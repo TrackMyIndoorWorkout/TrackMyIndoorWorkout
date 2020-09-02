@@ -3,7 +3,7 @@ package dev.csaba.virtual_velodrome_rider;
 import android.os.Bundle;
 import dev.flutter.plugins.e2e.E2EPlugin;
 import io.flutter.app.FlutterActivity;
-import dev.csaba.virtual_velodrome_rider.FlutterBluePlugin;
+import com.pauldemarco.flutter_blue.FlutterBluePlugin;
 
 public class EmbeddingV1Activity extends FlutterActivity {
   @Override
