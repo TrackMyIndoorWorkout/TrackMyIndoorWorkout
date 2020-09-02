@@ -1,5 +1,5 @@
-name: flutter_blue_example
-description: Demonstrates how to use the flutter_blue plugin.
+name: virtual_velodrome_rider
+description: Recording virtual rides as if circling in a Velodrome or on a running track.
 publish_to: "none"
 
 environment:

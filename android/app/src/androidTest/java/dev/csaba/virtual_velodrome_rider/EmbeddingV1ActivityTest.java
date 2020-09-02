@@ -2,7 +2,7 @@
 
  import androidx.test.rule.ActivityTestRule;
  import dev.flutter.plugins.e2e.FlutterRunner;
- import com.pauldemarco.flutter_blue_example.EmbeddingV1Activity;
+ import dev.csaba.virtual_velodrome_rider.EmbeddingV1Activity;
  import org.junit.Rule;
  import org.junit.runner.RunWith;
 
