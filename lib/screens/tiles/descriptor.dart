@@ -18,7 +18,7 @@ class DescriptorTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Descriptor'),
-          Text('0x${descriptor.uuid.toString().toUpperCase().substring(4, 8)}',
+          Text('0x${descriptor.uuid.toString()}',
               style: Theme.of(context)
                   .textTheme
                   .body1
