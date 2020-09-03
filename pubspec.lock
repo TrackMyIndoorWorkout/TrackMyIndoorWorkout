@@ -72,7 +72,7 @@ packages:
     source: hosted
     version: "2.1.5"
   e2e:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: e2e
       url: "https://pub.dartlang.org"
@@ -105,7 +105,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_blue:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: flutter_blue
       url: "https://pub.dartlang.org"
@@ -126,6 +126,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  get:
+    dependency: "direct main"
+    description:
+      name: get
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.8.0"
   intl:
     dependency: transitive
     description:

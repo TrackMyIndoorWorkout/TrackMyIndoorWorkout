@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:get/get.dart';
 import 'tiles/scan_result.dart';
 import 'device.dart';
 
@@ -33,10 +34,8 @@ class FindDevicesScreen extends StatelessWidget {
                                     BluetoothDeviceState.connected) {
                                   return RaisedButton(
                                     child: Text('OPEN'),
-                                    onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DeviceScreen(device: d))),
+                                    onPressed: () =>
+                                        Get.to(DeviceScreen(device: d)),
                                   );
                                 }
                                 return Text(snapshot.data.toString());
@@ -54,11 +53,10 @@ class FindDevicesScreen extends StatelessWidget {
                       .map(
                         (r) => ScanResultTile(
                           result: r,
-                          onTap: () => Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            r.device.connect();
-                            return DeviceScreen(device: r.device);
-                          })),
+                          onTap: () async {
+                            await r.device.connect();
+                            Get.to(DeviceScreen(device: r.device));
+                          },
                         ),
                       )
                       .toList(),
