@@ -6,7 +6,6 @@ class CharacteristicTile extends StatelessWidget {
   final BluetoothCharacteristic characteristic;
   final List<DescriptorTile> descriptorTiles;
   final VoidCallback onReadPressed;
-  final VoidCallback onWritePressed;
   final VoidCallback onNotificationPressed;
 
   const CharacteristicTile(
@@ -14,7 +13,6 @@ class CharacteristicTile extends StatelessWidget {
       this.characteristic,
       this.descriptorTiles,
       this.onReadPressed,
-      this.onWritePressed,
       this.onNotificationPressed})
       : super(key: key);
 
@@ -49,11 +47,6 @@ class CharacteristicTile extends StatelessWidget {
                   color: Theme.of(context).iconTheme.color.withOpacity(0.5),
                 ),
                 onPressed: onReadPressed,
-              ),
-              IconButton(
-                icon: Icon(Icons.file_upload,
-                    color: Theme.of(context).iconTheme.color.withOpacity(0.5)),
-                onPressed: onWritePressed,
               ),
               IconButton(
                 icon: Icon(

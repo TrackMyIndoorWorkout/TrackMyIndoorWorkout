@@ -4,10 +4,9 @@ import 'package:flutter_blue/flutter_blue.dart';
 class DescriptorTile extends StatelessWidget {
   final BluetoothDescriptor descriptor;
   final VoidCallback onReadPressed;
-  final VoidCallback onWritePressed;
 
   const DescriptorTile(
-      {Key key, this.descriptor, this.onReadPressed, this.onWritePressed})
+      {Key key, this.descriptor, this.onReadPressed})
       : super(key: key);
 
   @override
@@ -40,13 +39,6 @@ class DescriptorTile extends StatelessWidget {
             ),
             onPressed: onReadPressed,
           ),
-          IconButton(
-            icon: Icon(
-              Icons.file_upload,
-              color: Theme.of(context).iconTheme.color.withOpacity(0.5),
-            ),
-            onPressed: onWritePressed,
-          )
         ],
       ),
     );
