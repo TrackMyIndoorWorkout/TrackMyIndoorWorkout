@@ -12,7 +12,7 @@ class AdapterStateTile extends StatelessWidget {
       color: Colors.redAccent,
       child: ListTile(
         title: Text(
-          'Bluetooth adapter is ${state.toString()}',
+          'Bluetooth adapter is ${state.toString().substring(15)}',
           style: Theme.of(context).primaryTextTheme.subtitle1,
         ),
         trailing: Icon(

@@ -54,7 +54,8 @@ class ScanResultTile extends StatelessWidget {
   }
 
   String getNiceHexArray(List<int> bytes) {
-    final byteStrings = bytes.map((i) => i.toRadixString(16).padLeft(2, '0'));
+    final byteStrings =
+        bytes.map((i) => i.toRadixString(16).toUpperCase().padLeft(2, '0'));
     return '[${byteStrings.join(', ')}]';
   }
 
@@ -64,7 +65,8 @@ class ScanResultTile extends StatelessWidget {
     }
     List<String> res = [];
     data.forEach((id, bytes) {
-      res.add('${id.toRadixString(16)}: ${getNiceHexArray(bytes)}');
+      res.add(
+          '${id.toRadixString(16).toUpperCase()}: ${getNiceHexArray(bytes)}');
     });
     return res.join(', ');
   }
@@ -75,7 +77,7 @@ class ScanResultTile extends StatelessWidget {
     }
     List<String> res = [];
     data.forEach((id, bytes) {
-      res.add('${id}: ${getNiceHexArray(bytes)}');
+      res.add('${id.toUpperCase()}: ${getNiceHexArray(bytes)}');
     });
     return res.join(', ');
   }
@@ -106,7 +108,7 @@ class ScanResultTile extends StatelessWidget {
             context,
             'Service UUIDs',
             (result.advertisementData.serviceUuids.isNotEmpty)
-                ? result.advertisementData.serviceUuids.join(', ')
+                ? result.advertisementData.serviceUuids.join(', ').toUpperCase()
                 : 'N/A'),
         _buildAdvRow(context, 'Service Data',
             getNiceServiceData(result.advertisementData.serviceData) ?? 'N/A'),

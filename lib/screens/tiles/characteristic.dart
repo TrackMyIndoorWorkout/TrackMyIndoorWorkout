@@ -30,7 +30,8 @@ class CharacteristicTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text('Characteristic'),
-                Text('0x${characteristic.uuid.toString()}',
+                Text(
+                    '0x${characteristic.uuid.toString().substring(4, 8).toUpperCase()}',
                     style: Theme.of(context).textTheme.bodyText2.copyWith(
                         color: Theme.of(context).textTheme.caption.color))
               ],

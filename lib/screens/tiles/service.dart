@@ -18,7 +18,7 @@ class ServiceTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text('Service'),
-            Text('0x${service.uuid.toString()}',
+            Text('0x${service.uuid.toString().substring(4, 8).toUpperCase()}',
                 style: Theme.of(context)
                     .textTheme
                     .bodyText2
@@ -30,7 +30,8 @@ class ServiceTile extends StatelessWidget {
     } else {
       return ListTile(
         title: Text('Service'),
-        subtitle: Text('0x${service.uuid.toString()}'),
+        subtitle:
+            Text('0x${service.uuid.toString().substring(4, 8).toUpperCase()}'),
       );
     }
   }

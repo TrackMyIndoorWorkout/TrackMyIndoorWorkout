@@ -64,7 +64,7 @@ class DeviceScreen extends StatelessWidget {
                   break;
                 default:
                   onPressed = null;
-                  text = snapshot.data.toString().substring(21);
+                  text = snapshot.data.toString().substring(21).toUpperCase();
                   break;
               }
               return FlatButton(

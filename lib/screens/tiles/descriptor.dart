@@ -5,8 +5,7 @@ class DescriptorTile extends StatelessWidget {
   final BluetoothDescriptor descriptor;
   final VoidCallback onReadPressed;
 
-  const DescriptorTile(
-      {Key key, this.descriptor, this.onReadPressed})
+  const DescriptorTile({Key key, this.descriptor, this.onReadPressed})
       : super(key: key);
 
   @override
@@ -17,7 +16,7 @@ class DescriptorTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Descriptor'),
-          Text('0x${descriptor.uuid.toString()}',
+          Text('0x${descriptor.uuid.toString().substring(4, 8).toUpperCase()}',
               style: Theme.of(context)
                   .textTheme
                   .bodyText2
