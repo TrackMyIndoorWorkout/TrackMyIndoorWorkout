@@ -28,17 +28,12 @@ class DescriptorTile extends StatelessWidget {
         initialData: descriptor.lastValue,
         builder: (c, snapshot) => Text(snapshot.data.toString()),
       ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.file_download,
-              color: Theme.of(context).iconTheme.color.withOpacity(0.5),
-            ),
-            onPressed: onReadPressed,
-          ),
-        ],
+      trailing: IconButton(
+        icon: Icon(
+          Icons.file_download,
+          color: Theme.of(context).iconTheme.color.withOpacity(0.5),
+        ),
+        onPressed: onReadPressed,
       ),
     );
   }

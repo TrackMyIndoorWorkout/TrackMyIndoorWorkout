@@ -124,10 +124,10 @@ class DeviceScreen extends StatelessWidget {
               builder: (c, snapshot) => ListTile(
                 title: Text('MTU Size'),
                 subtitle: Text('${snapshot.data} bytes'),
-                trailing: IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () => device.requestMtu(223),
-                ),
+                // trailing: IconButton(
+                //   icon: Icon(Icons.edit),
+                //   onPressed: () => device.requestMtu(223),
+                // ),
               ),
             ),
             StreamBuilder<List<BluetoothService>>(
