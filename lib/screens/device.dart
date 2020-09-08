@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'tiles/characteristic.dart';
 import 'tiles/descriptor.dart';
@@ -22,8 +23,13 @@ class DeviceScreen extends StatelessWidget {
                     characteristic: c,
                     onReadPressed: () => c.read(),
                     onNotificationPressed: () async {
-                      await c.setNotifyValue(!c.isNotifying);
-                      await c.read();
+                      await c.setNotifyValue(true);  // !c.isNotifying
+                      try {
+                        await c.read();
+                      } on PlatformException catch(e, stacktrace) {
+                        debugPrint("StackTrace ${e.toString()}");
+                        debugPrint("StackTrace $s");
+                      }
                     },
                     descriptorTiles: c.descriptors
                         .map(
