@@ -1,15 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
-import 'tiles/scan_result.dart';
+import '../devices/devices.dart';
 import 'device.dart';
+import 'scan_result.dart';
 
 class FindDevicesScreen extends StatelessWidget {
+  Widget _alertDialog(BluetoothDevice device, bool connect) {
+    return AlertDialog(
+      title: Text(devices[0].fullName),
+      content: Text('''Device does not seem to be a ${devices[0].fullName}
+          by name. Still continue?'''),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('Yes'),
+          onPressed: () async {
+            Get.close(1);
+            if (connect) {
+              await device.connect();
+            }
+            await Get.to(DeviceScreen(device: device));
+          },
+        ),
+        FlatButton(child: Text('No'), onPressed: () => Get.close(1)),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Find Devices'),
+        title: Text('Devices'),
       ),
       body: RefreshIndicator(
         onRefresh: () =>
@@ -33,14 +55,17 @@ class FindDevicesScreen extends StatelessWidget {
                                 if (snapshot.data ==
                                     BluetoothDeviceState.connected) {
                                   return RaisedButton(
-                                    child: Text('OPEN'),
-                                    // onPressed: () =>
-                                    //     Get.to(DeviceScreen(device: d)),
-                                    onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DeviceScreen(device: d))),
-                                  );
+                                      child: Text('OPEN'),
+                                      onPressed: () async {
+                                        if (d.name.startsWith(
+                                            devices[0].namePrefix)) {
+                                          await Get.to(DeviceScreen(device: d));
+                                        } else {
+                                          await Get.dialog(
+                                              _alertDialog(d, false),
+                                              barrierDismissible: false);
+                                        }
+                                      });
                                 }
                                 return Text(snapshot.data.toString());
                               },
@@ -57,15 +82,14 @@ class FindDevicesScreen extends StatelessWidget {
                       .map(
                         (r) => ScanResultTile(
                           result: r,
-                          onTap: () => Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            r.device.connect();
-                            return DeviceScreen(device: r.device);
-                          })),
-                          // onTap: () async {
-                          //   await r.device.connect();
-                          //   Get.to(DeviceScreen(device: r.device));
-                          // },
+                          onTap: () async {
+                            if (r.device.name.startsWith("CHRONO")) {
+                              await Get.to(DeviceScreen(device: r.device));
+                            } else {
+                              await Get.dialog(_alertDialog(r.device, false),
+                                  barrierDismissible: false);
+                            }
+                          },
                         ),
                       )
                       .toList(),
