@@ -33,11 +33,9 @@ class DeviceState extends State<DeviceScreen> {
   double _speed; // snapshot
   double _cadence; // snapshot
   double _heartRate; // snapshot
-  DateTime _rightNow;
   DateTime _lastRecord;
-  Timer _timer;
   final style = TextStyle(
-    fontSize: 32,
+    fontSize: 72,
     fontFeatures: [FontFeature.tabularFigures()],
   );
 
@@ -117,7 +115,7 @@ class DeviceState extends State<DeviceScreen> {
           debugPrintStack(stackTrace: stack, label: "trace:");
         }
 
-        if (// _areListsEqual(name, descriptor.nameStart) &&
+        if (_areListsEqual(name, descriptor.nameStart) &&
             _areListsEqual(equipmentType, BIKE_EQUIPMENT)) {
           final measurements = equipmentService.characteristics.firstWhere(
               (ch) => ch.uuid == descriptor.measurementGuid,
@@ -156,27 +154,11 @@ class DeviceState extends State<DeviceScreen> {
     _heartRate = 0;
 
     _initialConnectOnDemand();
-    _updateTime();
   }
 
   @override
   dispose() {
-    _timer?.cancel();
     super.dispose();
-  }
-
-  void _updateTime() {
-    setState(() {
-      _rightNow = DateTime.now();
-      // TODO: record FIT on demand (if happened more than a second ago)
-      _lastRecord = DateTime.now();
-      // Update once per second, but make sure to do it at the beginning of each
-      // new second, so it is accurate.
-      _timer = Timer(
-        Duration(seconds: 1) - Duration(milliseconds: _rightNow.millisecond),
-        _updateTime,
-      );
-    });
   }
 
   @override
@@ -227,6 +209,8 @@ class DeviceState extends State<DeviceScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             StreamBuilder<BluetoothDeviceState>(
               stream: device.state,
@@ -242,30 +226,58 @@ class DeviceState extends State<DeviceScreen> {
                 subtitle: Text('${device.id}'),
               ),
             ),
-            Row(children: [
-              Icon(Icons.timer, size: style.fontSize),
-              Text(_timeDisplay, style: style),
-            ]),
-            Row(children: [
-              Icon(Icons.whatshot, size: style.fontSize),
-              Text('$_calories kCal', style: style),
-            ]),
-            Row(children: [
-              Icon(Icons.bolt, size: style.fontSize),
-              Text('$_power W', style: style),
-            ]),
-            Row(children: [
-              Icon(Icons.speed, size: style.fontSize),
-              Text('$_speed km/h', style: style),
-            ]),
-            Row(children: [
-              Icon(Icons.directions_bike, size: style.fontSize),
-              Text('$_cadence rpm', style: style),
-            ]),
-            Row(children: [
-              Icon(Icons.favorite, size: style.fontSize),
-              Text('$_heartRate bpm', style: style),
-            ]),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.timer, size: style.fontSize),
+                  Text(_timeDisplay, style: style),
+                ]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.whatshot, size: style.fontSize),
+                Text('$_calories', style: style),
+                Text('kCal', style: style),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.bolt, size: style.fontSize),
+                Text('$_power', style: style),
+                Text('W', style: style),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.speed, size: style.fontSize),
+                Text('$_speed', style: style),
+                Text('km/h', style: style),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.directions_bike, size: style.fontSize),
+                Text('$_cadence', style: style),
+                Text('rpm', style: style),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.favorite, size: style.fontSize),
+                Text('$_heartRate', style: style),
+                Text('bpm', style: style),
+              ],
+            ),
           ],
         ),
       ),
