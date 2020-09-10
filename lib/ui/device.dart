@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
-import 'package:virtual_velodrome_rider/devices/device_descriptor.dart';
-import '../devices/characteristic_constants.dart';
+import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
+import '../devices/gatt_constants.dart';
 
 class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
@@ -95,10 +95,10 @@ class DeviceState extends State<DeviceScreen> {
       setState(() {
         _discovered = true;
       });
-      final deviceInfo = services
-          .firstWhere((service) => service.uuid == deviceInformationUUID);
+      final deviceInfo =
+          services.firstWhere((service) => service.uuid == deviceInformationId);
       final nameCharacteristic = deviceInfo.characteristics
-          .firstWhere((ch) => ch.uuid == manufacturerNameUUID);
+          .firstWhere((ch) => ch.uuid == manufacturerNameId);
       var name;
       try {
         name = await nameCharacteristic.read();
@@ -108,11 +108,15 @@ class DeviceState extends State<DeviceScreen> {
       }
 
       final equipmentService = services.firstWhere(
-          (service) => service.uuid == descriptor.measurementServiceGuid,
+          (service) =>
+              service.uuid.toString().substring(4, 8).toLowerCase() ==
+              descriptor.measurementServiceId,
           orElse: () => null);
       if (equipmentService != null) {
         final equipmentTypeChar = equipmentService.characteristics.firstWhere(
-            (ch) => ch.uuid == descriptor.equipmentTypeGuid,
+            (ch) =>
+                ch.uuid.toString().substring(4, 8).toLowerCase() ==
+                descriptor.equipmentTypeId,
             orElse: () => null);
 
         var equipmentType;
@@ -126,7 +130,9 @@ class DeviceState extends State<DeviceScreen> {
         if (_areListsEqual(name, descriptor.nameStart) &&
             _areListsEqual(equipmentType, BIKE_EQUIPMENT)) {
           final measurements = equipmentService.characteristics.firstWhere(
-              (ch) => ch.uuid == descriptor.measurementGuid,
+              (ch) =>
+                  ch.uuid.toString().substring(4, 8).toLowerCase() ==
+                  descriptor.measurementId,
               orElse: () => null);
           if (measurements != null) {
             await measurements.setNotifyValue(true);

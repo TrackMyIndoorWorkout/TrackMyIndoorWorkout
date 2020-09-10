@@ -1,4 +1,3 @@
-import 'package:flutter_blue/flutter_blue.dart';
 import 'metric_descriptor.dart';
 
 class DeviceDescriptor {
@@ -7,10 +6,10 @@ class DeviceDescriptor {
   final List<int> nameStart;
   final List<int> manufacturer;
   final List<int> model;
-  final Guid measurementServiceGuid;
-  final Guid equipmentTypeGuid;
-  final Guid equipmentStateGuid;
-  final Guid measurementGuid;
+  final String measurementServiceId;
+  final String equipmentTypeId;
+  final String equipmentStateId;
+  final String measurementId;
   final int byteCount;
   final List<int> measurementPrefix;
   final MetricDescriptor time;
@@ -26,10 +25,10 @@ class DeviceDescriptor {
       this.nameStart,
       this.manufacturer,
       this.model,
-      this.measurementServiceGuid,
-      this.equipmentTypeGuid,
-      this.equipmentStateGuid,
-      this.measurementGuid,
+      this.measurementServiceId,
+      this.equipmentTypeId,
+      this.equipmentStateId,
+      this.measurementId,
       this.byteCount,
       this.measurementPrefix,
       this.time,
