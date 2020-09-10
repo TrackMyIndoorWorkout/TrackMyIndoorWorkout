@@ -1,7 +1,7 @@
 class MetricDescriptor {
   final int lsb;
   final int msb;
-  final int divider;
+  final double divider;
 
   MetricDescriptor({this.lsb, this.msb, this.divider});
 

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -28,14 +27,16 @@ class DeviceState extends State<DeviceScreen> {
   bool _discovered;
   bool _measuring;
   double _time; // cumulative elapsed (auto pause)
-  double _calories; // cumulative
-  double _power; // snapshot
-  double _speed; // snapshot
-  double _cadence; // snapshot
-  double _heartRate; // snapshot
+  double _calories; // cumulative (kCal)
+  double _power; // snapshot (W)
+  double _speed; // snapshot (km/h)
+  double _cadence; // snapshot (rpm)
+  double _heartRate; // snapshot (bpm)
+  double _distance; // cumulative (m)
+  static const double ms2kmh = 3.6;
   DateTime _lastRecord;
   final style = TextStyle(
-    fontSize: 72,
+    fontSize: 64,
     fontFeatures: [FontFeature.tabularFigures()],
   );
 
@@ -70,6 +71,13 @@ class DeviceState extends State<DeviceScreen> {
       if (data[i] != descriptor.measurementPrefix[i]) return;
     }
     setState(() {
+      final rightNow = DateTime.now();
+      if (_speed > 0) {
+        Duration dT = rightNow.difference(_lastRecord);
+        final dD = _speed / ms2kmh * dT.inMilliseconds / 1000.0;
+        _distance += dD;
+      }
+
       _time = descriptor.getTime(data);
       _calories = descriptor.getCalories(data);
       _power = descriptor.getPower(data);
@@ -78,7 +86,7 @@ class DeviceState extends State<DeviceScreen> {
       _heartRate = descriptor.getHeartRate(data);
 
       // TODO: record FIT
-      _lastRecord = DateTime.now();
+      _lastRecord = rightNow;
     });
   }
 
@@ -152,6 +160,7 @@ class DeviceState extends State<DeviceScreen> {
     _speed = 0;
     _cadence = 0;
     _heartRate = 0;
+    _distance = 0;
 
     _initialConnectOnDemand();
   }
@@ -276,6 +285,15 @@ class DeviceState extends State<DeviceScreen> {
                 Icon(Icons.favorite, size: style.fontSize),
                 Text('$_heartRate', style: style),
                 Text('bpm', style: style),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.add_road, size: style.fontSize),
+                Text('${_distance / 1000.0}', style: style),
+                Text('km', style: style),
               ],
             ),
           ],
