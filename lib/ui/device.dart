@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
+import '../track/utils.dart';
 
 class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
@@ -239,49 +239,6 @@ class DeviceState extends State<DeviceScreen> {
     super.dispose();
   }
 
-  double _calculate(distance, horizontal) {
-    final rX = (size.width - 2 * THICK) / (2 * RADIUS_BOOST);
-    final rY =
-        (size.height - 2 * THICK) / (2 * RADIUS_BOOST + pi * LANE_SHRINK);
-    final r = min(rY, rX) * RADIUS_BOOST;
-    final offset = Offset(
-        rX > rY ? (size.width - 2 * (THICK + r)) / 2 : 0,
-        rX < rY
-            ? (size.height - 2 * THICK - r * 2 - pi * rX * LANE_SHRINK) / 2
-            : 0);
-
-    final d = distance % TRACK_LENGTH;
-    final straight = TRACK_LENGTH / 4 * LANE_SHRINK;
-    final halfCircle = TRACK_LENGTH / 4 * RADIUS_BOOST;
-    if (d <= straight) {
-      // left straight
-      if (horizontal) return THICK + offset.dx;
-      final displacement =
-          (1 - d / straight) * pi * LANE_SHRINK / RADIUS_BOOST * r;
-      return r + THICK + offset.dy + displacement;
-    } else if (d <= TRACK_LENGTH / 2) {
-      // top half circle
-      final rad = (1 - (d - straight) / halfCircle) * pi;
-      if (horizontal) return (cos(rad) + 1) * r + THICK + offset.dx;
-      return (1 - sin(rad)) * r + THICK + offset.dy;
-    } else if (d <= TRACK_LENGTH / 2 + straight) {
-      // right straight
-      if (horizontal) return 2 * r + THICK + offset.dx;
-      final displacement = (d - TRACK_LENGTH / 2) /
-          straight *
-          pi *
-          LANE_SHRINK /
-          RADIUS_BOOST *
-          r;
-      return r + THICK + offset.dy + displacement;
-    } else {
-      // bottom half circle
-      final rad = (2 + (d - TRACK_LENGTH / 2 - straight) / halfCircle) * pi;
-      if (horizontal) return (cos(rad) + 1) * r + THICK + offset.dx;
-      return size.height - THICK - offset.dy - r * (1 - sin(rad));
-    }
-  }
-
   _finishActivity() async {
     if (!_measuring) return;
 
@@ -419,8 +376,8 @@ class DeviceState extends State<DeviceScreen> {
             ],
           )),
           Positioned(
-            top: _calculate(_distance, false) - THICK,
-            left: _calculate(_distance, true) - THICK,
+            top: calculateTrackMarker(size, _distance, false) - THICK,
+            left: calculateTrackMarker(size, _distance, true) - THICK,
             child: Container(
                 decoration: BoxDecoration(
                   color: Color(0x88FF0000),
