@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
+import '../track/constants.dart';
+import '../track/track_painter.dart';
 
 class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
@@ -36,6 +38,8 @@ class DeviceState extends State<DeviceScreen> {
   double _distance; // cumulative (m)
   static const double ms2kmh = 3.6;
   DateTime _lastRecord;
+  static Size size = Size(0, 0);
+
   final style = TextStyle(
     fontSize: 64,
     fontFeatures: [FontFeature.tabularFigures()],
@@ -86,7 +90,7 @@ class DeviceState extends State<DeviceScreen> {
       _cadence = descriptor.getCadence(data);
       _heartRate = descriptor.getHeartRate(data);
 
-      // TODO: record FIT
+      // TODO: record workout
       _lastRecord = rightNow;
     });
   }
@@ -179,6 +183,49 @@ class DeviceState extends State<DeviceScreen> {
     super.dispose();
   }
 
+  double _calculate(distance, horizontal) {
+    final rX = (size.width - 2 * THICK) / (2 * RADIUS_BOOST);
+    final rY =
+        (size.height - 2 * THICK) / (2 * RADIUS_BOOST + pi * LANE_SHRINK);
+    final r = min(rY, rX) * RADIUS_BOOST;
+    final offset = Offset(
+        rX > rY ? (size.width - 2 * (THICK + r)) / 2 : 0,
+        rX < rY
+            ? (size.height - 2 * THICK - r * 2 - pi * rX * LANE_SHRINK) / 2
+            : 0);
+
+    final d = distance % TRACK_LENGTH;
+    final straight = TRACK_LENGTH / 4 * LANE_SHRINK;
+    final halfCircle = TRACK_LENGTH / 4 * RADIUS_BOOST;
+    if (d <= straight) {
+      // left straight
+      if (horizontal) return THICK + offset.dx;
+      final displacement =
+          (1 - d / straight) * pi * LANE_SHRINK / RADIUS_BOOST * r;
+      return r + THICK + offset.dy + displacement;
+    } else if (d <= TRACK_LENGTH / 2) {
+      // top half circle
+      final rad = (1 - (d - straight) / halfCircle) * pi;
+      if (horizontal) return (cos(rad) + 1) * r + THICK + offset.dx;
+      return (1 - sin(rad)) * r + THICK + offset.dy;
+    } else if (d <= TRACK_LENGTH / 2 + straight) {
+      // right straight
+      if (horizontal) return 2 * r + THICK + offset.dx;
+      final displacement = (d - TRACK_LENGTH / 2) /
+          straight *
+          pi *
+          LANE_SHRINK /
+          RADIUS_BOOST *
+          r;
+      return r + THICK + offset.dy + displacement;
+    } else {
+      // bottom half circle
+      final rad = (2 + (d - TRACK_LENGTH / 2 - straight) / halfCircle) * pi;
+      if (horizontal) return (cos(rad) + 1) * r + THICK + offset.dx;
+      return size.height - THICK - offset.dy - r * (1 - sin(rad));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var _timeDisplay =
@@ -195,118 +242,116 @@ class DeviceState extends State<DeviceScreen> {
             initialData: BluetoothDeviceState.connecting,
             builder: (c, snapshot) {
               VoidCallback onPressed;
-              String text;
+              IconData icon;
               switch (snapshot.data) {
                 case BluetoothDeviceState.connected:
-                  text = 'CONNECTED';
+                  onPressed = null;
+                  icon = Icons.bluetooth_connected;
                   if (!_discovered) {
                     _discoverServices();
                   }
                   break;
                 case BluetoothDeviceState.disconnected:
                   onPressed = () => device.connect();
-                  text = 'CONNECT';
+                  icon = Icons.bluetooth_disabled;
                   break;
                 default:
                   onPressed = null;
-                  text = snapshot.data.toString().substring(21).toUpperCase();
+                  icon = Icons.bluetooth_searching;
                   break;
               }
-              return FlatButton(
-                  onPressed: onPressed,
-                  child: Text(
-                    text,
-                    style: Theme.of(context)
-                        .primaryTextTheme
-                        .button
-                        .copyWith(color: Colors.white),
-                  ));
+              return IconButton(
+                icon: Icon(icon),
+                onPressed: onPressed,
+              );
             },
           )
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            StreamBuilder<BluetoothDeviceState>(
-              stream: device.state,
-              initialData: BluetoothDeviceState.connecting,
-              builder: (c, snapshot) => ListTile(
-                leading: Icon(snapshot.data == BluetoothDeviceState.connected
-                    ? Icons.bluetooth_connected
-                    : (snapshot.data == BluetoothDeviceState.disconnected
-                        ? Icons.bluetooth_disabled
-                        : Icons.bluetooth_searching)),
-                title: Text(
-                    'Device is ${snapshot.data.toString().split('.')[1]}.'),
-                subtitle: Text('${device.id}'),
-              ),
-            ),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: CustomPaint(
+        painter: TrackPainter(),
+        child: Stack(children: <Widget>[
+          Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Icon(Icons.timer, size: style.fontSize),
                   Text(_timeDisplay, style: style),
-                ]),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(Icons.whatshot, size: style.fontSize),
-                Text('$_calories', style: style),
-                Text('kCal', style: style),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(Icons.bolt, size: style.fontSize),
-                Text('$_power', style: style),
-                Text('W', style: style),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(Icons.speed, size: style.fontSize),
-                Text('$_speed', style: style),
-                Text('km/h', style: style),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(Icons.directions_bike, size: style.fontSize),
-                Text('$_cadence', style: style),
-                Text('rpm', style: style),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(Icons.favorite, size: style.fontSize),
-                Text('$_heartRate', style: style),
-                Text('bpm', style: style),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(Icons.add_road, size: style.fontSize),
-                Text('${_distance / 1000.0}', style: style),
-                Text('km', style: style),
-              ],
-            ),
-          ],
-        ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.whatshot, size: style.fontSize),
+                  Text('$_calories', style: style),
+                  Text('kCal', style: style),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.bolt, size: style.fontSize),
+                  Text('$_power', style: style),
+                  Text('W', style: style),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.speed, size: style.fontSize),
+                  Text('$_speed', style: style),
+                  Text('km/h', style: style),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.directions_bike, size: style.fontSize),
+                  Text('$_cadence', style: style),
+                  Text('rpm', style: style),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.favorite, size: style.fontSize),
+                  Text('$_heartRate', style: style),
+                  Text('bpm', style: style),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_road, size: style.fontSize),
+                  Text('${_distance / 1000.0}', style: style),
+                  Text('km', style: style),
+                ],
+              ),
+            ],
+          )),
+          Positioned(
+            top: _calculate(_distance, false) - THICK,
+            left: _calculate(_distance, true) - THICK,
+            child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0x88FF0000),
+                  borderRadius: BorderRadius.circular(THICK),
+                ),
+                width: THICK * 2,
+                height: THICK * 2),
+          )
+        ]),
       ),
     );
   }
