@@ -155,8 +155,8 @@ class DeviceState extends State<DeviceScreen> {
             textConfirm: "OK",
             onConfirm: () => Get.close(1),
             middleText:
-                '''The device does not look like a ${descriptor.fullName}.
-                Measurement is not started''');
+                'The device does not look like a ${descriptor.fullName}. ' +
+                'Measurement is not started');
       }
       return services;
     });

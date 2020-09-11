@@ -9,8 +9,8 @@ class FindDevicesScreen extends StatelessWidget {
   Widget _alertDialog(BluetoothDevice device, bool connect) {
     return AlertDialog(
       title: Text(devices[0].fullName),
-      content: Text('''Device does not seem to be a ${devices[0].fullName}
-          by name. Still continue?'''),
+      content: Text('Device does not seem to be a ${devices[0].fullName} ' +
+          'by name. Still continue?'),
       actions: <Widget>[
         FlatButton(
           child: Text('Yes'),
