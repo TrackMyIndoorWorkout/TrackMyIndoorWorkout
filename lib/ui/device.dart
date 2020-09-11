@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
-import '../services/db.dart';
+import '../persistence/db.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
@@ -27,7 +27,6 @@ class DeviceState extends State<DeviceScreen> {
 
   final BluetoothDevice device;
   final DeviceDescriptor descriptor = devices[0];
-  // List<BluetoothService> _services;
   bool _discovered;
   bool _measuring;
   bool _paused;
@@ -274,6 +273,7 @@ class DeviceState extends State<DeviceScreen> {
     if (_timeDisplay.length == 7) {
       _timeDisplay = '0$_timeDisplay';
     }
+    final trackMarker = calculateTrackMarker(size, _distance);
     return Scaffold(
       appBar: AppBar(
         title: Text(device.name),
@@ -385,8 +385,8 @@ class DeviceState extends State<DeviceScreen> {
             ],
           )),
           Positioned(
-            top: calculateTrackMarker(size, _distance, false) - THICK,
-            left: calculateTrackMarker(size, _distance, true) - THICK,
+            left: trackMarker.dx - THICK,
+            top: trackMarker.dy - THICK,
             child: Container(
                 decoration: BoxDecoration(
                   color: Color(0x88FF0000),
