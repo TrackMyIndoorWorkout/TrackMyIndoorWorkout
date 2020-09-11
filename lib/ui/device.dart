@@ -32,10 +32,19 @@ class DeviceState extends State<DeviceScreen> {
   double _time; // cumulative elapsed (auto pause)
   double _calories; // cumulative (kCal)
   double _power; // snapshot (W)
+  double _powerSum;
+  int _powerCount;
   double _speed; // snapshot (km/h)
+  double _speedSum;
+  int _speedCount;
   double _cadence; // snapshot (rpm)
+  double _cadenceSum;
+  int _cadenceCount;
   double _heartRate; // snapshot (bpm)
+  double _hrSum;
+  int _hrCount;
   double _distance; // cumulative (m)
+
   static const double ms2kmh = 3.6;
   DateTime _lastRecord;
   static Size size = Size(0, 0);
@@ -86,11 +95,29 @@ class DeviceState extends State<DeviceScreen> {
       _time = descriptor.getTime(data);
       _calories = descriptor.getCalories(data);
       _power = descriptor.getPower(data);
+      if (_power > 0 && _measuring) {
+        _powerSum += _power;
+        _powerCount++;
+      }
       _speed = descriptor.getSpeed(data);
+      if (_speed > 0 && _measuring) {
+        _speedSum += _speed;
+        _speedCount++;
+      }
       _cadence = descriptor.getCadence(data);
+      if (_cadence > 0 && _measuring) {
+        _cadenceSum += _cadence;
+        _cadenceCount++;
+      }
       _heartRate = descriptor.getHeartRate(data);
+      if (_heartRate > 0 && _measuring) {
+        _hrSum += _heartRate;
+        _hrCount++;
+      }
 
-      // TODO: record workout
+      if (_measuring) {
+        // TODO: record workout
+      }
       _lastRecord = rightNow;
     });
   }
@@ -156,7 +183,7 @@ class DeviceState extends State<DeviceScreen> {
             onConfirm: () => Get.close(1),
             middleText:
                 'The device does not look like a ${descriptor.fullName}. ' +
-                'Measurement is not started');
+                    'Measurement is not started');
       }
       return services;
     });
@@ -170,9 +197,17 @@ class DeviceState extends State<DeviceScreen> {
     _time = 0;
     _calories = 0;
     _power = 0;
+    _powerSum = 0;
+    _powerCount = 0;
     _speed = 0;
+    _speedSum = 0;
+    _speedCount = 0;
     _cadence = 0;
+    _cadenceSum = 0;
+    _cadenceCount = 0;
     _heartRate = 0;
+    _hrSum = 0;
+    _hrCount = 0;
     _distance = 0;
 
     _initialConnectOnDemand();
@@ -226,6 +261,13 @@ class DeviceState extends State<DeviceScreen> {
     }
   }
 
+  _finishActivity() async {
+    setState(() {
+      _measuring = false;
+    });
+    // TODO: add averages to the activity table
+  }
+
   @override
   Widget build(BuildContext context) {
     var _timeDisplay =
@@ -265,7 +307,10 @@ class DeviceState extends State<DeviceScreen> {
                 onPressed: onPressed,
               );
             },
-          )
+          ),
+          IconButton(
+              icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+              onPressed: () async => await _finishActivity())
         ],
       ),
       body: CustomPaint(
