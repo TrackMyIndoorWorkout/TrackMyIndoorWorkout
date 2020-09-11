@@ -100,8 +100,17 @@ class DeviceState extends State<DeviceScreen> {
     _heartRate = descriptor.getHeartRate(data);
     if (_speed > 0 || !_paused) {
       final dB = Get.find<Db>();
-      await dB.addRecord(_distance + dD, _time.toInt(), _calories.toInt(),
-          _power.toInt(), _speed, _cadence.toInt(), _heartRate.toInt());
+      final gps = calculateGPS(_distance + dD);
+      await dB.addRecord(
+          _distance + dD,
+          _time.toInt(),
+          _calories.toInt(),
+          _power.toInt(),
+          _speed,
+          _cadence.toInt(),
+          _heartRate.toInt(),
+          gps.dx,
+          gps.dy);
     }
 
     setState(() {

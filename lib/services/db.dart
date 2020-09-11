@@ -17,6 +17,8 @@ class Db {
   static const SPEED = 'speed';
   static const CADENCE = 'cadence';
   static const HEART_RATE = 'heart_rate';
+  static const LON = 'longitude';
+  static const LAT = 'latitude';
   static const AVG = 'avg_';
   static const AVG_POWER = 'avg_$POWER';
   static const AVG_SPEED = 'avg_$SPEED';
@@ -57,6 +59,8 @@ class Db {
           "$SPEED FLOAT, " +
           "$CADENCE INTEGER, " +
           "$HEART_RATE INTEGER, " +
+          "$LON FLOAT, " +
+          "$LAT FLOAT, " +
           "FOREIGN KEY($ACTIVITY_ID) REFERENCES activities(_id))");
     });
   }
@@ -79,7 +83,7 @@ class Db {
   }
 
   addRecord(double distance, int elapsed, int calories, int power, double speed,
-      int cadence, int heartRate) async {
+      int cadence, int heartRate, double lon, double lat) async {
     await _db.insert(
       RECORDS,
       {
@@ -92,6 +96,8 @@ class Db {
         SPEED: speed,
         CADENCE: cadence,
         HEART_RATE: heartRate,
+        LON: lon,
+        LAT: lat,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
