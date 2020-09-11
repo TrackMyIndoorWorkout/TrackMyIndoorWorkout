@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -95,10 +96,12 @@ class DeviceState extends State<DeviceScreen> {
       setState(() {
         _discovered = true;
       });
-      final deviceInfo =
-          services.firstWhere((service) => service.uuid == deviceInformationId);
-      final nameCharacteristic = deviceInfo.characteristics
-          .firstWhere((ch) => ch.uuid == manufacturerNameId);
+      final deviceInfo = services.firstWhere((service) =>
+          service.uuid.toString().substring(4, 8).toLowerCase() ==
+          deviceInformationId);
+      final nameCharacteristic = deviceInfo.characteristics.firstWhere((ch) =>
+          ch.uuid.toString().substring(4, 8).toLowerCase() ==
+          manufacturerNameId);
       var name;
       try {
         name = await nameCharacteristic.read();
