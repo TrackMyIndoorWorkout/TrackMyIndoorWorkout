@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
+import '../services/db.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
@@ -29,6 +30,7 @@ class DeviceState extends State<DeviceScreen> {
   // List<BluetoothService> _services;
   bool _discovered;
   bool _measuring;
+  bool _paused;
   double _time; // cumulative elapsed (auto pause)
   double _calories; // cumulative (kCal)
   double _power; // snapshot (W)
@@ -79,44 +81,57 @@ class DeviceState extends State<DeviceScreen> {
     return true;
   }
 
-  _recordMeasurement(List<int> data) {
+  _recordMeasurement(List<int> data) async {
     if (data.length != descriptor.byteCount) return;
     for (int i = 0; i < descriptor.measurementPrefix.length; i++) {
       if (data[i] != descriptor.measurementPrefix[i]) return;
     }
+    final rightNow = DateTime.now();
+    double dD;
+    if (_speed > 0) {
+      Duration dT = rightNow.difference(_lastRecord);
+      dD = _speed / ms2kmh * dT.inMilliseconds / 1000.0;
+    }
+    _time = descriptor.getTime(data);
+    _calories = descriptor.getCalories(data);
+    _power = descriptor.getPower(data);
+    _speed = descriptor.getSpeed(data);
+    _cadence = descriptor.getCadence(data);
+    _heartRate = descriptor.getHeartRate(data);
+    if (_speed > 0 || !_paused) {
+      final dB = Get.find<Db>();
+      await dB.addRecord(_distance + dD, _time.toInt(), _calories.toInt(),
+          _power.toInt(), _speed, _cadence.toInt(), _heartRate.toInt());
+    }
+
     setState(() {
-      final rightNow = DateTime.now();
       if (_speed > 0) {
-        Duration dT = rightNow.difference(_lastRecord);
-        final dD = _speed / ms2kmh * dT.inMilliseconds / 1000.0;
         _distance += dD;
       }
 
-      _time = descriptor.getTime(data);
-      _calories = descriptor.getCalories(data);
-      _power = descriptor.getPower(data);
       if (_power > 0 && _measuring) {
         _powerSum += _power;
         _powerCount++;
       }
-      _speed = descriptor.getSpeed(data);
       if (_speed > 0 && _measuring) {
         _speedSum += _speed;
         _speedCount++;
       }
-      _cadence = descriptor.getCadence(data);
       if (_cadence > 0 && _measuring) {
         _cadenceSum += _cadence;
         _cadenceCount++;
       }
-      _heartRate = descriptor.getHeartRate(data);
       if (_heartRate > 0 && _measuring) {
         _hrSum += _heartRate;
         _hrCount++;
       }
 
       if (_measuring) {
-        // TODO: record workout
+        if (_speed <= 0) {
+          _paused = true;
+        } else {
+          _paused = false;
+        }
       }
       _lastRecord = rightNow;
     });
@@ -170,10 +185,15 @@ class DeviceState extends State<DeviceScreen> {
               orElse: () => null);
           if (measurements != null) {
             await measurements.setNotifyValue(true);
-            measurements.value.listen((data) {
-              _recordMeasurement(data);
+            measurements.value.listen((data) async {
+              await _recordMeasurement(data);
             });
             _measuring = true;
+            _paused = false;
+            final db = Db();
+            Get.put<Db>(db);
+            await db.open();
+            await db.startActivity(device.name);
           }
         }
       }
@@ -194,6 +214,7 @@ class DeviceState extends State<DeviceScreen> {
     super.initState();
     _discovered = false;
     _measuring = false;
+    _paused = false;
     _time = 0;
     _calories = 0;
     _power = 0;
@@ -262,10 +283,22 @@ class DeviceState extends State<DeviceScreen> {
   }
 
   _finishActivity() async {
+    if (!_measuring) return;
+
     setState(() {
       _measuring = false;
+      _paused = true;
     });
-    // TODO: add averages to the activity table
+
+    final dB = Get.find<Db>();
+    await dB.endActivity(
+        _distance,
+        _time.toInt(),
+        _calories.toInt(),
+        _powerSum / _powerCount,
+        _speedSum / _speedCount,
+        _cadenceSum / _cadenceCount,
+        _hrSum / _hrCount);
   }
 
   @override
