@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
+import '../persistence/activity.dart';
 import '../persistence/db.dart';
+import '../persistence/record.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
@@ -46,8 +48,10 @@ class DeviceState extends State<DeviceScreen> {
   int _hrCount;
   double _distance; // cumulative (m)
 
-  static const double ms2kmh = 3.6;
   DateTime _lastRecord;
+  Activity _activity;
+
+  static const double ms2kmh = 3.6;
   static Size size = Size(0, 0);
 
   final style = TextStyle(
@@ -100,16 +104,16 @@ class DeviceState extends State<DeviceScreen> {
     if (_speed > 0 || !_paused) {
       final dB = Get.find<Db>();
       final gps = calculateGPS(_distance + dD);
-      await dB.addRecord(
-          _distance + dD,
-          _time.toInt(),
-          _calories.toInt(),
-          _power.toInt(),
-          _speed,
-          _cadence.toInt(),
-          _heartRate.toInt(),
-          gps.dx,
-          gps.dy);
+      await dB.addRecord(Record(
+          distance: _distance + dD,
+          elapsed: _time.toInt(),
+          calories: _calories.toInt(),
+          power: _power.toInt(),
+          speed: _speed,
+          cadence: _cadence.toInt(),
+          heartRate: _heartRate.toInt(),
+          lon: gps.dx,
+          lat: gps.dy));
     }
 
     setState(() {
@@ -201,7 +205,8 @@ class DeviceState extends State<DeviceScreen> {
             final db = Db();
             Get.put<Db>(db);
             await db.open();
-            await db.startActivity(device.name);
+            _activity = Activity(deviceName: device.name);
+            await db.addActivity(_activity);
           }
         }
       }
@@ -256,7 +261,7 @@ class DeviceState extends State<DeviceScreen> {
     });
 
     final dB = Get.find<Db>();
-    await dB.endActivity(
+    _activity.update(
         _distance,
         _time.toInt(),
         _calories.toInt(),
@@ -264,6 +269,7 @@ class DeviceState extends State<DeviceScreen> {
         _speedSum / _speedCount,
         _cadenceSum / _cadenceCount,
         _hrSum / _hrCount);
+    await dB.updateActivity(_activity);
   }
 
   @override
