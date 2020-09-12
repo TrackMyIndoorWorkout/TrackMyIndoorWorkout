@@ -1,4 +1,4 @@
-# Virtul Velodrome Rider
+# Virtual Velodrome Rider
 
 Based on the flutter_blue example
 
