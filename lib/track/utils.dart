@@ -45,7 +45,7 @@ Offset calculateGPS(double distance) {
 
   if (d <= LANE_LENGTH) {
     // left straight
-    final displacement = - d * LAT_METER;
+    final displacement = -d * LAT_METER;
     return Offset(
         trackCenter.dx - LON_RADIUS, trackCenter.dy + LANE_HALF + displacement);
   } else if (d <= TRACK_LENGTH / 2) {
