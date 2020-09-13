@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import '../devices/devices.dart';
 import 'device.dart';
@@ -99,23 +100,34 @@ class FindDevicesScreen extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: StreamBuilder<bool>(
-        stream: FlutterBlue.instance.isScanning,
-        initialData: false,
-        builder: (c, snapshot) {
-          if (snapshot.data) {
-            return FloatingActionButton(
-              child: Icon(Icons.stop),
-              onPressed: () => FlutterBlue.instance.stopScan(),
-              backgroundColor: Colors.red,
-            );
-          } else {
-            return FloatingActionButton(
-                child: Icon(Icons.search),
-                onPressed: () => FlutterBlue.instance
-                    .startScan(timeout: Duration(seconds: 4)));
-          }
-        },
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: Row(
+        children: [
+          FloatingActionButton(
+            child: Icon(BrandIcons.strava),
+            onPressed: () {},
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.deepOrange,
+          ),
+          StreamBuilder<bool>(
+            stream: FlutterBlue.instance.isScanning,
+            initialData: false,
+            builder: (c, snapshot) {
+              if (snapshot.data) {
+                return FloatingActionButton(
+                  child: Icon(Icons.stop),
+                  onPressed: () => FlutterBlue.instance.stopScan(),
+                  foregroundColor: Colors.redAccent,
+                );
+              } else {
+                return FloatingActionButton(
+                    child: Icon(Icons.search),
+                    onPressed: () => FlutterBlue.instance
+                        .startScan(timeout: Duration(seconds: 4)));
+              }
+            },
+          ),
+        ],
       ),
     );
   }
