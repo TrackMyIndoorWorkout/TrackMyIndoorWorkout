@@ -35,3 +35,9 @@ lib/generated_plugin_registrant.dart
 
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# strava_flutter specific
+secret.dart
+todo.txt
+NOTWORKING_*
+NORWORKING_*.dart
