@@ -1,7 +1,10 @@
 import 'metric_descriptor.dart';
 
 class DeviceDescriptor {
-  final String fullName;
+  final String vendorName;
+  final String modelName;
+  var fullName;
+  final String sku;
   final String namePrefix;
   final List<int> nameStart;
   final List<int> manufacturer;
@@ -20,7 +23,10 @@ class DeviceDescriptor {
   final int heartRate;
 
   DeviceDescriptor(
-      {this.fullName,
+      {this.vendorName,
+      this.modelName,
+      this.fullName = '',
+      this.sku,
       this.namePrefix,
       this.nameStart,
       this.manufacturer,
@@ -36,7 +42,9 @@ class DeviceDescriptor {
       this.speed,
       this.power,
       this.cadence,
-      this.heartRate});
+      this.heartRate}) {
+    this.fullName = '$vendorName $modelName';
+  }
 
   double getTime(List<int> data) {
     return time.getMeasurementValue(data);

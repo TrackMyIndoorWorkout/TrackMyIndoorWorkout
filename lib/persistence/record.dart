@@ -16,11 +16,11 @@ class Record {
   int id;
   final int activityId;
   final int timeStamp = DateTime.now().millisecondsSinceEpoch;
-  final double distance;
-  final int elapsed;
-  final int calories;
-  final int power;
-  final double speed;
+  final double distance; // m
+  final int elapsed; // s
+  final int calories; // kCal
+  final int power; // W
+  final double speed; // m/s
   final int cadence;
   final int heartRate;
   final double lon;

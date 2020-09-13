@@ -18,6 +18,7 @@ class Db {
       await db.execute("CREATE TABLE IF NOT EXISTS " +
           "${Activity.TABLE_NAME}(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
           "${Activity.DEVICE_NAME} TEXT, " +
+          "${Activity.DEVICE_ID} TEXT, " +
           "${Activity.START} INTEGER, " +
           "${Activity.END} INTEGER, " +
           "${Activity.DISTANCE} INTEGER, " +
@@ -26,7 +27,8 @@ class Db {
           "${Activity.AVG_POWER} FLOAT, " +
           "${Activity.AVG_SPEED} FLOAT, " +
           "${Activity.AVG_CADENCE} FLOAT, " +
-          "${Activity.AVG_HEART_RATE} FLOAT)");
+          "${Activity.AVG_HEART_RATE} FLOAT, " +
+          "${Activity.MAX_SPEED} FLOAT)");
 
       await db.execute("CREATE TABLE IF NOT EXISTS " +
           "${Record.TABLE_NAME}(${Record.ID} INTEGER PRIMARY KEY AUTOINCREMENT, " +

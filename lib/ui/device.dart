@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -43,6 +44,7 @@ class DeviceState extends State<DeviceScreen> {
   double _speed; // snapshot (km/h)
   double _speedSum;
   int _speedCount;
+  double _maxSpeed;
   double _cadence; // snapshot (rpm)
   double _cadenceSum;
   int _cadenceCount;
@@ -131,6 +133,7 @@ class DeviceState extends State<DeviceScreen> {
       if (_speed > 0 && _measuring) {
         _speedSum += _speed;
         _speedCount++;
+        _maxSpeed = max(_speed, _maxSpeed);
       }
       if (_cadence > 0 && _measuring) {
         _cadenceSum += _cadence;
@@ -207,7 +210,8 @@ class DeviceState extends State<DeviceScreen> {
             _paused = false;
             final db = Get.put<Db>(Db());
             await db.open();
-            _activity = Activity(deviceName: device.name);
+            _activity =
+                Activity(deviceName: device.name, deviceId: device.id.id);
             await db.addActivity(_activity);
           }
         }
@@ -265,13 +269,15 @@ class DeviceState extends State<DeviceScreen> {
 
     final dB = Get.find<Db>();
     _activity.update(
-        _distance,
-        _time.toInt(),
-        _calories.toInt(),
-        _powerSum / _powerCount,
-        _speedSum / _speedCount,
-        _cadenceSum / _cadenceCount,
-        _hrSum / _hrCount);
+      _distance,
+      _time.toInt(),
+      _calories.toInt(),
+      _powerSum / _powerCount,
+      _speedSum / _speedCount,
+      _cadenceSum / _cadenceCount,
+      _hrSum / _hrCount,
+      _maxSpeed,
+    );
     await dB.updateActivity(_activity);
   }
 

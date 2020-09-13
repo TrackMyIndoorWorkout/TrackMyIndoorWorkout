@@ -17,3 +17,4 @@ const LAT_METER = 0.000008993;
 const RADIUS = HALF_CIRCLE / pi;
 const LON_RADIUS = RADIUS * LON_METER;
 const LANE_HALF = LANE_LENGTH / 2.0 * LAT_METER;
+const TRACK_ALTITUDE = 6.0; // in meters, the base level
