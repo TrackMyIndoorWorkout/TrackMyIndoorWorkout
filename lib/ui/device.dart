@@ -3,13 +3,16 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
-import '../persistence/activity.dart';
-import '../persistence/db.dart';
-import '../persistence/record.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
+import '../persistence/activity.dart';
+import '../persistence/db.dart';
+import '../persistence/record.dart';
+import '../persistence/strava_service.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/utils.dart';
@@ -202,8 +205,7 @@ class DeviceState extends State<DeviceScreen> {
             });
             _measuring = true;
             _paused = false;
-            final db = Db();
-            Get.put<Db>(db);
+            final db = Get.put<Db>(Db());
             await db.open();
             _activity = Activity(deviceName: device.name);
             await db.addActivity(_activity);
@@ -225,6 +227,7 @@ class DeviceState extends State<DeviceScreen> {
   @override
   initState() {
     super.initState();
+    initializeDateFormatting();
     _discovered = false;
     _measuring = false;
     _paused = false;
@@ -314,8 +317,22 @@ class DeviceState extends State<DeviceScreen> {
             },
           ),
           IconButton(
-              icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-              onPressed: () async => await _finishActivity())
+            icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+            onPressed: () async => await _finishActivity(),
+          ),
+          IconButton(
+            icon: Icon(BrandIcons.strava),
+            onPressed: () async {
+              var stravaService = Get.find<StravaService>();
+              if (stravaService == null) {
+                stravaService = Get.put<StravaService>(StravaService());
+              }
+              final success = await stravaService.login();
+              if (!success) {
+                Get.snackbar("Warning", "Strava login unsuccessful");
+              }
+            },
+          ),
         ],
       ),
       body: CustomPaint(

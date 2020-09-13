@@ -3,6 +3,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import '../devices/devices.dart';
+import '../persistence/strava_service.dart';
 import 'device.dart';
 import 'scan_result.dart';
 
@@ -100,12 +101,21 @@ class FindDevicesScreen extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: Row(
         children: [
           FloatingActionButton(
             child: Icon(BrandIcons.strava),
-            onPressed: () {},
+            onPressed: () async {
+              var stravaService = Get.find<StravaService>();
+              if (stravaService == null) {
+                stravaService = Get.put<StravaService>(StravaService());
+              }
+              final success = await stravaService.login();
+              if (!success) {
+                Get.snackbar("Warning", "Strava login unsuccessful");
+              }
+            },
             foregroundColor: Colors.white,
             backgroundColor: Colors.deepOrange,
           ),
@@ -121,9 +131,10 @@ class FindDevicesScreen extends StatelessWidget {
                 );
               } else {
                 return FloatingActionButton(
-                    child: Icon(Icons.search),
-                    onPressed: () => FlutterBlue.instance
-                        .startScan(timeout: Duration(seconds: 4)));
+                  child: Icon(Icons.search),
+                  onPressed: () => FlutterBlue.instance
+                      .startScan(timeout: Duration(seconds: 4)),
+                );
               }
             },
           ),
