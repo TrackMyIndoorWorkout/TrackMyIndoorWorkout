@@ -194,7 +194,7 @@ class DeviceState extends State<DeviceScreen> {
           debugPrintStack(stackTrace: stack, label: "trace:");
         }
 
-        if (_areListsEqual(name, descriptor.nameStart) &&
+        if (_areListsEqual(name, descriptor.manufacturer) &&
             _areListsEqual(equipmentType, BIKE_EQUIPMENT)) {
           final measurements = equipmentService.characteristics.firstWhere(
               (ch) =>
@@ -324,7 +324,8 @@ class DeviceState extends State<DeviceScreen> {
           ),
           IconButton(
             icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-            onPressed: () async => await _finishActivity(),
+            onPressed: () async =>
+                _measuring ? await _finishActivity() : _discoverServices(),
           ),
           IconButton(
             icon: Icon(BrandIcons.strava),
