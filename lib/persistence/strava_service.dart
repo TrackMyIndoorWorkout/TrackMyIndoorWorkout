@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:strava_flutter/Models/fault.dart';
 import 'package:strava_flutter/strava.dart';
-import 'package:rw_tcx/logTool.dart';
 import 'package:rw_tcx/models/TCXModel.dart';
 import 'package:rw_tcx/wTCX.dart';
 import 'package:virtual_velodrome_rider/track/constants.dart';
