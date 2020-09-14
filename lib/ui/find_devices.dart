@@ -107,9 +107,11 @@ class FindDevicesScreen extends StatelessWidget {
           FloatingActionButton(
             child: Icon(BrandIcons.strava),
             onPressed: () async {
-              var stravaService = Get.find<StravaService>();
-              if (stravaService == null) {
+              StravaService stravaService;
+              if (!Get.isRegistered<StravaService>()) {
                 stravaService = Get.put<StravaService>(StravaService());
+              } else {
+                stravaService = Get.find<StravaService>();
               }
               final success = await stravaService.login();
               if (!success) {
@@ -127,7 +129,6 @@ class FindDevicesScreen extends StatelessWidget {
                 return FloatingActionButton(
                   child: Icon(Icons.stop),
                   onPressed: () => FlutterBlue.instance.stopScan(),
-                  foregroundColor: Colors.redAccent,
                 );
               } else {
                 return FloatingActionButton(

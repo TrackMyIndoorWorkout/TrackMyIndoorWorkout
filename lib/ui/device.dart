@@ -329,9 +329,11 @@ class DeviceState extends State<DeviceScreen> {
           IconButton(
             icon: Icon(BrandIcons.strava),
             onPressed: () async {
-              var stravaService = Get.find<StravaService>();
-              if (stravaService == null) {
+              StravaService stravaService;
+              if (!Get.isRegistered<StravaService>()) {
                 stravaService = Get.put<StravaService>(StravaService());
+              } else {
+                stravaService = Get.find<StravaService>();
               }
               final success = await stravaService.login();
               if (!success) {
