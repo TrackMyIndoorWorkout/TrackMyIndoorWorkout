@@ -203,6 +203,7 @@ class DeviceState extends State<DeviceScreen> {
               orElse: () => null);
           if (measurements != null) {
             await measurements.setNotifyValue(true);
+            _lastRecord = DateTime.now();
             measurements.value.listen((data) async {
               await _recordMeasurement(data);
             });
@@ -324,8 +325,11 @@ class DeviceState extends State<DeviceScreen> {
           ),
           IconButton(
             icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-            onPressed: () async =>
-                _measuring ? await _finishActivity() : _discoverServices(),
+            onPressed: () async => _measuring
+                ? await _finishActivity()
+                : (await device.state.last == BluetoothDeviceState.disconnected
+                    ? device.connect()
+                    : _discoverServices()),
           ),
           IconButton(
             icon: Icon(BrandIcons.strava),
