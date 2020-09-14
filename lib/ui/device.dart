@@ -244,6 +244,7 @@ class DeviceState extends State<DeviceScreen> {
     _speed = 0;
     _speedSum = 0;
     _speedCount = 0;
+    _maxSpeed = 0;
     _cadence = 0;
     _cadenceSum = 0;
     _cadenceCount = 0;
