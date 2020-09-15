@@ -7,6 +7,8 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+import 'package:spannable_grid/spannable_grid.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
@@ -38,18 +40,18 @@ class DeviceState extends State<DeviceScreen> {
   bool _paused;
   double _time; // cumulative elapsed (auto pause)
   double _calories; // cumulative (kCal)
-  double _power; // snapshot (W)
-  double _powerSum;
+  int _power; // snapshot (W)
+  int _powerSum;
   int _powerCount;
   double _speed; // snapshot (km/h)
   double _speedSum;
   int _speedCount;
   double _maxSpeed;
-  double _cadence; // snapshot (rpm)
-  double _cadenceSum;
+  int _cadence; // snapshot (rpm)
+  int _cadenceSum;
   int _cadenceCount;
-  double _heartRate; // snapshot (bpm)
-  double _hrSum;
+  int _heartRate; // snapshot (bpm)
+  int _hrSum;
   int _hrCount;
   double _distance; // cumulative (m)
 
@@ -58,11 +60,17 @@ class DeviceState extends State<DeviceScreen> {
 
   static const double ms2kmh = 3.6;
   static Size size = Size(0, 0);
+  static const double sizeDefault = 64.0;
 
-  final style = TextStyle(
-    fontSize: 64,
+  final timeStyle = TextStyle(
+    fontSize: sizeDefault,
     fontFeatures: [FontFeature.tabularFigures()],
   );
+  final measurementStyle = TextStyle(fontSize: sizeDefault);
+  final unitStyle = TextStyle(fontSize: sizeDefault / 2);
+  final oneFractions = NumberFormat()
+    ..minimumFractionDigits = 1
+    ..maximumFractionDigits = 1;
 
   _initialConnectOnDemand() async {
     BluetoothDeviceState state = await device.state.last;
@@ -102,10 +110,10 @@ class DeviceState extends State<DeviceScreen> {
     }
     _time = descriptor.getTime(data);
     _calories = descriptor.getCalories(data);
-    _power = descriptor.getPower(data);
+    _power = descriptor.getPower(data).toInt();
     _speed = descriptor.getSpeed(data);
-    _cadence = descriptor.getCadence(data);
-    _heartRate = descriptor.getHeartRate(data);
+    _cadence = descriptor.getCadence(data).toInt();
+    _heartRate = descriptor.getHeartRate(data).toInt();
     if (_speed > 0 || !_paused) {
       final dB = Get.find<Db>();
       final gps = calculateGPS(_distance + dD);
@@ -274,10 +282,10 @@ class DeviceState extends State<DeviceScreen> {
       _distance,
       _time.toInt(),
       _calories.toInt(),
-      _powerSum / _powerCount,
+      _powerSum.toDouble() / _powerCount,
       _speedSum / _speedCount,
-      _cadenceSum / _cadenceCount,
-      _hrSum / _hrCount,
+      _cadenceSum.toDouble() / _cadenceCount,
+      _hrSum.toDouble() / _hrCount,
       _maxSpeed,
     );
     await dB.updateActivity(_activity);
@@ -291,6 +299,141 @@ class DeviceState extends State<DeviceScreen> {
       _timeDisplay = '0$_timeDisplay';
     }
     final trackMarker = calculateTrackMarker(size, _distance);
+
+    List<SpannableGridCellData> cells = [
+      SpannableGridCellData(
+        row: 1,
+        column: 1,
+        id: "Cell11",
+        child: Center(child: Icon(Icons.timer, size: sizeDefault)),
+      ),
+      SpannableGridCellData(
+        row: 1,
+        column: 2,
+        columnSpan: 2,
+        id: "Cell12",
+        child: Center(child: Text(_timeDisplay, style: timeStyle)),
+      ),
+      SpannableGridCellData(
+        row: 2,
+        column: 1,
+        id: "Cell21",
+        child: Center(child: Icon(Icons.whatshot, size: sizeDefault)),
+      ),
+      SpannableGridCellData(
+        row: 2,
+        column: 2,
+        id: "Cell22",
+        child: Center(child: Text('$_calories', style: measurementStyle)),
+      ),
+      SpannableGridCellData(
+        row: 2,
+        column: 3,
+        id: "Cell23",
+        child: Center(child: Text('kCal', style: unitStyle)),
+      ),
+      SpannableGridCellData(
+        row: 3,
+        column: 1,
+        id: "Cell31",
+        child: Center(child: Icon(Icons.bolt, size: sizeDefault)),
+      ),
+      SpannableGridCellData(
+        row: 3,
+        column: 2,
+        id: "Cell32",
+        child: Center(child: Text('$_power', style: measurementStyle)),
+      ),
+      SpannableGridCellData(
+        row: 3,
+        column: 3,
+        id: "Cell33",
+        child: Center(child: Text('W', style: unitStyle)),
+      ),
+      SpannableGridCellData(
+        row: 4,
+        column: 1,
+        id: "Cell41",
+        child: Center(child: Icon(Icons.speed, size: sizeDefault)),
+      ),
+      SpannableGridCellData(
+        row: 4,
+        column: 2,
+        id: "Cell42",
+        child: Center(
+            child: Text('${oneFractions.format(_speed)}',
+                style: measurementStyle)),
+      ),
+      SpannableGridCellData(
+        row: 4,
+        column: 3,
+        id: "Cell43",
+        child: Center(child: Text('kmh', style: unitStyle)),
+      ),
+      SpannableGridCellData(
+        row: 5,
+        column: 1,
+        id: "Cell51",
+        child: Center(child: Icon(Icons.directions_bike, size: sizeDefault)),
+      ),
+      SpannableGridCellData(
+        row: 5,
+        column: 2,
+        id: "Cell52",
+        child: Center(child: Text('$_cadence', style: measurementStyle)),
+      ),
+      SpannableGridCellData(
+        row: 5,
+        column: 3,
+        id: "Cell53",
+        child: Center(child: Text('rpm', style: unitStyle)),
+      ),
+      SpannableGridCellData(
+        row: 6,
+        column: 1,
+        id: "Cell61",
+        child: Center(child: Icon(Icons.favorite, size: sizeDefault)),
+      ),
+      SpannableGridCellData(
+        row: 6,
+        column: 2,
+        id: "Cell62",
+        child: Center(child: Text('$_heartRate', style: measurementStyle)),
+      ),
+      SpannableGridCellData(
+        row: 6,
+        column: 3,
+        id: "Cell63",
+        child: Center(child: Text('bpm', style: unitStyle)),
+      ),
+      SpannableGridCellData(
+        row: 7,
+        column: 1,
+        id: "Cell71",
+        child: Center(child: Icon(Icons.add_road, size: sizeDefault)),
+      ),
+      SpannableGridCellData(
+        row: 7,
+        column: 2,
+        id: "Cell72",
+        child: Center(
+            child: Text('${oneFractions.format(_distance / 1000.0)}',
+                style: measurementStyle)),
+      ),
+      SpannableGridCellData(
+        row: 7,
+        column: 3,
+        id: "Cell73",
+        child: Center(child: Text('km', style: unitStyle)),
+      ),
+    ];
+    final grid = SpannableGrid(
+      columns: 3,
+      rows: 7,
+      cells: cells,
+      spacing: 1.0,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(device.name),
@@ -352,75 +495,7 @@ class DeviceState extends State<DeviceScreen> {
       body: CustomPaint(
         painter: TrackPainter(),
         child: Stack(children: <Widget>[
-          Center(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.timer, size: style.fontSize),
-                  Text(_timeDisplay, style: style),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.whatshot, size: style.fontSize),
-                  Text('$_calories', style: style),
-                  Text('kCal', style: style),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.bolt, size: style.fontSize),
-                  Text('$_power', style: style),
-                  Text('W', style: style),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.speed, size: style.fontSize),
-                  Text('$_speed', style: style),
-                  Text('km/h', style: style),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.directions_bike, size: style.fontSize),
-                  Text('$_cadence', style: style),
-                  Text('rpm', style: style),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.favorite, size: style.fontSize),
-                  Text('$_heartRate', style: style),
-                  Text('bpm', style: style),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.add_road, size: style.fontSize),
-                  Text('${_distance / 1000.0}', style: style),
-                  Text('km', style: style),
-                ],
-              ),
-            ],
-          )),
+          Center(child: grid),
           Positioned(
             left: trackMarker.dx - THICK,
             top: trackMarker.dy - THICK,
