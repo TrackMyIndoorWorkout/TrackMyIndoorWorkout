@@ -101,7 +101,7 @@ class FindDevicesScreen extends StatelessWidget {
           ),
         ),
       ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Row(
         children: [
           FloatingActionButton(
