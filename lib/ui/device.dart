@@ -19,6 +19,7 @@ import '../persistence/strava_service.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/utils.dart';
+import 'activities.dart';
 
 class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
@@ -489,6 +490,13 @@ class DeviceState extends State<DeviceScreen> {
                 Get.snackbar("Warning", "Strava login unsuccessful");
               }
             },
+          ),
+          IconButton(
+            icon: Icon(Icons.list_alt),
+            onPressed: () async => _measuring
+                ? Get.snackbar(
+                    "Warning", "Cannot navigate away during measurement!")
+                : Get.to(ActivitiesScreen()),
           ),
         ],
       ),

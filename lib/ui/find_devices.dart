@@ -4,6 +4,7 @@ import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import '../devices/devices.dart';
 import '../persistence/strava_service.dart';
+import 'activities.dart';
 import 'device.dart';
 import 'scan_result.dart';
 
@@ -121,6 +122,23 @@ class FindDevicesScreen extends StatelessWidget {
             },
             foregroundColor: Colors.white,
             backgroundColor: Colors.deepOrange,
+          ),
+          FloatingActionButton(
+            heroTag: null,
+            child: Icon(Icons.list_alt),
+            onPressed: () async {
+              Get.to(ActivitiesScreen());
+              StravaService stravaService;
+              if (!Get.isRegistered<StravaService>()) {
+                stravaService = Get.put<StravaService>(StravaService());
+              } else {
+                stravaService = Get.find<StravaService>();
+              }
+              final success = await stravaService.login();
+              if (!success) {
+                Get.snackbar("Warning", "Strava login unsuccessful");
+              }
+            },
           ),
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
