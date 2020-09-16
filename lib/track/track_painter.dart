@@ -12,6 +12,7 @@ class TrackPainter extends CustomPainter {
     final rY =
         (size.height - 2 * THICK) / (2 * RADIUS_BOOST + pi * LANE_SHRINK);
     final r = min(rY, rX) * RADIUS_BOOST;
+    DeviceState.radius = r;
     final offset = Offset(
         rX > rY ? (size.width - 2 * (THICK + r)) / 2 : 0,
         rX < rY
