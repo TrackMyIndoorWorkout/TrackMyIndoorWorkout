@@ -401,7 +401,9 @@ class DeviceState extends State<DeviceScreen> {
                             Spacer(),
                             Text('${zeroFractions.format(_calories)}',
                                 style: measurementStyle),
-                            Text('kCal', style: unitStyle),
+                            SizedBox(
+                                width: sizeDefault,
+                                child: Text('kCal', style: unitStyle)),
                           ],
                         ),
                         Row(
@@ -412,7 +414,9 @@ class DeviceState extends State<DeviceScreen> {
                             Spacer(),
                             Text('${zeroFractions.format(_power)}',
                                 style: measurementStyle),
-                            Text('W', style: unitStyle),
+                            SizedBox(
+                                width: sizeDefault,
+                                child: Text('W', style: unitStyle)),
                           ],
                         ),
                         Row(
@@ -423,7 +427,9 @@ class DeviceState extends State<DeviceScreen> {
                             Spacer(),
                             Text('${oneFractions.format(_speed)}',
                                 style: measurementStyle),
-                            Text('km/h', style: unitStyle),
+                            SizedBox(
+                                width: sizeDefault,
+                                child: Text('km/h', style: unitStyle)),
                           ],
                         ),
                         Row(
@@ -434,7 +440,9 @@ class DeviceState extends State<DeviceScreen> {
                             Spacer(),
                             Text('${zeroFractions.format(_cadence)}',
                                 style: measurementStyle),
-                            Text('rpm', style: unitStyle),
+                            SizedBox(
+                                width: sizeDefault,
+                                child: Text('rpm', style: unitStyle)),
                           ],
                         ),
                         Row(
@@ -445,7 +453,9 @@ class DeviceState extends State<DeviceScreen> {
                             Spacer(),
                             Text('${zeroFractions.format(_heartRate)}',
                                 style: measurementStyle),
-                            Text('bpm', style: unitStyle),
+                            SizedBox(
+                                width: sizeDefault,
+                                child: Text('bpm', style: unitStyle)),
                           ],
                         ),
                         Row(
@@ -456,7 +466,9 @@ class DeviceState extends State<DeviceScreen> {
                             Spacer(),
                             Text('${oneFractions.format(_distance / 1000.0)}',
                                 style: measurementStyle),
-                            Text('km', style: unitStyle),
+                            SizedBox(
+                                width: sizeDefault,
+                                child: Text('km', style: unitStyle)),
                           ],
                         ),
                       ],
