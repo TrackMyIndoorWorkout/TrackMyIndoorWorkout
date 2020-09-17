@@ -13,7 +13,6 @@ dependencies:
   flutter_brand_icons: ^1.1.0
   strava_flutter: ^1.2.2+61
   rw_tcx: ^0.1.1+4
-  spannable_grid: ^0.1.0
   intl: ^0.16.1
   flutter:
     sdk: flutter

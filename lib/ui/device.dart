@@ -8,7 +8,6 @@ import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:spannable_grid/spannable_grid.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
@@ -62,19 +61,6 @@ class DeviceState extends State<DeviceScreen> {
   static const double ms2kmh = 3.6;
   static Size size = Size(0, 0);
   static double radius = 0;
-  static const double sizeDefault = 64.0;
-
-  final timeStyle = TextStyle(
-    fontSize: sizeDefault,
-    fontFeatures: [FontFeature.tabularFigures()],
-    color: Colors.indigo,
-  );
-  final measurementStyle =
-      TextStyle(fontSize: sizeDefault, color: Colors.indigo);
-  final unitStyle = TextStyle(fontSize: sizeDefault / 2);
-  final oneFractions = NumberFormat()
-    ..minimumFractionDigits = 1
-    ..maximumFractionDigits = 1;
 
   _initialConnectOnDemand() async {
     BluetoothDeviceState state = await device.state.last;
@@ -297,6 +283,23 @@ class DeviceState extends State<DeviceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double sizeDefault = radius > 0 ? radius / 6.0 : 64.0;
+
+    final timeStyle = TextStyle(
+      fontSize: sizeDefault,
+      fontFeatures: [FontFeature.tabularFigures()],
+      color: Colors.indigo,
+    );
+    final measurementStyle =
+        TextStyle(fontSize: sizeDefault, color: Colors.indigo);
+    final unitStyle = TextStyle(fontSize: sizeDefault / 2.5);
+    final oneFractions = NumberFormat()
+      ..minimumFractionDigits = 1
+      ..maximumFractionDigits = 1;
+    final zeroFractions = NumberFormat()
+      ..minimumFractionDigits = 0
+      ..maximumFractionDigits = 0;
+
     var _timeDisplay = Duration(seconds: _time).toString().split('.')[0];
     if (_timeDisplay.length == 7) {
       _timeDisplay = '0$_timeDisplay';
@@ -371,157 +374,95 @@ class DeviceState extends State<DeviceScreen> {
       body: CustomPaint(
         painter: TrackPainter(),
         child: Stack(children: <Widget>[
-          Center(child: SizedBox(
-              height: size.height - 2 * radius,
-              width: size.width - 2 * THICK,
-              child: SpannableGrid(
-                emptyCellView:
-                    Text("Waiting for data...", style: measurementStyle),
-                columns: 5,
-                rows: 7,
-                spacing: 1.0,
-                cells: [
-                  SpannableGridCellData(
-                    row: 1,
-                    column: 1,
-                    id: "Cell11",
-                    child: Icon(Icons.timer, size: sizeDefault / 2),
+          radius <= 0
+              ? Text("Waiting for data...", style: measurementStyle)
+              : Center(
+                  child: SizedBox(
+                    width: size.width - 2 * THICK,
+                    height: size.height - 2 * THICK,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(child: Icon(Icons.timer, size: sizeDefault)),
+                            Spacer(),
+                            Text(_timeDisplay, style: timeStyle),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.whatshot, size: sizeDefault),
+                            Spacer(),
+                            Text('${zeroFractions.format(_calories)}',
+                                style: measurementStyle),
+                            Text('kCal', style: unitStyle),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.bolt, size: sizeDefault),
+                            Spacer(),
+                            Text('${zeroFractions.format(_power)}',
+                                style: measurementStyle),
+                            Text('W', style: unitStyle),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.speed, size: sizeDefault),
+                            Spacer(),
+                            Text('${oneFractions.format(_speed)}',
+                                style: measurementStyle),
+                            Text('km/h', style: unitStyle),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.directions_bike, size: sizeDefault),
+                            Spacer(),
+                            Text('${zeroFractions.format(_cadence)}',
+                                style: measurementStyle),
+                            Text('rpm', style: unitStyle),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.favorite, size: sizeDefault),
+                            Spacer(),
+                            Text('${zeroFractions.format(_heartRate)}',
+                                style: measurementStyle),
+                            Text('bpm', style: unitStyle),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add_road, size: sizeDefault),
+                            Spacer(),
+                            Text('${oneFractions.format(_distance / 1000.0)}',
+                                style: measurementStyle),
+                            Text('km', style: unitStyle),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  SpannableGridCellData(
-                    row: 1,
-                    column: 2,
-                    columnSpan: 4,
-                    id: "Cell12_$_time",
-                    child: Text(_timeDisplay, style: timeStyle),
-                  ),
-                  SpannableGridCellData(
-                    row: 2,
-                    column: 1,
-                    id: "Cell21",
-                    child: Icon(Icons.whatshot, size: sizeDefault / 2),
-                  ),
-                  SpannableGridCellData(
-                    row: 2,
-                    column: 2,
-                    columnSpan: 3,
-                    id: "Cell22_$_time",
-                    child: Text('$_calories', style: measurementStyle),
-                  ),
-                  SpannableGridCellData(
-                    row: 2,
-                    column: 5,
-                    id: "Cell23",
-                    child: Text('kCal', style: unitStyle),
-                  ),
-                  SpannableGridCellData(
-                    row: 3,
-                    column: 1,
-                    id: "Cell31",
-                    child: Icon(Icons.bolt, size: sizeDefault / 2),
-                  ),
-                  SpannableGridCellData(
-                    row: 3,
-                    column: 2,
-                    columnSpan: 3,
-                    id: "Cell32_$_time",
-                    child: Text('$_power', style: measurementStyle),
-                  ),
-                  SpannableGridCellData(
-                    row: 3,
-                    column: 5,
-                    id: "Cell33",
-                    child: Text('W', style: unitStyle),
-                  ),
-                  SpannableGridCellData(
-                    row: 4,
-                    column: 1,
-                    id: "Cell41",
-                    child:
-                        Center(child: Icon(Icons.speed, size: sizeDefault / 2)),
-                  ),
-                  SpannableGridCellData(
-                    row: 4,
-                    column: 2,
-                    columnSpan: 3,
-                    id: "Cell42_$_time",
-                    child: Center(
-                        child: Text('${oneFractions.format(_speed)}',
-                            style: measurementStyle)),
-                  ),
-                  SpannableGridCellData(
-                    row: 4,
-                    column: 5,
-                    id: "Cell43",
-                    child: Center(child: Text('kmh', style: unitStyle)),
-                  ),
-                  SpannableGridCellData(
-                    row: 5,
-                    column: 1,
-                    id: "Cell51",
-                    child: Center(
-                        child:
-                            Icon(Icons.directions_bike, size: sizeDefault / 2)),
-                  ),
-                  SpannableGridCellData(
-                    row: 5,
-                    column: 2,
-                    columnSpan: 3,
-                    id: "Cell52_$_time",
-                    child: Center(
-                        child: Text('$_cadence', style: measurementStyle)),
-                  ),
-                  SpannableGridCellData(
-                    row: 5,
-                    column: 5,
-                    id: "Cell53",
-                    child: Center(child: Text('rpm', style: unitStyle)),
-                  ),
-                  SpannableGridCellData(
-                    row: 6,
-                    column: 1,
-                    id: "Cell61",
-                    child: Center(
-                        child: Icon(Icons.favorite, size: sizeDefault / 2)),
-                  ),
-                  SpannableGridCellData(
-                    row: 6,
-                    column: 2,
-                    columnSpan: 3,
-                    id: "Cell62_$_time",
-                    child: Center(
-                        child: Text('$_heartRate', style: measurementStyle)),
-                  ),
-                  SpannableGridCellData(
-                    row: 6,
-                    column: 5,
-                    id: "Cell63",
-                    child: Center(child: Text('bpm', style: unitStyle)),
-                  ),
-                  SpannableGridCellData(
-                    row: 7,
-                    column: 1,
-                    id: "Cell71",
-                    child: Center(
-                        child: Icon(Icons.add_road, size: sizeDefault / 2)),
-                  ),
-                  SpannableGridCellData(
-                    row: 7,
-                    column: 2,
-                    columnSpan: 3,
-                    id: "Cell72_$_time",
-                    child: Center(
-                        child: Text(
-                            '${oneFractions.format(_distance / 1000.0)}',
-                            style: measurementStyle)),
-                  ),
-                  SpannableGridCellData(
-                    row: 7,
-                    column: 5,
-                    id: "Cell73",
-                    child: Center(child: Text('km', style: unitStyle)),
-                  ),
-                ],
-              ))),
+                ),
           Positioned(
             left: trackMarker.dx - THICK,
             top: trackMarker.dy - THICK,
