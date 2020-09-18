@@ -12,8 +12,8 @@ dependencies:
   sqflite: ^1.3.0
   flutter_brand_icons: ^1.1.0
   strava_flutter: ^1.2.2+61
-  rw_tcx: ^0.1.1+4
   intl: ^0.16.1
+  path_provider: ^1.6.14
   flutter:
     sdk: flutter
 

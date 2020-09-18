@@ -2,10 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:strava_flutter/Models/fault.dart';
 import 'package:strava_flutter/strava.dart';
-import 'package:rw_tcx/models/TCXModel.dart';
-import 'package:rw_tcx/wTCX.dart';
 import 'package:virtual_velodrome_rider/track/constants.dart';
 import '../devices/devices.dart';
+import 'models/tcx_model.dart';
 import 'activity.dart';
 import 'record.dart';
 import 'secret.dart';
@@ -33,7 +32,7 @@ class StravaService {
       ..speed = record.speed
       ..distance = record.distance
       ..date = DateTime.fromMillisecondsSinceEpoch(record.timeStamp)
-      ..cadence = record.cadence.toDouble()
+      ..cadence = record.cadence
       ..power = record.power.toDouble()
       ..heartRate = record.heartRate;
   }
