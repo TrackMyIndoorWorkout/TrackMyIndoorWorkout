@@ -1,5 +1,7 @@
 import 'metric_descriptor.dart';
 
+typedef MeasurementProcessing(List<int> data);
+
 class DeviceDescriptor {
   final String vendorName;
   final String modelName;
@@ -13,36 +15,37 @@ class DeviceDescriptor {
   final String equipmentTypeId;
   final String equipmentStateId;
   final String measurementId;
-  final int byteCount;
-  final List<int> measurementPrefix;
   final MetricDescriptor time;
   final MetricDescriptor calories;
   final MetricDescriptor speed;
   final MetricDescriptor power;
   final MetricDescriptor cadence;
   final int heartRate;
+  final MeasurementProcessing canMeasurementProcessed;
+  final MeasurementProcessing processMeasurement;
 
-  DeviceDescriptor(
-      {this.vendorName,
-      this.modelName,
-      this.fullName = '',
-      this.sku,
-      this.namePrefix,
-      this.nameStart,
-      this.manufacturer,
-      this.model,
-      this.measurementServiceId,
-      this.equipmentTypeId,
-      this.equipmentStateId,
-      this.measurementId,
-      this.byteCount,
-      this.measurementPrefix,
-      this.time,
-      this.calories,
-      this.speed,
-      this.power,
-      this.cadence,
-      this.heartRate}) {
+  DeviceDescriptor({
+    this.vendorName,
+    this.modelName,
+    this.fullName = '',
+    this.sku,
+    this.namePrefix,
+    this.nameStart,
+    this.manufacturer,
+    this.model,
+    this.measurementServiceId,
+    this.equipmentTypeId,
+    this.equipmentStateId,
+    this.measurementId,
+    this.time,
+    this.calories,
+    this.speed,
+    this.power,
+    this.cadence,
+    this.heartRate,
+    this.canMeasurementProcessed,
+    this.processMeasurement,
+  }) {
     this.fullName = '$vendorName $modelName';
   }
 

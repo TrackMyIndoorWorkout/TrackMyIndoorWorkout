@@ -79,10 +79,7 @@ class DeviceState extends State<DeviceScreen> {
   }
 
   _recordMeasurement(List<int> data) async {
-    if (data.length != descriptor.byteCount) return;
-    for (int i = 0; i < descriptor.measurementPrefix.length; i++) {
-      if (data[i] != descriptor.measurementPrefix[i]) return;
-    }
+    if (!descriptor.canMeasurementProcessed(data)) return;
     final rightNow = DateTime.now();
     double dD;
     if (_speed > 0) {
@@ -239,6 +236,7 @@ class DeviceState extends State<DeviceScreen> {
       _paused = true;
     });
 
+    // TODO add one last GPS point
     _activity.update(
       _distance,
       _time,

@@ -14,13 +14,22 @@ final devices = [
     equipmentTypeId: "e01f",
     equipmentStateId: "e01e",
     measurementId: "e01d",
-    byteCount: 19,
-    measurementPrefix: [83, 89, 22],
     time: MetricDescriptor(lsb: 3, msb: 4, divider: 1),
     calories: MetricDescriptor(lsb: 13, msb: 14, divider: 1),
     speed: MetricDescriptor(lsb: 6, msb: 7, divider: 100),
     power: MetricDescriptor(lsb: 17, msb: 18, divider: 1),
     cadence: MetricDescriptor(lsb: 8, msb: 9, divider: 10),
     heartRate: 5,
+    canMeasurementProcessed: (List<int> data) {
+      if (data.length != 19) return false;
+      const measurementPrefix = [83, 89, 22];
+      for (int i = 0; i < measurementPrefix.length; i++) {
+        if (data[i] != measurementPrefix[i]) return false;
+      }
+      return true;
+    },
+    processMeasurement: (List<int> data) {
+      ;
+    },
   )
 ];
