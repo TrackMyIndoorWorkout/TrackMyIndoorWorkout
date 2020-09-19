@@ -37,8 +37,4 @@ class Activity {
     this.elapsed = elapsed;
     this.calories = calories;
   }
-
-  markUploaded() {
-    this.uploaded = true;
-  }
 }
