@@ -20,6 +20,7 @@ class Activity {
   double distance; // m
   int elapsed; // s
   int calories; // kCal
+  bool uploaded;
 
   Activity({
     this.deviceName,
@@ -27,6 +28,7 @@ class Activity {
     this.distance: 0,
     this.elapsed: 0,
     this.calories: 0,
+    this.uploaded: false,
   });
 
   update(double distance, int elapsed, int calories) {
@@ -34,5 +36,9 @@ class Activity {
     this.distance = distance;
     this.elapsed = elapsed;
     this.calories = calories;
+  }
+
+  markUploaded() {
+    this.uploaded = true;
   }
 }

@@ -96,9 +96,8 @@ class DeviceState extends State<DeviceScreen> {
     _cadence = descriptor.getCadence(data).toInt();
     _heartRate = descriptor.getHeartRate(data).toInt();
     if (_speed > 0 || !_paused) {
-      final recordDao = _database.recordDao;
       final gps = calculateGPS(_distance + dD);
-      await recordDao.insertRecord(
+      await _database.recordDao.insertRecord(
         Record(
           distance: _distance + dD,
           elapsed: _time,
@@ -186,8 +185,7 @@ class DeviceState extends State<DeviceScreen> {
 
             _activity =
                 Activity(deviceName: device.name, deviceId: device.id.id);
-            final activityDao = _database.activityDao;
-            await activityDao.insertActivity(_activity);
+            await _database.activityDao.insertActivity(_activity);
           }
         }
       }
@@ -246,8 +244,7 @@ class DeviceState extends State<DeviceScreen> {
       _time,
       _calories.toInt(),
     );
-    final activityDao = _database.activityDao;
-    await activityDao.updateActivity(_activity);
+    await _database.activityDao.updateActivity(_activity);
   }
 
   @override

@@ -355,6 +355,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.1"
+  listview_utils:
+    dependency: "direct main"
+    description:
+      name: listview_utils
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.6+1"
   logging:
     dependency: transitive
     description:

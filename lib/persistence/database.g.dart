@@ -82,7 +82,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, `start` INTEGER, `end` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER)');
+            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, `start` INTEGER, `end` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `uploaded` INTEGER)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `activity_id` INTEGER, `time_stamp` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `power` INTEGER, `speed` REAL, `cadence` INTEGER, `heart_rate` INTEGER, `lon` REAL, `lat` REAL, FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
@@ -121,7 +121,9 @@ class _$ActivityDao extends ActivityDao {
                   'end': item.end,
                   'distance': item.distance,
                   'elapsed': item.elapsed,
-                  'calories': item.calories
+                  'calories': item.calories,
+                  'uploaded':
+                      item.uploaded == null ? null : (item.uploaded ? 1 : 0)
                 },
             changeListener),
         _activityUpdateAdapter = UpdateAdapter(
@@ -136,7 +138,9 @@ class _$ActivityDao extends ActivityDao {
                   'end': item.end,
                   'distance': item.distance,
                   'elapsed': item.elapsed,
-                  'calories': item.calories
+                  'calories': item.calories,
+                  'uploaded':
+                      item.uploaded == null ? null : (item.uploaded ? 1 : 0)
                 },
             changeListener);
 
@@ -151,7 +155,8 @@ class _$ActivityDao extends ActivityDao {
       deviceId: row['device_id'] as String,
       distance: row['distance'] as double,
       elapsed: row['elapsed'] as int,
-      calories: row['calories'] as int);
+      calories: row['calories'] as int,
+      uploaded: row['uploaded'] == null ? null : (row['uploaded'] as int) != 0);
 
   final InsertionAdapter<Activity> _activityInsertionAdapter;
 
@@ -159,7 +164,8 @@ class _$ActivityDao extends ActivityDao {
 
   @override
   Future<List<Activity>> findAllActivities() async {
-    return _queryAdapter.queryList('SELECT * FROM activities',
+    return _queryAdapter.queryList(
+        'SELECT * FROM activities ORDER BY start DESC',
         mapper: _activitiesMapper);
   }
 
@@ -169,6 +175,14 @@ class _$ActivityDao extends ActivityDao {
         arguments: <dynamic>[id],
         queryableName: 'activities',
         isView: false,
+        mapper: _activitiesMapper);
+  }
+
+  @override
+  Future<List<Activity>> findActivities(int offset, int limit) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM activities ORDER BY start DESC LIMIT ?, ?',
+        arguments: <dynamic>[offset, limit],
         mapper: _activitiesMapper);
   }
 
@@ -248,7 +262,7 @@ class _$RecordDao extends RecordDao {
 
   @override
   Future<List<Record>> findAllRecords() async {
-    return _queryAdapter.queryList('SELECT * FROM records',
+    return _queryAdapter.queryList('SELECT * FROM records ORDER BY time_stamp',
         mapper: _recordsMapper);
   }
 

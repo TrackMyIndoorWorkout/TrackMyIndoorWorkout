@@ -3,7 +3,7 @@ import '../models/record.dart';
 
 @dao
 abstract class RecordDao {
-  @Query('SELECT * FROM $RECORDS_TABLE_NAME')
+  @Query('SELECT * FROM $RECORDS_TABLE_NAME ORDER BY time_stamp')
   Future<List<Record>> findAllRecords();
 
   @Query('SELECT * FROM $RECORDS_TABLE_NAME WHERE id = :id')
