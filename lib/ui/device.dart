@@ -125,17 +125,28 @@ class DeviceState extends State<DeviceScreen> {
     });
   }
 
+  BluetoothService _filterService(List<BluetoothService> services, identifier) {
+    return services.firstWhere(
+        (service) =>
+            service.uuid.toString().substring(4, 8).toLowerCase() == identifier,
+        orElse: () => null);
+  }
+
+  BluetoothCharacteristic _filterCharacteristic(
+      List<BluetoothCharacteristic> characteristics, identifier) {
+    return characteristics.firstWhere(
+        (ch) => ch.uuid.toString().substring(4, 8).toLowerCase() == identifier,
+        orElse: () => null);
+  }
+
   _discoverServices() async {
     await device.discoverServices().then((services) async {
       setState(() {
         _discovered = true;
       });
-      final deviceInfo = services.firstWhere((service) =>
-          service.uuid.toString().substring(4, 8).toLowerCase() ==
-          deviceInformationId);
-      final nameCharacteristic = deviceInfo.characteristics.firstWhere((ch) =>
-          ch.uuid.toString().substring(4, 8).toLowerCase() ==
-          manufacturerNameId);
+      final deviceInfo = _filterService(services, deviceInformationId);
+      final nameCharacteristic =
+          _filterCharacteristic(deviceInfo.characteristics, manufacturerNameId);
       var name;
       try {
         name = await nameCharacteristic.read();
@@ -144,17 +155,11 @@ class DeviceState extends State<DeviceScreen> {
         debugPrintStack(stackTrace: stack, label: "trace:");
       }
 
-      final equipmentService = services.firstWhere(
-          (service) =>
-              service.uuid.toString().substring(4, 8).toLowerCase() ==
-              descriptor.measurementServiceId,
-          orElse: () => null);
+      final equipmentService =
+          _filterService(services, descriptor.measurementServiceId);
       if (equipmentService != null) {
-        final equipmentTypeChar = equipmentService.characteristics.firstWhere(
-            (ch) =>
-                ch.uuid.toString().substring(4, 8).toLowerCase() ==
-                descriptor.equipmentTypeId,
-            orElse: () => null);
+        final equipmentTypeChar = _filterCharacteristic(
+            equipmentService.characteristics, descriptor.equipmentTypeId);
 
         var equipmentType;
         try {
@@ -166,11 +171,8 @@ class DeviceState extends State<DeviceScreen> {
 
         if (_areListsEqual(name, descriptor.manufacturer) &&
             _areListsEqual(equipmentType, BIKE_EQUIPMENT)) {
-          final measurements = equipmentService.characteristics.firstWhere(
-              (ch) =>
-                  ch.uuid.toString().substring(4, 8).toLowerCase() ==
-                  descriptor.measurementId,
-              orElse: () => null);
+          final measurements = _filterCharacteristic(
+              equipmentService.characteristics, descriptor.measurementId);
           if (measurements != null) {
             await measurements.setNotifyValue(true);
             _lastRecord = DateTime.now();
