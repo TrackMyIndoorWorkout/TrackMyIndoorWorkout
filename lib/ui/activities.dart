@@ -46,7 +46,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             : CustomListView<Activity>(
                 paginationMode: PaginationMode.page,
                 initialOffset: 0,
-                loadingBuilder: CustomListLoading.defaultBuilder,
+                loadingBuilder: (BuildContext context) =>
+                    Center(child: CircularProgressIndicator()),
                 adapter: ActivityListAdapter(_database),
                 errorBuilder: (context, error, state) {
                   return Column(
