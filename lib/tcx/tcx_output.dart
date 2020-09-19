@@ -324,7 +324,7 @@ class TCXOutput {
   /// To get 2019-03-03T11:43:46.000Z
   /// utc time
   /// Need to add T in the middle
-  String createTimestamp(DateTime dateTime) {
+  static String createTimestamp(DateTime dateTime) {
     return dateTime.toUtc().toString().replaceFirst(' ', 'T');
   }
 }

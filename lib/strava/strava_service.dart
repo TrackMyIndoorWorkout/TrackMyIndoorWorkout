@@ -26,14 +26,15 @@ class StravaService {
   }
 
   TrackPoint recordToTrackPoint(Record record) {
+    final timeStamp = DateTime.fromMillisecondsSinceEpoch(record.timeStamp);
     return TrackPoint()
       ..latitude = record.lat
       ..longitude = record.lon
-      // ..timeStamp = record.timeStamp // TODO
+      ..timeStamp = TCXOutput.createTimestamp(timeStamp)
       ..altitude = TRACK_ALTITUDE
       ..speed = record.speed
       ..distance = record.distance
-      ..date = DateTime.fromMillisecondsSinceEpoch(record.timeStamp)
+      ..date = timeStamp
       ..cadence = record.cadence
       ..power = record.power.toDouble()
       ..heartRate = record.heartRate;
