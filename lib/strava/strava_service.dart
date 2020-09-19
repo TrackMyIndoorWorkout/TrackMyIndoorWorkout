@@ -4,6 +4,7 @@ import '../devices/devices.dart';
 import '../persistence/activity.dart';
 import '../persistence/record.dart';
 import '../persistence/secret.dart';
+import '../tcx/activity_type.dart';
 import '../tcx/tcx_model.dart';
 import '../tcx/tcx_output.dart';
 import '../track/constants.dart';
@@ -44,7 +45,7 @@ class StravaService {
     final timeString = DateFormat.Hms().format(startStamp);
 
     TCXModel tcxInfo = TCXModel()
-      ..activityType = "Virtual bicycle"
+      ..activityType = ActivityType.VirtualRide
       ..totalDistance = activity.distance
       ..totalTime = activity.elapsed.toDouble()
       ..maxSpeed = activity.maxSpeed // in m/s
