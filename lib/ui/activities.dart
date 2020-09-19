@@ -20,15 +20,14 @@ class ActivitiesScreen extends StatefulWidget {
 class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database;
 
-  _openDatabase() async {
-    _database =
-        await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-  }
-
   @override
   initState() {
     super.initState();
-    _openDatabase();
+    $FloorAppDatabase.databaseBuilder('app_database.db').build().then((db) {
+      setState(() {
+        _database = db;
+      });
+    });
   }
 
   @override
@@ -40,75 +39,77 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlue,
       appBar: AppBar(title: Text('Activities')),
       body: SafeArea(
-        child: CustomListView<Activity>(
-          paginationMode: PaginationMode.page,
-          initialOffset: 0,
-          loadingBuilder: CustomListLoading.defaultBuilder,
-          adapter: ActivityListAdapter(_database),
-          errorBuilder: (context, error, state) {
-            return Column(
-              children: <Widget>[
-                Text(error.toString()),
-                RaisedButton(
-                  onPressed: () => state.loadMore(),
-                  child: Text('Retry'),
+        child: _database == null
+            ? Text('Initializing...')
+            : CustomListView<Activity>(
+                paginationMode: PaginationMode.page,
+                initialOffset: 0,
+                loadingBuilder: CustomListLoading.defaultBuilder,
+                adapter: ActivityListAdapter(_database),
+                errorBuilder: (context, error, state) {
+                  return Column(
+                    children: <Widget>[
+                      Text(error.toString()),
+                      RaisedButton(
+                        onPressed: () => state.loadMore(),
+                        child: Text('Retry'),
+                      ),
+                    ],
+                  );
+                },
+                separatorBuilder: (context, _) {
+                  return Divider(height: 1);
+                },
+                empty: Center(
+                  child: Text('No activities found'),
                 ),
-              ],
-            );
-          },
-          separatorBuilder: (context, _) {
-            return Divider(height: 1);
-          },
-          empty: Center(
-            child: Text('No activities found'),
-          ),
-          itemBuilder: (context, _, item) {
-            final activity = item as Activity;
-            final startStamp =
-                DateTime.fromMillisecondsSinceEpoch(activity.start);
-            final dateString = DateFormat.yMd().format(startStamp);
-            final timeString = DateFormat.Hms().format(startStamp);
-            return ListTile(
-              leading: activity.uploaded
-                  ? Icon(Icons.check, color: Colors.lightGreenAccent)
-                  : Icon(Icons.close, color: Colors.red),
-              title: Text('$dateString $timeString on ${activity.deviceName}'),
-              subtitle: Text(
-                  '${activity.elapsed} s, ${activity.distance} m, ${activity.calories} kCal'),
-              trailing: IconButton(
-                icon: Icon(Icons.file_upload,
-                    color: activity.uploaded ? Colors.grey : Colors.green),
-                onPressed: () async {
-                  StravaService stravaService;
-                  if (!Get.isRegistered<StravaService>()) {
-                    stravaService = Get.put<StravaService>(StravaService());
-                  } else {
-                    stravaService = Get.find<StravaService>();
-                  }
-                  final success = await stravaService.login();
-                  if (!success) {
-                    Get.snackbar("Warning", "Strava login unsuccessful");
-                  } else {
-                    final records = await _database.recordDao
-                        .findAllActivityRecords(activity.id);
-                    final statusCode =
-                        await stravaService.upload(activity, records);
-                    if (statusCode == statusOk) {
-                      setState(() {
-                        activity.uploaded = true;
-                      });
-                      activity.uploaded = true;
-                      await _database.activityDao.updateActivity(activity);
-                    }
-                  }
+                itemBuilder: (context, _, item) {
+                  final activity = item as Activity;
+                  final startStamp =
+                      DateTime.fromMillisecondsSinceEpoch(activity.start);
+                  final dateString = DateFormat.yMd().format(startStamp);
+                  final timeString = DateFormat.Hms().format(startStamp);
+                  return ListTile(
+                    leading: activity.uploaded
+                        ? Icon(Icons.check, color: Colors.lightGreenAccent)
+                        : Icon(Icons.close, color: Colors.red),
+                    title: Text(
+                        '$dateString $timeString on ${activity.deviceName}'),
+                    subtitle: Text(
+                        '${activity.elapsed} s, ${activity.distance} m, ${activity.calories} kCal'),
+                    trailing: IconButton(
+                      icon: Icon(Icons.file_upload,
+                          color:
+                              activity.uploaded ? Colors.grey : Colors.green),
+                      onPressed: () async {
+                        StravaService stravaService;
+                        if (!Get.isRegistered<StravaService>()) {
+                          stravaService =
+                              Get.put<StravaService>(StravaService());
+                        } else {
+                          stravaService = Get.find<StravaService>();
+                        }
+                        final success = await stravaService.login();
+                        if (!success) {
+                          Get.snackbar("Warning", "Strava login unsuccessful");
+                        } else {
+                          final records = await _database.recordDao
+                              .findAllActivityRecords(activity.id);
+                          final statusCode =
+                              await stravaService.upload(activity, records);
+                          if (statusCode == statusOk) {
+                            activity.uploaded = true; // TODO trigger UI update
+                            await _database.activityDao
+                                .updateActivity(activity);
+                          }
+                        }
+                      },
+                    ),
+                  );
                 },
               ),
-            );
-          },
-        ),
       ),
     );
   }
