@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -11,9 +10,9 @@ import 'package:intl/intl.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
-import '../persistence/activity.dart';
-import '../persistence/db.dart';
-import '../persistence/record.dart';
+import '../persistence/models/activity.dart';
+import '../persistence/database.dart';
+import '../persistence/models/record.dart';
 import '../strava/strava_service.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
@@ -41,22 +40,14 @@ class DeviceState extends State<DeviceScreen> {
   int _time; // cumulative elapsed (auto pause)
   double _calories; // cumulative (kCal)
   int _power; // snapshot (W)
-  int _powerSum;
-  int _powerCount;
   double _speed; // snapshot (km/h)
-  double _speedSum;
-  int _speedCount;
-  double _maxSpeed;
   int _cadence; // snapshot (rpm)
-  int _cadenceSum;
-  int _cadenceCount;
   int _heartRate; // snapshot (bpm)
-  int _hrSum;
-  int _hrCount;
   double _distance; // cumulative (m)
 
   DateTime _lastRecord;
   Activity _activity;
+  AppDatabase _database;
 
   static const double ms2kmh = 3.6;
   static Size size = Size(0, 0);
@@ -105,9 +96,10 @@ class DeviceState extends State<DeviceScreen> {
     _cadence = descriptor.getCadence(data).toInt();
     _heartRate = descriptor.getHeartRate(data).toInt();
     if (_speed > 0 || !_paused) {
-      final dB = Get.find<Db>();
+      final recordDao = _database.recordDao;
       final gps = calculateGPS(_distance + dD);
-      await dB.addRecord(Record(
+      await recordDao.insertRecord(
+        Record(
           distance: _distance + dD,
           elapsed: _time,
           calories: _calories.toInt(),
@@ -116,30 +108,14 @@ class DeviceState extends State<DeviceScreen> {
           cadence: _cadence,
           heartRate: _heartRate,
           lon: gps.dx,
-          lat: gps.dy));
+          lat: gps.dy,
+        ),
+      );
     }
 
     setState(() {
       if (_speed > 0) {
         _distance += dD;
-      }
-
-      if (_power > 0 && _measuring) {
-        _powerSum += _power;
-        _powerCount++;
-      }
-      if (_speed > 0 && _measuring) {
-        _speedSum += _speed;
-        _speedCount++;
-        _maxSpeed = max(_speed, _maxSpeed);
-      }
-      if (_cadence > 0 && _measuring) {
-        _cadenceSum += _cadence;
-        _cadenceCount++;
-      }
-      if (_heartRate > 0 && _measuring) {
-        _hrSum += _heartRate;
-        _hrCount++;
       }
 
       if (_measuring) {
@@ -207,11 +183,11 @@ class DeviceState extends State<DeviceScreen> {
             });
             _measuring = true;
             _paused = false;
-            final db = Get.put<Db>(Db());
-            await db.open();
+
             _activity =
                 Activity(deviceName: device.name, deviceId: device.id.id);
-            await db.addActivity(_activity);
+            final activityDao = _database.activityDao;
+            await activityDao.insertActivity(_activity);
           }
         }
       }
@@ -227,6 +203,11 @@ class DeviceState extends State<DeviceScreen> {
     });
   }
 
+  _openDatabase() async {
+    _database =
+        await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  }
+
   @override
   initState() {
     super.initState();
@@ -237,25 +218,18 @@ class DeviceState extends State<DeviceScreen> {
     _time = 0;
     _calories = 0;
     _power = 0;
-    _powerSum = 0;
-    _powerCount = 0;
     _speed = 0;
-    _speedSum = 0;
-    _speedCount = 0;
-    _maxSpeed = 0;
     _cadence = 0;
-    _cadenceSum = 0;
-    _cadenceCount = 0;
     _heartRate = 0;
-    _hrSum = 0;
-    _hrCount = 0;
     _distance = 0;
 
     _initialConnectOnDemand();
+    _openDatabase();
   }
 
   @override
   dispose() {
+    _database.close();
     super.dispose();
   }
 
@@ -267,18 +241,13 @@ class DeviceState extends State<DeviceScreen> {
       _paused = true;
     });
 
-    final dB = Get.find<Db>();
     _activity.update(
       _distance,
       _time,
       _calories.toInt(),
-      _powerSum.toDouble() / _powerCount,
-      _speedSum / _speedCount,
-      _cadenceSum.toDouble() / _cadenceCount,
-      _hrSum.toDouble() / _hrCount,
-      _maxSpeed,
     );
-    await dB.updateActivity(_activity);
+    final activityDao = _database.activityDao;
+    await activityDao.updateActivity(_activity);
   }
 
   @override

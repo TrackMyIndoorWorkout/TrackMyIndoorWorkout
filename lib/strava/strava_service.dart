@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import '../devices/devices.dart';
-import '../persistence/activity.dart';
-import '../persistence/record.dart';
+import '../persistence/models/activity.dart';
+import '../persistence/models/record.dart';
 import '../persistence/secret.dart';
 import '../tcx/activity_type.dart';
 import '../tcx/tcx_model.dart';
@@ -48,7 +48,6 @@ class StravaService {
       ..activityType = ActivityType.VirtualRide
       ..totalDistance = activity.distance
       ..totalTime = activity.elapsed.toDouble()
-      ..maxSpeed = activity.maxSpeed // in m/s
       ..calories = activity.calories
       ..dateActivity = startStamp
 

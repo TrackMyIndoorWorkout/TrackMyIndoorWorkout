@@ -17,10 +17,13 @@ dependencies:
   shared_preferences: ^0.5.10
   uni_links: ^0.4.0
   http_parser: ^3.1.4
+  floor: ^0.14.0
   flutter:
     sdk: flutter
 
 dev_dependencies:
+  floor_generator: ^0.14.0
+  build_runner: ^1.7.3
   flutter_test:
     sdk: flutter
   flutter_driver:
