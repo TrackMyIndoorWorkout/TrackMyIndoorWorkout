@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
-import 'package:path_provider/path_provider.dart';
 
-import 'models/tcx_model.dart';
+import 'tcx_model.dart';
 
 class StatisticsAccumulator {
   bool calculateMaxSpeed;
@@ -66,38 +65,18 @@ class StatisticsAccumulator {
 }
 
 class TCXOutput {
-  final String fileName;
   StringBuffer _sb;
 
   StringBuffer get sb => _sb;
 
-  TCXOutput({this.fileName}) {
+  TCXOutput() {
     _sb = StringBuffer();
   }
 
-  Future<File> _localFile() async {
-    final directory = await getApplicationDocumentsDirectory();
-    var path = directory.path;
-    return File('$path/$fileName');
-  }
-
-  Future<void> writeTCX(TCXModel tcxInfo, {bool gzip: false}) async {
-    // Now generate a new file from rideData
-    var tcxFile = await _localFile();
-
+  Future<List<int>> getTCX(TCXModel tcxInfo) async {
     generateTCX(tcxInfo);
-
-    if (!gzip) {
-      var sink = tcxFile.openWrite(mode: FileMode.writeOnly);
-      sink.write(_sb.toString());
-      // Close the file
-      await sink.flush();
-      await sink.close();
-    } else {
-      final stringBytes = utf8.encode(_sb.toString());
-      final gzipped = GZipCodec(gzip: true).encode(stringBytes);
-      await tcxFile.writeAsBytes(gzipped, flush: true);
-    }
+    final stringBytes = utf8.encode(_sb.toString());
+    return GZipCodec(gzip: true).encode(stringBytes);
   }
 
   generateTCX(TCXModel tcxInfo) {
@@ -135,7 +114,8 @@ class TCXOutput {
   addLap(TCXModel tcxInfo) {
     // Add lap
     //---------
-    _sb.write('        <Lap StartTime="${createTimestamp(tcxInfo.dateActivity)}">\n');
+    _sb.write(
+        '        <Lap StartTime="${createTimestamp(tcxInfo.dateActivity)}">\n');
 
     // Assuming that points are ordered by time stamp ascending
     TrackPoint lastTrackPoint = tcxInfo.points.last;
@@ -171,8 +151,10 @@ class TCXOutput {
           calculateAverageHeartRate: calculateAverageHeartRate,
           calculateMaxHeartRate: calculateMaxHeartRate,
           calculateAverageCadence: calculateAverageCadence);
-      accu = tcxInfo.points.fold<StatisticsAccumulator>(accuInit,
-          (accumulator, trackPoint) => accumulator.processTrackPoint(trackPoint));
+      accu = tcxInfo.points.fold<StatisticsAccumulator>(
+          accuInit,
+          (accumulator, trackPoint) =>
+              accumulator.processTrackPoint(trackPoint));
     }
     if (calculateMaxSpeed) {
       tcxInfo.maxSpeed = accu.maxSpeed;
@@ -306,7 +288,8 @@ class TCXOutput {
   ///
   addHeartRate(int heartRate) {
     int _heartRate = heartRate ?? 0;
-    _sb.write("""                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+    _sb.write(
+        """                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
                 <Value>${_heartRate.toString()}</Value>
               </HeartRateBpm>\n""");
   }

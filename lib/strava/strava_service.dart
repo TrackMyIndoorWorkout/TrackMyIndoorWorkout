@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
-import 'package:strava_flutter/Models/fault.dart';
-import 'package:strava_flutter/strava.dart';
-import 'package:virtual_velodrome_rider/track/constants.dart';
 import '../devices/devices.dart';
-import 'models/tcx_model.dart';
-import 'activity.dart';
-import 'record.dart';
-import 'secret.dart';
+import '../persistence/activity.dart';
+import '../persistence/record.dart';
+import '../persistence/secret.dart';
+import '../tcx/tcx_model.dart';
+import '../tcx/tcx_output.dart';
+import '../track/constants.dart';
+import 'fault.dart';
+import 'strava.dart';
 
 class StravaService {
   static const MAJOR = '1';
@@ -71,13 +72,15 @@ class StravaService {
       ..partNumber = '0'
       ..points = records.map((r) => recordToTrackPoint(r)).toList();
 
-    await writeTCX(tcxInfo, 'generatedSample.tcx');
+    final tcxGzip = await TCXOutput().getTCX(tcxInfo);
 
     Fault fault = await _strava.uploadActivity(
-        'Virtual velodrome ride at $dateString $timeString',
-        'Virtual velodrome ride on a ${activity.deviceName}',
-        'filePath', // TODO
-        'tcx');
+      'Virtual velodrome ride at $dateString $timeString',
+      'Virtual velodrome ride on a ${activity.deviceName}',
+      'ERide$dateString-$timeString.gpx.gz',
+      'gpx.gz',
+      tcxGzip,
+    );
 
     return fault.statusCode;
   }

@@ -3,7 +3,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import '../devices/devices.dart';
-import '../persistence/strava_service.dart';
+import '../strava/strava_service.dart';
 import 'activities.dart';
 import 'device.dart';
 import 'scan_result.dart';
