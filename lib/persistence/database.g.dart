@@ -276,6 +276,14 @@ class _$RecordDao extends RecordDao {
   }
 
   @override
+  Future<List<Record>> findAllActivityRecords(int id) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM records WHERE activity_id = ? ORDER BY time_stamp',
+        arguments: <dynamic>[id],
+        mapper: _recordsMapper);
+  }
+
+  @override
   Future<void> insertRecord(Record record) async {
     await _recordInsertionAdapter.insert(record, OnConflictStrategy.abort);
   }
