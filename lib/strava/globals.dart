@@ -8,12 +8,6 @@ bool isInDebug = true; // set to true to see debug message in API
 
 Token token = Token(); // Where the token info is stored when executing APIs
 
-// Default location
-// used when an activity has null
-// for startLatitude and end
-final defaultStartLatlng = 0.0;
-final defaultEndlatlng = 0.0;
-
 /// To display debug info in Strava API
 void displayInfo(String message) {
   if (isInDebug) {
