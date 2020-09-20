@@ -17,8 +17,7 @@ final defaultEndlatlng = 0.0;
 /// To display debug info in Strava API
 void displayInfo(String message) {
   if (isInDebug) {
-    var msgToDisplay = '--> Strava_flutter: ' + message;
-    debugPrint(msgToDisplay);
+    debugPrint('--> Strava_flutter: $message');
   }
 }
 
