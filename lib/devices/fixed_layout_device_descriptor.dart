@@ -73,23 +73,37 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
 
   @override
   Record getMeasurement(DateTime rightNow, DateTime lastRecord, double speed,
-      double distance, bool paused, List<int> data) {
+      double distance, List<int> data, Record supplement) {
     double dD = 0;
     if (speed > 0) {
       Duration dT = rightNow.difference(lastRecord);
       dD = speed / DeviceDescriptor.MS2KMH * dT.inMilliseconds / 1000.0;
     }
     final gps = calculateGPS(distance + dD);
-    return Record(
-      distance: distance + dD,
-      elapsed: getTime(data).toInt(),
-      calories: getCalories(data).toInt(),
-      power: getPower(data).toInt(),
-      speed: getSpeed(data),
-      cadence: getCadence(data).toInt(),
-      heartRate: getHeartRate(data).toInt(),
-      lon: gps.dx,
-      lat: gps.dy,
-    );
+    if (data != null) {
+      return Record(
+        distance: distance + dD,
+        elapsed: getTime(data).toInt(),
+        calories: getCalories(data).toInt(),
+        power: getPower(data).toInt(),
+        speed: getSpeed(data),
+        cadence: getCadence(data).toInt(),
+        heartRate: getHeartRate(data).toInt(),
+        lon: gps.dx,
+        lat: gps.dy,
+      );
+    } else {
+      return Record(
+        distance: distance + dD,
+        elapsed: supplement.elapsed,
+        calories: supplement.calories,
+        power: supplement.power,
+        speed: speed,
+        cadence: supplement.cadence,
+        heartRate: supplement.heartRate,
+        lon: gps.dx,
+        lat: gps.dy,
+      );
+    }
   }
 }

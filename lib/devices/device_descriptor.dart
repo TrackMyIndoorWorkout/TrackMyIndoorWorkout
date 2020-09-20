@@ -40,5 +40,5 @@ abstract class DeviceDescriptor {
   }
 
   Record getMeasurement(DateTime rightNow, DateTime lastRecord, double speed,
-      double distance, bool paused, List<int> data);
+      double distance, List<int> data, Record supplement);
 }

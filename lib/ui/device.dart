@@ -11,6 +11,7 @@ import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/models/activity.dart';
+import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../strava/strava_service.dart';
 import '../track/constants.dart';
@@ -81,9 +82,9 @@ class DeviceState extends State<DeviceScreen> {
 
     final rightNow = DateTime.now();
     final record = descriptor.getMeasurement(
-        rightNow, _lastRecord, _speed, _distance, _paused, data);
+        rightNow, _lastRecord, _speed, _distance, data, null);
 
-    if (!_paused) {
+    if (!_paused && _measuring) {
       await _database.recordDao.insertRecord(record);
     }
 
@@ -223,7 +224,24 @@ class DeviceState extends State<DeviceScreen> {
       _paused = true;
     });
 
-    // TODO add one last GPS point
+    // Add one last record for the time of stopping
+    final rightNow = DateTime.now();
+    final supplement = Record(
+      distance: _distance,
+      elapsed: _time,
+      calories: _calories,
+      power: _power,
+      speed: _speed,
+      cadence: _cadence,
+      heartRate: _heartRate,
+      lon: 0,
+      lat: 0,
+    );
+    final record = descriptor.getMeasurement(
+        rightNow, _lastRecord, _speed, _distance, null, supplement);
+
+    await _database.recordDao.insertRecord(record);
+
     _activity.update(
       _distance,
       _time,
