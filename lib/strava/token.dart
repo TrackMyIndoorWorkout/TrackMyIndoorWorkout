@@ -17,23 +17,21 @@ class Token {
   String toString() => Token.toJsonMap(this).toString();
 
   static Map toJsonMap(Token model) {
-    Map ret = new Map();
-    ret['access_token'] = model.accessToken ?? 'Error';
-    ret['token_type'] = model.tokenType ?? 'Error';
-    ret['refresh_token'] = model.refreshToken ?? 'Error';
-    ret['expires_at'] = model.expiresAt ?? 'Error';
-
-    return ret;
+    return {
+      'access_token': model.accessToken ?? 'Error',
+      'token_type': model.tokenType ?? 'Error',
+      'refresh_token': model.refreshToken ?? 'Error',
+      'expires_at': model.expiresAt ?? 'Error',
+    };
   }
 
   static Token fromMap(Map<String, dynamic> map) {
     if (map == null) return null;
-    Token model = new Token();
-    model.accessToken = map['access_token'];
-    model.refreshToken = map['refresh_token'];
-    model.tokenType = map['token_type'];
-    model.expiresAt = map['expires_at'];
-    return model;
+    return Token()
+      ..accessToken = map['access_token']
+      ..refreshToken = map['refresh_token']
+      ..tokenType = map['token_type']
+      ..expiresAt = map['expires_at'];
   }
 }
 
@@ -50,10 +48,10 @@ class RefreshAnswer {
 
   static RefreshAnswer fromMap(Map<String, dynamic> map) {
     if (map == null) return null;
-    RefreshAnswer model = RefreshAnswer();
-    model.accessToken = map['access_token'];
-    model.refreshToken = map['refresh_token'];
-    model.expiresAt = map['expires_at'];
+    RefreshAnswer model = RefreshAnswer()
+      ..accessToken = map['access_token']
+      ..refreshToken = map['refresh_token']
+      ..expiresAt = map['expires_at'];
     return model;
   }
 }
