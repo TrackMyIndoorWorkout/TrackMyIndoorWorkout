@@ -12,7 +12,6 @@ import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
-import '../persistence/models/record.dart';
 import '../strava/strava_service.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
