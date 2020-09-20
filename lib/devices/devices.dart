@@ -1,8 +1,8 @@
-import 'device_descriptor.dart';
+import 'fixed_layout_device_descriptor.dart';
 import 'metric_descriptor.dart';
 
 final devices = [
-  DeviceDescriptor(
+  FixedLayoutDeviceDescriptor(
     vendorName: "Precor",
     modelName: "Spinning Power Chrono",
     sku: "SBK 869",
@@ -14,11 +14,6 @@ final devices = [
     equipmentTypeId: "e01f",
     equipmentStateId: "e01e",
     measurementId: "e01d",
-    time: MetricDescriptor(lsb: 3, msb: 4, divider: 1),
-    calories: MetricDescriptor(lsb: 13, msb: 14, divider: 1),
-    speed: MetricDescriptor(lsb: 6, msb: 7, divider: 100),
-    power: MetricDescriptor(lsb: 17, msb: 18, divider: 1),
-    cadence: MetricDescriptor(lsb: 8, msb: 9, divider: 10),
     heartRate: 5,
     canMeasurementProcessed: (List<int> data) {
       if (data.length != 19) return false;
@@ -28,8 +23,10 @@ final devices = [
       }
       return true;
     },
-    processMeasurement: (List<int> data) {
-      ;
-    },
-  )
+    time: MetricDescriptor(lsb: 3, msb: 4, divider: 1),
+    calories: MetricDescriptor(lsb: 13, msb: 14, divider: 1),
+    speed: MetricDescriptor(lsb: 6, msb: 7, divider: 100),
+    power: MetricDescriptor(lsb: 17, msb: 18, divider: 1),
+    cadence: MetricDescriptor(lsb: 8, msb: 9, divider: 10),
+  ),
 ];

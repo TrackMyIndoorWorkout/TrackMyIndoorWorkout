@@ -1,8 +1,10 @@
-import 'metric_descriptor.dart';
+import '../persistence/models/record.dart';
 
 typedef MeasurementProcessing(List<int> data);
 
-class DeviceDescriptor {
+abstract class DeviceDescriptor {
+  static const double MS2KMH = 3.6;
+
   final String vendorName;
   final String modelName;
   var fullName;
@@ -15,14 +17,8 @@ class DeviceDescriptor {
   final String equipmentTypeId;
   final String equipmentStateId;
   final String measurementId;
-  final MetricDescriptor time;
-  final MetricDescriptor calories;
-  final MetricDescriptor speed;
-  final MetricDescriptor power;
-  final MetricDescriptor cadence;
   final int heartRate;
   final MeasurementProcessing canMeasurementProcessed;
-  final MeasurementProcessing processMeasurement;
 
   DeviceDescriptor({
     this.vendorName,
@@ -37,39 +33,12 @@ class DeviceDescriptor {
     this.equipmentTypeId,
     this.equipmentStateId,
     this.measurementId,
-    this.time,
-    this.calories,
-    this.speed,
-    this.power,
-    this.cadence,
     this.heartRate,
     this.canMeasurementProcessed,
-    this.processMeasurement,
   }) {
     this.fullName = '$vendorName $modelName';
   }
 
-  double getTime(List<int> data) {
-    return time.getMeasurementValue(data);
-  }
-
-  double getCalories(List<int> data) {
-    return calories.getMeasurementValue(data);
-  }
-
-  double getSpeed(List<int> data) {
-    return speed.getMeasurementValue(data);
-  }
-
-  double getPower(List<int> data) {
-    return power.getMeasurementValue(data);
-  }
-
-  double getCadence(List<int> data) {
-    return cadence.getMeasurementValue(data);
-  }
-
-  double getHeartRate(List<int> data) {
-    return data[heartRate].toDouble();
-  }
+  Record getMeasurement(DateTime rightNow, DateTime lastRecord, double speed,
+      double distance, bool paused, List<int> data);
 }
