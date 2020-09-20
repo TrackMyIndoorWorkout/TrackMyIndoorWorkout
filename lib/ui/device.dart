@@ -38,7 +38,7 @@ class DeviceState extends State<DeviceScreen> {
   bool _measuring;
   bool _paused;
   int _time; // cumulative elapsed (auto pause)
-  double _calories; // cumulative (kCal)
+  int _calories; // cumulative (kCal)
   int _power; // snapshot (W)
   double _speed; // snapshot (km/h)
   int _cadence; // snapshot (rpm)
@@ -49,7 +49,6 @@ class DeviceState extends State<DeviceScreen> {
   Activity _activity;
   AppDatabase _database;
 
-  static const double ms2kmh = 3.6;
   static Size size = Size(0, 0);
   static double radius = 0;
 
@@ -80,38 +79,25 @@ class DeviceState extends State<DeviceScreen> {
 
   _recordMeasurement(List<int> data) async {
     if (!descriptor.canMeasurementProcessed(data)) return;
+
     final rightNow = DateTime.now();
-    double dD;
-    if (_speed > 0) {
-      Duration dT = rightNow.difference(_lastRecord);
-      dD = _speed / ms2kmh * dT.inMilliseconds / 1000.0;
-    }
-    _time = descriptor.getTime(data).toInt();
-    _calories = descriptor.getCalories(data);
-    _power = descriptor.getPower(data).toInt();
-    _speed = descriptor.getSpeed(data);
-    _cadence = descriptor.getCadence(data).toInt();
-    _heartRate = descriptor.getHeartRate(data).toInt();
-    if (_speed > 0 || !_paused) {
-      final gps = calculateGPS(_distance + dD);
-      await _database.recordDao.insertRecord(
-        Record(
-          distance: _distance + dD,
-          elapsed: _time,
-          calories: _calories.toInt(),
-          power: _power,
-          speed: _speed,
-          cadence: _cadence,
-          heartRate: _heartRate,
-          lon: gps.dx,
-          lat: gps.dy,
-        ),
-      );
+    final record = descriptor.getMeasurement(
+        rightNow, _lastRecord, _speed, _distance, _paused, data);
+
+    if (!_paused) {
+      await _database.recordDao.insertRecord(record);
     }
 
     setState(() {
-      if (_speed > 0) {
-        _distance += dD;
+      _time = record.elapsed;
+      _calories = record.calories;
+      _power = record.power;
+      _speed = record.speed;
+      _cadence = record.cadence;
+      _heartRate = record.heartRate;
+
+      if (_speed > 0 && !_paused) {
+        _distance += record.distance;
       }
 
       if (_measuring) {
