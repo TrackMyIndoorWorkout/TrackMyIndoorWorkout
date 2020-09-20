@@ -1,5 +1,3 @@
-// upload.dart
-
 class UploadActivity {
   int activityId;
   String externalId;

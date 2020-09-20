@@ -1,5 +1,3 @@
-// Upload file
-
 import 'dart:async';
 
 import 'dart:convert';

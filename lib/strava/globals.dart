@@ -1,5 +1,3 @@
-// globals.dart
-
 import 'package:flutter/foundation.dart';
 import 'fault.dart';
 import 'token.dart';

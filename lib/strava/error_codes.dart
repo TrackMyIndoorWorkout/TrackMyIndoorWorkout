@@ -1,5 +1,3 @@
-// Error code
-
 /// List of statuscode used by Fault
 /// set in  Strava API
 final statusOk = 0;
