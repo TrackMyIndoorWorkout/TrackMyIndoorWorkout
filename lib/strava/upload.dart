@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
@@ -83,12 +84,12 @@ abstract class Upload {
     if (response.statusCode == 201) {
       globals.displayInfo('Activity successfully created');
       response.stream.transform(utf8.decoder).listen((value) {
-        print(value);
+        debugPrint(value);
         final Map<String, dynamic> _body = json.decode(value);
         ResponseUploadActivity _response =
             ResponseUploadActivity.fromJson(_body);
 
-        print('id ${_response.id}');
+        debugPrint('id ${_response.id}');
         idUpload = _response.id;
         onUploadPending.add(idUpload);
       });
@@ -97,37 +98,37 @@ abstract class Upload {
       onUploadPending.stream.listen((id) async {
         reqCheckUpgrade = reqCheckUpgrade + id.toString();
         var resp = await http.get(reqCheckUpgrade, headers: _header);
-        print('check status ${resp.reasonPhrase}  ${resp.statusCode}');
+        debugPrint('check status ${resp.reasonPhrase}  ${resp.statusCode}');
 
         // Everything is fine the file has been loaded
         if (resp.statusCode == 200) {
-          print('200 ${resp.reasonPhrase}');
+          debugPrint('200 ${resp.reasonPhrase}');
         }
 
         // 404 the temp id does not exist anymore
         // Activity has been probably already loaded
         if (resp.statusCode == 404) {
-          print('---> 404 activity already loaded  ${resp.reasonPhrase}');
+          debugPrint('---> 404 activity already loaded  ${resp.reasonPhrase}');
         }
 
         if (resp.reasonPhrase.compareTo(ready) == 0) {
-          print('---> Activity succesfully uploaded');
+          debugPrint('---> Activity succesfully uploaded');
           onUploadPending.close();
         }
 
         if ((resp.reasonPhrase.compareTo(notFound) == 0) ||
             (resp.reasonPhrase.compareTo(errorMsg) == 0)) {
-          print('---> Error while checking status upload');
+          debugPrint('---> Error while checking status upload');
           onUploadPending.close();
         }
 
         if (resp.reasonPhrase.compareTo(deleted) == 0) {
-          print('---> Activity deleted');
+          debugPrint('---> Activity deleted');
           onUploadPending.close();
         }
 
         if (resp.reasonPhrase.compareTo(processed) == 0) {
-          print('---> try another time');
+          debugPrint('---> try another time');
           // wait 2 sec before checking again status
           Timer(Duration(seconds: 2), () => onUploadPending.add(id));
         }
