@@ -243,12 +243,13 @@ class DeviceState extends State<DeviceScreen> {
 
     await _database.recordDao.insertRecord(record);
 
-    _activity.update(
+    _activity.finish(
       _distance,
       _time,
       _calories.toInt(),
     );
-    await _database.activityDao.updateActivity(_activity);
+    final changed = await _database.activityDao.updateActivity(_activity);
+    debugPrint('Activity finished ($changed)');
   }
 
   @override

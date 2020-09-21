@@ -193,8 +193,9 @@ class _$ActivityDao extends ActivityDao {
   }
 
   @override
-  Future<void> updateActivity(Activity activity) async {
-    await _activityUpdateAdapter.update(activity, OnConflictStrategy.abort);
+  Future<int> updateActivity(Activity activity) {
+    return _activityUpdateAdapter.updateAndReturnChangedRows(
+        activity, OnConflictStrategy.abort);
   }
 }
 

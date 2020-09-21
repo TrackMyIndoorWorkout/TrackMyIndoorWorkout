@@ -17,5 +17,5 @@ abstract class ActivityDao {
   Future<int> insertActivity(Activity activity);
 
   @update
-  Future<void> updateActivity(Activity activity);
+  Future<int> updateActivity(Activity activity);
 }

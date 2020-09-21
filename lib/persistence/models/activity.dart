@@ -31,7 +31,7 @@ class Activity {
     this.uploaded: false,
   });
 
-  update(double distance, int elapsed, int calories) {
+  finish(double distance, int elapsed, int calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;
     this.distance = distance;
     this.elapsed = elapsed;
