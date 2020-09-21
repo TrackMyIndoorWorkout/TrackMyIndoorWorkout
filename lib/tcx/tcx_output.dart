@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 
+import '../devices/device_descriptor.dart';
 import 'tcx_model.dart';
 
 class StatisticsAccumulator {
@@ -42,7 +43,7 @@ class StatisticsAccumulator {
     }
   }
 
-  processTrackPoint(TrackPoint trackPoint) {
+  StatisticsAccumulator processTrackPoint(TrackPoint trackPoint) {
     if (calculateMaxSpeed && trackPoint.speed != null) {
       maxSpeed = max(maxSpeed, trackPoint.speed);
     }
@@ -61,6 +62,7 @@ class StatisticsAccumulator {
       cadenceSum += trackPoint.cadence;
       cadenceCount++;
     }
+    return this;
   }
 }
 
