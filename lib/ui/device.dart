@@ -260,7 +260,7 @@ class DeviceState extends State<DeviceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double sizeDefault = radius > 0 ? radius / 6.0 : 64.0;
+    final double sizeDefault = radius > 0 ? radius / 3.0 : 64.0;
 
     final timeStyle = TextStyle(
       fontSize: sizeDefault,
@@ -355,7 +355,7 @@ class DeviceState extends State<DeviceScreen> {
               ? Text("Waiting for data...", style: measurementStyle)
               : Center(
                   child: SizedBox(
-                    width: size.width - 2 * THICK,
+                    width: size.width - 4 * THICK,
                     height: size.height - 2 * THICK,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -370,6 +370,7 @@ class DeviceState extends State<DeviceScreen> {
                             Text(_timeDisplay, style: timeStyle),
                           ],
                         ),
+                        Divider(height: 1),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -383,6 +384,7 @@ class DeviceState extends State<DeviceScreen> {
                                 child: Text('kCal', style: unitStyle)),
                           ],
                         ),
+                        Divider(height: 1),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -396,6 +398,7 @@ class DeviceState extends State<DeviceScreen> {
                                 child: Text('W', style: unitStyle)),
                           ],
                         ),
+                        Divider(height: 1),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -409,6 +412,7 @@ class DeviceState extends State<DeviceScreen> {
                                 child: Text('km/h', style: unitStyle)),
                           ],
                         ),
+                        Divider(height: 1),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -422,6 +426,7 @@ class DeviceState extends State<DeviceScreen> {
                                 child: Text('rpm', style: unitStyle)),
                           ],
                         ),
+                        Divider(height: 1),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -435,6 +440,7 @@ class DeviceState extends State<DeviceScreen> {
                                 child: Text('bpm', style: unitStyle)),
                           ],
                         ),
+                        Divider(height: 1),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
