@@ -22,18 +22,20 @@ import 'activities.dart';
 
 class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
-  DeviceScreen({Key key, this.device}) : super(key: key);
+  final BluetoothDeviceState initialState;
+  DeviceScreen({Key key, this.device, this.initialState}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return DeviceState(device: device);
+    return DeviceState(device: device, initialState: initialState);
   }
 }
 
 class DeviceState extends State<DeviceScreen> {
-  DeviceState({this.device});
+  DeviceState({this.device, this.initialState});
 
   final BluetoothDevice device;
+  final BluetoothDeviceState initialState;
   final DeviceDescriptor descriptor = devices[0];
   bool _discovered;
   bool _measuring;
@@ -54,12 +56,11 @@ class DeviceState extends State<DeviceScreen> {
   static double radius = 0;
 
   _initialConnectOnDemand() async {
-    BluetoothDeviceState state = await device.state.last;
-    if (state == BluetoothDeviceState.disconnected) {
+    if (initialState == BluetoothDeviceState.disconnected) {
       await device.connect().then((value) async {
         await _discoverServices();
       });
-    } else if (state == BluetoothDeviceState.connected && !_discovered) {
+    } else if (initialState == BluetoothDeviceState.connected && !_discovered) {
       await _discoverServices();
     }
   }

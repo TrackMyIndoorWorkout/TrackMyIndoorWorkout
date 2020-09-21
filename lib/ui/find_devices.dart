@@ -40,7 +40,9 @@ class FindDevicesScreen extends StatelessWidget {
                                   return RaisedButton(
                                       child: Text('OPEN'),
                                       onPressed: () async {
-                                        await Get.to(DeviceScreen(device: d));
+                                        await Get.to(DeviceScreen(
+                                            device: d,
+                                            initialState: snapshot.data));
                                       });
                                 }
                                 return Text(snapshot.data.toString());
@@ -61,7 +63,10 @@ class FindDevicesScreen extends StatelessWidget {
                         (r) => ScanResultTile(
                           result: r,
                           onTap: () async {
-                            await Get.to(DeviceScreen(device: r.device));
+                            await Get.to(DeviceScreen(
+                                device: r.device,
+                                initialState:
+                                    BluetoothDeviceState.disconnected));
                           },
                         ),
                       )
