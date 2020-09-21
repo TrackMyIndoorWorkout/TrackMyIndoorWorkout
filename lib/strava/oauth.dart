@@ -17,7 +17,7 @@ import 'token.dart';
 import 'fault.dart';
 
 ///===========================================
-/// Class related to Authorization processs
+/// Class related to Authorization process
 ///===========================================
 abstract class Auth {
   StreamController<String> onCodeReceived = StreamController();
