@@ -7,6 +7,7 @@ import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
@@ -209,11 +210,14 @@ class DeviceState extends State<DeviceScreen> {
 
     _initialConnectOnDemand();
     _openDatabase();
+
+    Wakelock.enable();
   }
 
   @override
   dispose() {
     _database.close();
+    Wakelock.disable();
     super.dispose();
   }
 
