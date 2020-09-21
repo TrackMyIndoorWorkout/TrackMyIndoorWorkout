@@ -97,7 +97,7 @@ class DeviceState extends State<DeviceScreen> {
       _heartRate = record.heartRate;
 
       if (_speed > 0 && !_paused) {
-        _distance += record.distance;
+        _distance = record.distance;
       }
 
       if (_measuring) {
