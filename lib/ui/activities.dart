@@ -6,7 +6,6 @@ import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
-import 'activity_list_adapter.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   ActivitiesScreen({Key key}) : super(key: key);
@@ -54,12 +53,17 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       body: SafeArea(
         child: _database == null
             ? Text('Initializing...')
-            : CustomListView<Activity>(
+            : CustomListView(
                 paginationMode: PaginationMode.page,
                 initialOffset: 0,
                 loadingBuilder: (BuildContext context) =>
                     Center(child: CircularProgressIndicator()),
-                adapter: ActivityListAdapter(this),
+                adapter: ListAdapter(
+                  fetchItems: (int offset, int limit) async {
+                    final data = await _database.activityDao.findActivities(offset, limit);
+                    return ListItems(data, reachedToEnd: data.length < limit);
+                  },
+                ),
                 errorBuilder: (context, error, state) {
                   return Column(
                     children: <Widget>[
@@ -71,9 +75,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     ],
                   );
                 },
-                separatorBuilder: (context, _) {
-                  return Divider(height: 1);
-                },
+                // Cannot have until https://github.com/TheMisir/flutter-listutils/issues/11 is fixed
+                // separatorBuilder: (context, _) {
+                //   return Divider(height: 1);
+                // },
                 empty: Center(
                   child: Text('No activities found'),
                 ),
