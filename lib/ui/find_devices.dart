@@ -9,27 +9,6 @@ import 'device.dart';
 import 'scan_result.dart';
 
 class FindDevicesScreen extends StatelessWidget {
-  Widget _alertDialog(BluetoothDevice device, bool connect) {
-    return AlertDialog(
-      title: Text(devices[0].fullName),
-      content: Text('Device does not seem to be a ${devices[0].fullName} ' +
-          'by name. Still continue?'),
-      actions: <Widget>[
-        FlatButton(
-          child: Text('Yes'),
-          onPressed: () async {
-            Get.close(1);
-            if (connect) {
-              await device.connect();
-            }
-            await Get.to(DeviceScreen(device: device));
-          },
-        ),
-        FlatButton(child: Text('No'), onPressed: () => Get.close(1)),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +27,7 @@ class FindDevicesScreen extends StatelessWidget {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
+                      .where((d) => d.name.startsWith(devices[0].namePrefix))
                       .map((d) => ListTile(
                             title: Text(d.name),
                             subtitle: Text(d.id.toString()),
@@ -60,14 +40,7 @@ class FindDevicesScreen extends StatelessWidget {
                                   return RaisedButton(
                                       child: Text('OPEN'),
                                       onPressed: () async {
-                                        if (d.name.startsWith(
-                                            devices[0].namePrefix)) {
-                                          await Get.to(DeviceScreen(device: d));
-                                        } else {
-                                          await Get.dialog(
-                                              _alertDialog(d, false),
-                                              barrierDismissible: false);
-                                        }
+                                        await Get.to(DeviceScreen(device: d));
                                       });
                                 }
                                 return Text(snapshot.data.toString());
@@ -82,16 +55,13 @@ class FindDevicesScreen extends StatelessWidget {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
+                      .where((d) =>
+                          d.device.name.startsWith(devices[0].namePrefix))
                       .map(
                         (r) => ScanResultTile(
                           result: r,
                           onTap: () async {
-                            if (r.device.name.startsWith("CHRONO")) {
-                              await Get.to(DeviceScreen(device: r.device));
-                            } else {
-                              await Get.dialog(_alertDialog(r.device, false),
-                                  barrierDismissible: false);
-                            }
+                            await Get.to(DeviceScreen(device: r.device));
                           },
                         ),
                       )
