@@ -19,8 +19,8 @@ class StatisticsAccumulator {
   int cadenceCount;
 
   int get averageHeartRate =>
-      heartRateCount > 0 ? heartRateSum / heartRateCount : 0;
-  int get averageCadence => cadenceCount > 0 ? cadenceSum / cadenceCount : 0;
+      heartRateCount > 0 ? heartRateSum ~/ heartRateCount : 0;
+  int get averageCadence => cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0;
 
   StatisticsAccumulator(
       {this.calculateMaxSpeed,
