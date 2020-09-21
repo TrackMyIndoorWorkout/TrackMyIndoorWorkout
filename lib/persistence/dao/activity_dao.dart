@@ -14,7 +14,7 @@ abstract class ActivityDao {
   Future<List<Activity>> findActivities(int offset, int limit);
 
   @insert
-  Future<void> insertActivity(Activity activity);
+  Future<int> insertActivity(Activity activity);
 
   @update
   Future<void> updateActivity(Activity activity);

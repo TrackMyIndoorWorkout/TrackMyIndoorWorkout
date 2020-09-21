@@ -170,7 +170,8 @@ class DeviceState extends State<DeviceScreen> {
 
             _activity =
                 Activity(deviceName: device.name, deviceId: device.id.id);
-            await _database.activityDao.insertActivity(_activity);
+            final id = await _database.activityDao.insertActivity(_activity);
+            _activity.id = id;
           }
         }
       }

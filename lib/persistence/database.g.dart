@@ -187,8 +187,9 @@ class _$ActivityDao extends ActivityDao {
   }
 
   @override
-  Future<void> insertActivity(Activity activity) async {
-    await _activityInsertionAdapter.insert(activity, OnConflictStrategy.abort);
+  Future<int> insertActivity(Activity activity) {
+    return _activityInsertionAdapter.insertAndReturnId(
+        activity, OnConflictStrategy.abort);
   }
 
   @override
