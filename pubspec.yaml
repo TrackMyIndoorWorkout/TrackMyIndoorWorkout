@@ -2,6 +2,8 @@ name: virtual_velodrome_rider
 description: Recording virtual rides as if circling in a Velodrome or on a running track.
 publish_to: "none"
 
+version: 1.0.0+1
+
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
