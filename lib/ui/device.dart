@@ -83,7 +83,7 @@ class DeviceState extends State<DeviceScreen> {
 
     final rightNow = DateTime.now();
     final record = descriptor.getMeasurement(
-        rightNow, _lastRecord, _speed, _distance, data, null);
+        _activity.id, rightNow, _lastRecord, _speed, _distance, data, null);
 
     if (!_paused && _measuring) {
       await _database.recordDao.insertRecord(record);
@@ -244,8 +244,8 @@ class DeviceState extends State<DeviceScreen> {
       lon: 0,
       lat: 0,
     );
-    final record = descriptor.getMeasurement(
-        rightNow, _lastRecord, _speed, _distance, null, supplement);
+    final record = descriptor.getMeasurement(_activity.id, rightNow,
+        _lastRecord, _speed, _distance, null, supplement);
 
     await _database.recordDao.insertRecord(record);
 
@@ -255,7 +255,6 @@ class DeviceState extends State<DeviceScreen> {
       _calories.toInt(),
     );
     final changed = await _database.activityDao.updateActivity(_activity);
-    debugPrint('Activity finished ($changed)');
   }
 
   @override

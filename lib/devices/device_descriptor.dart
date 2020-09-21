@@ -39,6 +39,6 @@ abstract class DeviceDescriptor {
     this.fullName = '$vendorName $modelName';
   }
 
-  Record getMeasurement(DateTime rightNow, DateTime lastRecord, double speed,
-      double distance, List<int> data, Record supplement);
+  Record getMeasurement(int activityId, DateTime rightNow, DateTime lastRecord,
+      double speed, double distance, List<int> data, Record supplement);
 }

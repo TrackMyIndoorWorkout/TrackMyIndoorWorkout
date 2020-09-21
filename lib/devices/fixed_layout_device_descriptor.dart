@@ -72,8 +72,8 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   }
 
   @override
-  Record getMeasurement(DateTime rightNow, DateTime lastRecord, double speed,
-      double distance, List<int> data, Record supplement) {
+  Record getMeasurement(int activityId, DateTime rightNow, DateTime lastRecord,
+      double speed, double distance, List<int> data, Record supplement) {
     double dD = 0;
     if (speed > 0) {
       Duration dT = rightNow.difference(lastRecord);
@@ -83,6 +83,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     final timeStamp = rightNow.millisecondsSinceEpoch;
     if (data != null) {
       return Record(
+        activityId: activityId,
         timeStamp: timeStamp,
         distance: distance + dD,
         elapsed: getTime(data).toInt(),
@@ -96,6 +97,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       );
     } else {
       return Record(
+        activityId: activityId,
         timeStamp: timeStamp,
         distance: distance + dD,
         elapsed: supplement.elapsed,
