@@ -18,7 +18,7 @@ class Record {
   @ColumnInfo(name: 'activity_id')
   final int activityId;
   @ColumnInfo(name: 'time_stamp')
-  final int timeStamp = DateTime.now().millisecondsSinceEpoch;
+  final int timeStamp; // ms since epoch
   final double distance; // m
   final int elapsed; // s
   final int calories; // kCal
@@ -32,6 +32,7 @@ class Record {
 
   Record({
     this.activityId,
+    this.timeStamp,
     this.distance,
     this.elapsed,
     this.calories,

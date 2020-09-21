@@ -15,8 +15,8 @@ class Activity {
   final String deviceName;
   @ColumnInfo(name: 'device_id')
   final String deviceId;
-  final int start = DateTime.now().millisecondsSinceEpoch;
-  int end;
+  final int start; // ms since epoch
+  int end; // ms since epoch
   double distance; // m
   int elapsed; // s
   int calories; // kCal
@@ -25,6 +25,8 @@ class Activity {
   Activity({
     this.deviceName,
     this.deviceId,
+    this.start,
+    this.end: 0,
     this.distance: 0,
     this.elapsed: 0,
     this.calories: 0,

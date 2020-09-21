@@ -80,8 +80,10 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       dD = speed / DeviceDescriptor.MS2KMH * dT.inMilliseconds / 1000.0;
     }
     final gps = calculateGPS(distance + dD);
+    final timeStamp = rightNow.millisecondsSinceEpoch;
     if (data != null) {
       return Record(
+        timeStamp: timeStamp,
         distance: distance + dD,
         elapsed: getTime(data).toInt(),
         calories: getCalories(data).toInt(),
@@ -94,6 +96,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       );
     } else {
       return Record(
+        timeStamp: timeStamp,
         distance: distance + dD,
         elapsed: supplement.elapsed,
         calories: supplement.calories,

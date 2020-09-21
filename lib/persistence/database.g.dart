@@ -153,6 +153,8 @@ class _$ActivityDao extends ActivityDao {
   static final _activitiesMapper = (Map<String, dynamic> row) => Activity(
       deviceName: row['device_name'] as String,
       deviceId: row['device_id'] as String,
+      start: row['start'] as int,
+      end: row['end'] as int,
       distance: row['distance'] as double,
       elapsed: row['elapsed'] as int,
       calories: row['calories'] as int,
@@ -248,6 +250,7 @@ class _$RecordDao extends RecordDao {
 
   static final _recordsMapper = (Map<String, dynamic> row) => Record(
       activityId: row['activity_id'] as int,
+      timeStamp: row['time_stamp'] as int,
       distance: row['distance'] as double,
       elapsed: row['elapsed'] as int,
       calories: row['calories'] as int,

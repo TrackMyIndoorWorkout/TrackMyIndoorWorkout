@@ -169,8 +169,10 @@ class DeviceState extends State<DeviceScreen> {
             _measuring = true;
             _paused = false;
 
-            _activity =
-                Activity(deviceName: device.name, deviceId: device.id.id);
+            _activity = Activity(
+                deviceName: device.name,
+                deviceId: device.id.id,
+                start: _lastRecord.millisecondsSinceEpoch);
             final id = await _database.activityDao.insertActivity(_activity);
             _activity.id = id;
           }
