@@ -74,6 +74,8 @@ class StatisticsAccumulator {
 class TCXOutput {
   static const MAJOR = '1';
   static const MINOR = '0';
+  static const FILE_EXTENSION = 'gpx.gz';
+  static const MIME_TYPE = 'application/x-gzip';
 
   StringBuffer _sb;
 

@@ -1,4 +1,6 @@
 import 'package:floor/floor.dart';
+import 'package:intl/intl.dart';
+import 'package:virtual_velodrome_rider/tcx/tcx_output.dart';
 
 const String ACTIVITIES_TABLE_NAME = 'activities';
 
@@ -23,7 +25,7 @@ class Activity {
   bool uploaded;
 
   Activity({
-    this.id: null,
+    this.id,
     this.deviceName,
     this.deviceId,
     this.start,
@@ -39,5 +41,20 @@ class Activity {
     this.distance = distance;
     this.elapsed = elapsed;
     this.calories = calories;
+  }
+
+  Map<String, dynamic> getPersistenceValues() {
+    final startStamp = DateTime.fromMillisecondsSinceEpoch(start);
+    final dateString = DateFormat.yMd().format(startStamp);
+    final timeString = DateFormat.Hms().format(startStamp);
+    final fileName = 'ERide_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
+        .replaceAll('/', '-')
+        .replaceAll(':', '-');
+    return {
+      'startStamp': startStamp,
+      'name': 'Virtual velodrome ride at $dateString $timeString',
+      'description': 'Virtual velodrome ride on a $deviceName',
+      'fileName': fileName,
+    };
   }
 }

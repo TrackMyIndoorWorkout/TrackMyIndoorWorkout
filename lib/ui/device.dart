@@ -171,6 +171,7 @@ class DeviceState extends State<DeviceScreen> {
             _paused = false;
 
             _activity = Activity(
+                id: null,
                 deviceName: device.name,
                 deviceId: device.id.id,
                 start: _lastRecord.millisecondsSinceEpoch);

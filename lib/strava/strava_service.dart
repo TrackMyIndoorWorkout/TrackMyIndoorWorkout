@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/secret.dart';
@@ -19,19 +18,13 @@ class StravaService {
   }
 
   Future<int> upload(Activity activity, List<Record> records) async {
-    final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
-    final dateString = DateFormat.yMd().format(startStamp);
-    final timeString = DateFormat.Hms().format(startStamp);
-
+    final persistenceValues = activity.getPersistenceValues();
     final tcxGzip = await TCXOutput().getTcxOfActivity(activity, records);
-
     Fault fault = await _strava.uploadActivity(
-      'Virtual velodrome ride at $dateString $timeString',
-      'Virtual velodrome ride on a ${activity.deviceName}',
-      'ERide_${dateString}_$timeString.gpx.gz'
-          .replaceAll('/', '-')
-          .replaceAll(':', '-'),
-      'gpx.gz',
+      persistenceValues["name"],
+      persistenceValues["description"],
+      persistenceValues["fileName"],
+      TCXOutput.FILE_EXTENSION,
       tcxGzip,
     );
 

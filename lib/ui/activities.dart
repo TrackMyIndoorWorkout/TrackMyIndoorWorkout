@@ -139,20 +139,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                                 .findAllActivityRecords(activity.id);
                             final tcxGzip = await TCXOutput()
                                 .getTcxOfActivity(activity, records);
-                            final startStamp =
-                                DateTime.fromMillisecondsSinceEpoch(
-                                    activity.start);
-                            final dateString =
-                                DateFormat.yMd().format(startStamp);
-                            final timeString =
-                                DateFormat.Hms().format(startStamp);
+                            final persistenceValues =
+                                activity.getPersistenceValues();
                             ShareFilesAndScreenshotWidgets().shareFile(
-                                'Virtual velodrome ride at $dateString $timeString',
-                                'ERide_${dateString}_$timeString.gpx.gz'
-                                    .replaceAll('/', '-')
-                                    .replaceAll(':', '-'),
+                                persistenceValues['name'],
+                                persistenceValues['fileName'],
                                 tcxGzip,
-                                "application/x-gzip",
+                                TCXOutput.MIME_TYPE,
                                 text: 'Share a ride on ${activity.deviceName}');
                           },
                         ),
