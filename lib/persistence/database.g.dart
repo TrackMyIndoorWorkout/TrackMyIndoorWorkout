@@ -278,10 +278,10 @@ class _$RecordDao extends RecordDao {
   }
 
   @override
-  Future<List<Record>> findAllActivityRecords(int id) async {
+  Future<List<Record>> findAllActivityRecords(int activityId) async {
     return _queryAdapter.queryList(
         'SELECT * FROM records WHERE activity_id = ? ORDER BY time_stamp',
-        arguments: <dynamic>[id],
+        arguments: <dynamic>[activityId],
         mapper: _recordsMapper);
   }
 
