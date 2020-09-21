@@ -738,6 +738,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.6+2"
+  wakelock:
+    dependency: "direct main"
+    description:
+      name: wakelock
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.4+2"
   watcher:
     dependency: transitive
     description:
