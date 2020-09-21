@@ -2,7 +2,12 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 
+import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
+import '../persistence/models/activity.dart';
+import '../persistence/models/record.dart';
+import '../track/constants.dart';
+import 'activity_type.dart';
 import 'tcx_model.dart';
 
 class StatisticsAccumulator {
@@ -67,6 +72,9 @@ class StatisticsAccumulator {
 }
 
 class TCXOutput {
+  static const MAJOR = '1';
+  static const MINOR = '0';
+
   StringBuffer _sb;
 
   StringBuffer get sb => _sb;
@@ -75,7 +83,57 @@ class TCXOutput {
     _sb = StringBuffer();
   }
 
-  Future<List<int>> getTCX(TCXModel tcxInfo) async {
+  TrackPoint recordToTrackPoint(Record record) {
+    final timeStamp = DateTime.fromMillisecondsSinceEpoch(record.timeStamp);
+    return TrackPoint()
+      ..latitude = record.lat
+      ..longitude = record.lon
+      ..timeStamp = TCXOutput.createTimestamp(timeStamp)
+      ..altitude = TRACK_ALTITUDE
+      ..speed = record.speed
+      ..distance = record.distance
+      ..date = timeStamp
+      ..cadence = record.cadence
+      ..power = record.power.toDouble()
+      ..heartRate = record.heartRate;
+  }
+
+  Future<List<int>> getTcxOfActivity(
+      Activity activity, List<Record> records) async {
+    final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
+
+    TCXModel tcxInfo = TCXModel()
+      ..activityType = ActivityType.VirtualRide
+      ..totalDistance = activity.distance
+      ..totalTime = activity.elapsed.toDouble()
+      ..calories = activity.calories
+      ..dateActivity = startStamp
+
+      // Related to device that generated the data
+      ..creator = 'Precor'
+      ..deviceName = devices[0].fullName
+      ..unitID = activity.deviceId
+      ..productID = devices[0].sku
+      ..versionMajor = MAJOR
+      ..versionMinor = MINOR
+      ..buildMajor = MAJOR
+      ..buildMinor = MINOR
+
+      // Related to software used to generate the TCX file
+      ..author = 'Csaba Consulting'
+      ..name = 'Virtual Velodrome Rider'
+      ..swVersionMajor = MAJOR
+      ..swVersionMinor = MINOR
+      ..buildVersionMajor = MAJOR
+      ..buildVersionMinor = MINOR
+      ..langID = 'en-US'
+      ..partNumber = '0'
+      ..points = records.map((r) => recordToTrackPoint(r)).toList();
+
+    return await TCXOutput().getTcx(tcxInfo);
+  }
+
+  Future<List<int>> getTcx(TCXModel tcxInfo) async {
     generateTCX(tcxInfo);
     final stringBytes = utf8.encode(_sb.toString());
     return GZipCodec(gzip: true).encode(stringBytes);

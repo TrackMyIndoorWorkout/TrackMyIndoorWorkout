@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
+import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
+import '../tcx/tcx_output.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   ActivitiesScreen({Key key}) : super(key: key);
@@ -90,43 +92,71 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                   final dateString = DateFormat.yMd().format(startStamp);
                   final timeString = DateFormat.Hms().format(startStamp);
                   return ListTile(
-                    leading: activity.uploaded
-                        ? Icon(Icons.check, color: Colors.lightGreenAccent)
-                        : Icon(Icons.close, color: Colors.red),
                     title: Text(
                         '$dateString $timeString on ${activity.deviceName}'),
                     subtitle: Text(
                         '${activity.elapsed} s, ${activity.distance} m, ${activity.calories} kCal'),
-                    trailing: IconButton(
-                      icon: Icon(Icons.file_upload,
-                          color:
-                              activity.uploaded ? Colors.grey : Colors.green),
-                      onPressed: () async {
-                        StravaService stravaService;
-                        if (!Get.isRegistered<StravaService>()) {
-                          stravaService =
-                              Get.put<StravaService>(StravaService());
-                        } else {
-                          stravaService = Get.find<StravaService>();
-                        }
-                        final success = await stravaService.login();
-                        if (!success) {
-                          Get.snackbar("Warning", "Strava login unsuccessful");
-                        } else {
-                          final records = await _database.recordDao
-                              .findAllActivityRecords(activity.id);
-                          final statusCode =
-                              await stravaService.upload(activity, records);
-                          if (statusCode == statusOk) {
-                            activity.uploaded = true;
-                            setState(() {
-                              _shouldUpdate = true;
-                            });
-                            await _database.activityDao
-                                .updateActivity(activity);
-                          }
-                        }
-                      },
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.file_upload,
+                              color: activity.uploaded
+                                  ? Colors.grey
+                                  : Colors.green),
+                          onPressed: () async {
+                            StravaService stravaService;
+                            if (!Get.isRegistered<StravaService>()) {
+                              stravaService =
+                                  Get.put<StravaService>(StravaService());
+                            } else {
+                              stravaService = Get.find<StravaService>();
+                            }
+                            final success = await stravaService.login();
+                            if (!success) {
+                              Get.snackbar(
+                                  "Warning", "Strava login unsuccessful");
+                            } else {
+                              final records = await _database.recordDao
+                                  .findAllActivityRecords(activity.id);
+                              final statusCode =
+                                  await stravaService.upload(activity, records);
+                              if (statusCode == statusOk) {
+                                activity.uploaded = true;
+                                setState(() {
+                                  _shouldUpdate = true;
+                                });
+                                await _database.activityDao
+                                    .updateActivity(activity);
+                              }
+                            }
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.file_download),
+                          onPressed: () async {
+                            final records = await _database.recordDao
+                                .findAllActivityRecords(activity.id);
+                            final tcxGzip = await TCXOutput()
+                                .getTcxOfActivity(activity, records);
+                            final startStamp =
+                                DateTime.fromMillisecondsSinceEpoch(
+                                    activity.start);
+                            final dateString =
+                                DateFormat.yMd().format(startStamp);
+                            final timeString =
+                                DateFormat.Hms().format(startStamp);
+                            ShareFilesAndScreenshotWidgets().shareFile(
+                                'Virtual velodrome ride at $dateString $timeString',
+                                'ERide_${dateString}_$timeString.gpx.gz'
+                                    .replaceAll('/', '-')
+                                    .replaceAll(':', '-'),
+                                tcxGzip,
+                                "application/x-gzip",
+                                text: 'Share a ride on ${activity.deviceName}');
+                          },
+                        ),
+                      ],
                     ),
                   );
                 },

@@ -8,26 +8,27 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  flutter_blue: any
   e2e: any
-  get: any
-  sqflite: any
-  flutter_brand_icons: any
-  intl: any
-  http: any
-  url_launcher: any
-  shared_preferences: any
-  uni_links: any
-  http_parser: any
   floor: any
+  flutter_blue: any
+  flutter_brand_icons: any
+  get: any
+  http: any
+  intl: any
+  http_parser: any
   listview_utils: any
+  share_files_and_screenshot_widgets: any
+  shared_preferences: any
+  sqflite: any
+  uni_links: any
+  url_launcher: any
   wakelock: any
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  floor_generator: any
   build_runner: any
+  floor_generator: any
   flutter_test:
     sdk: flutter
   flutter_driver:
