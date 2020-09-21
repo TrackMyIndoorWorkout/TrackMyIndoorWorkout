@@ -60,7 +60,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     Center(child: CircularProgressIndicator()),
                 adapter: ListAdapter(
                   fetchItems: (int offset, int limit) async {
-                    final data = await _database.activityDao.findActivities(offset, limit);
+                    final data = await _database.activityDao
+                        .findActivities(offset, limit);
                     return ListItems(data, reachedToEnd: data.length < limit);
                   },
                 ),
