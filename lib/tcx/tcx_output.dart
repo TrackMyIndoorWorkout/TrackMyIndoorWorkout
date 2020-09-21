@@ -221,26 +221,26 @@ class TCXOutput {
     if (calculateMaxSpeed) {
       tcxInfo.maxSpeed = accu.maxSpeed / DeviceDescriptor.MS2KMH;
     }
-    if (calculateAverageHeartRate) {
+    if (calculateAverageHeartRate && accu.heartRateCount > 0) {
       tcxInfo.averageHeartRate = accu.averageHeartRate;
     }
-    if (calculateMaxHeartRate) {
+    if (calculateMaxHeartRate && accu.maxHeartRate > 0) {
       tcxInfo.maximumHeartRate = accu.maxHeartRate;
     }
-    if (calculateAverageCadence) {
+    if (calculateAverageCadence && accu.cadenceCount > 0) {
       tcxInfo.averageCadence = accu.averageCadence;
     }
 
     // Add Maximum speed in meter/second
     addElement('MaximumSpeed', tcxInfo.maxSpeed.toString());
 
-    if (tcxInfo.averageHeartRate != null) {
+    if (tcxInfo.averageHeartRate != null && tcxInfo.averageHeartRate > 0) {
       addElement('AverageHeartRateBpm', tcxInfo.averageHeartRate.toString());
     }
-    if (tcxInfo.maximumHeartRate != null) {
+    if (tcxInfo.maximumHeartRate != null && tcxInfo.maximumHeartRate > 0) {
       addElement('MaximumHeartRateBpm', tcxInfo.maximumHeartRate.toString());
     }
-    if (tcxInfo.averageCadence != null) {
+    if (tcxInfo.averageCadence != null && tcxInfo.averageCadence > 0) {
       final cadence = min(max(tcxInfo.averageCadence, 0), 254).toInt();
       addElement('Cadence', cadence.toString());
     }
