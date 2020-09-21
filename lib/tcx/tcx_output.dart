@@ -277,9 +277,11 @@ class TCXOutput {
   ///
   addExtension(String tag, double value) {
     double _value = value ?? 0.0;
-    _sb.write("""<Extensions>\n   <ns3:TPX>
-       <ns3:$tag>${_value.toString()}</ns3:$tag>
-     </ns3:TPX>\n</Extensions>\n""");
+    _sb.write("""    <Extensions>
+      <ns3:TPX>
+        <ns3:$tag>${_value.toString()}</ns3:$tag>
+      </ns3:TPX>
+    </Extensions>\n""");
   }
 
   /// Add heartRate in TCX file to look like
@@ -302,9 +304,9 @@ class TCXOutput {
   ///   <LongitudeDegrees>5.771340150386095</LongitudeDegrees>
   /// </Position>
   addPosition(String latitude, String longitude) {
-    _sb.write("""<Position>\n
-     <LatitudeDegrees>$latitude</LatitudeDegrees>\n
-     <LongitudeDegrees>$longitude</LongitudeDegrees>\n
+    _sb.write("""<Position>
+     <LatitudeDegrees>$latitude</LatitudeDegrees>
+     <LongitudeDegrees>$longitude</LongitudeDegrees>
   </Position>\n""");
   }
 
