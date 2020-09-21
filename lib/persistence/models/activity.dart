@@ -23,6 +23,7 @@ class Activity {
   bool uploaded;
 
   Activity({
+    this.id: null,
     this.deviceName,
     this.deviceId,
     this.start,

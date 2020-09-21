@@ -31,6 +31,7 @@ class Record {
   final double lat;
 
   Record({
+    this.id: null,
     this.activityId,
     this.timeStamp,
     this.distance,

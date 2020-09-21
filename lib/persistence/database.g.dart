@@ -151,6 +151,7 @@ class _$ActivityDao extends ActivityDao {
   final QueryAdapter _queryAdapter;
 
   static final _activitiesMapper = (Map<String, dynamic> row) => Activity(
+      id: row['id'] as int,
       deviceName: row['device_name'] as String,
       deviceId: row['device_id'] as String,
       start: row['start'] as int,
@@ -249,6 +250,7 @@ class _$RecordDao extends RecordDao {
   final QueryAdapter _queryAdapter;
 
   static final _recordsMapper = (Map<String, dynamic> row) => Record(
+      id: row['id'] as int,
       activityId: row['activity_id'] as int,
       timeStamp: row['time_stamp'] as int,
       distance: row['distance'] as double,
