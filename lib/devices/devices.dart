@@ -1,5 +1,9 @@
+import 'package:flutter_blue/flutter_blue.dart';
+
 import 'fixed_layout_device_descriptor.dart';
 import 'metric_descriptor.dart';
+
+final withServices = [Guid('a026ee07-0a7d-4ab3-97fa-f1500f9feb8b')];
 
 final devices = [
   FixedLayoutDeviceDescriptor(
