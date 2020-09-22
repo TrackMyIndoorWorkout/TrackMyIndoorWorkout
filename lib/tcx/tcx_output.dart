@@ -213,10 +213,10 @@ class TCXOutput {
           calculateAverageHeartRate: calculateAverageHeartRate,
           calculateMaxHeartRate: calculateMaxHeartRate,
           calculateAverageCadence: calculateAverageCadence);
-      accu = tcxInfo.points.fold<StatisticsAccumulator>(
+      tcxInfo.points.fold<StatisticsAccumulator>(
           accuInit,
           (accumulator, trackPoint) =>
-              accumulator.processTrackPoint(trackPoint));
+              accu.processTrackPoint(trackPoint));
     }
     if (calculateMaxSpeed) {
       tcxInfo.maxSpeed = accu.maxSpeed;
