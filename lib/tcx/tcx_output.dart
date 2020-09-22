@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:intl/intl.dart';
 import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
 import '../persistence/models/activity.dart';
@@ -80,6 +81,13 @@ class TCXOutput {
   StringBuffer _sb;
 
   StringBuffer get sb => _sb;
+
+  final twoFractions = NumberFormat()
+    ..minimumFractionDigits = 2
+    ..maximumFractionDigits = 2;
+  final tenFractions = NumberFormat()
+    ..minimumFractionDigits = 10
+    ..maximumFractionDigits = 10;
 
   TCXOutput() {
     _sb = StringBuffer();
@@ -194,7 +202,7 @@ class TCXOutput {
 
     addElement('TotalTimeSeconds', tcxInfo.totalTime.toString());
     // Add Total distance in meters
-    addElement('DistanceMeters', tcxInfo.totalDistance.toString());
+    addElement('DistanceMeters', twoFractions.format(tcxInfo.totalDistance));
 
     final calculateMaxSpeed = tcxInfo.maxSpeed == null || tcxInfo.maxSpeed == 0;
     final calculateAverageHeartRate =
@@ -232,17 +240,17 @@ class TCXOutput {
     }
 
     // Add Maximum speed in meter/second
-    addElement('MaximumSpeed', tcxInfo.maxSpeed.toString());
+    addElement('MaximumSpeed', twoFractions.format(tcxInfo.maxSpeed));
 
     if (tcxInfo.averageHeartRate != null && tcxInfo.averageHeartRate > 0) {
-      addElement('AverageHeartRateBpm', tcxInfo.averageHeartRate.toString());
+      addElement('AverageHeartRateBpm', twoFractions.format(tcxInfo.averageHeartRate));
     }
     if (tcxInfo.maximumHeartRate != null && tcxInfo.maximumHeartRate > 0) {
       addElement('MaximumHeartRateBpm', tcxInfo.maximumHeartRate.toString());
     }
     if (tcxInfo.averageCadence != null && tcxInfo.averageCadence > 0) {
       final cadence = min(max(tcxInfo.averageCadence, 0), 254).toInt();
-      addElement('Cadence', cadence.toString());
+      addElement('Cadence', twoFractions.format(cadence));
     }
 
     // Add calories
@@ -276,15 +284,15 @@ class TCXOutput {
   addTrackPoint(TrackPoint point) {
     _sb.write("<Trackpoint>\n");
     addElement('Time', point.timeStamp);
-    addPosition(point.latitude.toString(), point.longitude.toString());
+    addPosition(tenFractions.format(point.latitude), tenFractions.format(point.longitude));
     addElement('AltitudeMeters', point.altitude.toString());
-    addElement('DistanceMeters', point.distance.toString());
+    addElement('DistanceMeters', twoFractions.format(point));
     if (point.cadence != null) {
       final cadence = min(max(point.cadence, 0), 254).toInt();
       addElement('Cadence', cadence.toString());
     }
 
-    addExtension('Speed', point.speed);
+    addExtensionString('Speed', twoFractions.format(point.speed));
     addExtension('Watts', point.power);
 
     if (point.heartRate != null) {
@@ -324,6 +332,14 @@ class TCXOutput {
   </Author>\n""");
   }
 
+  addExtensionString(String tag, String value) {
+    _sb.write("""    <Extensions>
+      <ns3:TPX>
+        <ns3:$tag>$value</ns3:$tag>
+      </ns3:TPX>
+    </Extensions>\n""");
+  }
+
   /// Add an extension like
   ///
   ///  <Extensions>
@@ -337,11 +353,7 @@ class TCXOutput {
   ///
   addExtension(String tag, double value) {
     double _value = value ?? 0.0;
-    _sb.write("""    <Extensions>
-      <ns3:TPX>
-        <ns3:$tag>${_value.toString()}</ns3:$tag>
-      </ns3:TPX>
-    </Extensions>\n""");
+    addExtensionString(tag, '${_value.toString()}');
   }
 
   /// Add heartRate in TCX file to look like
