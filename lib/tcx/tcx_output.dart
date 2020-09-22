@@ -105,7 +105,7 @@ class TCXOutput {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
 
     TCXModel tcxInfo = TCXModel()
-      ..activityType = ActivityType.VirtualRide
+      ..activityType = ActivityType.Ride
       ..totalDistance = activity.distance
       ..totalTime = activity.elapsed.toDouble()
       ..calories = activity.calories
