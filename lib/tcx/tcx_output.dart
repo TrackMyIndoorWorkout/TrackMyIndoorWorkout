@@ -92,7 +92,7 @@ class TCXOutput {
       ..longitude = record.lon
       ..timeStamp = TCXOutput.createTimestamp(timeStamp)
       ..altitude = TRACK_ALTITUDE
-      ..speed = record.speed
+      ..speed = record.speed / DeviceDescriptor.MS2KMH
       ..distance = record.distance
       ..date = timeStamp
       ..cadence = record.cadence
@@ -332,7 +332,7 @@ class TCXOutput {
   ///              </ns3:TPX>
   ///            </Extensions>
   ///
-  /// Does not handle mutiple values like
+  /// Does not handle multiple values like
   /// Speed AND Watts in the same extension
   ///
   addExtension(String tag, double value) {
