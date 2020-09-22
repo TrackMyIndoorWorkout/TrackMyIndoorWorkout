@@ -110,7 +110,7 @@ abstract class Upload {
         }
 
         if (resp.reasonPhrase.compareTo(ready) == 0) {
-          debugPrint('---> Activity succesfully uploaded');
+          debugPrint('---> Activity successfully uploaded');
           onUploadPending.close();
         }
 
