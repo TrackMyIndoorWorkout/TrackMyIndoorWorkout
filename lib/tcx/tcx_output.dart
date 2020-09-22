@@ -177,8 +177,8 @@ class TCXOutput {
     addLap(tcxInfo);
     addCreator(tcxInfo);
 
-    _sb.write("    </Activities>\n");
-    _sb.write("  </Activity>\n");
+    _sb.write("    </Activity>\n");
+    _sb.write("  </Activities>\n");
   }
 
   addLap(TCXModel tcxInfo) {
@@ -211,20 +211,18 @@ class TCXOutput {
         tcxInfo.maximumHeartRate == null || tcxInfo.maximumHeartRate == 0;
     final calculateAverageCadence =
         tcxInfo.averageCadence == null || tcxInfo.averageCadence == 0;
-    StatisticsAccumulator accu;
+    var accu = StatisticsAccumulator(
+      calculateMaxSpeed: calculateMaxSpeed,
+      calculateAverageHeartRate: calculateAverageHeartRate,
+      calculateMaxHeartRate: calculateMaxHeartRate,
+      calculateAverageCadence: calculateAverageCadence,
+    );
     if (calculateMaxSpeed ||
         calculateAverageHeartRate ||
         calculateMaxHeartRate ||
         calculateAverageCadence) {
-      var accuInit = StatisticsAccumulator(
-          calculateMaxSpeed: calculateMaxSpeed,
-          calculateAverageHeartRate: calculateAverageHeartRate,
-          calculateMaxHeartRate: calculateMaxHeartRate,
-          calculateAverageCadence: calculateAverageCadence);
-      tcxInfo.points.fold<StatisticsAccumulator>(
-          accuInit,
-          (accumulator, trackPoint) =>
-              accu.processTrackPoint(trackPoint));
+      tcxInfo.points.fold<StatisticsAccumulator>(accu,
+          (accumulator, trackPoint) => accu.processTrackPoint(trackPoint));
     }
     if (calculateMaxSpeed) {
       tcxInfo.maxSpeed = accu.maxSpeed;
@@ -243,7 +241,8 @@ class TCXOutput {
     addElement('MaximumSpeed', twoFractions.format(tcxInfo.maxSpeed));
 
     if (tcxInfo.averageHeartRate != null && tcxInfo.averageHeartRate > 0) {
-      addElement('AverageHeartRateBpm', twoFractions.format(tcxInfo.averageHeartRate));
+      addElement(
+          'AverageHeartRateBpm', twoFractions.format(tcxInfo.averageHeartRate));
     }
     if (tcxInfo.maximumHeartRate != null && tcxInfo.maximumHeartRate > 0) {
       addElement('MaximumHeartRateBpm', tcxInfo.maximumHeartRate.toString());
@@ -284,9 +283,10 @@ class TCXOutput {
   addTrackPoint(TrackPoint point) {
     _sb.write("<Trackpoint>\n");
     addElement('Time', point.timeStamp);
-    addPosition(tenFractions.format(point.latitude), tenFractions.format(point.longitude));
+    addPosition(tenFractions.format(point.latitude),
+        tenFractions.format(point.longitude));
     addElement('AltitudeMeters', point.altitude.toString());
-    addElement('DistanceMeters', twoFractions.format(point));
+    addElement('DistanceMeters', twoFractions.format(point.distance));
     if (point.cadence != null) {
       final cadence = min(max(point.cadence, 0), 254).toInt();
       addElement('Cadence', cadence.toString());
