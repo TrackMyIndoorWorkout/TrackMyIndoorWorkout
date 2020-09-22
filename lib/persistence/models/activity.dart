@@ -47,9 +47,10 @@ class Activity {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(start);
     final dateString = DateFormat.yMd().format(startStamp);
     final timeString = DateFormat.Hms().format(startStamp);
-    final fileName = 'ERide_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
-        .replaceAll('/', '-')
-        .replaceAll(':', '-');
+    final fileName =
+        'ERide_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
+            .replaceAll('/', '-')
+            .replaceAll(':', '-');
     return {
       'startStamp': startStamp,
       'name': 'Virtual velodrome ride at $dateString $timeString',
