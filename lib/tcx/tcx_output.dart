@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:intl/intl.dart';
 import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
 import '../persistence/models/activity.dart';
@@ -81,13 +80,6 @@ class TCXOutput {
   StringBuffer _sb;
 
   StringBuffer get sb => _sb;
-
-  final twoFractions = NumberFormat()
-    ..minimumFractionDigits = 2
-    ..maximumFractionDigits = 2;
-  final tenFractions = NumberFormat()
-    ..minimumFractionDigits = 10
-    ..maximumFractionDigits = 10;
 
   TCXOutput() {
     _sb = StringBuffer();
@@ -202,7 +194,7 @@ class TCXOutput {
 
     addElement('TotalTimeSeconds', tcxInfo.totalTime.toString());
     // Add Total distance in meters
-    addElement('DistanceMeters', twoFractions.format(tcxInfo.totalDistance));
+    addElement('DistanceMeters', tcxInfo.totalDistance.toStringAsFixed(2));
 
     final calculateMaxSpeed = tcxInfo.maxSpeed == null || tcxInfo.maxSpeed == 0;
     final calculateAverageHeartRate =
@@ -238,18 +230,18 @@ class TCXOutput {
     }
 
     // Add Maximum speed in meter/second
-    addElement('MaximumSpeed', twoFractions.format(tcxInfo.maxSpeed));
+    addElement('MaximumSpeed', tcxInfo.maxSpeed.toStringAsFixed(2));
 
     if (tcxInfo.averageHeartRate != null && tcxInfo.averageHeartRate > 0) {
       addElement(
-          'AverageHeartRateBpm', twoFractions.format(tcxInfo.averageHeartRate));
+          'AverageHeartRateBpm', tcxInfo.averageHeartRate.toStringAsFixed(2));
     }
     if (tcxInfo.maximumHeartRate != null && tcxInfo.maximumHeartRate > 0) {
       addElement('MaximumHeartRateBpm', tcxInfo.maximumHeartRate.toString());
     }
     if (tcxInfo.averageCadence != null && tcxInfo.averageCadence > 0) {
       final cadence = min(max(tcxInfo.averageCadence, 0), 254).toInt();
-      addElement('Cadence', twoFractions.format(cadence));
+      addElement('Cadence', cadence.toStringAsFixed(2));
     }
 
     // Add calories
@@ -283,16 +275,16 @@ class TCXOutput {
   addTrackPoint(TrackPoint point) {
     _sb.write("<Trackpoint>\n");
     addElement('Time', point.timeStamp);
-    addPosition(tenFractions.format(point.latitude),
-        tenFractions.format(point.longitude));
+    addPosition(point.latitude.toStringAsFixed(10),
+        point.longitude.toStringAsFixed(10));
     addElement('AltitudeMeters', point.altitude.toString());
-    addElement('DistanceMeters', twoFractions.format(point.distance));
+    addElement('DistanceMeters', point.distance.toStringAsFixed(2));
     if (point.cadence != null) {
       final cadence = min(max(point.cadence, 0), 254).toInt();
       addElement('Cadence', cadence.toString());
     }
 
-    addExtensionString('Speed', twoFractions.format(point.speed));
+    addExtensionString('Speed', point.speed.toStringAsFixed(2));
     addExtension('Watts', point.power);
 
     if (point.heartRate != null) {
