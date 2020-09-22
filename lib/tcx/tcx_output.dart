@@ -219,7 +219,7 @@ class TCXOutput {
               accumulator.processTrackPoint(trackPoint));
     }
     if (calculateMaxSpeed) {
-      tcxInfo.maxSpeed = accu.maxSpeed / DeviceDescriptor.MS2KMH;
+      tcxInfo.maxSpeed = accu.maxSpeed;
     }
     if (calculateAverageHeartRate && accu.heartRateCount > 0) {
       tcxInfo.averageHeartRate = accu.averageHeartRate;
