@@ -447,11 +447,11 @@ class DeviceState extends State<DeviceScreen> {
                           children: [
                             Icon(Icons.add_road, size: sizeDefault),
                             Spacer(),
-                            Text('${oneFractions.format(_distance / 1000.0)}',
+                            Text('${zeroFractions.format(_distance)}',
                                 style: measurementStyle),
                             SizedBox(
                                 width: sizeDefault,
-                                child: Text('km', style: unitStyle)),
+                                child: Text('m', style: unitStyle)),
                           ],
                         ),
                       ],
