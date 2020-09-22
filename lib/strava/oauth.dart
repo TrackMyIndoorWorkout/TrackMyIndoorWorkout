@@ -75,7 +75,7 @@ abstract class Auth {
       final _disp =
           '${dateExpired.day.toString()}/${dateExpired.month.toString()} ${dateExpired.hour.toString()} hours';
       globals.displayInfo(
-          'stored token ${localToken.accessToken} ${localToken.expiresAt} expires: $_disp ');
+          'stored token ${localToken.accessToken} ${localToken.expiresAt} ${localToken.scope} expires: $_disp ');
     }
 
     return (localToken);
