@@ -84,7 +84,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, `start` INTEGER, `end` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `uploaded` INTEGER, `strava_id` INTEGER)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `activity_id` INTEGER, `time_stamp` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `power` INTEGER, `speed` REAL, `cadence` INTEGER, `heart_rate` INTEGER, `lon` REAL, `lat` REAL, FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `activity_id` INTEGER, `time_stamp` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `power` INTEGER, `speed` REAL, `cadence` INTEGER, `heart_rate` INTEGER, FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
             'CREATE INDEX `index_activities_start` ON `activities` (`start`)');
         await database.execute(
@@ -221,9 +221,7 @@ class _$RecordDao extends RecordDao {
                   'power': item.power,
                   'speed': item.speed,
                   'cadence': item.cadence,
-                  'heart_rate': item.heartRate,
-                  'lon': item.lon,
-                  'lat': item.lat
+                  'heart_rate': item.heartRate
                 },
             changeListener),
         _recordUpdateAdapter = UpdateAdapter(
@@ -240,9 +238,7 @@ class _$RecordDao extends RecordDao {
                   'power': item.power,
                   'speed': item.speed,
                   'cadence': item.cadence,
-                  'heart_rate': item.heartRate,
-                  'lon': item.lon,
-                  'lat': item.lat
+                  'heart_rate': item.heartRate
                 },
             changeListener);
 
@@ -262,9 +258,7 @@ class _$RecordDao extends RecordDao {
       power: row['power'] as int,
       speed: row['speed'] as double,
       cadence: row['cadence'] as int,
-      heartRate: row['heart_rate'] as int,
-      lon: row['lon'] as double,
-      lat: row['lat'] as double);
+      heartRate: row['heart_rate'] as int);
 
   final InsertionAdapter<Record> _recordInsertionAdapter;
 

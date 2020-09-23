@@ -1,5 +1,4 @@
 import '../persistence/models/record.dart';
-import '../track/utils.dart';
 import 'device_descriptor.dart';
 import 'metric_descriptor.dart';
 
@@ -79,7 +78,6 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       Duration dT = rightNow.difference(lastRecord);
       dD = speed / DeviceDescriptor.MS2KMH * dT.inMilliseconds / 1000.0;
     }
-    final gps = calculateGPS(distance + dD);
     final timeStamp = rightNow.millisecondsSinceEpoch;
     if (data != null) {
       return Record(
@@ -92,8 +90,6 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         speed: getSpeed(data),
         cadence: getCadence(data).toInt(),
         heartRate: getHeartRate(data).toInt(),
-        lon: gps.dx,
-        lat: gps.dy,
       );
     } else {
       return Record(
@@ -106,8 +102,6 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         speed: speed,
         cadence: supplement.cadence,
         heartRate: supplement.heartRate,
-        lon: gps.dx,
-        lat: gps.dy,
       );
     }
   }

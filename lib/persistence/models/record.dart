@@ -27,8 +27,6 @@ class Record {
   final int cadence;
   @ColumnInfo(name: 'heart_rate')
   final int heartRate;
-  final double lon;
-  final double lat;
 
   Record({
     this.id,
@@ -41,7 +39,5 @@ class Record {
     this.speed,
     this.cadence,
     this.heartRate,
-    this.lon,
-    this.lat,
   });
 }

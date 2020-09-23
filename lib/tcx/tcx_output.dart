@@ -7,6 +7,7 @@ import '../devices/device_descriptor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../track/constants.dart';
+import '../track/utils.dart';
 import 'activity_type.dart';
 import 'tcx_model.dart';
 
@@ -87,9 +88,10 @@ class TCXOutput {
 
   TrackPoint recordToTrackPoint(Record record) {
     final timeStamp = DateTime.fromMillisecondsSinceEpoch(record.timeStamp);
+    final gps = calculateGPS(record.distance);
     return TrackPoint()
-      ..latitude = record.lat
-      ..longitude = record.lon
+      ..longitude = gps.dx
+      ..latitude = gps.dy
       ..timeStamp = TCXOutput.createTimestamp(timeStamp)
       ..altitude = TRACK_ALTITUDE
       ..speed = record.speed / DeviceDescriptor.MS2KMH

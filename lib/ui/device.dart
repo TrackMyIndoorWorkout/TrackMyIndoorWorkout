@@ -242,8 +242,6 @@ class DeviceState extends State<DeviceScreen> {
       speed: _speed,
       cadence: _cadence,
       heartRate: _heartRate,
-      lon: 0,
-      lat: 0,
     );
     final record = descriptor.getMeasurement(_activity.id, rightNow,
         _lastRecord, _speed, _distance, null, supplement);
