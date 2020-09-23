@@ -79,6 +79,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         (r) => ScanResultTile(
                           result: r,
                           onTap: () async {
+                            FlutterBlue.instance.stopScan();
                             await Get.to(DeviceScreen(
                                 device: r.device,
                                 initialState:
