@@ -1,19 +1,16 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../ui/device.dart';
 import 'constants.dart';
 
 class TrackPainter extends CustomPainter {
-  static Size _size;
-  static Paint _trackStroke;
-  static Path _trackPath;
-
   @override
   paint(Canvas canvas, Size size) {
-    if (_size == null ||
-        size.width != _size.width ||
-        size.height != _size.height) {
-      _size = size;
+    if (DeviceState.size == null ||
+        size.width != DeviceState.size.width ||
+        size.height != DeviceState.size.height) {
+      DeviceState.size = size;
       final rX = (size.width - 2 * THICK) / (2 * RADIUS_BOOST);
       final rY =
           (size.height - 2 * THICK) / (2 * RADIUS_BOOST + pi * LANE_SHRINK);
@@ -24,7 +21,7 @@ class TrackPainter extends CustomPainter {
               ? (size.height - 2 * THICK - r * 2 - pi * rX * LANE_SHRINK) / 2
               : 0);
 
-      _trackStroke = Paint()
+      DeviceState.trackStroke = Paint()
         ..color = Color(0x88777777)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2 * THICK
@@ -39,7 +36,7 @@ class TrackPainter extends CustomPainter {
               r + THICK + offset.dx, size.height - r - THICK - offset.dy),
           radius: r);
 
-      _trackPath = Path()
+      DeviceState.trackPath = Path()
         ..moveTo(THICK + offset.dx,
             THICK + offset.dy + r * (1 + pi * LANE_SHRINK / RADIUS_BOOST))
         ..lineTo(THICK + offset.dx, r + THICK + offset.dy)
@@ -49,7 +46,7 @@ class TrackPainter extends CustomPainter {
         ..arcTo(bottomHalfCircleRect, 0, pi, true);
     }
 
-    canvas.drawPath(_trackPath, _trackStroke);
+    canvas.drawPath(DeviceState.trackPath, DeviceState.trackStroke);
   }
 
   @override

@@ -34,6 +34,11 @@ class DeviceScreen extends StatefulWidget {
 class DeviceState extends State<DeviceScreen> {
   DeviceState({this.device, this.initialState});
 
+  // Track drawing cached computed values
+  static Size size;
+  static Paint trackStroke;
+  static Path trackPath;
+
   final BluetoothDevice device;
   final BluetoothDeviceState initialState;
   final DeviceDescriptor descriptor = devices[0];
