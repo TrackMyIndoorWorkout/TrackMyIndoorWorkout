@@ -112,7 +112,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                                   .findAllActivityRecords(activity.id);
                               final statusCode =
                                   await stravaService.upload(activity, records);
-                              Get.snackbar("Upload", statusCode == statusOk ? "Activity ${activity.id} submitted successfully" : "Activity ${activity.id} upload failure");
+                              Get.snackbar(
+                                  "Upload",
+                                  statusCode == statusOk
+                                      ? "Activity ${activity.id} submitted successfully"
+                                      : "Activity ${activity.id} upload failure");
                             }
                           },
                         ),

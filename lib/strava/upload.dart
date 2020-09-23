@@ -91,7 +91,10 @@ abstract class Upload {
         ResponseUploadActivity _response =
             ResponseUploadActivity.fromJson(_body);
 
-        $FloorAppDatabase.databaseBuilder('app_database.db').build().then((db) async {
+        $FloorAppDatabase
+            .databaseBuilder('app_database.db')
+            .build()
+            .then((db) async {
           activity.markUploaded(_response.id);
           await db.activityDao.updateActivity(activity);
         });
