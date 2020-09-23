@@ -55,7 +55,7 @@ class Activity {
     final dateString = DateFormat.yMd().format(startStamp);
     final timeString = DateFormat.Hms().format(startStamp);
     final fileName =
-        'ERide_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
+        'VRide_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
             .replaceAll('/', '-')
             .replaceAll(':', '-');
     return {
