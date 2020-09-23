@@ -8,7 +8,22 @@ import 'activities.dart';
 import 'device.dart';
 import 'scan_result.dart';
 
-class FindDevicesScreen extends StatelessWidget {
+class FindDevicesScreen extends StatefulWidget {
+  FindDevicesScreen({Key key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return FindDevicesState();
+  }
+}
+
+class FindDevicesState extends State<FindDevicesScreen> {
+  @override
+  dispose() {
+    FlutterBlue.instance.stopScan();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +55,7 @@ class FindDevicesScreen extends StatelessWidget {
                                   return RaisedButton(
                                       child: Text('OPEN'),
                                       onPressed: () async {
+                                        FlutterBlue.instance.stopScan();
                                         await Get.to(DeviceScreen(
                                             device: d,
                                             initialState: snapshot.data));
