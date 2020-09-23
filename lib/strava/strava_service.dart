@@ -18,13 +18,9 @@ class StravaService {
   }
 
   Future<int> upload(Activity activity, List<Record> records) async {
-    final persistenceValues = activity.getPersistenceValues();
     final tcxGzip = await TCXOutput().getTcxOfActivity(activity, records);
     Fault fault = await _strava.uploadActivity(
-      persistenceValues["name"],
-      persistenceValues["description"],
-      persistenceValues["fileName"],
-      TCXOutput.FILE_EXTENSION,
+      activity,
       tcxGzip,
     );
 

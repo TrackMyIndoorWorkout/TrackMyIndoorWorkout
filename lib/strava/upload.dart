@@ -5,6 +5,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import '../persistence/models/activity.dart';
+import '../persistence/database.dart';
+import '../tcx/tcx_output.dart';
 
 import 'fault.dart';
 import 'upload_activity.dart';
@@ -22,8 +25,7 @@ abstract class Upload {
   /// 201 activity created
   /// 400 problem could be that activity already uploaded
   ///
-  Future<Fault> uploadActivity(String name, String description, String fileName,
-      String fileType, List<int> fileContent) async {
+  Future<Fault> uploadActivity(Activity activity, List<int> fileContent) async {
     globals.displayInfo('Starting to upload activity');
 
     // To check if the activity has been uploaded successfully
@@ -39,13 +41,14 @@ abstract class Upload {
 
     var fault = Fault(888, '');
 
+    final persistenceValues = activity.getPersistenceValues();
     var request = http.MultipartRequest("POST", postUri);
-    request.fields['data_type'] = fileType; // tested with gpx
+    request.fields['data_type'] = TCXOutput.FILE_EXTENSION;
     request.fields['trainer'] = 'false';
     request.fields['commute'] = 'false';
-    request.fields['name'] = name;
+    request.fields['name'] = persistenceValues["name"];
     request.fields['external_id'] = 'strava_flutter';
-    request.fields['description'] = description;
+    request.fields['description'] = persistenceValues["description"];
 
     var _header = globals.createHeader();
 
@@ -58,7 +61,8 @@ abstract class Upload {
     request.headers.addAll(_header);
 
     request.files.add(http.MultipartFile.fromBytes('file', fileContent,
-        filename: fileName, contentType: MediaType("application", "x-gzip")));
+        filename: persistenceValues["fileName"],
+        contentType: MediaType("application", "x-gzip")));
     globals.displayInfo(request.toString());
 
     var response = await request.send();
@@ -87,6 +91,10 @@ abstract class Upload {
         ResponseUploadActivity _response =
             ResponseUploadActivity.fromJson(_body);
 
+        $FloorAppDatabase.databaseBuilder('app_database.db').build().then((db) async {
+          activity.markUploaded(_response.id);
+          await db.activityDao.updateActivity(activity);
+        });
         debugPrint('id ${_response.id}');
         idUpload = _response.id;
         onUploadPending.add(idUpload);

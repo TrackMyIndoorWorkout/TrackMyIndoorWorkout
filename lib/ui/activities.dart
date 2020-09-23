@@ -20,15 +20,12 @@ class ActivitiesScreen extends StatefulWidget {
 
 class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database;
-  bool _shouldUpdate;
 
   AppDatabase get database => _database;
-  bool get shouldUpdate => _shouldUpdate;
 
   @override
   initState() {
     super.initState();
-    _shouldUpdate = false;
     $FloorAppDatabase.databaseBuilder('app_database.db').build().then((db) {
       setState(() {
         _database = db;
@@ -40,12 +37,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   dispose() {
     _database.close();
     super.dispose();
-  }
-
-  toggleUpdate() {
-    setState(() {
-      _shouldUpdate = !_shouldUpdate;
-    });
   }
 
   @override
@@ -121,14 +112,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                                   .findAllActivityRecords(activity.id);
                               final statusCode =
                                   await stravaService.upload(activity, records);
-                              if (statusCode == statusOk) {
-                                activity.uploaded = true;
-                                setState(() {
-                                  _shouldUpdate = true;
-                                });
-                                await _database.activityDao
-                                    .updateActivity(activity);
-                              }
+                              Get.snackbar("Upload", statusCode == statusOk ? "Activity ${activity.id} submitted successfully" : "Activity ${activity.id} upload failure");
                             }
                           },
                         ),
