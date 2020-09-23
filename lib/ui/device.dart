@@ -37,6 +37,7 @@ class DeviceState extends State<DeviceScreen> {
   final BluetoothDevice device;
   final BluetoothDeviceState initialState;
   final DeviceDescriptor descriptor = devices[0];
+  BluetoothCharacteristic _measurements;
   bool _discovered;
   bool _measuring;
   bool _paused;
@@ -159,12 +160,12 @@ class DeviceState extends State<DeviceScreen> {
 
         if (_areListsEqual(name, descriptor.manufacturer) &&
             _areListsEqual(equipmentType, BIKE_EQUIPMENT)) {
-          final measurements = _filterCharacteristic(
+          _measurements = _filterCharacteristic(
               equipmentService.characteristics, descriptor.measurementId);
-          if (measurements != null) {
-            await measurements.setNotifyValue(true);
+          if (_measurements != null) {
+            await _measurements.setNotifyValue(true);
             _lastRecord = DateTime.now();
-            measurements.value.listen((data) async {
+            _measurements.value.listen((data) async {
               await _recordMeasurement(data);
             });
             _measuring = true;
@@ -219,6 +220,9 @@ class DeviceState extends State<DeviceScreen> {
 
   @override
   dispose() {
+    if (_measurements != null) {
+      _measurements.setNotifyValue(false);
+    }
     _database.close();
     Wakelock.disable();
     super.dispose();
