@@ -23,24 +23,31 @@ class Activity {
   int elapsed; // s
   int calories; // kCal
   bool uploaded;
+  @ColumnInfo(name: 'strava_id')
+  int stravaId;
 
-  Activity({
-    this.id,
-    this.deviceName,
-    this.deviceId,
-    this.start,
-    this.end: 0,
-    this.distance: 0,
-    this.elapsed: 0,
-    this.calories: 0,
-    this.uploaded: false,
-  });
+  Activity(
+      {this.id,
+      this.deviceName,
+      this.deviceId,
+      this.start,
+      this.end: 0,
+      this.distance: 0,
+      this.elapsed: 0,
+      this.calories: 0,
+      this.uploaded: false,
+      this.stravaId});
 
   finish(double distance, int elapsed, int calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;
     this.distance = distance;
     this.elapsed = elapsed;
     this.calories = calories;
+  }
+
+  markUploaded(int stravaId) {
+    this.uploaded = true;
+    this.stravaId = stravaId;
   }
 
   Map<String, dynamic> getPersistenceValues() {
