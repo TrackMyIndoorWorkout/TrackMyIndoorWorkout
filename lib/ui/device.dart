@@ -271,9 +271,9 @@ class DeviceState extends State<DeviceScreen> {
     final measurementStyle = TextStyle(
       fontSize: sizeDefault,
       fontFeatures: [FontFeature.tabularFigures()],
-      color: Colors.indigo,
     );
-    final unitStyle = TextStyle(fontSize: sizeDefault / 3);
+    final unitStyle =
+        TextStyle(fontSize: sizeDefault / 3, color: Colors.indigo);
 
     var _timeDisplay = Duration(seconds: _time).toString().split('.')[0];
     if (_timeDisplay.length == 7) {
@@ -354,7 +354,7 @@ class DeviceState extends State<DeviceScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.timer, size: sizeDefault),
+              Icon(Icons.timer, size: sizeDefault, color: Colors.indigo),
               Text(_timeDisplay, style: measurementStyle),
             ],
           ),
@@ -363,7 +363,7 @@ class DeviceState extends State<DeviceScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.whatshot, size: sizeDefault),
+              Icon(Icons.whatshot, size: sizeDefault, color: Colors.indigo),
               Spacer(),
               Text(_calories.toString(), style: measurementStyle),
               SizedBox(
@@ -375,7 +375,7 @@ class DeviceState extends State<DeviceScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.bolt, size: sizeDefault),
+              Icon(Icons.bolt, size: sizeDefault, color: Colors.indigo),
               Spacer(),
               Text(_power.toString(), style: measurementStyle),
               SizedBox(width: sizeDefault, child: Text('W', style: unitStyle)),
@@ -386,7 +386,7 @@ class DeviceState extends State<DeviceScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.speed, size: sizeDefault),
+              Icon(Icons.speed, size: sizeDefault, color: Colors.indigo),
               Spacer(),
               Text(_speed.toStringAsFixed(1), style: measurementStyle),
               SizedBox(
@@ -398,7 +398,8 @@ class DeviceState extends State<DeviceScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.directions_bike, size: sizeDefault),
+              Icon(Icons.directions_bike,
+                  size: sizeDefault, color: Colors.indigo),
               Spacer(),
               Text(_cadence.toString(), style: measurementStyle),
               SizedBox(
@@ -410,7 +411,7 @@ class DeviceState extends State<DeviceScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.favorite, size: sizeDefault),
+              Icon(Icons.favorite, size: sizeDefault, color: Colors.indigo),
               Spacer(),
               Text(_heartRate.toString(), style: measurementStyle),
               SizedBox(
@@ -422,7 +423,7 @@ class DeviceState extends State<DeviceScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.add_road, size: sizeDefault),
+              Icon(Icons.add_road, size: sizeDefault, color: Colors.indigo),
               Spacer(),
               Text(_distance.toStringAsFixed(0), style: measurementStyle),
               SizedBox(width: sizeDefault, child: Text('m', style: unitStyle)),
