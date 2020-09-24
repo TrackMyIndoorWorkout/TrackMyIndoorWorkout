@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'constants.dart';
 
 Offset calculateTrackMarker(Size size, double distance) {
+  if (size == null) return null;
   final rX = (size.width - 2 * THICK) / (2 * RADIUS_BOOST);
   final rY = (size.height - 2 * THICK) / (2 * RADIUS_BOOST + pi * LANE_SHRINK);
   final r = min(rY, rX) * RADIUS_BOOST;
