@@ -86,7 +86,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     title: Text(
                         '$dateString $timeString on ${activity.deviceName}'),
                     subtitle: Text(
-                        '${activity.elapsed} s, ${activity.distance} m, ${activity.calories} kCal'),
+                        '${activity.elapsed} s, ${activity.distance.toStringAsFixed(0)} m, ${activity.calories} kCal'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
