@@ -376,6 +376,7 @@ class DeviceState extends State<DeviceScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(Icons.bolt, size: sizeDefault),
+              Spacer(),
               Text(_power.toString(), style: measurementStyle),
               SizedBox(width: sizeDefault, child: Text('W', style: unitStyle)),
             ],
@@ -423,7 +424,7 @@ class DeviceState extends State<DeviceScreen> {
             children: [
               Icon(Icons.add_road, size: sizeDefault),
               Spacer(),
-              Text(_distance.toString(), style: measurementStyle),
+              Text(_distance.toStringAsFixed(0), style: measurementStyle),
               SizedBox(width: sizeDefault, child: Text('m', style: unitStyle)),
             ],
           ),
