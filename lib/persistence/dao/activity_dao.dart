@@ -18,4 +18,7 @@ abstract class ActivityDao {
 
   @update
   Future<int> updateActivity(Activity activity);
+
+  @delete
+  Future<int> deleteActivity(Activity activity);
 }

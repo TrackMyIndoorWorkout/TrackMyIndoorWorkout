@@ -144,6 +144,24 @@ class _$ActivityDao extends ActivityDao {
                       item.uploaded == null ? null : (item.uploaded ? 1 : 0),
                   'strava_id': item.stravaId
                 },
+            changeListener),
+        _activityDeletionAdapter = DeletionAdapter(
+            database,
+            'activities',
+            ['id'],
+            (Activity item) => <String, dynamic>{
+                  'id': item.id,
+                  'device_name': item.deviceName,
+                  'device_id': item.deviceId,
+                  'start': item.start,
+                  'end': item.end,
+                  'distance': item.distance,
+                  'elapsed': item.elapsed,
+                  'calories': item.calories,
+                  'uploaded':
+                      item.uploaded == null ? null : (item.uploaded ? 1 : 0),
+                  'strava_id': item.stravaId
+                },
             changeListener);
 
   final sqflite.DatabaseExecutor database;
@@ -167,6 +185,8 @@ class _$ActivityDao extends ActivityDao {
   final InsertionAdapter<Activity> _activityInsertionAdapter;
 
   final UpdateAdapter<Activity> _activityUpdateAdapter;
+
+  final DeletionAdapter<Activity> _activityDeletionAdapter;
 
   @override
   Future<List<Activity>> findAllActivities() async {
@@ -202,6 +222,11 @@ class _$ActivityDao extends ActivityDao {
   Future<int> updateActivity(Activity activity) {
     return _activityUpdateAdapter.updateAndReturnChangedRows(
         activity, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> deleteActivity(Activity activity) {
+    return _activityDeletionAdapter.deleteAndReturnChangedRows(activity);
   }
 }
 
@@ -285,6 +310,12 @@ class _$RecordDao extends RecordDao {
         'SELECT * FROM records WHERE activity_id = ? ORDER BY time_stamp',
         arguments: <dynamic>[activityId],
         mapper: _recordsMapper);
+  }
+
+  @override
+  Future<List<Record>> deleteAllActivityRecords(int activityId) async {
+    return _queryAdapter.queryList('DELETE FROM records WHERE activity_id = ?',
+        arguments: <dynamic>[activityId], mapper: _recordsMapper);
   }
 
   @override

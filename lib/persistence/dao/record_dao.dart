@@ -18,4 +18,7 @@ abstract class RecordDao {
 
   @update
   Future<void> updateRecord(Record record);
+
+  @Query('DELETE FROM $RECORDS_TABLE_NAME WHERE activity_id = :activityId')
+  Future<List<Record>> deleteAllActivityRecords(int activityId);
 }

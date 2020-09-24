@@ -137,6 +137,30 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                                 text: 'Share a ride on ${activity.deviceName}');
                           },
                         ),
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.redAccent),
+                          onPressed: () async {
+                            Get.defaultDialog(
+                              title: 'Warning!!!',
+                              middleText:
+                                  'Are you sure to delete this Activity?',
+                              confirm: FlatButton(
+                                child: Text("Yes"),
+                                onPressed: () async {
+                                  await _database.recordDao
+                                      .deleteAllActivityRecords(activity.id);
+                                  await _database.activityDao
+                                      .deleteActivity(activity);
+                                  Get.close(1);
+                                },
+                              ),
+                              cancel: FlatButton(
+                                child: Text("No"),
+                                onPressed: () => Get.close(1),
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   );
