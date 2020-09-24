@@ -11,10 +11,10 @@ const HALF_CIRCLE = TRACK_QUARTER * RADIUS_BOOST;
 const LANE_LENGTH = TRACK_QUARTER * LANE_SHRINK;
 
 // GPS constants
-final trackCenter = Offset(47.665821, -122.112045);
-const LON_METER = 0.000013351;
-const LAT_METER = 0.000008993;
+final trackCenter = Offset(-122.112045, 47.665821); // lon, lat
+const EW_METER = 0.000013356;
+const NS_METER = 0.000008993;
 const RADIUS = HALF_CIRCLE / pi;
-const LON_RADIUS = RADIUS * LON_METER;
-const LANE_HALF = LANE_LENGTH / 2.0 * LAT_METER;
+const EW_RADIUS = RADIUS * EW_METER; // lon
+const NS_LANE_HALF = LANE_LENGTH / 2.0 * NS_METER;
 const TRACK_ALTITUDE = 6.0; // in meters, the base level

@@ -46,23 +46,22 @@ Offset calculateGPS(double distance) {
 
   if (d <= LANE_LENGTH) {
     // left straight
-    final displacement = -d * LAT_METER;
-    return Offset(
-        trackCenter.dx - LON_RADIUS, trackCenter.dy + LANE_HALF + displacement);
+    final displacement = -d * NS_METER;
+    return Offset(trackCenter.dx - EW_RADIUS, trackCenter.dy + NS_LANE_HALF + displacement);
   } else if (d <= TRACK_LENGTH / 2) {
     // top half circle
     final rad = (d - LANE_LENGTH) / HALF_CIRCLE * pi;
-    return Offset(trackCenter.dx - cos(rad) * RADIUS * LON_METER,
-        trackCenter.dy - LANE_HALF - sin(rad) * RADIUS * LAT_METER);
+    return Offset(trackCenter.dx - cos(rad) * RADIUS * EW_METER,
+        trackCenter.dy - NS_LANE_HALF - sin(rad) * RADIUS * NS_METER);
   } else if (d <= TRACK_LENGTH / 2 + LANE_LENGTH) {
     // right straight
-    final displacement = (d - TRACK_LENGTH / 2) * LAT_METER;
-    return Offset(
-        trackCenter.dx + LON_RADIUS, trackCenter.dy - LANE_HALF + displacement);
+    final displacement = (d - TRACK_LENGTH / 2) * NS_METER;
+    return Offset(trackCenter.dx + EW_RADIUS, trackCenter.dy - NS_LANE_HALF + displacement);
   } else {
     // bottom half circle
     final rad = (d - TRACK_LENGTH / 2 - LANE_LENGTH) / HALF_CIRCLE * pi;
-    return Offset(trackCenter.dx + cos(rad) * RADIUS * LON_METER,
-        trackCenter.dy + LANE_HALF + sin(rad) * RADIUS * LAT_METER);
+    return Offset(trackCenter.dx + cos(rad) * RADIUS * EW_METER,
+        trackCenter.dy + NS_LANE_HALF + sin(rad) * RADIUS * NS_METER);
   }
 }
+
