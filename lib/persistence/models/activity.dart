@@ -1,6 +1,6 @@
 import 'package:floor/floor.dart';
 import 'package:intl/intl.dart';
-import 'package:virtual_velodrome_rider/tcx/tcx_output.dart';
+import '../../tcx/tcx_output.dart';
 
 const String ACTIVITIES_TABLE_NAME = 'activities';
 
