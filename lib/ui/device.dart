@@ -434,16 +434,20 @@ class DeviceState extends State<DeviceScreen> {
               painter: TrackPainter(),
               child: trackMarker == null
                   ? SizedBox(width: 0, height: 0)
-                  : Positioned(
-                      left: trackMarker.dx - THICK,
-                      top: trackMarker.dy - THICK,
-                      child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0x88FF0000),
-                            borderRadius: BorderRadius.circular(THICK),
-                          ),
-                          width: THICK * 2,
-                          height: THICK * 2),
+                  : Stack(
+                      children: <Widget>[
+                        Positioned(
+                          left: trackMarker.dx - THICK,
+                          top: trackMarker.dy - THICK,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                color: Color(0x88FF0000),
+                                borderRadius: BorderRadius.circular(THICK),
+                              ),
+                              width: THICK * 2,
+                              height: THICK * 2),
+                        ),
+                      ],
                     ),
             ),
           ),
