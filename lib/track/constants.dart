@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-const RADIUS_BOOST = 1.25;
+const RADIUS_BOOST = 1.2;
 const LANE_SHRINK = 2.0 - RADIUS_BOOST;
 const THICK = 20.0;
 const TRACK_LENGTH = 400.0;
