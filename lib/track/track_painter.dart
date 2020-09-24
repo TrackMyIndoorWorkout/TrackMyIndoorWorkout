@@ -7,10 +7,10 @@ import 'constants.dart';
 class TrackPainter extends CustomPainter {
   @override
   paint(Canvas canvas, Size size) {
-    if (DeviceState.size == null ||
-        size.width != DeviceState.size.width ||
-        size.height != DeviceState.size.height) {
-      DeviceState.size = size;
+    if (DeviceState.trackSize == null ||
+        size.width != DeviceState.trackSize.width ||
+        size.height != DeviceState.trackSize.height) {
+      DeviceState.trackSize = size;
       final rX = (size.width - 2 * THICK) / (2 * RADIUS_BOOST);
       final rY =
           (size.height - 2 * THICK) / (2 * RADIUS_BOOST + pi * LANE_SHRINK);

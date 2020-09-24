@@ -6,7 +6,6 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
@@ -35,7 +34,7 @@ class DeviceState extends State<DeviceScreen> {
   DeviceState({this.device, this.initialState});
 
   // Track drawing cached computed values
-  static Size size;
+  static Size trackSize;
   static Paint trackStroke;
   static Path trackPath;
 
@@ -57,9 +56,6 @@ class DeviceState extends State<DeviceScreen> {
   DateTime _lastRecord;
   Activity _activity;
   AppDatabase _database;
-
-  static Size size = Size(0, 0);
-  static double radius = 0;
 
   _initialConnectOnDemand() async {
     if (initialState == BluetoothDeviceState.disconnected) {
@@ -264,7 +260,8 @@ class DeviceState extends State<DeviceScreen> {
       _time,
       _calories.toInt(),
     );
-    final changed = await _database.activityDao.updateActivity(_activity);
+    // final changed =
+    await _database.activityDao.updateActivity(_activity);
   }
 
   @override
@@ -276,21 +273,13 @@ class DeviceState extends State<DeviceScreen> {
       fontFeatures: [FontFeature.tabularFigures()],
       color: Colors.indigo,
     );
-    final measurementStyle =
-        TextStyle(fontSize: sizeDefault, color: Colors.indigo);
-    final unitStyle = TextStyle(fontSize: sizeDefault / 2.5);
-    final oneFractions = NumberFormat()
-      ..minimumFractionDigits = 1
-      ..maximumFractionDigits = 1;
-    final zeroFractions = NumberFormat()
-      ..minimumFractionDigits = 0
-      ..maximumFractionDigits = 0;
+    final unitStyle = TextStyle(fontSize: sizeDefault / 3);
 
     var _timeDisplay = Duration(seconds: _time).toString().split('.')[0];
     if (_timeDisplay.length == 7) {
       _timeDisplay = '0$_timeDisplay';
     }
-    final trackMarker = calculateTrackMarker(size, _distance);
+    final trackMarker = calculateTrackMarker(trackSize, _distance);
 
     return Scaffold(
       appBar: AppBar(
@@ -357,128 +346,107 @@ class DeviceState extends State<DeviceScreen> {
           ),
         ],
       ),
-      body: CustomPaint(
-        painter: TrackPainter(),
-        child: Stack(children: <Widget>[
-          radius <= 0
-              ? Text("Waiting for data...", style: measurementStyle)
-              : Center(
-                  child: SizedBox(
-                    width: size.width - 4 * THICK,
-                    height: size.height - 2 * THICK,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Center(child: Icon(Icons.timer, size: sizeDefault)),
-                            Spacer(),
-                            Text(_timeDisplay, style: timeStyle),
-                          ],
-                        ),
-                        Divider(height: 1),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.whatshot, size: sizeDefault),
-                            Spacer(),
-                            Text('${zeroFractions.format(_calories)}',
-                                style: measurementStyle),
-                            SizedBox(
-                                width: sizeDefault,
-                                child: Text('kCal', style: unitStyle)),
-                          ],
-                        ),
-                        Divider(height: 1),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.bolt, size: sizeDefault),
-                            Spacer(),
-                            Text('${zeroFractions.format(_power)}',
-                                style: measurementStyle),
-                            SizedBox(
-                                width: sizeDefault,
-                                child: Text('W', style: unitStyle)),
-                          ],
-                        ),
-                        Divider(height: 1),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.speed, size: sizeDefault),
-                            Spacer(),
-                            Text('${oneFractions.format(_speed)}',
-                                style: measurementStyle),
-                            SizedBox(
-                                width: sizeDefault,
-                                child: Text('km/h', style: unitStyle)),
-                          ],
-                        ),
-                        Divider(height: 1),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.directions_bike, size: sizeDefault),
-                            Spacer(),
-                            Text('${zeroFractions.format(_cadence)}',
-                                style: measurementStyle),
-                            SizedBox(
-                                width: sizeDefault,
-                                child: Text('rpm', style: unitStyle)),
-                          ],
-                        ),
-                        Divider(height: 1),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.favorite, size: sizeDefault),
-                            Spacer(),
-                            Text('${zeroFractions.format(_heartRate)}',
-                                style: measurementStyle),
-                            SizedBox(
-                                width: sizeDefault,
-                                child: Text('bpm', style: unitStyle)),
-                          ],
-                        ),
-                        Divider(height: 1),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add_road, size: sizeDefault),
-                            Spacer(),
-                            Text('${zeroFractions.format(_distance)}',
-                                style: measurementStyle),
-                            SizedBox(
-                                width: sizeDefault,
-                                child: Text('m', style: unitStyle)),
-                          ],
-                        ),
-                      ],
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.timer, size: sizeDefault),
+              Text(_timeDisplay, style: measurementStyle),
+            ],
+          ),
+          Divider(height: 1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.whatshot, size: sizeDefault),
+              Spacer(),
+              Text(_calories.toString(), style: measurementStyle),
+              SizedBox(
+                  width: sizeDefault, child: Text('kCal', style: unitStyle)),
+            ],
+          ),
+          Divider(height: 1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.bolt, size: sizeDefault),
+              Text(_power.toString(), style: measurementStyle),
+              SizedBox(width: sizeDefault, child: Text('W', style: unitStyle)),
+            ],
+          ),
+          Divider(height: 1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.speed, size: sizeDefault),
+              Spacer(),
+              Text(_speed.toStringAsFixed(1), style: measurementStyle),
+              SizedBox(
+                  width: sizeDefault, child: Text('km/h', style: unitStyle)),
+            ],
+          ),
+          Divider(height: 1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.directions_bike, size: sizeDefault),
+              Spacer(),
+              Text(_cadence.toString(), style: measurementStyle),
+              SizedBox(
+                  width: sizeDefault, child: Text('rpm', style: unitStyle)),
+            ],
+          ),
+          Divider(height: 1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.favorite, size: sizeDefault),
+              Spacer(),
+              Text(_heartRate.toString(), style: measurementStyle),
+              SizedBox(
+                  width: sizeDefault, child: Text('bpm', style: unitStyle)),
+            ],
+          ),
+          Divider(height: 1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.add_road, size: sizeDefault),
+              Spacer(),
+              Text(_distance.toString(), style: measurementStyle),
+              SizedBox(width: sizeDefault, child: Text('m', style: unitStyle)),
+            ],
+          ),
+          Divider(height: 1),
+          Expanded(
+            child: CustomPaint(
+              painter: TrackPainter(),
+              child: trackMarker == null
+                  ? SizedBox(width: 0, height: 0)
+                  : Positioned(
+                      left: trackMarker.dx - THICK,
+                      top: trackMarker.dy - THICK,
+                      child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0x88FF0000),
+                            borderRadius: BorderRadius.circular(THICK),
+                          ),
+                          width: THICK * 2,
+                          height: THICK * 2),
                     ),
-                  ),
-                ),
-          Positioned(
-            left: trackMarker.dx - THICK,
-            top: trackMarker.dy - THICK,
-            child: Container(
-                decoration: BoxDecoration(
-                  color: Color(0x88FF0000),
-                  borderRadius: BorderRadius.circular(THICK),
-                ),
-                width: THICK * 2,
-                height: THICK * 2),
-          )
-        ]),
+            ),
+          ),
+        ],
       ),
     );
   }
