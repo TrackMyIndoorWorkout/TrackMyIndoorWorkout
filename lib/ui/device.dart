@@ -269,11 +269,14 @@ class DeviceState extends State<DeviceScreen> {
     final double sizeDefault = Get.mediaQuery.size.width / 6;
 
     final measurementStyle = TextStyle(
+      fontFamily: 'VT323',
       fontSize: sizeDefault,
-      fontFeatures: [FontFeature.tabularFigures()],
     );
-    final unitStyle =
-        TextStyle(fontSize: sizeDefault / 3, color: Colors.indigo);
+    final unitStyle = TextStyle(
+      fontFamily: 'VT323',
+      fontSize: sizeDefault / 3,
+      color: Colors.indigo,
+    );
 
     var _timeDisplay = Duration(seconds: _time).toString().split('.')[0];
     if (_timeDisplay.length == 7) {

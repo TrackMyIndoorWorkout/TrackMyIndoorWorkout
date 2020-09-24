@@ -36,3 +36,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: VT323
+      fonts:
+        - asset: third_party/vt323-v11-latin-regular.ttf
