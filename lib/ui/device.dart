@@ -269,9 +269,9 @@ class DeviceState extends State<DeviceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double sizeDefault = radius > 0 ? radius / 3.0 : 64.0;
+    final double sizeDefault = Get.mediaQuery.size.width / 6;
 
-    final timeStyle = TextStyle(
+    final measurementStyle = TextStyle(
       fontSize: sizeDefault,
       fontFeatures: [FontFeature.tabularFigures()],
       color: Colors.indigo,
