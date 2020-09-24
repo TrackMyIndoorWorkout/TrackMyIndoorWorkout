@@ -39,4 +39,4 @@ flutter:
   fonts:
     - family: VT323
       fonts:
-        - asset: third_party/vt323-v11-latin-regular.ttf
+        - asset: fonts/vt323-v11-latin-regular.ttf
