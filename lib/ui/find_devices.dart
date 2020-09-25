@@ -80,7 +80,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
-                      .where((d) => UX_DEBUG ||
+                      .where((d) =>
+                          UX_DEBUG ||
                           d.device.name.startsWith(devices[0].namePrefix))
                       .map(
                         (r) => ScanResultTile(
