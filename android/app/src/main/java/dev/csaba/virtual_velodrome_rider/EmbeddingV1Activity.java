@@ -1,4 +1,4 @@
-package dev.csaba.virtual_velodrome_rider;
+package dev.csaba.track_my_indoor_exercise;
 
 import android.os.Bundle;
 import dev.flutter.plugins.e2e.E2EPlugin;
@@ -9,7 +9,7 @@ public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    FlutterBluePlugin.registerWith(registrarFor("dev.csaba.virtual_velodrome_rider.FlutterBluePlugin"));
+    FlutterBluePlugin.registerWith(registrarFor("dev.csaba.track_my_indoor_exercise.FlutterBluePlugin"));
     E2EPlugin.registerWith(registrarFor("dev.flutter.plugins.e2e.E2EPlugin"));
   }
 }

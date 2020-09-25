@@ -1,5 +1,5 @@
-name: virtual_velodrome_rider
-description: Recording virtual rides as if circling in a Velodrome or on a running track.
+name: track_my_indoor_exercise
+description: Recording indoor exercises as if circling in a Velodrome or on a running track.
 publish_to: "none"
 
 version: 1.0.0+1

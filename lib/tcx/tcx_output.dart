@@ -125,7 +125,7 @@ class TCXOutput {
 
       // Related to software used to generate the TCX file
       ..author = 'Csaba Consulting'
-      ..name = 'Virtual Velodrome Rider'
+      ..name = 'Track My Indoor Exercise'
       ..swVersionMajor = MAJOR
       ..swVersionMinor = MINOR
       ..buildVersionMajor = MAJOR

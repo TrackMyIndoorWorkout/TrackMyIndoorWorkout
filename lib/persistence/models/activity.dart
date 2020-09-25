@@ -60,8 +60,8 @@ class Activity {
             .replaceAll(':', '-');
     return {
       'startStamp': startStamp,
-      'name': 'Virtual velodrome ride at $dateString $timeString',
-      'description': 'Virtual velodrome ride on a $deviceName',
+      'name': 'Velodrome ride at $dateString $timeString',
+      'description': 'Velodrome ride on a $deviceName',
       'fileName': fileName,
     };
   }

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'ui/bluetooth_off.dart';
 import 'ui/find_devices.dart';
 
-class VirtualVelodromeRiderApp extends StatelessWidget {
+class TrackMyIndoorExerciseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
