@@ -88,7 +88,7 @@ class DeviceState extends State<DeviceScreen> {
         _activity.id, rightNow, _lastRecord, _speed, _distance, data, null);
 
     if (!_paused && _measuring) {
-      await _database.recordDao.insertRecord(record);
+      await _database?.recordDao?.insertRecord(record);
     }
 
     setState(() {
@@ -175,7 +175,7 @@ class DeviceState extends State<DeviceScreen> {
                 deviceName: device.name,
                 deviceId: device.id.id,
                 start: _lastRecord.millisecondsSinceEpoch);
-            final id = await _database.activityDao.insertActivity(_activity);
+            final id = await _database?.activityDao?.insertActivity(_activity);
             _activity.id = id;
           }
         }
@@ -251,7 +251,7 @@ class DeviceState extends State<DeviceScreen> {
     final record = descriptor.getMeasurement(_activity.id, rightNow,
         _lastRecord, _speed, _distance, null, supplement);
 
-    await _database.recordDao.insertRecord(record);
+    await _database?.recordDao?.insertRecord(record);
 
     _activity.finish(
       _distance,
@@ -259,7 +259,7 @@ class DeviceState extends State<DeviceScreen> {
       _calories.toInt(),
     );
     // final changed =
-    await _database.activityDao.updateActivity(_activity);
+    await _database?.activityDao?.updateActivity(_activity);
   }
 
   @override
