@@ -1,6 +1,4 @@
-# Virtual Velodrome Rider
-
-Based on the flutter_blue example
+# TrackMyIndoorExercise
 
 ## Plans
 
