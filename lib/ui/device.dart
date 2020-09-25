@@ -20,7 +20,7 @@ import '../track/track_painter.dart';
 import '../track/utils.dart';
 import 'activities.dart';
 
-const UX_DEBUG = true;
+const UX_DEBUG = false;
 
 class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
