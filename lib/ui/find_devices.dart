@@ -62,7 +62,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   return RaisedButton(
                                       child: Text('OPEN'),
                                       onPressed: () async {
-                                        FlutterBlue.instance.stopScan();
+                                        await FlutterBlue.instance.stopScan();
                                         await Get.to(DeviceScreen(
                                             device: d,
                                             initialState: snapshot.data));
@@ -86,7 +86,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         (r) => ScanResultTile(
                           result: r,
                           onTap: () async {
-                            FlutterBlue.instance.stopScan();
+                            await FlutterBlue.instance.stopScan();
                             await Get.to(DeviceScreen(
                                 device: r.device,
                                 initialState:
@@ -147,7 +147,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 return FloatingActionButton(
                   heroTag: null,
                   child: Icon(Icons.stop),
-                  onPressed: () => FlutterBlue.instance.stopScan(),
+                  onPressed: () async => await FlutterBlue.instance.stopScan(),
                 );
               } else {
                 return FloatingActionButton(
