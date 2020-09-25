@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
@@ -203,7 +202,6 @@ class DeviceState extends State<DeviceScreen> {
   @override
   initState() {
     super.initState();
-    initializeDateFormatting();
     _discovered = false;
     _measuring = false;
     _paused = false;

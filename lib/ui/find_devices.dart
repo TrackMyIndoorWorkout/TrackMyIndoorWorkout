@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import '../devices/devices.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';
@@ -22,6 +23,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
   dispose() {
     FlutterBlue.instance.stopScan();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    initializeDateFormatting();
+    super.initState();
   }
 
   @override
