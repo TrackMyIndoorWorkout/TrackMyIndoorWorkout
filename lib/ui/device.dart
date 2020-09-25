@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -17,6 +19,8 @@ import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/utils.dart';
 import 'activities.dart';
+
+const UX_DEBUG = true;
 
 class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
@@ -55,6 +59,11 @@ class DeviceState extends State<DeviceScreen> {
   DateTime _lastRecord;
   Activity _activity;
   AppDatabase _database;
+
+  // Debugging UX without actual connected device
+  Timer _timer;
+  var _rightNow = DateTime.now();
+  final _random = Random();
 
   _initialConnectOnDemand() async {
     if (initialState == BluetoothDeviceState.disconnected) {
@@ -211,22 +220,45 @@ class DeviceState extends State<DeviceScreen> {
     _speed = 0;
     _cadence = 0;
     _heartRate = 0;
-    _distance = 0;
+    _distance = UX_DEBUG ? _random.nextInt(100000).toDouble() : 0;
 
-    _initialConnectOnDemand();
-    _openDatabase();
+    if (UX_DEBUG) {
+      _simulateMeasurements();
+    } else {
+      _initialConnectOnDemand();
+      _openDatabase();
+    }
 
     Wakelock.enable();
   }
 
   @override
   dispose() {
-    if (_measurements != null) {
-      _measurements.setNotifyValue(false);
-    }
-    _database.close();
+    _timer?.cancel();
+    _measurements?.setNotifyValue(false);
+    _database?.close();
     Wakelock.disable();
     super.dispose();
+  }
+
+  void _simulateMeasurements() {
+    setState(() {
+      _rightNow = DateTime.now();
+      _time++;
+      _calories = _random.nextInt(1500);
+      _power = 50 + _random.nextInt(500);
+      _speed = 15.0 + _random.nextDouble() * 15.0;
+      _cadence = 30 + _random.nextInt(100);
+      _heartRate = 60 + _random.nextInt(120);
+      _distance += _random.nextInt(10);
+
+      // Update once per second, but make sure to do it at the beginning of each
+      // new second, so that the clock is accurate.
+      _timer = Timer(
+        Duration(seconds: 1) - Duration(milliseconds: _rightNow.millisecond),
+        _simulateMeasurements,
+      );
+    });
   }
 
   _finishActivity() async {
