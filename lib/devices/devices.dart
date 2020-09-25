@@ -8,7 +8,7 @@ final withServices = [Guid('a026ee07-0a7d-4ab3-97fa-f1500f9feb8b')];
 final devices = [
   FixedLayoutDeviceDescriptor(
     vendorName: "Precor",
-    modelName: "Spinning Power Chrono",
+    modelName: "Spinner Chrono Power",
     sku: "SBK 869",
     namePrefix: "CHRONO",
     nameStart: [67, 72, 82, 79, 78, 79], // CHRONO
