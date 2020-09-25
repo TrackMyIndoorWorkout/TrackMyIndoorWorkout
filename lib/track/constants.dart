@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 const RADIUS_BOOST = 1.2;
 const LANE_SHRINK = 2.0 - RADIUS_BOOST;
-const THICK = 20.0;
+const THICK = 10.0;
 const TRACK_LENGTH = 400.0;
 const TRACK_QUARTER = TRACK_LENGTH / 4.0;
 const HALF_CIRCLE = TRACK_QUARTER * RADIUS_BOOST;
