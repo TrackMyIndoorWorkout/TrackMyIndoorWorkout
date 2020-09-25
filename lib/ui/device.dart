@@ -296,14 +296,14 @@ class DeviceState extends State<DeviceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double sizeDefault = Get.mediaQuery.size.width / 6;
+    final double sizeDefault = Get.mediaQuery.size.width / 7;
 
     final measurementStyle = TextStyle(
-      fontFamily: 'VT323',
+      fontFamily: 'DSEG7',
       fontSize: sizeDefault,
     );
     final unitStyle = TextStyle(
-      fontFamily: 'VT323',
+      fontFamily: 'DSEG14',
       fontSize: sizeDefault / 3,
       color: Colors.indigo,
     );
@@ -400,7 +400,7 @@ class DeviceState extends State<DeviceScreen> {
               Spacer(),
               Text(_calories.toString(), style: measurementStyle),
               SizedBox(
-                  width: sizeDefault, child: Text('kCal', style: unitStyle)),
+                  width: sizeDefault, child: Text('k Cal', style: unitStyle)),
             ],
           ),
           Divider(height: 1),

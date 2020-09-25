@@ -40,3 +40,9 @@ flutter:
     - family: VT323
       fonts:
         - asset: fonts/vt323-v11-latin-regular.ttf
+    - family: DSEG7
+      fonts:
+        - asset: fonts/DSEG7Modern-Bold.ttf
+    - family: DSEG14
+      fonts:
+        - asset: fonts/DSEG14Classic-Bold.ttf
