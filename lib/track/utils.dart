@@ -1,43 +1,40 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../ui/device.dart';
 import 'constants.dart';
 
 Offset calculateTrackMarker(Size size, double distance) {
-  if (size == null) return null;
-  final rX = (size.width - 2 * THICK) / (2 * RADIUS_BOOST);
-  final rY = (size.height - 2 * THICK) / (2 * RADIUS_BOOST + pi * LANE_SHRINK);
-  final r = min(rY, rX) * RADIUS_BOOST;
-  final offset = Offset(
-      rX > rY ? (size.width - 2 * (THICK + r)) / 2 : 0,
-      rX < rY
-          ? (size.height - 2 * THICK - r * 2 - pi * rX * LANE_SHRINK) / 2
-          : 0);
+  if (size == null || DeviceState.trackRadius == null) return null;
+  final r = DeviceState.trackRadius;
+  final offset = DeviceState.trackOffset;
 
   final d = distance % TRACK_LENGTH;
-  final straight = TRACK_QUARTER * LANE_SHRINK;
-  final halfCircle = TRACK_QUARTER * RADIUS_BOOST;
-  if (d <= straight) {
-    // left straight
-    final displacement =
-        (1 - d / straight) * pi * LANE_SHRINK / RADIUS_BOOST * r;
-    return Offset(THICK + offset.dx, r + THICK + offset.dy + displacement);
-  } else if (d <= TRACK_LENGTH / 2) {
-    // top half circle
-    final rad = (1 - (d - straight) / halfCircle) * pi;
-    return Offset((cos(rad) + 1) * r + THICK + offset.dx,
-        (1 - sin(rad)) * r + THICK + offset.dy);
-  } else if (d <= TRACK_LENGTH / 2 + straight) {
-    // right straight
-    final displacement =
-        (d - TRACK_LENGTH / 2) / straight * pi * LANE_SHRINK / RADIUS_BOOST * r;
+  if (d <= LANE_LENGTH) {
+    // top straight
+    final displacement = d / LANE_LENGTH * pi * LANE_SHRINK / RADIUS_BOOST * r;
     return Offset(
-        2 * r + THICK + offset.dx, r + THICK + offset.dy + displacement);
+        size.width - THICK - offset.dx - r - displacement, THICK + offset.dy);
+  } else if (d <= TRACK_LENGTH / 2) {
+    // left half circle
+    final rad = (1 - (d - LANE_LENGTH) / HALF_CIRCLE) * pi;
+    return Offset((1 - sin(rad)) * r + THICK + offset.dx,
+        (cos(rad) + 1) * r + THICK + offset.dy);
+  } else if (d <= TRACK_LENGTH / 2 + LANE_LENGTH) {
+    // bottom straight
+    final displacement = (d - TRACK_LENGTH / 2) /
+        LANE_LENGTH *
+        pi *
+        LANE_SHRINK /
+        RADIUS_BOOST *
+        r;
+    return Offset(
+        THICK + offset.dx + r + displacement, size.height - THICK - offset.dy);
   } else {
-    // bottom half circle
-    final rad = (2 + (d - TRACK_LENGTH / 2 - straight) / halfCircle) * pi;
-    return Offset((cos(rad) + 1) * r + THICK + offset.dx,
-        size.height - THICK - offset.dy - r * (1 - sin(rad)));
+    // right half circle
+    final rad = (2 + (d - TRACK_LENGTH / 2 - LANE_LENGTH) / HALF_CIRCLE) * pi;
+    return Offset(size.width - THICK - offset.dx - (1 - sin(rad)) * r,
+        r * (cos(rad) + 1) + THICK + offset.dy);
   }
 }
 

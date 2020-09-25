@@ -40,6 +40,8 @@ class DeviceState extends State<DeviceScreen> {
   static Size trackSize;
   static Paint trackStroke;
   static Path trackPath;
+  static Offset trackOffset;
+  static double trackRadius;
 
   final BluetoothDevice device;
   final BluetoothDeviceState initialState;
