@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
 import '../tcx/tcx_output.dart';
+import 'find_devices.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   ActivitiesScreen({Key key}) : super(key: key);
@@ -42,7 +44,21 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Activities')),
+      appBar: AppBar(
+        title: Text('Activities'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.help),
+            onPressed:() async {
+              if (await canLaunch(HELP_URL)) {
+                launch(HELP_URL);
+              } else {
+                Get.snackbar("Attention", "Cannot open URL");
+              }
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: _database == null
             ? Text('Initializing...')
