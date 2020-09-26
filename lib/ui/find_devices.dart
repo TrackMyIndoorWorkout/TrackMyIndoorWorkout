@@ -35,7 +35,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Devices'),
+        title: Text('Supported Exercise Equipment:'),
       ),
       body: RefreshIndicator(
         onRefresh: () => FlutterBlue.instance.startScan(
