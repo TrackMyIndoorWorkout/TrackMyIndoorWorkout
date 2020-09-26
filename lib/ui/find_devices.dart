@@ -3,11 +3,15 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../devices/devices.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';
 import 'device.dart';
 import 'scan_result.dart';
+
+const HELP_URL =
+    "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
 
 class FindDevicesScreen extends StatefulWidget {
   FindDevicesScreen({Key key}) : super(key: key);
@@ -105,6 +109,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Row(
         children: [
+          FloatingActionButton(
+            heroTag: null,
+            child: Icon(Icons.help),
+            onPressed: () async {
+              if (await canLaunch(HELP_URL)) {
+                launch(HELP_URL);
+              } else {
+                Get.snackbar("Attention", "Cannot open URL");
+              }
+            },
+          ),
           FloatingActionButton(
             heroTag: null,
             child: Icon(BrandIcons.strava),
