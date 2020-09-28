@@ -298,6 +298,7 @@ class DeviceState extends State<DeviceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final separatorHeight = 3.0;
     final double sizeDefault = Get.mediaQuery.size.width / 7;
 
     final measurementStyle = TextStyle(
@@ -393,7 +394,7 @@ class DeviceState extends State<DeviceScreen> {
               Text(_timeDisplay, style: measurementStyle),
             ],
           ),
-          Divider(height: 1),
+          Divider(height: separatorHeight),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -405,7 +406,7 @@ class DeviceState extends State<DeviceScreen> {
                   width: sizeDefault, child: Text('k Cal', style: unitStyle)),
             ],
           ),
-          Divider(height: 1),
+          Divider(height: separatorHeight),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -416,7 +417,7 @@ class DeviceState extends State<DeviceScreen> {
               SizedBox(width: sizeDefault, child: Text('W', style: unitStyle)),
             ],
           ),
-          Divider(height: 1),
+          Divider(height: separatorHeight),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -428,7 +429,7 @@ class DeviceState extends State<DeviceScreen> {
                   width: sizeDefault, child: Text('km/h', style: unitStyle)),
             ],
           ),
-          Divider(height: 1),
+          Divider(height: separatorHeight),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -441,7 +442,7 @@ class DeviceState extends State<DeviceScreen> {
                   width: sizeDefault, child: Text('rpm', style: unitStyle)),
             ],
           ),
-          Divider(height: 1),
+          Divider(height: separatorHeight),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -453,7 +454,7 @@ class DeviceState extends State<DeviceScreen> {
                   width: sizeDefault, child: Text('bpm', style: unitStyle)),
             ],
           ),
-          Divider(height: 1),
+          Divider(height: separatorHeight),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -464,7 +465,7 @@ class DeviceState extends State<DeviceScreen> {
               SizedBox(width: sizeDefault, child: Text('m', style: unitStyle)),
             ],
           ),
-          Divider(height: 1),
+          Divider(height: separatorHeight),
           Expanded(
             child: CustomPaint(
               painter: TrackPainter(),
