@@ -85,10 +85,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                   ],
                 );
               },
-              // Cannot have until https://github.com/TheMisir/flutter-listutils/issues/11 is fixed
-              // separatorBuilder: (context, _) {
-              //   return Divider(height: 1);
-              // },
+              separatorBuilder: (context, _) {
+                return Divider(height: 2);
+              },
               empty: Center(
                 child: Text('No activities found'),
               ),
