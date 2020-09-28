@@ -3,6 +3,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:track_my_indoor_exercise/ui/preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../devices/devices.dart';
 import '../strava/strava_service.dart';
@@ -141,19 +142,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           FloatingActionButton(
             heroTag: null,
             child: Icon(Icons.list_alt),
-            onPressed: () async {
-              Get.to(ActivitiesScreen());
-              StravaService stravaService;
-              if (!Get.isRegistered<StravaService>()) {
-                stravaService = Get.put<StravaService>(StravaService());
-              } else {
-                stravaService = Get.find<StravaService>();
-              }
-              final success = await stravaService.login();
-              if (!success) {
-                Get.snackbar("Warning", "Strava login unsuccessful");
-              }
-            },
+            onPressed: () async => Get.to(ActivitiesScreen()),
           ),
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
@@ -174,6 +163,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 );
               }
             },
+          ),
+          FloatingActionButton(
+            heroTag: null,
+            child: Icon(Icons.settings),
+            onPressed: () async => Get.to(PreferencesScreen()),
           ),
         ],
       ),
