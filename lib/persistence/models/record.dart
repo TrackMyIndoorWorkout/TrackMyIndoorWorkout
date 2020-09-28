@@ -28,6 +28,9 @@ class Record {
   @ColumnInfo(name: 'heart_rate')
   final int heartRate;
 
+  @ignore
+  DateTime dt;
+
   Record({
     this.id,
     this.activityId,
@@ -40,4 +43,9 @@ class Record {
     this.cadence,
     this.heartRate,
   });
+
+  Record hydrate() {
+    dt = DateTime.fromMillisecondsSinceEpoch(timeStamp);
+    return this;
+  }
 }

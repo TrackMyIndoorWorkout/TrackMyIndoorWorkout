@@ -23,6 +23,7 @@ dependencies:
   uni_links: any
   url_launcher: any
   wakelock: any
+  charts_flutter: any
   flutter:
     sdk: flutter
 
