@@ -1,6 +1,7 @@
 import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:listview_utils/listview_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -18,6 +19,16 @@ class RecordsScreen extends StatefulWidget {
   }
 }
 
+typedef DataFn = List<Series<Record, DateTime>> Function();
+
+class TileConfiguration {
+  final String title;
+  final DataFn dataFn;
+  final DataFn histogramFn;
+
+  TileConfiguration({this.title, this.dataFn, this.histogramFn});
+}
+
 class RecordsScreenState extends State<RecordsScreen> {
   RecordsScreenState({this.activity, this.size});
 
@@ -26,10 +37,17 @@ class RecordsScreenState extends State<RecordsScreen> {
   int _count;
   List<Record> _allRecords;
   List<Record> _sampledRecords;
+  Map<String, TileConfiguration> tileConfigurations;
 
   @override
   initState() {
     super.initState();
+    tileConfigurations = {
+      "power": TileConfiguration(title: "Power (W)", dataFn: _getPowerData),
+      "speed": TileConfiguration(title: "Speed (km/h)", dataFn: _getSpeedData),
+      "cadence": TileConfiguration(title: "Cadence (rpm)", dataFn: _getCadenceData),
+      "hr": TileConfiguration(title: "Heart Rate (bpm)", dataFn: _getHRData),
+    };
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
         .build()
@@ -54,7 +72,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<Series<Record, DateTime>> _getPowerData() {
     return <Series<Record, DateTime>>[
       Series<Record, DateTime>(
-        id: 'Power (W)',
+        id: 'power',
         colorFn: (_, __) => MaterialPalette.purple.shadeDefault,
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.power,
@@ -69,7 +87,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         id: 'Speed (km/h)',
         colorFn: (_, __) => MaterialPalette.indigo.shadeDefault,
         domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.speed.toInt(),
+        measureFn: (Record record, _) => record.speed,
         data: _sampledRecords,
       ),
     ];
@@ -100,8 +118,6 @@ class RecordsScreenState extends State<RecordsScreen> {
   }
 
   Widget build(BuildContext context) {
-    final separatorHeight = 3.0;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Activities'),
@@ -120,10 +136,60 @@ class RecordsScreenState extends State<RecordsScreen> {
       ),
       body: _sampledRecords == null
           ? Text('Initializing...')
-          : Column(
+          : CustomListView(
+              paginationMode: PaginationMode.page,
+              initialOffset: 0,
+              loadingBuilder: CustomListLoading.defaultBuilder,
+              separatorBuilder: (context, _) {
+                return Divider(height: 2);
+              },
+              header: Center(
+                child: Column(
+                  children: [
+                    Text('Device: ${activity.deviceName}'),
+                    Text('Elapsed: ${activity.elapsed} s'),
+                    Text('Distance: ${activity.distance.toStringAsFixed(1)} m'),
+                    Text('Calories: ${activity.calories} kCal'),
+                  ],
+                ),
+              ),
+              adapter: StaticListAdapter(data: ["power", "speed", "cadence", "hr"]),
+              itemBuilder: (context, _, item) {
+                return ListTile(
+                  title: Text(tileConfigurations[item].title),
+                  subtitle: Column(children: [
+                    SizedBox(
+                      width: size.width,
+                      height: size.height / 5,
+                      child: TimeSeriesChart(
+                        tileConfigurations[item].dataFn(),
+                        animate: true,
+                        primaryMeasureAxis: NumericAxisSpec(
+                          tickProviderSpec:
+                          BasicNumericTickProviderSpec(zeroBound: false),
+                        ),
+                        behaviors: [
+                          LinePointHighlighter(
+                            showHorizontalFollowLine:
+                            LinePointHighlighterFollowLineType.none,
+                            showVerticalFollowLine:
+                            LinePointHighlighterFollowLineType.nearest,
+                          ),
+                          SelectNearest(eventTrigger: SelectionTrigger.tapAndDrag),
+                        ],
+                      ),
+                    ),
+                  ]),
+                );
+              },
+          ),
+
+/*
+      Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
+                Text("Power (W)"),
                 SizedBox(
                   width: size.width,
                   height: size.height / 5,
@@ -146,6 +212,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                   ),
                 ),
                 Divider(height: separatorHeight),
+                Text("Speed (km/h)"),
                 SizedBox(
                   width: size.width,
                   height: size.height / 5,
@@ -168,6 +235,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                   ),
                 ),
                 Divider(height: separatorHeight),
+                Text("Cadence (rpm)"),
                 SizedBox(
                   width: size.width,
                   height: size.height / 5,
@@ -190,6 +258,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                   ),
                 ),
                 Divider(height: separatorHeight),
+                Text("Heart Rate (bpm)"),
                 SizedBox(
                   width: size.width,
                   height: size.height / 5,
@@ -212,7 +281,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                   ),
                 ),
               ],
-            ),
+            ),*/
     );
   }
 }
