@@ -377,7 +377,7 @@ class DeviceState extends State<DeviceScreen> {
             onPressed: () async => _measuring
                 ? Get.snackbar(
                     "Warning", "Cannot navigate away during measurement!")
-                : Get.to(ActivitiesScreen()),
+                : await Get.to(ActivitiesScreen()),
           ),
         ],
       ),
