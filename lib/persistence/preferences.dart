@@ -1,3 +1,47 @@
+import 'package:charts_flutter/flutter.dart';
+import 'package:preferences/preferences.dart';
+
+Color getTranslucent(Color c) {
+  return Color(
+      r: c.r, g: c.g, b: c.b, a: 70, darker: c.darker, lighter: c.lighter);
+}
+
+final sevenBgPalette = [
+  getTranslucent(MaterialPalette.blue.shadeDefault.lighter),
+  getTranslucent(MaterialPalette.teal.shadeDefault.lighter),
+  getTranslucent(MaterialPalette.cyan.shadeDefault.lighter),
+  getTranslucent(MaterialPalette.lime.shadeDefault.lighter),
+  getTranslucent(MaterialPalette.yellow.shadeDefault.lighter),
+  getTranslucent(MaterialPalette.red.shadeDefault.lighter),
+  getTranslucent(MaterialPalette.pink.shadeDefault.lighter),
+];
+
+final sevenFgPalette = [
+  MaterialPalette.indigo.shadeDefault.darker,
+  MaterialPalette.teal.shadeDefault.darker,
+  MaterialPalette.cyan.shadeDefault.darker,
+  MaterialPalette.green.shadeDefault.darker,
+  MaterialPalette.deepOrange.shadeDefault.darker,
+  MaterialPalette.red.shadeDefault.darker,
+  MaterialPalette.purple.shadeDefault.darker,
+];
+
+final fiveBgPalette = [
+  getTranslucent(MaterialPalette.blue.shadeDefault.lighter),
+  getTranslucent(MaterialPalette.cyan.shadeDefault.lighter),
+  getTranslucent(MaterialPalette.lime.shadeDefault.lighter),
+  getTranslucent(MaterialPalette.yellow.shadeDefault.lighter),
+  getTranslucent(MaterialPalette.red.shadeDefault.lighter),
+];
+
+final fiveFgPalette = [
+  MaterialPalette.indigo.shadeDefault.darker,
+  MaterialPalette.teal.shadeDefault.darker,
+  MaterialPalette.green.shadeDefault.darker,
+  MaterialPalette.deepOrange.shadeDefault.darker,
+  MaterialPalette.red.shadeDefault.darker,
+];
+
 class PreferencesSpec {
   final String metric;
   final String title;
@@ -5,6 +49,9 @@ class PreferencesSpec {
   final String thresholdDefault;
   final String zonesTag;
   final String zonesDefault;
+  double threshold;
+  List<int> zonePercents;
+  List<double> zoneBounds;
 
   PreferencesSpec({
     this.metric,
@@ -14,6 +61,50 @@ class PreferencesSpec {
     this.zonesTag,
     this.zonesDefault,
   });
+
+  calculateZones() {
+    final thresholdString = PrefService.getString(thresholdTag);
+    threshold = double.tryParse(thresholdString);
+    final zonesSpecStr = PrefService.getString(zonesTag);
+    zonePercents = zonesSpecStr
+        .split(',')
+        .map((zs) => int.tryParse(zs))
+        .toList(growable: false);
+    zoneBounds = zonePercents.map((z) => z / 100.0 * threshold).toList(growable: false);
+  }
+
+  int get binCount => zonePercents.length + 1;
+
+  int binIndex(num value) {
+    int i = 0;
+    for (; i < zoneBounds.length; i++) {
+      if (value < zoneBounds[i]) {
+        return i;
+      }
+    }
+    return i;
+  }
+
+  Color binBgColor(int bin) {
+    if (bin > 6) {
+      return getTranslucent(MaterialPalette.blue.shadeDefault.lighter);
+    }
+    if (zonePercents.length <= 5) {
+      return fiveBgPalette[bin];
+    }
+    return sevenBgPalette[bin];
+  }
+
+  Color binFgColor(num value) {
+    final bin = binIndex(value);
+    if (bin > 6) {
+      return MaterialPalette.blue.shadeDefault.darker;
+    }
+    if (zonePercents.length <= 5) {
+      return fiveFgPalette[bin];
+    }
+    return sevenFgPalette[bin];
+  }
 }
 
 const THRESHOLD_CAPITAL = 'Threshold ';

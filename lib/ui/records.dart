@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
+import '../persistence/preferences.dart';
 import 'find_devices.dart';
 
 class RecordsScreen extends StatefulWidget {
@@ -22,17 +23,53 @@ class RecordsScreen extends StatefulWidget {
 }
 
 class HistogramData {
+  final int index;
   final double upper;
   int count;
+  int percent;
   final String range;
 
-  HistogramData({this.upper, this.range}) {
+  HistogramData({this.index, this.upper, this.range}) {
     count = 0;
+    percent = 0;
   }
 
   increment() {
     count++;
   }
+
+  calculatePercent(int total) {
+    if (count > 0) {
+      percent = total * 100 ~/ count;
+    }
+  }
+}
+
+class MeasurementCounter {
+  int powerCounter = 0;
+  int speedCounter = 0;
+  int cadenceCounter = 0;
+  int hrCounter = 0;
+
+  processRecord(Record record) {
+    if (record.power > 0) {
+      powerCounter++;
+    }
+    if (record.speed > 0) {
+      speedCounter++;
+    }
+    if (record.cadence > 0) {
+      cadenceCounter++;
+    }
+    if (record.heartRate > 0) {
+      hrCounter++;
+    }
+  }
+
+  bool get hasPower => powerCounter > 0;
+  bool get hasSpeed => speedCounter > 0;
+  bool get hasCadence => cadenceCounter > 0;
+  bool get hasHeartRate => hrCounter > 0;
 }
 
 typedef DataFn = List<Series<Record, DateTime>> Function();
@@ -42,45 +79,15 @@ class TileConfiguration {
   final String title;
   final DataFn dataFn;
   HistogramFn histogramFn;
-  final double binSize;
+  final List<double> zoneBounds;
+  int count;
   List<HistogramData> histogram;
 
-  TileConfiguration({this.title, this.dataFn, this.binSize});
-}
-
-const MIN_INIT = 10000;
-
-class BoundsAccumulator {
-  int minPower = MIN_INIT;
-  int maxPower = 0;
-  double minSpeed = MIN_INIT.toDouble();
-  double maxSpeed = 0;
-  int minCadence = MIN_INIT;
-  int maxCadence = 0;
-  int minHr = MIN_INIT;
-  int maxHr = 0;
-
-  processRecord(Record record) {
-    if (record.power > 0) {
-      maxPower = max(maxPower, record.power);
-      minPower = min(minPower, record.power);
-    }
-    if (record.speed > 0) {
-      maxSpeed = max(maxSpeed, record.speed);
-      minSpeed = min(minSpeed, record.speed);
-    }
-    if (record.cadence > 0) {
-      maxCadence = max(maxCadence, record.cadence);
-      minCadence = min(minCadence, record.cadence);
-    }
-    if (record.heartRate > 0) {
-      maxHr = max(maxHr, record.heartRate);
-      minHr = min(minHr, record.heartRate);
-    }
+  TileConfiguration({this.title, this.dataFn, this.zoneBounds}) {
+    count = 0;
   }
+  bool get hasMeasurement => count > 0;
 }
-
-const BIN_COUNT = 20;
 
 class RecordsScreenState extends State<RecordsScreen> {
   RecordsScreenState({this.activity, this.size});
@@ -115,120 +122,157 @@ class RecordsScreenState extends State<RecordsScreen> {
           _sampledRecords = List.generate(_pointCount,
               (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate());
         }
-        var bounds = BoundsAccumulator();
+        final measurementCounter = MeasurementCounter();
         _allRecords.forEach((record) {
-          bounds.processRecord(record);
+          measurementCounter.processRecord(record);
         });
+        preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
 
-        if (bounds.minPower < MIN_INIT) {
+        if (measurementCounter.hasPower) {
           _tiles.add("power");
-          final binSize = (bounds.maxPower - bounds.minPower) / BIN_COUNT;
           final tileConfig = TileConfiguration(
             title: "Power (W)",
             dataFn: _getPowerData,
-            binSize: binSize,
           );
-          tileConfig.histogram = List.generate(
-              BIN_COUNT,
-              (i) => HistogramData(
-                    upper: bounds.minPower + (i + 1) * binSize,
-                    range: ' - ${bounds.minPower + (i + 1) * binSize}',
-                  ));
+          tileConfig.histogram =
+              preferencesSpecs[0].zoneBounds.asMap().entries.map(
+                    (entry) => HistogramData(
+                      index: entry.key,
+                      upper: entry.value,
+                      range: '<${entry.value.toStringAsFixed(0)}',
+                    ),
+                  ).toList();
+          tileConfig.histogram.add(HistogramData(
+            index: preferencesSpecs[0].binCount - 1,
+            upper: 0,
+            range: '>${preferencesSpecs[0].zoneBounds.last.toStringAsFixed(0)}',
+          ));
           _tileConfigurations["power"] = tileConfig;
         }
-        if (bounds.minSpeed < MIN_INIT) {
+        if (measurementCounter.hasSpeed) {
           _tiles.add("speed");
-          final binSize = (bounds.maxSpeed - bounds.minSpeed) / BIN_COUNT;
           final tileConfig = TileConfiguration(
             title: "Speed (km/h)",
             dataFn: _getSpeedData,
-            binSize: binSize,
           );
-          tileConfig.histogram = List.generate(
-              BIN_COUNT,
-              (i) => HistogramData(
-                    upper: bounds.minSpeed + (i + 1) * binSize,
-                    range: ' - ${bounds.minSpeed + (i + 1) * binSize}',
-                  ));
+          tileConfig.histogram =
+              preferencesSpecs[1].zoneBounds.asMap().entries.map(
+                    (entry) => HistogramData(
+                      index: entry.key,
+                      upper: entry.value,
+                      range: '<${entry.value.toStringAsFixed(0)}',
+                    ),
+                  ).toList();
+          tileConfig.histogram.add(HistogramData(
+            index: preferencesSpecs[0].binCount - 1,
+            upper: 0,
+            range: '>${preferencesSpecs[1].zoneBounds.last.toStringAsFixed(0)}',
+          ));
           _tileConfigurations["speed"] = tileConfig;
         }
-        if (bounds.minCadence < MIN_INIT) {
+        if (measurementCounter.hasCadence) {
           _tiles.add("cadence");
-          final binSize = (bounds.maxCadence - bounds.minCadence) / BIN_COUNT;
           final tileConfig = TileConfiguration(
             title: "Cadence (rpm)",
             dataFn: _getCadenceData,
-            binSize: binSize,
           );
-          tileConfig.histogram = List.generate(
-              BIN_COUNT,
-              (i) => HistogramData(
-                    upper: bounds.minCadence + (i + 1) * binSize,
-                    range: ' - ${bounds.minCadence + (i + 1) * binSize}',
-                  ));
+          tileConfig.histogram =
+              preferencesSpecs[2].zoneBounds.asMap().entries.map(
+                    (entry) => HistogramData(
+                      index: entry.key,
+                      upper: entry.value,
+                      range: '<${entry.value.toStringAsFixed(0)}',
+                    ),
+                  ).toList();
+          tileConfig.histogram.add(HistogramData(
+            index: preferencesSpecs[0].binCount - 1,
+            upper: 0,
+            range: '>${preferencesSpecs[2].zoneBounds.last.toStringAsFixed(0)}',
+          ));
           _tileConfigurations["cadence"] = tileConfig;
         }
-        if (bounds.minHr < MIN_INIT) {
+        if (measurementCounter.hasHeartRate) {
           _tiles.add("hr");
-          final binSize = (bounds.maxHr - bounds.minHr) / BIN_COUNT;
           final tileConfig = TileConfiguration(
             title: "Cadence (rpm)",
             dataFn: _getHRData,
-            binSize: (bounds.maxHr - bounds.minHr) / BIN_COUNT,
           );
-          tileConfig.histogram = List.generate(
-              BIN_COUNT,
-              (i) => HistogramData(
-                    upper: bounds.minHr + (i + 1) * binSize,
-                    range: ' - ${bounds.minHr + (i + 1) * binSize}',
-                  ));
+          tileConfig.histogram =
+              preferencesSpecs[3].zoneBounds.asMap().entries.map(
+                    (entry) => HistogramData(
+                      index: entry.key,
+                      upper: entry.value,
+                      range: '<${entry.value.toStringAsFixed(0)}',
+                    ),
+                  ).toList();
+          tileConfig.histogram.add(HistogramData(
+            index: preferencesSpecs[0].binCount - 1,
+            upper: 0,
+            range: '>${preferencesSpecs[3].zoneBounds.last.toStringAsFixed(0)}',
+          ));
           _tileConfigurations["hr"] = tileConfig;
         }
         _allRecords.forEach((record) {
-          if (bounds.minPower < MIN_INIT) {
+          if (measurementCounter.hasPower) {
             if (record.power > 0) {
               var tileConfig = _tileConfigurations["power"];
-              int binIndex = min(BIN_COUNT - 1,
-                  (record.power - bounds.minPower) ~/ tileConfig.binSize);
+              tileConfig.count++;
+              final binIndex = preferencesSpecs[0].binIndex(record.power);
               tileConfig.histogram[binIndex].increment();
             }
           }
-          if (bounds.minSpeed < MIN_INIT) {
+          if (measurementCounter.hasSpeed) {
             if (record.speed > 0) {
               var tileConfig = _tileConfigurations["speed"];
-              int binIndex = min(BIN_COUNT - 1,
-                  (record.speed - bounds.minSpeed) ~/ tileConfig.binSize);
+              tileConfig.count++;
+              final binIndex = preferencesSpecs[1].binIndex(record.speed);
               tileConfig.histogram[binIndex].increment();
             }
           }
-          if (bounds.minCadence < MIN_INIT) {
+          if (measurementCounter.hasCadence) {
             if (record.cadence > 0) {
               var tileConfig = _tileConfigurations["cadence"];
-              int binIndex = min(BIN_COUNT - 1,
-                  (record.cadence - bounds.minCadence) ~/ tileConfig.binSize);
+              tileConfig.count++;
+              final binIndex = preferencesSpecs[2].binIndex(record.cadence);
               tileConfig.histogram[binIndex].increment();
             }
           }
-          if (bounds.minHr < MIN_INIT) {
+          if (measurementCounter.hasHeartRate) {
             if (record.heartRate > 0) {
               var tileConfig = _tileConfigurations["hr"];
-              int binIndex = min(BIN_COUNT - 1,
-                  (record.heartRate - bounds.minHr) ~/ tileConfig.binSize);
+              tileConfig.count++;
+              final binIndex = preferencesSpecs[3].binIndex(record.heartRate);
               tileConfig.histogram[binIndex].increment();
             }
           }
         });
-        if (bounds.minPower < MIN_INIT) {
-          _tileConfigurations["power"].histogramFn = _getPowerHistogram;
+        if (measurementCounter.hasPower) {
+          var tileConfig = _tileConfigurations["power"];
+          tileConfig.histogram.forEach((h) {
+            h.calculatePercent(tileConfig.count);
+          });
+          tileConfig.histogramFn = _getPowerHistogram;
         }
-        if (bounds.minSpeed < MIN_INIT) {
-          _tileConfigurations["speed"].histogramFn = _getSpeedHistogram;
+        if (measurementCounter.hasSpeed) {
+          var tileConfig = _tileConfigurations["speed"];
+          tileConfig.histogram.forEach((h) {
+            h.calculatePercent(tileConfig.count);
+          });
+          tileConfig.histogramFn = _getSpeedHistogram;
         }
-        if (bounds.minCadence < MIN_INIT) {
-          _tileConfigurations["cadence"].histogramFn = _getCadenceHistogram;
+        if (measurementCounter.hasCadence) {
+          var tileConfig = _tileConfigurations["cadence"];
+          tileConfig.histogram.forEach((h) {
+            h.calculatePercent(tileConfig.count);
+          });
+          tileConfig.histogramFn = _getCadenceHistogram;
         }
-        if (bounds.minHr < MIN_INIT) {
-          _tileConfigurations["hr"].histogramFn = _getHrHistogram;
+        if (measurementCounter.hasHeartRate) {
+          var tileConfig = _tileConfigurations["hr"];
+          tileConfig.histogram.forEach((h) {
+            h.calculatePercent(tileConfig.count);
+          });
+          tileConfig.histogramFn = _getHrHistogram;
         }
         _allRecords = null;
         _initialized = true;
@@ -240,7 +284,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<Record, DateTime>>[
       Series<Record, DateTime>(
         id: 'power',
-        colorFn: (_, __) => MaterialPalette.purple.shadeDefault,
+        colorFn: (Record record, __) =>
+            preferencesSpecs[0].binFgColor(record.power),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.power,
         data: _sampledRecords,
@@ -252,9 +297,10 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<HistogramData, String>>[
       Series<HistogramData, String>(
         id: 'powerHistogram',
-        colorFn: (_, __) => MaterialPalette.purple.shadeDefault,
+        colorFn: (HistogramData data, __) =>
+            preferencesSpecs[0].binFgColor(data.index),
         domainFn: (HistogramData data, _) => data.range,
-        measureFn: (HistogramData data, _) => data.count,
+        measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["power"].histogram,
       ),
     ];
@@ -263,8 +309,9 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<Series<Record, DateTime>> _getSpeedData() {
     return <Series<Record, DateTime>>[
       Series<Record, DateTime>(
-        id: 'Speed (km/h)',
-        colorFn: (_, __) => MaterialPalette.indigo.shadeDefault,
+        id: 'speed',
+        colorFn: (Record record, __) =>
+            preferencesSpecs[1].binFgColor(record.speed),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.speed,
         data: _sampledRecords,
@@ -276,9 +323,10 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<HistogramData, String>>[
       Series<HistogramData, String>(
         id: 'speedHistogram',
-        colorFn: (_, __) => MaterialPalette.indigo.shadeDefault,
+        colorFn: (HistogramData data, __) =>
+            preferencesSpecs[1].binFgColor(data.index),
         domainFn: (HistogramData data, _) => data.range,
-        measureFn: (HistogramData data, _) => data.count,
+        measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["speed"].histogram,
       ),
     ];
@@ -287,8 +335,9 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<Series<Record, DateTime>> _getCadenceData() {
     return <Series<Record, DateTime>>[
       Series<Record, DateTime>(
-        id: 'Cadence (rpm)',
-        colorFn: (_, __) => MaterialPalette.green.shadeDefault,
+        id: 'cadence',
+        colorFn: (Record record, __) =>
+            preferencesSpecs[2].binFgColor(record.cadence),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.cadence,
         data: _sampledRecords,
@@ -300,9 +349,10 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<HistogramData, String>>[
       Series<HistogramData, String>(
         id: 'speedHistogram',
-        colorFn: (_, __) => MaterialPalette.green.shadeDefault,
+        colorFn: (HistogramData data, __) =>
+            preferencesSpecs[2].binFgColor(data.index),
         domainFn: (HistogramData data, _) => data.range,
-        measureFn: (HistogramData data, _) => data.count,
+        measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["cadence"].histogram,
       ),
     ];
@@ -311,8 +361,9 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<Series<Record, DateTime>> _getHRData() {
     return <Series<Record, DateTime>>[
       Series<Record, DateTime>(
-        id: 'Heart Rate (bpm)',
-        colorFn: (_, __) => MaterialPalette.red.shadeDefault,
+        id: 'hr',
+        colorFn: (Record record, __) =>
+            preferencesSpecs[3].binFgColor(record.heartRate),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.heartRate,
         data: _sampledRecords,
@@ -324,9 +375,10 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<HistogramData, String>>[
       Series<HistogramData, String>(
         id: 'hrHistogram',
-        colorFn: (_, __) => MaterialPalette.red.shadeDefault,
+        colorFn: (HistogramData data, __) =>
+            preferencesSpecs[3].binFgColor(data.index),
         domainFn: (HistogramData data, _) => data.range,
-        measureFn: (HistogramData data, _) => data.count,
+        measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["hr"].histogram,
       ),
     ];
@@ -379,10 +431,10 @@ class RecordsScreenState extends State<RecordsScreen> {
                       child: TimeSeriesChart(
                         _tileConfigurations[item].dataFn(),
                         animate: true,
-                        primaryMeasureAxis: NumericAxisSpec(
-                          tickProviderSpec:
-                              BasicNumericTickProviderSpec(zeroBound: false),
-                        ),
+                        // primaryMeasureAxis: NumericAxisSpec(
+                        //   tickProviderSpec:
+                        //       BasicNumericTickProviderSpec(zeroBound: false),
+                        // ),
                         behaviors: [
                           LinePointHighlighter(
                             showHorizontalFollowLine:
@@ -401,10 +453,6 @@ class RecordsScreenState extends State<RecordsScreen> {
                       child: BarChart(
                         _tileConfigurations[item].histogramFn(),
                         animate: true,
-                        primaryMeasureAxis: NumericAxisSpec(
-                          tickProviderSpec:
-                              BasicNumericTickProviderSpec(zeroBound: false),
-                        ),
                         behaviors: [
                           LinePointHighlighter(
                             showHorizontalFollowLine:
