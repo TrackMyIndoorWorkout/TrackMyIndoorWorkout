@@ -218,10 +218,18 @@ class RecordsScreenState extends State<RecordsScreen> {
             }
           }
         });
-        _tileConfigurations["power"].histogramFn = _getPowerHistogram;
-        _tileConfigurations["speed"].histogramFn = _getSpeedHistogram;
-        _tileConfigurations["cadence"].histogramFn = _getCadenceHistogram;
-        _tileConfigurations["hr"].histogramFn = _getHrHistogram;
+        if (bounds.minPower < MIN_INIT) {
+          _tileConfigurations["power"].histogramFn = _getPowerHistogram;
+        }
+        if (bounds.minSpeed < MIN_INIT) {
+          _tileConfigurations["speed"].histogramFn = _getSpeedHistogram;
+        }
+        if (bounds.minCadence < MIN_INIT) {
+          _tileConfigurations["cadence"].histogramFn = _getCadenceHistogram;
+        }
+        if (bounds.minHr < MIN_INIT) {
+          _tileConfigurations["hr"].histogramFn = _getHrHistogram;
+        }
         _allRecords = null;
         _initialized = true;
       });
