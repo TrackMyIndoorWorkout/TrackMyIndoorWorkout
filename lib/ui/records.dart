@@ -45,24 +45,45 @@ class HistogramData {
   }
 }
 
+const MIN_INIT = 10000;
+
 class MeasurementCounter {
   int powerCounter = 0;
+  int minPower = MIN_INIT;
+  int maxPower = 0;
+
   int speedCounter = 0;
+  double minSpeed = MIN_INIT.toDouble();
+  double maxSpeed = 0;
+
   int cadenceCounter = 0;
+  int minCadence = MIN_INIT;
+  int maxCadence = 0;
+
   int hrCounter = 0;
+  int minHr = MIN_INIT;
+  int maxHr = 0;
 
   processRecord(Record record) {
     if (record.power > 0) {
       powerCounter++;
+      maxPower = max(maxPower, record.power);
+      minPower = min(minPower, record.power);
     }
     if (record.speed > 0) {
       speedCounter++;
+      maxSpeed = max(maxSpeed, record.speed);
+      minSpeed = min(minSpeed, record.speed);
     }
     if (record.cadence > 0) {
       cadenceCounter++;
+      maxCadence = max(maxCadence, record.cadence);
+      minCadence = min(minCadence, record.cadence);
     }
     if (record.heartRate > 0) {
       hrCounter++;
+      maxHr = max(maxHr, record.heartRate);
+      minHr = min(minHr, record.heartRate);
     }
   }
 
@@ -73,7 +94,7 @@ class MeasurementCounter {
 }
 
 typedef DataFn = List<Series<Record, DateTime>> Function();
-typedef HistogramFn = List<Series<HistogramData, String>> Function();
+typedef HistogramFn = List<Series<HistogramData, double>> Function();
 
 class TileConfiguration {
   final String title;
@@ -134,8 +155,10 @@ class RecordsScreenState extends State<RecordsScreen> {
             title: "Power (W)",
             dataFn: _getPowerData,
           );
+          var prefSpec = preferencesSpecs[0];
+          prefSpec.calculateBounds(measurementCounter.minPower.toDouble(), measurementCounter.maxPower.toDouble());
           tileConfig.histogram =
-              preferencesSpecs[0].zoneBounds.asMap().entries.map(
+              prefSpec.zoneBounds.asMap().entries.map(
                     (entry) => HistogramData(
                       index: entry.key,
                       upper: entry.value,
@@ -143,9 +166,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                     ),
                   ).toList();
           tileConfig.histogram.add(HistogramData(
-            index: preferencesSpecs[0].binCount - 1,
+            index: prefSpec.binCount - 1,
             upper: 0,
-            range: '>${preferencesSpecs[0].zoneBounds.last.toStringAsFixed(0)}',
+            range: '>${prefSpec.zoneBounds.last.toStringAsFixed(0)}',
           ));
           _tileConfigurations["power"] = tileConfig;
         }
@@ -155,8 +178,10 @@ class RecordsScreenState extends State<RecordsScreen> {
             title: "Speed (km/h)",
             dataFn: _getSpeedData,
           );
+          var prefSpec = preferencesSpecs[1];
+          prefSpec.calculateBounds(measurementCounter.minSpeed, measurementCounter.maxSpeed);
           tileConfig.histogram =
-              preferencesSpecs[1].zoneBounds.asMap().entries.map(
+              prefSpec.zoneBounds.asMap().entries.map(
                     (entry) => HistogramData(
                       index: entry.key,
                       upper: entry.value,
@@ -164,9 +189,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                     ),
                   ).toList();
           tileConfig.histogram.add(HistogramData(
-            index: preferencesSpecs[0].binCount - 1,
+            index: prefSpec.binCount - 1,
             upper: 0,
-            range: '>${preferencesSpecs[1].zoneBounds.last.toStringAsFixed(0)}',
+            range: '>${prefSpec.zoneBounds.last.toStringAsFixed(0)}',
           ));
           _tileConfigurations["speed"] = tileConfig;
         }
@@ -176,8 +201,10 @@ class RecordsScreenState extends State<RecordsScreen> {
             title: "Cadence (rpm)",
             dataFn: _getCadenceData,
           );
+          var prefSpec = preferencesSpecs[2];
+          prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(), measurementCounter.maxCadence.toDouble());
           tileConfig.histogram =
-              preferencesSpecs[2].zoneBounds.asMap().entries.map(
+              prefSpec.zoneBounds.asMap().entries.map(
                     (entry) => HistogramData(
                       index: entry.key,
                       upper: entry.value,
@@ -185,9 +212,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                     ),
                   ).toList();
           tileConfig.histogram.add(HistogramData(
-            index: preferencesSpecs[0].binCount - 1,
+            index: prefSpec.binCount - 1,
             upper: 0,
-            range: '>${preferencesSpecs[2].zoneBounds.last.toStringAsFixed(0)}',
+            range: '>${prefSpec.zoneBounds.last.toStringAsFixed(0)}',
           ));
           _tileConfigurations["cadence"] = tileConfig;
         }
@@ -197,8 +224,10 @@ class RecordsScreenState extends State<RecordsScreen> {
             title: "Cadence (rpm)",
             dataFn: _getHRData,
           );
+          var prefSpec = preferencesSpecs[3];
+          prefSpec.calculateBounds(measurementCounter.minHr.toDouble(), measurementCounter.maxHr.toDouble());
           tileConfig.histogram =
-              preferencesSpecs[3].zoneBounds.asMap().entries.map(
+              prefSpec.zoneBounds.asMap().entries.map(
                     (entry) => HistogramData(
                       index: entry.key,
                       upper: entry.value,
@@ -206,9 +235,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                     ),
                   ).toList();
           tileConfig.histogram.add(HistogramData(
-            index: preferencesSpecs[0].binCount - 1,
+            index: prefSpec.binCount - 1,
             upper: 0,
-            range: '>${preferencesSpecs[3].zoneBounds.last.toStringAsFixed(0)}',
+            range: '>${prefSpec.zoneBounds.last.toStringAsFixed(0)}',
           ));
           _tileConfigurations["hr"] = tileConfig;
         }
@@ -293,13 +322,13 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<Series<HistogramData, String>> _getPowerHistogram() {
-    return <Series<HistogramData, String>>[
-      Series<HistogramData, String>(
+  List<Series<HistogramData, double>> _getPowerHistogram() {
+    return <Series<HistogramData, double>>[
+      Series<HistogramData, double>(
         id: 'powerHistogram',
         colorFn: (HistogramData data, __) =>
             preferencesSpecs[0].binFgColor(data.index),
-        domainFn: (HistogramData data, _) => data.range,
+        domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["power"].histogram,
       ),
@@ -319,13 +348,13 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<Series<HistogramData, String>> _getSpeedHistogram() {
-    return <Series<HistogramData, String>>[
-      Series<HistogramData, String>(
+  List<Series<HistogramData, double>> _getSpeedHistogram() {
+    return <Series<HistogramData, double>>[
+      Series<HistogramData, double>(
         id: 'speedHistogram',
         colorFn: (HistogramData data, __) =>
             preferencesSpecs[1].binFgColor(data.index),
-        domainFn: (HistogramData data, _) => data.range,
+        domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["speed"].histogram,
       ),
@@ -345,13 +374,13 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<Series<HistogramData, String>> _getCadenceHistogram() {
-    return <Series<HistogramData, String>>[
-      Series<HistogramData, String>(
+  List<Series<HistogramData, double>> _getCadenceHistogram() {
+    return <Series<HistogramData, double>>[
+      Series<HistogramData, double>(
         id: 'speedHistogram',
         colorFn: (HistogramData data, __) =>
             preferencesSpecs[2].binFgColor(data.index),
-        domainFn: (HistogramData data, _) => data.range,
+        domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["cadence"].histogram,
       ),
@@ -371,13 +400,13 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<Series<HistogramData, String>> _getHrHistogram() {
-    return <Series<HistogramData, String>>[
-      Series<HistogramData, String>(
+  List<Series<HistogramData, double>> _getHrHistogram() {
+    return <Series<HistogramData, double>>[
+      Series<HistogramData, double>(
         id: 'hrHistogram',
         colorFn: (HistogramData data, __) =>
             preferencesSpecs[3].binFgColor(data.index),
-        domainFn: (HistogramData data, _) => data.range,
+        domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["hr"].histogram,
       ),
@@ -421,7 +450,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                 ),
               ),
               adapter: StaticListAdapter(data: _tiles),
-              itemBuilder: (context, _, item) {
+              itemBuilder: (context, index, item) {
                 return ListTile(
                   title: Text(_tileConfigurations[item].title),
                   subtitle: Column(children: [
@@ -438,30 +467,52 @@ class RecordsScreenState extends State<RecordsScreen> {
                         behaviors: [
                           LinePointHighlighter(
                             showHorizontalFollowLine:
-                                LinePointHighlighterFollowLineType.none,
+                                LinePointHighlighterFollowLineType.nearest,
                             showVerticalFollowLine:
                                 LinePointHighlighterFollowLineType.nearest,
                           ),
                           SelectNearest(
                               eventTrigger: SelectionTrigger.tapAndDrag),
+                          RangeAnnotation(
+                              List.generate(
+                                  preferencesSpecs[index].binCount,
+                                  (i) => RangeAnnotationSegment(
+                                      preferencesSpecs[index].zoneLower[i],
+                                      preferencesSpecs[index].zoneUpper[i],
+                                      RangeAnnotationAxisType.measure,
+                                      color: preferencesSpecs[index].binBgColor(i),
+                                  ),
+                            ),
+                          )
                         ],
                       ),
                     ),
                     SizedBox(
                       width: size.width,
                       height: size.height / 5,
-                      child: BarChart(
+                      child: LineChart(
                         _tileConfigurations[item].histogramFn(),
                         animate: true,
                         behaviors: [
                           LinePointHighlighter(
                             showHorizontalFollowLine:
-                                LinePointHighlighterFollowLineType.none,
+                                LinePointHighlighterFollowLineType.nearest,
                             showVerticalFollowLine:
                                 LinePointHighlighterFollowLineType.nearest,
                           ),
                           SelectNearest(
                               eventTrigger: SelectionTrigger.tapAndDrag),
+                          RangeAnnotation(
+                            List.generate(
+                                preferencesSpecs[index].binCount,
+                                    (i) => RangeAnnotationSegment(
+                                  preferencesSpecs[index].zoneLower[i],
+                                  preferencesSpecs[index].zoneUpper[i],
+                                  RangeAnnotationAxisType.domain,
+                                  color: preferencesSpecs[index].binBgColor(i),
+                                ),
+                            ),
+                          )
                         ],
                       ),
                     ),

@@ -3,7 +3,7 @@ import 'package:preferences/preferences.dart';
 
 Color getTranslucent(Color c) {
   return Color(
-      r: c.r, g: c.g, b: c.b, a: 70, darker: c.darker, lighter: c.lighter);
+      r: c.r, g: c.g, b: c.b, a: 120, darker: c.darker, lighter: c.lighter);
 }
 
 final sevenBgPalette = [
@@ -52,6 +52,8 @@ class PreferencesSpec {
   double threshold;
   List<int> zonePercents;
   List<double> zoneBounds;
+  List<double> zoneLower;
+  List<double> zoneUpper;
 
   PreferencesSpec({
     this.metric,
@@ -70,7 +72,14 @@ class PreferencesSpec {
         .split(',')
         .map((zs) => int.tryParse(zs))
         .toList(growable: false);
-    zoneBounds = zonePercents.map((z) => z / 100.0 * threshold).toList(growable: false);
+    zoneBounds = zonePercents.map((z) => z / 100.0 * threshold).toList();
+  }
+
+  calculateBounds(double minVal, double maxVal) {
+    zoneLower = [...zoneBounds];
+    zoneLower.insert(0, minVal);
+    zoneUpper = [...zoneBounds];
+    zoneUpper.add(maxVal);
   }
 
   int get binCount => zonePercents.length + 1;
