@@ -87,7 +87,7 @@ class RecordsScreenState extends State<RecordsScreen> {
 
   final Activity activity;
   final Size size;
-  int _count;
+  int _pointCount;
   List<Record> _allRecords;
   List<Record> _sampledRecords;
   Map<String, TileConfiguration> _tileConfigurations;
@@ -106,13 +106,13 @@ class RecordsScreenState extends State<RecordsScreen> {
         .then((db) async {
       _allRecords = await db.recordDao.findAllActivityRecords(activity.id);
       setState(() {
-        _count = size.width.toInt() - 20;
-        if (_allRecords.length < _count) {
+        _pointCount = size.width.toInt() - 20;
+        if (_allRecords.length < _pointCount) {
           _sampledRecords =
               _allRecords.map((r) => r.hydrate()).toList(growable: false);
         } else {
-          final nth = _allRecords.length / _count;
-          _sampledRecords = List.generate(_count,
+          final nth = _allRecords.length / _pointCount;
+          _sampledRecords = List.generate(_pointCount,
               (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate());
         }
         var bounds = BoundsAccumulator();
