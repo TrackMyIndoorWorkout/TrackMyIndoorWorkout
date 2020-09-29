@@ -14,8 +14,3 @@ abstract class AppDatabase extends FloorDatabase {
   ActivityDao get activityDao;
   RecordDao get recordDao;
 }
-
-// final migration1to2 = Migration(1, 2, (database) async {
-//   await database.execute(
-//       'ALTER TABLE $ACTIVITIES_TABLE_NAME ADD COLUMN strava_id INTEGER');
-// });
