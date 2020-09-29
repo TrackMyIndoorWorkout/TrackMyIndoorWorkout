@@ -156,15 +156,19 @@ class RecordsScreenState extends State<RecordsScreen> {
             dataFn: _getPowerData,
           );
           var prefSpec = preferencesSpecs[0];
-          prefSpec.calculateBounds(measurementCounter.minPower.toDouble(), measurementCounter.maxPower.toDouble());
-          tileConfig.histogram =
-              prefSpec.zoneBounds.asMap().entries.map(
-                    (entry) => HistogramData(
-                      index: entry.key,
-                      upper: entry.value,
-                      range: '<${entry.value.toStringAsFixed(0)}',
-                    ),
-                  ).toList();
+          prefSpec.calculateBounds(measurementCounter.minPower.toDouble(),
+              measurementCounter.maxPower.toDouble());
+          tileConfig.histogram = prefSpec.zoneBounds
+              .asMap()
+              .entries
+              .map(
+                (entry) => HistogramData(
+                  index: entry.key,
+                  upper: entry.value,
+                  range: '<${entry.value.toStringAsFixed(0)}',
+                ),
+              )
+              .toList();
           tileConfig.histogram.add(HistogramData(
             index: prefSpec.binCount - 1,
             upper: 0,
@@ -179,15 +183,19 @@ class RecordsScreenState extends State<RecordsScreen> {
             dataFn: _getSpeedData,
           );
           var prefSpec = preferencesSpecs[1];
-          prefSpec.calculateBounds(measurementCounter.minSpeed, measurementCounter.maxSpeed);
-          tileConfig.histogram =
-              prefSpec.zoneBounds.asMap().entries.map(
-                    (entry) => HistogramData(
-                      index: entry.key,
-                      upper: entry.value,
-                      range: '<${entry.value.toStringAsFixed(0)}',
-                    ),
-                  ).toList();
+          prefSpec.calculateBounds(
+              measurementCounter.minSpeed, measurementCounter.maxSpeed);
+          tileConfig.histogram = prefSpec.zoneBounds
+              .asMap()
+              .entries
+              .map(
+                (entry) => HistogramData(
+                  index: entry.key,
+                  upper: entry.value,
+                  range: '<${entry.value.toStringAsFixed(0)}',
+                ),
+              )
+              .toList();
           tileConfig.histogram.add(HistogramData(
             index: prefSpec.binCount - 1,
             upper: 0,
@@ -202,15 +210,19 @@ class RecordsScreenState extends State<RecordsScreen> {
             dataFn: _getCadenceData,
           );
           var prefSpec = preferencesSpecs[2];
-          prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(), measurementCounter.maxCadence.toDouble());
-          tileConfig.histogram =
-              prefSpec.zoneBounds.asMap().entries.map(
-                    (entry) => HistogramData(
-                      index: entry.key,
-                      upper: entry.value,
-                      range: '<${entry.value.toStringAsFixed(0)}',
-                    ),
-                  ).toList();
+          prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
+              measurementCounter.maxCadence.toDouble());
+          tileConfig.histogram = prefSpec.zoneBounds
+              .asMap()
+              .entries
+              .map(
+                (entry) => HistogramData(
+                  index: entry.key,
+                  upper: entry.value,
+                  range: '<${entry.value.toStringAsFixed(0)}',
+                ),
+              )
+              .toList();
           tileConfig.histogram.add(HistogramData(
             index: prefSpec.binCount - 1,
             upper: 0,
@@ -225,15 +237,19 @@ class RecordsScreenState extends State<RecordsScreen> {
             dataFn: _getHRData,
           );
           var prefSpec = preferencesSpecs[3];
-          prefSpec.calculateBounds(measurementCounter.minHr.toDouble(), measurementCounter.maxHr.toDouble());
-          tileConfig.histogram =
-              prefSpec.zoneBounds.asMap().entries.map(
-                    (entry) => HistogramData(
-                      index: entry.key,
-                      upper: entry.value,
-                      range: '<${entry.value.toStringAsFixed(0)}',
-                    ),
-                  ).toList();
+          prefSpec.calculateBounds(measurementCounter.minHr.toDouble(),
+              measurementCounter.maxHr.toDouble());
+          tileConfig.histogram = prefSpec.zoneBounds
+              .asMap()
+              .entries
+              .map(
+                (entry) => HistogramData(
+                  index: entry.key,
+                  upper: entry.value,
+                  range: '<${entry.value.toStringAsFixed(0)}',
+                ),
+              )
+              .toList();
           tileConfig.histogram.add(HistogramData(
             index: prefSpec.binCount - 1,
             upper: 0,
@@ -474,14 +490,14 @@ class RecordsScreenState extends State<RecordsScreen> {
                           SelectNearest(
                               eventTrigger: SelectionTrigger.tapAndDrag),
                           RangeAnnotation(
-                              List.generate(
-                                  preferencesSpecs[index].binCount,
-                                  (i) => RangeAnnotationSegment(
-                                      preferencesSpecs[index].zoneLower[i],
-                                      preferencesSpecs[index].zoneUpper[i],
-                                      RangeAnnotationAxisType.measure,
-                                      color: preferencesSpecs[index].binBgColor(i),
-                                  ),
+                            List.generate(
+                              preferencesSpecs[index].binCount,
+                              (i) => RangeAnnotationSegment(
+                                preferencesSpecs[index].zoneLower[i],
+                                preferencesSpecs[index].zoneUpper[i],
+                                RangeAnnotationAxisType.measure,
+                                color: preferencesSpecs[index].binBgColor(i),
+                              ),
                             ),
                           )
                         ],
@@ -504,13 +520,13 @@ class RecordsScreenState extends State<RecordsScreen> {
                               eventTrigger: SelectionTrigger.tapAndDrag),
                           RangeAnnotation(
                             List.generate(
-                                preferencesSpecs[index].binCount,
-                                    (i) => RangeAnnotationSegment(
-                                  preferencesSpecs[index].zoneLower[i],
-                                  preferencesSpecs[index].zoneUpper[i],
-                                  RangeAnnotationAxisType.domain,
-                                  color: preferencesSpecs[index].binBgColor(i),
-                                ),
+                              preferencesSpecs[index].binCount,
+                              (i) => RangeAnnotationSegment(
+                                preferencesSpecs[index].zoneLower[i],
+                                preferencesSpecs[index].zoneUpper[i],
+                                RangeAnnotationAxisType.domain,
+                                color: preferencesSpecs[index].binBgColor(i),
+                              ),
                             ),
                           )
                         ],
