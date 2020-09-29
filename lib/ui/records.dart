@@ -352,7 +352,7 @@ class RecordsScreenState extends State<RecordsScreen> {
       body: !_initialized
           ? Text('Initializing...')
           : CustomListView(
-              paginationMode: PaginationMode.page,
+              paginationMode: PaginationMode.offset,
               initialOffset: 0,
               loadingBuilder: CustomListLoading.defaultBuilder,
               separatorBuilder: (context, _) {
