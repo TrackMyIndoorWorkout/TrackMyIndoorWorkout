@@ -53,31 +53,8 @@ class PreferencesScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Zone Preferences'),
-      ),
-      body: PreferencePage(zonePreferences
-          /*
-        PreferenceTitle('Theme'),
-        RadioPreference(
-          'Light Theme',
-          'light',
-          'ui_theme',
-          isDefault: true,
-          onSelect: () {
-            DynamicTheme.of(context).setBrightness(Brightness.light);
-          },
-        ),
-        RadioPreference(
-          'Dark Theme',
-          'dark',
-          'ui_theme',
-          onSelect: () {
-            DynamicTheme.of(context).setBrightness(Brightness.dark);
-          },
-        ),
-        */
-          ),
+      appBar: AppBar(title: Text('Zone Preferences')),
+      body: PreferencePage(zonePreferences)
     );
   }
 }
