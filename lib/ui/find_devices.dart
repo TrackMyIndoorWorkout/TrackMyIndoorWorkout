@@ -70,7 +70,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                         await FlutterBlue.instance.stopScan();
                                         await Get.to(DeviceScreen(
                                             device: d,
-                                            initialState: snapshot.data));
+                                            initialState: snapshot.data,
+                                            size: Get.mediaQuery.size));
                                       });
                                 }
                                 return Text(snapshot.data.toString());
@@ -95,8 +96,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             await FlutterBlue.instance.stopScan();
                             await Get.to(DeviceScreen(
                                 device: r.device,
-                                initialState:
-                                    BluetoothDeviceState.disconnected));
+                                initialState: BluetoothDeviceState.disconnected,
+                                size: Get.mediaQuery.size));
                           },
                         ),
                       )

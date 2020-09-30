@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
+import 'package:track_my_indoor_exercise/persistence/preferences.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
@@ -21,21 +24,47 @@ import '../track/utils.dart';
 import 'activities.dart';
 
 const UX_DEBUG = false;
+const Map<int, int> ROW_TO_EXTRA = {
+  0: 0,
+  1: 1,
+  2: 1,
+  3: 2,
+  4: 3,
+  5: 4,
+  6: 0,
+};
+
+typedef DataFn = List<charts.Series<Record, DateTime>> Function();
+
+class RowConfig {
+  final IconData icon;
+  final String unit;
+
+  RowConfig({this.icon, this.unit});
+}
 
 class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
   final BluetoothDeviceState initialState;
-  DeviceScreen({Key key, this.device, this.initialState}) : super(key: key);
+  final Size size;
+
+  DeviceScreen({
+    Key key,
+    this.device,
+    this.initialState,
+    this.size,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return DeviceState(device: device, initialState: initialState);
+    return DeviceState(device: device, initialState: initialState, size: size);
   }
 }
 
 class DeviceState extends State<DeviceScreen> {
-  DeviceState({this.device, this.initialState});
+  DeviceState({this.device, this.initialState, this.size});
 
+  Size size;
   // Track drawing cached computed values
   static Size trackSize;
   static Paint trackStroke;
@@ -57,6 +86,12 @@ class DeviceState extends State<DeviceScreen> {
   int _cadence; // snapshot (rpm)
   int _heartRate; // snapshot (bpm)
   double _distance; // cumulative (m)
+  int _selectedRow;
+  int _extraDisplayIndex;
+  int _pointCount;
+  ListQueue<Record> _graphData;
+  TextStyle _unselectedUnitStyle;
+  TextStyle _selectedUnitStyle;
 
   DateTime _lastRecord;
   Activity _activity;
@@ -66,6 +101,11 @@ class DeviceState extends State<DeviceScreen> {
   Timer _timer;
   var _rightNow = DateTime.now();
   final _random = Random();
+
+  List<Record> get graphData => _graphData.toList();
+  Map<String, DataFn> _metricToDataFn = {};
+  List<RowConfig> _rowConfig;
+  List<String> _values;
 
   _initialConnectOnDemand() async {
     if (initialState == BluetoothDeviceState.disconnected) {
@@ -91,6 +131,24 @@ class DeviceState extends State<DeviceScreen> {
     return true;
   }
 
+  _addGraphData(Record record) {
+    _graphData.add(record.hydrate());
+    if (_pointCount > 0 && _graphData.length > _pointCount) {
+      _graphData.removeFirst();
+    }
+  }
+
+  _fillValues() {
+    _values = [
+      _calories.toString(),
+      _power.toString(),
+      _speed.toStringAsFixed(1),
+      _cadence.toString(),
+      _heartRate.toString(),
+      _distance.toStringAsFixed(0),
+    ];
+  }
+
   _recordMeasurement(List<int> data) async {
     if (!descriptor.canMeasurementProcessed(data)) return;
 
@@ -100,6 +158,7 @@ class DeviceState extends State<DeviceScreen> {
 
     if (!_paused && _measuring) {
       await _database?.recordDao?.insertRecord(record);
+      _addGraphData(record);
     }
 
     setState(() {
@@ -113,6 +172,8 @@ class DeviceState extends State<DeviceScreen> {
       if (_speed > 0 && !_paused) {
         _distance = record.distance;
       }
+
+      _fillValues();
 
       if (_measuring) {
         if (_speed <= 0) {
@@ -213,6 +274,40 @@ class DeviceState extends State<DeviceScreen> {
   @override
   initState() {
     super.initState();
+    _selectedRow = 0;
+    _extraDisplayIndex = ROW_TO_EXTRA[_selectedRow];
+    _pointCount = size.width ~/ 2;
+    _graphData = ListQueue<Record>(_pointCount);
+    _unselectedUnitStyle = TextStyle(
+      fontFamily: 'DSEG14',
+      color: Colors.indigo,
+    );
+    _selectedUnitStyle = TextStyle(
+      fontFamily: 'DSEG14',
+      color: Colors.indigo,
+    );
+    preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
+    preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
+          0,
+          prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0,
+        ));
+
+    _metricToDataFn = {
+      "power": _powerChartData,
+      "speed": _speedChartData,
+      "cadence": _cadenceChartData,
+      "hr": _hRChartData,
+    };
+
+    _rowConfig = [
+      RowConfig(icon: Icons.whatshot, unit: 'k Cal'),
+      RowConfig(icon: Icons.bolt, unit: 'W'),
+      RowConfig(icon: Icons.speed, unit: 'km/h'),
+      RowConfig(icon: Icons.directions_bike, unit: 'rpm'),
+      RowConfig(icon: Icons.favorite, unit: 'bpm'),
+      RowConfig(icon: Icons.add_road, unit: 'm'),
+    ];
+
     _discovered = false;
     _measuring = false;
     _paused = false;
@@ -253,6 +348,19 @@ class DeviceState extends State<DeviceScreen> {
       _cadence = 30 + _random.nextInt(100);
       _heartRate = 60 + _random.nextInt(120);
       _distance += _random.nextInt(10);
+
+      _fillValues();
+
+      _addGraphData(Record(
+        timeStamp: _rightNow.millisecondsSinceEpoch,
+        distance: _distance,
+        elapsed: _time,
+        calories: _calories,
+        power: _power,
+        speed: _speed,
+        cadence: _cadence,
+        heartRate: _heartRate,
+      ));
 
       // Update once per second, but make sure to do it at the beginning of each
       // new second, so that the clock is accurate.
@@ -296,6 +404,79 @@ class DeviceState extends State<DeviceScreen> {
     await _database?.activityDao?.updateActivity(_activity);
   }
 
+  Color getExtraColor(int rowIndex) {
+    if (_selectedRow == rowIndex) {
+      return Colors.red;
+    }
+    return Colors.indigo;
+  }
+
+  TextStyle getTextStyle(int rowIndex) {
+    if (_selectedRow == rowIndex) {
+      return _selectedUnitStyle;
+    }
+    return _unselectedUnitStyle;
+  }
+
+  _onRowTap(int rowIndex) {
+    setState(() {
+      _selectedRow = rowIndex;
+      _extraDisplayIndex = ROW_TO_EXTRA[rowIndex];
+    });
+  }
+
+  List<charts.Series<Record, DateTime>> _powerChartData() {
+    return <charts.Series<Record, DateTime>>[
+      charts.Series<Record, DateTime>(
+        id: 'power',
+        colorFn: (Record record, __) =>
+            preferencesSpecs[0].binFgColor(record.power),
+        domainFn: (Record record, _) => record.dt,
+        measureFn: (Record record, _) => record.power,
+        data: graphData,
+      ),
+    ];
+  }
+
+  List<charts.Series<Record, DateTime>> _speedChartData() {
+    return <charts.Series<Record, DateTime>>[
+      charts.Series<Record, DateTime>(
+        id: 'speed',
+        colorFn: (Record record, __) =>
+            preferencesSpecs[1].binFgColor(record.speed),
+        domainFn: (Record record, _) => record.dt,
+        measureFn: (Record record, _) => record.speed,
+        data: graphData,
+      ),
+    ];
+  }
+
+  List<charts.Series<Record, DateTime>> _cadenceChartData() {
+    return <charts.Series<Record, DateTime>>[
+      charts.Series<Record, DateTime>(
+        id: 'cadence',
+        colorFn: (Record record, __) =>
+            preferencesSpecs[2].binFgColor(record.cadence),
+        domainFn: (Record record, _) => record.dt,
+        measureFn: (Record record, _) => record.cadence,
+        data: graphData,
+      ),
+    ];
+  }
+
+  List<charts.Series<Record, DateTime>> _hRChartData() {
+    return <charts.Series<Record, DateTime>>[
+      charts.Series<Record, DateTime>(
+        id: 'hr',
+        colorFn: (Record record, __) =>
+            preferencesSpecs[3].binFgColor(record.heartRate),
+        domainFn: (Record record, _) => record.dt,
+        measureFn: (Record record, _) => record.heartRate,
+        data: graphData,
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final separatorHeight = 3.0;
@@ -305,10 +486,15 @@ class DeviceState extends State<DeviceScreen> {
       fontFamily: 'DSEG7',
       fontSize: sizeDefault,
     );
-    final unitStyle = TextStyle(
+    _unselectedUnitStyle = TextStyle(
       fontFamily: 'DSEG14',
       fontSize: sizeDefault / 3,
       color: Colors.indigo,
+    );
+    _selectedUnitStyle = TextStyle(
+      fontFamily: 'DSEG14',
+      fontSize: sizeDefault / 3,
+      color: Colors.red,
     );
 
     var _timeDisplay = Duration(seconds: _time).toString().split('.')[0];
@@ -316,6 +502,100 @@ class DeviceState extends State<DeviceScreen> {
       _timeDisplay = '0$_timeDisplay';
     }
     final trackMarker = calculateTrackMarker(trackSize, _distance);
+
+    List<Widget> rows = [
+      GestureDetector(
+        onTap: () => _onRowTap(0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.timer, size: sizeDefault, color: getExtraColor(0)),
+            Text(_timeDisplay, style: measurementStyle),
+          ],
+        ),
+      ),
+    ];
+
+    _rowConfig.asMap().entries.forEach((entry) {
+      rows.add(Divider(height: separatorHeight));
+      rows.add(GestureDetector(
+        onTap: () => _onRowTap(entry.key + 1),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              _rowConfig[entry.key].icon,
+              size: sizeDefault,
+              color: getExtraColor(entry.key + 1),
+            ),
+            Spacer(),
+            Text(_values[entry.key], style: measurementStyle),
+            SizedBox(
+              width: sizeDefault,
+              child: Text(
+                _rowConfig[entry.key].unit,
+                style: getTextStyle(entry.key + 1),
+              ),
+            ),
+          ],
+        ),
+      ));
+    });
+
+    List<Widget> extras = [
+      CustomPaint(
+        painter: TrackPainter(),
+        child: trackMarker == null
+            ? SizedBox(width: 0, height: 0)
+            : Stack(
+                children: <Widget>[
+                  Positioned(
+                    left: trackMarker.dx - THICK,
+                    top: trackMarker.dy - THICK,
+                    child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0x88FF0000),
+                          borderRadius: BorderRadius.circular(THICK),
+                        ),
+                        width: THICK * 2,
+                        height: THICK * 2),
+                  ),
+                ],
+              ),
+      ),
+    ];
+
+    preferencesSpecs.forEach((prefSpec) {
+      extras.add(
+        charts.TimeSeriesChart(
+          _metricToDataFn[prefSpec.metric](),
+          animate: false,
+          behaviors: [
+            charts.RangeAnnotation(
+              List.generate(
+                prefSpec.binCount,
+                (i) => charts.RangeAnnotationSegment(
+                  prefSpec.zoneLower[i],
+                  prefSpec.zoneUpper[i],
+                  charts.RangeAnnotationAxisType.measure,
+                  color: prefSpec.binBgColor(i),
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    });
+
+    rows.add(Divider(height: separatorHeight));
+    rows.add(Expanded(
+      child: IndexedStack(
+        index: _extraDisplayIndex,
+        children: extras,
+      ),
+    ));
 
     return Scaffold(
       appBar: AppBar(
@@ -385,110 +665,7 @@ class DeviceState extends State<DeviceScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.timer, size: sizeDefault, color: Colors.indigo),
-              Text(_timeDisplay, style: measurementStyle),
-            ],
-          ),
-          Divider(height: separatorHeight),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.whatshot, size: sizeDefault, color: Colors.indigo),
-              Spacer(),
-              Text(_calories.toString(), style: measurementStyle),
-              SizedBox(
-                  width: sizeDefault, child: Text('k Cal', style: unitStyle)),
-            ],
-          ),
-          Divider(height: separatorHeight),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.bolt, size: sizeDefault, color: Colors.indigo),
-              Spacer(),
-              Text(_power.toString(), style: measurementStyle),
-              SizedBox(width: sizeDefault, child: Text('W', style: unitStyle)),
-            ],
-          ),
-          Divider(height: separatorHeight),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.speed, size: sizeDefault, color: Colors.indigo),
-              Spacer(),
-              Text(_speed.toStringAsFixed(1), style: measurementStyle),
-              SizedBox(
-                  width: sizeDefault, child: Text('km/h', style: unitStyle)),
-            ],
-          ),
-          Divider(height: separatorHeight),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.directions_bike,
-                  size: sizeDefault, color: Colors.indigo),
-              Spacer(),
-              Text(_cadence.toString(), style: measurementStyle),
-              SizedBox(
-                  width: sizeDefault, child: Text('rpm', style: unitStyle)),
-            ],
-          ),
-          Divider(height: separatorHeight),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.favorite, size: sizeDefault, color: Colors.indigo),
-              Spacer(),
-              Text(_heartRate.toString(), style: measurementStyle),
-              SizedBox(
-                  width: sizeDefault, child: Text('bpm', style: unitStyle)),
-            ],
-          ),
-          Divider(height: separatorHeight),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.add_road, size: sizeDefault, color: Colors.indigo),
-              Spacer(),
-              Text(_distance.toStringAsFixed(0), style: measurementStyle),
-              SizedBox(width: sizeDefault, child: Text('m', style: unitStyle)),
-            ],
-          ),
-          Divider(height: separatorHeight),
-          Expanded(
-            child: CustomPaint(
-              painter: TrackPainter(),
-              child: trackMarker == null
-                  ? SizedBox(width: 0, height: 0)
-                  : Stack(
-                      children: <Widget>[
-                        Positioned(
-                          left: trackMarker.dx - THICK,
-                          top: trackMarker.dy - THICK,
-                          child: Container(
-                              decoration: BoxDecoration(
-                                color: Color(0x88FF0000),
-                                borderRadius: BorderRadius.circular(THICK),
-                              ),
-                              width: THICK * 2,
-                              height: THICK * 2),
-                        ),
-                      ],
-                    ),
-            ),
-          ),
-        ],
+        children: rows,
       ),
     );
   }
