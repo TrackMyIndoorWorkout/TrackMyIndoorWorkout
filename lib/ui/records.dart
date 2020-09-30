@@ -27,9 +27,8 @@ class HistogramData {
   final double upper;
   int count;
   int percent;
-  final String range;
 
-  HistogramData({this.index, this.upper, this.range}) {
+  HistogramData({this.index, this.upper}) {
     count = 0;
     percent = 0;
   }
@@ -39,8 +38,10 @@ class HistogramData {
   }
 
   calculatePercent(int total) {
-    if (count > 0) {
-      percent = total * 100 ~/ count;
+    if (total > 0) {
+      percent = count * 100 ~/ total;
+    } else {
+      percent = 0;
     }
   }
 }
@@ -151,7 +152,7 @@ class RecordsScreenState extends State<RecordsScreen> {
 
         if (measurementCounter.hasPower) {
           _tiles.add("power");
-          final tileConfig = TileConfiguration(
+          var tileConfig = TileConfiguration(
             title: "Power (W)",
             dataFn: _getPowerData,
           );
@@ -162,23 +163,18 @@ class RecordsScreenState extends State<RecordsScreen> {
               .asMap()
               .entries
               .map(
-                (entry) => HistogramData(
-                  index: entry.key,
-                  upper: entry.value,
-                  range: '<${entry.value.toStringAsFixed(0)}',
-                ),
+                (entry) => HistogramData(index: entry.key, upper: entry.value),
               )
               .toList();
           tileConfig.histogram.add(HistogramData(
             index: prefSpec.binCount - 1,
             upper: 0,
-            range: '>${prefSpec.zoneBounds.last.toStringAsFixed(0)}',
           ));
           _tileConfigurations["power"] = tileConfig;
         }
         if (measurementCounter.hasSpeed) {
           _tiles.add("speed");
-          final tileConfig = TileConfiguration(
+          var tileConfig = TileConfiguration(
             title: "Speed (km/h)",
             dataFn: _getSpeedData,
           );
@@ -189,23 +185,18 @@ class RecordsScreenState extends State<RecordsScreen> {
               .asMap()
               .entries
               .map(
-                (entry) => HistogramData(
-                  index: entry.key,
-                  upper: entry.value,
-                  range: '<${entry.value.toStringAsFixed(0)}',
-                ),
+                (entry) => HistogramData(index: entry.key, upper: entry.value),
               )
               .toList();
           tileConfig.histogram.add(HistogramData(
             index: prefSpec.binCount - 1,
             upper: 0,
-            range: '>${prefSpec.zoneBounds.last.toStringAsFixed(0)}',
           ));
           _tileConfigurations["speed"] = tileConfig;
         }
         if (measurementCounter.hasCadence) {
           _tiles.add("cadence");
-          final tileConfig = TileConfiguration(
+          var tileConfig = TileConfiguration(
             title: "Cadence (rpm)",
             dataFn: _getCadenceData,
           );
@@ -216,23 +207,18 @@ class RecordsScreenState extends State<RecordsScreen> {
               .asMap()
               .entries
               .map(
-                (entry) => HistogramData(
-                  index: entry.key,
-                  upper: entry.value,
-                  range: '<${entry.value.toStringAsFixed(0)}',
-                ),
+                (entry) => HistogramData(index: entry.key, upper: entry.value),
               )
               .toList();
           tileConfig.histogram.add(HistogramData(
             index: prefSpec.binCount - 1,
             upper: 0,
-            range: '>${prefSpec.zoneBounds.last.toStringAsFixed(0)}',
           ));
           _tileConfigurations["cadence"] = tileConfig;
         }
         if (measurementCounter.hasHeartRate) {
           _tiles.add("hr");
-          final tileConfig = TileConfiguration(
+          var tileConfig = TileConfiguration(
             title: "Cadence (rpm)",
             dataFn: _getHRData,
           );
@@ -243,17 +229,12 @@ class RecordsScreenState extends State<RecordsScreen> {
               .asMap()
               .entries
               .map(
-                (entry) => HistogramData(
-                  index: entry.key,
-                  upper: entry.value,
-                  range: '<${entry.value.toStringAsFixed(0)}',
-                ),
+                (entry) => HistogramData(index: entry.key, upper: entry.value),
               )
               .toList();
           tileConfig.histogram.add(HistogramData(
             index: prefSpec.binCount - 1,
             upper: 0,
-            range: '>${prefSpec.zoneBounds.last.toStringAsFixed(0)}',
           ));
           _tileConfigurations["hr"] = tileConfig;
         }
