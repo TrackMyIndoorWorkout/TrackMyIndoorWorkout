@@ -300,11 +300,11 @@ class DeviceState extends State<DeviceScreen> {
     };
 
     _rowConfig = [
-      RowConfig(icon: Icons.whatshot, unit: 'k Cal'),
-      RowConfig(icon: Icons.bolt, unit: 'W'),
-      RowConfig(icon: Icons.speed, unit: 'km/h'),
-      RowConfig(icon: Icons.directions_bike, unit: 'rpm'),
-      RowConfig(icon: Icons.favorite, unit: 'bpm'),
+      RowConfig(icon: Icons.whatshot, unit: 'cal'),
+      RowConfig(icon: Icons.bolt, unit: preferencesSpecs[0].unit),
+      RowConfig(icon: Icons.speed, unit: preferencesSpecs[1].unit),
+      RowConfig(icon: Icons.directions_bike, unit: preferencesSpecs[2].unit),
+      RowConfig(icon: Icons.favorite, unit: preferencesSpecs[3].unit),
       RowConfig(icon: Icons.add_road, unit: 'm'),
     ];
 
