@@ -152,11 +152,11 @@ class RecordsScreenState extends State<RecordsScreen> {
 
         if (measurementCounter.hasPower) {
           _tiles.add("power");
+          var prefSpec = preferencesSpecs[0];
           var tileConfig = TileConfiguration(
-            title: "Power (W)",
+            title: prefSpec.fullTitle,
             dataFn: _getPowerData,
           );
-          var prefSpec = preferencesSpecs[0];
           prefSpec.calculateBounds(measurementCounter.minPower.toDouble(),
               measurementCounter.maxPower.toDouble());
           tileConfig.histogram = prefSpec.zoneBounds
@@ -174,11 +174,11 @@ class RecordsScreenState extends State<RecordsScreen> {
         }
         if (measurementCounter.hasSpeed) {
           _tiles.add("speed");
+          var prefSpec = preferencesSpecs[1];
           var tileConfig = TileConfiguration(
-            title: "Speed (km/h)",
+            title: prefSpec.fullTitle,
             dataFn: _getSpeedData,
           );
-          var prefSpec = preferencesSpecs[1];
           prefSpec.calculateBounds(
               measurementCounter.minSpeed, measurementCounter.maxSpeed);
           tileConfig.histogram = prefSpec.zoneBounds
@@ -196,11 +196,11 @@ class RecordsScreenState extends State<RecordsScreen> {
         }
         if (measurementCounter.hasCadence) {
           _tiles.add("cadence");
+          var prefSpec = preferencesSpecs[2];
           var tileConfig = TileConfiguration(
-            title: "Cadence (rpm)",
+            title: prefSpec.fullTitle,
             dataFn: _getCadenceData,
           );
-          var prefSpec = preferencesSpecs[2];
           prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
               measurementCounter.maxCadence.toDouble());
           tileConfig.histogram = prefSpec.zoneBounds
@@ -218,11 +218,11 @@ class RecordsScreenState extends State<RecordsScreen> {
         }
         if (measurementCounter.hasHeartRate) {
           _tiles.add("hr");
+          var prefSpec = preferencesSpecs[3];
           var tileConfig = TileConfiguration(
-            title: "Cadence (rpm)",
+            title: prefSpec.fullTitle,
             dataFn: _getHRData,
           );
-          var prefSpec = preferencesSpecs[3];
           prefSpec.calculateBounds(measurementCounter.minHr.toDouble(),
               measurementCounter.maxHr.toDouble());
           tileConfig.histogram = prefSpec.zoneBounds
