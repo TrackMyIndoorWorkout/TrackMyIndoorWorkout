@@ -318,6 +318,7 @@ class DeviceState extends State<DeviceScreen> {
     _cadence = 0;
     _heartRate = 0;
     _distance = UX_DEBUG ? _random.nextInt(100000).toDouble() : 0;
+    _fillValues(); // initial
 
     if (UX_DEBUG) {
       _simulateMeasurements();
