@@ -24,11 +24,12 @@ class PreferencesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> zonePreferences = [PreferenceTitle('Zones')];
+    List<Widget> zonePreferences = [];
     preferencesSpecs.forEach((prefSpec) {
       zonePreferences.addAll([
+        PreferenceTitle(prefSpec.title),
         TextFieldPreference(
-          THRESHOLD_CAPITAL + prefSpec.title,
+          THRESHOLD_CAPITAL + prefSpec.fullTitle,
           prefSpec.thresholdTag,
           defaultVal: prefSpec.thresholdDefault,
           validator: (str) {

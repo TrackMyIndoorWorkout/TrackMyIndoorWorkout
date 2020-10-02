@@ -45,6 +45,7 @@ final fiveFgPalette = [
 class PreferencesSpec {
   final String metric;
   final String title;
+  final String unit;
   final String thresholdTag;
   final String thresholdDefault;
   final String zonesTag;
@@ -58,11 +59,14 @@ class PreferencesSpec {
   PreferencesSpec({
     this.metric,
     this.title,
+    this.unit,
     this.thresholdTag,
     this.thresholdDefault,
     this.zonesTag,
     this.zonesDefault,
   });
+
+  String get fullTitle => '$title ($unit)';
 
   calculateZones() {
     final thresholdString = PrefService.getString(thresholdTag);
@@ -117,7 +121,7 @@ class PreferencesSpec {
 }
 
 const THRESHOLD_CAPITAL = 'Threshold ';
-const ZONES_CAPITAL = ' Zones';
+const ZONES_CAPITAL = ' Zones (list of % of threshold)';
 const THRESHOLD_PREFIX = 'threshold_';
 const ZONES_POSTFIX = '_zones';
 const METRICS = ['power', 'speed', 'cadence', 'hr'];
@@ -126,6 +130,7 @@ final preferencesSpecs = [
   PreferencesSpec(
     metric: METRICS[0],
     title: 'Power',
+    unit: 'W',
     thresholdTag: THRESHOLD_PREFIX + METRICS[0],
     thresholdDefault: '360',
     zonesTag: METRICS[0] + ZONES_POSTFIX,
@@ -134,6 +139,7 @@ final preferencesSpecs = [
   PreferencesSpec(
     metric: METRICS[1],
     title: 'Speed',
+    unit: 'kmh',
     thresholdTag: THRESHOLD_PREFIX + METRICS[1],
     thresholdDefault: '30',
     zonesTag: METRICS[1] + ZONES_POSTFIX,
@@ -142,6 +148,7 @@ final preferencesSpecs = [
   PreferencesSpec(
     metric: METRICS[2],
     title: 'Cadence',
+    unit: 'rpm',
     thresholdTag: THRESHOLD_PREFIX + METRICS[2],
     thresholdDefault: '120',
     zonesTag: METRICS[2] + ZONES_POSTFIX,
@@ -150,6 +157,7 @@ final preferencesSpecs = [
   PreferencesSpec(
     metric: METRICS[3],
     title: 'Heart Rate',
+    unit: 'bpm',
     thresholdTag: THRESHOLD_PREFIX + METRICS[3],
     thresholdDefault: '180',
     zonesTag: METRICS[3] + ZONES_POSTFIX,
