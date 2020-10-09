@@ -164,3 +164,7 @@ final preferencesSpecs = [
     zonesDefault: '50,60,70,80,90,100',
   ),
 ];
+
+const DEVICE_FILTERING = "Device Filtering";
+const DEVICE_FILTERING_TAG = "device_filtering";
+const DEVICE_FILTERING_DEFAULT = true;

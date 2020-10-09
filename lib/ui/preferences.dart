@@ -24,9 +24,9 @@ class PreferencesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> zonePreferences = [];
+    List<Widget> appPreferences = [];
     preferencesSpecs.forEach((prefSpec) {
-      zonePreferences.addAll([
+      appPreferences.addAll([
         PreferenceTitle(prefSpec.title),
         TextFieldPreference(
           THRESHOLD_CAPITAL + prefSpec.fullTitle,
@@ -53,9 +53,18 @@ class PreferencesScreen extends StatelessWidget {
       ]);
     });
 
+    appPreferences.addAll([
+      PreferenceTitle(DEVICE_FILTERING),
+      SwitchPreference(
+        DEVICE_FILTERING,
+        DEVICE_FILTERING_TAG,
+        defaultVal: DEVICE_FILTERING_DEFAULT,
+      ),
+    ]);
+
     return Scaffold(
-      appBar: AppBar(title: Text('Zone Preferences')),
-      body: PreferencePage(zonePreferences)
+      appBar: AppBar(title: Text('Preferences')),
+      body: PreferencePage(appPreferences)
     );
   }
 }

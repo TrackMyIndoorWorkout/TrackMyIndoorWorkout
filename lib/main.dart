@@ -10,12 +10,15 @@ void main() async {
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   await PrefService.init(prefix: 'pref_');
-  Map<String, String> prefDefaults = {};
+  Map<String, dynamic> prefDefaults = {};
   preferencesSpecs.forEach((prefSpec) {
     prefDefaults.addAll({
       prefSpec.thresholdTag: prefSpec.thresholdDefault,
       prefSpec.zonesTag: prefSpec.zonesDefault,
     });
+  });
+  prefDefaults.addAll({
+    DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT
   });
   PrefService.setDefaultValues(prefDefaults);
 

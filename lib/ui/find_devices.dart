@@ -3,12 +3,14 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:track_my_indoor_exercise/ui/preferences.dart';
+import 'package:preferences/preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../devices/devices.dart';
+import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';
 import 'device.dart';
+import 'preferences.dart';
 import 'scan_result.dart';
 
 const HELP_URL =
@@ -24,6 +26,8 @@ class FindDevicesScreen extends StatefulWidget {
 }
 
 class FindDevicesState extends State<FindDevicesScreen> {
+  bool _filterDevices;
+
   @override
   dispose() {
     FlutterBlue.instance.stopScan();
@@ -33,6 +37,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   @override
   void initState() {
     initializeDateFormatting();
+    _filterDevices = PrefService.getBool(DEVICE_FILTERING_TAG);
     super.initState();
   }
 
@@ -87,7 +92,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
                       .where((d) =>
-                          UX_DEBUG ||
+                          !_filterDevices ||
                           d.device.name.startsWith(devices[0].namePrefix))
                       .map(
                         (r) => ScanResultTile(
@@ -169,6 +174,37 @@ class FindDevicesState extends State<FindDevicesScreen> {
             heroTag: null,
             child: Icon(Icons.settings),
             onPressed: () async => Get.to(PreferencesScreen()),
+          ),
+          FloatingActionButton(
+            heroTag: null,
+            child: Icon(Icons.filter_alt),
+            onPressed: () async {
+              Get.defaultDialog(
+                title: 'Device filtering',
+                middleText: 'Should the app try to filter supported devices? ' +
+                    'Yes: filter. No: show all nearby Bluetooth devices',
+                confirm: FlatButton(
+                  child: Text("Yes"),
+                  onPressed: () {
+                    PrefService.setBool(DEVICE_FILTERING_TAG, true);
+                    setState(() {
+                      _filterDevices = true;
+                    });
+                    Get.close(1);
+                  },
+                ),
+                cancel: FlatButton(
+                  child: Text("No"),
+                  onPressed: () {
+                    PrefService.setBool(DEVICE_FILTERING_TAG, false);
+                    setState(() {
+                      _filterDevices = false;
+                    });
+                    Get.close(1);
+                  },
+                ),
+              );
+            },
           ),
         ],
       ),
