@@ -1,5 +1,5 @@
 /// List of statuscode used by Fault
-/// set in  Strava API
+/// set in Strava API
 final statusOk = 0;
 final statusInvalidToken = 1;
 final statusUnknownError = 2;
