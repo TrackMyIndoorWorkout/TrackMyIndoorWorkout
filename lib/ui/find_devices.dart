@@ -103,7 +103,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
-                      .where((d) => !_filterDevices || d.device.seemsSupported())
+                      .where(
+                          (d) => !_filterDevices || d.device.seemsSupported())
                       .map(
                         (r) => ScanResultTile(
                           result: r,

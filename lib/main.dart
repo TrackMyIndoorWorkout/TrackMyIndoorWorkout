@@ -18,7 +18,7 @@ void main() async {
     });
   });
   prefDefaults.addAll({
-    DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT
+    DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT,
   });
   PrefService.setDefaultValues(prefDefaults);
 

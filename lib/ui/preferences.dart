@@ -64,7 +64,7 @@ class PreferencesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('Preferences')),
-      body: PreferencePage(appPreferences)
+      body: PreferencePage(appPreferences),
     );
   }
 }
