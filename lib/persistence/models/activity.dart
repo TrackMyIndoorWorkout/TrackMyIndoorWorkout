@@ -26,6 +26,9 @@ class Activity {
   @ColumnInfo(name: 'strava_id')
   int stravaId;
 
+  @ignore
+  DateTime startDateTime;
+
   Activity(
       {this.id,
       this.deviceName,
@@ -36,7 +39,8 @@ class Activity {
       this.elapsed: 0,
       this.calories: 0,
       this.uploaded: false,
-      this.stravaId});
+      this.stravaId,
+      this.startDateTime});
 
   finish(double distance, int elapsed, int calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;

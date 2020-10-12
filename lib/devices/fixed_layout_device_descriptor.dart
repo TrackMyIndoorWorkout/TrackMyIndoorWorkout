@@ -1,3 +1,4 @@
+import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import 'device_descriptor.dart';
 import 'metric_descriptor.dart';
@@ -71,20 +72,31 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   }
 
   @override
-  Record getMeasurement(int activityId, DateTime rightNow, DateTime lastRecord,
-      double speed, double distance, List<int> data, Record supplement) {
+  Record getMeasurement(
+    Activity activity,
+    int lastElapsed,
+    Duration idleDuration,
+    double speed,
+    double distance,
+    List<int> data,
+    Record supplement,
+  ) {
+    final elapsed = getTime(data).toInt();
     double dD = 0;
     if (speed > 0) {
-      Duration dT = rightNow.difference(lastRecord);
-      dD = speed / DeviceDescriptor.MS2KMH * dT.inMilliseconds / 1000.0;
+      final dT = elapsed - lastElapsed;
+      if (dT > 0) {
+        dD = dT > 0 ? speed / DeviceDescriptor.MS2KMH * dT / 1000.0 : 0.0;
+      }
     }
-    final timeStamp = rightNow.millisecondsSinceEpoch;
+    final elapsedDuration = Duration(seconds: elapsed);
+    final timeStamp = activity.startDateTime.add(idleDuration).add(elapsedDuration);
     if (data != null) {
       return Record(
-        activityId: activityId,
-        timeStamp: timeStamp,
+        activityId: activity.id,
+        timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: distance + dD,
-        elapsed: getTime(data).toInt(),
+        elapsed: elapsed,
         calories: getCalories(data).toInt(),
         power: getPower(data).toInt(),
         speed: getSpeed(data),
@@ -93,8 +105,8 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       );
     } else {
       return Record(
-        activityId: activityId,
-        timeStamp: timeStamp,
+        activityId: activity.id,
+        timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: distance + dD,
         elapsed: supplement.elapsed,
         calories: supplement.calories,

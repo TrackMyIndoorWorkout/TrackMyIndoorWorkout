@@ -1,3 +1,4 @@
+import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 
 typedef MeasurementProcessing(List<int> data);
@@ -39,6 +40,13 @@ abstract class DeviceDescriptor {
     this.fullName = '$vendorName $modelName';
   }
 
-  Record getMeasurement(int activityId, DateTime rightNow, DateTime lastRecord,
-      double speed, double distance, List<int> data, Record supplement);
+  Record getMeasurement(
+    Activity activity,
+    int lastElapsed,
+    Duration idleDuration,
+    double speed,
+    double distance,
+    List<int> data,
+    Record supplement,
+  );
 }
