@@ -154,7 +154,7 @@ packages:
       name: code_builder
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.1"
+    version: "3.5.0"
   collection:
     dependency: transitive
     description:
@@ -196,7 +196,7 @@ packages:
       name: e2e
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.0"
+    version: "0.7.0+1"
   fake_async:
     dependency: transitive
     description:
@@ -291,49 +291,7 @@ packages:
       name: get
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.12.1"
-  get_core:
-    dependency: transitive
-    description:
-      name: get_core
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.12.0"
-  get_instance:
-    dependency: transitive
-    description:
-      name: get_instance
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.12.0"
-  get_navigation:
-    dependency: transitive
-    description:
-      name: get_navigation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.12.0"
-  get_rx:
-    dependency: transitive
-    description:
-      name: get_rx
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.12.0"
-  get_state_manager:
-    dependency: transitive
-    description:
-      name: get_state_manager
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.12.0"
-  get_utils:
-    dependency: transitive
-    description:
-      name: get_utils
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.12.0"
+    version: "3.13.2"
   glob:
     dependency: transitive
     description:
@@ -354,7 +312,7 @@ packages:
       name: html
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.14.0+3"
+    version: "0.14.0+4"
   http:
     dependency: "direct main"
     description:
@@ -376,6 +334,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.4"
+  import_js_library:
+    dependency: transitive
+    description:
+      name: import_js_library
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   intl:
     dependency: "direct main"
     description:
@@ -529,7 +494,7 @@ packages:
       name: plugin_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   pool:
     dependency: transitive
     description:
@@ -688,14 +653,14 @@ packages:
       name: sqflite_common_ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0+1"
+    version: "1.1.1"
   sqlite3:
     dependency: transitive
     description:
       name: sqlite3
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.5"
+    version: "0.1.6"
   stack_trace:
     dependency: transitive
     description:
@@ -835,7 +800,21 @@ packages:
       name: wakelock
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.4+2"
+    version: "0.2.0+1"
+  wakelock_platform_interface:
+    dependency: transitive
+    description:
+      name: wakelock_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
+  wakelock_web:
+    dependency: transitive
+    description:
+      name: wakelock_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0+2"
   watcher:
     dependency: transitive
     description:
@@ -880,4 +859,4 @@ packages:
     version: "2.2.1"
 sdks:
   dart: ">=2.10.0-4.0.dev <2.10.0"
-  flutter: ">=1.17.0 <2.0.0"
+  flutter: ">=1.20.0 <2.0.0"

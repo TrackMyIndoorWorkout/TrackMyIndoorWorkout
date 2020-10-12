@@ -16,6 +16,18 @@ import 'scan_result.dart';
 const HELP_URL =
     "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
 
+extension DeviceMathing on BluetoothDevice {
+  bool seemsSupported() {
+    for (var dev in devices) {
+      if (name.startsWith(dev.namePrefix)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}
+
 class FindDevicesScreen extends StatefulWidget {
   FindDevicesScreen({Key key}) : super(key: key);
 
@@ -59,7 +71,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
-                      .where((d) => d.name.startsWith(devices[0].namePrefix))
+                      .where((d) => d.seemsSupported())
                       .map((d) => ListTile(
                             title: Text(d.name),
                             subtitle: Text(d.id.toString()),
@@ -91,9 +103,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
-                      .where((d) =>
-                          !_filterDevices ||
-                          d.device.name.startsWith(devices[0].namePrefix))
+                      .where((d) => !_filterDevices || d.device.seemsSupported())
                       .map(
                         (r) => ScanResultTile(
                           result: r,
