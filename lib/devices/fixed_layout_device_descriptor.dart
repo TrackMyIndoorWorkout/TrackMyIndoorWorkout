@@ -81,7 +81,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     List<int> data,
     Record supplement,
   ) {
-    final elapsed = getTime(data).toInt();
+    final elapsed = data != null ? getTime(data).toInt() : lastElapsed;
     double dD = 0;
     if (speed > 0) {
       final dT = elapsed - lastElapsed;
