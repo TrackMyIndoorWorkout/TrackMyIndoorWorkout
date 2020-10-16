@@ -90,7 +90,8 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       }
     }
     final elapsedDuration = Duration(seconds: elapsed);
-    final timeStamp = activity.startDateTime.add(idleDuration).add(elapsedDuration);
+    final timeStamp =
+        activity.startDateTime.add(idleDuration).add(elapsedDuration);
     if (data != null) {
       return Record(
         activityId: activity.id,
