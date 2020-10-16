@@ -86,7 +86,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     if (speed > 0) {
       final dT = elapsed - lastElapsed;
       if (dT > 0) {
-        dD = dT > 0 ? speed / DeviceDescriptor.MS2KMH * dT / 1000.0 : 0.0;
+        dD = dT > 0 ? speed / DeviceDescriptor.MS2KMH * dT : 0.0;
       }
     }
     final elapsedDuration = Duration(seconds: elapsed);
