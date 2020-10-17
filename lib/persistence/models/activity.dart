@@ -29,18 +29,19 @@ class Activity {
   @ignore
   DateTime startDateTime;
 
-  Activity(
-      {this.id,
-      this.deviceName,
-      this.deviceId,
-      this.start,
-      this.end: 0,
-      this.distance: 0,
-      this.elapsed: 0,
-      this.calories: 0,
-      this.uploaded: false,
-      this.stravaId,
-      this.startDateTime});
+  Activity({
+    this.id,
+    this.deviceName,
+    this.deviceId,
+    this.start,
+    this.end: 0,
+    this.distance: 0,
+    this.elapsed: 0,
+    this.calories: 0,
+    this.uploaded: false,
+    this.stravaId,
+    this.startDateTime,
+  });
 
   finish(double distance, int elapsed, int calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;
