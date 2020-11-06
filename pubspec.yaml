@@ -25,6 +25,7 @@ dependencies:
   wakelock: any
   charts_flutter: any
   preferences: any
+  loading_overlay: any
   flutter:
     sdk: flutter
 
