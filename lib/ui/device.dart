@@ -303,7 +303,7 @@ class DeviceState extends State<DeviceScreen> {
   _openDatabase() async {
     _database = await $FloorAppDatabase
         .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2]).build();
+        .addMigrations([migration1to2, migration2to3]).build();
   }
 
   @override

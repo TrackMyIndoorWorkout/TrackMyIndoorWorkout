@@ -33,7 +33,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     super.initState();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2])
+        .addMigrations([migration1to2, migration2to3])
         .build()
         .then((db) {
           setState(() {

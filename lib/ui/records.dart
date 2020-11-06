@@ -131,7 +131,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     _tiles = [];
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2])
+        .addMigrations([migration1to2, migration2to3])
         .build()
         .then((db) async {
           _allRecords = await db.recordDao.findAllActivityRecords(activity.id);
