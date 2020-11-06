@@ -18,5 +18,5 @@ abstract class AppDatabase extends FloorDatabase {
 final migration1to2 = Migration(1, 2, (database) async {
   await database.execute(
       "ALTER TABLE $ACTIVITIES_TABLE_NAME ADD COLUMN four_cc TEXT; " +
-          "UPDATE $ACTIVITIES_TABLE_NAME SET four_cc='PSCP'");
+          "UPDATE $ACTIVITIES_TABLE_NAME SET four_cc='PSCP' WHERE 1=1");
 });
