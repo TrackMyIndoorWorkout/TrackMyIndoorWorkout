@@ -25,6 +25,8 @@ class Activity {
   bool uploaded;
   @ColumnInfo(name: 'strava_id')
   int stravaId;
+  @ColumnInfo(name: 'four_cc')
+  final String fourCC;
 
   @ignore
   DateTime startDateTime;
@@ -41,6 +43,7 @@ class Activity {
     this.uploaded: false,
     this.stravaId,
     this.startDateTime,
+    this.fourCC,
   });
 
   finish(double distance, int elapsed, int calories) {

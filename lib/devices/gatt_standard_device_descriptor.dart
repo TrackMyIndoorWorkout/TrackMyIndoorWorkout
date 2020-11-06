@@ -3,14 +3,14 @@ import '../persistence/models/record.dart';
 import 'device_descriptor.dart';
 import 'short_metric_descriptor.dart';
 
-class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
+class GattStandardDeviceDescriptor extends DeviceDescriptor {
   final ShortMetricDescriptor time;
   final ShortMetricDescriptor calories;
   final ShortMetricDescriptor speed;
   final ShortMetricDescriptor power;
   final ShortMetricDescriptor cadence;
 
-  FixedLayoutDeviceDescriptor({
+  GattStandardDeviceDescriptor({
     fourCC,
     vendorName,
     modelName,
@@ -23,6 +23,8 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     equipmentStateId,
     measurementService1Id,
     measurement1Id,
+    measurementService2Id,
+    measurement2Id,
     heartRate,
     canMeasurementProcessed,
     this.time,
@@ -43,6 +45,8 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
           equipmentStateId: equipmentStateId,
           measurementService1Id: measurementService1Id,
           measurement1Id: measurement1Id,
+          measurementService2Id: measurementService2Id,
+          measurement2Id: measurement2Id,
           heartRate: heartRate,
           canMeasurementProcessed: canMeasurementProcessed,
         );

@@ -131,179 +131,185 @@ class RecordsScreenState extends State<RecordsScreen> {
     _tiles = [];
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
+        .addMigrations([migration1to2])
         .build()
         .then((db) async {
-      _allRecords = await db.recordDao.findAllActivityRecords(activity.id);
-      setState(() {
-        _pointCount = size.width.toInt() - 20;
-        if (_allRecords.length < _pointCount) {
-          _sampledRecords =
-              _allRecords.map((r) => r.hydrate()).toList(growable: false);
-        } else {
-          final nth = _allRecords.length / _pointCount;
-          _sampledRecords = List.generate(_pointCount,
-              (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate());
-        }
-        final measurementCounter = MeasurementCounter();
-        _allRecords.forEach((record) {
-          measurementCounter.processRecord(record);
-        });
-        preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
+          _allRecords = await db.recordDao.findAllActivityRecords(activity.id);
+          setState(() {
+            _pointCount = size.width.toInt() - 20;
+            if (_allRecords.length < _pointCount) {
+              _sampledRecords =
+                  _allRecords.map((r) => r.hydrate()).toList(growable: false);
+            } else {
+              final nth = _allRecords.length / _pointCount;
+              _sampledRecords = List.generate(_pointCount,
+                  (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate());
+            }
+            final measurementCounter = MeasurementCounter();
+            _allRecords.forEach((record) {
+              measurementCounter.processRecord(record);
+            });
+            preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
 
-        if (measurementCounter.hasPower) {
-          _tiles.add("power");
-          var prefSpec = preferencesSpecs[0];
-          var tileConfig = TileConfiguration(
-            title: prefSpec.fullTitle,
-            dataFn: _getPowerData,
-          );
-          prefSpec.calculateBounds(measurementCounter.minPower.toDouble(),
-              measurementCounter.maxPower.toDouble());
-          tileConfig.histogram = prefSpec.zoneBounds
-              .asMap()
-              .entries
-              .map(
-                (entry) => HistogramData(index: entry.key, upper: entry.value),
-              )
-              .toList();
-          tileConfig.histogram.add(HistogramData(
-            index: prefSpec.binCount - 1,
-            upper: 0,
-          ));
-          _tileConfigurations["power"] = tileConfig;
-        }
-        if (measurementCounter.hasSpeed) {
-          _tiles.add("speed");
-          var prefSpec = preferencesSpecs[1];
-          var tileConfig = TileConfiguration(
-            title: prefSpec.fullTitle,
-            dataFn: _getSpeedData,
-          );
-          prefSpec.calculateBounds(
-              measurementCounter.minSpeed, measurementCounter.maxSpeed);
-          tileConfig.histogram = prefSpec.zoneBounds
-              .asMap()
-              .entries
-              .map(
-                (entry) => HistogramData(index: entry.key, upper: entry.value),
-              )
-              .toList();
-          tileConfig.histogram.add(HistogramData(
-            index: prefSpec.binCount - 1,
-            upper: 0,
-          ));
-          _tileConfigurations["speed"] = tileConfig;
-        }
-        if (measurementCounter.hasCadence) {
-          _tiles.add("cadence");
-          var prefSpec = preferencesSpecs[2];
-          var tileConfig = TileConfiguration(
-            title: prefSpec.fullTitle,
-            dataFn: _getCadenceData,
-          );
-          prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
-              measurementCounter.maxCadence.toDouble());
-          tileConfig.histogram = prefSpec.zoneBounds
-              .asMap()
-              .entries
-              .map(
-                (entry) => HistogramData(index: entry.key, upper: entry.value),
-              )
-              .toList();
-          tileConfig.histogram.add(HistogramData(
-            index: prefSpec.binCount - 1,
-            upper: 0,
-          ));
-          _tileConfigurations["cadence"] = tileConfig;
-        }
-        if (measurementCounter.hasHeartRate) {
-          _tiles.add("hr");
-          var prefSpec = preferencesSpecs[3];
-          var tileConfig = TileConfiguration(
-            title: prefSpec.fullTitle,
-            dataFn: _getHRData,
-          );
-          prefSpec.calculateBounds(measurementCounter.minHr.toDouble(),
-              measurementCounter.maxHr.toDouble());
-          tileConfig.histogram = prefSpec.zoneBounds
-              .asMap()
-              .entries
-              .map(
-                (entry) => HistogramData(index: entry.key, upper: entry.value),
-              )
-              .toList();
-          tileConfig.histogram.add(HistogramData(
-            index: prefSpec.binCount - 1,
-            upper: 0,
-          ));
-          _tileConfigurations["hr"] = tileConfig;
-        }
-        _allRecords.forEach((record) {
-          if (measurementCounter.hasPower) {
-            if (record.power > 0) {
+            if (measurementCounter.hasPower) {
+              _tiles.add("power");
+              var prefSpec = preferencesSpecs[0];
+              var tileConfig = TileConfiguration(
+                title: prefSpec.fullTitle,
+                dataFn: _getPowerData,
+              );
+              prefSpec.calculateBounds(measurementCounter.minPower.toDouble(),
+                  measurementCounter.maxPower.toDouble());
+              tileConfig.histogram = prefSpec.zoneBounds
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) =>
+                        HistogramData(index: entry.key, upper: entry.value),
+                  )
+                  .toList();
+              tileConfig.histogram.add(HistogramData(
+                index: prefSpec.binCount - 1,
+                upper: 0,
+              ));
+              _tileConfigurations["power"] = tileConfig;
+            }
+            if (measurementCounter.hasSpeed) {
+              _tiles.add("speed");
+              var prefSpec = preferencesSpecs[1];
+              var tileConfig = TileConfiguration(
+                title: prefSpec.fullTitle,
+                dataFn: _getSpeedData,
+              );
+              prefSpec.calculateBounds(
+                  measurementCounter.minSpeed, measurementCounter.maxSpeed);
+              tileConfig.histogram = prefSpec.zoneBounds
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) =>
+                        HistogramData(index: entry.key, upper: entry.value),
+                  )
+                  .toList();
+              tileConfig.histogram.add(HistogramData(
+                index: prefSpec.binCount - 1,
+                upper: 0,
+              ));
+              _tileConfigurations["speed"] = tileConfig;
+            }
+            if (measurementCounter.hasCadence) {
+              _tiles.add("cadence");
+              var prefSpec = preferencesSpecs[2];
+              var tileConfig = TileConfiguration(
+                title: prefSpec.fullTitle,
+                dataFn: _getCadenceData,
+              );
+              prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
+                  measurementCounter.maxCadence.toDouble());
+              tileConfig.histogram = prefSpec.zoneBounds
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) =>
+                        HistogramData(index: entry.key, upper: entry.value),
+                  )
+                  .toList();
+              tileConfig.histogram.add(HistogramData(
+                index: prefSpec.binCount - 1,
+                upper: 0,
+              ));
+              _tileConfigurations["cadence"] = tileConfig;
+            }
+            if (measurementCounter.hasHeartRate) {
+              _tiles.add("hr");
+              var prefSpec = preferencesSpecs[3];
+              var tileConfig = TileConfiguration(
+                title: prefSpec.fullTitle,
+                dataFn: _getHRData,
+              );
+              prefSpec.calculateBounds(measurementCounter.minHr.toDouble(),
+                  measurementCounter.maxHr.toDouble());
+              tileConfig.histogram = prefSpec.zoneBounds
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) =>
+                        HistogramData(index: entry.key, upper: entry.value),
+                  )
+                  .toList();
+              tileConfig.histogram.add(HistogramData(
+                index: prefSpec.binCount - 1,
+                upper: 0,
+              ));
+              _tileConfigurations["hr"] = tileConfig;
+            }
+            _allRecords.forEach((record) {
+              if (measurementCounter.hasPower) {
+                if (record.power > 0) {
+                  var tileConfig = _tileConfigurations["power"];
+                  tileConfig.count++;
+                  final binIndex = preferencesSpecs[0].binIndex(record.power);
+                  tileConfig.histogram[binIndex].increment();
+                }
+              }
+              if (measurementCounter.hasSpeed) {
+                if (record.speed > 0) {
+                  var tileConfig = _tileConfigurations["speed"];
+                  tileConfig.count++;
+                  final binIndex = preferencesSpecs[1].binIndex(record.speed);
+                  tileConfig.histogram[binIndex].increment();
+                }
+              }
+              if (measurementCounter.hasCadence) {
+                if (record.cadence > 0) {
+                  var tileConfig = _tileConfigurations["cadence"];
+                  tileConfig.count++;
+                  final binIndex = preferencesSpecs[2].binIndex(record.cadence);
+                  tileConfig.histogram[binIndex].increment();
+                }
+              }
+              if (measurementCounter.hasHeartRate) {
+                if (record.heartRate > 0) {
+                  var tileConfig = _tileConfigurations["hr"];
+                  tileConfig.count++;
+                  final binIndex =
+                      preferencesSpecs[3].binIndex(record.heartRate);
+                  tileConfig.histogram[binIndex].increment();
+                }
+              }
+            });
+            if (measurementCounter.hasPower) {
               var tileConfig = _tileConfigurations["power"];
-              tileConfig.count++;
-              final binIndex = preferencesSpecs[0].binIndex(record.power);
-              tileConfig.histogram[binIndex].increment();
+              tileConfig.histogram.forEach((h) {
+                h.calculatePercent(tileConfig.count);
+              });
+              tileConfig.histogramFn = _getPowerHistogram;
             }
-          }
-          if (measurementCounter.hasSpeed) {
-            if (record.speed > 0) {
+            if (measurementCounter.hasSpeed) {
               var tileConfig = _tileConfigurations["speed"];
-              tileConfig.count++;
-              final binIndex = preferencesSpecs[1].binIndex(record.speed);
-              tileConfig.histogram[binIndex].increment();
+              tileConfig.histogram.forEach((h) {
+                h.calculatePercent(tileConfig.count);
+              });
+              tileConfig.histogramFn = _getSpeedHistogram;
             }
-          }
-          if (measurementCounter.hasCadence) {
-            if (record.cadence > 0) {
+            if (measurementCounter.hasCadence) {
               var tileConfig = _tileConfigurations["cadence"];
-              tileConfig.count++;
-              final binIndex = preferencesSpecs[2].binIndex(record.cadence);
-              tileConfig.histogram[binIndex].increment();
+              tileConfig.histogram.forEach((h) {
+                h.calculatePercent(tileConfig.count);
+              });
+              tileConfig.histogramFn = _getCadenceHistogram;
             }
-          }
-          if (measurementCounter.hasHeartRate) {
-            if (record.heartRate > 0) {
+            if (measurementCounter.hasHeartRate) {
               var tileConfig = _tileConfigurations["hr"];
-              tileConfig.count++;
-              final binIndex = preferencesSpecs[3].binIndex(record.heartRate);
-              tileConfig.histogram[binIndex].increment();
+              tileConfig.histogram.forEach((h) {
+                h.calculatePercent(tileConfig.count);
+              });
+              tileConfig.histogramFn = _getHrHistogram;
             }
-          }
+            _allRecords = null;
+            _initialized = true;
+          });
         });
-        if (measurementCounter.hasPower) {
-          var tileConfig = _tileConfigurations["power"];
-          tileConfig.histogram.forEach((h) {
-            h.calculatePercent(tileConfig.count);
-          });
-          tileConfig.histogramFn = _getPowerHistogram;
-        }
-        if (measurementCounter.hasSpeed) {
-          var tileConfig = _tileConfigurations["speed"];
-          tileConfig.histogram.forEach((h) {
-            h.calculatePercent(tileConfig.count);
-          });
-          tileConfig.histogramFn = _getSpeedHistogram;
-        }
-        if (measurementCounter.hasCadence) {
-          var tileConfig = _tileConfigurations["cadence"];
-          tileConfig.histogram.forEach((h) {
-            h.calculatePercent(tileConfig.count);
-          });
-          tileConfig.histogramFn = _getCadenceHistogram;
-        }
-        if (measurementCounter.hasHeartRate) {
-          var tileConfig = _tileConfigurations["hr"];
-          tileConfig.histogram.forEach((h) {
-            h.calculatePercent(tileConfig.count);
-          });
-          tileConfig.histogramFn = _getHrHistogram;
-        }
-        _allRecords = null;
-        _initialized = true;
-      });
-    });
   }
 
   List<Series<Record, DateTime>> _getPowerData() {

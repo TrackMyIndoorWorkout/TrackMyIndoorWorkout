@@ -29,11 +29,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   initState() {
     super.initState();
-    $FloorAppDatabase.databaseBuilder('app_database.db').build().then((db) {
-      setState(() {
-        _database = db;
-      });
-    });
+    $FloorAppDatabase
+        .databaseBuilder('app_database.db')
+        .addMigrations([migration1to2])
+        .build()
+        .then((db) {
+          setState(() {
+            _database = db;
+          });
+        });
   }
 
   @override

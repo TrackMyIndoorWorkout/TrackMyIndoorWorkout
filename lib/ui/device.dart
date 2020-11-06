@@ -9,14 +9,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
-import 'package:track_my_indoor_exercise/persistence/preferences.dart';
 import 'package:wakelock/wakelock.dart';
-import '../devices/device_descriptor.dart';
 import '../devices/devices.dart';
+import '../devices/device_descriptor.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
+import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
@@ -43,6 +43,19 @@ class RowConfig {
   RowConfig({this.icon, this.unit});
 }
 
+extension DeviceIdentification on BluetoothDevice {
+  DeviceDescriptor getDescriptor() {
+    for (var dev in deviceMap.values) {
+      if (name.startsWith(dev.namePrefix)) {
+        return dev;
+      }
+    }
+
+    // Default to first (Precor Power)
+    return deviceMap.values.first;
+  }
+}
+
 class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
   final BluetoothDeviceState initialState;
@@ -62,7 +75,9 @@ class DeviceScreen extends StatefulWidget {
 }
 
 class DeviceState extends State<DeviceScreen> {
-  DeviceState({this.device, this.initialState, this.size});
+  DeviceState({this.device, this.initialState, this.size}) {
+    this.descriptor = device.getDescriptor();
+  }
 
   Size size;
   // Track drawing cached computed values
@@ -74,7 +89,7 @@ class DeviceState extends State<DeviceScreen> {
 
   final BluetoothDevice device;
   final BluetoothDeviceState initialState;
-  final DeviceDescriptor descriptor = devices[0];
+  DeviceDescriptor descriptor;
   BluetoothCharacteristic _measurements;
   bool _discovered;
   bool _measuring;
@@ -233,7 +248,7 @@ class DeviceState extends State<DeviceScreen> {
       }
 
       final equipmentService =
-          _filterService(services, descriptor.measurementServiceId);
+          _filterService(services, descriptor.measurementService1Id);
       if (equipmentService != null) {
         final equipmentTypeChar = _filterCharacteristic(
             equipmentService.characteristics, descriptor.equipmentTypeId);
@@ -249,7 +264,7 @@ class DeviceState extends State<DeviceScreen> {
         if (_areListsEqual(name, descriptor.manufacturer) &&
             _areListsEqual(equipmentType, BIKE_EQUIPMENT)) {
           _measurements = _filterCharacteristic(
-              equipmentService.characteristics, descriptor.measurementId);
+              equipmentService.characteristics, descriptor.measurement1Id);
           if (_measurements != null) {
             await _measurements.setNotifyValue(true);
             _measurements.value.listen((data) async {
@@ -260,6 +275,7 @@ class DeviceState extends State<DeviceScreen> {
 
             final now = DateTime.now();
             _activity = Activity(
+              fourCC: descriptor.fourCC,
               deviceName: device.name,
               deviceId: device.id.id,
               start: now.millisecondsSinceEpoch,
@@ -285,8 +301,9 @@ class DeviceState extends State<DeviceScreen> {
   }
 
   _openDatabase() async {
-    _database =
-        await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+    _database = await $FloorAppDatabase
+        .databaseBuilder('app_database.db')
+        .addMigrations([migration1to2]).build();
   }
 
   @override

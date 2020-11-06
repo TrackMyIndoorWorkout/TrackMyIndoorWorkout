@@ -93,11 +93,12 @@ abstract class Upload {
 
         $FloorAppDatabase
             .databaseBuilder('app_database.db')
+            .addMigrations([migration1to2])
             .build()
             .then((db) async {
-          activity.markUploaded(_response.id);
-          await db.activityDao.updateActivity(activity);
-        });
+              activity.markUploaded(_response.id);
+              await db.activityDao.updateActivity(activity);
+            });
         debugPrint('id ${_response.id}');
         idUpload = _response.id;
         onUploadPending.add(idUpload);

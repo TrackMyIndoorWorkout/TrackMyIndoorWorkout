@@ -1,23 +1,24 @@
-import 'package:flutter_blue/flutter_blue.dart';
-
+import 'device_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
-import 'metric_descriptor.dart';
+import 'gatt_standard_device_descriptor.dart';
+import 'short_metric_descriptor.dart';
 
-final withServices = [Guid('a026ee07-0a7d-4ab3-97fa-f1500f9feb8b')];
-
-final devices = [
-  FixedLayoutDeviceDescriptor(
+Map<String, DeviceDescriptor> deviceMap = {
+  "PSCP": FixedLayoutDeviceDescriptor(
+    fourCC: "PSCP",
     vendorName: "Precor",
     modelName: "Spinner Chrono Power",
-    sku: "SBK 869",
     namePrefix: "CHRONO",
-    nameStart: [67, 72, 82, 79, 78, 79], // CHRONO
-    manufacturer: [80, 114, 101, 99, 111, 114], // Precor
-    model: [49], // 1
-    measurementServiceId: "ee07",
+    nameStart: [67, 72, 82, 79, 78, 79],
+    // CHRONO
+    manufacturer: [80, 114, 101, 99, 111, 114],
+    // Precor
+    model: [49],
+    // 1
     equipmentTypeId: "e01f",
     equipmentStateId: "e01e",
-    measurementId: "e01d",
+    measurementService1Id: "ee07",
+    measurement1Id: "e01d",
     heartRate: 5,
     canMeasurementProcessed: (List<int> data) {
       if (data.length != 19) return false;
@@ -27,10 +28,37 @@ final devices = [
       }
       return true;
     },
-    time: MetricDescriptor(lsb: 3, msb: 4, divider: 1),
-    calories: MetricDescriptor(lsb: 13, msb: 14, divider: 1),
-    speed: MetricDescriptor(lsb: 6, msb: 7, divider: 100),
-    power: MetricDescriptor(lsb: 17, msb: 18, divider: 1),
-    cadence: MetricDescriptor(lsb: 8, msb: 9, divider: 10),
+    time: ShortMetricDescriptor(lsb: 3, msb: 4, divider: 1),
+    calories: ShortMetricDescriptor(lsb: 13, msb: 14, divider: 1),
+    speed: ShortMetricDescriptor(lsb: 6, msb: 7, divider: 100),
+    power: ShortMetricDescriptor(lsb: 17, msb: 18, divider: 1),
+    cadence: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 10),
   ),
-];
+  "SIC4": GattStandardDeviceDescriptor(
+    fourCC: "SIC4",
+    vendorName: "Nautilus, Inc",
+    modelName: "Schwinn IC4",
+    namePrefix: "IC BIKE",
+    nameStart: [73, 67, 32, 66, 111, 113, 105],
+    // IC Bike
+    manufacturer: [78, 97, 117, 116, 105, 108, 117, 115, 44, 32, 73, 110, 99],
+    // Nautilus, Inc
+    model: [73, 67, 32, 66, 73, 75, 69],
+    // IC BIKE
+    equipmentTypeId: "e01f",
+    equipmentStateId: "e01e",
+    measurementService1Id: "1826",
+    measurement1Id: "2ad2",
+    measurementService2Id: "1816",
+    measurement2Id: "2a5b",
+    heartRate: 8,
+    canMeasurementProcessed: (List<int> data) {
+      return true;
+    },
+    time: ShortMetricDescriptor(lsb: 3, msb: 4, divider: 1),
+    calories: ShortMetricDescriptor(lsb: 13, msb: 14, divider: 1),
+    speed: ShortMetricDescriptor(lsb: 6, msb: 7, divider: 100),
+    power: ShortMetricDescriptor(lsb: 17, msb: 18, divider: 1),
+    cadence: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 10),
+  ),
+};

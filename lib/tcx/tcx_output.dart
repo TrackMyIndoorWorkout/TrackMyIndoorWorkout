@@ -106,6 +106,7 @@ class TCXOutput {
       Activity activity, List<Record> records) async {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
 
+    final descriptor = deviceMap[activity.fourCC];
     TCXModel tcxInfo = TCXModel()
       ..activityType = ActivityType.Ride
       ..totalDistance = activity.distance
@@ -115,9 +116,9 @@ class TCXOutput {
 
       // Related to device that generated the data
       ..creator = 'Precor'
-      ..deviceName = devices[0].fullName
+      ..deviceName = descriptor.fullName
       ..unitID = activity.deviceId
-      ..productID = devices[0].sku
+      ..productID = descriptor.modelName
       ..versionMajor = MAJOR
       ..versionMinor = MINOR
       ..buildMajor = MAJOR

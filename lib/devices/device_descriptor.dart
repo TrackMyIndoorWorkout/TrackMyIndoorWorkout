@@ -6,34 +6,38 @@ typedef MeasurementProcessing(List<int> data);
 abstract class DeviceDescriptor {
   static const double MS2KMH = 3.6;
 
+  final String fourCC;
   final String vendorName;
   final String modelName;
   var fullName;
-  final String sku;
   final String namePrefix;
   final List<int> nameStart;
   final List<int> manufacturer;
   final List<int> model;
-  final String measurementServiceId;
   final String equipmentTypeId;
   final String equipmentStateId;
-  final String measurementId;
+  final String measurementService1Id;
+  final String measurement1Id;
+  String measurementService2Id;
+  String measurement2Id;
   final int heartRate;
   final MeasurementProcessing canMeasurementProcessed;
 
   DeviceDescriptor({
+    this.fourCC,
     this.vendorName,
     this.modelName,
     this.fullName = '',
-    this.sku,
     this.namePrefix,
     this.nameStart,
     this.manufacturer,
     this.model,
-    this.measurementServiceId,
     this.equipmentTypeId,
     this.equipmentStateId,
-    this.measurementId,
+    this.measurementService1Id,
+    this.measurement1Id,
+    this.measurementService2Id = '',
+    this.measurement2Id = '',
     this.heartRate,
     this.canMeasurementProcessed,
   }) {

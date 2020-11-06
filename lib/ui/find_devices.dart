@@ -18,7 +18,7 @@ const HELP_URL =
 
 extension DeviceMathing on BluetoothDevice {
   bool seemsSupported() {
-    for (var dev in devices) {
+    for (var dev in deviceMap.values) {
       if (name.startsWith(dev.namePrefix)) {
         return true;
       }
@@ -60,8 +60,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
         title: Text('Supported Exercise Equipment:'),
       ),
       body: RefreshIndicator(
-        onRefresh: () => FlutterBlue.instance.startScan(
-            withServices: withServices, timeout: Duration(seconds: 4)),
+        onRefresh: () =>
+            FlutterBlue.instance.startScan(timeout: Duration(seconds: 4)),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[

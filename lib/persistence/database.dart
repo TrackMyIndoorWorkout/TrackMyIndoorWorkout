@@ -7,10 +7,15 @@ import 'dao/record_dao.dart';
 import 'models/activity.dart';
 import 'models/record.dart';
 
-part 'database.g.dart'; // the generated code will be there
+part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 1, entities: [Activity, Record])
+@Database(version: 2, entities: [Activity, Record])
 abstract class AppDatabase extends FloorDatabase {
   ActivityDao get activityDao;
   RecordDao get recordDao;
 }
+
+final migration1to2 = Migration(1, 2, (database) async {
+  await database.execute("ALTER TABLE activity ADD COLUMN four_cc TEXT; " +
+      "UPDATE activity SET four_cc='PSCP'");
+});
