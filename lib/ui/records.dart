@@ -260,10 +260,6 @@ class RecordsScreenState extends State<RecordsScreen> {
                         HistogramData(index: entry.key, upper: entry.value),
                   )
                   .toList();
-              tileConfig.histogram.add(HistogramData(
-                index: prefSpec.binCount - 1,
-                upper: 0,
-              ));
               _tileConfigurations["power"] = tileConfig;
             }
             if (measurementCounter.hasSpeed) {
@@ -288,10 +284,6 @@ class RecordsScreenState extends State<RecordsScreen> {
                         HistogramData(index: entry.key, upper: entry.value),
                   )
                   .toList();
-              tileConfig.histogram.add(HistogramData(
-                index: prefSpec.binCount - 1,
-                upper: 0,
-              ));
               _tileConfigurations["speed"] = tileConfig;
             }
             if (measurementCounter.hasCadence) {
@@ -316,10 +308,6 @@ class RecordsScreenState extends State<RecordsScreen> {
                         HistogramData(index: entry.key, upper: entry.value),
                   )
                   .toList();
-              tileConfig.histogram.add(HistogramData(
-                index: prefSpec.binCount - 1,
-                upper: 0,
-              ));
               _tileConfigurations["cadence"] = tileConfig;
             }
             if (measurementCounter.hasHeartRate) {
@@ -344,10 +332,6 @@ class RecordsScreenState extends State<RecordsScreen> {
                         HistogramData(index: entry.key, upper: entry.value),
                   )
                   .toList();
-              tileConfig.histogram.add(HistogramData(
-                index: prefSpec.binCount - 1,
-                upper: 0,
-              ));
               _tileConfigurations["hr"] = tileConfig;
             }
             _allRecords.forEach((record) {
@@ -450,11 +434,13 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<HistogramData, double>>[
       Series<HistogramData, double>(
         id: 'powerHistogram',
-        colorFn: (HistogramData data, __) =>
-            preferencesSpecs[0].binFgColor(data.index),
+        // colorFn: (HistogramData data, __) =>
+        //   preferencesSpecs[0].binFgColor(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["power"].histogram,
+        labelAccessorFn: (HistogramData data, _) =>
+            'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
@@ -490,11 +476,13 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<HistogramData, double>>[
       Series<HistogramData, double>(
         id: 'speedHistogram',
-        colorFn: (HistogramData data, __) =>
-            preferencesSpecs[1].binFgColor(data.index),
+        // colorFn: (HistogramData data, __) =>
+        //     preferencesSpecs[1].binFgColor(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["speed"].histogram,
+        labelAccessorFn: (HistogramData data, _) =>
+            'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
@@ -530,11 +518,13 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<HistogramData, double>>[
       Series<HistogramData, double>(
         id: 'speedHistogram',
-        colorFn: (HistogramData data, __) =>
-            preferencesSpecs[2].binFgColor(data.index),
+        // colorFn: (HistogramData data, __) =>
+        //     preferencesSpecs[2].binFgColor(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["cadence"].histogram,
+        labelAccessorFn: (HistogramData data, _) =>
+            'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
@@ -570,11 +560,13 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<HistogramData, double>>[
       Series<HistogramData, double>(
         id: 'hrHistogram',
-        colorFn: (HistogramData data, __) =>
-            preferencesSpecs[3].binFgColor(data.index),
+        // colorFn: (HistogramData data, __) =>
+        //     preferencesSpecs[3].binFgColor(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["hr"].histogram,
+        labelAccessorFn: (HistogramData data, _) =>
+            'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
@@ -668,35 +660,32 @@ class RecordsScreenState extends State<RecordsScreen> {
                         ],
                       ),
                     ),
-                    Text(
-                        "Selected: ${_selectedValues[index]} ${preferencesSpecs[index].unit} at ${_selectedTimes[index]}"),
+                    Text("Selected: ${_selectedValues[index]} " +
+                        "${preferencesSpecs[index].unit} " +
+                        "at ${_selectedTimes[index]}"),
                     Text(_tileConfigurations[item].histogramTitle),
                     SizedBox(
                       width: size.width,
                       height: size.height / 5,
-                      child: LineChart(
+                      child: PieChart(
                         _tileConfigurations[item].histogramFn(),
                         animate: true,
+                        defaultRenderer: ArcRendererConfig(
+                            arcWidth: 60,
+                            arcRendererDecorators: [ArcLabelDecorator()]),
                         behaviors: [
-                          LinePointHighlighter(
-                            showHorizontalFollowLine:
-                                LinePointHighlighterFollowLineType.nearest,
-                            showVerticalFollowLine:
-                                LinePointHighlighterFollowLineType.nearest,
+                          DatumLegend(
+                            position: BehaviorPosition.start,
+                            horizontalFirst: false,
+                            cellPadding:
+                                new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                            showMeasures: true,
+                            legendDefaultMeasure:
+                                LegendDefaultMeasure.firstValue,
+                            measureFormatter: (num value) {
+                              return value == null ? '-' : '$value %';
+                            },
                           ),
-                          SelectNearest(
-                              eventTrigger: SelectionTrigger.tapAndDrag),
-                          RangeAnnotation(
-                            List.generate(
-                              preferencesSpecs[index].binCount,
-                              (i) => RangeAnnotationSegment(
-                                preferencesSpecs[index].zoneLower[i],
-                                preferencesSpecs[index].zoneUpper[i],
-                                RangeAnnotationAxisType.domain,
-                                color: preferencesSpecs[index].binBgColor(i),
-                              ),
-                            ),
-                          )
                         ],
                       ),
                     ),
