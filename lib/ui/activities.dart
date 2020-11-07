@@ -24,12 +24,15 @@ class ActivitiesScreen extends StatefulWidget {
 
 class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database;
-  bool _isLoading = true;
+  bool _isLoading;
+  int _deletionCount;
 
   AppDatabase get database => _database;
 
   @override
   initState() {
+    _isLoading = true;
+    _deletionCount = 0;
     super.initState();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
@@ -72,6 +75,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         child: _database == null
             ? Container()
             : CustomListView(
+                key: Key("CLV$_deletionCount"),
                 paginationMode: PaginationMode.page,
                 initialOffset: 0,
                 loadingBuilder: (BuildContext context) =>
@@ -184,6 +188,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                                       .deleteAllActivityRecords(activity.id);
                                   await _database.activityDao
                                       .deleteActivity(activity);
+                                  setState(() {
+                                    _deletionCount++;
+                                  });
                                   Get.close(1);
                                 },
                               ),
