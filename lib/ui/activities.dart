@@ -25,14 +25,14 @@ class ActivitiesScreen extends StatefulWidget {
 class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database;
   bool _isLoading;
-  int _deletionCount;
+  int _editCount;
 
   AppDatabase get database => _database;
 
   @override
   initState() {
     _isLoading = true;
-    _deletionCount = 0;
+    _editCount = 0;
     super.initState();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
@@ -75,7 +75,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         child: _database == null
             ? Container()
             : CustomListView(
-                key: Key("CLV$_deletionCount"),
+                key: Key("CLV$_editCount"),
                 paginationMode: PaginationMode.page,
                 initialOffset: 0,
                 loadingBuilder: (BuildContext context) =>
@@ -111,6 +111,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                   final dateString = DateFormat.yMd().format(startStamp);
                   final timeString = DateFormat.Hms().format(startStamp);
                   return ListTile(
+                    key: Key("${activity.id} ${activity.stravaId}"),
                     onTap: () async => await Get.to(RecordsScreen(
                         activity: item, size: Get.mediaQuery.size)),
                     title: Text(
@@ -147,6 +148,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                                   await stravaService.upload(activity, records);
                               setState(() {
                                 _isLoading = false;
+                                _editCount++;
                               });
                               Get.snackbar(
                                   "Upload",
@@ -189,7 +191,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                                   await _database.activityDao
                                       .deleteActivity(activity);
                                   setState(() {
-                                    _deletionCount++;
+                                    _editCount++;
                                   });
                                   Get.close(1);
                                 },
