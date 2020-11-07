@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -94,23 +95,51 @@ class MeasurementCounter {
   bool get hasHeartRate => hrCounter > 0;
 }
 
+class SelectionStrings {
+  String time;
+  String value;
+
+  SelectionStrings({this.time, this.value});
+}
+
 typedef DataFn = List<Series<Record, DateTime>> Function();
+typedef DataStringFn = String Function(Record);
 typedef HistogramFn = List<Series<HistogramData, double>> Function();
 
 class TileConfiguration {
   final String title;
   final String histogramTitle;
   final DataFn dataFn;
+  final DataStringFn dataStringFn;
   HistogramFn histogramFn;
   final List<double> zoneBounds;
   int count;
   List<HistogramData> histogram;
+  final common.SelectionModelListener<DateTime> selectionListener;
 
-  TileConfiguration(
-      {this.title, this.histogramTitle, this.dataFn, this.zoneBounds}) {
+  TileConfiguration({
+    this.title,
+    this.histogramTitle,
+    this.dataFn,
+    this.dataStringFn,
+    this.selectionListener,
+    this.zoneBounds,
+  }) {
     count = 0;
   }
   bool get hasMeasurement => count > 0;
+
+  SelectionStrings getSelectionStrings(SelectionModel<DateTime> model) {
+    final selectedDatum = model.selectedDatum;
+
+    if (selectedDatum.isNotEmpty) {
+      final datum = selectedDatum.first.datum.hydrate();
+      return SelectionStrings(
+          time: datum.dt.toString(), value: dataStringFn(datum));
+    }
+
+    return SelectionStrings(time: "-", value: "-");
+  }
 }
 
 class RecordsScreenState extends State<RecordsScreen> {
@@ -125,6 +154,8 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<String> _tiles;
   bool _initialized;
   String _elapsedString;
+  List<String> _selectedTimes;
+  List<String> _selectedValues;
 
   @override
   initState() {
@@ -132,6 +163,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     _initialized = false;
     _tileConfigurations = {};
     _tiles = [];
+    _selectedTimes = [];
+    _selectedValues = [];
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
         .addMigrations([migration1to2, migration2to3])
@@ -161,11 +194,15 @@ class RecordsScreenState extends State<RecordsScreen> {
 
             if (measurementCounter.hasPower) {
               _tiles.add("power");
+              _selectedTimes.add("-");
+              _selectedValues.add("-");
               var prefSpec = preferencesSpecs[0];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
                 histogramTitle: prefSpec.histogramTitle,
                 dataFn: _getPowerData,
+                dataStringFn: _getPowerString,
+                selectionListener: _powerSelectionListener,
               );
               prefSpec.calculateBounds(measurementCounter.minPower.toDouble(),
                   measurementCounter.maxPower.toDouble());
@@ -185,11 +222,15 @@ class RecordsScreenState extends State<RecordsScreen> {
             }
             if (measurementCounter.hasSpeed) {
               _tiles.add("speed");
+              _selectedTimes.add("-");
+              _selectedValues.add("-");
               var prefSpec = preferencesSpecs[1];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
                 histogramTitle: prefSpec.histogramTitle,
                 dataFn: _getSpeedData,
+                dataStringFn: _getSpeedString,
+                selectionListener: _speedSelectionListener,
               );
               prefSpec.calculateBounds(
                   measurementCounter.minSpeed, measurementCounter.maxSpeed);
@@ -209,11 +250,15 @@ class RecordsScreenState extends State<RecordsScreen> {
             }
             if (measurementCounter.hasCadence) {
               _tiles.add("cadence");
+              _selectedTimes.add("-");
+              _selectedValues.add("-");
               var prefSpec = preferencesSpecs[2];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
                 histogramTitle: prefSpec.histogramTitle,
                 dataFn: _getCadenceData,
+                dataStringFn: _getCadenceString,
+                selectionListener: _cadenceSelectionListener,
               );
               prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
                   measurementCounter.maxCadence.toDouble());
@@ -233,11 +278,15 @@ class RecordsScreenState extends State<RecordsScreen> {
             }
             if (measurementCounter.hasHeartRate) {
               _tiles.add("hr");
+              _selectedTimes.add("-");
+              _selectedValues.add("-");
               var prefSpec = preferencesSpecs[3];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
                 histogramTitle: prefSpec.histogramTitle,
-                dataFn: _getHRData,
+                dataFn: _getHrData,
+                dataStringFn: _getHrString,
+                selectionListener: _hrSelectionListener,
               );
               prefSpec.calculateBounds(measurementCounter.minHr.toDouble(),
                   measurementCounter.maxHr.toDouble());
@@ -337,6 +386,20 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
+  String _getPowerString(Record record) {
+    return record.power.toString();
+  }
+
+  void _powerSelectionListener(SelectionModel<DateTime> model) {
+    final selectionStrings =
+        _tileConfigurations["power"].getSelectionStrings(model);
+
+    setState(() {
+      _selectedTimes[0] = selectionStrings.time;
+      _selectedValues[0] = selectionStrings.value;
+    });
+  }
+
   List<Series<HistogramData, double>> _getPowerHistogram() {
     return <Series<HistogramData, double>>[
       Series<HistogramData, double>(
@@ -361,6 +424,20 @@ class RecordsScreenState extends State<RecordsScreen> {
         data: _sampledRecords,
       ),
     ];
+  }
+
+  String _getSpeedString(Record record) {
+    return record.speed.toString();
+  }
+
+  void _speedSelectionListener(SelectionModel<DateTime> model) {
+    final selectionStrings =
+        _tileConfigurations["speed"].getSelectionStrings(model);
+
+    setState(() {
+      _selectedTimes[1] = selectionStrings.time;
+      _selectedValues[1] = selectionStrings.value;
+    });
   }
 
   List<Series<HistogramData, double>> _getSpeedHistogram() {
@@ -389,6 +466,20 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
+  String _getCadenceString(Record record) {
+    return record.cadence.toString();
+  }
+
+  void _cadenceSelectionListener(SelectionModel<DateTime> model) {
+    final selectionStrings =
+        _tileConfigurations["cadence"].getSelectionStrings(model);
+
+    setState(() {
+      _selectedTimes[2] = selectionStrings.time;
+      _selectedValues[2] = selectionStrings.value;
+    });
+  }
+
   List<Series<HistogramData, double>> _getCadenceHistogram() {
     return <Series<HistogramData, double>>[
       Series<HistogramData, double>(
@@ -402,7 +493,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<Series<Record, DateTime>> _getHRData() {
+  List<Series<Record, DateTime>> _getHrData() {
     return <Series<Record, DateTime>>[
       Series<Record, DateTime>(
         id: 'hr',
@@ -413,6 +504,20 @@ class RecordsScreenState extends State<RecordsScreen> {
         data: _sampledRecords,
       ),
     ];
+  }
+
+  String _getHrString(Record record) {
+    return record.cadence.toString();
+  }
+
+  void _hrSelectionListener(SelectionModel<DateTime> model) {
+    final selectionStrings =
+        _tileConfigurations["hr"].getSelectionStrings(model);
+
+    setState(() {
+      _selectedTimes[3] = selectionStrings.time;
+      _selectedValues[3] = selectionStrings.value;
+    });
   }
 
   List<Series<HistogramData, double>> _getHrHistogram() {
@@ -479,10 +584,10 @@ class RecordsScreenState extends State<RecordsScreen> {
                       child: TimeSeriesChart(
                         _tileConfigurations[item].dataFn(),
                         animate: true,
-                        // primaryMeasureAxis: NumericAxisSpec(
-                        //   tickProviderSpec:
-                        //       BasicNumericTickProviderSpec(zeroBound: false),
-                        // ),
+                        primaryMeasureAxis: NumericAxisSpec(
+                          tickProviderSpec:
+                              BasicNumericTickProviderSpec(zeroBound: false),
+                        ),
                         behaviors: [
                           LinePointHighlighter(
                             showHorizontalFollowLine:
@@ -502,10 +607,19 @@ class RecordsScreenState extends State<RecordsScreen> {
                                 color: preferencesSpecs[index].binBgColor(i),
                               ),
                             ),
-                          )
+                          ),
+                        ],
+                        selectionModels: [
+                          new SelectionModelConfig(
+                            type: SelectionModelType.info,
+                            changedListener:
+                                _tileConfigurations[item].selectionListener,
+                          ),
                         ],
                       ),
                     ),
+                    Text(
+                        "Selected: ${_selectedValues[index]} at ${_selectedTimes[index]}"),
                     Text(_tileConfigurations[item].histogramTitle),
                     SizedBox(
                       width: size.width,
