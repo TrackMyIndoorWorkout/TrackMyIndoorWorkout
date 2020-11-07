@@ -8,69 +8,9 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../track/constants.dart';
 import '../track/utils.dart';
+import '../utils/statistics_accumulator.dart';
 import 'activity_type.dart';
 import 'tcx_model.dart';
-
-class StatisticsAccumulator {
-  bool calculateMaxSpeed;
-  bool calculateAverageHeartRate;
-  bool calculateMaxHeartRate;
-  bool calculateAverageCadence;
-
-  double maxSpeed;
-  int heartRateSum;
-  int heartRateCount;
-  int maxHeartRate;
-  int cadenceSum;
-  int cadenceCount;
-
-  int get averageHeartRate =>
-      heartRateCount > 0 ? heartRateSum ~/ heartRateCount : 0;
-  int get averageCadence => cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0;
-
-  StatisticsAccumulator(
-      {this.calculateMaxSpeed,
-      this.calculateAverageHeartRate,
-      this.calculateMaxHeartRate,
-      this.calculateAverageCadence}) {
-    if (calculateMaxSpeed) {
-      maxSpeed = 0;
-    }
-    if (calculateAverageHeartRate) {
-      heartRateSum = 0;
-      heartRateCount = 0;
-    }
-    if (calculateMaxHeartRate) {
-      maxHeartRate = 0;
-    }
-    if (calculateAverageCadence) {
-      cadenceSum = 0;
-      cadenceCount = 0;
-    }
-  }
-
-  StatisticsAccumulator processTrackPoint(TrackPoint trackPoint) {
-    if (calculateMaxSpeed && trackPoint.speed != null) {
-      maxSpeed = max(maxSpeed, trackPoint.speed);
-    }
-    if (trackPoint.heartRate != null && trackPoint.heartRate > 0) {
-      if (calculateAverageHeartRate) {
-        heartRateSum += trackPoint.heartRate;
-        heartRateCount++;
-      }
-      if (calculateMaxHeartRate) {
-        maxHeartRate = max(maxHeartRate, trackPoint.heartRate);
-      }
-    }
-    if (calculateAverageCadence &&
-        trackPoint.cadence != null &&
-        trackPoint.cadence > 0) {
-      cadenceSum += trackPoint.cadence;
-      cadenceCount++;
-    }
-    return this;
-  }
-}
 
 class TCXOutput {
   static const MAJOR = '1';
@@ -200,22 +140,22 @@ class TCXOutput {
     addElement('DistanceMeters', tcxInfo.totalDistance.toStringAsFixed(2));
 
     final calculateMaxSpeed = tcxInfo.maxSpeed == null || tcxInfo.maxSpeed == 0;
-    final calculateAverageHeartRate =
+    final calculateAvgHeartRate =
         tcxInfo.averageHeartRate == null || tcxInfo.averageHeartRate == 0;
     final calculateMaxHeartRate =
         tcxInfo.maximumHeartRate == null || tcxInfo.maximumHeartRate == 0;
-    final calculateAverageCadence =
+    final calculateAvgCadence =
         tcxInfo.averageCadence == null || tcxInfo.averageCadence == 0;
     var accu = StatisticsAccumulator(
       calculateMaxSpeed: calculateMaxSpeed,
-      calculateAverageHeartRate: calculateAverageHeartRate,
+      calculateAvgHeartRate: calculateAvgHeartRate,
       calculateMaxHeartRate: calculateMaxHeartRate,
-      calculateAverageCadence: calculateAverageCadence,
+      calculateAvgCadence: calculateAvgCadence,
     );
     if (calculateMaxSpeed ||
-        calculateAverageHeartRate ||
+        calculateAvgHeartRate ||
         calculateMaxHeartRate ||
-        calculateAverageCadence) {
+        calculateAvgCadence) {
       tcxInfo.points.forEach((trackPoint) {
         accu.processTrackPoint(trackPoint);
       });
@@ -223,14 +163,14 @@ class TCXOutput {
     if (calculateMaxSpeed) {
       tcxInfo.maxSpeed = accu.maxSpeed;
     }
-    if (calculateAverageHeartRate && accu.heartRateCount > 0) {
-      tcxInfo.averageHeartRate = accu.averageHeartRate;
+    if (calculateAvgHeartRate && accu.heartRateCount > 0) {
+      tcxInfo.averageHeartRate = accu.avgHeartRate;
     }
     if (calculateMaxHeartRate && accu.maxHeartRate > 0) {
       tcxInfo.maximumHeartRate = accu.maxHeartRate;
     }
-    if (calculateAverageCadence && accu.cadenceCount > 0) {
-      tcxInfo.averageCadence = accu.averageCadence;
+    if (calculateAvgCadence && accu.cadenceCount > 0) {
+      tcxInfo.averageCadence = accu.avgCadence;
     }
 
     // Add Maximum speed in meter/second

@@ -10,6 +10,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../utils/statistics_accumulator.dart';
 import 'find_devices.dart';
 
 class RecordsScreen extends StatefulWidget {
@@ -156,6 +157,14 @@ class RecordsScreenState extends State<RecordsScreen> {
   String _elapsedString;
   List<String> _selectedTimes;
   List<String> _selectedValues;
+  String _avgPower = "N/A";
+  String _maxPower = "N/A";
+  String _avgSpeed = "N/A";
+  String _maxSpeed = "N/A";
+  String _avgCadence = "N/A";
+  String _maxCadence = "N/A";
+  String _avgHr = "N/A";
+  String _maxHr = "N/A";
 
   @override
   initState() {
@@ -171,6 +180,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         .build()
         .then((db) async {
           _allRecords = await db.recordDao.findAllActivityRecords(activity.id);
+
           setState(() {
             _elapsedString = Duration(seconds: activity.elapsed)
                 .toString()
@@ -191,6 +201,42 @@ class RecordsScreenState extends State<RecordsScreen> {
               measurementCounter.processRecord(record);
             });
             preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
+
+            var accu = StatisticsAccumulator(
+              calculateAvgPower: measurementCounter.hasPower,
+              calculateMaxPower: measurementCounter.hasPower,
+              calculateAvgSpeed: measurementCounter.hasSpeed,
+              calculateMaxSpeed: measurementCounter.hasSpeed,
+              calculateAvgCadence: measurementCounter.hasCadence,
+              calculateMaxCadence: measurementCounter.hasHeartRate,
+              calculateAvgHeartRate: measurementCounter.hasHeartRate,
+              calculateMaxHeartRate: measurementCounter.hasHeartRate,
+            );
+            _allRecords.forEach((record) {
+              accu.processRecord(record);
+            });
+
+            String unit = "";
+            if (measurementCounter.hasPower) {
+              unit = preferencesSpecs[0].unit;
+              _avgPower = "${accu.avgPower.toStringAsFixed(1)} $unit";
+              _maxPower = "${accu.maxPower} $unit";
+            }
+            if (measurementCounter.hasSpeed) {
+              unit = preferencesSpecs[1].unit;
+              _avgSpeed = "${accu.avgSpeed.toStringAsFixed(1)} $unit";
+              _maxSpeed = "${accu.maxSpeed} $unit";
+            }
+            if (measurementCounter.hasCadence) {
+              unit = preferencesSpecs[2].unit;
+              _avgCadence = "${accu.avgCadence} $unit";
+              _maxCadence = "${accu.maxCadence} $unit";
+            }
+            if (measurementCounter.hasHeartRate) {
+              unit = preferencesSpecs[3].unit;
+              _avgHr = "${accu.avgHeartRate} $unit";
+              _maxHr = "${accu.maxHeartRate} $unit";
+            }
 
             if (measurementCounter.hasPower) {
               _tiles.add("power");
@@ -562,10 +608,14 @@ class RecordsScreenState extends State<RecordsScreen> {
               header: Center(
                 child: Column(
                   children: [
-                    Text('Device: ${activity.deviceName}'),
-                    Text('Elapsed: $_elapsedString'),
-                    Text('Distance: ${activity.distance.toStringAsFixed(1)} m'),
-                    Text('Calories: ${activity.calories} kCal'),
+                    Text('Device: ${activity.deviceName}, ' +
+                        'Elapsed: $_elapsedString'),
+                    Text('Distance: ${activity.distance.toStringAsFixed(1)} m' +
+                        ', Calories: ${activity.calories} kCal'),
+                    Text('Power; Average: $_avgPower, Max: $_maxPower'),
+                    Text('Speed; Average: $_avgSpeed, Max: $_maxSpeed'),
+                    Text('Cadence; Average: $_avgCadence, Max: $_maxCadence'),
+                    Text('HR; Average: $_avgHr, Max: $_maxHr'),
                   ],
                 ),
               ),
@@ -619,7 +669,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       ),
                     ),
                     Text(
-                        "Selected: ${_selectedValues[index]} at ${_selectedTimes[index]}"),
+                        "Selected: ${_selectedValues[index]} ${preferencesSpecs[index].unit} at ${_selectedTimes[index]}"),
                     Text(_tileConfigurations[item].histogramTitle),
                     SizedBox(
                       width: size.width,
