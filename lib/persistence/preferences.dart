@@ -67,6 +67,7 @@ class PreferencesSpec {
   });
 
   String get fullTitle => '$title ($unit)';
+  String get histogramTitle => '$title zones (%)';
 
   calculateZones() {
     final thresholdString = PrefService.getString(thresholdTag);

@@ -99,13 +99,15 @@ typedef HistogramFn = List<Series<HistogramData, double>> Function();
 
 class TileConfiguration {
   final String title;
+  final String histogramTitle;
   final DataFn dataFn;
   HistogramFn histogramFn;
   final List<double> zoneBounds;
   int count;
   List<HistogramData> histogram;
 
-  TileConfiguration({this.title, this.dataFn, this.zoneBounds}) {
+  TileConfiguration(
+      {this.title, this.histogramTitle, this.dataFn, this.zoneBounds}) {
     count = 0;
   }
   bool get hasMeasurement => count > 0;
@@ -122,6 +124,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   Map<String, TileConfiguration> _tileConfigurations;
   List<String> _tiles;
   bool _initialized;
+  String _elapsedString;
 
   @override
   initState() {
@@ -136,6 +139,11 @@ class RecordsScreenState extends State<RecordsScreen> {
         .then((db) async {
           _allRecords = await db.recordDao.findAllActivityRecords(activity.id);
           setState(() {
+            _elapsedString = Duration(seconds: activity.elapsed)
+                .toString()
+                .split('.')
+                .first
+                .padLeft(8, "0");
             _pointCount = size.width.toInt() - 20;
             if (_allRecords.length < _pointCount) {
               _sampledRecords =
@@ -156,6 +164,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               var prefSpec = preferencesSpecs[0];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
+                histogramTitle: prefSpec.histogramTitle,
                 dataFn: _getPowerData,
               );
               prefSpec.calculateBounds(measurementCounter.minPower.toDouble(),
@@ -179,6 +188,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               var prefSpec = preferencesSpecs[1];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
+                histogramTitle: prefSpec.histogramTitle,
                 dataFn: _getSpeedData,
               );
               prefSpec.calculateBounds(
@@ -202,6 +212,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               var prefSpec = preferencesSpecs[2];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
+                histogramTitle: prefSpec.histogramTitle,
                 dataFn: _getCadenceData,
               );
               prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
@@ -225,6 +236,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               var prefSpec = preferencesSpecs[3];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
+                histogramTitle: prefSpec.histogramTitle,
                 dataFn: _getHRData,
               );
               prefSpec.calculateBounds(measurementCounter.minHr.toDouble(),
@@ -446,7 +458,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                 child: Column(
                   children: [
                     Text('Device: ${activity.deviceName}'),
-                    Text('Elapsed: ${activity.elapsed} s'),
+                    Text('Elapsed: $_elapsedString'),
                     Text('Distance: ${activity.distance.toStringAsFixed(1)} m'),
                     Text('Calories: ${activity.calories} kCal'),
                   ],
@@ -455,8 +467,12 @@ class RecordsScreenState extends State<RecordsScreen> {
               adapter: StaticListAdapter(data: _tiles),
               itemBuilder: (context, index, item) {
                 return ListTile(
-                  title: Text(_tileConfigurations[item].title),
+                  title: const Divider(
+                    color: Colors.black,
+                    thickness: 1,
+                  ),
                   subtitle: Column(children: [
+                    Text(_tileConfigurations[item].title),
                     SizedBox(
                       width: size.width,
                       height: size.height / 5,
@@ -490,6 +506,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         ],
                       ),
                     ),
+                    Text(_tileConfigurations[item].histogramTitle),
                     SizedBox(
                       width: size.width,
                       height: size.height / 5,
