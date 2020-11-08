@@ -1,4 +1,5 @@
 import 'package:floor/floor.dart';
+import '../../persistence/preferences.dart';
 import 'activity.dart';
 
 const String RECORDS_TABLE_NAME = 'records';
@@ -47,5 +48,21 @@ class Record {
   Record hydrate() {
     dt = DateTime.fromMillisecondsSinceEpoch(timeStamp);
     return this;
+  }
+
+  double speedByUnit(bool si) {
+    if (si) return speed;
+    return speed * KMH2MPH;
+  }
+
+  double distanceByUnit(bool si) {
+    if (si) return distance;
+    return distance * M2MILE;
+  }
+
+  String distanceStringByUnit(bool si) {
+    final dist = distanceByUnit(si);
+    if (si) return dist.toStringAsFixed(0);
+    return dist.toStringAsFixed(2);
   }
 }

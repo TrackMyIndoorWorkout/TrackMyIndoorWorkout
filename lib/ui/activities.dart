@@ -3,10 +3,12 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:preferences/preferences.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
+import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
 import '../tcx/tcx_output.dart';
@@ -26,6 +28,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database;
   bool _isLoading;
   int _editCount;
+  bool _si;
 
   AppDatabase get database => _database;
 
@@ -34,6 +37,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _isLoading = true;
     _editCount = 0;
     super.initState();
+    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
         .addMigrations([migration1to2, migration2to3])
@@ -116,8 +120,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                         activity: item, size: Get.mediaQuery.size)),
                     title: Text(
                         '$dateString $timeString on ${activity.deviceName}'),
-                    subtitle: Text(
-                        '${activity.elapsed} s, ${activity.distance.toStringAsFixed(0)} m, ${activity.calories} kCal'),
+                    subtitle: Text('Elapsed: ${activity.elapsedString}, ' +
+                        '${activity.distanceByUnit(_si)}, ' +
+                        '${activity.calories} kCal'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

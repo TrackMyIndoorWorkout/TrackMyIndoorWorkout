@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
+import 'package:preferences/preferences.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
@@ -23,7 +24,7 @@ import '../track/track_painter.dart';
 import '../track/utils.dart';
 import 'activities.dart';
 
-const UX_DEBUG = false;
+const UX_DEBUG = true;
 const Map<int, int> ROW_TO_EXTRA = {
   0: 0,
   1: 1,
@@ -113,6 +114,7 @@ class DeviceState extends State<DeviceScreen> {
   int _lastElapsed;
   Activity _activity;
   AppDatabase _database;
+  bool _si;
 
   // Debugging UX without actual connected device
   Timer _timer;
@@ -154,14 +156,14 @@ class DeviceState extends State<DeviceScreen> {
     }
   }
 
-  _fillValues() {
+  _fillValues(Record record) {
     _values = [
-      _calories.toString(),
-      _power.toString(),
-      _speed.toStringAsFixed(1),
-      _cadence.toString(),
-      _heartRate.toString(),
-      _distance.toStringAsFixed(0),
+      record.calories.toString(),
+      record.power.toString(),
+      record.speedByUnit(_si).toStringAsFixed(1),
+      record.cadence.toString(),
+      record.heartRate.toString(),
+      record.distanceStringByUnit(_si),
     ];
   }
 
@@ -202,7 +204,7 @@ class DeviceState extends State<DeviceScreen> {
         _distance = record.distance;
       }
 
-      _fillValues();
+      _fillValues(record);
 
       if (_measuring) {
         if (_speed <= 0) {
@@ -321,6 +323,8 @@ class DeviceState extends State<DeviceScreen> {
       fontFamily: 'DSEG14',
       color: Colors.indigo,
     );
+    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    preferencesSpecs[1].unit = _si ? 'kmh' : 'mph';
     preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
     preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
@@ -340,7 +344,7 @@ class DeviceState extends State<DeviceScreen> {
       RowConfig(icon: Icons.speed, unit: preferencesSpecs[1].unit),
       RowConfig(icon: Icons.directions_bike, unit: preferencesSpecs[2].unit),
       RowConfig(icon: Icons.favorite, unit: preferencesSpecs[3].unit),
-      RowConfig(icon: Icons.add_road, unit: 'm'),
+      RowConfig(icon: Icons.add_road, unit: _si ? 'm' : 'mi'),
     ];
 
     _discovered = false;
@@ -355,7 +359,7 @@ class DeviceState extends State<DeviceScreen> {
     _heartRate = 0;
     _lastElapsed = 0;
     _distance = UX_DEBUG ? _random.nextInt(100000).toDouble() : 0;
-    _fillValues(); // initial
+    _values = ["N/A", "N/A", "N/A", "N/A", "N/A", "N/A"];
 
     if (UX_DEBUG) {
       _simulateMeasurements();
@@ -387,9 +391,7 @@ class DeviceState extends State<DeviceScreen> {
       _heartRate = 60 + _random.nextInt(120);
       _distance += _random.nextInt(10);
 
-      _fillValues();
-
-      _addGraphData(Record(
+      final simulatedRecord = Record(
         timeStamp: rightNow.millisecondsSinceEpoch,
         distance: _distance,
         elapsed: _time,
@@ -398,7 +400,9 @@ class DeviceState extends State<DeviceScreen> {
         speed: _speed,
         cadence: _cadence,
         heartRate: _heartRate,
-      ));
+      );
+      _fillValues(simulatedRecord);
+      _addGraphData(simulatedRecord);
 
       // Update once per second, but make sure to do it at the beginning of each
       // new second, so that the clock is accurate.
@@ -492,9 +496,9 @@ class DeviceState extends State<DeviceScreen> {
       charts.Series<Record, DateTime>(
         id: 'speed',
         colorFn: (Record record, __) =>
-            preferencesSpecs[1].binFgColor(record.speed),
+            preferencesSpecs[1].binFgColor(record.speedByUnit(_si)),
         domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.speed,
+        measureFn: (Record record, _) => record.speedByUnit(_si),
         data: graphData,
       ),
     ];

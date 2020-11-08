@@ -1,5 +1,6 @@
 import 'package:floor/floor.dart';
 import 'package:intl/intl.dart';
+import '../../persistence/preferences.dart';
 import '../../tcx/tcx_output.dart';
 
 const String ACTIVITIES_TABLE_NAME = 'activities';
@@ -30,6 +31,9 @@ class Activity {
 
   @ignore
   DateTime startDateTime;
+
+  String get elapsedString =>
+      Duration(seconds: elapsed).toString().split('.').first.padLeft(8, "0");
 
   Activity({
     this.id,
@@ -72,5 +76,10 @@ class Activity {
       'description': 'Velodrome ride on a $deviceName',
       'fileName': fileName,
     };
+  }
+
+  String distanceByUnit(bool si) {
+    if (si) return '${distance.toStringAsFixed(0)} m';
+    return '${(distance * M2MILE).toStringAsFixed(2)} mi';
   }
 }

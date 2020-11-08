@@ -4,6 +4,8 @@ import '../persistence/models/record.dart';
 import '../tcx/tcx_model.dart';
 
 class StatisticsAccumulator {
+  final bool si;
+
   bool calculateAvgPower;
   bool calculateMaxPower;
   bool calculateAvgSpeed;
@@ -33,6 +35,7 @@ class StatisticsAccumulator {
       heartRateCount > 0 ? heartRateSum ~/ heartRateCount : 0;
 
   StatisticsAccumulator({
+    this.si,
     this.calculateAvgPower = false,
     this.calculateMaxPower = false,
     this.calculateAvgSpeed = false,
@@ -122,12 +125,13 @@ class StatisticsAccumulator {
       }
     }
     if (record.speed != null) {
+      final speed = record.speedByUnit(si);
       if (calculateAvgSpeed) {
-        speedSum += record.speed;
+        speedSum += speed;
         speedCount++;
       }
       if (calculateMaxSpeed) {
-        maxSpeed = max(maxSpeed, record.speed);
+        maxSpeed = max(maxSpeed, speed);
       }
     }
     if (record.heartRate != null && record.heartRate > 0) {

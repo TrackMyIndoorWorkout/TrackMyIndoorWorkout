@@ -45,7 +45,7 @@ final fiveFgPalette = [
 class PreferencesSpec {
   final String metric;
   final String title;
-  final String unit;
+  String unit;
   final String thresholdTag;
   final String thresholdDefault;
   final String zonesTag;
@@ -140,9 +140,9 @@ final preferencesSpecs = [
   PreferencesSpec(
     metric: METRICS[1],
     title: 'Speed',
-    unit: 'kmh',
+    unit: 'mph',
     thresholdTag: THRESHOLD_PREFIX + METRICS[1],
-    thresholdDefault: '30',
+    thresholdDefault: '20',
     zonesTag: METRICS[1] + ZONES_POSTFIX,
     zonesDefault: '55,75,90,105,120,150',
   ),
@@ -169,3 +169,15 @@ final preferencesSpecs = [
 const DEVICE_FILTERING = "Device Filtering";
 const DEVICE_FILTERING_TAG = "device_filtering";
 const DEVICE_FILTERING_DEFAULT = true;
+const DEVICE_FILTERING_DESCRIPTION =
+    "Off: the app won't filter the list of Bluetooth device while scanning. " +
+        "Useful if your equipment has an unexpected Bluetooth name";
+
+const UNIT_SYSTEM = "Unit System";
+const UNIT_SYSTEM_TAG = "unit_system";
+const UNIT_SYSTEM_DEFAULT = false; // false: Imperial, true: Metric
+const UNIT_SYSTEM_DESCRIPTION = "On: metric (km/h speed, meters distance), " +
+    "Off: imperial (mp/h speed, miles distance)";
+
+const KMH2MPH = 0.621371;
+const M2MILE = KMH2MPH / 1000.0;

@@ -5,6 +5,7 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
+import 'package:preferences/preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -51,6 +52,7 @@ class HistogramData {
 const MIN_INIT = 10000;
 
 class MeasurementCounter {
+  final bool si;
   int powerCounter = 0;
   int minPower = MIN_INIT;
   int maxPower = 0;
@@ -67,6 +69,8 @@ class MeasurementCounter {
   int minHr = MIN_INIT;
   int maxHr = 0;
 
+  MeasurementCounter({this.si});
+
   processRecord(Record record) {
     if (record.power > 0) {
       powerCounter++;
@@ -75,8 +79,9 @@ class MeasurementCounter {
     }
     if (record.speed > 0) {
       speedCounter++;
-      maxSpeed = max(maxSpeed, record.speed);
-      minSpeed = min(minSpeed, record.speed);
+      final speed = record.speedByUnit(si);
+      maxSpeed = max(maxSpeed, speed);
+      minSpeed = min(minSpeed, speed);
     }
     if (record.cadence > 0) {
       cadenceCounter++;
@@ -154,17 +159,17 @@ class RecordsScreenState extends State<RecordsScreen> {
   Map<String, TileConfiguration> _tileConfigurations;
   List<String> _tiles;
   bool _initialized;
-  String _elapsedString;
   List<String> _selectedTimes;
   List<String> _selectedValues;
-  String _avgPower = "N/A";
-  String _maxPower = "N/A";
-  String _avgSpeed = "N/A";
-  String _maxSpeed = "N/A";
-  String _avgCadence = "N/A";
-  String _maxCadence = "N/A";
-  String _avgHr = "N/A";
-  String _maxHr = "N/A";
+  String _avgPower;
+  String _maxPower;
+  String _avgSpeed;
+  String _maxSpeed;
+  String _avgCadence;
+  String _maxCadence;
+  String _avgHr;
+  String _maxHr;
+  bool _si;
 
   @override
   initState() {
@@ -174,6 +179,15 @@ class RecordsScreenState extends State<RecordsScreen> {
     _tiles = [];
     _selectedTimes = [];
     _selectedValues = [];
+    _avgPower = "N/A";
+    _maxPower = "N/A";
+    _avgSpeed = "N/A";
+    _maxSpeed = "N/A";
+    _avgCadence = "N/A";
+    _maxCadence = "N/A";
+    _avgHr = "N/A";
+    _maxHr = "N/A";
+    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
         .addMigrations([migration1to2, migration2to3])
@@ -182,11 +196,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           _allRecords = await db.recordDao.findAllActivityRecords(activity.id);
 
           setState(() {
-            _elapsedString = Duration(seconds: activity.elapsed)
-                .toString()
-                .split('.')
-                .first
-                .padLeft(8, "0");
             _pointCount = size.width.toInt() - 20;
             if (_allRecords.length < _pointCount) {
               _sampledRecords =
@@ -196,13 +205,14 @@ class RecordsScreenState extends State<RecordsScreen> {
               _sampledRecords = List.generate(_pointCount,
                   (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate());
             }
-            final measurementCounter = MeasurementCounter();
+            final measurementCounter = MeasurementCounter(si: _si);
             _allRecords.forEach((record) {
               measurementCounter.processRecord(record);
             });
             preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
 
             var accu = StatisticsAccumulator(
+              si: _si,
               calculateAvgPower: measurementCounter.hasPower,
               calculateMaxPower: measurementCounter.hasPower,
               calculateAvgSpeed: measurementCounter.hasSpeed,
@@ -347,7 +357,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                 if (record.speed > 0) {
                   var tileConfig = _tileConfigurations["speed"];
                   tileConfig.count++;
-                  final binIndex = preferencesSpecs[1].binIndex(record.speed);
+                  final binIndex =
+                      preferencesSpecs[1].binIndex(record.speedByUnit(_si));
                   tileConfig.histogram[binIndex].increment();
                 }
               }
@@ -450,9 +461,9 @@ class RecordsScreenState extends State<RecordsScreen> {
       Series<Record, DateTime>(
         id: 'speed',
         colorFn: (Record record, __) =>
-            preferencesSpecs[1].binFgColor(record.speed),
+            preferencesSpecs[1].binFgColor(record.speedByUnit(_si)),
         domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.speed,
+        measureFn: (Record record, _) => record.speedByUnit(_si),
         data: _sampledRecords,
       ),
     ];
@@ -476,8 +487,6 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<HistogramData, double>>[
       Series<HistogramData, double>(
         id: 'speedHistogram',
-        // colorFn: (HistogramData data, __) =>
-        //     preferencesSpecs[1].binFgColor(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["speed"].histogram,
@@ -518,8 +527,6 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <Series<HistogramData, double>>[
       Series<HistogramData, double>(
         id: 'speedHistogram',
-        // colorFn: (HistogramData data, __) =>
-        //     preferencesSpecs[2].binFgColor(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["cadence"].histogram,
@@ -601,7 +608,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                 child: Column(
                   children: [
                     Text('Device: ${activity.deviceName}, ' +
-                        'Elapsed: $_elapsedString'),
+                        'Elapsed: ${activity.elapsedString}'),
                     Text('Distance: ${activity.distance.toStringAsFixed(1)} m' +
                         ', Calories: ${activity.calories} kCal'),
                     Text('Power; Average: $_avgPower, Max: $_maxPower'),
