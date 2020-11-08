@@ -133,6 +133,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           FloatingActionButton(
             heroTag: null,
             child: Icon(Icons.help),
+            foregroundColor: Colors.lightBlue,
+            backgroundColor: Colors.white,
             onPressed: () async {
               if (await canLaunch(HELP_URL)) {
                 launch(HELP_URL);
@@ -144,6 +146,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           FloatingActionButton(
             heroTag: null,
             child: Icon(BrandIcons.strava),
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.deepOrangeAccent,
             onPressed: () async {
               StravaService stravaService;
               if (!Get.isRegistered<StravaService>()) {
@@ -156,12 +160,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 Get.snackbar("Warning", "Strava login unsuccessful");
               }
             },
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.deepOrange,
           ),
           FloatingActionButton(
             heroTag: null,
             child: Icon(Icons.list_alt),
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.indigo,
             onPressed: () async => Get.to(ActivitiesScreen()),
           ),
           StreamBuilder<bool>(
@@ -172,12 +176,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 return FloatingActionButton(
                   heroTag: null,
                   child: Icon(Icons.stop),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.indigo,
                   onPressed: () async => await FlutterBlue.instance.stopScan(),
                 );
               } else {
                 return FloatingActionButton(
                   heroTag: null,
                   child: Icon(Icons.search),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.green,
                   onPressed: () => FlutterBlue.instance
                       .startScan(timeout: Duration(seconds: 4)),
                 );
@@ -187,11 +195,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
           FloatingActionButton(
             heroTag: null,
             child: Icon(Icons.settings),
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.indigo,
             onPressed: () async => Get.to(PreferencesScreen()),
           ),
           FloatingActionButton(
             heroTag: null,
             child: Icon(Icons.filter_alt),
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.indigo,
             onPressed: () async {
               Get.defaultDialog(
                 title: 'Device filtering',
