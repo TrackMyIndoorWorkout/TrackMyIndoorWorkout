@@ -24,7 +24,7 @@ import '../track/track_painter.dart';
 import '../track/utils.dart';
 import 'activities.dart';
 
-const UX_DEBUG = true;
+const UX_DEBUG = false;
 const Map<int, int> ROW_TO_EXTRA = {
   0: 0,
   1: 1,
