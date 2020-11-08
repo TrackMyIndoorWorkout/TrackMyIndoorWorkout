@@ -1,3 +1,4 @@
+import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
@@ -57,7 +58,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Supported Exercise Equipment:'),
+        title: Text(_filterDevices
+            ? 'Supported Exercise Equipment:'
+            : 'Bluetooth Devices'),
       ),
       body: RefreshIndicator(
         onRefresh: () =>
@@ -125,7 +128,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Row(
+      floatingActionButton: FabCircularMenu(
         children: [
           FloatingActionButton(
             heroTag: null,

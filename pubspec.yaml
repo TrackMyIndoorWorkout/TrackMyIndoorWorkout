@@ -26,6 +26,7 @@ dependencies:
   charts_flutter: any
   preferences: any
   loading_overlay: any
+  fab_circular_menu: any
   flutter:
     sdk: flutter
 
