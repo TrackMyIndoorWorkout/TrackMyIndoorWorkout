@@ -37,7 +37,7 @@ Map<String, DeviceDescriptor> deviceMap = {
   "SIC4": GattStandardDeviceDescriptor(
     fourCC: "SIC4",
     vendorName: "Nautilus, Inc",
-    modelName: "Schwinn IC4",
+    modelName: "Schwinn IC4/IC8",
     namePrefix: "IC BIKE",
     nameStart: [73, 67, 32, 66, 111, 113, 105],
     // IC Bike
