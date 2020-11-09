@@ -22,7 +22,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     primaryMeasurementServiceId,
     primaryMeasurementId,
     heartRate,
-    canMeasurementProcessed,
+    canPrimaryMeasurementProcessed,
     this.time,
     this.calories,
     this.speed,
@@ -40,7 +40,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
           primaryMeasurementServiceId: primaryMeasurementServiceId,
           primaryMeasurementId: primaryMeasurementId,
           heartRate: heartRate,
-          canMeasurementProcessed: canMeasurementProcessed,
+          canPrimaryMeasurementProcessed: canPrimaryMeasurementProcessed,
         );
 
   double getTime(List<int> data) {
@@ -68,7 +68,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   }
 
   @override
-  Record getMeasurement(
+  Record processPrimaryMeasurement(
     Activity activity,
     int lastElapsed,
     Duration idleDuration,
@@ -113,5 +113,10 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         heartRate: supplement.heartRate,
       );
     }
+  }
+
+  @override
+  int processCadenceMeasurement(List<int> data) {
+    return 0;
   }
 }

@@ -3,12 +3,21 @@ import '../persistence/models/record.dart';
 import 'device_descriptor.dart';
 import 'short_metric_descriptor.dart';
 
+class CadenceData {
+  final int seconds;
+  int revolutions;
+
+  CadenceData({this.seconds, this.revolutions});
+}
+
 class GattStandardDeviceDescriptor extends DeviceDescriptor {
   final ShortMetricDescriptor time;
   final ShortMetricDescriptor calories;
   final ShortMetricDescriptor speed;
   final ShortMetricDescriptor power;
   final ShortMetricDescriptor cadence;
+
+  List<CadenceData> _cadenceData;
 
   GattStandardDeviceDescriptor({
     fourCC,
@@ -21,10 +30,11 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     model,
     primaryMeasurementServiceId,
     primaryMeasurementId,
+    canPrimaryMeasurementProcessed,
     cadenceMeasurementServiceId,
     cadenceMeasurementId,
+    canCadenceMeasurementProcessed,
     heartRate,
-    canMeasurementProcessed,
     this.time,
     this.calories,
     this.speed,
@@ -41,10 +51,11 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
           model: model,
           primaryMeasurementServiceId: primaryMeasurementServiceId,
           primaryMeasurementId: primaryMeasurementId,
+          canPrimaryMeasurementProcessed: canPrimaryMeasurementProcessed,
           cadenceMeasurementServiceId: cadenceMeasurementServiceId,
           cadenceMeasurementId: cadenceMeasurementId,
+          canCadenceMeasurementProcessed: canCadenceMeasurementProcessed,
           heartRate: heartRate,
-          canMeasurementProcessed: canMeasurementProcessed,
         );
 
   double getTime(List<int> data) {
@@ -72,7 +83,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
   }
 
   @override
-  Record getMeasurement(
+  Record processPrimaryMeasurement(
     Activity activity,
     int lastElapsed,
     Duration idleDuration,
@@ -117,5 +128,13 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
         heartRate: supplement.heartRate,
       );
     }
+  }
+
+  @override
+  int processCadenceMeasurement(List<int> data) {
+    if (!canCadenceMeasurementProcessed(data)) return 0;
+
+
+    return 0;
   }
 }

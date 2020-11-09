@@ -16,10 +16,11 @@ abstract class DeviceDescriptor {
   final List<int> model;
   final String primaryMeasurementServiceId;
   final String primaryMeasurementId;
+  final MeasurementProcessing canPrimaryMeasurementProcessed;
   String cadenceMeasurementServiceId;
   String cadenceMeasurementId;
+  final MeasurementProcessing canCadenceMeasurementProcessed;
   final int heartRate;
-  final MeasurementProcessing canMeasurementProcessed;
 
   DeviceDescriptor({
     this.fourCC,
@@ -32,15 +33,16 @@ abstract class DeviceDescriptor {
     this.model,
     this.primaryMeasurementServiceId,
     this.primaryMeasurementId,
+    this.canPrimaryMeasurementProcessed,
     this.cadenceMeasurementServiceId = '',
     this.cadenceMeasurementId = '',
+    this.canCadenceMeasurementProcessed,
     this.heartRate,
-    this.canMeasurementProcessed,
   }) {
     this.fullName = '$vendorName $modelName';
   }
 
-  Record getMeasurement(
+  Record processPrimaryMeasurement(
     Activity activity,
     int lastElapsed,
     Duration idleDuration,
@@ -49,4 +51,6 @@ abstract class DeviceDescriptor {
     List<int> data,
     Record supplement,
   );
+
+  int processCadenceMeasurement(List<int> data);
 }

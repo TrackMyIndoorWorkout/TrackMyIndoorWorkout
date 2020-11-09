@@ -17,8 +17,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     // 1
     primaryMeasurementServiceId: "ee07",
     primaryMeasurementId: "e01d",
-    heartRate: 5,
-    canMeasurementProcessed: (List<int> data) {
+    canPrimaryMeasurementProcessed: (List<int> data) {
       if (data.length != 19) return false;
       const measurementPrefix = [83, 89, 22];
       for (int i = 0; i < measurementPrefix.length; i++) {
@@ -26,6 +25,7 @@ Map<String, DeviceDescriptor> deviceMap = {
       }
       return true;
     },
+    heartRate: 5,
     time: ShortMetricDescriptor(lsb: 3, msb: 4, divider: 1),
     calories: ShortMetricDescriptor(lsb: 13, msb: 14, divider: 1),
     speed: ShortMetricDescriptor(lsb: 6, msb: 7, divider: 100),
@@ -45,12 +45,15 @@ Map<String, DeviceDescriptor> deviceMap = {
     // IC BIKE
     primaryMeasurementServiceId: "1826",
     primaryMeasurementId: "2ad2",
-    cadenceMeasurementServiceId: "1816",
-    cadenceMeasurementId: "2a5b",
-    heartRate: 8,
-    canMeasurementProcessed: (List<int> data) {
+    canPrimaryMeasurementProcessed: (List<int> data) {
       return true;
     },
+    cadenceMeasurementServiceId: "1816",
+    cadenceMeasurementId: "2a5b",
+    canCadenceMeasurementProcessed: (List<int> data) {
+      return data.length != 11 && data[0] >= 2;
+    },
+    heartRate: 8,
     time: ShortMetricDescriptor(lsb: 3, msb: 4, divider: 1),
     calories: ShortMetricDescriptor(lsb: 13, msb: 14, divider: 1),
     speed: ShortMetricDescriptor(lsb: 6, msb: 7, divider: 100),

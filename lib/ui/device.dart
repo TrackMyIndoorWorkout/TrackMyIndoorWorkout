@@ -169,14 +169,14 @@ class DeviceState extends State<DeviceScreen> {
   }
 
   _recordMeasurement(List<int> data) async {
-    if (!descriptor.canMeasurementProcessed(data)) return;
+    if (!descriptor.canPrimaryMeasurementProcessed(data)) return;
 
     Duration currentIdle = Duration();
     if (_paused) {
       currentIdle = DateTime.now().difference(_pauseStarted);
     }
 
-    final record = descriptor.getMeasurement(
+    final record = descriptor.processPrimaryMeasurement(
       _activity,
       _lastElapsed,
       _idleDuration + currentIdle,
@@ -220,8 +220,10 @@ class DeviceState extends State<DeviceScreen> {
     });
   }
 
-  _processSecondaryMeasurement(List<int> data) {
+  _processCadenceMeasurement(List<int> data) {
+    if (!descriptor.canCadenceMeasurementProcessed(data)) return;
 
+    _cadence = descriptor.processCadenceMeasurement(data);
   }
 
   BluetoothService _filterService(List<BluetoothService> services, identifier) {
@@ -257,7 +259,7 @@ class DeviceState extends State<DeviceScreen> {
       if (_areListsEqual(name, descriptor.manufacturer)) {
         if (descriptor.cadenceMeasurementServiceId != '') {
           final cadenceMeasurementService =
-          _filterService(services, descriptor.cadenceMeasurementServiceId);
+              _filterService(services, descriptor.cadenceMeasurementServiceId);
           if (cadenceMeasurementService != null) {
             _cadenceMeasurements = _filterCharacteristic(
                 cadenceMeasurementService.characteristics,
@@ -266,7 +268,7 @@ class DeviceState extends State<DeviceScreen> {
           if (_cadenceMeasurements != null) {
             await _cadenceMeasurements.setNotifyValue(true);
             _cadenceMeasurements.value.listen((data) async {
-              await _processSecondaryMeasurement(data);
+              await _processCadenceMeasurement(data);
             });
           }
         }
@@ -274,7 +276,8 @@ class DeviceState extends State<DeviceScreen> {
             _filterService(services, descriptor.primaryMeasurementServiceId);
         if (measurementService1 != null) {
           _primaryMeasurements = _filterCharacteristic(
-              measurementService1.characteristics, descriptor.primaryMeasurementId);
+              measurementService1.characteristics,
+              descriptor.primaryMeasurementId);
           if (_primaryMeasurements != null) {
             await _primaryMeasurements.setNotifyValue(true);
             _primaryMeasurements.value.listen((data) async {
@@ -444,7 +447,7 @@ class DeviceState extends State<DeviceScreen> {
       cadence: _cadence,
       heartRate: _heartRate,
     );
-    final record = descriptor.getMeasurement(
+    final record = descriptor.processPrimaryMeasurement(
       _activity,
       _lastElapsed,
       _idleDuration + currentIdle,
