@@ -14,10 +14,10 @@ abstract class DeviceDescriptor {
   final List<int> nameStart;
   final List<int> manufacturer;
   final List<int> model;
-  final String measurementService1Id;
-  final String measurement1Id;
-  String measurementService2Id;
-  String measurement2Id;
+  final String primaryMeasurementServiceId;
+  final String primaryMeasurementId;
+  String cadenceMeasurementServiceId;
+  String cadenceMeasurementId;
   final int heartRate;
   final MeasurementProcessing canMeasurementProcessed;
 
@@ -30,10 +30,10 @@ abstract class DeviceDescriptor {
     this.nameStart,
     this.manufacturer,
     this.model,
-    this.measurementService1Id,
-    this.measurement1Id,
-    this.measurementService2Id = '',
-    this.measurement2Id = '',
+    this.primaryMeasurementServiceId,
+    this.primaryMeasurementId,
+    this.cadenceMeasurementServiceId = '',
+    this.cadenceMeasurementId = '',
     this.heartRate,
     this.canMeasurementProcessed,
   }) {

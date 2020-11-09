@@ -15,8 +15,8 @@ Map<String, DeviceDescriptor> deviceMap = {
     // Precor
     model: [49],
     // 1
-    measurementService1Id: "ee07",
-    measurement1Id: "e01d",
+    primaryMeasurementServiceId: "ee07",
+    primaryMeasurementId: "e01d",
     heartRate: 5,
     canMeasurementProcessed: (List<int> data) {
       if (data.length != 19) return false;
@@ -43,10 +43,10 @@ Map<String, DeviceDescriptor> deviceMap = {
     // Nautilus, Inc
     model: [73, 67, 32, 66, 73, 75, 69],
     // IC BIKE
-    measurementService1Id: "1826",
-    measurement1Id: "2ad2",
-    measurementService2Id: "1816",
-    measurement2Id: "2a5b",
+    primaryMeasurementServiceId: "1826",
+    primaryMeasurementId: "2ad2",
+    cadenceMeasurementServiceId: "1816",
+    cadenceMeasurementId: "2a5b",
     heartRate: 8,
     canMeasurementProcessed: (List<int> data) {
       return true;

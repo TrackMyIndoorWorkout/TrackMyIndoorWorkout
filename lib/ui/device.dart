@@ -91,7 +91,8 @@ class DeviceState extends State<DeviceScreen> {
   final BluetoothDevice device;
   final BluetoothDeviceState initialState;
   DeviceDescriptor descriptor;
-  BluetoothCharacteristic _measurements;
+  BluetoothCharacteristic _primaryMeasurements;
+  BluetoothCharacteristic _cadenceMeasurements;
   bool _discovered;
   bool _measuring;
   bool _paused;
@@ -219,6 +220,10 @@ class DeviceState extends State<DeviceScreen> {
     });
   }
 
+  _processSecondaryMeasurement(List<int> data) {
+
+  }
+
   BluetoothService _filterService(List<BluetoothService> services, identifier) {
     return services.firstWhere(
         (service) =>
@@ -250,14 +255,29 @@ class DeviceState extends State<DeviceScreen> {
       }
 
       if (_areListsEqual(name, descriptor.manufacturer)) {
+        if (descriptor.cadenceMeasurementServiceId != '') {
+          final cadenceMeasurementService =
+          _filterService(services, descriptor.cadenceMeasurementServiceId);
+          if (cadenceMeasurementService != null) {
+            _cadenceMeasurements = _filterCharacteristic(
+                cadenceMeasurementService.characteristics,
+                descriptor.cadenceMeasurementId);
+          }
+          if (_cadenceMeasurements != null) {
+            await _cadenceMeasurements.setNotifyValue(true);
+            _cadenceMeasurements.value.listen((data) async {
+              await _processSecondaryMeasurement(data);
+            });
+          }
+        }
         final measurementService1 =
-            _filterService(services, descriptor.measurementService1Id);
+            _filterService(services, descriptor.primaryMeasurementServiceId);
         if (measurementService1 != null) {
-          _measurements = _filterCharacteristic(
-              measurementService1.characteristics, descriptor.measurement1Id);
-          if (_measurements != null) {
-            await _measurements.setNotifyValue(true);
-            _measurements.value.listen((data) async {
+          _primaryMeasurements = _filterCharacteristic(
+              measurementService1.characteristics, descriptor.primaryMeasurementId);
+          if (_primaryMeasurements != null) {
+            await _primaryMeasurements.setNotifyValue(true);
+            _primaryMeasurements.value.listen((data) async {
               await _recordMeasurement(data);
             });
             _measuring = true;
@@ -362,7 +382,7 @@ class DeviceState extends State<DeviceScreen> {
   @override
   dispose() {
     _timer?.cancel();
-    _measurements?.setNotifyValue(false);
+    _primaryMeasurements?.setNotifyValue(false);
     _database?.close();
     Wakelock.disable();
     super.dispose();
