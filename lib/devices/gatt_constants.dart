@@ -8,4 +8,3 @@ final firmwareRevisionId = '2a26';
 final hardwareRevisionId = '2a27';
 final softwareRevisionId = '2a28';
 final manufacturerNameId = '2a29';
-const BIKE_EQUIPMENT = [2];

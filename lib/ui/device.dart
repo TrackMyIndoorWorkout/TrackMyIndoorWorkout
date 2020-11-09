@@ -249,24 +249,12 @@ class DeviceState extends State<DeviceScreen> {
         debugPrintStack(stackTrace: stack, label: "trace:");
       }
 
-      final equipmentService =
-          _filterService(services, descriptor.measurementService1Id);
-      if (equipmentService != null) {
-        final equipmentTypeChar = _filterCharacteristic(
-            equipmentService.characteristics, descriptor.equipmentTypeId);
-
-        var equipmentType;
-        try {
-          equipmentType = await equipmentTypeChar.read();
-        } on PlatformException catch (e, stack) {
-          debugPrint("${e.message}");
-          debugPrintStack(stackTrace: stack, label: "trace:");
-        }
-
-        if (_areListsEqual(name, descriptor.manufacturer) &&
-            _areListsEqual(equipmentType, BIKE_EQUIPMENT)) {
+      if (_areListsEqual(name, descriptor.manufacturer)) {
+        final measurementService1 =
+            _filterService(services, descriptor.measurementService1Id);
+        if (measurementService1 != null) {
           _measurements = _filterCharacteristic(
-              equipmentService.characteristics, descriptor.measurement1Id);
+              measurementService1.characteristics, descriptor.measurement1Id);
           if (_measurements != null) {
             await _measurements.setNotifyValue(true);
             _measurements.value.listen((data) async {
