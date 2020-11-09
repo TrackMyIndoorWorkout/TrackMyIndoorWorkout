@@ -15,7 +15,6 @@ abstract class DeviceDescriptor {
   final List<int> manufacturer;
   final List<int> model;
   final String equipmentTypeId;
-  final String equipmentStateId;
   final String measurementService1Id;
   final String measurement1Id;
   String measurementService2Id;
@@ -33,7 +32,6 @@ abstract class DeviceDescriptor {
     this.manufacturer,
     this.model,
     this.equipmentTypeId,
-    this.equipmentStateId,
     this.measurementService1Id,
     this.measurement1Id,
     this.measurementService2Id = '',

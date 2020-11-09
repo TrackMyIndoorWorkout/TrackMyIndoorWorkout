@@ -16,7 +16,6 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: [49],
     // 1
     equipmentTypeId: "e01f",
-    equipmentStateId: "e01e",
     measurementService1Id: "ee07",
     measurement1Id: "e01d",
     heartRate: 5,
@@ -46,7 +45,6 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: [73, 67, 32, 66, 73, 75, 69],
     // IC BIKE
     equipmentTypeId: "e01f",
-    equipmentStateId: "e01e",
     measurementService1Id: "1826",
     measurement1Id: "2ad2",
     measurementService2Id: "1816",
