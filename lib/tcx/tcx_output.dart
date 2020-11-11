@@ -34,7 +34,7 @@ class TCXOutput {
       ..latitude = gps.dy
       ..timeStamp = TCXOutput.createTimestamp(timeStamp)
       ..altitude = TRACK_ALTITUDE
-      ..speed = record.speed / DeviceDescriptor.MS2KMH
+      ..speed = record.speed * DeviceDescriptor.KMH2MS
       ..distance = record.distance
       ..date = timeStamp
       ..cadence = record.cadence

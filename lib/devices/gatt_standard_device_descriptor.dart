@@ -258,7 +258,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       double dD = 0;
       if (lastSpeed > 0) {
         if (dT > 0) {
-          dD = dT > 0 ? lastSpeed / DeviceDescriptor.MS2KMH * dT : 0.0;
+          dD = dT > 0 ? lastSpeed / DeviceDescriptor.KMH2MS * dT : 0.0;
         }
       }
       newDistance = lastDistance + dD;
