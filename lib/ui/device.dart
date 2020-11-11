@@ -182,6 +182,8 @@ class DeviceState extends State<DeviceScreen> {
       _idleDuration + currentIdle,
       _speed,
       _distance,
+      _calories,
+      _cadence,
       data,
       null,
     );
@@ -254,9 +256,15 @@ class DeviceState extends State<DeviceScreen> {
       } on PlatformException catch (e, stack) {
         debugPrint("${e.message}");
         debugPrintStack(stackTrace: stack, label: "trace:");
+        try {
+          name = await nameCharacteristic.read();
+        } on PlatformException catch (e, stack) {
+          debugPrint("${e.message}");
+          debugPrintStack(stackTrace: stack, label: "trace:");
+        }
       }
 
-      if (_areListsEqual(name, descriptor.manufacturer)) {
+      if (name != null && _areListsEqual(name, descriptor.manufacturer)) {
         if (descriptor.cadenceMeasurementServiceId != '') {
           final cadenceMeasurementService =
               _filterService(services, descriptor.cadenceMeasurementServiceId);
@@ -268,7 +276,9 @@ class DeviceState extends State<DeviceScreen> {
           if (_cadenceMeasurements != null) {
             await _cadenceMeasurements.setNotifyValue(true);
             _cadenceMeasurements.value.listen((data) async {
-              await _processCadenceMeasurement(data);
+              if (data != null && data.length > 1) {
+                await _processCadenceMeasurement(data);
+              }
             });
           }
         }
@@ -281,7 +291,9 @@ class DeviceState extends State<DeviceScreen> {
           if (_primaryMeasurements != null) {
             await _primaryMeasurements.setNotifyValue(true);
             _primaryMeasurements.value.listen((data) async {
-              await _recordMeasurement(data);
+              if (data != null && data.length > 1) {
+                await _recordMeasurement(data);
+              }
             });
             _measuring = true;
             _paused = false;
@@ -386,6 +398,7 @@ class DeviceState extends State<DeviceScreen> {
   dispose() {
     _timer?.cancel();
     _primaryMeasurements?.setNotifyValue(false);
+    _cadenceMeasurements?.setNotifyValue(false);
     _database?.close();
     Wakelock.disable();
     super.dispose();
@@ -453,6 +466,8 @@ class DeviceState extends State<DeviceScreen> {
       _idleDuration + currentIdle,
       _speed,
       _distance,
+      _calories,
+      _cadence,
       null,
       supplement,
     );

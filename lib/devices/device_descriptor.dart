@@ -5,6 +5,8 @@ typedef MeasurementProcessing(List<int> data);
 
 abstract class DeviceDescriptor {
   static const double MS2KMH = 3.6;
+  static const int MAX_UINT16 = 65536;
+  static const double J2KCAL = 0.0002390057;
 
   final String fourCC;
   final String vendorName;
@@ -20,7 +22,7 @@ abstract class DeviceDescriptor {
   String cadenceMeasurementServiceId;
   String cadenceMeasurementId;
   final MeasurementProcessing canCadenceMeasurementProcessed;
-  final int heartRate;
+  int heartRate;
 
   DeviceDescriptor({
     this.fourCC,
@@ -46,8 +48,10 @@ abstract class DeviceDescriptor {
     Activity activity,
     int lastElapsed,
     Duration idleDuration,
-    double speed,
-    double distance,
+    double lastSpeed,
+    double lastDistance,
+    int lastCalories,
+    int cadence,
     List<int> data,
     Record supplement,
   );
