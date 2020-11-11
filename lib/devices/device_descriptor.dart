@@ -7,7 +7,8 @@ abstract class DeviceDescriptor {
   static const double MS2KMH = 3.6;
   static const double KMH2MS = 1 / MS2KMH;
   static const int MAX_UINT16 = 65536;
-  static const double J2KCAL = 0.0002390057;
+  static const double J2CAL = 0.2390057;
+  static const double J2KCAL = J2CAL / 1000.0;
 
   final String fourCC;
   final String vendorName;
