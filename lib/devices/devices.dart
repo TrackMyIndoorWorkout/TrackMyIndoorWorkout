@@ -2,6 +2,7 @@ import 'device_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
 import 'gatt_standard_device_descriptor.dart';
 import 'short_metric_descriptor.dart';
+import 'three_byte_metric_descriptor.dart';
 
 Map<String, DeviceDescriptor> deviceMap = {
   "PSCP": FixedLayoutDeviceDescriptor(
@@ -32,6 +33,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     speedMetric: ShortMetricDescriptor(lsb: 6, msb: 7, divider: 100),
     powerMetric: ShortMetricDescriptor(lsb: 17, msb: 18, divider: 1),
     cadenceMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 10),
+    distanceMetric: ThreeByteMetricDescriptor(lsb: 10, msb: 12, divider: 1),
   ),
   "SIC4": GattStandardDeviceDescriptor(
     fourCC: "SIC4",

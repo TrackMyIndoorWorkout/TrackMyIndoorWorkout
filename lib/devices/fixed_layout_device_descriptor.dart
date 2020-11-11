@@ -2,6 +2,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import 'device_descriptor.dart';
 import 'short_metric_descriptor.dart';
+import 'three_byte_metric_descriptor.dart';
 
 class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   final ShortMetricDescriptor timeMetric;
@@ -9,6 +10,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   final ShortMetricDescriptor speedMetric;
   final ShortMetricDescriptor powerMetric;
   final ShortMetricDescriptor cadenceMetric;
+  final ThreeByteMetricDescriptor distanceMetric;
 
   FixedLayoutDeviceDescriptor({
     fourCC,
@@ -28,6 +30,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     this.speedMetric,
     this.powerMetric,
     this.cadenceMetric,
+    this.distanceMetric,
   }) : super(
           fourCC: fourCC,
           vendorName: vendorName,
@@ -63,6 +66,10 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     return cadenceMetric?.getMeasurementValue(data);
   }
 
+  double getDistance(List<int> data) {
+    return cadenceMetric?.getMeasurementValue(data);
+  }
+
   double getHeartRate(List<int> data) {
     return data[heartRate].toDouble();
   }
@@ -80,13 +87,20 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     Record supplement,
   ) {
     final elapsed = data != null ? getTime(data).toInt() : lastElapsed;
-    double dD = 0;
-    if (lastSpeed > 0) {
-      final dT = elapsed - lastElapsed;
-      if (dT > 0) {
-        dD = dT > 0 ? lastSpeed / DeviceDescriptor.MS2KMH * dT : 0.0;
+    double newDistance = 0;
+    if (data != null && distanceMetric != null) {
+      newDistance = getDistance(data);
+    } else {
+      double dD = 0;
+      if (lastSpeed > 0) {
+        final dT = elapsed - lastElapsed;
+        if (dT > 0) {
+          dD = dT > 0 ? lastSpeed * DeviceDescriptor.KMH2MS * dT : 0.0;
+        }
       }
+      newDistance = lastDistance + dD;
     }
+
     final elapsedDuration = Duration(seconds: elapsed);
     // This is not simply DateTime.now() because the measurements may
     // flood in batches for processing so we take their timestamp
@@ -98,7 +112,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       return Record(
         activityId: activity.id,
         timeStamp: timeStamp.millisecondsSinceEpoch,
-        distance: lastDistance + dD,
+        distance: newDistance,
         elapsed: elapsed,
         calories: getCalories(data).toInt(),
         power: getPower(data).toInt(),
@@ -110,7 +124,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       return Record(
         activityId: activity.id,
         timeStamp: timeStamp.millisecondsSinceEpoch,
-        distance: lastDistance + dD,
+        distance: newDistance,
         elapsed: supplement.elapsed,
         calories: supplement.calories,
         power: supplement.power,
