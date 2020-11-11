@@ -44,23 +44,23 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         );
 
   double getTime(List<int> data) {
-    return timeMetric.getMeasurementValue(data);
+    return timeMetric?.getMeasurementValue(data);
   }
 
   double getCalories(List<int> data) {
-    return caloriesMetric.getMeasurementValue(data);
+    return caloriesMetric?.getMeasurementValue(data);
   }
 
   double getSpeed(List<int> data) {
-    return speedMetric.getMeasurementValue(data);
+    return speedMetric?.getMeasurementValue(data);
   }
 
   double getPower(List<int> data) {
-    return powerMetric.getMeasurementValue(data);
+    return powerMetric?.getMeasurementValue(data);
   }
 
   double getCadence(List<int> data) {
-    return cadenceMetric.getMeasurementValue(data);
+    return cadenceMetric?.getMeasurementValue(data);
   }
 
   double getHeartRate(List<int> data) {

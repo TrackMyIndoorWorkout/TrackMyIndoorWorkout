@@ -73,35 +73,35 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
   }
 
   double getSpeed(List<int> data) {
-    return _speedMetric.getMeasurementValue(data);
+    return _speedMetric?.getMeasurementValue(data);
   }
 
   double getCadence(List<int> data) {
-    return _cadenceMetric.getMeasurementValue(data);
+    return _cadenceMetric?.getMeasurementValue(data);
   }
 
   double getDistance(List<int> data) {
-    return _distanceMetric.getMeasurementValue(data);
+    return _distanceMetric?.getMeasurementValue(data);
   }
 
   double getPower(List<int> data) {
-    return _powerMetric.getMeasurementValue(data);
+    return _powerMetric?.getMeasurementValue(data);
   }
 
   double getCalories(List<int> data) {
-    return _caloriesMetric.getMeasurementValue(data);
+    return _caloriesMetric?.getMeasurementValue(data);
   }
 
   double getTime(List<int> data) {
-    return _timeMetric.getMeasurementValue(data);
+    return _timeMetric?.getMeasurementValue(data);
   }
 
   int getRevolutions(List<int> data) {
-    return _revolutions.getMeasurementValue(data).toInt();
+    return _revolutions?.getMeasurementValue(data).toInt();
   }
 
   double getRevolutionTime(List<int> data) {
-    return _revolutionTime.getMeasurementValue(data);
+    return _revolutionTime?.getMeasurementValue(data);
   }
 
   double getHeartRate(List<int> data) {
