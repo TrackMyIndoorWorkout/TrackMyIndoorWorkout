@@ -52,8 +52,8 @@ extension DeviceIdentification on BluetoothDevice {
       }
     }
 
-    // Default to first (Precor Power)
-    return deviceMap.values.first;
+    // Default to standard GATT (Schwinn IC4/IC8)
+    return deviceMap['SIC4'];
   }
 }
 
