@@ -181,3 +181,9 @@ const UNIT_SYSTEM_DESCRIPTION = "On: metric (km/h speed, meters distance), " +
 
 const KMH2MPH = 0.621371;
 const M2MILE = KMH2MPH / 1000.0;
+
+extension DurationDisplay on Duration {
+  String toDisplay() {
+    return this.toString().split('.').first.padLeft(8, "0");
+  }
+}

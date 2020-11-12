@@ -32,8 +32,7 @@ class Activity {
   @ignore
   DateTime startDateTime;
 
-  String get elapsedString =>
-      Duration(seconds: elapsed).toString().split('.').first.padLeft(8, "0");
+  String get elapsedString => Duration(seconds: elapsed).toDisplay();
 
   Activity({
     this.id,

@@ -576,11 +576,8 @@ class DeviceState extends State<DeviceScreen> {
       color: Colors.red,
     );
 
-    var _timeDisplay = Duration(seconds: _time).toString().split('.')[0];
-    if (_timeDisplay.length == 7) {
-      _timeDisplay = '0$_timeDisplay';
-    }
-    final trackMarker = calculateTrackMarker(trackSize, _distance);
+    final _timeDisplay = Duration(seconds: _latestRecord.elapsed).toDisplay();
+    final trackMarker = calculateTrackMarker(trackSize, _latestRecord.distance);
 
     List<Widget> rows = [
       GestureDetector(
