@@ -244,6 +244,10 @@ class DeviceState extends State<DeviceScreen> {
 
   _discoverServices() async {
     await device.discoverServices().then((services) async {
+      if (_primaryMeasurements != null) {
+        return services;
+      }
+
       setState(() {
         _discovered = true;
       });
@@ -256,15 +260,13 @@ class DeviceState extends State<DeviceScreen> {
       } on PlatformException catch (e, stack) {
         debugPrint("${e.message}");
         debugPrintStack(stackTrace: stack, label: "trace:");
-        try {
-          name = await nameCharacteristic.read();
-        } on PlatformException catch (e, stack) {
-          debugPrint("${e.message}");
-          debugPrintStack(stackTrace: stack, label: "trace:");
-        }
       }
 
-      if (name != null && _areListsEqual(name, descriptor.manufacturer)) {
+      if (name == null) {
+        return services;
+      }
+
+      if (_areListsEqual(name, descriptor.manufacturer)) {
         if (descriptor.cadenceMeasurementServiceId != '') {
           final cadenceMeasurementService =
               _filterService(services, descriptor.cadenceMeasurementServiceId);
