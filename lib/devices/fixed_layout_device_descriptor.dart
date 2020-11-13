@@ -67,7 +67,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   }
 
   double getDistance(List<int> data) {
-    return cadenceMetric?.getMeasurementValue(data);
+    return distanceMetric?.getMeasurementValue(data);
   }
 
   double getHeartRate(List<int> data) {
