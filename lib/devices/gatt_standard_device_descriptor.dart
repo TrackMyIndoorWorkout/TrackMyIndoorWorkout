@@ -1,7 +1,5 @@
 import 'dart:collection';
 
-import 'package:flutter/foundation.dart';
-
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import 'device_descriptor.dart';
@@ -75,15 +73,11 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
   }
 
   double getSpeed(List<int> data) {
-    final spd = _speedMetric?.getMeasurementValue(data);
-    // debugPrint("spd_ $spd");
-    return spd;
+    return _speedMetric?.getMeasurementValue(data);
   }
 
   double getCadence(List<int> data) {
-    final cad = _cadenceMetric?.getMeasurementValue(data);
-    // debugPrint("cad_ $cad");
-    return cad;
+    return _cadenceMetric?.getMeasurementValue(data);
   }
 
   double getDistance(List<int> data) {
@@ -91,9 +85,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
   }
 
   double getPower(List<int> data) {
-    final pow = _powerMetric?.getMeasurementValue(data);
-    // debugPrint("pow_ $pow");
-    return pow;
+    return _powerMetric?.getMeasurementValue(data);
   }
 
   double getCalories(List<int> data) {
@@ -128,7 +120,6 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       // UInt16, km/h with 0.01 resolution
       _speedMetric = ShortMetricDescriptor(
           lsb: byteCounter, msb: byteCounter + 1, divider: 100);
-      debugPrint("spd $byteCounter, ${byteCounter + 1}");
       byteCounter += 2;
     }
     flag ~/= 2;
@@ -147,7 +138,6 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       // UInt16, revolutions / minute with 0.5 resolution
       _cadenceMetric = ShortMetricDescriptor(
           lsb: byteCounter, msb: byteCounter + 1, divider: 2);
-      debugPrint("cad $byteCounter, ${byteCounter + 1}");
       byteCounter += 2;
     }
     flag ~/= 2;
@@ -181,7 +171,6 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       // SInt16, Watts
       _powerMetric = ShortMetricDescriptor(
           lsb: byteCounter, msb: byteCounter + 1, divider: 1);
-      debugPrint("pow $byteCounter, ${byteCounter + 1}");
       byteCounter += 2;
     }
     flag ~/= 2;
@@ -209,7 +198,6 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     if (flag % 2 == 1) {
       // UInt8
       heartRate = byteCounter;
-      debugPrint("HR $byteCounter");
       byteCounter++;
     }
     flag ~/= 2;
@@ -272,7 +260,6 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       if (lastRecord.speed > 0) {
         if (dT > 0) {
           dD = lastRecord.speed * DeviceDescriptor.KMH2MS * dT;
-          debugPrint("delta $dD $dT (${lastRecord.speed})");
         }
       }
       newDistance = lastRecord.distance + dD;
