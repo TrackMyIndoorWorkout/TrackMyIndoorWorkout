@@ -77,28 +77,23 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   @override
   Record processPrimaryMeasurement(
     Activity activity,
-    int lastElapsed,
     Duration idleDuration,
-    double lastSpeed,
-    double lastDistance,
-    int lastCalories,
-    int cadence,
+    Record lastRecord,
     List<int> data,
-    Record supplement,
   ) {
-    final elapsed = data != null ? getTime(data).toInt() : lastElapsed;
+    final elapsed = data != null ? getTime(data).toInt() : lastRecord.elapsed;
     double newDistance = 0;
     if (data != null && distanceMetric != null) {
       newDistance = getDistance(data);
     } else {
       double dD = 0;
-      if (lastSpeed > 0) {
-        final dT = elapsed - lastElapsed;
+      if (lastRecord.speed > 0) {
+        final dT = elapsed - lastRecord.speed;
         if (dT > 0) {
-          dD = dT > 0 ? lastSpeed * DeviceDescriptor.KMH2MS * dT : 0.0;
+          dD = dT > 0 ? lastRecord.speed * DeviceDescriptor.KMH2MS * dT : 0.0;
         }
       }
-      newDistance = lastDistance + dD;
+      newDistance = lastRecord.distance + dD;
     }
 
     final elapsedDuration = Duration(seconds: elapsed);
@@ -125,12 +120,12 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         activityId: activity.id,
         timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: newDistance,
-        elapsed: supplement.elapsed,
-        calories: supplement.calories,
-        power: supplement.power,
-        speed: lastSpeed,
-        cadence: supplement.cadence,
-        heartRate: supplement.heartRate,
+        elapsed: lastRecord.elapsed,
+        calories: lastRecord.calories,
+        power: lastRecord.power,
+        speed: lastRecord.speed,
+        cadence: lastRecord.cadence,
+        heartRate: lastRecord.heartRate,
       );
     }
   }

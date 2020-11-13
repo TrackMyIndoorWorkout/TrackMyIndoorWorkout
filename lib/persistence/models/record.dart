@@ -31,6 +31,8 @@ class Record {
 
   @ignore
   DateTime dt;
+  @ignore
+  int elapsedMillis;
 
   Record({
     this.id,
@@ -43,6 +45,7 @@ class Record {
     this.speed,
     this.cadence,
     this.heartRate,
+    this.elapsedMillis,
   });
 
   Record hydrate() {

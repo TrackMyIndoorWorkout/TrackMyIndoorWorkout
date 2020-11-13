@@ -48,14 +48,9 @@ abstract class DeviceDescriptor {
 
   Record processPrimaryMeasurement(
     Activity activity,
-    int lastElapsed,
     Duration idleDuration,
-    double lastSpeed,
-    double lastDistance,
-    int lastCalories,
-    int cadence,
+    Record lastRecord,
     List<int> data,
-    Record supplement,
   );
 
   int processCadenceMeasurement(List<int> data);

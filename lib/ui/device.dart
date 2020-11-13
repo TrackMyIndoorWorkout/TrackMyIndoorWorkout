@@ -98,13 +98,6 @@ class DeviceState extends State<DeviceScreen> {
   bool _paused;
   DateTime _pauseStarted;
   Duration _idleDuration;
-  int _time; // cumulative elapsed (auto pause)
-  int _calories; // cumulative (kCal)
-  int _power; // snapshot (W)
-  double _speed; // snapshot (km/h)
-  int _cadence; // snapshot (rpm)
-  int _heartRate; // snapshot (bpm)
-  double _distance; // cumulative (m)
   int _selectedRow;
   int _extraDisplayIndex;
   int _pointCount;
@@ -112,7 +105,7 @@ class DeviceState extends State<DeviceScreen> {
   TextStyle _unselectedUnitStyle;
   TextStyle _selectedUnitStyle;
 
-  int _lastElapsed;
+  Record _latestRecord;
   Activity _activity;
   AppDatabase _database;
   bool _si;
@@ -176,41 +169,26 @@ class DeviceState extends State<DeviceScreen> {
       currentIdle = DateTime.now().difference(_pauseStarted);
     }
 
-    final record = descriptor.processPrimaryMeasurement(
+    final latestRecord = descriptor.processPrimaryMeasurement(
       _activity,
-      _lastElapsed,
       _idleDuration + currentIdle,
-      _speed,
-      _distance,
-      _calories,
-      _cadence,
+      _latestRecord,
       data,
-      null,
     );
 
     if (!_paused && _measuring) {
-      if (record.elapsed != _lastElapsed) {
-        await _database?.recordDao?.insertRecord(record);
+      if (latestRecord.elapsed != _latestRecord?.elapsed) {
+        await _database?.recordDao?.insertRecord(latestRecord);
       }
-      _addGraphData(record);
+      _addGraphData(latestRecord);
     }
 
     setState(() {
-      _time = record.elapsed;
-      _calories = record.calories;
-      _power = record.power;
-      _speed = record.speed;
-      _cadence = record.cadence;
-      _heartRate = record.heartRate;
-
-      if (_speed > 0 && !_paused) {
-        _distance = record.distance;
-      }
-
-      _fillValues(record);
+      _latestRecord = latestRecord;
+      _fillValues(_latestRecord);
 
       if (_measuring) {
-        if (_speed <= 0) {
+        if (_latestRecord?.speed <= 0) {
           _pauseStarted = DateTime.now();
           _paused = true;
         } else {
@@ -218,14 +196,13 @@ class DeviceState extends State<DeviceScreen> {
           _idleDuration += currentIdle;
         }
       }
-      _lastElapsed = record.elapsed;
     });
   }
 
   _processCadenceMeasurement(List<int> data) {
     if (!descriptor.canCadenceMeasurementProcessed(data)) return;
 
-    _cadence = descriptor.processCadenceMeasurement(data);
+    // _latestRecord?.cadence = descriptor.processCadenceMeasurement(data);
   }
 
   BluetoothService _filterService(List<BluetoothService> services, identifier) {
@@ -376,15 +353,18 @@ class DeviceState extends State<DeviceScreen> {
     _measuring = false;
     _paused = false;
     _idleDuration = Duration();
-    _time = 0;
-    _calories = 0;
-    _power = 0;
-    _speed = 0;
-    _cadence = 0;
-    _heartRate = 0;
-    _lastElapsed = 0;
-    _distance = UX_DEBUG ? _random.nextInt(100000).toDouble() : 0;
-    _values = ["N/A", "N/A", "N/A", "N/A", "N/A", "N/A"];
+    _latestRecord = Record(
+      timeStamp: 0,
+      distance: UX_DEBUG ? _random.nextInt(100000).toDouble() : 0,
+      elapsed: 0,
+      calories: 0,
+      power: 0,
+      speed: 0,
+      cadence: 0,
+      heartRate: 0,
+      elapsedMillis: 0,
+    );
+    _values = ["--", "--", "--", "--", "--", "--"];
 
     if (UX_DEBUG) {
       _simulateMeasurements();
@@ -409,26 +389,20 @@ class DeviceState extends State<DeviceScreen> {
   void _simulateMeasurements() {
     setState(() {
       final rightNow = DateTime.now();
-      _time++;
-      _calories = _random.nextInt(1500);
-      _power = 50 + _random.nextInt(500);
-      _speed = 15.0 + _random.nextDouble() * 15.0;
-      _cadence = 30 + _random.nextInt(100);
-      _heartRate = 60 + _random.nextInt(120);
-      _distance += _random.nextInt(10);
-
-      final simulatedRecord = Record(
+      final newElapsed = _latestRecord.elapsed + 1;
+      _latestRecord = Record(
         timeStamp: rightNow.millisecondsSinceEpoch,
-        distance: _distance,
-        elapsed: _time,
-        calories: _calories,
-        power: _power,
-        speed: _speed,
-        cadence: _cadence,
-        heartRate: _heartRate,
+        distance: _latestRecord.distance + _random.nextInt(10),
+        elapsed: newElapsed,
+        calories: _random.nextInt(1500),
+        power: 50 + _random.nextInt(500),
+        speed: 15.0 + _random.nextDouble() * 15.0,
+        cadence: 30 + _random.nextInt(100),
+        heartRate: 60 + _random.nextInt(120),
+        elapsedMillis: newElapsed,
       );
-      _fillValues(simulatedRecord);
-      _addGraphData(simulatedRecord);
+      _fillValues(_latestRecord);
+      _addGraphData(_latestRecord);
 
       // Update once per second, but make sure to do it at the beginning of each
       // new second, so that the clock is accurate.
@@ -453,33 +427,19 @@ class DeviceState extends State<DeviceScreen> {
     });
 
     // Add one last record for the time of stopping
-    final supplement = Record(
-      distance: _distance,
-      elapsed: _time,
-      calories: _calories,
-      power: _power,
-      speed: _speed,
-      cadence: _cadence,
-      heartRate: _heartRate,
-    );
-    final record = descriptor.processPrimaryMeasurement(
+    _latestRecord = descriptor.processPrimaryMeasurement(
       _activity,
-      _lastElapsed,
       _idleDuration + currentIdle,
-      _speed,
-      _distance,
-      _calories,
-      _cadence,
+      _latestRecord,
       null,
-      supplement,
     );
 
-    await _database?.recordDao?.insertRecord(record);
+    await _database?.recordDao?.insertRecord(_latestRecord);
 
     _activity.finish(
-      _distance,
-      _time,
-      _calories.toInt(),
+      _latestRecord.distance,
+      _latestRecord.elapsed,
+      _latestRecord.calories,
     );
     // final changed =
     await _database?.activityDao?.updateActivity(_activity);

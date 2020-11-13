@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
+
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import 'device_descriptor.dart';
@@ -73,11 +75,15 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
   }
 
   double getSpeed(List<int> data) {
-    return _speedMetric?.getMeasurementValue(data);
+    final spd = _speedMetric?.getMeasurementValue(data);
+    // debugPrint("spd_ $spd");
+    return spd;
   }
 
   double getCadence(List<int> data) {
-    return _cadenceMetric?.getMeasurementValue(data);
+    final cad = _cadenceMetric?.getMeasurementValue(data);
+    // debugPrint("cad_ $cad");
+    return cad;
   }
 
   double getDistance(List<int> data) {
@@ -85,7 +91,9 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
   }
 
   double getPower(List<int> data) {
-    return _powerMetric?.getMeasurementValue(data);
+    final pow = _powerMetric?.getMeasurementValue(data);
+    // debugPrint("pow_ $pow");
+    return pow;
   }
 
   double getCalories(List<int> data) {
@@ -97,7 +105,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
   }
 
   int getRevolutions(List<int> data) {
-    return _revolutions?.getMeasurementValue(data).toInt();
+    return _revolutions?.getMeasurementValue(data)?.toInt();
   }
 
   double getRevolutionTime(List<int> data) {
@@ -108,164 +116,171 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     return data[heartRate].toDouble();
   }
 
+  processFlag(int flag) {
+    // Schwinn IC4:
+    // 68 01000100 avg speed, instant power
+    //  2 00000010 heart rate
+    // Two flag bytes
+    int byteCounter = 2;
+    // negated bit!
+    final hasInstantSpeed = flag % 2 == 0;
+    if (hasInstantSpeed) {
+      // UInt16, km/h with 0.01 resolution
+      _speedMetric = ShortMetricDescriptor(
+          lsb: byteCounter, msb: byteCounter + 1, divider: 100);
+      debugPrint("spd $byteCounter, ${byteCounter + 1}");
+      byteCounter += 2;
+    }
+    flag ~/= 2;
+    // Has Average Speed?
+    if (flag % 2 == 1) {
+      // UInt16, km/h with 0.01 resolution
+      if (!hasInstantSpeed) {
+        _speedMetric = ShortMetricDescriptor(
+            lsb: byteCounter, msb: byteCounter + 1, divider: 100);
+      }
+      byteCounter += 2;
+    }
+    flag ~/= 2;
+    final hasInstantCadence = flag % 2 == 1;
+    if (hasInstantCadence) {
+      // UInt16, revolutions / minute with 0.5 resolution
+      _cadenceMetric = ShortMetricDescriptor(
+          lsb: byteCounter, msb: byteCounter + 1, divider: 2);
+      debugPrint("cad $byteCounter, ${byteCounter + 1}");
+      byteCounter += 2;
+    }
+    flag ~/= 2;
+    // Has Average Cadence?
+    if (flag % 2 == 1) {
+      // Fall back to the less instantaneous average metric
+      // UInt16, revolutions / minute with 0.5 resolution
+      if (!hasInstantCadence) {
+        _cadenceMetric = ShortMetricDescriptor(
+            lsb: byteCounter, msb: byteCounter + 1, divider: 2);
+      }
+      byteCounter += 2;
+    }
+    flag ~/= 2;
+    // Has Total Distance?
+    if (flag % 2 == 1) {
+      // UInt24, meters
+      _distanceMetric = ThreeByteMetricDescriptor(
+          lsb: byteCounter, msb: byteCounter + 2, divider: 1);
+      byteCounter += 3;
+    }
+    flag ~/= 2;
+    // Has Resistance Level
+    if (flag % 2 == 1) {
+      // SInt16
+      byteCounter += 2;
+    }
+    flag ~/= 2;
+    final hasInstantPower = flag % 2 == 1;
+    if (hasInstantPower) {
+      // SInt16, Watts
+      _powerMetric = ShortMetricDescriptor(
+          lsb: byteCounter, msb: byteCounter + 1, divider: 1);
+      debugPrint("pow $byteCounter, ${byteCounter + 1}");
+      byteCounter += 2;
+    }
+    flag ~/= 2;
+    // Has Average Power?
+    if (flag % 2 == 1) {
+      // Fall back to the less instantaneous average metric
+      // SInt16, Watts
+      if (!hasInstantPower) {
+        _powerMetric = ShortMetricDescriptor(
+            lsb: byteCounter, msb: byteCounter + 1, divider: 1);
+      }
+      byteCounter += 2;
+    }
+    flag ~/= 2;
+    // Has Expanded Energy
+    if (flag % 2 == 1) {
+      // Total Energy: UInt16
+      _caloriesMetric = ShortMetricDescriptor(
+          lsb: byteCounter, msb: byteCounter + 1, divider: 1);
+      // Also skipping Energy / hour UInt16 and Energy / minute UInt8
+      byteCounter += 5;
+    }
+    flag ~/= 2;
+    // Has Heart Rate
+    if (flag % 2 == 1) {
+      // UInt8
+      heartRate = byteCounter;
+      debugPrint("HR $byteCounter");
+      byteCounter++;
+    }
+    flag ~/= 2;
+    // Has Metabolic Equivalent
+    if (flag % 2 == 1) {
+      // UInt8
+      byteCounter++;
+    }
+    flag ~/= 2;
+    // Has Elapsed Time
+    if (flag % 2 == 1) {
+      _timeMetric = ShortMetricDescriptor(
+          lsb: byteCounter, msb: byteCounter + 1, divider: 1);
+      byteCounter += 2;
+    }
+    flag ~/= 2;
+    // Has Remaining Time
+    if (flag % 2 == 1) {
+      byteCounter += 2;
+    }
+  }
+
   @override
   Record processPrimaryMeasurement(
     Activity activity,
-    int lastElapsed,
     Duration idleDuration,
-    double lastSpeed,
-    double lastDistance,
-    int lastCalories,
-    int cadence,
+    Record lastRecord,
     List<int> data,
-    Record supplement,
   ) {
     if (data != null && data.length > 2) {
       var flag = data[0] + 256 * data[1];
       if (flag != _featuresFlag) {
         _featuresFlag = flag;
-        // Schwinn IC4:
-        // 68 01000100 avg speed, instant power
-        //  2 00000010 heart rate
-        // Two flag bytes
-        int byteCounter = 2;
-        // negated bit!
-        final hasInstantSpeed = flag % 2 == 0;
-        if (hasInstantSpeed) {
-          // UInt16, km/h with 0.01 resolution
-          _speedMetric = ShortMetricDescriptor(
-              lsb: byteCounter, msb: byteCounter + 1, divider: 100);
-          byteCounter += 2;
-        }
-        flag ~/= 2;
-        // Has Average Speed?
-        if (flag % 2 == 1) {
-          // UInt16, km/h with 0.01 resolution
-          if (!hasInstantSpeed) {
-            _speedMetric = ShortMetricDescriptor(
-                lsb: byteCounter, msb: byteCounter + 1, divider: 100);
-          }
-          byteCounter += 2;
-        }
-        flag ~/= 2;
-        final hasInstantCadence = flag % 2 == 1;
-        if (hasInstantCadence) {
-          // UInt16, revolutions / minute with 0.5 resolution
-          _cadenceMetric = ShortMetricDescriptor(
-              lsb: byteCounter, msb: byteCounter + 1, divider: 2);
-          byteCounter += 2;
-        }
-        flag ~/= 2;
-        // Has Average Cadence?
-        if (flag % 2 == 1) {
-          // Fall back to the less instantaneous average metric
-          // UInt16, revolutions / minute with 0.5 resolution
-          if (!hasInstantCadence) {
-            _cadenceMetric = ShortMetricDescriptor(
-                lsb: byteCounter, msb: byteCounter + 1, divider: 2);
-          }
-          byteCounter += 2;
-        }
-        flag ~/= 2;
-        // Has Total Distance?
-        if (flag % 2 == 1) {
-          // UInt24, meters
-          _distanceMetric = ThreeByteMetricDescriptor(
-              lsb: byteCounter, msb: byteCounter + 2, divider: 1);
-          byteCounter += 3;
-        }
-        flag ~/= 2;
-        // Has Resistance Level
-        if (flag % 2 == 1) {
-          // SInt16
-          byteCounter += 2;
-        }
-        flag ~/= 2;
-        final hasInstantPower = flag % 2 == 1;
-        if (hasInstantPower) {
-          // SInt16, Watts
-          _powerMetric = ShortMetricDescriptor(
-              lsb: byteCounter, msb: byteCounter + 1, divider: 1);
-          byteCounter += 2;
-        }
-        flag ~/= 2;
-        // Has Average Power?
-        if (flag % 2 == 1) {
-          // Fall back to the less instantaneous average metric
-          // SInt16, Watts
-          if (!hasInstantPower) {
-            _powerMetric = ShortMetricDescriptor(
-                lsb: byteCounter, msb: byteCounter + 1, divider: 1);
-          }
-          byteCounter += 2;
-        }
-        flag ~/= 2;
-        // Has Expanded Energy
-        if (flag % 2 == 1) {
-          // Total Energy: UInt16
-          _caloriesMetric = ShortMetricDescriptor(
-              lsb: byteCounter, msb: byteCounter + 1, divider: 1);
-          // Also skipping Energy / hour UInt16 and Energy / minute UInt8
-          byteCounter += 5;
-        }
-        flag ~/= 2;
-        // Has Heart Rate
-        if (flag % 2 == 1) {
-          // UInt8
-          heartRate = byteCounter;
-          byteCounter++;
-        }
-        flag ~/= 2;
-        // Has Metabolic Equivalent
-        if (flag % 2 == 1) {
-          // UInt8
-          byteCounter++;
-        }
-        flag ~/= 2;
-        // Has Elapsed Time
-        if (flag % 2 == 1) {
-          _timeMetric = ShortMetricDescriptor(
-              lsb: byteCounter, msb: byteCounter + 1, divider: 1);
-          byteCounter += 2;
-        }
-        flag ~/= 2;
-        // Has Remaining Time
-        if (flag % 2 == 1) {
-          byteCounter += 2;
-        }
+        processFlag(flag);
       }
     }
 
-    double elapsed = lastElapsed.toDouble();
-    final elapsedDuration = Duration(seconds: lastElapsed);
-    if (data != null) {
-      if (_timeMetric != null) {
-        elapsed = getTime(data);
-      } else {
-        elapsed = DateTime.now()
-                .subtract(idleDuration)
-                .difference(activity.startDateTime)
-                .inMilliseconds /
-            1000.0;
-      }
+    double elapsed;
+    Duration elapsedDuration;
+    int elapsedMillis;
+    if (data != null && _timeMetric != null) {
+      elapsed = getTime(data);
+      elapsedMillis = (elapsed * 1000.0).toInt();
+      elapsedDuration = Duration(seconds: lastRecord.elapsed);
+    } else {
+      elapsedMillis = DateTime.now()
+          .subtract(idleDuration)
+          .difference(activity.startDateTime)
+          .inMilliseconds;
+      elapsed = elapsedMillis / 1000.0;
+      elapsedDuration = Duration(milliseconds: elapsedMillis);
     }
 
     double newDistance = 0;
-    final dT = elapsed - lastElapsed;
+    final dT = (elapsedMillis - lastRecord.elapsedMillis) / 1000.0;
     if (data != null && _distanceMetric != null) {
       newDistance = getDistance(data);
     } else {
       double dD = 0;
-      if (lastSpeed > 0) {
+      if (lastRecord.speed > 0) {
         if (dT > 0) {
-          dD = dT > 0 ? lastSpeed / DeviceDescriptor.KMH2MS * dT : 0.0;
+          dD = lastRecord.speed * DeviceDescriptor.KMH2MS * dT;
+          debugPrint("delta $dD $dT (${lastRecord.speed})");
         }
       }
-      newDistance = lastDistance + dD;
+      newDistance = lastRecord.distance + dD;
     }
     final timeStamp =
         activity.startDateTime.add(idleDuration).add(elapsedDuration);
     if (data != null) {
+      var cadence = lastRecord.cadence;
       if (_cadenceMetric != null) {
         cadence = getCadence(data).toInt();
       }
@@ -276,8 +291,8 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       } else {
         final deltaCalories = power * dT * DeviceDescriptor.J2KCAL;
         _residueCalories += deltaCalories;
-        calories = lastCalories + _residueCalories;
-        if (calories.toInt() > lastCalories) {
+        calories = lastRecord.calories + _residueCalories;
+        if (calories.toInt() > lastRecord.calories) {
           _residueCalories = calories - calories.toInt();
         }
       }
@@ -291,18 +306,20 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
         speed: getSpeed(data),
         cadence: cadence,
         heartRate: getHeartRate(data).toInt(),
+        elapsedMillis: elapsedMillis,
       );
     } else {
       return Record(
         activityId: activity.id,
         timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: newDistance,
-        elapsed: supplement.elapsed,
-        calories: supplement.calories,
-        power: supplement.power,
-        speed: lastSpeed,
-        cadence: supplement.cadence,
-        heartRate: supplement.heartRate,
+        elapsed: lastRecord.elapsed,
+        calories: lastRecord.calories,
+        power: lastRecord.power,
+        speed: lastRecord.speed,
+        cadence: lastRecord.cadence,
+        heartRate: lastRecord.heartRate,
+        elapsedMillis: elapsedMillis,
       );
     }
   }
