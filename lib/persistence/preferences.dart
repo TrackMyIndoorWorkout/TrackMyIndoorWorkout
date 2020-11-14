@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:charts_flutter/flutter.dart';
+import 'package:device_info/device_info.dart';
 import 'package:preferences/preferences.dart';
 
 Color getTranslucent(Color c) {
@@ -171,13 +174,33 @@ const DEVICE_FILTERING_TAG = "device_filtering";
 const DEVICE_FILTERING_DEFAULT = true;
 const DEVICE_FILTERING_DESCRIPTION =
     "Off: the app won't filter the list of Bluetooth device while scanning. " +
-        "Useful if your equipment has an unexpected Bluetooth name";
+        "Useful if your equipment has an unexpected Bluetooth name.";
 
 const UNIT_SYSTEM = "Unit System";
 const UNIT_SYSTEM_TAG = "unit_system";
 const UNIT_SYSTEM_DEFAULT = false; // false: Imperial, true: Metric
 const UNIT_SYSTEM_DESCRIPTION = "On: metric (km/h speed, meters distance), " +
-    "Off: imperial (mp/h speed, miles distance)";
+    "Off: imperial (mp/h speed, miles distance).";
+
+const SIMPLER_UI = "Simplify Measurement UI";
+const SIMPLER_UI_TAG = "simpler_ui";
+const SIMPLER_UI_FAST_DEFAULT = false;
+const SIMPLER_UI_SLOW_DEFAULT = true;
+const SIMPLER_UI_DESCRIPTION = "On: the track visualization and the real-time" +
+    " graphs won't be featured at the bottom of the measurement " +
+    "screen. This can help old / slow phones.";
+
+Future<bool> getSimplerUiDefault() async {
+  var simplerUiDefault = SIMPLER_UI_FAST_DEFAULT;
+  if (Platform.isAndroid) {
+    var androidInfo = await DeviceInfoPlugin().androidInfo;
+    if (androidInfo.version.sdkInt < 26) {
+      // Remove complexities for very old Android devices
+      simplerUiDefault = SIMPLER_UI_SLOW_DEFAULT;
+    }
+  }
+  return simplerUiDefault;
+}
 
 const KMH2MPH = 0.621371;
 const M2MILE = KMH2MPH / 1000.0;

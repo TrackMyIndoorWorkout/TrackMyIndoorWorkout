@@ -13,6 +13,7 @@ void main() async {
   Map<String, dynamic> prefDefaults = {
     UNIT_SYSTEM_TAG: UNIT_SYSTEM_DEFAULT,
     DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT,
+    SIMPLER_UI_TAG: await getSimplerUiDefault(),
   };
   preferencesSpecs.forEach((prefSpec) {
     prefDefaults.addAll({

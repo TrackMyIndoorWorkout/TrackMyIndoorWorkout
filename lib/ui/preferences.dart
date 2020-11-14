@@ -41,6 +41,13 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: DEVICE_FILTERING_DEFAULT,
         desc: DEVICE_FILTERING_DESCRIPTION,
       ),
+      PreferenceTitle(SIMPLER_UI),
+      SwitchPreference(
+        SIMPLER_UI,
+        SIMPLER_UI_TAG,
+        defaultVal: SIMPLER_UI_FAST_DEFAULT,
+        desc: SIMPLER_UI_DESCRIPTION,
+      ),
     ];
 
     preferencesSpecs.forEach((prefSpec) {

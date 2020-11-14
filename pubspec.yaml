@@ -27,6 +27,7 @@ dependencies:
   preferences: any
   loading_overlay: any
   fab_circular_menu: any
+  device_info: any
   flutter:
     sdk: flutter
 

@@ -109,6 +109,7 @@ class DeviceState extends State<DeviceScreen> {
   Activity _activity;
   AppDatabase _database;
   bool _si;
+  bool _simplerUi;
 
   // Debugging UX without actual connected device
   Timer _timer;
@@ -144,6 +145,10 @@ class DeviceState extends State<DeviceScreen> {
   }
 
   _addGraphData(Record record) {
+    if (_simplerUi) {
+      return;
+    }
+
     _graphData.add(record.hydrate());
     if (_pointCount > 0 && _graphData.length > _pointCount) {
       _graphData.removeFirst();
@@ -316,7 +321,6 @@ class DeviceState extends State<DeviceScreen> {
     _selectedRow = 0;
     _extraDisplayIndex = ROW_TO_EXTRA[_selectedRow];
     _pointCount = size.width ~/ 2;
-    _graphData = ListQueue<Record>(_pointCount);
     _unselectedUnitStyle = TextStyle(
       fontFamily: 'DSEG14',
       color: Colors.indigo,
@@ -326,6 +330,10 @@ class DeviceState extends State<DeviceScreen> {
       color: Colors.indigo,
     );
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    _simplerUi = PrefService.getBool(SIMPLER_UI_TAG);
+    if (!_simplerUi) {
+      _graphData = ListQueue<Record>(_pointCount);
+    }
     preferencesSpecs[1].unit = _si ? 'kmh' : 'mph';
     preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
     preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
@@ -539,7 +547,6 @@ class DeviceState extends State<DeviceScreen> {
     );
 
     final _timeDisplay = Duration(seconds: _latestRecord.elapsed).toDisplay();
-    final trackMarker = calculateTrackMarker(trackSize, _latestRecord.distance);
 
     List<Widget> rows = [
       GestureDetector(
@@ -582,58 +589,63 @@ class DeviceState extends State<DeviceScreen> {
       ));
     });
 
-    List<Widget> extras = [
-      CustomPaint(
-        painter: TrackPainter(),
-        child: trackMarker == null
-            ? SizedBox(width: 0, height: 0)
-            : Stack(
-                children: <Widget>[
-                  Positioned(
-                    left: trackMarker.dx - THICK,
-                    top: trackMarker.dy - THICK,
-                    child: Container(
-                        decoration: BoxDecoration(
-                          color: Color(0x88FF0000),
-                          borderRadius: BorderRadius.circular(THICK),
-                        ),
-                        width: THICK * 2,
-                        height: THICK * 2),
-                  ),
-                ],
-              ),
-      ),
-    ];
+    if (!_simplerUi) {
+      final trackMarker =
+          calculateTrackMarker(trackSize, _latestRecord.distance);
 
-    preferencesSpecs.forEach((prefSpec) {
-      extras.add(
-        charts.TimeSeriesChart(
-          _metricToDataFn[prefSpec.metric](),
-          animate: false,
-          behaviors: [
-            charts.RangeAnnotation(
-              List.generate(
-                prefSpec.binCount,
-                (i) => charts.RangeAnnotationSegment(
-                  prefSpec.zoneLower[i],
-                  prefSpec.zoneUpper[i],
-                  charts.RangeAnnotationAxisType.measure,
-                  color: prefSpec.binBgColor(i),
+      List<Widget> extras = [
+        CustomPaint(
+          painter: TrackPainter(),
+          child: trackMarker == null
+              ? SizedBox(width: 0, height: 0)
+              : Stack(
+                  children: <Widget>[
+                    Positioned(
+                      left: trackMarker.dx - THICK,
+                      top: trackMarker.dy - THICK,
+                      child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0x88FF0000),
+                            borderRadius: BorderRadius.circular(THICK),
+                          ),
+                          width: THICK * 2,
+                          height: THICK * 2),
+                    ),
+                  ],
                 ),
-              ),
-            )
-          ],
         ),
-      );
-    });
+      ];
 
-    rows.add(Divider(height: separatorHeight));
-    rows.add(Expanded(
-      child: IndexedStack(
-        index: _extraDisplayIndex,
-        children: extras,
-      ),
-    ));
+      preferencesSpecs.forEach((prefSpec) {
+        extras.add(
+          charts.TimeSeriesChart(
+            _metricToDataFn[prefSpec.metric](),
+            animate: false,
+            behaviors: [
+              charts.RangeAnnotation(
+                List.generate(
+                  prefSpec.binCount,
+                  (i) => charts.RangeAnnotationSegment(
+                    prefSpec.zoneLower[i],
+                    prefSpec.zoneUpper[i],
+                    charts.RangeAnnotationAxisType.measure,
+                    color: prefSpec.binBgColor(i),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      });
+
+      rows.add(Divider(height: separatorHeight));
+      rows.add(Expanded(
+        child: IndexedStack(
+          index: _extraDisplayIndex,
+          children: extras,
+        ),
+      ));
+    }
 
     return Scaffold(
       appBar: AppBar(
