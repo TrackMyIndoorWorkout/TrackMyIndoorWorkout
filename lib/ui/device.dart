@@ -92,7 +92,9 @@ class DeviceState extends State<DeviceScreen> {
   final BluetoothDeviceState initialState;
   DeviceDescriptor descriptor;
   BluetoothCharacteristic _primaryMeasurements;
+  StreamSubscription _measurementSubscription;
   BluetoothCharacteristic _cadenceMeasurements;
+  StreamSubscription _cadenceSubscription;
   bool _discovered;
   bool _measuring;
   bool _paused;
@@ -259,7 +261,8 @@ class DeviceState extends State<DeviceScreen> {
           }
           if (_cadenceMeasurements != null) {
             await _cadenceMeasurements.setNotifyValue(true);
-            _cadenceMeasurements.value.listen((data) async {
+            _cadenceSubscription =
+                _cadenceMeasurements.value.listen((data) async {
               if (data != null && data.length > 1) {
                 await _processCadenceMeasurement(data);
               }
@@ -274,7 +277,8 @@ class DeviceState extends State<DeviceScreen> {
               descriptor.primaryMeasurementId);
           if (_primaryMeasurements != null) {
             await _primaryMeasurements.setNotifyValue(true);
-            _primaryMeasurements.value.listen((data) async {
+            _measurementSubscription =
+                _primaryMeasurements.value.listen((data) async {
               if (data != null && data.length > 1) {
                 await _recordMeasurement(data);
               }
@@ -388,7 +392,9 @@ class DeviceState extends State<DeviceScreen> {
   dispose() {
     _timer?.cancel();
     _primaryMeasurements?.setNotifyValue(false);
+    _measurementSubscription?.cancel();
     _cadenceMeasurements?.setNotifyValue(false);
+    _cadenceSubscription?.cancel();
     _database?.close();
     Wakelock.disable();
     super.dispose();
