@@ -632,7 +632,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       height: size.height / 5,
                       child: TimeSeriesChart(
                         _tileConfigurations[item].dataFn(),
-                        animate: true,
+                        animate: false,
                         primaryMeasureAxis: NumericAxisSpec(
                           tickProviderSpec:
                               BasicNumericTickProviderSpec(zeroBound: false),
@@ -676,7 +676,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       height: size.height / 5,
                       child: PieChart(
                         _tileConfigurations[item].histogramFn(),
-                        animate: true,
+                        animate: false,
                         defaultRenderer: ArcRendererConfig(
                             arcWidth: 60,
                             arcRendererDecorators: [ArcLabelDecorator()]),
