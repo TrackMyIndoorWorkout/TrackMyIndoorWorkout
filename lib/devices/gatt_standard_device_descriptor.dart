@@ -279,8 +279,8 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
         final deltaCalories = power * dT * DeviceDescriptor.J2KCAL;
         _residueCalories += deltaCalories;
         calories = lastRecord.calories + _residueCalories;
-        if (calories.toInt() > lastRecord.calories) {
-          _residueCalories = calories - calories.toInt();
+        if (calories.floor() > lastRecord.calories) {
+          _residueCalories = calories - calories.floor();
         }
       }
       return Record(
@@ -288,7 +288,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
         timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: newDistance,
         elapsed: elapsed.toInt(),
-        calories: calories.toInt(),
+        calories: calories.floor(),
         power: power.toInt(),
         speed: getSpeed(data),
         cadence: cadence,
