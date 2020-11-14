@@ -46,31 +46,31 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
           canPrimaryMeasurementProcessed: canPrimaryMeasurementProcessed,
         );
 
-  double getTime(List<int> data) {
+  double _getTime(List<int> data) {
     return timeMetric?.getMeasurementValue(data);
   }
 
-  double getCalories(List<int> data) {
+  double _getCalories(List<int> data) {
     return caloriesMetric?.getMeasurementValue(data);
   }
 
-  double getSpeed(List<int> data) {
+  double _getSpeed(List<int> data) {
     return speedMetric?.getMeasurementValue(data);
   }
 
-  double getPower(List<int> data) {
+  double _getPower(List<int> data) {
     return powerMetric?.getMeasurementValue(data);
   }
 
-  double getCadence(List<int> data) {
+  double _getCadence(List<int> data) {
     return cadenceMetric?.getMeasurementValue(data);
   }
 
-  double getDistance(List<int> data) {
+  double _getDistance(List<int> data) {
     return distanceMetric?.getMeasurementValue(data);
   }
 
-  double getHeartRate(List<int> data) {
+  double _getHeartRate(List<int> data) {
     return data[heartRate].toDouble();
   }
 
@@ -81,10 +81,10 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     Record lastRecord,
     List<int> data,
   ) {
-    final elapsed = data != null ? getTime(data).toInt() : lastRecord.elapsed;
+    final elapsed = data != null ? _getTime(data).toInt() : lastRecord.elapsed;
     double newDistance = 0;
     if (data != null && distanceMetric != null) {
-      newDistance = getDistance(data);
+      newDistance = _getDistance(data);
     } else {
       double dD = 0;
       if (lastRecord.speed > 0) {
@@ -109,11 +109,11 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: newDistance,
         elapsed: elapsed,
-        calories: getCalories(data).toInt(),
-        power: getPower(data).toInt(),
-        speed: getSpeed(data),
-        cadence: getCadence(data).toInt(),
-        heartRate: getHeartRate(data).toInt(),
+        calories: _getCalories(data).toInt(),
+        power: _getPower(data).toInt(),
+        speed: _getSpeed(data),
+        cadence: _getCadence(data).toInt(),
+        heartRate: _getHeartRate(data).toInt(),
       );
     } else {
       return Record(

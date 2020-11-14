@@ -72,43 +72,43 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     _residueCalories = 0;
   }
 
-  double getSpeed(List<int> data) {
+  double _getSpeed(List<int> data) {
     return _speedMetric?.getMeasurementValue(data);
   }
 
-  double getCadence(List<int> data) {
+  double _getCadence(List<int> data) {
     return _cadenceMetric?.getMeasurementValue(data);
   }
 
-  double getDistance(List<int> data) {
+  double _getDistance(List<int> data) {
     return _distanceMetric?.getMeasurementValue(data);
   }
 
-  double getPower(List<int> data) {
+  double _getPower(List<int> data) {
     return _powerMetric?.getMeasurementValue(data);
   }
 
-  double getCalories(List<int> data) {
+  double _getCalories(List<int> data) {
     return _caloriesMetric?.getMeasurementValue(data);
   }
 
-  double getTime(List<int> data) {
+  double _getTime(List<int> data) {
     return _timeMetric?.getMeasurementValue(data);
   }
 
-  int getRevolutions(List<int> data) {
+  int _getRevolutions(List<int> data) {
     return _revolutions?.getMeasurementValue(data)?.toInt();
   }
 
-  double getRevolutionTime(List<int> data) {
+  double _getRevolutionTime(List<int> data) {
     return _revolutionTime?.getMeasurementValue(data);
   }
 
-  double getHeartRate(List<int> data) {
+  double _getHeartRate(List<int> data) {
     return data[heartRate].toDouble();
   }
 
-  processFlag(int flag) {
+  _processFlag(int flag) {
     // Schwinn IC4:
     // 68 01000100 avg speed, instant power
     //  2 00000010 heart rate
@@ -231,7 +231,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       var flag = data[0] + 256 * data[1];
       if (flag != _featuresFlag) {
         _featuresFlag = flag;
-        processFlag(flag);
+        _processFlag(flag);
       }
     }
 
@@ -239,7 +239,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     Duration elapsedDuration;
     int elapsedMillis;
     if (data != null && _timeMetric != null) {
-      elapsed = getTime(data);
+      elapsed = _getTime(data);
       elapsedMillis = (elapsed * 1000.0).toInt();
       elapsedDuration = Duration(seconds: lastRecord.elapsed);
     } else {
@@ -254,7 +254,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     double newDistance = 0;
     final dT = (elapsedMillis - lastRecord.elapsedMillis) / 1000.0;
     if (data != null && _distanceMetric != null) {
-      newDistance = getDistance(data);
+      newDistance = _getDistance(data);
     } else {
       double dD = 0;
       if (lastRecord.speed > 0) {
@@ -269,12 +269,12 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     if (data != null) {
       var cadence = lastRecord.cadence;
       if (_cadenceMetric != null) {
-        cadence = getCadence(data).toInt();
+        cadence = _getCadence(data).toInt();
       }
-      double power = getPower(data);
+      double power = _getPower(data);
       double calories = 0;
       if (_caloriesMetric != null) {
-        calories = getCalories(data);
+        calories = _getCalories(data);
       } else {
         final deltaCalories = power * dT * DeviceDescriptor.J2KCAL;
         _residueCalories += deltaCalories;
@@ -290,9 +290,9 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
         elapsed: elapsed.toInt(),
         calories: calories.floor(),
         power: power.toInt(),
-        speed: getSpeed(data),
+        speed: _getSpeed(data),
         cadence: cadence,
-        heartRate: getHeartRate(data).toInt(),
+        heartRate: _getHeartRate(data).toInt(),
         elapsedMillis: elapsedMillis,
       );
     } else {
@@ -338,8 +338,8 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
 
     // See https://web.archive.org/web/20170816162607/https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.csc_measurement.xml
     _cadenceData.add(CadenceData(
-      seconds: getRevolutionTime(data),
-      revolutions: getRevolutions(data),
+      seconds: _getRevolutionTime(data),
+      revolutions: _getRevolutions(data),
     ));
 
     var firstData = _cadenceData.first;
