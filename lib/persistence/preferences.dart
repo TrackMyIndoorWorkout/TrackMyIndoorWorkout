@@ -93,9 +93,16 @@ class PreferencesSpec {
 
   calculateBounds(double minVal, double maxVal) {
     zoneLower = [...zoneBounds];
-    zoneLower.insert(0, minVal);
+    if (minVal < 0 || minVal > 0 && minVal > zoneLower[0]) {
+      minVal = zoneLower[0] * 0.75;
+    }
+    zoneLower.insert(0, decimalRound(minVal));
+
     zoneUpper = [...zoneBounds];
-    zoneUpper.add(maxVal);
+    if (maxVal < 0 || maxVal > 0 && maxVal < zoneLower.last) {
+      maxVal = zoneLower.last * 1.15;
+    }
+    zoneUpper.add(decimalRound(maxVal));
   }
 
   int get binCount => zonePercents.length + 1;
