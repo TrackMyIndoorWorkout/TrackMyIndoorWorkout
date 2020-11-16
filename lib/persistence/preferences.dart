@@ -46,6 +46,11 @@ final fiveFgPalette = [
   MaterialPalette.red.shadeDefault.darker,
 ];
 
+// https://stackoverflow.com/questions/57481767/dart-rounding-errors
+double decimalRound(double value, {int precision = 100}) {
+  return (value * precision).round() / precision;
+}
+
 class PreferencesSpec {
   final String metric;
   final String title;
@@ -83,7 +88,7 @@ class PreferencesSpec {
         .split(',')
         .map((zs) => int.tryParse(zs))
         .toList(growable: false);
-    zoneBounds = zonePercents.map((z) => z / 100.0 * threshold).toList();
+    zoneBounds = zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList();
   }
 
   calculateBounds(double minVal, double maxVal) {
