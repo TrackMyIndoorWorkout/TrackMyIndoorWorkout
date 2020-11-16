@@ -1,3 +1,4 @@
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -50,6 +51,96 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         });
   }
 
+  Widget actionButtonRow(Activity activity, double size) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: Icon(Icons.open_in_new, color: Colors.black, size: size),
+          onPressed: () async => await Get.to(
+              RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.file_upload,
+            color: activity.uploaded ? Colors.grey : Colors.green,
+            size: size,
+          ),
+          onPressed: () async {
+            StravaService stravaService;
+            if (!Get.isRegistered<StravaService>()) {
+              stravaService = Get.put<StravaService>(StravaService());
+            } else {
+              stravaService = Get.find<StravaService>();
+            }
+            final success = await stravaService.login();
+            if (!success) {
+              Get.snackbar("Warning", "Strava login unsuccessful");
+            } else {
+              final records =
+                  await _database.recordDao.findAllActivityRecords(activity.id);
+              setState(() {
+                _isLoading = true;
+              });
+              final statusCode = await stravaService.upload(activity, records);
+              setState(() {
+                _isLoading = false;
+                _editCount++;
+              });
+              Get.snackbar(
+                  "Upload",
+                  statusCode == statusOk ||
+                          statusCode >= 200 && statusCode < 300
+                      ? "Activity ${activity.id} submitted successfully"
+                      : "Activity ${activity.id} upload failure");
+            }
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.file_download, size: size),
+          onPressed: () async {
+            final records =
+                await _database.recordDao.findAllActivityRecords(activity.id);
+            final tcxGzip =
+                await TCXOutput().getTcxOfActivity(activity, records);
+            final persistenceValues = activity.getPersistenceValues();
+            ShareFilesAndScreenshotWidgets().shareFile(
+                persistenceValues['name'],
+                persistenceValues['fileName'],
+                tcxGzip,
+                TCXOutput.MIME_TYPE,
+                text: 'Share a ride on ${activity.deviceName}');
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          onPressed: () async {
+            Get.defaultDialog(
+              title: 'Warning!!!',
+              middleText: 'Are you sure to delete this Activity?',
+              confirm: FlatButton(
+                child: Text("Yes"),
+                onPressed: () async {
+                  await _database.recordDao
+                      .deleteAllActivityRecords(activity.id);
+                  await _database.activityDao.deleteActivity(activity);
+                  setState(() {
+                    _editCount++;
+                  });
+                  Get.close(1);
+                },
+              ),
+              cancel: FlatButton(
+                child: Text("No"),
+                onPressed: () => Get.close(1),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   dispose() {
     _database.close();
@@ -58,6 +149,26 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double sizeDefault = Get.mediaQuery.size.width / 7;
+    final double sizeDefault2 = sizeDefault / 1.5;
+
+    final measurementStyle = TextStyle(
+      fontFamily: 'DSEG7',
+      fontSize: sizeDefault,
+    );
+    final textStyle = TextStyle(
+      fontSize: sizeDefault2,
+    );
+    final headerStyle = TextStyle(
+      fontFamily: 'DSEG14',
+      fontSize: sizeDefault2,
+    );
+    final unitStyle = TextStyle(
+      fontFamily: 'DSEG14',
+      fontSize: sizeDefault / 3,
+      color: Colors.indigo,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Activities'),
@@ -103,7 +214,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                   );
                 },
                 separatorBuilder: (context, _) {
-                  return Divider(height: 2);
+                  return Divider(height: 20);
                 },
                 empty: Center(
                   child: Text('No activities found'),
@@ -114,101 +225,132 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       DateTime.fromMillisecondsSinceEpoch(activity.start);
                   final dateString = DateFormat.yMd().format(startStamp);
                   final timeString = DateFormat.Hms().format(startStamp);
-                  return ListTile(
+                  return ExpandablePanel(
                     key: Key("${activity.id} ${activity.stravaId}"),
-                    onTap: () async => await Get.to(RecordsScreen(
-                        activity: item, size: Get.mediaQuery.size)),
-                    title: Text(
-                        '$dateString $timeString on ${activity.deviceName}'),
-                    subtitle: Text('Elapsed: ${activity.elapsedString}, ' +
-                        '${activity.distanceByUnit(_si)}, ' +
-                        '${activity.calories} kCal'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    header: Column(
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.file_upload,
-                              color: activity.uploaded
-                                  ? Colors.grey
-                                  : Colors.green),
-                          onPressed: () async {
-                            StravaService stravaService;
-                            if (!Get.isRegistered<StravaService>()) {
-                              stravaService =
-                                  Get.put<StravaService>(StravaService());
-                            } else {
-                              stravaService = Get.find<StravaService>();
-                            }
-                            final success = await stravaService.login();
-                            if (!success) {
-                              Get.snackbar(
-                                  "Warning", "Strava login unsuccessful");
-                            } else {
-                              final records = await _database.recordDao
-                                  .findAllActivityRecords(activity.id);
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              final statusCode =
-                                  await stravaService.upload(activity, records);
-                              setState(() {
-                                _isLoading = false;
-                                _editCount++;
-                              });
-                              Get.snackbar(
-                                  "Upload",
-                                  statusCode == statusOk ||
-                                          statusCode >= 200 && statusCode < 300
-                                      ? "Activity ${activity.id} submitted successfully"
-                                      : "Activity ${activity.id} upload failure");
-                            }
-                          },
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.calendar_today,
+                              color: Colors.indigo,
+                              size: sizeDefault2,
+                            ),
+                            Text(
+                              dateString,
+                              style: headerStyle,
+                            ),
+                          ],
                         ),
-                        IconButton(
-                          icon: Icon(Icons.file_download),
-                          onPressed: () async {
-                            final records = await _database.recordDao
-                                .findAllActivityRecords(activity.id);
-                            final tcxGzip = await TCXOutput()
-                                .getTcxOfActivity(activity, records);
-                            final persistenceValues =
-                                activity.getPersistenceValues();
-                            ShareFilesAndScreenshotWidgets().shareFile(
-                                persistenceValues['name'],
-                                persistenceValues['fileName'],
-                                tcxGzip,
-                                TCXOutput.MIME_TYPE,
-                                text: 'Share a ride on ${activity.deviceName}');
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Colors.redAccent),
-                          onPressed: () async {
-                            Get.defaultDialog(
-                              title: 'Warning!!!',
-                              middleText:
-                                  'Are you sure to delete this Activity?',
-                              confirm: FlatButton(
-                                child: Text("Yes"),
-                                onPressed: () async {
-                                  await _database.recordDao
-                                      .deleteAllActivityRecords(activity.id);
-                                  await _database.activityDao
-                                      .deleteActivity(activity);
-                                  setState(() {
-                                    _editCount++;
-                                  });
-                                  Get.close(1);
-                                },
-                              ),
-                              cancel: FlatButton(
-                                child: Text("No"),
-                                onPressed: () => Get.close(1),
-                              ),
-                            );
-                          },
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.watch,
+                              color: Colors.indigo,
+                              size: sizeDefault2,
+                            ),
+                            Text(
+                              timeString,
+                              style: headerStyle,
+                            ),
+                          ],
                         ),
                       ],
+                    ),
+                    collapsed: ListTile(
+                      trailing: actionButtonRow(activity, sizeDefault2),
+                    ),
+                    expanded: ListTile(
+                      onTap: () async => await Get.to(RecordsScreen(
+                          activity: item, size: Get.mediaQuery.size)),
+                      title: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.directions_bike,
+                                color: Colors.indigo,
+                                size: sizeDefault,
+                              ),
+                              Spacer(),
+                              Text(
+                                activity.deviceName,
+                                style: textStyle,
+                                maxLines: 4,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.timer,
+                                color: Colors.indigo,
+                                size: sizeDefault,
+                              ),
+                              Spacer(),
+                              Text(
+                                activity.elapsedString,
+                                style: measurementStyle,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_road,
+                                color: Colors.indigo,
+                                size: sizeDefault,
+                              ),
+                              Spacer(),
+                              Text(
+                                activity.distanceString(_si),
+                                style: measurementStyle,
+                              ),
+                              SizedBox(
+                                width: sizeDefault,
+                                child: Text(
+                                  _si ? 'm' : 'mi',
+                                  style: unitStyle,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.whatshot,
+                                color: Colors.indigo,
+                                size: sizeDefault,
+                              ),
+                              Spacer(),
+                              Text(
+                                '${activity.calories}',
+                                style: measurementStyle,
+                              ),
+                              SizedBox(
+                                width: sizeDefault,
+                                child: Text(
+                                  'cal',
+                                  style: unitStyle,
+                                ),
+                              ),
+                            ],
+                          ),
+                          actionButtonRow(activity, sizeDefault2),
+                        ],
+                      ),
                     ),
                   );
                 },

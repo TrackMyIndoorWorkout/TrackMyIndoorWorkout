@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
+import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
 
 Color getTranslucent(Color c) {
@@ -58,6 +59,7 @@ class PreferencesSpec {
   List<double> zoneBounds;
   List<double> zoneLower;
   List<double> zoneUpper;
+  final IconData icon;
 
   PreferencesSpec({
     this.metric,
@@ -67,6 +69,7 @@ class PreferencesSpec {
     this.thresholdDefault,
     this.zonesTag,
     this.zonesDefault,
+    this.icon,
   });
 
   String get fullTitle => '$title ($unit)';
@@ -139,6 +142,7 @@ final preferencesSpecs = [
     thresholdDefault: '360',
     zonesTag: METRICS[0] + ZONES_POSTFIX,
     zonesDefault: '55,75,90,105,120,150',
+    icon: Icons.bolt,
   ),
   PreferencesSpec(
     metric: METRICS[1],
@@ -148,6 +152,7 @@ final preferencesSpecs = [
     thresholdDefault: '20',
     zonesTag: METRICS[1] + ZONES_POSTFIX,
     zonesDefault: '55,75,90,105,120,150',
+    icon: Icons.speed,
   ),
   PreferencesSpec(
     metric: METRICS[2],
@@ -157,6 +162,7 @@ final preferencesSpecs = [
     thresholdDefault: '120',
     zonesTag: METRICS[2] + ZONES_POSTFIX,
     zonesDefault: '25,37,50,75,100,120',
+    icon: Icons.directions_bike,
   ),
   PreferencesSpec(
     metric: METRICS[3],
@@ -166,6 +172,7 @@ final preferencesSpecs = [
     thresholdDefault: '180',
     zonesTag: METRICS[3] + ZONES_POSTFIX,
     zonesDefault: '50,60,70,80,90,100',
+    icon: Icons.favorite,
   ),
 ];
 

@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:charts_common/common.dart' as common;
-import 'package:charts_flutter/flutter.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
@@ -101,16 +102,16 @@ class MeasurementCounter {
   bool get hasHeartRate => hrCounter > 0;
 }
 
-class SelectionStrings {
-  String time;
+class SelectionData {
+  DateTime time;
   String value;
 
-  SelectionStrings({this.time, this.value});
+  SelectionData({this.time, this.value});
 }
 
-typedef DataFn = List<Series<Record, DateTime>> Function();
+typedef DataFn = List<charts.Series<Record, DateTime>> Function();
 typedef DataStringFn = String Function(Record);
-typedef HistogramFn = List<Series<HistogramData, double>> Function();
+typedef HistogramFn = List<charts.Series<HistogramData, double>> Function();
 
 class TileConfiguration {
   final String title;
@@ -122,6 +123,8 @@ class TileConfiguration {
   int count;
   List<HistogramData> histogram;
   final common.SelectionModelListener<DateTime> selectionListener;
+  final String maxString;
+  final String avgString;
 
   TileConfiguration({
     this.title,
@@ -130,21 +133,22 @@ class TileConfiguration {
     this.dataStringFn,
     this.selectionListener,
     this.zoneBounds,
+    this.maxString,
+    this.avgString,
   }) {
     count = 0;
   }
   bool get hasMeasurement => count > 0;
 
-  SelectionStrings getSelectionStrings(SelectionModel<DateTime> model) {
+  SelectionData getSelectionData(charts.SelectionModel<DateTime> model) {
     final selectedDatum = model.selectedDatum;
 
     if (selectedDatum.isNotEmpty) {
       final datum = selectedDatum.first.datum.hydrate();
-      return SelectionStrings(
-          time: datum.dt.toString(), value: dataStringFn(datum));
+      return SelectionData(time: datum.dt, value: dataStringFn(datum));
     }
 
-    return SelectionStrings(time: "-", value: "-");
+    return SelectionData(time: null, value: "--");
   }
 }
 
@@ -161,15 +165,15 @@ class RecordsScreenState extends State<RecordsScreen> {
   bool _initialized;
   List<String> _selectedTimes;
   List<String> _selectedValues;
-  String _avgPower;
-  String _maxPower;
-  String _avgSpeed;
-  String _maxSpeed;
-  String _avgCadence;
-  String _maxCadence;
-  String _avgHr;
-  String _maxHr;
   bool _si;
+
+  double _sizeDefault;
+  double _sizeDefault2;
+  TextStyle _measurementStyle;
+  TextStyle _textStyle;
+  TextStyle _unitStyle;
+  TextStyle _selectionStyle;
+  TextStyle _selectionTextStyle;
 
   @override
   initState() {
@@ -179,15 +183,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     _tiles = [];
     _selectedTimes = [];
     _selectedValues = [];
-    _avgPower = "N/A";
-    _maxPower = "N/A";
-    _avgSpeed = "N/A";
-    _maxSpeed = "N/A";
-    _avgCadence = "N/A";
-    _maxCadence = "N/A";
-    _avgHr = "N/A";
-    _maxHr = "N/A";
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    activity.hydrate();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
         .addMigrations([migration1to2, migration2to3])
@@ -218,7 +215,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               calculateAvgSpeed: measurementCounter.hasSpeed,
               calculateMaxSpeed: measurementCounter.hasSpeed,
               calculateAvgCadence: measurementCounter.hasCadence,
-              calculateMaxCadence: measurementCounter.hasHeartRate,
+              calculateMaxCadence: measurementCounter.hasCadence,
               calculateAvgHeartRate: measurementCounter.hasHeartRate,
               calculateMaxHeartRate: measurementCounter.hasHeartRate,
             );
@@ -226,32 +223,10 @@ class RecordsScreenState extends State<RecordsScreen> {
               accu.processRecord(record);
             });
 
-            String unit = "";
-            if (measurementCounter.hasPower) {
-              unit = preferencesSpecs[0].unit;
-              _avgPower = "${accu.avgPower.toStringAsFixed(1)} $unit";
-              _maxPower = "${accu.maxPower} $unit";
-            }
-            if (measurementCounter.hasSpeed) {
-              unit = preferencesSpecs[1].unit;
-              _avgSpeed = "${accu.avgSpeed.toStringAsFixed(1)} $unit";
-              _maxSpeed = "${accu.maxSpeed} $unit";
-            }
-            if (measurementCounter.hasCadence) {
-              unit = preferencesSpecs[2].unit;
-              _avgCadence = "${accu.avgCadence} $unit";
-              _maxCadence = "${accu.maxCadence} $unit";
-            }
-            if (measurementCounter.hasHeartRate) {
-              unit = preferencesSpecs[3].unit;
-              _avgHr = "${accu.avgHeartRate} $unit";
-              _maxHr = "${accu.maxHeartRate} $unit";
-            }
-
             if (measurementCounter.hasPower) {
               _tiles.add("power");
-              _selectedTimes.add("-");
-              _selectedValues.add("-");
+              _selectedTimes.add("--");
+              _selectedValues.add("--");
               var prefSpec = preferencesSpecs[0];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
@@ -259,6 +234,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                 dataFn: _getPowerData,
                 dataStringFn: _getPowerString,
                 selectionListener: _powerSelectionListener,
+                maxString: accu.maxPower.toStringAsFixed(2),
+                avgString: accu.avgPower.toStringAsFixed(2),
               );
               prefSpec.calculateBounds(measurementCounter.minPower.toDouble(),
                   measurementCounter.maxPower.toDouble());
@@ -274,8 +251,8 @@ class RecordsScreenState extends State<RecordsScreen> {
             }
             if (measurementCounter.hasSpeed) {
               _tiles.add("speed");
-              _selectedTimes.add("-");
-              _selectedValues.add("-");
+              _selectedTimes.add("--");
+              _selectedValues.add("--");
               var prefSpec = preferencesSpecs[1];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
@@ -283,6 +260,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                 dataFn: _getSpeedData,
                 dataStringFn: _getSpeedString,
                 selectionListener: _speedSelectionListener,
+                maxString: accu.maxSpeed.toStringAsFixed(2),
+                avgString: accu.avgSpeed.toStringAsFixed(2),
               );
               prefSpec.calculateBounds(
                   measurementCounter.minSpeed, measurementCounter.maxSpeed);
@@ -298,8 +277,8 @@ class RecordsScreenState extends State<RecordsScreen> {
             }
             if (measurementCounter.hasCadence) {
               _tiles.add("cadence");
-              _selectedTimes.add("-");
-              _selectedValues.add("-");
+              _selectedTimes.add("--");
+              _selectedValues.add("--");
               var prefSpec = preferencesSpecs[2];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
@@ -307,6 +286,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                 dataFn: _getCadenceData,
                 dataStringFn: _getCadenceString,
                 selectionListener: _cadenceSelectionListener,
+                maxString: "${accu.maxCadence}",
+                avgString: "${accu.avgCadence}",
               );
               prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
                   measurementCounter.maxCadence.toDouble());
@@ -322,8 +303,8 @@ class RecordsScreenState extends State<RecordsScreen> {
             }
             if (measurementCounter.hasHeartRate) {
               _tiles.add("hr");
-              _selectedTimes.add("-");
-              _selectedValues.add("-");
+              _selectedTimes.add("--");
+              _selectedValues.add("--");
               var prefSpec = preferencesSpecs[3];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
@@ -331,6 +312,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                 dataFn: _getHrData,
                 dataStringFn: _getHrString,
                 selectionListener: _hrSelectionListener,
+                maxString: "${accu.maxHeartRate}",
+                avgString: "${accu.avgHeartRate}",
               );
               prefSpec.calculateBounds(measurementCounter.minHr.toDouble(),
                   measurementCounter.maxHr.toDouble());
@@ -412,11 +395,33 @@ class RecordsScreenState extends State<RecordsScreen> {
             _initialized = true;
           });
         });
+
+    _sizeDefault = Get.mediaQuery.size.width / 7;
+    _sizeDefault2 = _sizeDefault / 1.5;
+    _measurementStyle = TextStyle(
+      fontFamily: 'DSEG7',
+      fontSize: _sizeDefault,
+    );
+    _textStyle = TextStyle(
+      fontSize: _sizeDefault2,
+    );
+    _unitStyle = TextStyle(
+      fontFamily: 'DSEG14',
+      fontSize: _sizeDefault2 / 2,
+      color: Colors.indigo,
+    );
+    _selectionStyle = TextStyle(
+      fontFamily: 'DSEG14',
+      fontSize: _sizeDefault2 / 2,
+    );
+    _selectionTextStyle = TextStyle(
+      fontSize: _sizeDefault2 / 2,
+    );
   }
 
-  List<Series<Record, DateTime>> _getPowerData() {
-    return <Series<Record, DateTime>>[
-      Series<Record, DateTime>(
+  List<charts.Series<Record, DateTime>> _getPowerData() {
+    return <charts.Series<Record, DateTime>>[
+      charts.Series<Record, DateTime>(
         id: 'power',
         colorFn: (Record record, __) =>
             preferencesSpecs[0].binFgColor(record.power),
@@ -431,19 +436,19 @@ class RecordsScreenState extends State<RecordsScreen> {
     return record.power.toString();
   }
 
-  void _powerSelectionListener(SelectionModel<DateTime> model) {
-    final selectionStrings =
-        _tileConfigurations["power"].getSelectionStrings(model);
+  void _powerSelectionListener(charts.SelectionModel<DateTime> model) {
+    final selectionData = _tileConfigurations["power"].getSelectionData(model);
 
     setState(() {
-      _selectedTimes[0] = selectionStrings.time;
-      _selectedValues[0] = selectionStrings.value;
+      _selectedTimes[0] =
+          selectionData.time.difference(activity.startDateTime).toDisplay();
+      _selectedValues[0] = selectionData.value;
     });
   }
 
-  List<Series<HistogramData, double>> _getPowerHistogram() {
-    return <Series<HistogramData, double>>[
-      Series<HistogramData, double>(
+  List<charts.Series<HistogramData, double>> _getPowerHistogram() {
+    return <charts.Series<HistogramData, double>>[
+      charts.Series<HistogramData, double>(
         id: 'powerHistogram',
         // colorFn: (HistogramData data, __) =>
         //   preferencesSpecs[0].binFgColor(data.index),
@@ -456,9 +461,9 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<Series<Record, DateTime>> _getSpeedData() {
-    return <Series<Record, DateTime>>[
-      Series<Record, DateTime>(
+  List<charts.Series<Record, DateTime>> _getSpeedData() {
+    return <charts.Series<Record, DateTime>>[
+      charts.Series<Record, DateTime>(
         id: 'speed',
         colorFn: (Record record, __) =>
             preferencesSpecs[1].binFgColor(record.speedByUnit(_si)),
@@ -473,19 +478,19 @@ class RecordsScreenState extends State<RecordsScreen> {
     return record.speed.toString();
   }
 
-  void _speedSelectionListener(SelectionModel<DateTime> model) {
-    final selectionStrings =
-        _tileConfigurations["speed"].getSelectionStrings(model);
+  void _speedSelectionListener(charts.SelectionModel<DateTime> model) {
+    final selectionData = _tileConfigurations["speed"].getSelectionData(model);
 
     setState(() {
-      _selectedTimes[1] = selectionStrings.time;
-      _selectedValues[1] = selectionStrings.value;
+      _selectedTimes[1] =
+          selectionData.time.difference(activity.startDateTime).toDisplay();
+      _selectedValues[1] = selectionData.value;
     });
   }
 
-  List<Series<HistogramData, double>> _getSpeedHistogram() {
-    return <Series<HistogramData, double>>[
-      Series<HistogramData, double>(
+  List<charts.Series<HistogramData, double>> _getSpeedHistogram() {
+    return <charts.Series<HistogramData, double>>[
+      charts.Series<HistogramData, double>(
         id: 'speedHistogram',
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
@@ -496,9 +501,9 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<Series<Record, DateTime>> _getCadenceData() {
-    return <Series<Record, DateTime>>[
-      Series<Record, DateTime>(
+  List<charts.Series<Record, DateTime>> _getCadenceData() {
+    return <charts.Series<Record, DateTime>>[
+      charts.Series<Record, DateTime>(
         id: 'cadence',
         colorFn: (Record record, __) =>
             preferencesSpecs[2].binFgColor(record.cadence),
@@ -513,19 +518,20 @@ class RecordsScreenState extends State<RecordsScreen> {
     return record.cadence.toString();
   }
 
-  void _cadenceSelectionListener(SelectionModel<DateTime> model) {
-    final selectionStrings =
-        _tileConfigurations["cadence"].getSelectionStrings(model);
+  void _cadenceSelectionListener(charts.SelectionModel<DateTime> model) {
+    final selectionData =
+        _tileConfigurations["cadence"].getSelectionData(model);
 
     setState(() {
-      _selectedTimes[2] = selectionStrings.time;
-      _selectedValues[2] = selectionStrings.value;
+      _selectedTimes[2] =
+          selectionData.time.difference(activity.startDateTime).toDisplay();
+      _selectedValues[2] = selectionData.value;
     });
   }
 
-  List<Series<HistogramData, double>> _getCadenceHistogram() {
-    return <Series<HistogramData, double>>[
-      Series<HistogramData, double>(
+  List<charts.Series<HistogramData, double>> _getCadenceHistogram() {
+    return <charts.Series<HistogramData, double>>[
+      charts.Series<HistogramData, double>(
         id: 'speedHistogram',
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
@@ -536,9 +542,9 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<Series<Record, DateTime>> _getHrData() {
-    return <Series<Record, DateTime>>[
-      Series<Record, DateTime>(
+  List<charts.Series<Record, DateTime>> _getHrData() {
+    return <charts.Series<Record, DateTime>>[
+      charts.Series<Record, DateTime>(
         id: 'hr',
         colorFn: (Record record, __) =>
             preferencesSpecs[3].binFgColor(record.heartRate),
@@ -553,19 +559,19 @@ class RecordsScreenState extends State<RecordsScreen> {
     return record.cadence.toString();
   }
 
-  void _hrSelectionListener(SelectionModel<DateTime> model) {
-    final selectionStrings =
-        _tileConfigurations["hr"].getSelectionStrings(model);
+  void _hrSelectionListener(charts.SelectionModel<DateTime> model) {
+    final selectionData = _tileConfigurations["hr"].getSelectionData(model);
 
     setState(() {
-      _selectedTimes[3] = selectionStrings.time;
-      _selectedValues[3] = selectionStrings.value;
+      _selectedTimes[3] =
+          selectionData.time.difference(activity.startDateTime).toDisplay();
+      _selectedValues[3] = selectionData.value;
     });
   }
 
-  List<Series<HistogramData, double>> _getHrHistogram() {
-    return <Series<HistogramData, double>>[
-      Series<HistogramData, double>(
+  List<charts.Series<HistogramData, double>> _getHrHistogram() {
+    return <charts.Series<HistogramData, double>>[
+      charts.Series<HistogramData, double>(
         id: 'hrHistogram',
         // colorFn: (HistogramData data, __) =>
         //     preferencesSpecs[3].binFgColor(data.index),
@@ -602,93 +608,239 @@ class RecordsScreenState extends State<RecordsScreen> {
               initialOffset: 0,
               loadingBuilder: CustomListLoading.defaultBuilder,
               separatorBuilder: (context, _) {
-                return Divider(height: 2);
+                return Divider(height: 20);
               },
               header: Center(
                 child: Column(
                   children: [
-                    Text('Device: ${activity.deviceName}, ' +
-                        'Elapsed: ${activity.elapsedString}'),
-                    Text('Distance: ${activity.distance.toStringAsFixed(1)} m' +
-                        ', Calories: ${activity.calories} kCal'),
-                    Text('Power; Average: $_avgPower, Max: $_maxPower'),
-                    Text('Speed; Average: $_avgSpeed, Max: $_maxSpeed'),
-                    Text('Cadence; Average: $_avgCadence, Max: $_maxCadence'),
-                    Text('HR; Average: $_avgHr, Max: $_maxHr'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.directions_bike,
+                          color: Colors.indigo,
+                          size: _sizeDefault,
+                        ),
+                        Spacer(),
+                        Text(
+                          activity.deviceName,
+                          style: _textStyle,
+                          maxLines: 4,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.timer,
+                          color: Colors.indigo,
+                          size: _sizeDefault,
+                        ),
+                        Spacer(),
+                        Text(
+                          activity.elapsedString,
+                          style: _measurementStyle,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add_road,
+                          color: Colors.indigo,
+                          size: _sizeDefault,
+                        ),
+                        Spacer(),
+                        Text(
+                          activity.distanceString(_si),
+                          style: _measurementStyle,
+                        ),
+                        SizedBox(
+                          width: _sizeDefault,
+                          child: Text(
+                            _si ? 'm' : 'mi',
+                            style: _unitStyle,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.whatshot,
+                          color: Colors.indigo,
+                          size: _sizeDefault,
+                        ),
+                        Spacer(),
+                        Text(
+                          '${activity.calories}',
+                          style: _measurementStyle,
+                        ),
+                        SizedBox(
+                          width: _sizeDefault,
+                          child: Text(
+                            'cal',
+                            style: _unitStyle,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
               adapter: StaticListAdapter(data: _tiles),
               itemBuilder: (context, index, item) {
-                return ListTile(
-                  title: const Divider(
-                    color: Colors.black,
-                    thickness: 1,
+                return ExpandablePanel(
+                  header: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            _tileConfigurations[item].title,
+                            style: _textStyle,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            preferencesSpecs[index].icon,
+                            color: Colors.indigo,
+                            size: _sizeDefault2,
+                          ),
+                          Spacer(),
+                          Text(
+                            "MAX",
+                            style: _unitStyle,
+                          ),
+                          Spacer(),
+                          Text(
+                            _tileConfigurations[item].maxString,
+                            style: _measurementStyle,
+                          ),
+                          Spacer(),
+                          Text(
+                            preferencesSpecs[index].unit,
+                            style: _unitStyle,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            preferencesSpecs[index].icon,
+                            color: Colors.indigo,
+                            size: _sizeDefault2,
+                          ),
+                          Spacer(),
+                          Text(
+                            "AVG",
+                            style: _unitStyle,
+                          ),
+                          Spacer(),
+                          Text(
+                            _tileConfigurations[item].avgString,
+                            style: _measurementStyle,
+                          ),
+                          Spacer(),
+                          Text(
+                            preferencesSpecs[index].unit,
+                            style: _unitStyle,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  subtitle: Column(children: [
-                    Text(_tileConfigurations[item].title),
+                  expanded: Column(children: [
                     SizedBox(
                       width: size.width,
-                      height: size.height / 5,
-                      child: TimeSeriesChart(
+                      height: size.height / 4,
+                      child: charts.TimeSeriesChart(
                         _tileConfigurations[item].dataFn(),
                         animate: false,
-                        primaryMeasureAxis: NumericAxisSpec(
-                          tickProviderSpec:
-                              BasicNumericTickProviderSpec(zeroBound: false),
+                        primaryMeasureAxis: charts.NumericAxisSpec(
+                          tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                              zeroBound: false),
                         ),
                         behaviors: [
-                          LinePointHighlighter(
-                            showHorizontalFollowLine:
-                                LinePointHighlighterFollowLineType.nearest,
-                            showVerticalFollowLine:
-                                LinePointHighlighterFollowLineType.nearest,
+                          charts.LinePointHighlighter(
+                            showHorizontalFollowLine: charts
+                                .LinePointHighlighterFollowLineType.nearest,
+                            showVerticalFollowLine: charts
+                                .LinePointHighlighterFollowLineType.nearest,
                           ),
-                          SelectNearest(
-                              eventTrigger: SelectionTrigger.tapAndDrag),
-                          RangeAnnotation(
+                          charts.SelectNearest(
+                              eventTrigger: charts.SelectionTrigger.tapAndDrag),
+                          charts.RangeAnnotation(
                             List.generate(
                               preferencesSpecs[index].binCount,
-                              (i) => RangeAnnotationSegment(
+                              (i) => charts.RangeAnnotationSegment(
                                 preferencesSpecs[index].zoneLower[i],
                                 preferencesSpecs[index].zoneUpper[i],
-                                RangeAnnotationAxisType.measure,
+                                charts.RangeAnnotationAxisType.measure,
                                 color: preferencesSpecs[index].binBgColor(i),
                               ),
                             ),
                           ),
                         ],
                         selectionModels: [
-                          new SelectionModelConfig(
-                            type: SelectionModelType.info,
+                          new charts.SelectionModelConfig(
+                            type: charts.SelectionModelType.info,
                             changedListener:
                                 _tileConfigurations[item].selectionListener,
                           ),
                         ],
                       ),
                     ),
-                    Text("Selected: ${_selectedValues[index]} " +
-                        "${preferencesSpecs[index].unit} " +
-                        "at ${_selectedTimes[index]}"),
-                    Text(_tileConfigurations[item].histogramTitle),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(_selectedValues[index], style: _selectionStyle),
+                        Text(" ", style: _selectionTextStyle),
+                        Text(preferencesSpecs[index].unit, style: _unitStyle),
+                        Text(" @ ", style: _selectionTextStyle),
+                        Text(_selectedTimes[index], style: _selectionStyle),
+                      ],
+                    ),
+                    Divider(height: 20, thickness: 2),
+                    Text(
+                      _tileConfigurations[item].histogramTitle,
+                      style: _textStyle,
+                    ),
                     SizedBox(
                       width: size.width,
-                      height: size.height / 5,
-                      child: PieChart(
+                      height: size.height / 4,
+                      child: charts.PieChart(
                         _tileConfigurations[item].histogramFn(),
                         animate: false,
-                        defaultRenderer: ArcRendererConfig(
+                        defaultRenderer: charts.ArcRendererConfig(
                             arcWidth: 60,
-                            arcRendererDecorators: [ArcLabelDecorator()]),
+                            arcRendererDecorators: [
+                              charts.ArcLabelDecorator()
+                            ]),
                         behaviors: [
-                          DatumLegend(
-                            position: BehaviorPosition.start,
+                          charts.DatumLegend(
+                            position: charts.BehaviorPosition.start,
                             horizontalFirst: false,
                             cellPadding:
                                 new EdgeInsets.only(right: 4.0, bottom: 4.0),
                             showMeasures: true,
                             legendDefaultMeasure:
-                                LegendDefaultMeasure.firstValue,
+                                charts.LegendDefaultMeasure.firstValue,
                             measureFormatter: (num value) {
                               return value == null ? '-' : '$value %';
                             },

@@ -77,8 +77,18 @@ class Activity {
     };
   }
 
+  String distanceString(bool si) {
+    if (si) return '${distance.toStringAsFixed(0)}';
+    return '${(distance * M2MILE).toStringAsFixed(2)}';
+  }
+
   String distanceByUnit(bool si) {
-    if (si) return '${distance.toStringAsFixed(0)} m';
-    return '${(distance * M2MILE).toStringAsFixed(2)} mi';
+    final distanceStr = distanceString(si);
+    return '$distanceStr ${si ? "m" : "mi"}';
+  }
+
+  Activity hydrate() {
+    startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
+    return this;
   }
 }
