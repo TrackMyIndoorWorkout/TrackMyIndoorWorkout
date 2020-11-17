@@ -88,7 +88,8 @@ class PreferencesSpec {
         .split(',')
         .map((zs) => int.tryParse(zs))
         .toList(growable: false);
-    zoneBounds = zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList();
+    zoneBounds =
+        zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList();
   }
 
   calculateBounds(double minVal, double maxVal) {
@@ -117,7 +118,7 @@ class PreferencesSpec {
     return i;
   }
 
-  Color binBgColor(int bin) {
+  Color bgColorByBin(int bin) {
     if (bin > 6) {
       return getTranslucent(MaterialPalette.blue.shadeDefault.lighter);
     }
@@ -127,8 +128,7 @@ class PreferencesSpec {
     return sevenBgPalette[bin];
   }
 
-  Color binFgColor(num value) {
-    final bin = binIndex(value);
+  Color fgColorByBin(int bin) {
     if (bin > 6) {
       return MaterialPalette.blue.shadeDefault.darker;
     }
@@ -136,6 +136,11 @@ class PreferencesSpec {
       return fiveFgPalette[bin];
     }
     return sevenFgPalette[bin];
+  }
+
+  Color fgColorByValue(num value) {
+    final bin = binIndex(value);
+    return fgColorByBin(bin);
   }
 }
 

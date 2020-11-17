@@ -485,7 +485,7 @@ class DeviceState extends State<DeviceScreen> {
       charts.Series<Record, DateTime>(
         id: 'power',
         colorFn: (Record record, __) =>
-            preferencesSpecs[0].binFgColor(record.power),
+            preferencesSpecs[0].fgColorByValue(record.power),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.power,
         data: graphData,
@@ -498,7 +498,7 @@ class DeviceState extends State<DeviceScreen> {
       charts.Series<Record, DateTime>(
         id: 'speed',
         colorFn: (Record record, __) =>
-            preferencesSpecs[1].binFgColor(record.speedByUnit(_si)),
+            preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si)),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.speedByUnit(_si),
         data: graphData,
@@ -511,7 +511,7 @@ class DeviceState extends State<DeviceScreen> {
       charts.Series<Record, DateTime>(
         id: 'cadence',
         colorFn: (Record record, __) =>
-            preferencesSpecs[2].binFgColor(record.cadence),
+            preferencesSpecs[2].fgColorByValue(record.cadence),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.cadence,
         data: graphData,
@@ -524,7 +524,7 @@ class DeviceState extends State<DeviceScreen> {
       charts.Series<Record, DateTime>(
         id: 'hr',
         colorFn: (Record record, __) =>
-            preferencesSpecs[3].binFgColor(record.heartRate),
+            preferencesSpecs[3].fgColorByValue(record.heartRate),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.heartRate,
         data: graphData,
@@ -635,7 +635,7 @@ class DeviceState extends State<DeviceScreen> {
                     prefSpec.zoneLower[i],
                     prefSpec.zoneUpper[i],
                     charts.RangeAnnotationAxisType.measure,
-                    color: prefSpec.binBgColor(i),
+                    color: prefSpec.bgColorByBin(i),
                   ),
                 ),
               )

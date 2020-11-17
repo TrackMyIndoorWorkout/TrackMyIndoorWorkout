@@ -424,7 +424,7 @@ class RecordsScreenState extends State<RecordsScreen> {
       charts.Series<Record, DateTime>(
         id: 'power',
         colorFn: (Record record, __) =>
-            preferencesSpecs[0].binFgColor(record.power),
+            preferencesSpecs[0].fgColorByValue(record.power),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.power,
         data: _sampledRecords,
@@ -450,8 +450,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'powerHistogram',
-        // colorFn: (HistogramData data, __) =>
-        //   preferencesSpecs[0].binFgColor(data.index),
+        colorFn: (HistogramData data, __) =>
+            preferencesSpecs[0].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["power"].histogram,
@@ -466,7 +466,7 @@ class RecordsScreenState extends State<RecordsScreen> {
       charts.Series<Record, DateTime>(
         id: 'speed',
         colorFn: (Record record, __) =>
-            preferencesSpecs[1].binFgColor(record.speedByUnit(_si)),
+            preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si)),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.speedByUnit(_si),
         data: _sampledRecords,
@@ -492,6 +492,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'speedHistogram',
+        colorFn: (HistogramData data, __) =>
+            preferencesSpecs[1].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["speed"].histogram,
@@ -506,7 +508,7 @@ class RecordsScreenState extends State<RecordsScreen> {
       charts.Series<Record, DateTime>(
         id: 'cadence',
         colorFn: (Record record, __) =>
-            preferencesSpecs[2].binFgColor(record.cadence),
+            preferencesSpecs[2].fgColorByValue(record.cadence),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.cadence,
         data: _sampledRecords,
@@ -532,7 +534,9 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<charts.Series<HistogramData, double>> _getCadenceHistogram() {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
-        id: 'speedHistogram',
+        id: 'cadenceHistogram',
+        colorFn: (HistogramData data, __) =>
+            preferencesSpecs[2].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["cadence"].histogram,
@@ -547,7 +551,7 @@ class RecordsScreenState extends State<RecordsScreen> {
       charts.Series<Record, DateTime>(
         id: 'hr',
         colorFn: (Record record, __) =>
-            preferencesSpecs[3].binFgColor(record.heartRate),
+            preferencesSpecs[3].fgColorByValue(record.heartRate),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.heartRate,
         data: _sampledRecords,
@@ -573,8 +577,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'hrHistogram',
-        // colorFn: (HistogramData data, __) =>
-        //     preferencesSpecs[3].binFgColor(data.index),
+        colorFn: (HistogramData data, __) =>
+            preferencesSpecs[3].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["hr"].histogram,
@@ -791,7 +795,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                                 preferencesSpecs[index].zoneLower[i],
                                 preferencesSpecs[index].zoneUpper[i],
                                 charts.RangeAnnotationAxisType.measure,
-                                color: preferencesSpecs[index].binBgColor(i),
+                                color: preferencesSpecs[index].bgColorByBin(i),
                               ),
                             ),
                           ),
