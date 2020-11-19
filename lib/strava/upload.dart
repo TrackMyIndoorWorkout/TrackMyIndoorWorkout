@@ -71,7 +71,7 @@ abstract class Upload {
     fault.statusCode = response.statusCode;
     fault.message = response.reasonPhrase;
 
-    if (response.statusCode != 201) {
+    if (response.statusCode < 200 || response.statusCode >= 300) { // != 201
       globals.displayInfo('Error while uploading the activity');
       globals.displayInfo('${response.statusCode} - ${response.reasonPhrase}');
     }
@@ -81,7 +81,7 @@ abstract class Upload {
     // Upload is processed by the server
     // now wait for the upload to be finished
     //----------------------------------------
-    if (response.statusCode == 201) {
+    if (response.statusCode >= 200 && response.statusCode < 300) { // == 201
       globals.displayInfo('Activity successfully created');
       response.stream.transform(utf8.decoder).listen((value) {
         debugPrint(value);
@@ -109,8 +109,8 @@ abstract class Upload {
         debugPrint('check status ${resp.reasonPhrase}  ${resp.statusCode}');
 
         // Everything is fine the file has been loaded
-        if (resp.statusCode == 200) {
-          debugPrint('200 ${resp.reasonPhrase}');
+        if (resp.statusCode >= 200 && resp.statusCode < 300) { // == 200
+          debugPrint('${resp.statusCode} ${resp.reasonPhrase}');
         }
 
         // 404 the temp id does not exist anymore

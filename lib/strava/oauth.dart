@@ -222,8 +222,9 @@ abstract class Auth {
     if (isExpired && _token != null && _token != "null") {
       RefreshAnswer _refreshAnswer =
           await _getNewAccessToken(clientID, secret, tokenStored.refreshToken);
-      // Update with new values
-      if (_refreshAnswer.fault.statusCode == 200) {
+      // Update with new values if HTTP status code is 200
+      if (_refreshAnswer.fault.statusCode >= 200 &&
+          _refreshAnswer.fault.statusCode < 300) {
         await _saveToken(_refreshAnswer.accessToken, _refreshAnswer.expiresAt,
             scope, _refreshAnswer.refreshToken);
       } else {
@@ -296,7 +297,7 @@ abstract class Auth {
     final resp = await http.post(urlRefresh);
 
     globals.displayInfo('body ${resp.body}');
-    if (resp.statusCode == 200) {
+    if (resp.statusCode >= 200 && resp.statusCode < 300) { // == 200
       returnToken = RefreshAnswer.fromJson(json.decode(resp.body));
 
       globals.displayInfo('new exp. date: ${returnToken.expiresAt}');
@@ -391,7 +392,7 @@ abstract class Auth {
       final reqDeAuthorize = "https://www.strava.com/oauth/deauthorize";
       globals.displayInfo('request $reqDeAuthorize');
       final rep = await http.post(reqDeAuthorize, headers: _header);
-      if (rep.statusCode == 200) {
+      if (rep.statusCode >= 200 && rep.statusCode < 300) {
         globals.displayInfo('DeAuthorize done');
         globals.displayInfo('response ${rep.body}');
         await _saveToken(null, null, null, null);
