@@ -193,6 +193,8 @@ final preferencesSpecs = [
   ),
 ];
 
+const UX_PREFERENCES = "UX Preferences";
+
 const DEVICE_FILTERING = "Device Filtering";
 const DEVICE_FILTERING_TAG = "device_filtering";
 const DEVICE_FILTERING_DEFAULT = true;
@@ -213,6 +215,8 @@ const SIMPLER_UI_SLOW_DEFAULT = true;
 const SIMPLER_UI_DESCRIPTION = "On: the track visualization and the real-time" +
     " graphs won't be featured at the bottom of the measurement " +
     "screen. This can help old / slow phones.";
+
+const ZONE_PREFERENCES = "Zone Preferences";
 
 Future<bool> getSimplerUiDefault() async {
   var simplerUiDefault = SIMPLER_UI_FAST_DEFAULT;

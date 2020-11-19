@@ -25,7 +25,7 @@ class PreferencesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> appPreferences = [
-      PreferenceTitle(UNIT_SYSTEM),
+      PreferenceTitle(UX_PREFERENCES),
       SwitchPreference(
         UNIT_SYSTEM,
         UNIT_SYSTEM_TAG,
@@ -34,25 +34,23 @@ class PreferencesScreen extends StatelessWidget {
         onEnable: () => preferencesSpecs[1].unit = 'kmh',
         onDisable: () => preferencesSpecs[1].unit = 'mph',
       ),
-      PreferenceTitle(DEVICE_FILTERING),
       SwitchPreference(
         DEVICE_FILTERING,
         DEVICE_FILTERING_TAG,
         defaultVal: DEVICE_FILTERING_DEFAULT,
         desc: DEVICE_FILTERING_DESCRIPTION,
       ),
-      PreferenceTitle(SIMPLER_UI),
       SwitchPreference(
         SIMPLER_UI,
         SIMPLER_UI_TAG,
         defaultVal: SIMPLER_UI_FAST_DEFAULT,
         desc: SIMPLER_UI_DESCRIPTION,
       ),
+      PreferenceTitle(ZONE_PREFERENCES),
     ];
 
     preferencesSpecs.forEach((prefSpec) {
       appPreferences.addAll([
-        PreferenceTitle(prefSpec.title),
         TextFieldPreference(
           THRESHOLD_CAPITAL + prefSpec.fullTitle,
           prefSpec.thresholdTag,
