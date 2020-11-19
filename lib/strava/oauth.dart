@@ -212,14 +212,15 @@ abstract class Auth {
     globals.displayInfo('is token expired? $isExpired');
 
     // Check if the token is not expired
-    // if (_token != null) {
-    if (_token != null && _token != "null") {
-      globals.displayInfo(
-          'token has been stored before! ${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
+    if (_token != null) {
+      // && _token != "null"
+      globals.displayInfo('token has been stored before! ' +
+          '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
     }
 
     // Use the refresh token to get a new access token
-    if (isExpired && _token != null && _token != "null") {
+    if (isExpired) {
+      // _token != null || _token != "null"
       RefreshAnswer _refreshAnswer =
           await _getNewAccessToken(clientID, secret, tokenStored.refreshToken);
       // Update with new values if HTTP status code is 200
