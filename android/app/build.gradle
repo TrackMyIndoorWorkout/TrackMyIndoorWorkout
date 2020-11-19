@@ -27,6 +27,8 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 android {
     compileSdkVersion 29
 
+    ndkVersion "22.0.6917172"
+
     lintOptions {
         disable 'InvalidPackage'
     }
@@ -45,6 +47,9 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+            ndk {
+                debugSymbolLevel 'FULL' // Use 'SYMBOL_TABLE' if full is too big
+            }
         }
     }
 }
