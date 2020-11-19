@@ -276,7 +276,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       if (_caloriesMetric != null) {
         calories = _getCalories(data);
       } else {
-        final deltaCalories = power * dT * DeviceDescriptor.J2KCAL;
+        final deltaCalories = power * /* dT * */ DeviceDescriptor.J2KCAL;
         _residueCalories += deltaCalories;
         calories = lastRecord.calories + _residueCalories;
         if (calories.floor() > lastRecord.calories) {
