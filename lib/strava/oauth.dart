@@ -318,7 +318,8 @@ abstract class Auth {
     globals.displayInfo('Entering getStravaToken!!');
     // Put your own secret in secret.dart
     final urlToken =
-        '$tokenEndpoint?client_id=$clientID&client_secret=$secret&code=$code&grant_type=authorization_code';
+        '$tokenEndpoint?client_id=$clientID&client_secret=$secret' +
+            '&code=$code&grant_type=authorization_code';
 
     globals.displayInfo('urlToken $urlToken');
 
