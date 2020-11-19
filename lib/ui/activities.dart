@@ -97,7 +97,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           },
         ),
         IconButton(
-          icon: Icon(Icons.file_download, size: size),
+          icon: Icon(Icons.file_download, color: Colors.black, size: size),
           onPressed: () async {
             final records =
                 await _database.recordDao.findAllActivityRecords(activity.id);
