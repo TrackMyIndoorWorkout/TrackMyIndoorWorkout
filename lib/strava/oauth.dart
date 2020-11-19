@@ -1,14 +1,12 @@
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
-import 'dart:io'; // Use in web mode only
+import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
-// To handle browser return after auth is done
 import 'package:uni_links/uni_links.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'error_codes.dart' as error;
 import 'globals.dart' as globals;

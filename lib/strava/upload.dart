@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -9,11 +8,10 @@ import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../tcx/tcx_output.dart';
 
-import 'fault.dart';
-import 'upload_activity.dart';
-
-import 'globals.dart' as globals;
 import 'error_codes.dart' as error;
+import 'fault.dart';
+import 'globals.dart' as globals;
+import 'upload_activity.dart';
 
 abstract class Upload {
   /// Tested with gpx and tcx
