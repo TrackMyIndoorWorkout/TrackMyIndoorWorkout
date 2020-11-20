@@ -285,7 +285,7 @@ packages:
       name: flutter_blue
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.3"
+    version: "0.7.2"
   flutter_brand_icons:
     dependency: "direct main"
     description:
