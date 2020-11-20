@@ -5,6 +5,7 @@ import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:preferences/preferences.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../devices/devices.dart';
 import '../persistence/preferences.dart';
@@ -61,6 +62,22 @@ class FindDevicesState extends State<FindDevicesScreen> {
         title: Text(_filterDevices
             ? 'Supported Exercise Equipment:'
             : 'Bluetooth Devices'),
+        actions: <Widget>[
+          StreamBuilder<bool>(
+            stream: FlutterBlue.instance.isScanning,
+            initialData: _instantScan,
+            builder: (c, snapshot) {
+              if (snapshot.data) {
+                return JumpingDotsProgressIndicator(
+                  fontSize: 30.0,
+                  color: Colors.white,
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () =>

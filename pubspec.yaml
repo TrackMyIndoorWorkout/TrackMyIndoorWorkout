@@ -29,6 +29,7 @@ dependencies:
   fab_circular_menu: any
   device_info: any
   expandable: any
+  progress_indicators: any
   flutter:
     sdk: flutter
 
