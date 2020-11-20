@@ -18,7 +18,8 @@ import 'fault.dart';
 /// Class related to Authorization process
 ///===========================================
 abstract class Auth {
-  StreamController<String> onCodeReceived = StreamController();
+  StreamController<String> onCodeReceived =
+      StreamController<String>.broadcast();
 
   /// Save the token and the expiry date
   Future<void> _saveToken(
