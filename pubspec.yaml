@@ -10,7 +10,7 @@ environment:
 dependencies:
   e2e: any
   floor: any
-  flutter_blue: any
+  flutter_blue: ^0.7.2
   flutter_brand_icons: any
   get: any
   http: any
