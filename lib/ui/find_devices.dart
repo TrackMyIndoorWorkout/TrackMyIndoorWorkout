@@ -146,6 +146,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FabCircularMenu(
+        fabOpenIcon: const Icon(Icons.menu, color: Colors.white),
+        fabCloseIcon: const Icon(Icons.close, color: Colors.white),
         children: [
           FloatingActionButton(
             heroTag: null,
