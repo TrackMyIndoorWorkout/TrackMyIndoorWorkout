@@ -65,7 +65,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         actions: <Widget>[
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
-            initialData: _instantScan,
+            initialData: false,
             builder: (c, snapshot) {
               if (snapshot.data) {
                 return JumpingDotsProgressIndicator(
