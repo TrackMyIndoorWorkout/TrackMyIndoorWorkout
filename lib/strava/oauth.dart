@@ -298,7 +298,8 @@ abstract class Auth {
     final resp = await http.post(urlRefresh);
 
     globals.displayInfo('body ${resp.body}');
-    if (resp.statusCode >= 200 && resp.statusCode < 300) { // == 200
+    if (resp.statusCode >= 200 && resp.statusCode < 300) {
+      // resp.statusCode == 200
       returnToken = RefreshAnswer.fromJson(json.decode(resp.body));
 
       globals.displayInfo('new exp. date: ${returnToken.expiresAt}');
