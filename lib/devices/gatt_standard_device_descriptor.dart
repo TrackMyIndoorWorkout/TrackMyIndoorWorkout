@@ -22,6 +22,10 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
   ShortMetricDescriptor _powerMetric;
   ShortMetricDescriptor _caloriesMetric;
   ShortMetricDescriptor _timeMetric;
+  // Adjusting skewed calories
+  double calorieFactor;
+  // Adjusting skewed distance
+  double distanceFactor;
 
   // Secondary (Crank cadence) metrics
   int _cadenceFlag;
@@ -49,6 +53,8 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     cadenceMeasurementId,
     canCadenceMeasurementProcessed,
     heartRate,
+    calorieFactor = 1.0,
+    distanceFactor = 1.0,
   }) : super(
           fourCC: fourCC,
           vendorName: vendorName,
@@ -259,7 +265,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       double dD = 0;
       if (lastRecord.speed > 0) {
         if (dT > 0) {
-          dD = lastRecord.speed * DeviceDescriptor.KMH2MS * dT;
+          dD = lastRecord.speed * DeviceDescriptor.KMH2MS * distanceFactor * dT;
         }
       }
       newDistance = lastRecord.distance + dD;
@@ -276,7 +282,9 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       if (_caloriesMetric != null) {
         calories = _getCalories(data);
       } else {
-        final deltaCalories = power * /* dT * */ DeviceDescriptor.J2KCAL;
+        // Instead of dT fractional second we use 1s to boost calorie counting
+        // Due to #35. On top of that
+        final deltaCalories = power * calorieFactor * DeviceDescriptor.J2KCAL;
         _residueCalories += deltaCalories;
         calories = lastRecord.calories + _residueCalories;
         if (calories.floor() > lastRecord.calories) {

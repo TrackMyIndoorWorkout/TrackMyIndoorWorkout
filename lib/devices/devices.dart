@@ -69,5 +69,6 @@ Map<String, DeviceDescriptor> deviceMap = {
       }
       return data.length == expectedLength;
     },
+    calorieFactor: 1.40,
   ),
 };
