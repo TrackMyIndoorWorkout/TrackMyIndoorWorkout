@@ -12,8 +12,6 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:usesCleartextTraffic="true"
-        android:networkSecurityConfig="@xml/network_security_config"
         android:label="Track My Indoor Exercise"
         android:icon="@mipmap/ic_launcher">
         <activity
