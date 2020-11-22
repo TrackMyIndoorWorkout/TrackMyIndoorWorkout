@@ -1,13 +1,15 @@
+import 'package:charts_flutter/flutter.dart' hide TextStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
 class ScanResultTile extends StatelessWidget {
   const ScanResultTile({Key key, this.result, this.onTap}) : super(key: key);
+  static const fontSizeFactor = 2.0;
 
   final ScanResult result;
   final VoidCallback onTap;
 
-  Widget _buildTitle(BuildContext context) {
+  Widget _buildTitle(BuildContext context, TextStyle adjustedCaptionStyle) {
     if (result.device.name.length > 0) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -15,11 +17,16 @@ class ScanResultTile extends StatelessWidget {
         children: <Widget>[
           Text(
             result.device.name,
+            style: adjustedCaptionStyle.apply(
+              fontSizeFactor: fontSizeFactor,
+              color: Colors.black,
+              fontWeightDelta: 3,
+            ),
             overflow: TextOverflow.ellipsis,
           ),
           Text(
             result.device.id.toString(),
-            style: Theme.of(context).textTheme.caption,
+            style: adjustedCaptionStyle.apply(fontFamily: 'DSEG14'),
           )
         ],
       );
@@ -28,23 +35,21 @@ class ScanResultTile extends StatelessWidget {
     }
   }
 
-  Widget _buildAdvRow(BuildContext context, String title, String value) {
+  Widget _buildAdvRow(BuildContext context, String title, String value,
+      TextStyle adjustedCaptionStyle, TextStyle dataStyle) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(title, style: Theme.of(context).textTheme.caption),
+          Text(title, style: adjustedCaptionStyle),
           SizedBox(
             width: 12.0,
           ),
           Expanded(
             child: Text(
               value,
-              style: Theme.of(context)
-                  .textTheme
-                  .caption
-                  .apply(color: Colors.black),
+              style: dataStyle.apply(color: Colors.black),
               softWrap: true,
             ),
           ),
@@ -84,34 +89,63 @@ class ScanResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final adjustedCaptionStyle = Theme.of(context)
+        .textTheme
+        .caption
+        .apply(fontSizeFactor: fontSizeFactor);
+    final dseg14 = adjustedCaptionStyle.apply(fontFamily: 'DSEG14');
     return ExpansionTile(
-      title: _buildTitle(context),
-      leading: Text(result.rssi.toString()),
-      trailing: RaisedButton(
-        child: Text('CONNECT'),
-        color: Colors.black,
-        textColor: Colors.white,
+      title: _buildTitle(context, adjustedCaptionStyle),
+      leading: Text(
+        result.rssi.toString(),
+        style: adjustedCaptionStyle.apply(fontFamily: 'DSEG7'),
+      ),
+      trailing: FloatingActionButton(
+        heroTag: null,
+        child: Icon(Icons.play_arrow),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.blue,
         onPressed: (result.advertisementData.connectable) ? onTap : null,
       ),
       children: <Widget>[
         _buildAdvRow(
-            context, 'Complete Local Name', result.advertisementData.localName),
-        _buildAdvRow(context, 'Tx Power Level',
-            '${result.advertisementData.txPowerLevel ?? 'N/A'}'),
+          context,
+          'Complete Local Name',
+          result.advertisementData.localName,
+          adjustedCaptionStyle,
+          adjustedCaptionStyle,
+        ),
         _buildAdvRow(
-            context,
-            'Manufacturer Data',
-            getNiceManufacturerData(
-                    result.advertisementData.manufacturerData) ??
-                'N/A'),
+          context,
+          'Tx Power Level',
+          '${result.advertisementData.txPowerLevel ?? 'N/A'}',
+          adjustedCaptionStyle,
+          dseg14,
+        ),
         _buildAdvRow(
-            context,
-            'Service UUIDs',
-            (result.advertisementData.serviceUuids.isNotEmpty)
-                ? result.advertisementData.serviceUuids.join(', ').toUpperCase()
-                : 'N/A'),
-        _buildAdvRow(context, 'Service Data',
-            getNiceServiceData(result.advertisementData.serviceData) ?? 'N/A'),
+          context,
+          'Manufacturer Data',
+          getNiceManufacturerData(result.advertisementData.manufacturerData) ??
+              'N/A',
+          adjustedCaptionStyle,
+          dseg14,
+        ),
+        _buildAdvRow(
+          context,
+          'Service UUIDs',
+          (result.advertisementData.serviceUuids.isNotEmpty)
+              ? result.advertisementData.serviceUuids.join(', ').toUpperCase()
+              : 'N/A',
+          adjustedCaptionStyle,
+          dseg14,
+        ),
+        _buildAdvRow(
+          context,
+          'Service Data',
+          getNiceServiceData(result.advertisementData.serviceData) ?? 'N/A',
+          adjustedCaptionStyle,
+          dseg14,
+        ),
       ],
     );
   }
