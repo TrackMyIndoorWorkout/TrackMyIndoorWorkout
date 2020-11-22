@@ -19,7 +19,23 @@ const HELP_URL =
     "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
 
 extension DeviceMathing on BluetoothDevice {
-  bool seemsSupported() {
+  bool isWorthy(bool filterDevices, bool connectable) {
+    if (!connectable) {
+      return false;
+    }
+
+    if (name == null || name.length <= 0) {
+      return false;
+    }
+
+    if (id.id == null || id.id.length <= 0) {
+      return false;
+    }
+
+    if (!filterDevices) {
+      return true;
+    }
+
     for (var dev in deviceMap.values) {
       if (name.startsWith(dev.namePrefix)) {
         return true;
@@ -51,8 +67,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
   @override
   void initState() {
     initializeDateFormatting();
-    _filterDevices = PrefService.getBool(DEVICE_FILTERING_TAG);
     super.initState();
+    _filterDevices = PrefService.getBool(DEVICE_FILTERING_TAG);
   }
 
   @override
@@ -91,7 +107,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
-                      .where((d) => d.seemsSupported())
+                      .where((d) => d.isWorthy(_filterDevices, true))
                       .map((d) => ListTile(
                             title: Text(d.name),
                             subtitle: Text(d.id.toString()),
@@ -123,8 +139,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
-                      .where(
-                          (d) => !_filterDevices || d.device.seemsSupported())
+                      .where((d) => d.device.isWorthy(
+                          _filterDevices, d.advertisementData.connectable))
                       .map(
                         (r) => ScanResultTile(
                           result: r,
