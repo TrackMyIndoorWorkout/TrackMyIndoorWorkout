@@ -55,7 +55,17 @@ class FindDevicesScreen extends StatefulWidget {
   }
 }
 
+standOutStyle(TextStyle style, double fontSizeFactor) {
+  return style.apply(
+    fontSizeFactor: fontSizeFactor,
+    color: Colors.black,
+    fontWeightDelta: 3,
+  );
+}
+
 class FindDevicesState extends State<FindDevicesScreen> {
+  static const fontSizeFactor = 1.5;
+
   bool _filterDevices;
 
   @override
@@ -73,6 +83,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final adjustedCaptionStyle = Theme.of(context)
+        .textTheme
+        .caption
+        .apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
+    final dseg14 = adjustedCaptionStyle.apply(fontFamily: 'DSEG14');
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_filterDevices
@@ -109,16 +125,23 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   children: snapshot.data
                       .where((d) => d.isWorthy(_filterDevices, true))
                       .map((d) => ListTile(
-                            title: Text(d.name),
-                            subtitle: Text(d.id.toString()),
+                            title: Text(d.name,
+                                style: standOutStyle(
+                                  adjustedCaptionStyle,
+                                  fontSizeFactor,
+                                )),
+                            subtitle: Text(d.id.id, style: dseg14),
                             trailing: StreamBuilder<BluetoothDeviceState>(
                               stream: d.state,
                               initialData: BluetoothDeviceState.disconnected,
                               builder: (c, snapshot) {
                                 if (snapshot.data ==
                                     BluetoothDeviceState.connected) {
-                                  return RaisedButton(
-                                      child: Text('OPEN'),
+                                  return FloatingActionButton(
+                                      heroTag: null,
+                                      child: Icon(Icons.open_in_new),
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.green,
                                       onPressed: () async {
                                         await FlutterBlue.instance.stopScan();
                                         await Get.to(DeviceScreen(
@@ -126,8 +149,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                             initialState: snapshot.data,
                                             size: Get.mediaQuery.size));
                                       });
+                                } else {
+                                  return Text(snapshot.data.toString());
                                 }
-                                return Text(snapshot.data.toString());
                               },
                             ),
                           ))

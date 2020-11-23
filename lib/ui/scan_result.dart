@@ -1,15 +1,16 @@
 import 'package:charts_flutter/flutter.dart' hide TextStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'find_devices.dart';
 
 class ScanResultTile extends StatelessWidget {
   const ScanResultTile({Key key, this.result, this.onTap}) : super(key: key);
-  static const fontSizeFactor = 2.0;
 
   final ScanResult result;
   final VoidCallback onTap;
 
-  Widget _buildTitle(BuildContext context, TextStyle adjustedCaptionStyle) {
+  Widget _buildTitle(BuildContext context, TextStyle adjustedCaptionStyle,
+      TextStyle dataStyle) {
     if (result.device.name.length > 0) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -17,16 +18,15 @@ class ScanResultTile extends StatelessWidget {
         children: <Widget>[
           Text(
             result.device.name,
-            style: adjustedCaptionStyle.apply(
-              fontSizeFactor: fontSizeFactor,
-              color: Colors.black,
-              fontWeightDelta: 3,
+            style: standOutStyle(
+              adjustedCaptionStyle,
+              FindDevicesState.fontSizeFactor,
             ),
             overflow: TextOverflow.ellipsis,
           ),
           Text(
             result.device.id.toString(),
-            style: adjustedCaptionStyle.apply(fontFamily: 'DSEG14'),
+            style: dataStyle,
           )
         ],
       );
@@ -92,10 +92,10 @@ class ScanResultTile extends StatelessWidget {
     final adjustedCaptionStyle = Theme.of(context)
         .textTheme
         .caption
-        .apply(fontSizeFactor: fontSizeFactor);
+        .apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
     final dseg14 = adjustedCaptionStyle.apply(fontFamily: 'DSEG14');
     return ExpansionTile(
-      title: _buildTitle(context, adjustedCaptionStyle),
+      title: _buildTitle(context, adjustedCaptionStyle, dseg14),
       leading: Text(
         result.rssi.toString(),
         style: adjustedCaptionStyle.apply(fontFamily: 'DSEG7'),
