@@ -53,8 +53,8 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     cadenceMeasurementId,
     canCadenceMeasurementProcessed,
     heartRate,
-    calorieFactor = 1.0,
-    distanceFactor = 1.0,
+    this.calorieFactor = 1.0,
+    this.distanceFactor = 1.0,
   }) : super(
           fourCC: fourCC,
           vendorName: vendorName,
