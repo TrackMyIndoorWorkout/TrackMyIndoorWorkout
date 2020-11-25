@@ -18,6 +18,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
@@ -688,34 +689,62 @@ class DeviceState extends State<DeviceScreen> {
             },
           ),
           IconButton(
-            icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-            onPressed: () async => _measuring
-                ? await _finishActivity()
-                : (await device.state.last == BluetoothDeviceState.disconnected
-                    ? device.connect()
-                    : _discoverServices()),
-          ),
+              icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+              onPressed: () async {
+                if (_measuring) {
+                  await _finishActivity();
+                } else {
+                  if (await device.state.last ==
+                      BluetoothDeviceState.disconnected) {
+                    await device.connect();
+                  } else {
+                    await _discoverServices();
+                  }
+                }
+              }),
           IconButton(
             icon: Icon(BrandIcons.strava),
             onPressed: () async {
+              if (_measuring) {
+                Get.snackbar(
+                    "Warning", "Cannot navigate away during measurement!");
+                return;
+              }
+
               StravaService stravaService;
               if (!Get.isRegistered<StravaService>()) {
                 stravaService = Get.put<StravaService>(StravaService());
               } else {
                 stravaService = Get.find<StravaService>();
               }
+
               final success = await stravaService.login();
               if (!success) {
                 Get.snackbar("Warning", "Strava login unsuccessful");
+                return;
               }
+
+              final records = await _database.recordDao
+                  .findAllActivityRecords(_activity.id);
+              final statusCode = await stravaService.upload(_activity, records);
+              Get.snackbar(
+                  "Upload",
+                  statusCode == statusOk ||
+                          statusCode >= 200 && statusCode < 300
+                      ? "Activity ${_activity.id} submitted successfully"
+                      : "Activity ${_activity.id} upload failure");
             },
           ),
           IconButton(
             icon: Icon(Icons.list_alt),
-            onPressed: () async => _measuring
-                ? Get.snackbar(
-                    "Warning", "Cannot navigate away during measurement!")
-                : await Get.to(ActivitiesScreen()),
+            onPressed: () async {
+              if (_measuring) {
+                Get.snackbar(
+                    "Warning", "Cannot navigate away during measurement!");
+              } else {
+                await Get.to(ActivitiesScreen());
+              }
+            },
           ),
         ],
       ),

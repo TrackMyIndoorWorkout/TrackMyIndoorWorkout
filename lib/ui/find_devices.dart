@@ -288,10 +288,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 stravaService = Get.find<StravaService>();
               }
               final success = await stravaService.login();
-              if (!success) {
-                Get.snackbar("Warning", "Strava login unsuccessful");
-              } else {
+              if (success) {
                 Get.snackbar("Success", "Successful Strava login");
+              } else {
+                Get.snackbar("Warning", "Strava login unsuccessful");
               }
             },
           ),

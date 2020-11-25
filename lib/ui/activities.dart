@@ -1,5 +1,6 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
@@ -62,8 +63,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         IconButton(
           icon: Icon(
-            Icons.file_upload,
-            color: activity.uploaded ? Colors.grey : Colors.green,
+            BrandIcons.strava,
+            color: activity.uploaded ? Colors.grey : Colors.deepOrangeAccent,
             size: size,
           ),
           onPressed: () async {
@@ -76,24 +77,24 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             final success = await stravaService.login();
             if (!success) {
               Get.snackbar("Warning", "Strava login unsuccessful");
-            } else {
-              final records =
-                  await _database.recordDao.findAllActivityRecords(activity.id);
-              setState(() {
-                _isLoading = true;
-              });
-              final statusCode = await stravaService.upload(activity, records);
-              setState(() {
-                _isLoading = false;
-                _editCount++;
-              });
-              Get.snackbar(
-                  "Upload",
-                  statusCode == statusOk ||
-                          statusCode >= 200 && statusCode < 300
-                      ? "Activity ${activity.id} submitted successfully"
-                      : "Activity ${activity.id} upload failure");
+              return;
             }
+
+            final records =
+                await _database.recordDao.findAllActivityRecords(activity.id);
+            setState(() {
+              _isLoading = true;
+            });
+            final statusCode = await stravaService.upload(activity, records);
+            setState(() {
+              _isLoading = false;
+              _editCount++;
+            });
+            Get.snackbar(
+                "Upload",
+                statusCode == statusOk || statusCode >= 200 && statusCode < 300
+                    ? "Activity ${activity.id} submitted successfully"
+                    : "Activity ${activity.id} upload failure");
           },
         ),
         IconButton(
