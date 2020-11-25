@@ -12,8 +12,12 @@ void main() async {
   await PrefService.init(prefix: 'pref_');
   Map<String, dynamic> prefDefaults = {
     UNIT_SYSTEM_TAG: UNIT_SYSTEM_DEFAULT,
-    DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT,
+    INSTANT_SCAN_TAG: INSTANT_SCAN_DEFAULT,
+    SCAN_DURATION_TAG: SCAN_DURATION_DEFAULT,
+    INSTANT_WORKOUT_TAG: INSTANT_WORKOUT_DEFAULT,
+    LAST_EQUIPMENT_ID_TAG: LAST_EQUIPMENT_ID_DEFAULT,
     SIMPLER_UI_TAG: await getSimplerUiDefault(),
+    DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT,
   };
   preferencesSpecs.forEach((prefSpec) {
     prefDefaults.addAll({

@@ -66,7 +66,13 @@ standOutStyle(TextStyle style, double fontSizeFactor) {
 class FindDevicesState extends State<FindDevicesScreen> {
   static const fontSizeFactor = 1.5;
 
+  bool _instantScan;
+  int _scanDuration;
+  bool _instantWorkout;
+  String _lastEquipmentId;
   bool _filterDevices;
+  BluetoothDevice _openedDevice;
+  List<BluetoothDevice> _scannedDevices;
 
   @override
   dispose() {
@@ -74,11 +80,40 @@ class FindDevicesState extends State<FindDevicesScreen> {
     super.dispose();
   }
 
+  startScan() {
+    setState(() {
+      _scannedDevices.clear();
+    });
+    FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
+  }
+
+  addScannedDevice(BluetoothDevice device, bool connectable) {
+    if (!device.isWorthy(_filterDevices, connectable)) {
+      return;
+    }
+
+    if (_scannedDevices.where((d) => d.id.id == device.id.id).length > 0) {
+      return;
+    }
+
+    _scannedDevices.add(device);
+  }
+
   @override
   void initState() {
     initializeDateFormatting();
     super.initState();
+    _scannedDevices = List<BluetoothDevice>();
+    _instantScan = PrefService.getBool(INSTANT_SCAN_TAG);
+    _scanDuration = PrefService.getInt(SCAN_DURATION_TAG);
+    _instantWorkout = PrefService.getBool(INSTANT_WORKOUT_TAG);
+    _lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG);
     _filterDevices = PrefService.getBool(DEVICE_FILTERING_TAG);
+    if (_instantScan) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        startScan();
+      });
+    }
   }
 
   @override
@@ -97,7 +132,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         actions: <Widget>[
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
-            initialData: false,
+            initialData: _instantScan,
             builder: (c, snapshot) {
               if (snapshot.data) {
                 return JumpingDotsProgressIndicator(
@@ -105,6 +140,40 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   color: Colors.white,
                 );
               } else {
+                if (_instantWorkout) {
+                  if (_openedDevice != null) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Get.to(DeviceScreen(
+                        device: _openedDevice,
+                        initialState: BluetoothDeviceState.connected,
+                        size: Get.mediaQuery.size,
+                      ));
+                    });
+                  } else {
+                    if (_filterDevices && _scannedDevices.length == 1) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        Get.to(DeviceScreen(
+                          device: _scannedDevices.first,
+                          initialState: BluetoothDeviceState.disconnected,
+                          size: Get.mediaQuery.size,
+                        ));
+                      });
+                    } else if (_scannedDevices.length > 1 &&
+                        _lastEquipmentId.length > 0) {
+                      final lasts = _scannedDevices
+                          .where((d) => d.id.id == _lastEquipmentId);
+                      if (lasts.length > 0) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          Get.to(DeviceScreen(
+                            device: lasts.first,
+                            initialState: BluetoothDeviceState.disconnected,
+                            size: Get.mediaQuery.size,
+                          ));
+                        });
+                      }
+                    }
+                  }
+                }
                 return Container();
               }
             },
@@ -112,8 +181,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () =>
-            FlutterBlue.instance.startScan(timeout: Duration(seconds: 4)),
+        onRefresh: () => startScan(),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -124,38 +192,39 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
                       .where((d) => d.isWorthy(_filterDevices, true))
-                      .map((d) => ListTile(
-                            title: Text(d.name,
-                                style: standOutStyle(
-                                  adjustedCaptionStyle,
-                                  fontSizeFactor,
-                                )),
-                            subtitle: Text(d.id.id, style: dseg14),
-                            trailing: StreamBuilder<BluetoothDeviceState>(
-                              stream: d.state,
-                              initialData: BluetoothDeviceState.disconnected,
-                              builder: (c, snapshot) {
-                                if (snapshot.data ==
-                                    BluetoothDeviceState.connected) {
-                                  return FloatingActionButton(
-                                      heroTag: null,
-                                      child: Icon(Icons.open_in_new),
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: Colors.green,
-                                      onPressed: () async {
-                                        await FlutterBlue.instance.stopScan();
-                                        await Get.to(DeviceScreen(
-                                            device: d,
-                                            initialState: snapshot.data,
-                                            size: Get.mediaQuery.size));
-                                      });
-                                } else {
-                                  return Text(snapshot.data.toString());
-                                }
-                              },
-                            ),
-                          ))
-                      .toList(),
+                      .map((d) {
+                    _openedDevice = d;
+                    return ListTile(
+                      title: Text(d.name,
+                          style: standOutStyle(
+                            adjustedCaptionStyle,
+                            fontSizeFactor,
+                          )),
+                      subtitle: Text(d.id.id, style: dseg14),
+                      trailing: StreamBuilder<BluetoothDeviceState>(
+                        stream: d.state,
+                        initialData: BluetoothDeviceState.disconnected,
+                        builder: (c, snapshot) {
+                          if (snapshot.data == BluetoothDeviceState.connected) {
+                            return FloatingActionButton(
+                                heroTag: null,
+                                child: Icon(Icons.open_in_new),
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.green,
+                                onPressed: () async {
+                                  await FlutterBlue.instance.stopScan();
+                                  await Get.to(DeviceScreen(
+                                      device: d,
+                                      initialState: snapshot.data,
+                                      size: Get.mediaQuery.size));
+                                });
+                          } else {
+                            return Text(snapshot.data.toString());
+                          }
+                        },
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
               StreamBuilder<List<ScanResult>>(
@@ -165,19 +234,23 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   children: snapshot.data
                       .where((d) => d.device.isWorthy(
                           _filterDevices, d.advertisementData.connectable))
-                      .map(
-                        (r) => ScanResultTile(
-                          result: r,
-                          onTap: () async {
-                            await FlutterBlue.instance.stopScan();
-                            await Get.to(DeviceScreen(
-                                device: r.device,
-                                initialState: BluetoothDeviceState.disconnected,
-                                size: Get.mediaQuery.size));
-                          },
-                        ),
-                      )
-                      .toList(),
+                      .map((r) {
+                    addScannedDevice(r.device, r.advertisementData.connectable);
+                    if (_instantWorkout && r.device.id.id == _lastEquipmentId) {
+                      FlutterBlue.instance.stopScan();
+                    }
+                    return ScanResultTile(
+                      result: r,
+                      onTap: () async {
+                        await FlutterBlue.instance.stopScan();
+                        await Get.to(DeviceScreen(
+                          device: r.device,
+                          initialState: BluetoothDeviceState.disconnected,
+                          size: Get.mediaQuery.size,
+                        ));
+                      },
+                    );
+                  }).toList(),
                 ),
               ),
             ],
@@ -229,7 +302,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           ),
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
-            initialData: false,
+            initialData: _instantScan,
             builder: (c, snapshot) {
               if (snapshot.data) {
                 return FloatingActionButton(
@@ -246,7 +319,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.green,
                   onPressed: () => FlutterBlue.instance
-                      .startScan(timeout: Duration(seconds: 4)),
+                      .startScan(timeout: Duration(seconds: _scanDuration)),
                 );
               }
             },

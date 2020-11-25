@@ -333,6 +333,7 @@ class DeviceState extends State<DeviceScreen> {
       fontFamily: 'DSEG14',
       color: Colors.indigo,
     );
+    PrefService.setString(LAST_EQUIPMENT_ID_TAG, device.id.id);
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _simplerUi = PrefService.getBool(SIMPLER_UI_TAG);
     if (!_simplerUi) {

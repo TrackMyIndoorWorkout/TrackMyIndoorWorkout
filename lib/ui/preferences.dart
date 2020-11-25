@@ -35,6 +35,18 @@ class PreferencesScreen extends StatelessWidget {
         onDisable: () => preferencesSpecs[1].unit = 'mph',
       ),
       SwitchPreference(
+        INSTANT_SCAN,
+        INSTANT_SCAN_TAG,
+        defaultVal: INSTANT_SCAN_DEFAULT,
+        desc: INSTANT_SCAN_DESCRIPTION,
+      ),
+      SwitchPreference(
+        INSTANT_WORKOUT,
+        INSTANT_WORKOUT_TAG,
+        defaultVal: INSTANT_WORKOUT_DEFAULT,
+        desc: INSTANT_WORKOUT_DESCRIPTION,
+      ),
+      SwitchPreference(
         DEVICE_FILTERING,
         DEVICE_FILTERING_TAG,
         defaultVal: DEVICE_FILTERING_DEFAULT,

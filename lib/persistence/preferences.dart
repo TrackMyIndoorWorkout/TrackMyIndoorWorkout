@@ -195,18 +195,37 @@ final preferencesSpecs = [
 
 const UX_PREFERENCES = "UX Preferences";
 
-const DEVICE_FILTERING = "Device Filtering";
-const DEVICE_FILTERING_TAG = "device_filtering";
-const DEVICE_FILTERING_DEFAULT = true;
-const DEVICE_FILTERING_DESCRIPTION =
-    "Off: the app won't filter the list of Bluetooth device while scanning. " +
-        "Useful if your equipment has an unexpected Bluetooth name.";
-
 const UNIT_SYSTEM = "Unit System";
 const UNIT_SYSTEM_TAG = "unit_system";
-const UNIT_SYSTEM_DEFAULT = false; // false: Imperial, true: Metric
+const UNIT_SYSTEM_DEFAULT = false;
 const UNIT_SYSTEM_DESCRIPTION = "On: metric (km/h speed, meters distance), " +
     "Off: imperial (mp/h speed, miles distance).";
+
+const INSTANT_SCAN = "Instant Scanning";
+const INSTANT_SCAN_TAG = "instant_scan";
+const INSTANT_SCAN_DEFAULT = true;
+const INSTANT_SCAN_DESCRIPTION = "On: the app will automatically start "
+    "scanning for equipment after application start.";
+
+const SCAN_DURATION = "Scan Duration";
+const SCAN_DURATION_TAG = "scan_duration";
+const SCAN_DURATION_DEFAULT = 3;
+const SCAN_DURATION_DESCRIPTION = "Duration in seconds the app will spend " +
+    "looking Bluetooth Low Energy exercise equipment.";
+
+const INSTANT_WORKOUT = "Instant Workout";
+const INSTANT_WORKOUT_TAG = "instant_workout";
+const INSTANT_WORKOUT_DEFAULT = false;
+const INSTANT_WORKOUT_DESCRIPTION = "On: if there's only a single " +
+    "equipment after scan, or one of the devices match the " +
+    "last exercise machine the app will automatically move to the " +
+    "measurement screen to start recording.";
+
+const LAST_EQUIPMENT_ID = "Last Equipment ID";
+const LAST_EQUIPMENT_ID_TAG = "last_equipment";
+const LAST_EQUIPMENT_ID_DEFAULT = "";
+const LAST_EQUIPMENT_ID_DESCRIPTION =
+    "The last exercise equipment ID " + "the app recorded a workout for";
 
 const SIMPLER_UI = "Simplify Measurement UI";
 const SIMPLER_UI_TAG = "simpler_ui";
@@ -215,6 +234,13 @@ const SIMPLER_UI_SLOW_DEFAULT = true;
 const SIMPLER_UI_DESCRIPTION = "On: the track visualization and the real-time" +
     " graphs won't be featured at the bottom of the measurement " +
     "screen. This can help old / slow phones.";
+
+const DEVICE_FILTERING = "Device Filtering";
+const DEVICE_FILTERING_TAG = "device_filtering";
+const DEVICE_FILTERING_DEFAULT = true;
+const DEVICE_FILTERING_DESCRIPTION =
+    "Off: the app won't filter the list of Bluetooth device while scanning. " +
+        "Useful if your equipment has an unexpected Bluetooth name.";
 
 const ZONE_PREFERENCES = "Zone Preferences";
 
