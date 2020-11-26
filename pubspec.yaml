@@ -30,6 +30,7 @@ dependencies:
   device_info: any
   expandable: any
   progress_indicators: any
+  data_connection_checker: any
   flutter:
     sdk: flutter
 

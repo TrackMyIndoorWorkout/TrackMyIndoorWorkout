@@ -18,6 +18,10 @@ class StravaService {
         STRAVA_CLIENT_ID, 'activity:write', STRAVA_SECRET, 'auto');
   }
 
+  Future<bool> hasValidToken() async {
+    return await _strava.hasValidToken();
+  }
+
   Future<int> upload(Activity activity, List<Record> records) async {
     if (records == null || records.length <= 0) {
       return statusJsonIsEmpty;

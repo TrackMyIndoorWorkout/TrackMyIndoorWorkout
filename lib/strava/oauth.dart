@@ -189,6 +189,17 @@ abstract class Auth {
 ***/
   }
 
+  Future<bool> hasValidToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    String accessToken = prefs.getString('strava_accessToken').toString();
+    if (accessToken == null || accessToken.length == 0) {
+      return false;
+    }
+    final Token tokenStored = await getStoredToken();
+    accessToken = tokenStored.accessToken;
+    return accessToken != null && accessToken.length > 0;
+  }
+
   /// Do Strava Authentication.
   ///
   /// Do not do/show the Strava login if a token has been stored previously

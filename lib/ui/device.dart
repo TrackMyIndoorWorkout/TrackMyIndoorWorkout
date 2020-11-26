@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -113,6 +114,7 @@ class DeviceState extends State<DeviceScreen> {
   AppDatabase _database;
   bool _si;
   bool _simplerUi;
+  bool _instantUpload;
 
   // Debugging UX without actual connected device
   Timer _timer;
@@ -337,6 +339,7 @@ class DeviceState extends State<DeviceScreen> {
     PrefService.setString(LAST_EQUIPMENT_ID_TAG, device.id.id);
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _simplerUi = PrefService.getBool(SIMPLER_UI_TAG);
+    _instantUpload = PrefService.getBool(INSTANT_UPLOAD_TAG);
     if (!_simplerUi) {
       _graphData = ListQueue<Record>(_pointCount);
     }
@@ -429,6 +432,39 @@ class DeviceState extends State<DeviceScreen> {
     });
   }
 
+  _stravaUpload(bool onlyWhenAuthenticated) async {
+    StravaService stravaService;
+    if (!Get.isRegistered<StravaService>()) {
+      stravaService = Get.put<StravaService>(StravaService());
+    } else {
+      stravaService = Get.find<StravaService>();
+    }
+
+    if (onlyWhenAuthenticated && !await stravaService.hasValidToken()) {
+      return;
+    }
+
+    if (!await DataConnectionChecker().hasConnection) {
+      Get.snackbar("Warning", "No data connection detected");
+      return;
+    }
+
+    final success = await stravaService.login();
+    if (!success) {
+      Get.snackbar("Warning", "Strava login unsuccessful");
+      return;
+    }
+
+    final records =
+        await _database.recordDao.findAllActivityRecords(_activity.id);
+    final statusCode = await stravaService.upload(_activity, records);
+    Get.snackbar(
+        "Upload",
+        statusCode == statusOk || statusCode >= 200 && statusCode < 300
+            ? "Activity ${_activity.id} submitted successfully"
+            : "Activity ${_activity.id} upload failure");
+  }
+
   _finishActivity() async {
     if (!_measuring) return;
 
@@ -458,7 +494,15 @@ class DeviceState extends State<DeviceScreen> {
       _latestRecord.calories,
     );
     // final changed =
-    await _database?.activityDao?.updateActivity(_activity);
+    final retVal = await _database?.activityDao?.updateActivity(_activity);
+    if (retVal <= 0) {
+      Get.snackbar("Warning", "Could not save activity");
+      return;
+    }
+
+    if (_instantUpload) {
+      await _stravaUpload(true);
+    }
   }
 
   Color getExtraColor(int rowIndex) {
@@ -706,33 +750,11 @@ class DeviceState extends State<DeviceScreen> {
             icon: Icon(BrandIcons.strava),
             onPressed: () async {
               if (_measuring) {
-                Get.snackbar(
-                    "Warning", "Cannot navigate away during measurement!");
+                Get.snackbar("Warning", "Cannot disrupt the measurement!");
                 return;
               }
 
-              StravaService stravaService;
-              if (!Get.isRegistered<StravaService>()) {
-                stravaService = Get.put<StravaService>(StravaService());
-              } else {
-                stravaService = Get.find<StravaService>();
-              }
-
-              final success = await stravaService.login();
-              if (!success) {
-                Get.snackbar("Warning", "Strava login unsuccessful");
-                return;
-              }
-
-              final records = await _database.recordDao
-                  .findAllActivityRecords(_activity.id);
-              final statusCode = await stravaService.upload(_activity, records);
-              Get.snackbar(
-                  "Upload",
-                  statusCode == statusOk ||
-                          statusCode >= 200 && statusCode < 300
-                      ? "Activity ${_activity.id} submitted successfully"
-                      : "Activity ${_activity.id} upload failure");
+              await _stravaUpload(false);
             },
           ),
           IconButton(

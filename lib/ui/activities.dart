@@ -1,3 +1,4 @@
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
@@ -68,6 +69,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             size: size,
           ),
           onPressed: () async {
+            if (!await DataConnectionChecker().hasConnection) {
+              Get.snackbar("Warning", "No data connection detected");
+              return;
+            }
+
             StravaService stravaService;
             if (!Get.isRegistered<StravaService>()) {
               stravaService = Get.put<StravaService>(StravaService());
@@ -82,6 +88,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
             final records =
                 await _database.recordDao.findAllActivityRecords(activity.id);
+
             setState(() {
               _isLoading = true;
             });
