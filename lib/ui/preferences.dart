@@ -47,6 +47,12 @@ class PreferencesScreen extends StatelessWidget {
         desc: INSTANT_WORKOUT_DESCRIPTION,
       ),
       SwitchPreference(
+        INSTANT_UPLOAD,
+        INSTANT_UPLOAD_TAG,
+        defaultVal: INSTANT_UPLOAD_DEFAULT,
+        desc: INSTANT_UPLOAD_DESCRIPTION,
+      ),
+      SwitchPreference(
         DEVICE_FILTERING,
         DEVICE_FILTERING_TAG,
         defaultVal: DEVICE_FILTERING_DEFAULT,
