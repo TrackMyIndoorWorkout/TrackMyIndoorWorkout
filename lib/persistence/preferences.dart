@@ -227,6 +227,13 @@ const LAST_EQUIPMENT_ID_DEFAULT = "";
 const LAST_EQUIPMENT_ID_DESCRIPTION =
     "The last exercise equipment ID " + "the app recorded a workout for";
 
+const INSTANT_UPLOAD = "Instant Upload";
+const INSTANT_UPLOAD_TAG = "instant_upload";
+const INSTANT_UPLOAD_DEFAULT = false;
+const INSTANT_UPLOAD_DESCRIPTION = "On: when Strava is authenticated and " +
+    "the device is connected then activity upload is automatically " +
+    "attempted at the end of workout";
+
 const SIMPLER_UI = "Simplify Measurement UI";
 const SIMPLER_UI_TAG = "simpler_ui";
 const SIMPLER_UI_FAST_DEFAULT = false;
