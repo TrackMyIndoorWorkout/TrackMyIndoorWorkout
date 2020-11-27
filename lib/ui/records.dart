@@ -239,7 +239,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               );
               prefSpec.calculateBounds(measurementCounter.minPower.toDouble(),
                   measurementCounter.maxPower.toDouble());
-              tileConfig.histogram = prefSpec.zoneBounds
+              tileConfig.histogram = prefSpec.zoneUpper
                   .asMap()
                   .entries
                   .map(
@@ -265,7 +265,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               );
               prefSpec.calculateBounds(
                   measurementCounter.minSpeed, measurementCounter.maxSpeed);
-              tileConfig.histogram = prefSpec.zoneBounds
+              tileConfig.histogram = prefSpec.zoneUpper
                   .asMap()
                   .entries
                   .map(
@@ -291,7 +291,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               );
               prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
                   measurementCounter.maxCadence.toDouble());
-              tileConfig.histogram = prefSpec.zoneBounds
+              tileConfig.histogram = prefSpec.zoneUpper
                   .asMap()
                   .entries
                   .map(
@@ -317,7 +317,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               );
               prefSpec.calculateBounds(measurementCounter.minHr.toDouble(),
                   measurementCounter.maxHr.toDouble());
-              tileConfig.histogram = prefSpec.zoneBounds
+              tileConfig.histogram = prefSpec.zoneUpper
                   .asMap()
                   .entries
                   .map(
