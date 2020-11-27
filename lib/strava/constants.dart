@@ -1,7 +1,12 @@
-final tokenEndpoint = "https://www.strava.com/oauth/token";
-final authorizationEndpoint = "https://www.strava.com/oauth/authorize";
+const STRAVA_URL = "https://www.strava.com/";
+const TOKEN_ENDPOINT = STRAVA_URL + "oauth/token";
+const AUTHORIZATION_ENDPOINT = STRAVA_URL + "oauth/authorize";
+const DEAUTHORIZATION_ENDPOINT = STRAVA_URL + "oauth/deauthorize";
+const UPLOADS_ENDPOINT = STRAVA_URL + "api/v3/uploads";
 
-final String redirectUrlWeb = "https://BirdyF.github.io";
+const REDIRECT_URL_WEB = "https://BirdyF.github.io";
 
-final String redirectUrlMobile =
-    "stravaflutter://redirect/"; // To use with iOS or Android
+// To use with iOS or Android
+const REDIRECT_URL_MOBILE = "stravaflutter://redirect/";
+
+const STRAVA_ACTIVITY_URL = STRAVA_URL + "activities/";

@@ -8,6 +8,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../tcx/tcx_output.dart';
 
+import 'constants.dart';
 import 'error_codes.dart' as error;
 import 'fault.dart';
 import 'globals.dart' as globals;
@@ -34,7 +35,7 @@ abstract class Upload {
     final String processed = "Your activity is still being processed.";
     final String notFound = 'Not Found';
 
-    final postUri = Uri.parse('https://www.strava.com/api/v3/uploads');
+    final postUri = Uri.parse(UPLOADS_ENDPOINT);
     StreamController<int> onUploadPending = StreamController();
 
     var fault = Fault(888, '');
@@ -104,7 +105,7 @@ abstract class Upload {
         onUploadPending.add(idUpload);
       });
 
-      String reqCheckUpgrade = 'https://www.strava.com/api/v3/uploads/';
+      String reqCheckUpgrade = '$UPLOADS_ENDPOINT/';
       onUploadPending.stream.listen((id) async {
         reqCheckUpgrade = reqCheckUpgrade + id.toString();
         var resp = await http.get(reqCheckUpgrade, headers: _header);

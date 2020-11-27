@@ -99,15 +99,15 @@ abstract class Auth {
     String redirectUrl;
 
     if (kIsWeb == true) {
-      redirectUrl = redirectUrlWeb;
+      redirectUrl = REDIRECT_URL_WEB;
     } else {
-      redirectUrl = redirectUrlMobile;
+      redirectUrl = REDIRECT_URL_MOBILE;
     }
 
     final params = '?client_id=$clientID&redirect_uri=$redirectUrl' +
         '&response_type=code&approval_prompt=$prompt&scope=$scope';
 
-    final reqAuth = authorizationEndpoint + params;
+    final reqAuth = AUTHORIZATION_ENDPOINT + params;
     globals.displayInfo(reqAuth);
     StreamSubscription _sub;
 
@@ -300,7 +300,7 @@ abstract class Auth {
   ) async {
     RefreshAnswer returnToken = RefreshAnswer();
 
-    final urlRefresh = 'https://www.strava.com/oauth/token' +
+    final urlRefresh = TOKEN_ENDPOINT +
         '?client_id=$clientID&client_secret=$secret' +
         '&grant_type=refresh_token&refresh_token=$refreshToken';
 
@@ -333,7 +333,7 @@ abstract class Auth {
     globals.displayInfo('Entering getStravaToken!!');
     // Put your own secret in secret.dart
     final urlToken =
-        '$tokenEndpoint?client_id=$clientID&client_secret=$secret' +
+        '$TOKEN_ENDPOINT?client_id=$clientID&client_secret=$secret' +
             '&code=$code&grant_type=authorization_code';
 
     globals.displayInfo('urlToken $urlToken');
@@ -403,9 +403,9 @@ abstract class Auth {
 
     // If header is not "empty"
     if (_header.containsKey('88') == false) {
-      final reqDeAuthorize = "https://www.strava.com/oauth/deauthorize";
-      globals.displayInfo('request $reqDeAuthorize');
-      final rep = await http.post(reqDeAuthorize, headers: _header);
+      final requestDeAuthorize = DEAUTHORIZATION_ENDPOINT;
+      globals.displayInfo('request $requestDeAuthorize');
+      final rep = await http.post(requestDeAuthorize, headers: _header);
       if (rep.statusCode >= 200 && rep.statusCode < 300) {
         globals.displayInfo('DeAuthorize done');
         globals.displayInfo('response ${rep.body}');
