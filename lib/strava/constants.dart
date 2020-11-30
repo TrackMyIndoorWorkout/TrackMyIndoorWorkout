@@ -8,5 +8,3 @@ const REDIRECT_URL_WEB = "https://BirdyF.github.io";
 
 // To use with iOS or Android
 const REDIRECT_URL_MOBILE = "stravaflutter://redirect/";
-
-const STRAVA_ACTIVITY_URL = STRAVA_URL + "activities/";

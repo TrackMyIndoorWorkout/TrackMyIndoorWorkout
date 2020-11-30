@@ -53,15 +53,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         });
   }
 
-  Widget actionButtonRow(Activity activity, double size) {
+  Widget _actionButtonRow(Activity activity, double size) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(
-          icon: Icon(Icons.open_in_new, color: Colors.black, size: size),
-          onPressed: () async => await Get.to(
-              RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
-        ),
         IconButton(
           icon: Icon(
             BrandIcons.strava,
@@ -120,6 +115,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                 text: 'Share a ride on ${activity.deviceName}');
           },
         ),
+        Spacer(),
         IconButton(
           icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
           onPressed: () async {
@@ -144,6 +140,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               ),
             );
           },
+        ),
+        Spacer(),
+        IconButton(
+          icon: Icon(Icons.chevron_right, color: Colors.black, size: size),
+          onPressed: () async => await Get.to(
+              RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
         ),
       ],
     );
@@ -270,7 +272,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       ],
                     ),
                     collapsed: ListTile(
-                      trailing: actionButtonRow(activity, sizeDefault2),
+                      trailing: _actionButtonRow(activity, sizeDefault2),
                     ),
                     expanded: ListTile(
                       onTap: () async => await Get.to(RecordsScreen(
@@ -356,7 +358,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                               ),
                             ],
                           ),
-                          actionButtonRow(activity, sizeDefault2),
+                          _actionButtonRow(activity, sizeDefault2),
                         ],
                       ),
                     ),
