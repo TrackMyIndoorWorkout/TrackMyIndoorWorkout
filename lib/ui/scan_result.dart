@@ -86,7 +86,7 @@ class ScanResultTile extends StatelessWidget {
     }
     List<String> res = [];
     data.forEach((id, bytes) {
-      res.add('${id.toUpperCase()}: ${getNiceHexArray(bytes)}');
+      res.add('${id.substring(4, 8).toUpperCase()}: ${getNiceHexArray(bytes)}');
     });
     return res.join(', ');
   }
@@ -140,7 +140,11 @@ class ScanResultTile extends StatelessWidget {
           context,
           'Service UUIDs',
           (result.advertisementData.serviceUuids.isNotEmpty)
-              ? result.advertisementData.serviceUuids.join(', ').toUpperCase()
+              ? result.advertisementData.serviceUuids
+                  .map((x) => x.substring(4, 8))
+                  .toList()
+                  .join(', ')
+                  .toUpperCase()
               : 'N/A',
           adjustedCaptionStyle,
           dseg14,
