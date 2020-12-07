@@ -64,6 +64,12 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: SIMPLER_UI_FAST_DEFAULT,
         desc: SIMPLER_UI_DESCRIPTION,
       ),
+      DropdownPreference(
+        FONT_SELECTION,
+        FONT_SELECTION_TAG,
+        defaultVal: FONT_SELECTION_DEFAULT,
+        values: FONT_SELECTION_VALUES,
+      ),
       PreferenceTitle(ZONE_PREFERENCES),
     ];
 

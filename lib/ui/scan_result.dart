@@ -1,11 +1,15 @@
 import 'package:charts_flutter/flutter.dart' hide TextStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import '../persistence/preferences.dart';
 import 'find_devices.dart';
 
 class ScanResultTile extends StatelessWidget {
-  const ScanResultTile({Key key, this.result, this.onTap}) : super(key: key);
+  const ScanResultTile(
+      {Key key, this.result, this.fontFamilyProperties, this.onTap})
+      : super(key: key);
 
+  final FontFamilyProperties fontFamilyProperties;
   final ScanResult result;
   final VoidCallback onTap;
 
@@ -93,12 +97,14 @@ class ScanResultTile extends StatelessWidget {
         .textTheme
         .caption
         .apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
-    final dseg14 = adjustedCaptionStyle.apply(fontFamily: 'DSEG14');
+    final dseg14 =
+        adjustedCaptionStyle.apply(fontFamily: fontFamilyProperties.secondary);
     return ExpansionTile(
       title: _buildTitle(context, adjustedCaptionStyle, dseg14),
       leading: Text(
         result.rssi.toString(),
-        style: adjustedCaptionStyle.apply(fontFamily: 'DSEG7'),
+        style: adjustedCaptionStyle.apply(
+            fontFamily: fontFamilyProperties.primary),
       ),
       trailing: FloatingActionButton(
         heroTag: null,

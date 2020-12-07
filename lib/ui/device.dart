@@ -106,6 +106,9 @@ class DeviceState extends State<DeviceScreen> {
   int _extraDisplayIndex;
   int _pointCount;
   ListQueue<Record> _graphData;
+  double _mediaWidth;
+  double _sizeDefault;
+  TextStyle _measurementStyle;
   TextStyle _unselectedUnitStyle;
   TextStyle _selectedUnitStyle;
 
@@ -115,6 +118,7 @@ class DeviceState extends State<DeviceScreen> {
   bool _si;
   bool _simplerUi;
   bool _instantUpload;
+  FontFamilyProperties _fontFamilyProperties;
 
   // Debugging UX without actual connected device
   Timer _timer;
@@ -328,12 +332,13 @@ class DeviceState extends State<DeviceScreen> {
     _selectedRow = 0;
     _extraDisplayIndex = ROW_TO_EXTRA[_selectedRow];
     _pointCount = size.width ~/ 2;
+    _fontFamilyProperties = getFontFamilyProperties();
     _unselectedUnitStyle = TextStyle(
-      fontFamily: 'DSEG14',
+      fontFamily: _fontFamilyProperties.secondary,
       color: Colors.indigo,
     );
     _selectedUnitStyle = TextStyle(
-      fontFamily: 'DSEG14',
+      fontFamily: _fontFamilyProperties.secondary,
       color: Colors.indigo,
     );
     PrefService.setString(LAST_EQUIPMENT_ID_TAG, device.id.id);
@@ -581,22 +586,26 @@ class DeviceState extends State<DeviceScreen> {
   @override
   Widget build(BuildContext context) {
     final separatorHeight = 3.0;
-    final double sizeDefault = Get.mediaQuery.size.width / 7;
 
-    final measurementStyle = TextStyle(
-      fontFamily: 'DSEG7',
-      fontSize: sizeDefault,
-    );
-    _unselectedUnitStyle = TextStyle(
-      fontFamily: 'DSEG14',
-      fontSize: sizeDefault / 3,
-      color: Colors.indigo,
-    );
-    _selectedUnitStyle = TextStyle(
-      fontFamily: 'DSEG14',
-      fontSize: sizeDefault / 3,
-      color: Colors.red,
-    );
+    final mediaWidth = Get.mediaQuery.size.width;
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > 1e-6) {
+      _mediaWidth = mediaWidth;
+      _sizeDefault = Get.mediaQuery.size.width / 7;
+      _measurementStyle = TextStyle(
+        fontFamily: _fontFamilyProperties.primary,
+        fontSize: _sizeDefault,
+      );
+      _unselectedUnitStyle = TextStyle(
+        fontFamily: _fontFamilyProperties.secondary,
+        fontSize: _sizeDefault / 3,
+        color: Colors.indigo,
+      );
+      _selectedUnitStyle = TextStyle(
+        fontFamily: _fontFamilyProperties.secondary,
+        fontSize: _sizeDefault / 3,
+        color: Colors.red,
+      );
+    }
 
     final _timeDisplay = Duration(seconds: _latestRecord.elapsed).toDisplay();
 
@@ -607,8 +616,8 @@ class DeviceState extends State<DeviceScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.timer, size: sizeDefault, color: getExtraColor(0)),
-            Text(_timeDisplay, style: measurementStyle),
+            Icon(Icons.timer, size: _sizeDefault, color: getExtraColor(0)),
+            Text(_timeDisplay, style: _measurementStyle),
           ],
         ),
       ),
@@ -624,13 +633,13 @@ class DeviceState extends State<DeviceScreen> {
           children: [
             Icon(
               _rowConfig[entry.key].icon,
-              size: sizeDefault,
+              size: _sizeDefault,
               color: getExtraColor(entry.key + 1),
             ),
             Spacer(),
-            Text(_values[entry.key], style: measurementStyle),
+            Text(_values[entry.key], style: _measurementStyle),
             SizedBox(
-              width: sizeDefault,
+              width: _sizeDefault,
               child: Text(
                 _rowConfig[entry.key].unit,
                 style: getTextStyle(entry.key + 1),

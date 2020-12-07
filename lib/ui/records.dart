@@ -174,6 +174,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _unitStyle;
   TextStyle _selectionStyle;
   TextStyle _selectionTextStyle;
+  FontFamilyProperties _fontFamilyProperties;
 
   @override
   initState() {
@@ -184,6 +185,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     _selectedTimes = [];
     _selectedValues = [];
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    _fontFamilyProperties = getFontFamilyProperties();
     activity.hydrate();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
@@ -399,19 +401,19 @@ class RecordsScreenState extends State<RecordsScreen> {
     _sizeDefault = Get.mediaQuery.size.width / 7;
     _sizeDefault2 = _sizeDefault / 1.5;
     _measurementStyle = TextStyle(
-      fontFamily: 'DSEG7',
+      fontFamily: _fontFamilyProperties.primary,
       fontSize: _sizeDefault,
     );
     _textStyle = TextStyle(
       fontSize: _sizeDefault2,
     );
     _unitStyle = TextStyle(
-      fontFamily: 'DSEG14',
+      fontFamily: _fontFamilyProperties.secondary,
       fontSize: _sizeDefault2 / 2,
       color: Colors.indigo,
     );
     _selectionStyle = TextStyle(
-      fontFamily: 'DSEG14',
+      fontFamily: _fontFamilyProperties.secondary,
       fontSize: _sizeDefault2 / 2,
     );
     _selectionTextStyle = TextStyle(

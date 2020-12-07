@@ -19,6 +19,7 @@ void main() async {
     INSTANT_UPLOAD_TAG: INSTANT_UPLOAD_DEFAULT,
     SIMPLER_UI_TAG: await getSimplerUiDefault(),
     DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT,
+    FONT_SELECTION_TAG: FONT_SELECTION_DEFAULT,
   };
   preferencesSpecs.forEach((prefSpec) {
     prefDefaults.addAll({

@@ -249,6 +249,47 @@ const DEVICE_FILTERING_DESCRIPTION =
     "Off: the app won't filter the list of Bluetooth device while scanning. " +
         "Useful if your equipment has an unexpected Bluetooth name.";
 
+const FONT_SELECTION = "Font Selection";
+const FONT_SELECTION_TAG = "font_selection";
+const FONT_SELECTION_REGULAR = "Regular";
+const FONT_SELECTION_14SEGMENT = "14-segment";
+const FONT_SELECTION_DEFAULT = FONT_SELECTION_REGULAR;
+const FONT_SELECTION_VALUES = [
+  FONT_SELECTION_REGULAR,
+  FONT_SELECTION_14SEGMENT,
+];
+const FONT_SELECTION_DESCRIPTION =
+    "What font the app will use to display measurements: " +
+        FONT_SELECTION_REGULAR +
+        ", " +
+        FONT_SELECTION_14SEGMENT;
+
+class FontFamilyProperties {
+  final String primary;
+  final String secondary;
+
+  FontFamilyProperties({
+    this.primary,
+    this.secondary,
+  });
+}
+
+Map<String, FontFamilyProperties> fontSelectionToFamilyProperties = {
+  FONT_SELECTION_REGULAR: FontFamilyProperties(
+    primary: "RobotoMono",
+    secondary: "RobotoMono",
+  ),
+  FONT_SELECTION_14SEGMENT: FontFamilyProperties(
+    primary: "DSEG7",
+    secondary: "DSEG14",
+  ),
+};
+
+FontFamilyProperties getFontFamilyProperties() {
+  final fontSelection = PrefService.getString(FONT_SELECTION_TAG);
+  return fontSelectionToFamilyProperties[fontSelection];
+}
+
 const ZONE_PREFERENCES = "Zone Preferences";
 
 Future<bool> getSimplerUiDefault() async {

@@ -51,3 +51,6 @@ flutter:
     - family: DSEG14
       fonts:
         - asset: fonts/DSEG14Classic-Bold.ttf
+    - family: RobotoMono
+      fonts:
+        - asset: fonts/RobotoMono-Bold.ttf

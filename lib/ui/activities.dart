@@ -32,6 +32,14 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   bool _isLoading;
   int _editCount;
   bool _si;
+  FontFamilyProperties _fontFamilyProperties;
+  double _mediaWidth;
+  double _sizeDefault;
+  double _sizeDefault2;
+  TextStyle _measurementStyle;
+  TextStyle _textStyle;
+  TextStyle _headerStyle;
+  TextStyle _unitStyle;
 
   AppDatabase get database => _database;
 
@@ -41,6 +49,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _editCount = 0;
     super.initState();
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    _fontFamilyProperties = getFontFamilyProperties();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
         .addMigrations([migration1to2, migration2to3])
@@ -159,25 +168,29 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double sizeDefault = Get.mediaQuery.size.width / 7;
-    final double sizeDefault2 = sizeDefault / 1.5;
+    final mediaWidth = Get.mediaQuery.size.width;
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > 1e-6) {
+      _mediaWidth = mediaWidth;
+      _sizeDefault = _mediaWidth / 7;
+      _sizeDefault2 = _sizeDefault / 1.5;
 
-    final measurementStyle = TextStyle(
-      fontFamily: 'DSEG7',
-      fontSize: sizeDefault,
-    );
-    final textStyle = TextStyle(
-      fontSize: sizeDefault2,
-    );
-    final headerStyle = TextStyle(
-      fontFamily: 'DSEG14',
-      fontSize: sizeDefault2,
-    );
-    final unitStyle = TextStyle(
-      fontFamily: 'DSEG14',
-      fontSize: sizeDefault / 3,
-      color: Colors.indigo,
-    );
+      _measurementStyle = TextStyle(
+        fontFamily: _fontFamilyProperties.primary,
+        fontSize: _sizeDefault,
+      );
+      _textStyle = TextStyle(
+        fontSize: _sizeDefault2,
+      );
+      _headerStyle = TextStyle(
+        fontFamily: _fontFamilyProperties.secondary,
+        fontSize: _sizeDefault2,
+      );
+      _unitStyle = TextStyle(
+        fontFamily: _fontFamilyProperties.secondary,
+        fontSize: _sizeDefault / 3,
+        color: Colors.indigo,
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -246,11 +259,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                             Icon(
                               Icons.calendar_today,
                               color: Colors.indigo,
-                              size: sizeDefault2,
+                              size: _sizeDefault2,
                             ),
                             Text(
                               dateString,
-                              style: headerStyle,
+                              style: _headerStyle,
                             ),
                           ],
                         ),
@@ -261,18 +274,18 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                             Icon(
                               Icons.watch,
                               color: Colors.indigo,
-                              size: sizeDefault2,
+                              size: _sizeDefault2,
                             ),
                             Text(
                               timeString,
-                              style: headerStyle,
+                              style: _headerStyle,
                             ),
                           ],
                         ),
                       ],
                     ),
                     collapsed: ListTile(
-                      trailing: _actionButtonRow(activity, sizeDefault2),
+                      trailing: _actionButtonRow(activity, _sizeDefault2),
                     ),
                     expanded: ListTile(
                       onTap: () async => await Get.to(RecordsScreen(
@@ -286,12 +299,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                               Icon(
                                 Icons.directions_bike,
                                 color: Colors.indigo,
-                                size: sizeDefault,
+                                size: _sizeDefault,
                               ),
                               Spacer(),
                               Text(
                                 activity.deviceName,
-                                style: textStyle,
+                                style: _textStyle,
                                 maxLines: 4,
                               ),
                             ],
@@ -303,12 +316,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                               Icon(
                                 Icons.timer,
                                 color: Colors.indigo,
-                                size: sizeDefault,
+                                size: _sizeDefault,
                               ),
                               Spacer(),
                               Text(
                                 activity.elapsedString,
-                                style: measurementStyle,
+                                style: _measurementStyle,
                               ),
                             ],
                           ),
@@ -319,18 +332,18 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                               Icon(
                                 Icons.add_road,
                                 color: Colors.indigo,
-                                size: sizeDefault,
+                                size: _sizeDefault,
                               ),
                               Spacer(),
                               Text(
                                 activity.distanceString(_si),
-                                style: measurementStyle,
+                                style: _measurementStyle,
                               ),
                               SizedBox(
-                                width: sizeDefault,
+                                width: _sizeDefault,
                                 child: Text(
                                   _si ? 'm' : 'mi',
-                                  style: unitStyle,
+                                  style: _unitStyle,
                                 ),
                               ),
                             ],
@@ -342,23 +355,23 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                               Icon(
                                 Icons.whatshot,
                                 color: Colors.indigo,
-                                size: sizeDefault,
+                                size: _sizeDefault,
                               ),
                               Spacer(),
                               Text(
                                 '${activity.calories}',
-                                style: measurementStyle,
+                                style: _measurementStyle,
                               ),
                               SizedBox(
-                                width: sizeDefault,
+                                width: _sizeDefault,
                                 child: Text(
                                   'cal',
-                                  style: unitStyle,
+                                  style: _unitStyle,
                                 ),
                               ),
                             ],
                           ),
-                          _actionButtonRow(activity, sizeDefault2),
+                          _actionButtonRow(activity, _sizeDefault2),
                         ],
                       ),
                     ),
