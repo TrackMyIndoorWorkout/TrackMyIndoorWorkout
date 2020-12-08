@@ -54,4 +54,6 @@ abstract class DeviceDescriptor {
   );
 
   int processCadenceMeasurement(List<int> data);
+
+  String activityType();
 }

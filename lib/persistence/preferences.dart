@@ -264,6 +264,13 @@ const FONT_SELECTION_DESCRIPTION =
         ", " +
         FONT_SELECTION_14SEGMENT;
 
+const VIRTUAL_WORKOUT = "Virtual Workout";
+const VIRTUAL_WORKOUT_TAG = "virtual_workout";
+const VIRTUAL_WORKOUT_DEFAULT = true;
+const VIRTUAL_WORKOUT_DESCRIPTION =
+    "On: Strava upload will yield a Virtual Ride. " +
+        "Off: Strava upload will yield a Ride (non virtual).";
+
 class FontFamilyProperties {
   final String primary;
   final String secondary;

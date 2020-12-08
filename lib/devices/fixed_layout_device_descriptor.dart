@@ -1,10 +1,11 @@
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
+import 'cycling_device_descriptor.dart';
 import 'device_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
 
-class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
+class FixedLayoutDeviceDescriptor extends CyclingDeviceDescriptor {
   final ShortMetricDescriptor timeMetric;
   final ShortMetricDescriptor caloriesMetric;
   final ShortMetricDescriptor speedMetric;

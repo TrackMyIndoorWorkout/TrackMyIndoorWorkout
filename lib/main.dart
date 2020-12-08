@@ -20,6 +20,7 @@ void main() async {
     SIMPLER_UI_TAG: await getSimplerUiDefault(),
     DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT,
     FONT_SELECTION_TAG: FONT_SELECTION_DEFAULT,
+    VIRTUAL_WORKOUT_TAG: VIRTUAL_WORKOUT_DEFAULT,
   };
   preferencesSpecs.forEach((prefSpec) {
     prefDefaults.addAll({

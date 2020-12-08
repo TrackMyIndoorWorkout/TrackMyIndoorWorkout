@@ -70,6 +70,12 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: FONT_SELECTION_DEFAULT,
         values: FONT_SELECTION_VALUES,
       ),
+      SwitchPreference(
+        VIRTUAL_WORKOUT,
+        VIRTUAL_WORKOUT_TAG,
+        defaultVal: VIRTUAL_WORKOUT_DEFAULT,
+        desc: VIRTUAL_WORKOUT_DESCRIPTION,
+      ),
       PreferenceTitle(ZONE_PREFERENCES),
     ];
 

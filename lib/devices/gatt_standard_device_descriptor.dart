@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
+import 'cycling_device_descriptor.dart';
 import 'device_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
@@ -13,7 +14,7 @@ class CadenceData {
   CadenceData({this.seconds, this.revolutions});
 }
 
-class GattStandardDeviceDescriptor extends DeviceDescriptor {
+class GattStandardDeviceDescriptor extends CyclingDeviceDescriptor {
   // Primary metrics
   int _featuresFlag;
   ShortMetricDescriptor _speedMetric;

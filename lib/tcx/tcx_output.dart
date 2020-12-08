@@ -9,7 +9,6 @@ import '../persistence/models/record.dart';
 import '../track/constants.dart';
 import '../track/utils.dart';
 import '../utils/statistics_accumulator.dart';
-import 'activity_type.dart';
 import 'tcx_model.dart';
 
 class TCXOutput {
@@ -48,14 +47,14 @@ class TCXOutput {
 
     final descriptor = deviceMap[activity.fourCC];
     TCXModel tcxInfo = TCXModel()
-      ..activityType = ActivityType.Ride
+      ..activityType = descriptor.activityType()
       ..totalDistance = activity.distance
       ..totalTime = activity.elapsed.toDouble()
       ..calories = activity.calories
       ..dateActivity = startStamp
 
       // Related to device that generated the data
-      ..creator = 'Precor'
+      ..creator = descriptor.vendorName
       ..deviceName = descriptor.fullName
       ..unitID = activity.deviceId
       ..productID = descriptor.modelName
