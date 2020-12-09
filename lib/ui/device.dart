@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:preferences/preferences.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/devices.dart';
@@ -128,6 +129,7 @@ class DeviceState extends State<DeviceScreen> {
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfig> _rowConfig;
   List<String> _values;
+  bool _isLoading;
 
   _initialConnectOnDemand() async {
     if (initialState == BluetoothDeviceState.disconnected) {
@@ -329,6 +331,7 @@ class DeviceState extends State<DeviceScreen> {
   @override
   initState() {
     super.initState();
+    _isLoading = true;
     _selectedRow = 0;
     _extraDisplayIndex = ROW_TO_EXTRA[_selectedRow];
     _pointCount = size.width ~/ 2;
@@ -395,6 +398,7 @@ class DeviceState extends State<DeviceScreen> {
       _openDatabase();
     }
 
+    _isLoading = false;
     Wakelock.enable();
   }
 
@@ -454,9 +458,15 @@ class DeviceState extends State<DeviceScreen> {
       return;
     }
 
+    setState(() {
+      _isLoading = true;
+    });
     final success = await stravaService.login();
     if (!success) {
       Get.snackbar("Warning", "Strava login unsuccessful");
+      setState(() {
+        _isLoading = false;
+      });
       return;
     }
 
@@ -468,6 +478,9 @@ class DeviceState extends State<DeviceScreen> {
         statusCode == statusOk || statusCode >= 200 && statusCode < 300
             ? "Activity ${_activity.id} submitted successfully"
             : "Activity ${_activity.id} upload failure");
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   _finishActivity() async {
@@ -779,10 +792,13 @@ class DeviceState extends State<DeviceScreen> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: rows,
+      body: LoadingOverlay(
+        isLoading: _isLoading,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: rows,
+        ),
       ),
     );
   }
