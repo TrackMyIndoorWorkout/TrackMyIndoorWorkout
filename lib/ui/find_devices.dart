@@ -11,7 +11,7 @@ import '../devices/devices.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';
-import 'device.dart';
+import 'recording.dart';
 import 'preferences.dart';
 import 'scan_result.dart';
 
@@ -150,7 +150,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 if (_instantWorkout) {
                   if (_openedDevice != null) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Get.to(DeviceScreen(
+                      Get.to(RecordingScreen(
                         device: _openedDevice,
                         initialState: BluetoothDeviceState.connected,
                         size: Get.mediaQuery.size,
@@ -159,7 +159,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   } else {
                     if (_filterDevices && _scannedDevices.length == 1) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        Get.to(DeviceScreen(
+                        Get.to(RecordingScreen(
                           device: _scannedDevices.first,
                           initialState: BluetoothDeviceState.disconnected,
                           size: Get.mediaQuery.size,
@@ -171,7 +171,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           .where((d) => d.id.id == _lastEquipmentId);
                       if (lasts.length > 0) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          Get.to(DeviceScreen(
+                          Get.to(RecordingScreen(
                             device: lasts.first,
                             initialState: BluetoothDeviceState.disconnected,
                             size: Get.mediaQuery.size,
@@ -226,7 +226,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       backgroundColor: Colors.green,
                                       onPressed: () async {
                                         await FlutterBlue.instance.stopScan();
-                                        await Get.to(DeviceScreen(
+                                        await Get.to(RecordingScreen(
                                             device: d,
                                             initialState: snapshot.data,
                                             size: Get.mediaQuery.size));
@@ -259,7 +259,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             fontFamilyProperties: _fontFamilyProperties,
                             onTap: () async {
                               await FlutterBlue.instance.stopScan();
-                              await Get.to(DeviceScreen(
+                              await Get.to(RecordingScreen(
                                 device: r.device,
                                 initialState: BluetoothDeviceState.disconnected,
                                 size: Get.mediaQuery.size,

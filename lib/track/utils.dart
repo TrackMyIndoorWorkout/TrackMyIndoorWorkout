@@ -1,13 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import '../ui/device.dart';
+import '../ui/recording.dart';
 import 'constants.dart';
 
 Offset calculateTrackMarker(Size size, double distance) {
-  if (size == null || DeviceState.trackRadius == null) return null;
-  final r = DeviceState.trackRadius;
-  final offset = DeviceState.trackOffset;
+  if (size == null || RecordingState.trackRadius == null) return null;
+  final r = RecordingState.trackRadius;
+  final offset = RecordingState.trackOffset;
 
   final d = distance % TRACK_LENGTH;
   if (d <= LANE_LENGTH) {

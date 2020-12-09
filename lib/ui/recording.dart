@@ -60,12 +60,12 @@ extension DeviceIdentification on BluetoothDevice {
   }
 }
 
-class DeviceScreen extends StatefulWidget {
+class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
   final BluetoothDeviceState initialState;
   final Size size;
 
-  DeviceScreen({
+  RecordingScreen({
     Key key,
     this.device,
     this.initialState,
@@ -74,12 +74,12 @@ class DeviceScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return DeviceState(device: device, initialState: initialState, size: size);
+    return RecordingState(device: device, initialState: initialState, size: size);
   }
 }
 
-class DeviceState extends State<DeviceScreen> {
-  DeviceState({this.device, this.initialState, this.size}) {
+class RecordingState extends State<RecordingScreen> {
+  RecordingState({this.device, this.initialState, this.size}) {
     this.descriptor = device.getDescriptor();
   }
 
