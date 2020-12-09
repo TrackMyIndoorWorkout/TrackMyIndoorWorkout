@@ -74,7 +74,8 @@ class RecordingScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return RecordingState(device: device, initialState: initialState, size: size);
+    return RecordingState(
+        device: device, initialState: initialState, size: size);
   }
 }
 
