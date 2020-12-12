@@ -16,6 +16,7 @@ import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
 import '../tcx/tcx_output.dart';
 import 'find_devices.dart';
+import 'import_form.dart';
 import 'records.dart';
 
 class ActivitiesScreen extends StatefulWidget {
@@ -45,9 +46,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
   @override
   initState() {
+    super.initState();
     _isLoading = true;
     _editCount = 0;
-    super.initState();
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _fontFamilyProperties = getFontFamilyProperties();
     $FloorAppDatabase
@@ -196,6 +197,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       appBar: AppBar(
         title: Text('Activities'),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.file_upload),
+            onPressed: () async {
+              await Get.to(ImportForm());
+            },
+          ),
           IconButton(
             icon: Icon(Icons.help),
             onPressed: () async {

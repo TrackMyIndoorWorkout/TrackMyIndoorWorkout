@@ -31,6 +31,8 @@ dependencies:
   expandable: any
   progress_indicators: any
   data_connection_checker: any
+  datetime_picker_formfield: any
+  regexed_validator: any
   flutter:
     sdk: flutter
 

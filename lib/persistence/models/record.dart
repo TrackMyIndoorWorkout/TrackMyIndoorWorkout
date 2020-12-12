@@ -55,7 +55,7 @@ class Record {
 
   double speedByUnit(bool si) {
     if (si) return speed;
-    return speed * KMH2MPH;
+    return speed * KM2MI;
   }
 
   double distanceByUnit(bool si) {

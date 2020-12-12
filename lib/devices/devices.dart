@@ -71,4 +71,15 @@ Map<String, DeviceDescriptor> deviceMap = {
     },
     calorieFactor: 1.40,
   ),
+  "SAP+": GattStandardDeviceDescriptor(
+    fourCC: "SAP+",
+    vendorName: "Schwinn",
+    modelName: "AC Performance Plus",
+    // is an ANT+ device, will never show as BLE
+    namePrefix: "Schwinn AC Perf+",
+    canPrimaryMeasurementProcessed: (List<int> data) {
+      return false;
+    },
+    calorieFactor: 3.9,
+  ),
 };
