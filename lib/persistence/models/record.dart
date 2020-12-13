@@ -24,7 +24,7 @@ class Record {
   final int elapsed; // s
   final int calories; // kCal
   final int power; // W
-  final double speed; // m/s
+  final double speed; // km/h
   final int cadence;
   @ColumnInfo(name: 'heart_rate')
   final int heartRate;
