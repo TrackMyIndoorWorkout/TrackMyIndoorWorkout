@@ -159,7 +159,7 @@ class MPowerEchelon2Importer {
       for (int i = 0; i < secondsPerRowInt; i++) {
         final dEnergy = power * milliSecondsPerRecord;
         final dDistance = dEnergy * ENERGY_2_SPEED;
-        final speed = power * ENERGY_2_SPEED * 1000;
+        final speed = power * ENERGY_2_SPEED * 1000 * DeviceDescriptor.MS2KMH;
 
         final record = Record(
           activityId: activity.id,
