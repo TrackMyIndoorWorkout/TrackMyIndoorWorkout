@@ -29,6 +29,7 @@ class WorkoutRow {
 class MPowerEchelon2Importer {
   static const ENERGY_2_SPEED_FACTOR = 1.0;
   static const ENERGY_2_SPEED = 5.28768241564455E-05 * ENERGY_2_SPEED_FACTOR;
+  static const TIME_RESOLUTION_FACTOR = 2;
 
   final DateTime start;
   String message;
@@ -131,10 +132,11 @@ class MPowerEchelon2Importer {
     _linePointer++;
     double secondsPerRow = totalElapsed / numRow;
     int secondsPerRowInt = secondsPerRow.round();
-    double milliSecondsPerRecord = secondsPerRow / secondsPerRowInt * 1000;
+    int recordsPerRow = secondsPerRowInt * TIME_RESOLUTION_FACTOR;
+    double milliSecondsPerRecord = secondsPerRow * 1000 / recordsPerRow;
     int milliSecondsPerRecordInt = milliSecondsPerRecord.round();
 
-    int recordCount = numRow * secondsPerRowInt;
+    int recordCount = numRow * recordsPerRow;
     int progress = 0;
     int recordCounter = 0;
     double energy = 0;
@@ -153,14 +155,14 @@ class MPowerEchelon2Importer {
         nextRow = WorkoutRow(rowString: _lines[_linePointer + 1]);
       }
 
-      double dPower = (nextRow.power - row.power) / secondsPerRowInt;
-      double dCadence = (nextRow.rpm - row.rpm) / secondsPerRowInt;
-      double dHr = (nextRow.hr - row.hr) / secondsPerRowInt;
+      double dPower = (nextRow.power - row.power) / recordsPerRow;
+      double dCadence = (nextRow.rpm - row.rpm) / recordsPerRow;
+      double dHr = (nextRow.hr - row.hr) / recordsPerRow;
       double power = row.power.toDouble();
       double rpm = row.rpm.toDouble();
       double hr = row.hr.toDouble();
 
-      for (int i = 0; i < secondsPerRowInt; i++) {
+      for (int i = 0; i < recordsPerRow; i++) {
         final dEnergy = power * milliSecondsPerRecord;
         final dDistance = dEnergy * ENERGY_2_SPEED;
         final speed = power * ENERGY_2_SPEED * 1000 * DeviceDescriptor.MS2KMH;
