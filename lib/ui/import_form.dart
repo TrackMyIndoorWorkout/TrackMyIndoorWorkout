@@ -8,7 +8,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:regexed_validator/regexed_validator.dart';
 import '../persistence/mpower_importer.dart';
 
-typedef void LoadingOverlayControl(bool show);
+typedef void SetProgress(double progress);
 
 class ImportForm extends StatefulWidget {
   @override
@@ -21,22 +21,44 @@ class _ImportFormState extends State<ImportForm> {
   String _fileUrl;
   DateTime _activityDateTime;
   bool _isLoading;
+  double _progressValue;
+  double _mediaWidth;
 
   @override
   initState() {
     super.initState();
     _isLoading = false;
     _formKey = GlobalKey<FormState>();
+    _progressValue = 0;
+  }
+
+  setProgress(double progress) {
+    setState(() {
+      _progressValue = progress;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final mediaWidth = Get.mediaQuery.size.width;
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > 1e-6) {
+      _mediaWidth = mediaWidth;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('MPower Workout Import'),
       ),
       body: LoadingOverlay(
         isLoading: _isLoading,
+        progressIndicator: SizedBox(
+          child: CircularProgressIndicator(
+            strokeWidth: _mediaWidth / 4,
+            value: _progressValue,
+          ),
+          height: _mediaWidth / 2,
+          width: _mediaWidth / 2,
+        ),
         child: Form(
           key: _formKey,
           child: Column(
@@ -127,7 +149,7 @@ class _ImportFormState extends State<ImportForm> {
                             }
                             final importer = MPowerEchelon2Importer(
                                 start: _activityDateTime);
-                            var activity = await importer.import(response.body);
+                            var activity = await importer.import(response.body, setProgress);
                             setState(() {
                               _isLoading = false;
                             });

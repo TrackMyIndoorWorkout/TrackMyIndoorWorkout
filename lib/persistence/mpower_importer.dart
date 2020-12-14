@@ -3,9 +3,10 @@ import 'dart:convert';
 import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/gatt_standard_device_descriptor.dart';
+import '../ui/import_form.dart';
+import 'models/activity.dart';
 import 'models/record.dart';
 import 'database.dart';
-import 'models/activity.dart';
 import 'preferences.dart';
 
 class WorkoutRow {
@@ -45,7 +46,7 @@ class MPowerEchelon2Importer {
     return _linePointer <= _lines.length;
   }
 
-  Future<Activity> import(String csv) async {
+  Future<Activity> import(String csv, SetProgress setProgress) async {
     LineSplitter lineSplitter = new LineSplitter();
     _lines = lineSplitter.convert(csv);
     if (_lines.length < 20) {
@@ -133,6 +134,9 @@ class MPowerEchelon2Importer {
     double milliSecondsPerRecord = secondsPerRow / secondsPerRowInt * 1000;
     int milliSecondsPerRecordInt = milliSecondsPerRecord.round();
 
+    int recordCount = numRow * secondsPerRowInt;
+    int progress = 0;
+    int recordCounter = 0;
     double energy = 0;
     double distance = 0;
     double elapsed = 0;
@@ -184,6 +188,12 @@ class MPowerEchelon2Importer {
         power += dPower;
         rpm += dCadence;
         hr += dHr;
+        recordCounter++;
+        final newProgress = recordCounter * 100 ~/ recordCount;
+        if (newProgress > progress) {
+          setProgress(recordCounter / recordCount);
+          progress = newProgress;
+        }
       }
       _linePointer++;
     }
