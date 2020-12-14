@@ -32,7 +32,7 @@ dependencies:
   progress_indicators: any
   data_connection_checker: any
   datetime_picker_formfield: any
-  regexed_validator: any
+  file_picker: ^2.1.4
   flutter:
     sdk: flutter
 

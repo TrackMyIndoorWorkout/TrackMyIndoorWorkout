@@ -1,11 +1,11 @@
-import 'package:data_connection_checker/data_connection_checker.dart';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:regexed_validator/regexed_validator.dart';
 import '../persistence/mpower_importer.dart';
 
 typedef void SetProgress(double progress);
@@ -18,11 +18,12 @@ class ImportForm extends StatefulWidget {
 class _ImportFormState extends State<ImportForm> {
   final dateTimeFormat = DateFormat("yyyy-MM-dd HH:mm");
   GlobalKey<FormState> _formKey;
-  String _fileUrl;
+  String _filePath;
   DateTime _activityDateTime;
   bool _isLoading;
   double _progressValue;
   double _mediaWidth;
+  TextEditingController _textController;
 
   @override
   initState() {
@@ -30,6 +31,7 @@ class _ImportFormState extends State<ImportForm> {
     _isLoading = false;
     _formKey = GlobalKey<FormState>();
     _progressValue = 0;
+    _textController = TextEditingController();
   }
 
   setProgress(double progress) {
@@ -65,20 +67,30 @@ class _ImportFormState extends State<ImportForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               TextFormField(
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.link),
+                decoration: InputDecoration(
                   labelText: 'MPower CSV File URL',
                   hintText: 'Paste the CSV file URL',
+                  suffixIcon: RaisedButton(
+                    child: Text(
+                      '⋯',
+                      style: TextStyle(fontSize: 30),
+                    ),
+                    onPressed: () async {
+                      FilePickerResult result =
+                          await FilePicker.platform.pickFiles();
+                      if (result != null) {
+                        _textController.text = result.files.single.path;
+                      }
+                    },
+                  ),
                 ),
+                controller: _textController,
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'Please enter an URL';
-                  }
-                  if (!validator.url(value)) {
-                    return 'URL does not seem to be valid';
+                    return 'Please pick a file';
                   }
                   setState(() {
-                    _fileUrl = value;
+                    _filePath = value;
                   });
                   return null;
                 },
@@ -125,31 +137,18 @@ class _ImportFormState extends State<ImportForm> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (!await DataConnectionChecker().hasConnection) {
-                          Get.snackbar(
-                              "Warning", "No data connection detected");
-                          return;
-                        }
                         if (_formKey.currentState.validate()) {
                           _formKey.currentState.save();
                           setState(() {
                             _isLoading = true;
                           });
                           try {
-                            final response = await http.get(_fileUrl);
-                            if (!response.headers.containsKey("content-type") ||
-                                !response.headers["content-type"]
-                                    .startsWith("text")) {
-                              setState(() {
-                                _isLoading = false;
-                              });
-                              Get.snackbar("Error",
-                                  "Content doesn't seem to be text (CSV)");
-                              return;
-                            }
+                            File file = File(_filePath);
+                            String contents = await file.readAsString();
                             final importer = MPowerEchelon2Importer(
                                 start: _activityDateTime);
-                            var activity = await importer.import(response.body, setProgress);
+                            var activity =
+                                await importer.import(contents, setProgress);
                             setState(() {
                               _isLoading = false;
                             });
