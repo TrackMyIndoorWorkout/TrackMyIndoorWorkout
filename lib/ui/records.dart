@@ -562,7 +562,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   }
 
   String _getHrString(Record record) {
-    return record.cadence.toString();
+    return record.heartRate.toString();
   }
 
   void _hrSelectionListener(charts.SelectionModel<DateTime> model) {
