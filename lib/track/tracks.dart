@@ -18,7 +18,14 @@ class TrackDescriptor {
   double get gpsRadius => radius * horizontalMeter; // lon
   double get gpsLaneHalf => laneLength / 2.0 * horizontalMeter;
 
-  TrackDescriptor({this.isVelodrome, this.radiusBoost, this.center, this.horizontalMeter, this.verticalMeter, this.altitude,});
+  TrackDescriptor({
+    this.isVelodrome,
+    this.radiusBoost,
+    this.center,
+    this.horizontalMeter,
+    this.verticalMeter,
+    this.altitude,
+  });
 }
 
 Map<String, TrackDescriptor> trackMap = {

@@ -13,8 +13,8 @@ class TrackPainter extends CustomPainter {
         size.width != RecordingState.trackSize.width ||
         size.height != RecordingState.trackSize.height) {
       RecordingState.trackSize = size;
-      final rX =
-          (size.width - 2 * THICK) / (2 * track.radiusBoost + pi * track.laneShrink);
+      final rX = (size.width - 2 * THICK) /
+          (2 * track.radiusBoost + pi * track.laneShrink);
       final rY = (size.height - 2 * THICK) / (2 * track.radiusBoost);
       final r = min(rY, rX) * track.radiusBoost;
       RecordingState.trackRadius = r;
