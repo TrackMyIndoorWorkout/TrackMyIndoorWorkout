@@ -773,7 +773,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                   expanded: Column(children: [
                     SizedBox(
                       width: size.width,
-                      height: size.height / 4,
+                      height: size.height / 2,
                       child: charts.TimeSeriesChart(
                         _tileConfigurations[item].dataFn(),
                         animate: false,
@@ -833,7 +833,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                     ),
                     SizedBox(
                       width: size.width,
-                      height: size.height / 4,
+                      height: size.height / 3,
                       child: charts.PieChart(
                         _tileConfigurations[item].histogramFn(),
                         animate: false,
