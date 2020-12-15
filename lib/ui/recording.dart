@@ -705,6 +705,8 @@ class RecordingState extends State<RecordingScreen> {
                     prefSpec.zoneUpper[i],
                     charts.RangeAnnotationAxisType.measure,
                     color: prefSpec.bgColorByBin(i),
+                    startLabel: prefSpec.zoneLower[i].toString(),
+                    labelAnchor: charts.AnnotationLabelAnchor.start,
                   ),
                 ),
               )

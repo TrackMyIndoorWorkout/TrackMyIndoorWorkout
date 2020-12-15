@@ -798,6 +798,10 @@ class RecordsScreenState extends State<RecordsScreen> {
                                 preferencesSpecs[index].zoneUpper[i],
                                 charts.RangeAnnotationAxisType.measure,
                                 color: preferencesSpecs[index].bgColorByBin(i),
+                                startLabel: preferencesSpecs[index]
+                                    .zoneLower[i]
+                                    .toString(),
+                                labelAnchor: charts.AnnotationLabelAnchor.start,
                               ),
                             ),
                           ),
