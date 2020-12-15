@@ -1,11 +1,10 @@
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
-import 'cycling_device_descriptor.dart';
 import 'device_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
 
-class FixedLayoutDeviceDescriptor extends CyclingDeviceDescriptor {
+class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   final ShortMetricDescriptor timeMetric;
   final ShortMetricDescriptor caloriesMetric;
   final ShortMetricDescriptor speedMetric;
@@ -14,6 +13,7 @@ class FixedLayoutDeviceDescriptor extends CyclingDeviceDescriptor {
   final ThreeByteMetricDescriptor distanceMetric;
 
   FixedLayoutDeviceDescriptor({
+    isBike,
     fourCC,
     vendorName,
     modelName,
@@ -33,6 +33,7 @@ class FixedLayoutDeviceDescriptor extends CyclingDeviceDescriptor {
     this.cadenceMetric,
     this.distanceMetric,
   }) : super(
+          isBike: isBike,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,

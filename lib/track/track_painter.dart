@@ -3,24 +3,26 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../ui/recording.dart';
 import 'constants.dart';
+import 'tracks.dart';
 
 class TrackPainter extends CustomPainter {
   @override
   paint(Canvas canvas, Size size) {
+    final track = trackMap["Painting"];
     if (RecordingState.trackSize == null ||
         size.width != RecordingState.trackSize.width ||
         size.height != RecordingState.trackSize.height) {
       RecordingState.trackSize = size;
       final rX =
-          (size.width - 2 * THICK) / (2 * RADIUS_BOOST + pi * LANE_SHRINK);
-      final rY = (size.height - 2 * THICK) / (2 * RADIUS_BOOST);
-      final r = min(rY, rX) * RADIUS_BOOST;
+          (size.width - 2 * THICK) / (2 * track.radiusBoost + pi * track.laneShrink);
+      final rY = (size.height - 2 * THICK) / (2 * track.radiusBoost);
+      final r = min(rY, rX) * track.radiusBoost;
       RecordingState.trackRadius = r;
 
       final offset = Offset(
           rX < rY
               ? 0
-              : (size.width - 2 * (THICK + r) - pi * r * LANE_SHRINK) / 2,
+              : (size.width - 2 * (THICK + r) - pi * r * track.laneShrink) / 2,
           rX > rY ? 0 : (size.height - 2 * (THICK + r)) / 2);
       RecordingState.trackOffset = offset;
 

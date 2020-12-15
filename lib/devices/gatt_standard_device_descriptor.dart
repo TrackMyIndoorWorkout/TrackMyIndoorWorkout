@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
-import 'cycling_device_descriptor.dart';
 import 'device_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
@@ -14,7 +13,7 @@ class CadenceData {
   CadenceData({this.seconds, this.revolutions});
 }
 
-class GattStandardDeviceDescriptor extends CyclingDeviceDescriptor {
+class GattStandardDeviceDescriptor extends DeviceDescriptor {
   // Primary metrics
   int _featuresFlag;
   ShortMetricDescriptor _speedMetric;
@@ -39,6 +38,7 @@ class GattStandardDeviceDescriptor extends CyclingDeviceDescriptor {
   double _residueCalories;
 
   GattStandardDeviceDescriptor({
+    isBike,
     fourCC,
     vendorName,
     modelName,
@@ -57,6 +57,7 @@ class GattStandardDeviceDescriptor extends CyclingDeviceDescriptor {
     this.calorieFactor = 1.0,
     this.distanceFactor = 1.0,
   }) : super(
+          isBike: isBike,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,

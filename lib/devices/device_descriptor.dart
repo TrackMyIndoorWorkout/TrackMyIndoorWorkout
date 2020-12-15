@@ -1,5 +1,8 @@
+import 'package:preferences/preference_service.dart';
+import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
+import '../persistence/preferences.dart';
 
 typedef MeasurementProcessing(List<int> data);
 
@@ -10,6 +13,7 @@ abstract class DeviceDescriptor {
   static const double J2CAL = 0.2390057;
   static const double J2KCAL = J2CAL / 1000.0;
 
+  final bool isBike;
   final String fourCC;
   final String vendorName;
   final String modelName;
@@ -27,6 +31,7 @@ abstract class DeviceDescriptor {
   int heartRate;
 
   DeviceDescriptor({
+    this.isBike,
     this.fourCC,
     this.vendorName,
     this.modelName,
@@ -55,5 +60,11 @@ abstract class DeviceDescriptor {
 
   int processCadenceMeasurement(List<int> data);
 
-  String activityType();
+  String activityType() {
+    final isVirtual = PrefService.getBool(VIRTUAL_WORKOUT_TAG);
+    if (isVirtual) {
+      return isBike ? ActivityType.VirtualRide : ActivityType.VirtualRun;
+    }
+    return isBike ? ActivityType.Ride : ActivityType.Run;
+  }
 }
