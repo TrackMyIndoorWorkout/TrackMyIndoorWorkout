@@ -477,7 +477,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   }
 
   String _getSpeedString(Record record) {
-    return record.speed.toString();
+    return decimalRound(record.speed).toString();
   }
 
   void _speedSelectionListener(charts.SelectionModel<DateTime> model) {
