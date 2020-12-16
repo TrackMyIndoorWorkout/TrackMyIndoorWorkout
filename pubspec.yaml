@@ -10,7 +10,7 @@ environment:
 dependencies:
   e2e: any
   floor: any
-  flutter_blue: 0.7.2
+  flutter_blue: any
   flutter_brand_icons: any
   get: any
   http: any
@@ -32,7 +32,7 @@ dependencies:
   progress_indicators: any
   data_connection_checker: any
   datetime_picker_formfield: any
-  file_picker: ^2.1.4
+  file_picker: any
   flutter:
     sdk: flutter
 
