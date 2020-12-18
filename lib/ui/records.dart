@@ -778,8 +778,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         _tileConfigurations[item].dataFn(),
                         animate: false,
                         primaryMeasureAxis: charts.NumericAxisSpec(
-                          tickProviderSpec: charts.BasicNumericTickProviderSpec(
-                              zeroBound: false),
+                          renderSpec: charts.NoneRenderSpec(),
                         ),
                         behaviors: [
                           charts.LinePointHighlighter(

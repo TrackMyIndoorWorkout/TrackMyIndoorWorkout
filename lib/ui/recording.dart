@@ -696,6 +696,9 @@ class RecordingState extends State<RecordingScreen> {
           charts.TimeSeriesChart(
             _metricToDataFn[prefSpec.metric](),
             animate: false,
+            primaryMeasureAxis: charts.NumericAxisSpec(
+              renderSpec: charts.NoneRenderSpec(),
+            ),
             behaviors: [
               charts.RangeAnnotation(
                 List.generate(
