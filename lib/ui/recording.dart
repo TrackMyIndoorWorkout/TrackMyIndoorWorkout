@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
@@ -692,6 +693,33 @@ class RecordingState extends State<RecordingScreen> {
       ];
 
       preferencesSpecs.forEach((prefSpec) {
+        List<common.AnnotationSegment> annotationSegments =
+            List<common.AnnotationSegment>();
+        if (!_isLoading) {
+          annotationSegments.addAll(List.generate(
+            prefSpec.binCount,
+            (i) => charts.RangeAnnotationSegment(
+              prefSpec.zoneLower[i],
+              prefSpec.zoneUpper[i],
+              charts.RangeAnnotationAxisType.measure,
+              color: prefSpec.bgColorByBin(i),
+              startLabel: prefSpec.zoneLower[i].toString(),
+              labelAnchor: charts.AnnotationLabelAnchor.start,
+            ),
+          ));
+          annotationSegments.addAll(List.generate(
+            prefSpec.binCount,
+            (i) => charts.LineAnnotationSegment(
+              prefSpec.zoneUpper[i],
+              charts.RangeAnnotationAxisType.measure,
+              startLabel: prefSpec.zoneUpper[i].toString(),
+              labelAnchor: charts.AnnotationLabelAnchor.end,
+              strokeWidthPx: 1.0,
+              color: charts.MaterialPalette.black,
+            ),
+          ));
+        }
+
         extras.add(
           charts.TimeSeriesChart(
             _metricToDataFn[prefSpec.metric](),
@@ -700,19 +728,7 @@ class RecordingState extends State<RecordingScreen> {
               renderSpec: charts.NoneRenderSpec(),
             ),
             behaviors: [
-              charts.RangeAnnotation(
-                List.generate(
-                  prefSpec.binCount,
-                  (i) => charts.RangeAnnotationSegment(
-                    prefSpec.zoneLower[i],
-                    prefSpec.zoneUpper[i],
-                    charts.RangeAnnotationAxisType.measure,
-                    color: prefSpec.bgColorByBin(i),
-                    startLabel: prefSpec.zoneLower[i].toString(),
-                    labelAnchor: charts.AnnotationLabelAnchor.start,
-                  ),
-                ),
-              )
+              charts.RangeAnnotation(annotationSegments),
             ],
           ),
         );

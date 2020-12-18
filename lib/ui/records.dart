@@ -703,6 +703,35 @@ class RecordsScreenState extends State<RecordsScreen> {
               ),
               adapter: StaticListAdapter(data: _tiles),
               itemBuilder: (context, index, item) {
+                List<common.AnnotationSegment> annotationSegments =
+                    List<common.AnnotationSegment>();
+                if (_initialized) {
+                  annotationSegments.addAll(List.generate(
+                    preferencesSpecs[index].binCount,
+                    (i) => charts.RangeAnnotationSegment(
+                      preferencesSpecs[index].zoneLower[i],
+                      preferencesSpecs[index].zoneUpper[i],
+                      charts.RangeAnnotationAxisType.measure,
+                      color: preferencesSpecs[index].bgColorByBin(i),
+                      startLabel:
+                          preferencesSpecs[index].zoneLower[i].toString(),
+                      labelAnchor: charts.AnnotationLabelAnchor.start,
+                    ),
+                  ));
+                  annotationSegments.addAll(List.generate(
+                    preferencesSpecs[index].binCount,
+                    (i) => charts.LineAnnotationSegment(
+                      preferencesSpecs[index].zoneUpper[i],
+                      charts.RangeAnnotationAxisType.measure,
+                      startLabel:
+                          preferencesSpecs[index].zoneUpper[i].toString(),
+                      labelAnchor: charts.AnnotationLabelAnchor.end,
+                      strokeWidthPx: 1.0,
+                      color: charts.MaterialPalette.black,
+                    ),
+                  ));
+                }
+
                 return ExpandablePanel(
                   header: Column(
                     children: [
@@ -789,21 +818,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                           ),
                           charts.SelectNearest(
                               eventTrigger: charts.SelectionTrigger.tapAndDrag),
-                          charts.RangeAnnotation(
-                            List.generate(
-                              preferencesSpecs[index].binCount,
-                              (i) => charts.RangeAnnotationSegment(
-                                preferencesSpecs[index].zoneLower[i],
-                                preferencesSpecs[index].zoneUpper[i],
-                                charts.RangeAnnotationAxisType.measure,
-                                color: preferencesSpecs[index].bgColorByBin(i),
-                                startLabel: preferencesSpecs[index]
-                                    .zoneLower[i]
-                                    .toString(),
-                                labelAnchor: charts.AnnotationLabelAnchor.start,
-                              ),
-                            ),
-                          ),
+                          charts.RangeAnnotation(annotationSegments),
                         ],
                         selectionModels: [
                           new charts.SelectionModelConfig(
