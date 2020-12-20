@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:data_connection_checker/data_connection_checker.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -29,16 +30,6 @@ import '../track/utils.dart';
 import 'activities.dart';
 
 const UX_DEBUG = false;
-const Map<int, int> ROW_TO_EXTRA = {
-  0: 0,
-  1: 1,
-  2: 1,
-  3: 2,
-  4: 3,
-  5: 4,
-  6: 0,
-};
-
 typedef DataFn = List<charts.Series<Record, DateTime>> Function();
 
 class RowConfig {
@@ -105,15 +96,16 @@ class RecordingState extends State<RecordingScreen> {
   bool _paused;
   DateTime _pauseStarted;
   Duration _idleDuration;
-  int _selectedRow;
-  int _extraDisplayIndex;
   int _pointCount;
   ListQueue<Record> _graphData;
   double _mediaWidth;
   double _sizeDefault;
   TextStyle _measurementStyle;
-  TextStyle _unselectedUnitStyle;
-  TextStyle _selectedUnitStyle;
+  TextStyle _unitStyle;
+  ExpandableThemeData _expandableThemeData;
+  List<bool> _expandedState;
+  List<ExpandableController> _rowControllers;
+  List<int> _expandedHeights;
 
   Record _latestRecord;
   Activity _activity;
@@ -330,19 +322,51 @@ class RecordingState extends State<RecordingScreen> {
         .addMigrations([migration1to2, migration2to3]).build();
   }
 
+  _onToggleDetails(int index) {
+    setState(() {
+      _expandedState[index] = _rowControllers[index].expanded;
+      final expandedStateStr = List<String>.generate(_expandedState.length,
+          (index) => _expandedState[index] ? "1" : "0").join("");
+      PrefService.setString(MEASUREMENT_PANELS_EXPANDED_TAG, expandedStateStr);
+    });
+  }
+
+  _onTogglePower() {
+    _onToggleDetails(0);
+  }
+
+  _onToggleSpeed() {
+    _onToggleDetails(1);
+  }
+
+  _onToggleRpm() {
+    _onToggleDetails(2);
+  }
+
+  _onToggleHr() {
+    _onToggleDetails(3);
+  }
+
+  _onToggleDistance() {
+    _onToggleDetails(4);
+  }
+
+  _onLongPress(int index) {
+    setState(() {
+      _expandedHeights[index] = (_expandedHeights[index] + 1) % 3;
+      final expandedHeightStr = List<String>.generate(_expandedHeights.length,
+          (index) => _expandedHeights[index].toString()).join("");
+      PrefService.setString(MEASUREMENT_DETAIL_SIZE_TAG, expandedHeightStr);
+    });
+  }
+
   @override
   initState() {
     super.initState();
     _isLoading = true;
-    _selectedRow = 0;
-    _extraDisplayIndex = ROW_TO_EXTRA[_selectedRow];
     _pointCount = size.width ~/ 2;
     _fontFamilyProperties = getFontFamilyProperties();
-    _unselectedUnitStyle = TextStyle(
-      fontFamily: _fontFamilyProperties.secondary,
-      color: Colors.indigo,
-    );
-    _selectedUnitStyle = TextStyle(
+    _unitStyle = TextStyle(
       fontFamily: _fontFamilyProperties.secondary,
       color: Colors.indigo,
     );
@@ -375,6 +399,42 @@ class RecordingState extends State<RecordingScreen> {
       RowConfig(icon: preferencesSpecs[3].icon, unit: preferencesSpecs[3].unit),
       RowConfig(icon: Icons.add_road, unit: _si ? 'm' : 'mi'),
     ];
+    _expandableThemeData = ExpandableThemeData(hasIcon: false);
+    _rowControllers = List<ExpandableController>();
+    _expandedHeights = List<int>();
+    final expandedStateStr =
+        PrefService.getString(MEASUREMENT_PANELS_EXPANDED_TAG);
+    final expandedHeightStr =
+        PrefService.getString(MEASUREMENT_DETAIL_SIZE_TAG);
+    _expandedState = List<bool>.generate(expandedStateStr.length, (int index) {
+      final expanded = expandedStateStr[index] == "1";
+      ExpandableController rowController =
+          ExpandableController(initialExpanded: expanded);
+      _rowControllers.add(rowController);
+      switch (index) {
+        case 0:
+          rowController.addListener(_onTogglePower);
+          break;
+        case 1:
+          rowController.addListener(_onToggleSpeed);
+          break;
+        case 2:
+          rowController.addListener(_onToggleRpm);
+          break;
+        case 3:
+          rowController.addListener(_onToggleHr);
+          break;
+        case 4:
+        default:
+          {
+            rowController.addListener(_onToggleDistance);
+          }
+          break;
+      }
+      final expandedHeight = int.tryParse(expandedHeightStr[index]);
+      _expandedHeights.add(expandedHeight);
+      return expanded;
+    });
 
     _discovered = false;
     _measuring = false;
@@ -513,7 +573,6 @@ class RecordingState extends State<RecordingScreen> {
       _latestRecord.elapsed,
       _latestRecord.calories,
     );
-    // final changed =
     final retVal = await _database?.activityDao?.updateActivity(_activity);
     if (retVal <= 0) {
       Get.snackbar("Warning", "Could not save activity");
@@ -523,27 +582,6 @@ class RecordingState extends State<RecordingScreen> {
     if (_instantUpload) {
       await _stravaUpload(true);
     }
-  }
-
-  Color getExtraColor(int rowIndex) {
-    if (_selectedRow == rowIndex) {
-      return Colors.red;
-    }
-    return Colors.indigo;
-  }
-
-  TextStyle getTextStyle(int rowIndex) {
-    if (_selectedRow == rowIndex) {
-      return _selectedUnitStyle;
-    }
-    return _unselectedUnitStyle;
-  }
-
-  _onRowTap(int rowIndex) {
-    setState(() {
-      _selectedRow = rowIndex;
-      _extraDisplayIndex = ROW_TO_EXTRA[rowIndex];
-    });
   }
 
   List<charts.Series<Record, DateTime>> _powerChartData() {
@@ -600,119 +638,82 @@ class RecordingState extends State<RecordingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final separatorHeight = 3.0;
+    final separatorHeight = 1.0;
 
     final mediaWidth = Get.mediaQuery.size.width;
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > 1e-6) {
       _mediaWidth = mediaWidth;
-      _sizeDefault = Get.mediaQuery.size.width / 7;
+      _sizeDefault = Get.mediaQuery.size.width / 8;
       _measurementStyle = TextStyle(
         fontFamily: _fontFamilyProperties.primary,
         fontSize: _sizeDefault,
       );
-      _unselectedUnitStyle = TextStyle(
+      _unitStyle = TextStyle(
         fontFamily: _fontFamilyProperties.secondary,
-        fontSize: _sizeDefault / 3,
+        fontSize: _sizeDefault / 2,
         color: Colors.indigo,
-      );
-      _selectedUnitStyle = TextStyle(
-        fontFamily: _fontFamilyProperties.secondary,
-        fontSize: _sizeDefault / 3,
-        color: Colors.red,
       );
     }
 
     final _timeDisplay = Duration(seconds: _latestRecord.elapsed).toDisplay();
 
     List<Widget> rows = [
-      GestureDetector(
-        onTap: () => _onRowTap(0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.timer, size: _sizeDefault, color: getExtraColor(0)),
-            Text(_timeDisplay, style: _measurementStyle),
-          ],
-        ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(Icons.timer, size: _sizeDefault, color: Colors.indigo),
+          Text(_timeDisplay, style: _measurementStyle),
+        ],
       ),
     ];
 
     _rowConfig.asMap().entries.forEach((entry) {
-      rows.add(Divider(height: separatorHeight));
-      rows.add(GestureDetector(
-        onTap: () => _onRowTap(entry.key + 1),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              _rowConfig[entry.key].icon,
-              size: _sizeDefault,
-              color: getExtraColor(entry.key + 1),
+      rows.add(Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            _rowConfig[entry.key].icon,
+            size: _sizeDefault,
+            color: Colors.indigo,
+          ),
+          Spacer(),
+          Text(_values[entry.key], style: _measurementStyle),
+          SizedBox(
+            width: _sizeDefault,
+            child: Text(
+              _rowConfig[entry.key].unit,
+              style: _unitStyle,
             ),
-            Spacer(),
-            Text(_values[entry.key], style: _measurementStyle),
-            SizedBox(
-              width: _sizeDefault,
-              child: Text(
-                _rowConfig[entry.key].unit,
-                style: getTextStyle(entry.key + 1),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ));
     });
 
+    var extras = List<Widget>();
     if (!_simplerUi) {
-      final trackMarker =
-          calculateTrackMarker(trackSize, _latestRecord.distance);
-
-      List<Widget> extras = [
-        CustomPaint(
-          painter: TrackPainter(),
-          child: trackMarker == null
-              ? SizedBox(width: 0, height: 0)
-              : Stack(
-                  children: <Widget>[
-                    Positioned(
-                      left: trackMarker.dx - THICK,
-                      top: trackMarker.dy - THICK,
-                      child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0x88FF0000),
-                            borderRadius: BorderRadius.circular(THICK),
-                          ),
-                          width: THICK * 2,
-                          height: THICK * 2),
-                    ),
-                  ],
-                ),
-        ),
-      ];
-
-      preferencesSpecs.forEach((prefSpec) {
+      preferencesSpecs.asMap().entries.forEach((entry) {
         List<common.AnnotationSegment> annotationSegments =
             List<common.AnnotationSegment>();
         if (!_isLoading) {
           annotationSegments.addAll(List.generate(
-            prefSpec.binCount,
+            entry.value.binCount,
             (i) => charts.RangeAnnotationSegment(
-              prefSpec.zoneLower[i],
-              prefSpec.zoneUpper[i],
+              entry.value.zoneLower[i],
+              entry.value.zoneUpper[i],
               charts.RangeAnnotationAxisType.measure,
-              color: prefSpec.bgColorByBin(i),
-              startLabel: prefSpec.zoneLower[i].toString(),
+              color: entry.value.bgColorByBin(i),
+              startLabel: entry.value.zoneLower[i].toString(),
               labelAnchor: charts.AnnotationLabelAnchor.start,
             ),
           ));
           annotationSegments.addAll(List.generate(
-            prefSpec.binCount,
+            entry.value.binCount,
             (i) => charts.LineAnnotationSegment(
-              prefSpec.zoneUpper[i],
+              entry.value.zoneUpper[i],
               charts.RangeAnnotationAxisType.measure,
-              startLabel: prefSpec.zoneUpper[i].toString(),
+              startLabel: entry.value.zoneUpper[i].toString(),
               labelAnchor: charts.AnnotationLabelAnchor.end,
               strokeWidthPx: 1.0,
               color: charts.MaterialPalette.black,
@@ -720,27 +721,67 @@ class RecordingState extends State<RecordingScreen> {
           ));
         }
 
+        var height = 0.0;
+        switch (_expandedHeights[entry.key]) {
+          case 0:
+            height = size.height / 4;
+            break;
+          case 1:
+            height = size.height / 3;
+            break;
+          case 2:
+            height = size.height / 2;
+            break;
+        }
         extras.add(
-          charts.TimeSeriesChart(
-            _metricToDataFn[prefSpec.metric](),
-            animate: false,
-            primaryMeasureAxis: charts.NumericAxisSpec(
-              renderSpec: charts.NoneRenderSpec(),
+          GestureDetector(
+            onLongPress: () => _onLongPress(entry.key),
+            child: SizedBox(
+              width: size.width,
+              height: height,
+              child: charts.TimeSeriesChart(
+                _metricToDataFn[entry.value.metric](),
+                animate: false,
+                primaryMeasureAxis: charts.NumericAxisSpec(
+                  renderSpec: charts.NoneRenderSpec(),
+                ),
+                behaviors: [
+                  charts.RangeAnnotation(annotationSegments),
+                ],
+              ),
             ),
-            behaviors: [
-              charts.RangeAnnotation(annotationSegments),
-            ],
           ),
         );
       });
 
-      rows.add(Divider(height: separatorHeight));
-      rows.add(Expanded(
-        child: IndexedStack(
-          index: _extraDisplayIndex,
-          children: extras,
+      final trackMarker =
+          calculateTrackMarker(trackSize, _latestRecord.distance);
+      extras.add(
+        CustomPaint(
+          painter: TrackPainter(),
+          child: SizedBox(
+            width: size.width,
+            height: size.width / 1.9,
+            child: trackMarker == null
+                ? null
+                : Stack(
+                    children: <Widget>[
+                      Positioned(
+                        left: trackMarker.dx - THICK,
+                        top: trackMarker.dy - THICK,
+                        child: Container(
+                            decoration: BoxDecoration(
+                              color: Color(0x88FF0000),
+                              borderRadius: BorderRadius.circular(THICK),
+                            ),
+                            width: THICK * 2,
+                            height: THICK * 2),
+                      ),
+                    ],
+                  ),
+          ),
         ),
-      ));
+      );
     }
 
     return Scaffold(
@@ -816,10 +857,51 @@ class RecordingState extends State<RecordingScreen> {
       ),
       body: LoadingOverlay(
         isLoading: _isLoading,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: rows,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              rows[0],
+              Divider(height: separatorHeight),
+              rows[1],
+              Divider(height: separatorHeight),
+              ExpandablePanel(
+                theme: _expandableThemeData,
+                header: rows[2],
+                expanded: _simplerUi ? null : extras[0],
+                controller: _rowControllers[0],
+              ),
+              Divider(height: separatorHeight),
+              ExpandablePanel(
+                theme: _expandableThemeData,
+                header: rows[3],
+                expanded: _simplerUi ? null : extras[1],
+                controller: _rowControllers[1],
+              ),
+              Divider(height: separatorHeight),
+              ExpandablePanel(
+                theme: _expandableThemeData,
+                header: rows[4],
+                expanded: _simplerUi ? null : extras[2],
+                controller: _rowControllers[2],
+              ),
+              Divider(height: separatorHeight),
+              ExpandablePanel(
+                theme: _expandableThemeData,
+                header: rows[5],
+                expanded: _simplerUi ? null : extras[3],
+                controller: _rowControllers[3],
+              ),
+              Divider(height: separatorHeight),
+              ExpandablePanel(
+                theme: _expandableThemeData,
+                header: rows[6],
+                expanded: _simplerUi ? null : extras[4],
+                controller: _rowControllers[4],
+              ),
+            ],
+          ),
         ),
       ),
     );
