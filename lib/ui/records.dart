@@ -755,10 +755,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                             size: _sizeDefault2,
                           ),
                           Spacer(),
-                          Text(
-                            "MAX",
-                            style: _unitStyle,
-                          ),
+                          Text("MAX", style: _unitStyle),
                           Spacer(),
                           Text(
                             _tileConfigurations[item].maxString,
@@ -781,10 +778,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                             size: _sizeDefault2,
                           ),
                           Spacer(),
-                          Text(
-                            "AVG",
-                            style: _unitStyle,
-                          ),
+                          Text("AVG", style: _unitStyle),
                           Spacer(),
                           Text(
                             _tileConfigurations[item].avgString,
