@@ -29,7 +29,6 @@ import '../track/track_painter.dart';
 import '../track/utils.dart';
 import 'activities.dart';
 
-const UX_DEBUG = false;
 typedef DataFn = List<charts.Series<Record, DateTime>> Function();
 
 class RowConfig {
@@ -436,13 +435,14 @@ class RecordingState extends State<RecordingScreen> {
       return expanded;
     });
 
+    final uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
     _discovered = false;
     _measuring = false;
     _paused = false;
     _idleDuration = Duration();
     _latestRecord = Record(
       timeStamp: 0,
-      distance: UX_DEBUG ? _random.nextInt(100000).toDouble() : 0,
+      distance: uxDebug ? _random.nextInt(100000).toDouble() : 0,
       elapsed: 0,
       calories: 0,
       power: 0,
@@ -453,7 +453,7 @@ class RecordingState extends State<RecordingScreen> {
     );
     _values = ["--", "--", "--", "--", "--", "--"];
 
-    if (UX_DEBUG) {
+    if (uxDebug) {
       _simulateMeasurements();
     } else {
       _initialConnectOnDemand();

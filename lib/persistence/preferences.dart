@@ -277,6 +277,13 @@ const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
 const MEASUREMENT_DETAIL_SIZE_TAG = "measurement_detail_size";
 const MEASUREMENT_DETAIL_SIZE_DEFAULT = "00000";
 
+const APP_DEBUG_MODE = "Application Debug Mode";
+const APP_DEBUG_MODE_TAG = "app_debug_mode";
+const APP_DEBUG_MODE_DEFAULT = false;
+const APP_DEBUG_MODE_DESCRIPTION =
+    "On: The Recording UI runs on simulated data, no equipment required. " +
+        "Off: The recording works as it should in release.";
+
 class FontFamilyProperties {
   final String primary;
   final String secondary;

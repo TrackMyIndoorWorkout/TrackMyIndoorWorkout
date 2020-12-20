@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
 import '../persistence/preferences.dart';
@@ -76,9 +77,18 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: VIRTUAL_WORKOUT_DEFAULT,
         desc: VIRTUAL_WORKOUT_DESCRIPTION,
       ),
-      PreferenceTitle(ZONE_PREFERENCES),
     ];
 
+    if (kDebugMode) {
+      appPreferences.add(SwitchPreference(
+        APP_DEBUG_MODE,
+        APP_DEBUG_MODE_TAG,
+        defaultVal: APP_DEBUG_MODE_DEFAULT,
+        desc: APP_DEBUG_MODE_DESCRIPTION,
+      ));
+    }
+
+    appPreferences.add(PreferenceTitle(ZONE_PREFERENCES));
     preferencesSpecs.forEach((prefSpec) {
       appPreferences.addAll([
         TextFieldPreference(
