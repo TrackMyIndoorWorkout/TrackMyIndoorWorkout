@@ -1,5 +1,6 @@
 import 'package:floor/floor.dart';
 import 'package:intl/intl.dart';
+import '../../devices/devices.dart';
 import '../../persistence/preferences.dart';
 import '../../tcx/tcx_output.dart';
 
@@ -69,10 +70,11 @@ class Activity {
         'VRide_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
             .replaceAll('/', '-')
             .replaceAll(':', '-');
+    final activityType = deviceMap[fourCC]?.activityType() ?? "Ride";
     return {
       'startStamp': startStamp,
-      'name': 'Velodrome ride at $dateString $timeString',
-      'description': 'Velodrome ride on a $deviceName',
+      'name': 'Track $activityType at $dateString $timeString',
+      'description': '$activityType by $deviceName',
       'fileName': fileName,
     };
   }
