@@ -1,5 +1,5 @@
 name: track_my_indoor_exercise
-description: Recording indoor exercises as if circling in a Velodrome or on a running track.
+description: Recording indoor exercises as if circling on a running track.
 publish_to: "none"
 
 version: 1.1.18+27
