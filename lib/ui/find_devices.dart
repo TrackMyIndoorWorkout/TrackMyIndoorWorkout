@@ -106,7 +106,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   void initState() {
     initializeDateFormatting();
     super.initState();
-    _scannedDevices = List<BluetoothDevice>();
+    _scannedDevices = [];
     _instantScan = PrefService.getBool(INSTANT_SCAN_TAG);
     _scanDuration = PrefService.getInt(SCAN_DURATION_TAG);
     _instantWorkout = PrefService.getBool(INSTANT_WORKOUT_TAG);

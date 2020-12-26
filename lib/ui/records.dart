@@ -703,8 +703,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               ),
               adapter: StaticListAdapter(data: _tiles),
               itemBuilder: (context, index, item) {
-                List<common.AnnotationSegment> annotationSegments =
-                    List<common.AnnotationSegment>();
+                List<common.AnnotationSegment> annotationSegments = [];
                 if (_initialized) {
                   annotationSegments.addAll(List.generate(
                     preferencesSpecs[index].binCount,

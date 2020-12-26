@@ -399,8 +399,8 @@ class RecordingState extends State<RecordingScreen> {
       RowConfig(icon: Icons.add_road, unit: _si ? 'm' : 'mi'),
     ];
     _expandableThemeData = ExpandableThemeData(hasIcon: false);
-    _rowControllers = List<ExpandableController>();
-    _expandedHeights = List<int>();
+    _rowControllers = [];
+    _expandedHeights = [];
     final expandedStateStr =
         PrefService.getString(MEASUREMENT_PANELS_EXPANDED_TAG);
     final expandedHeightStr =
@@ -691,11 +691,10 @@ class RecordingState extends State<RecordingScreen> {
       ));
     });
 
-    var extras = List<Widget>();
+    var extras = [];
     if (!_simplerUi) {
       preferencesSpecs.asMap().entries.forEach((entry) {
-        List<common.AnnotationSegment> annotationSegments =
-            List<common.AnnotationSegment>();
+        List<common.AnnotationSegment> annotationSegments = [];
         if (!_isLoading) {
           annotationSegments.addAll(List.generate(
             entry.value.binCount,
