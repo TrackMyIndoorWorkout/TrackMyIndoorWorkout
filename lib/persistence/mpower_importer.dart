@@ -27,17 +27,33 @@ class WorkoutRow {
 }
 
 class MPowerEchelon2Importer {
-  static const ENERGY_2_SPEED_FACTOR = 1.0;
-  static const ENERGY_2_SPEED = 5.28768241564455E-05 * ENERGY_2_SPEED_FACTOR;
+  static const ENERGY_2_SPEED = 5.28768241564455E-05;
   static const TIME_RESOLUTION_FACTOR = 2;
+  static const EPSILON = 0.001;
+  static const MAX_ITERATIONS = 100;
+  static const DRIVE_TRAIN_LOSS = 0; // %
+  static const G_CONST = 9.8067;
+  static const BIKER_WEIGHT = 81; // kg
+  static const BIKE_WEIGHT = 9; // kg
+  static const ROLLING_RESISTANCE_COEFFICIENT = 0.005;
+  static const DRAG_COEFFICIENT = 0.63;
+  static const LB_TO_KG = 0.45359237;
+  static const FT_TO_M = 0.3048;
+  // Backup: 5.4788
+  static const FRONTAL_AREA = 4 * FT_TO_M * FT_TO_M; // ft * ft_2_m^2
+  static const AIR_DENSITY =
+      0.076537 * LB_TO_KG / (FT_TO_M * FT_TO_M * FT_TO_M);
 
   final DateTime start;
   String message;
 
   List<String> _lines;
   int _linePointer;
+  Map<int, double> _velocityForPowerDict;
 
-  MPowerEchelon2Importer({this.start});
+  MPowerEchelon2Importer({this.start}) {
+    _velocityForPowerDict = Map<int, double>();
+  }
 
   bool _findLine(String lead) {
     while (_linePointer < _lines.length &&
@@ -45,6 +61,51 @@ class MPowerEchelon2Importer {
       _linePointer++;
     }
     return _linePointer <= _lines.length;
+  }
+
+  double powerForVelocity(velocity) {
+    final fRolling =
+        G_CONST * (BIKER_WEIGHT + BIKE_WEIGHT) * ROLLING_RESISTANCE_COEFFICIENT;
+
+    final fDrag = 0.5 *
+        FRONTAL_AREA *
+        DRAG_COEFFICIENT *
+        AIR_DENSITY *
+        velocity *
+        velocity;
+
+    final totalForce = fRolling + fDrag;
+    final wheelPower = totalForce * velocity;
+    final driveTrainFraction = 1.0 - (DRIVE_TRAIN_LOSS / 100.0);
+    final legPower = wheelPower / driveTrainFraction;
+    return legPower;
+  }
+
+  double velocityForPower(int power) {
+    if (_velocityForPowerDict.containsKey(power)) {
+      return _velocityForPowerDict[power];
+    }
+
+    var lowerVelocity = 0.0;
+    var upperVelocity = 2000.0;
+    var middleVelocity = power * ENERGY_2_SPEED * 1000;
+    var middlePower = powerForVelocity(middleVelocity);
+
+    var i = 0;
+    do {
+      if ((middlePower - power).abs() < EPSILON) break;
+
+      if (middlePower > power)
+        upperVelocity = middleVelocity;
+      else
+        lowerVelocity = middleVelocity;
+
+      middleVelocity = (upperVelocity + lowerVelocity) / 2.0;
+      middlePower = powerForVelocity(middleVelocity);
+    } while (i++ < MAX_ITERATIONS);
+
+    _velocityForPowerDict[power] = middleVelocity;
+    return middleVelocity;
   }
 
   Future<Activity> import(String csv, SetProgress setProgress) async {
@@ -163,9 +224,9 @@ class MPowerEchelon2Importer {
       double hr = row.hr.toDouble();
 
       for (int i = 0; i < recordsPerRow; i++) {
-        final dEnergy = power * milliSecondsPerRecord;
-        final dDistance = dEnergy * ENERGY_2_SPEED;
-        final speed = power * ENERGY_2_SPEED * 1000 * DeviceDescriptor.MS2KMH;
+        final powerInt = power.round();
+        final speed = velocityForPower(powerInt);
+        final dDistance = speed * milliSecondsPerRecord / 1000;
 
         final record = Record(
           activityId: activity.id,
@@ -173,16 +234,20 @@ class MPowerEchelon2Importer {
           distance: distance,
           elapsed: elapsed ~/ 1000,
           calories: energy.round(),
-          power: power.round(),
-          speed: speed,
+          power: powerInt,
+          speed: speed * DeviceDescriptor.MS2KMH,
           cadence: rpm.round(),
           heartRate: hr.round(),
           elapsedMillis: elapsed.round(),
         );
 
         distance += dDistance;
-        energy +=
-            dEnergy * DeviceDescriptor.J2KCAL / 1000 * device.calorieFactor;
+        final dEnergy = power *
+            milliSecondsPerRecord /
+            1000 *
+            DeviceDescriptor.J2KCAL *
+            device.calorieFactor;
+        energy += dEnergy;
         await db?.recordDao?.insertRecord(record);
 
         timeStamp += milliSecondsPerRecordInt;
