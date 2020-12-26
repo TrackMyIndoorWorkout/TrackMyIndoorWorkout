@@ -1,11 +1,11 @@
 {
-    "name": "track_my_indoor_workout",
-    "short_name": "track_my_indoor_workout",
+    "name": "Track My Indoor Workout",
+    "short_name": "Track My Indoor Workout",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Measure workouts on indoor exercise equipment and sync them to Strava or export TCX.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
