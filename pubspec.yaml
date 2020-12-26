@@ -9,10 +9,10 @@ environment:
 
 dependencies:
   e2e: any
-  floor: any
+  floor: ^0.18.0
   flutter_blue: any
   flutter_brand_icons: any
-  get: any
+  get: ^3.24.0
   http: any
   intl: any
   http_parser: any
@@ -37,8 +37,8 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  build_runner: any
-  floor_generator: any
+  build_runner: ^1.10.11
+  floor_generator: 0.18.0
   flutter_test:
     sdk: flutter
   flutter_driver:
