@@ -33,13 +33,13 @@ dependencies:
   data_connection_checker: any
   datetime_picker_formfield: any
   file_picker: any
-  integration_test: ^1.0.1
   flutter:
     sdk: flutter
 
 dev_dependencies:
   build_runner: ^1.10.11
   floor_generator: 0.18.0
+  integration_test: ^1.0.1
   flutter_test:
     sdk: flutter
   flutter_driver:
