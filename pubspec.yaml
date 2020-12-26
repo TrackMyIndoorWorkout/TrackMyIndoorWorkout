@@ -33,6 +33,7 @@ dependencies:
   data_connection_checker: any
   datetime_picker_formfield: any
   file_picker: any
+  integration_test: ^1.0.1
   flutter:
     sdk: flutter
 
