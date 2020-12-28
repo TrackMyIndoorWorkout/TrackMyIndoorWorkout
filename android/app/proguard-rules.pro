@@ -1,0 +1,2 @@
+-keep class androidx.lifecycle.DefaultLifecycleObserver
+-keep class com.pauldemarco.flutter_blue.** { *; }
