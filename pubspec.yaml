@@ -8,7 +8,6 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  e2e: any
   floor: ^0.18.0
   flutter_blue: any
   flutter_brand_icons: any
