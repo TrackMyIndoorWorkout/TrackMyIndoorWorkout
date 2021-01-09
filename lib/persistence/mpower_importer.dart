@@ -27,6 +27,7 @@ class WorkoutRow {
 }
 
 class MPowerEchelon2Importer {
+  static const PROGRESS_STEPS = 400;
   static const ENERGY_2_SPEED = 5.28768241564455E-05;
   static const TIME_RESOLUTION_FACTOR = 2;
   static const EPSILON = 0.001;
@@ -198,7 +199,8 @@ class MPowerEchelon2Importer {
     int milliSecondsPerRecordInt = milliSecondsPerRecord.round();
 
     int recordCount = numRow * recordsPerRow;
-    int progress = 0;
+    int progressSteps = recordCount ~/ PROGRESS_STEPS;
+    int progressCounter = 0;
     int recordCounter = 0;
     double energy = 0;
     double distance = 0;
@@ -256,10 +258,10 @@ class MPowerEchelon2Importer {
         rpm += dCadence;
         hr += dHr;
         recordCounter++;
-        final newProgress = recordCounter * 100 ~/ recordCount;
-        if (newProgress > progress) {
+        progressCounter++;
+        if (progressCounter == progressSteps) {
+          progressCounter = 0;
           setProgress(recordCounter / recordCount);
-          progress = newProgress;
         }
       }
       _linePointer++;
