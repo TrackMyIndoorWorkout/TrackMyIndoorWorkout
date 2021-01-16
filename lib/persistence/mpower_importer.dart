@@ -15,12 +15,22 @@ class WorkoutRow {
   int hr;
   double distance;
 
-  WorkoutRow({this.power, this.rpm, this.hr, this.distance, String rowString}) {
+  WorkoutRow({
+    this.power,
+    this.rpm,
+    this.hr,
+    this.distance,
+    String rowString,
+    int lastHr,
+  }) {
     if (rowString != null) {
       final values = rowString.split(",");
       this.power = int.tryParse(values[0]);
       this.rpm = int.tryParse(values[1]);
       this.hr = int.tryParse(values[2]);
+      if (this.hr == 0 && lastHr > 0) {
+        this.hr = lastHr;
+      }
       this.distance = double.tryParse(values[3]);
     }
   }
@@ -206,16 +216,18 @@ class MPowerEchelon2Importer {
     double distance = 0;
     double elapsed = 0;
     WorkoutRow nextRow;
+    int lastHr = 0;
     int timeStamp = start.millisecondsSinceEpoch;
     while (_linePointer < _lines.length) {
       WorkoutRow row = nextRow;
       if (row == null) {
-        row = WorkoutRow(rowString: _lines[_linePointer]);
+        row = WorkoutRow(rowString: _lines[_linePointer], lastHr: lastHr);
       }
       if (_linePointer + 1 >= _lines.length) {
         nextRow = WorkoutRow(power: 0, rpm: 0, hr: 0, distance: 0.0);
       } else {
-        nextRow = WorkoutRow(rowString: _lines[_linePointer + 1]);
+        nextRow =
+            WorkoutRow(rowString: _lines[_linePointer + 1], lastHr: lastHr);
       }
 
       double dPower = (nextRow.power - row.power) / recordsPerRow;
@@ -224,6 +236,7 @@ class MPowerEchelon2Importer {
       double power = row.power.toDouble();
       double rpm = row.rpm.toDouble();
       double hr = row.hr.toDouble();
+      lastHr = row.hr;
 
       for (int i = 0; i < recordsPerRow; i++) {
         final powerInt = power.round();
