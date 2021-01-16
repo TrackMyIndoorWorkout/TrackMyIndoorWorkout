@@ -200,7 +200,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           IconButton(
             icon: Icon(Icons.file_upload),
             onPressed: () async {
-              await Get.to(ImportForm());
+              await Get.to(ImportForm()).whenComplete(() => setState(() {
+                    _editCount++;
+                  }));
             },
           ),
           IconButton(
