@@ -6,20 +6,27 @@ import '../persistence/preferences.dart';
 RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
 
 class PreferencesScreen extends StatelessWidget {
-  bool isPositiveInteger(String str) {
+  bool isInteger(String str, lowerLimit, upperLimit) {
     int integer = int.tryParse(str);
-    return integer != null && integer > 0;
+    return integer != null &&
+        (lowerLimit < 0 || integer > lowerLimit) &&
+        (upperLimit < 0 || upperLimit <= 100);
   }
 
   bool isMonotoneIncreasingList(String zonesSpecStr) {
     if (!intListRule.hasMatch(zonesSpecStr)) return false;
+
     List<int> intList = zonesSpecStr
         .split(',')
         .map((zs) => int.tryParse(zs))
         .toList(growable: false);
+
     for (int i = 0; i < intList.length - 1; i++) {
+      if (intList[i] == null || intList[i + 1] == null) return false;
+
       if (intList[i] >= intList[i + 1]) return false;
     }
+
     return true;
   }
 
@@ -71,11 +78,30 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: FONT_SELECTION_DEFAULT,
         values: FONT_SELECTION_VALUES,
       ),
+      PreferenceTitle(TUNING_PREFERENCES),
       SwitchPreference(
         VIRTUAL_WORKOUT,
         VIRTUAL_WORKOUT_TAG,
         defaultVal: VIRTUAL_WORKOUT_DEFAULT,
         desc: VIRTUAL_WORKOUT_DESCRIPTION,
+      ),
+      PreferenceTitle(THROTTLE_POWER_DESCRIPTION),
+      TextFieldPreference(
+        THROTTLE_POWER,
+        THROTTLE_POWER_TAG,
+        defaultVal: THROTTLE_POWER_DEFAULT,
+        validator: (str) {
+          if (!isInteger(str, 0, 100)) {
+            return "Invalid throttle (should be 0 <= percent <= 100)";
+          }
+          return null;
+        },
+      ),
+      SwitchPreference(
+        THROTTLE_OTHER,
+        THROTTLE_OTHER_TAG,
+        defaultVal: THROTTLE_OTHER_DEFAULT,
+        desc: THROTTLE_OTHER_DESCRIPTION,
       ),
     ];
 
@@ -96,8 +122,8 @@ class PreferencesScreen extends StatelessWidget {
           prefSpec.thresholdTag,
           defaultVal: prefSpec.thresholdDefault,
           validator: (str) {
-            if (!isPositiveInteger(str)) {
-              return "Invalid threshold";
+            if (!isInteger(str, 1, -1)) {
+              return "Invalid threshold (should be integer >= 1)";
             }
             return null;
           },
@@ -108,7 +134,8 @@ class PreferencesScreen extends StatelessWidget {
           defaultVal: prefSpec.zonesDefault,
           validator: (str) {
             if (!isMonotoneIncreasingList(str)) {
-              return "Invalid zones";
+              return "Invalid zones (should be comma separated list of " +
+                  "monotonically increasing integers)";
             }
             return null;
           },

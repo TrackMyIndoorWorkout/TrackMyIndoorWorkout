@@ -264,6 +264,8 @@ const FONT_SELECTION_DESCRIPTION =
         ", " +
         FONT_SELECTION_14SEGMENT;
 
+const TUNING_PREFERENCES = "Tuning";
+
 const VIRTUAL_WORKOUT = "Virtual Workout";
 const VIRTUAL_WORKOUT_TAG = "virtual_workout";
 const VIRTUAL_WORKOUT_DEFAULT = true;
@@ -283,6 +285,21 @@ const APP_DEBUG_MODE_DEFAULT = false;
 const APP_DEBUG_MODE_DESCRIPTION =
     "On: The Recording UI runs on simulated data, no equipment required. " +
         "Off: The recording works as it should in release.";
+
+const THROTTLE_POWER = "Throttle Power";
+const THROTTLE_POWER_TAG = "throttle_power";
+const THROTTLE_POWER_DEFAULT = "0";
+const THROTTLE_POWER_DESCRIPTION =
+    "Throttle in percent. Example: 11 means that the app " +
+        "will take only 89% of the reported power reading. " +
+        "Possibly could throttle calories with certain bikes.";
+
+const THROTTLE_OTHER = "Throttle Other";
+const THROTTLE_OTHER_TAG = "throttle_other";
+const THROTTLE_OTHER_DEFAULT = false;
+const THROTTLE_OTHER_DESCRIPTION =
+    "Apply the power throttle to other measurements as well " +
+        "(speed, distance, calories)";
 
 class FontFamilyProperties {
   final String primary;
