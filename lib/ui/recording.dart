@@ -370,6 +370,8 @@ class RecordingState extends State<RecordingScreen> {
       color: Colors.indigo,
     );
     PrefService.setString(LAST_EQUIPMENT_ID_TAG, device.id.id);
+    descriptor.setPowerThrottle(PrefService.getString(THROTTLE_POWER_TAG),
+        PrefService.getBool(THROTTLE_OTHER_TAG));
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _simplerUi = PrefService.getBool(SIMPLER_UI_TAG);
     _instantUpload = PrefService.getBool(INSTANT_UPLOAD_TAG);

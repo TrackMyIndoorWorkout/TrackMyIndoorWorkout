@@ -16,21 +16,9 @@ class CadenceData {
 class GattStandardDeviceDescriptor extends DeviceDescriptor {
   // Primary metrics
   int _featuresFlag;
-  ShortMetricDescriptor _speedMetric;
-  ShortMetricDescriptor _cadenceMetric;
-  ThreeByteMetricDescriptor _distanceMetric;
-  ShortMetricDescriptor _powerMetric;
-  ShortMetricDescriptor _caloriesMetric;
-  ShortMetricDescriptor _timeMetric;
-  // Adjusting skewed calories
-  double calorieFactor;
-  // Adjusting skewed distance
-  double distanceFactor;
 
   // Secondary (Crank cadence) metrics
   int _cadenceFlag;
-  ShortMetricDescriptor _revolutions;
-  ShortMetricDescriptor _revolutionTime;
 
   ListQueue<CadenceData> _cadenceData;
   static const int REVOLUTION_SLIDING_WINDOW = 15; // Seconds
@@ -54,8 +42,8 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     cadenceMeasurementId,
     canCadenceMeasurementProcessed,
     heartRate,
-    this.calorieFactor = 1.0,
-    this.distanceFactor = 1.0,
+    calorieFactor,
+    distanceFactor = 1.0,
   }) : super(
           isBike: isBike,
           fourCC: fourCC,
@@ -73,6 +61,8 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
           cadenceMeasurementId: cadenceMeasurementId,
           canCadenceMeasurementProcessed: canCadenceMeasurementProcessed,
           heartRate: heartRate,
+          calorieFactor: calorieFactor,
+          distanceFactor: distanceFactor,
         ) {
     _cadenceData = ListQueue<CadenceData>();
     _featuresFlag = 0;
@@ -80,45 +70,9 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     _residueCalories = 0;
   }
 
-  double _getSpeed(List<int> data) {
-    return _speedMetric?.getMeasurementValue(data);
-  }
-
-  double _getCadence(List<int> data) {
-    return _cadenceMetric?.getMeasurementValue(data);
-  }
-
-  double _getDistance(List<int> data) {
-    return _distanceMetric?.getMeasurementValue(data);
-  }
-
-  double _getPower(List<int> data) {
-    return _powerMetric?.getMeasurementValue(data);
-  }
-
-  double _getCalories(List<int> data) {
-    return _caloriesMetric?.getMeasurementValue(data);
-  }
-
-  double _getTime(List<int> data) {
-    return _timeMetric?.getMeasurementValue(data);
-  }
-
-  int _getRevolutions(List<int> data) {
-    return _revolutions?.getMeasurementValue(data)?.toInt();
-  }
-
-  double _getRevolutionTime(List<int> data) {
-    return _revolutionTime?.getMeasurementValue(data);
-  }
-
-  double _getHeartRate(List<int> data) {
-    return data[heartRate].toDouble();
-  }
-
   _processFlag(int flag) {
     // Schwinn IC4:
-    // 68 01000100 avg speed, instant power
+    // 68 01000100 instant cadence, instant power
     //  2 00000010 heart rate
     // Two flag bytes
     int byteCounter = 2;
@@ -126,7 +80,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     final hasInstantSpeed = flag % 2 == 0;
     if (hasInstantSpeed) {
       // UInt16, km/h with 0.01 resolution
-      _speedMetric = ShortMetricDescriptor(
+      speedMetric = ShortMetricDescriptor(
           lsb: byteCounter, msb: byteCounter + 1, divider: 100);
       byteCounter += 2;
     }
@@ -135,7 +89,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     if (flag % 2 == 1) {
       // UInt16, km/h with 0.01 resolution
       if (!hasInstantSpeed) {
-        _speedMetric = ShortMetricDescriptor(
+        speedMetric = ShortMetricDescriptor(
             lsb: byteCounter, msb: byteCounter + 1, divider: 100);
       }
       byteCounter += 2;
@@ -144,7 +98,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     final hasInstantCadence = flag % 2 == 1;
     if (hasInstantCadence) {
       // UInt16, revolutions / minute with 0.5 resolution
-      _cadenceMetric = ShortMetricDescriptor(
+      cadenceMetric = ShortMetricDescriptor(
           lsb: byteCounter, msb: byteCounter + 1, divider: 2);
       byteCounter += 2;
     }
@@ -154,7 +108,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       // Fall back to the less instantaneous average metric
       // UInt16, revolutions / minute with 0.5 resolution
       if (!hasInstantCadence) {
-        _cadenceMetric = ShortMetricDescriptor(
+        cadenceMetric = ShortMetricDescriptor(
             lsb: byteCounter, msb: byteCounter + 1, divider: 2);
       }
       byteCounter += 2;
@@ -163,7 +117,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     // Has Total Distance?
     if (flag % 2 == 1) {
       // UInt24, meters
-      _distanceMetric = ThreeByteMetricDescriptor(
+      distanceMetric = ThreeByteMetricDescriptor(
           lsb: byteCounter, msb: byteCounter + 2, divider: 1);
       byteCounter += 3;
     }
@@ -177,7 +131,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     final hasInstantPower = flag % 2 == 1;
     if (hasInstantPower) {
       // SInt16, Watts
-      _powerMetric = ShortMetricDescriptor(
+      powerMetric = ShortMetricDescriptor(
           lsb: byteCounter, msb: byteCounter + 1, divider: 1);
       byteCounter += 2;
     }
@@ -187,7 +141,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       // Fall back to the less instantaneous average metric
       // SInt16, Watts
       if (!hasInstantPower) {
-        _powerMetric = ShortMetricDescriptor(
+        powerMetric = ShortMetricDescriptor(
             lsb: byteCounter, msb: byteCounter + 1, divider: 1);
       }
       byteCounter += 2;
@@ -196,7 +150,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     // Has Expanded Energy
     if (flag % 2 == 1) {
       // Total Energy: UInt16
-      _caloriesMetric = ShortMetricDescriptor(
+      caloriesMetric = ShortMetricDescriptor(
           lsb: byteCounter, msb: byteCounter + 1, divider: 1);
       // Also skipping Energy / hour UInt16 and Energy / minute UInt8
       byteCounter += 5;
@@ -217,7 +171,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     flag ~/= 2;
     // Has Elapsed Time
     if (flag % 2 == 1) {
-      _timeMetric = ShortMetricDescriptor(
+      timeMetric = ShortMetricDescriptor(
           lsb: byteCounter, msb: byteCounter + 1, divider: 1);
       byteCounter += 2;
     }
@@ -246,8 +200,8 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     double elapsed;
     Duration elapsedDuration;
     int elapsedMillis;
-    if (data != null && _timeMetric != null) {
-      elapsed = _getTime(data);
+    if (data != null && timeMetric != null) {
+      elapsed = getTime(data);
       elapsedMillis = (elapsed * 1000.0).toInt();
       elapsedDuration = Duration(seconds: lastRecord.elapsed);
     } else {
@@ -261,8 +215,8 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
 
     double newDistance = 0;
     final dT = (elapsedMillis - lastRecord.elapsedMillis) / 1000.0;
-    if (data != null && _distanceMetric != null) {
-      newDistance = _getDistance(data);
+    if (data != null && distanceMetric != null) {
+      newDistance = getDistance(data);
     } else {
       double dD = 0;
       if (lastRecord.speed > 0) {
@@ -276,13 +230,13 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
         activity.startDateTime.add(idleDuration).add(elapsedDuration);
     if (data != null) {
       var cadence = lastRecord.cadence;
-      if (_cadenceMetric != null) {
-        cadence = _getCadence(data).toInt();
+      if (cadenceMetric != null) {
+        cadence = getCadence(data).toInt();
       }
-      double power = _getPower(data);
+      double power = getPower(data);
       double calories = 0;
-      if (_caloriesMetric != null) {
-        calories = _getCalories(data);
+      if (caloriesMetric != null) {
+        calories = getCalories(data);
       } else {
         // Instead of dT fractional second we use 1s to boost calorie counting
         // Due to #35. On top of that
@@ -300,9 +254,9 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
         elapsed: elapsed.toInt(),
         calories: calories.floor(),
         power: power.toInt(),
-        speed: _getSpeed(data),
+        speed: getSpeed(data),
         cadence: cadence,
-        heartRate: _getHeartRate(data).toInt(),
+        heartRate: getHeartRate(data).toInt(),
         elapsedMillis: elapsedMillis,
       );
     } else {
@@ -339,17 +293,17 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       if (flag % 2 == 0) {
         return 0;
       }
-      _revolutions = ShortMetricDescriptor(
+      revolutions = ShortMetricDescriptor(
           lsb: lengthOffset, msb: lengthOffset + 1, divider: 1);
-      _revolutionTime = ShortMetricDescriptor(
+      revolutionTime = ShortMetricDescriptor(
           lsb: lengthOffset + 2, msb: lengthOffset + 3, divider: 1024);
       _cadenceFlag = flag;
     }
 
     // See https://web.archive.org/web/20170816162607/https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.csc_measurement.xml
     _cadenceData.add(CadenceData(
-      seconds: _getRevolutionTime(data),
-      revolutions: _getRevolutions(data),
+      seconds: getRevolutionTime(data),
+      revolutions: getRevolutions(data),
     ));
 
     var firstData = _cadenceData.first;
