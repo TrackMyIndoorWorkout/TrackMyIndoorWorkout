@@ -43,7 +43,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
           powerMetric: powerMetric,
           cadenceMetric: cadenceMetric,
           distanceMetric: distanceMetric,
-  );
+        );
 
   @override
   Record processPrimaryMeasurement(
