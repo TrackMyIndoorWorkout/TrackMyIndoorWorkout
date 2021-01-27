@@ -55,7 +55,15 @@ Map<String, TrackDescriptor> trackMap = {
   ),
   "Painting": TrackDescriptor(
     radiusBoost: 1.2,
-  )
+  ),
+  "SanJoaquinBluffPointe": TrackDescriptor(
+    isVelodrome: false,
+    center: Offset(-119.8730278, 36.84823845),
+    radiusBoost: 1.2,
+    horizontalMeter: 0.00001121,
+    verticalMeter: 0.00000901,
+    altitude: 75.0,
+  ),
 };
 
 TrackDescriptor getDefaultTrack(bool isBike) {
