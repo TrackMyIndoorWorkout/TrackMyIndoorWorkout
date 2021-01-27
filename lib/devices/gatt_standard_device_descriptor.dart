@@ -26,7 +26,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
   double _residueCalories;
 
   GattStandardDeviceDescriptor({
-    isBike,
+    sport,
     fourCC,
     vendorName,
     modelName,
@@ -45,7 +45,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     calorieFactor,
     distanceFactor = 1.0,
   }) : super(
-          isBike: isBike,
+          sport: sport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,

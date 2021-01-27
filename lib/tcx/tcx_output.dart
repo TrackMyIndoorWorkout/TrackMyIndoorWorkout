@@ -45,7 +45,7 @@ class TCXOutput {
       Activity activity, List<Record> records) async {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
     final descriptor = deviceMap[activity.fourCC];
-    final track = getDefaultTrack(descriptor.isBike);
+    final track = getDefaultTrack(descriptor.sport);
     TCXModel tcxInfo = TCXModel()
       ..activityType = descriptor.activityType()
       ..totalDistance = activity.distance

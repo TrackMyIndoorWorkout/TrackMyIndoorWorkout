@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../tcx/activity_type.dart';
 import 'constants.dart';
 
 class TrackDescriptor {
@@ -66,8 +67,18 @@ Map<String, TrackDescriptor> trackMap = {
   ),
 };
 
-TrackDescriptor getDefaultTrack(bool isBike) {
-  // For bikes we use a running track and for runs we'll use the velodrome
-  // So KOMs and CRs won't be disturbed. We mustn't to fit on any segment.
-  return trackMap[isBike ? "Hoover" : "Marymoor"];
+// For bikes we use a running track and for runs we'll use the velodrome
+// So KOMs and CRs won't be disturbed. We mustn't to fit on any segment.
+Map<String, String> defaultTrackMap = {
+  ActivityType.Ride: "Hoover",
+  ActivityType.VirtualRide: "Hoover",
+  ActivityType.Run: "Marymoor",
+  ActivityType.VirtualRun: "Marymoor",
+  ActivityType.Kayaking: "SanJoaquinBluffPointe",
+  ActivityType.Canoeing: "SanJoaquinBluffPointe",
+  ActivityType.Rowing: "SanJoaquinBluffPointe",
+};
+
+TrackDescriptor getDefaultTrack(String sport) {
+  return trackMap[defaultTrackMap[sport]];
 }

@@ -15,7 +15,7 @@ abstract class DeviceDescriptor {
   static const double J2CAL = 0.2390057;
   static const double J2KCAL = J2CAL / 1000.0;
 
-  final bool isBike;
+  final String sport;
   final String fourCC;
   final String vendorName;
   final String modelName;
@@ -52,7 +52,7 @@ abstract class DeviceDescriptor {
   bool throttleOther;
 
   DeviceDescriptor({
-    this.isBike,
+    this.sport,
     this.fourCC,
     this.vendorName,
     this.modelName,
@@ -92,11 +92,26 @@ abstract class DeviceDescriptor {
   int processCadenceMeasurement(List<int> data);
 
   String activityType() {
+    if (sport != ActivityType.Ride && sport != ActivityType.Run) {
+      return sport;
+    }
     final isVirtual = PrefService.getBool(VIRTUAL_WORKOUT_TAG);
     if (isVirtual) {
-      return isBike ? ActivityType.VirtualRide : ActivityType.VirtualRun;
+      if (sport == ActivityType.Ride) {
+        return ActivityType.VirtualRide;
+      }
+      if (sport == ActivityType.Run) {
+        return ActivityType.VirtualRun;
+      }
+    } else {
+      if (sport == ActivityType.VirtualRide) {
+        return ActivityType.Ride;
+      }
+      if (sport == ActivityType.VirtualRun) {
+        return ActivityType.Run;
+      }
     }
-    return isBike ? ActivityType.Ride : ActivityType.Run;
+    return sport;
   }
 
   setPowerThrottle(String throttlePercentString, bool throttleOther) {

@@ -4,7 +4,7 @@ import 'device_descriptor.dart';
 
 class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   FixedLayoutDeviceDescriptor({
-    isBike,
+    sport,
     fourCC,
     vendorName,
     modelName,
@@ -24,7 +24,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     cadenceMetric,
     distanceMetric,
   }) : super(
-          isBike: isBike,
+          sport: sport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,
