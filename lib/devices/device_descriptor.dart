@@ -3,6 +3,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/preferences.dart';
 import '../tcx/activity_type.dart';
+import '../track/tracks.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
 
@@ -81,6 +82,8 @@ abstract class DeviceDescriptor {
     throttlePower = 1.0;
     throttleOther = THROTTLE_OTHER_DEFAULT;
   }
+
+  double get lengthFactor => getDefaultTrack(sport).lengthFactor;
 
   Record processPrimaryMeasurement(
     Activity activity,

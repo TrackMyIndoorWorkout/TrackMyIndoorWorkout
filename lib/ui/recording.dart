@@ -73,6 +73,7 @@ class RecordingScreen extends StatefulWidget {
 class RecordingState extends State<RecordingScreen> {
   RecordingState({this.device, this.initialState, this.size}) {
     this.descriptor = device.getDescriptor();
+    _lengthFactor = this.descriptor.lengthFactor;
   }
 
   Size size;
@@ -86,6 +87,7 @@ class RecordingState extends State<RecordingScreen> {
   final BluetoothDevice device;
   final BluetoothDeviceState initialState;
   DeviceDescriptor descriptor;
+  double _lengthFactor;
   BluetoothCharacteristic _primaryMeasurements;
   StreamSubscription _measurementSubscription;
   BluetoothCharacteristic _cadenceMeasurements;
@@ -756,7 +758,7 @@ class RecordingState extends State<RecordingScreen> {
       });
 
       final trackMarker =
-          calculateTrackMarker(trackSize, _latestRecord.distance);
+          calculateTrackMarker(trackSize, _latestRecord.distance, _lengthFactor);
       extras.add(
         CustomPaint(
           painter: TrackPainter(),
