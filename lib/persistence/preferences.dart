@@ -301,6 +301,13 @@ const THROTTLE_OTHER_DESCRIPTION =
     "Apply the power throttle to other measurements as well " +
         "(speed, distance, calories)";
 
+const COMPRESS_DOWNLOAD = "File download compression";
+const COMPRESS_DOWNLOAD_TAG = "compress_download";
+const COMPRESS_DOWNLOAD_DEFAULT = true;
+const COMPRESS_DOWNLOAD_DESCRIPTION =
+    "On: the downloaded file is gzip compressed (TCX.gz). " +
+        "Off: the downloaded file is TCX (no compression)";
+
 class FontFamilyProperties {
   final String primary;
   final String secondary;

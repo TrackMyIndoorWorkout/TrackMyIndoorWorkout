@@ -42,7 +42,7 @@ class TCXOutput {
   }
 
   Future<List<int>> getTcxOfActivity(
-      Activity activity, List<Record> records) async {
+      Activity activity, List<Record> records, bool compress) async {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
     final descriptor = deviceMap[activity.fourCC];
     final track = getDefaultTrack(descriptor.sport);
@@ -74,12 +74,15 @@ class TCXOutput {
       ..partNumber = '0'
       ..points = records.map((r) => recordToTrackPoint(r, track)).toList();
 
-    return await TCXOutput().getTcx(tcxInfo);
+    return await TCXOutput().getTcx(tcxInfo, compress);
   }
 
-  Future<List<int>> getTcx(TCXModel tcxInfo) async {
+  Future<List<int>> getTcx(TCXModel tcxInfo, bool compress) async {
     generateTCX(tcxInfo);
     final stringBytes = utf8.encode(_sb.toString());
+    if (!compress) {
+      return stringBytes;
+    }
     return GZipCodec(gzip: true).encode(stringBytes);
   }
 

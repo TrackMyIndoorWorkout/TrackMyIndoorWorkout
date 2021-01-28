@@ -27,7 +27,7 @@ class StravaService {
       return statusJsonIsEmpty;
     }
 
-    final tcxGzip = await TCXOutput().getTcxOfActivity(activity, records);
+    final tcxGzip = await TCXOutput().getTcxOfActivity(activity, records, true);
     Fault fault = await _strava.uploadActivity(
       activity,
       tcxGzip,

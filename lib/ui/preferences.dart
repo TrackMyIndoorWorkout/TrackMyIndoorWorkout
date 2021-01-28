@@ -85,6 +85,12 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: VIRTUAL_WORKOUT_DEFAULT,
         desc: VIRTUAL_WORKOUT_DESCRIPTION,
       ),
+      SwitchPreference(
+        COMPRESS_DOWNLOAD,
+        COMPRESS_DOWNLOAD_TAG,
+        defaultVal: COMPRESS_DOWNLOAD_DEFAULT,
+        desc: COMPRESS_DOWNLOAD_DESCRIPTION,
+      ),
       PreferenceTitle(THROTTLE_POWER_DESCRIPTION),
       TextFieldPreference(
         THROTTLE_POWER,

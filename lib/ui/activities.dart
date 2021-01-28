@@ -33,6 +33,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   bool _isLoading;
   int _editCount;
   bool _si;
+  bool _compress;
   FontFamilyProperties _fontFamilyProperties;
   double _mediaWidth;
   double _sizeDefault;
@@ -50,6 +51,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _isLoading = true;
     _editCount = 0;
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    _compress = PrefService.getBool(COMPRESS_DOWNLOAD_TAG);
     _fontFamilyProperties = getFontFamilyProperties();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
@@ -114,8 +116,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           onPressed: () async {
             final records =
                 await _database.recordDao.findAllActivityRecords(activity.id);
-            final tcxGzip =
-                await TCXOutput().getTcxOfActivity(activity, records);
+            final tcxGzip = await TCXOutput()
+                .getTcxOfActivity(activity, records, _compress);
             final persistenceValues = activity.getPersistenceValues();
             ShareFilesAndScreenshotWidgets().shareFile(
                 persistenceValues['name'],
