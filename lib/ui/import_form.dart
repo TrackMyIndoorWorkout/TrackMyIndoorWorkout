@@ -6,7 +6,9 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:preferences/preference_service.dart';
 import '../persistence/mpower_importer.dart';
+import '../persistence/preferences.dart';
 
 typedef void SetProgress(double progress);
 
@@ -146,7 +148,9 @@ class _ImportFormState extends State<ImportForm> {
                             File file = File(_filePath);
                             String contents = await file.readAsString();
                             final importer = MPowerEchelon2Importer(
-                                start: _activityDateTime);
+                                start: _activityDateTime,
+                                throttlePercentString:
+                                    PrefService.getString(THROTTLE_POWER_TAG));
                             var activity =
                                 await importer.import(contents, setProgress);
                             setState(() {

@@ -22,10 +22,11 @@ class WorkoutRow {
     this.distance,
     String rowString,
     int lastHr,
+    double throttleRatio,
   }) {
     if (rowString != null) {
       final values = rowString.split(",");
-      this.power = int.tryParse(values[0]);
+      this.power = (int.tryParse(values[0]) * throttleRatio).round();
       this.rpm = int.tryParse(values[1]);
       this.hr = int.tryParse(values[2]);
       if (this.hr == 0 && lastHr > 0) {
@@ -61,9 +62,12 @@ class MPowerEchelon2Importer {
   List<String> _lines;
   int _linePointer;
   Map<int, double> _velocityForPowerDict;
+  double _throttleRatio;
 
-  MPowerEchelon2Importer({this.start}) {
+  MPowerEchelon2Importer({this.start, String throttlePercentString}) {
     _velocityForPowerDict = Map<int, double>();
+    final throttlePercent = int.tryParse(throttlePercentString);
+    _throttleRatio = (100 - throttlePercent) / 100;
   }
 
   bool _findLine(String lead) {
@@ -221,13 +225,19 @@ class MPowerEchelon2Importer {
     while (_linePointer < _lines.length) {
       WorkoutRow row = nextRow;
       if (row == null) {
-        row = WorkoutRow(rowString: _lines[_linePointer], lastHr: lastHr);
+        row = WorkoutRow(
+            rowString: _lines[_linePointer],
+            lastHr: lastHr,
+            throttleRatio: _throttleRatio);
       }
       if (_linePointer + 1 >= _lines.length) {
-        nextRow = WorkoutRow(power: 0, rpm: 0, hr: 0, distance: 0.0);
+        nextRow = WorkoutRow(
+            power: 0, rpm: 0, hr: 0, distance: 0.0, throttleRatio: 1.0);
       } else {
-        nextRow =
-            WorkoutRow(rowString: _lines[_linePointer + 1], lastHr: lastHr);
+        nextRow = WorkoutRow(
+            rowString: _lines[_linePointer + 1],
+            lastHr: lastHr,
+            throttleRatio: _throttleRatio);
       }
 
       double dPower = (nextRow.power - row.power) / recordsPerRow;

@@ -757,8 +757,8 @@ class RecordingState extends State<RecordingScreen> {
         );
       });
 
-      final trackMarker =
-          calculateTrackMarker(trackSize, _latestRecord.distance, _lengthFactor);
+      final trackMarker = calculateTrackMarker(
+          trackSize, _latestRecord.distance, _lengthFactor);
       extras.add(
         CustomPaint(
           painter: TrackPainter(),
