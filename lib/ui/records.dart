@@ -613,92 +613,92 @@ class RecordsScreenState extends State<RecordsScreen> {
               paginationMode: PaginationMode.offset,
               initialOffset: 0,
               loadingBuilder: CustomListLoading.defaultBuilder,
-              separatorBuilder: (context, _) {
-                return Divider(height: 20);
-              },
-              header: Center(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.directions_bike,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Spacer(),
-                        Text(
-                          activity.deviceName,
-                          style: _textStyle,
-                          maxLines: 4,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.timer,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Spacer(),
-                        Text(
-                          activity.elapsedString,
-                          style: _measurementStyle,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.add_road,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Spacer(),
-                        Text(
-                          activity.distanceString(_si),
-                          style: _measurementStyle,
-                        ),
-                        SizedBox(
-                          width: _sizeDefault,
-                          child: Text(
-                            _si ? 'm' : 'mi',
-                            style: _unitStyle,
+              header: Card(
+                elevation: 6,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.directions_bike,
+                            color: Colors.indigo,
+                            size: _sizeDefault,
                           ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.whatshot,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Spacer(),
-                        Text(
-                          '${activity.calories}',
-                          style: _measurementStyle,
-                        ),
-                        SizedBox(
-                          width: _sizeDefault,
-                          child: Text(
-                            'cal',
-                            style: _unitStyle,
+                          Spacer(),
+                          Text(
+                            activity.deviceName,
+                            style: _textStyle,
+                            maxLines: 4,
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.timer,
+                            color: Colors.indigo,
+                            size: _sizeDefault,
+                          ),
+                          Spacer(),
+                          Text(
+                            activity.elapsedString,
+                            style: _measurementStyle,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add_road,
+                            color: Colors.indigo,
+                            size: _sizeDefault,
+                          ),
+                          Spacer(),
+                          Text(
+                            activity.distanceString(_si),
+                            style: _measurementStyle,
+                          ),
+                          SizedBox(
+                            width: _sizeDefault,
+                            child: Text(
+                              _si ? 'm' : 'mi',
+                              style: _unitStyle,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.whatshot,
+                            color: Colors.indigo,
+                            size: _sizeDefault,
+                          ),
+                          Spacer(),
+                          Text(
+                            '${activity.calories}',
+                            style: _measurementStyle,
+                          ),
+                          SizedBox(
+                            width: _sizeDefault,
+                            child: Text(
+                              'cal',
+                              style: _unitStyle,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
               adapter: StaticListAdapter(data: _tiles),
@@ -731,141 +731,144 @@ class RecordsScreenState extends State<RecordsScreen> {
                   ));
                 }
 
-                return ExpandablePanel(
-                  header: Column(
-                    children: [
+                return Card(
+                  elevation: 6,
+                  child: ExpandablePanel(
+                    header: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              _tileConfigurations[item].title,
+                              style: _textStyle,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              preferencesSpecs[index].icon,
+                              color: Colors.indigo,
+                              size: _sizeDefault2,
+                            ),
+                            Spacer(),
+                            Text("MAX", style: _unitStyle),
+                            Spacer(),
+                            Text(
+                              _tileConfigurations[item].maxString,
+                              style: _measurementStyle,
+                            ),
+                            Spacer(),
+                            Text(
+                              preferencesSpecs[index].unit,
+                              style: _unitStyle,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              preferencesSpecs[index].icon,
+                              color: Colors.indigo,
+                              size: _sizeDefault2,
+                            ),
+                            Spacer(),
+                            Text("AVG", style: _unitStyle),
+                            Spacer(),
+                            Text(
+                              _tileConfigurations[item].avgString,
+                              style: _measurementStyle,
+                            ),
+                            Spacer(),
+                            Text(
+                              preferencesSpecs[index].unit,
+                              style: _unitStyle,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    expanded: Column(children: [
+                      SizedBox(
+                        width: size.width,
+                        height: size.height / 2,
+                        child: charts.TimeSeriesChart(
+                          _tileConfigurations[item].dataFn(),
+                          animate: false,
+                          primaryMeasureAxis: charts.NumericAxisSpec(
+                            renderSpec: charts.NoneRenderSpec(),
+                          ),
+                          behaviors: [
+                            charts.LinePointHighlighter(
+                              showHorizontalFollowLine: charts
+                                  .LinePointHighlighterFollowLineType.nearest,
+                              showVerticalFollowLine: charts
+                                  .LinePointHighlighterFollowLineType.nearest,
+                            ),
+                            charts.SelectNearest(
+                                eventTrigger: charts.SelectionTrigger.tapAndDrag),
+                            charts.RangeAnnotation(annotationSegments),
+                          ],
+                          selectionModels: [
+                            new charts.SelectionModelConfig(
+                              type: charts.SelectionModelType.info,
+                              changedListener:
+                                  _tileConfigurations[item].selectionListener,
+                            ),
+                          ],
+                        ),
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            _tileConfigurations[item].title,
-                            style: _textStyle,
-                          ),
+                          Text(_selectedValues[index], style: _selectionStyle),
+                          Text(" ", style: _selectionTextStyle),
+                          Text(preferencesSpecs[index].unit, style: _unitStyle),
+                          Text(" @ ", style: _selectionTextStyle),
+                          Text(_selectedTimes[index], style: _selectionStyle),
                         ],
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            preferencesSpecs[index].icon,
-                            color: Colors.indigo,
-                            size: _sizeDefault2,
-                          ),
-                          Spacer(),
-                          Text("MAX", style: _unitStyle),
-                          Spacer(),
-                          Text(
-                            _tileConfigurations[item].maxString,
-                            style: _measurementStyle,
-                          ),
-                          Spacer(),
-                          Text(
-                            preferencesSpecs[index].unit,
-                            style: _unitStyle,
-                          ),
-                        ],
+                      Divider(height: 20, thickness: 2),
+                      Text(
+                        _tileConfigurations[item].histogramTitle,
+                        style: _textStyle,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            preferencesSpecs[index].icon,
-                            color: Colors.indigo,
-                            size: _sizeDefault2,
-                          ),
-                          Spacer(),
-                          Text("AVG", style: _unitStyle),
-                          Spacer(),
-                          Text(
-                            _tileConfigurations[item].avgString,
-                            style: _measurementStyle,
-                          ),
-                          Spacer(),
-                          Text(
-                            preferencesSpecs[index].unit,
-                            style: _unitStyle,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  expanded: Column(children: [
-                    SizedBox(
-                      width: size.width,
-                      height: size.height / 2,
-                      child: charts.TimeSeriesChart(
-                        _tileConfigurations[item].dataFn(),
-                        animate: false,
-                        primaryMeasureAxis: charts.NumericAxisSpec(
-                          renderSpec: charts.NoneRenderSpec(),
+                      SizedBox(
+                        width: size.width,
+                        height: size.height / 3,
+                        child: charts.PieChart(
+                          _tileConfigurations[item].histogramFn(),
+                          animate: false,
+                          defaultRenderer: charts.ArcRendererConfig(
+                              arcWidth: 60,
+                              arcRendererDecorators: [
+                                charts.ArcLabelDecorator()
+                              ]),
+                          behaviors: [
+                            charts.DatumLegend(
+                              position: charts.BehaviorPosition.start,
+                              horizontalFirst: false,
+                              cellPadding:
+                                  new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                              showMeasures: true,
+                              legendDefaultMeasure:
+                                  charts.LegendDefaultMeasure.firstValue,
+                              measureFormatter: (num value) {
+                                return value == null ? '-' : '$value %';
+                              },
+                            ),
+                          ],
                         ),
-                        behaviors: [
-                          charts.LinePointHighlighter(
-                            showHorizontalFollowLine: charts
-                                .LinePointHighlighterFollowLineType.nearest,
-                            showVerticalFollowLine: charts
-                                .LinePointHighlighterFollowLineType.nearest,
-                          ),
-                          charts.SelectNearest(
-                              eventTrigger: charts.SelectionTrigger.tapAndDrag),
-                          charts.RangeAnnotation(annotationSegments),
-                        ],
-                        selectionModels: [
-                          new charts.SelectionModelConfig(
-                            type: charts.SelectionModelType.info,
-                            changedListener:
-                                _tileConfigurations[item].selectionListener,
-                          ),
-                        ],
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(_selectedValues[index], style: _selectionStyle),
-                        Text(" ", style: _selectionTextStyle),
-                        Text(preferencesSpecs[index].unit, style: _unitStyle),
-                        Text(" @ ", style: _selectionTextStyle),
-                        Text(_selectedTimes[index], style: _selectionStyle),
-                      ],
-                    ),
-                    Divider(height: 20, thickness: 2),
-                    Text(
-                      _tileConfigurations[item].histogramTitle,
-                      style: _textStyle,
-                    ),
-                    SizedBox(
-                      width: size.width,
-                      height: size.height / 3,
-                      child: charts.PieChart(
-                        _tileConfigurations[item].histogramFn(),
-                        animate: false,
-                        defaultRenderer: charts.ArcRendererConfig(
-                            arcWidth: 60,
-                            arcRendererDecorators: [
-                              charts.ArcLabelDecorator()
-                            ]),
-                        behaviors: [
-                          charts.DatumLegend(
-                            position: charts.BehaviorPosition.start,
-                            horizontalFirst: false,
-                            cellPadding:
-                                new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                            showMeasures: true,
-                            legendDefaultMeasure:
-                                charts.LegendDefaultMeasure.firstValue,
-                            measureFormatter: (num value) {
-                              return value == null ? '-' : '$value %';
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ]),
+                    ]),
+                  ),
                 );
               },
             ),

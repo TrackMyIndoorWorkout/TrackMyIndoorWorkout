@@ -247,9 +247,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     ],
                   );
                 },
-                separatorBuilder: (context, _) {
-                  return Divider(height: 20);
-                },
                 empty: Center(
                   child: Text('No activities found'),
                 ),
@@ -259,131 +256,134 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       DateTime.fromMillisecondsSinceEpoch(activity.start);
                   final dateString = DateFormat.yMd().format(startStamp);
                   final timeString = DateFormat.Hms().format(startStamp);
-                  return ExpandablePanel(
-                    key: Key("${activity.id} ${activity.stravaId}"),
-                    header: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.calendar_today,
-                              color: Colors.indigo,
-                              size: _sizeDefault2,
-                            ),
-                            Text(
-                              dateString,
-                              style: _headerStyle,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.watch,
-                              color: Colors.indigo,
-                              size: _sizeDefault2,
-                            ),
-                            Text(
-                              timeString,
-                              style: _headerStyle,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    collapsed: ListTile(
-                      trailing: _actionButtonRow(activity, _sizeDefault2),
-                    ),
-                    expanded: ListTile(
-                      onTap: () async => await Get.to(RecordsScreen(
-                          activity: item, size: Get.mediaQuery.size)),
-                      title: Column(
+                  return Card(
+                    elevation: 6,
+                    child: ExpandablePanel(
+                      key: Key("${activity.id} ${activity.stravaId}"),
+                      header: Column(
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.directions_bike,
+                                Icons.calendar_today,
                                 color: Colors.indigo,
-                                size: _sizeDefault,
+                                size: _sizeDefault2,
                               ),
-                              Spacer(),
                               Text(
-                                activity.deviceName,
-                                style: _textStyle,
-                                maxLines: 4,
+                                dateString,
+                                style: _headerStyle,
                               ),
                             ],
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.timer,
+                                Icons.watch,
                                 color: Colors.indigo,
-                                size: _sizeDefault,
+                                size: _sizeDefault2,
                               ),
-                              Spacer(),
                               Text(
-                                activity.elapsedString,
-                                style: _measurementStyle,
+                                timeString,
+                                style: _headerStyle,
                               ),
                             ],
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.add_road,
-                                color: Colors.indigo,
-                                size: _sizeDefault,
-                              ),
-                              Spacer(),
-                              Text(
-                                activity.distanceString(_si),
-                                style: _measurementStyle,
-                              ),
-                              SizedBox(
-                                width: _sizeDefault,
-                                child: Text(
-                                  _si ? 'm' : 'mi',
-                                  style: _unitStyle,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.whatshot,
-                                color: Colors.indigo,
-                                size: _sizeDefault,
-                              ),
-                              Spacer(),
-                              Text(
-                                '${activity.calories}',
-                                style: _measurementStyle,
-                              ),
-                              SizedBox(
-                                width: _sizeDefault,
-                                child: Text(
-                                  'cal',
-                                  style: _unitStyle,
-                                ),
-                              ),
-                            ],
-                          ),
-                          _actionButtonRow(activity, _sizeDefault2),
                         ],
+                      ),
+                      collapsed: ListTile(
+                        trailing: _actionButtonRow(activity, _sizeDefault2),
+                      ),
+                      expanded: ListTile(
+                        onTap: () async => await Get.to(RecordsScreen(
+                            activity: item, size: Get.mediaQuery.size)),
+                        title: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.directions_bike,
+                                  color: Colors.indigo,
+                                  size: _sizeDefault,
+                                ),
+                                Spacer(),
+                                Text(
+                                  activity.deviceName,
+                                  style: _textStyle,
+                                  maxLines: 4,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.timer,
+                                  color: Colors.indigo,
+                                  size: _sizeDefault,
+                                ),
+                                Spacer(),
+                                Text(
+                                  activity.elapsedString,
+                                  style: _measurementStyle,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_road,
+                                  color: Colors.indigo,
+                                  size: _sizeDefault,
+                                ),
+                                Spacer(),
+                                Text(
+                                  activity.distanceString(_si),
+                                  style: _measurementStyle,
+                                ),
+                                SizedBox(
+                                  width: _sizeDefault,
+                                  child: Text(
+                                    _si ? 'm' : 'mi',
+                                    style: _unitStyle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.whatshot,
+                                  color: Colors.indigo,
+                                  size: _sizeDefault,
+                                ),
+                                Spacer(),
+                                Text(
+                                  '${activity.calories}',
+                                  style: _measurementStyle,
+                                ),
+                                SizedBox(
+                                  width: _sizeDefault,
+                                  child: Text(
+                                    'cal',
+                                    style: _unitStyle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            _actionButtonRow(activity, _sizeDefault2),
+                          ],
+                        ),
                       ),
                     ),
                   );
