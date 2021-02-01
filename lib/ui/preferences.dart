@@ -9,8 +9,8 @@ class PreferencesScreen extends StatelessWidget {
   bool isInteger(String str, lowerLimit, upperLimit) {
     int integer = int.tryParse(str);
     return integer != null &&
-        (lowerLimit < 0 || integer > lowerLimit) &&
-        (upperLimit < 0 || upperLimit <= 100);
+        (lowerLimit < 0 || integer >= lowerLimit) &&
+        (upperLimit < 0 || integer <= upperLimit);
   }
 
   bool isMonotoneIncreasingList(String zonesSpecStr) {
