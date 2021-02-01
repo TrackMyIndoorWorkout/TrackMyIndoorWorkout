@@ -812,7 +812,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                                   .LinePointHighlighterFollowLineType.nearest,
                             ),
                             charts.SelectNearest(
-                                eventTrigger: charts.SelectionTrigger.tapAndDrag),
+                                eventTrigger:
+                                    charts.SelectionTrigger.tapAndDrag),
                             charts.RangeAnnotation(annotationSegments),
                           ],
                           selectionModels: [
