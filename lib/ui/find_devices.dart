@@ -226,6 +226,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       backgroundColor: Colors.green,
                                       onPressed: () async {
                                         await FlutterBlue.instance.stopScan();
+                                        await Future.delayed(
+                                            Duration(milliseconds: 100));
                                         await Get.to(RecordingScreen(
                                             device: d,
                                             initialState: snapshot.data,
@@ -252,13 +254,18 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               r.device, r.advertisementData.connectable);
                           if (_instantWorkout &&
                               r.device.id.id == _lastEquipmentId) {
-                            FlutterBlue.instance.stopScan();
+                            FlutterBlue.instance
+                                .stopScan()
+                                .whenComplete(() async {
+                              await Future.delayed(Duration(milliseconds: 100));
+                            });
                           }
                           return ScanResultTile(
                             result: r,
                             fontFamilyProperties: _fontFamilyProperties,
                             onTap: () async {
                               await FlutterBlue.instance.stopScan();
+                              await Future.delayed(Duration(milliseconds: 100));
                               await Get.to(RecordingScreen(
                                 device: r.device,
                                 initialState: BluetoothDeviceState.disconnected,
@@ -328,7 +335,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   child: Icon(Icons.stop),
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.indigo,
-                  onPressed: () async => await FlutterBlue.instance.stopScan(),
+                  onPressed: () async {
+                    await FlutterBlue.instance.stopScan();
+                    await Future.delayed(Duration(milliseconds: 100));
+                  },
                 );
               } else {
                 return FloatingActionButton(
