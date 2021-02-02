@@ -65,7 +65,6 @@ class Record {
 
   String distanceStringByUnit(bool si) {
     final dist = distanceByUnit(si);
-    if (si) return dist.toStringAsFixed(0);
-    return dist.toStringAsFixed(2);
+    return dist.toStringAsFixed(si ? 0: 2);
   }
 }
