@@ -47,7 +47,7 @@ class TCXOutput {
     final descriptor = deviceMap[activity.fourCC];
     final track = getDefaultTrack(descriptor.sport);
     TCXModel tcxInfo = TCXModel()
-      ..activityType = descriptor.activityType()
+      ..activityType = descriptor.activityType
       ..totalDistance = activity.distance
       ..totalTime = activity.elapsed.toDouble()
       ..calories = activity.calories

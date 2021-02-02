@@ -94,7 +94,7 @@ abstract class DeviceDescriptor {
 
   int processCadenceMeasurement(List<int> data);
 
-  String activityType() {
+  String get activityType {
     if (sport != ActivityType.Ride && sport != ActivityType.Run) {
       return sport;
     }
