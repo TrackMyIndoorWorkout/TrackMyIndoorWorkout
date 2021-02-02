@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:preferences/preferences.dart';
+import 'package:track_my_indoor_exercise/devices/device_descriptor.dart';
+import 'package:track_my_indoor_exercise/devices/devices.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -54,6 +56,8 @@ const MIN_INIT = 10000;
 
 class MeasurementCounter {
   final bool si;
+  final String sport;
+
   int powerCounter = 0;
   int minPower = MIN_INIT;
   int maxPower = 0;
@@ -70,7 +74,7 @@ class MeasurementCounter {
   int minHr = MIN_INIT;
   int maxHr = 0;
 
-  MeasurementCounter({this.si});
+  MeasurementCounter({this.si, this.sport});
 
   processRecord(Record record) {
     if (record.power > 0) {
@@ -80,7 +84,7 @@ class MeasurementCounter {
     }
     if (record.speed > 0) {
       speedCounter++;
-      final speed = record.speedByUnit(si);
+      final speed = record.speedByUnit(si, sport);
       maxSpeed = max(maxSpeed, speed);
       minSpeed = min(minSpeed, speed);
     }
@@ -166,6 +170,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<String> _selectedTimes;
   List<String> _selectedValues;
   bool _si;
+  DeviceDescriptor _descriptor;
 
   double _sizeDefault;
   double _sizeDefault2;
@@ -185,6 +190,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     _selectedTimes = [];
     _selectedValues = [];
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    _descriptor = deviceMap[activity.fourCC];
     _fontFamilyProperties = getFontFamilyProperties();
     activity.hydrate();
     $FloorAppDatabase
@@ -204,7 +210,8 @@ class RecordsScreenState extends State<RecordsScreen> {
               _sampledRecords = List.generate(_pointCount,
                   (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate());
             }
-            final measurementCounter = MeasurementCounter(si: _si);
+            final measurementCounter =
+                MeasurementCounter(si: _si, sport: _descriptor.sport);
             _allRecords.forEach((record) {
               measurementCounter.processRecord(record);
             });
@@ -212,6 +219,7 @@ class RecordsScreenState extends State<RecordsScreen> {
 
             var accu = StatisticsAccumulator(
               si: _si,
+              sport: _descriptor.sport,
               calculateAvgPower: measurementCounter.hasPower,
               calculateMaxPower: measurementCounter.hasPower,
               calculateAvgSpeed: measurementCounter.hasSpeed,
@@ -342,8 +350,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                 if (record.speed > 0) {
                   var tileConfig = _tileConfigurations["speed"];
                   tileConfig.count++;
-                  final binIndex =
-                      preferencesSpecs[1].binIndex(record.speedByUnit(_si));
+                  final binIndex = preferencesSpecs[1]
+                      .binIndex(record.speedByUnit(_si, _descriptor.sport));
                   tileConfig.histogram[binIndex].increment();
                 }
               }
@@ -467,17 +475,19 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'speed',
-        colorFn: (Record record, __) =>
-            preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si)),
+        colorFn: (Record record, __) => preferencesSpecs[1]
+            .fgColorByValue(record.speedByUnit(_si, _descriptor.sport)),
         domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.speedByUnit(_si),
+        measureFn: (Record record, _) =>
+            record.speedByUnit(_si, _descriptor.sport),
         data: _sampledRecords,
       ),
     ];
   }
 
   String _getSpeedString(Record record) {
-    return decimalRound(record.speedByUnit(_si)).toString();
+    return decimalRound(record.speedByUnit(_si, _descriptor.sport))
+        .toString(); // TODO
   }
 
   void _speedSelectionListener(charts.SelectionModel<DateTime> model) {

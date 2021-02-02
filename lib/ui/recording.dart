@@ -165,7 +165,7 @@ class RecordingState extends State<RecordingScreen> {
     _values = [
       record.calories.toString(),
       record.power.toString(),
-      record.speedByUnit(_si).toStringAsFixed(1),
+      record.speedByUnit(_si, descriptor.sport).toStringAsFixed(1), // TODO
       record.cadence.toString(),
       record.heartRate.toString(),
       record.distanceStringByUnit(_si),
@@ -607,10 +607,11 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'speed',
-        colorFn: (Record record, __) =>
-            preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si)),
+        colorFn: (Record record, __) => preferencesSpecs[1]
+            .fgColorByValue(record.speedByUnit(_si, descriptor.sport)),
         domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.speedByUnit(_si),
+        measureFn: (Record record, _) =>
+            record.speedByUnit(_si, descriptor.sport),
         data: graphData,
       ),
     ];

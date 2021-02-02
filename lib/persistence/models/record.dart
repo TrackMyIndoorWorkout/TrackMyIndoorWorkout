@@ -53,7 +53,8 @@ class Record {
     return this;
   }
 
-  double speedByUnit(bool si) {
+  double speedByUnit(bool si, String sport) {
+    // TODO: sport
     if (si) return speed;
     return speed * KM2MI;
   }
@@ -65,6 +66,6 @@ class Record {
 
   String distanceStringByUnit(bool si) {
     final dist = distanceByUnit(si);
-    return dist.toStringAsFixed(si ? 0: 2);
+    return dist.toStringAsFixed(si ? 0 : 2);
   }
 }

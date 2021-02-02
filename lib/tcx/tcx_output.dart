@@ -6,6 +6,7 @@ import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
+import '../tcx/activity_type.dart';
 import '../track/tracks.dart';
 import '../track/utils.dart';
 import '../utils/statistics_accumulator.dart';
@@ -149,6 +150,8 @@ class TCXOutput {
     final calculateAvgCadence =
         tcxInfo.averageCadence == null || tcxInfo.averageCadence == 0;
     var accu = StatisticsAccumulator(
+      si: true,
+      sport: ActivityType.Ride,
       calculateMaxSpeed: calculateMaxSpeed,
       calculateAvgHeartRate: calculateAvgHeartRate,
       calculateMaxHeartRate: calculateMaxHeartRate,

@@ -5,6 +5,7 @@ import '../tcx/tcx_model.dart';
 
 class StatisticsAccumulator {
   final bool si;
+  final String sport;
 
   bool calculateAvgPower;
   bool calculateMaxPower;
@@ -36,6 +37,7 @@ class StatisticsAccumulator {
 
   StatisticsAccumulator({
     this.si,
+    this.sport,
     this.calculateAvgPower = false,
     this.calculateMaxPower = false,
     this.calculateAvgSpeed = false,
@@ -125,7 +127,7 @@ class StatisticsAccumulator {
       }
     }
     if (record.speed != null) {
-      final speed = record.speedByUnit(si);
+      final speed = record.speedByUnit(si, sport);
       if (calculateAvgSpeed) {
         speedSum += speed;
         speedCount++;
