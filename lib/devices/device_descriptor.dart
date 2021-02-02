@@ -117,6 +117,19 @@ abstract class DeviceDescriptor {
     return sport;
   }
 
+  String unit(bool si) {
+    if (sport == ActivityType.Ride || sport == ActivityType.VirtualRide) {
+      return si ? 'kmh' : 'mph';
+    } else if (sport == ActivityType.Run || sport == ActivityType.VirtualRun) {
+      return si ? 'min /km' : 'min /mi';
+    } else if (sport == ActivityType.Kayaking ||
+        sport == ActivityType.Canoeing ||
+        sport == ActivityType.Rowing) {
+      return 'min /500';
+    }
+    return si ? 'kmh' : 'mph';
+  }
+
   setPowerThrottle(String throttlePercentString, bool throttleOther) {
     int throttlePercent = int.tryParse(throttlePercentString);
     throttlePower = (100 - throttlePercent) / 100;

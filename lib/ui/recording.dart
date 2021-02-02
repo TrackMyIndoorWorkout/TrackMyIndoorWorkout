@@ -382,7 +382,7 @@ class RecordingState extends State<RecordingScreen> {
     if (!_simplerUi) {
       _graphData = ListQueue<Record>(_pointCount);
     }
-    preferencesSpecs[1].unit = _si ? 'kmh' : 'mph';
+    preferencesSpecs[1].unit = descriptor.unit(_si);
     preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
     preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
