@@ -486,8 +486,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   }
 
   String _getSpeedString(Record record) {
-    return decimalRound(record.speedByUnit(_si, _descriptor.sport))
-        .toString(); // TODO
+    return record.speedStringByUnit(_si, _descriptor.sport);
   }
 
   void _speedSelectionListener(charts.SelectionModel<DateTime> model) {

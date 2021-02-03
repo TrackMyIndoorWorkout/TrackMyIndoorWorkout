@@ -165,7 +165,7 @@ class RecordingState extends State<RecordingScreen> {
     _values = [
       record.calories.toString(),
       record.power.toString(),
-      record.speedByUnit(_si, descriptor.sport).toStringAsFixed(1), // TODO
+      record.speedStringByUnit(_si, descriptor.sport),
       record.cadence.toString(),
       record.heartRate.toString(),
       record.distanceStringByUnit(_si),

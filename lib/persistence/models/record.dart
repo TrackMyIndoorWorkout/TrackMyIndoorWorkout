@@ -1,5 +1,6 @@
 import 'package:floor/floor.dart';
 import '../../persistence/preferences.dart';
+import '../../tcx/activity_type.dart';
 import 'activity.dart';
 
 const String RECORDS_TABLE_NAME = 'records';
@@ -54,9 +55,43 @@ class Record {
   }
 
   double speedByUnit(bool si, String sport) {
-    // TODO: sport
-    if (si) return speed;
-    return speed * KM2MI;
+    if (sport == ActivityType.Ride || sport == ActivityType.VirtualRide) {
+      if (si) return speed;
+      return speed * KM2MI;
+    } else if (sport == ActivityType.Run || sport == ActivityType.VirtualRun) {
+      final pace = 60 / speed;
+      if (si) return pace;
+      return pace / KM2MI; // mph is lower than kmh but pace is reciprocal
+    } else if (sport == ActivityType.Kayaking ||
+        sport == ActivityType.Canoeing ||
+        sport == ActivityType.Rowing) {
+      return 30 / speed;
+    }
+    return speed;
+  }
+
+  String speedStringByUnit(bool si, String sport) {
+    final spd = speedByUnit(si, sport);
+    if (sport == ActivityType.Ride || sport == ActivityType.VirtualRide) {
+      return spd.toStringAsFixed(2);
+    } else if (sport == ActivityType.Run ||
+        sport == ActivityType.VirtualRun ||
+        sport == ActivityType.Kayaking ||
+        sport == ActivityType.Canoeing ||
+        sport == ActivityType.Rowing) {
+      var pace = 60 / speed;
+      if (sport == ActivityType.Kayaking ||
+          sport == ActivityType.Canoeing ||
+          sport == ActivityType.Rowing) {
+        pace /= 2;
+      } else if (!si) {
+        pace /= KM2MI;
+      }
+      final minutes = pace.truncate();
+      final seconds = ((pace - minutes) * 60).truncate();
+      return "$minutes" + seconds.toString().padLeft(2, "0");
+    }
+    return spd.toStringAsFixed(2);
   }
 
   double distanceByUnit(bool si) {
