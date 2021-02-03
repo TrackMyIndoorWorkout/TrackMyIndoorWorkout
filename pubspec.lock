@@ -481,6 +481,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.7"
+  mock_data:
+    dependency: "direct dev"
+    description:
+      name: mock_data
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.8"
+  mockito:
+    dependency: "direct dev"
+    description:
+      name: mockito
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.4"
   node_interop:
     dependency: transitive
     description:

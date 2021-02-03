@@ -39,6 +39,8 @@ dev_dependencies:
   build_runner: ^1.10.11
   floor_generator: 0.18.0
   integration_test: ^1.0.1
+  mockito: any
+  mock_data: any
   flutter_test:
     sdk: flutter
   flutter_driver:
