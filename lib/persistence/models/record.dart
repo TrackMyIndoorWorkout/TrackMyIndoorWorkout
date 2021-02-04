@@ -59,15 +59,15 @@ class Record {
       if (si) return speed;
       return speed * KM2MI;
     } else if (sport == ActivityType.Run || sport == ActivityType.VirtualRun) {
-      if (speed.abs() < 10e-4) return 0;
-      final pace = 60 / speed;
+      if (speed.abs() < 10e-4) return 0.0;
+      final pace = 60.0 / speed;
       if (si) return pace;
       return pace / KM2MI; // mph is lower than kmh but pace is reciprocal
     } else if (sport == ActivityType.Kayaking ||
         sport == ActivityType.Canoeing ||
         sport == ActivityType.Rowing) {
-      if (speed.abs() < 10e-4) return 0;
-      return 30 / speed;
+      if (speed.abs() < 10e-4) return 0.0;
+      return 30.0 / speed;
     }
     return speed;
   }
@@ -86,7 +86,7 @@ class Record {
       if (sport == ActivityType.Kayaking ||
           sport == ActivityType.Canoeing ||
           sport == ActivityType.Rowing) {
-        pace /= 2;
+        pace /= 2.0;
       } else if (!si) {
         pace /= KM2MI;
       }

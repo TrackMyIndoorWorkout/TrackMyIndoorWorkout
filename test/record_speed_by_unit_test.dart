@@ -44,7 +44,7 @@ void main() {
     final sports = [ActivityType.Run, ActivityType.VirtualRun];
     speeds.forEach((speed) {
       sports.forEach((sport) {
-        final expected = speed.abs() < 10e-4 ? 0 : 60 / speed;
+        final expected = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed;
         test("$speed -> $expected", () {
           final record = Record(speed: speed);
           expect(record.speedByUnit(true, sport), expected);
@@ -57,7 +57,7 @@ void main() {
     final sports = [ActivityType.Run, ActivityType.VirtualRun];
     speeds.forEach((speed) {
       sports.forEach((sport) {
-        final expected = speed.abs() < 10e-4 ? 0 : 60 / speed / KM2MI;
+        final expected = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed / KM2MI;
         test("$speed -> $expected", () {
           final record = Record(speed: speed);
           expect(record.speedByUnit(false, sport), expected);
@@ -74,7 +74,7 @@ void main() {
     ];
     speeds.forEach((speed) {
       sports.forEach((sport) {
-        final expected = speed.abs() < 10e-4 ? 0 : 30 / speed;
+        final expected = speed.abs() < 10e-4 ? 0.0 : 30.0 / speed;
         test("$speed -> $expected", () {
           final record = Record(speed: speed);
           // There's no imperial for water sports, it's always 500m
