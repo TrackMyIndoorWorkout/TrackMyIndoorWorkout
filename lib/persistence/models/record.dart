@@ -81,7 +81,8 @@ class Record {
         sport == ActivityType.Kayaking ||
         sport == ActivityType.Canoeing ||
         sport == ActivityType.Rowing) {
-      var pace = 60 / speed;
+      if (speed.abs() < 10e-4) return "0:00";
+      var pace = 60.0 / speed;
       if (sport == ActivityType.Kayaking ||
           sport == ActivityType.Canoeing ||
           sport == ActivityType.Rowing) {
