@@ -64,4 +64,60 @@ void main() {
       });
     });
   });
+
+  group("speedByUnit for metric system and running:", () {
+    final sports = [ActivityType.Run, ActivityType.VirtualRun];
+    speeds.forEach((speed) {
+      sports.forEach((sport) {
+        final expected = speed.abs() < 10e-4 ? 0 : 60 / speed;
+        test("$speed -> $expected", () {
+          final record = Record(speed: speed);
+          expect(record.speedByUnit(true, sport), expected);
+        });
+      });
+    });
+  });
+
+  group("speedByUnit for imperial system and running:", () {
+    final sports = [ActivityType.Run, ActivityType.VirtualRun];
+    speeds.forEach((speed) {
+      sports.forEach((sport) {
+        final expected = speed.abs() < 10e-4 ? 0 : 60 / speed / KM2MI;
+        test("$speed -> $expected", () {
+          final record = Record(speed: speed);
+          expect(record.speedByUnit(false, sport), expected);
+        });
+      });
+    });
+  });
+
+  group("speedByUnit for water sports:", () {
+    final sports = [
+      ActivityType.Kayaking,
+      ActivityType.Canoeing,
+      ActivityType.Rowing
+    ];
+    speeds.forEach((speed) {
+      sports.forEach((sport) {
+        final expected = speed.abs() < 10e-4 ? 0 : 30 / speed;
+        test("$speed -> $expected", () {
+          final record = Record(speed: speed);
+          // There's no imperial for water sports, it's always 500m
+          expect(record.speedByUnit(false, sport), expected);
+          expect(record.speedByUnit(true, sport), expected);
+        });
+      });
+    });
+  });
+
+  group("speedByUnit for elliptical sports:", () {
+    speeds.forEach((speed) {
+      test("$speed", () {
+        final record = Record(speed: speed);
+        // There's no imperial for water sports, it's always 500m
+        expect(record.speedByUnit(false, ActivityType.Elliptical), speed);
+        expect(record.speedByUnit(true, ActivityType.Elliptical), speed);
+      });
+    });
+  });
 }
