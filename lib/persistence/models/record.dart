@@ -72,6 +72,12 @@ class Record {
     return speed;
   }
 
+  static String paceString(double pace) {
+    final minutes = pace.truncate();
+    final seconds = ((pace - minutes) * 60.0).truncate();
+    return "$minutes:" + seconds.toString().padLeft(2, "0");
+  }
+
   String speedStringByUnit(bool si, String sport) {
     final spd = speedByUnit(si, sport);
     if (sport == ActivityType.Ride || sport == ActivityType.VirtualRide) {
@@ -90,9 +96,7 @@ class Record {
       } else if (!si) {
         pace /= KM2MI;
       }
-      final minutes = pace.truncate();
-      final seconds = ((pace - minutes) * 60).truncate();
-      return "$minutes" + seconds.toString().padLeft(2, "0");
+      return paceString(pace);
     }
     return spd.toStringAsFixed(2);
   }
