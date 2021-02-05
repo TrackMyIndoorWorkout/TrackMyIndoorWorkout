@@ -10,4 +10,4 @@
   1. [Schwinn IC4](https://www.schwinnfitness.com/ic4/100873.html)
   2. [Schwinn IC8](https://global.schwinnfitness.com/en/ic8/100893.html)
   3. [Bowflex C6](https://www.bowflex.com/bikes/c6/100894.html)
-  4. [CyclBar spinning](https://www.cyclebar.com/) studio's [Schwinn AC Performance Plus](https://www.amazon.com/AC-Performance-Plus-Indoor-Cycle/dp/B002KV942W) through the [MPower Echelon2 console's CSV workout file](https://www.youtube.com/watch?v=ENkHdcV_E70)'s import.
+  4. [CyclBar spinning](https://www.cyclebar.com/) studio's [Schwinn AC Performance Plus](https://www.amazon.com/AC-Performance-Plus-Indoor-Cycle/dp/B002KV942W) via the [MPower Echelon2 console's CSV workout file](https://www.youtube.com/watch?v=ENkHdcV_E70)'s import.
