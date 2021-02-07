@@ -3,14 +3,7 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import '../lib/tcx/tcx_model.dart';
 import '../lib/utils/statistics_accumulator.dart';
-
-List<int> getRandomInts(int count, int max, Random source) {
-  return List<int>.generate(count, (index) => source.nextInt(max));
-}
-
-List<double> getRandomDoubles(int count, double max, Random source) {
-  return List<double>.generate(count, (index) => source.nextDouble() * max);
-}
+import 'utils.dart';
 
 void main() {
   test('StatisticsAccumulator calculates avg power when requested', () async {
