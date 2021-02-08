@@ -38,8 +38,8 @@ void main() {
 
       final marker = calculateTrackMarker(size, 0, lengthFactor);
 
-      expect(marker.dx, size.width - THICK - offset.dx - r);
-      expect(marker.dy, THICK + offset.dy);
+      expect(marker.dx, closeTo(size.width - THICK - offset.dx - r, 1e-6));
+      expect(marker.dy, closeTo(THICK + offset.dy, 1e-6));
     });
   });
 
