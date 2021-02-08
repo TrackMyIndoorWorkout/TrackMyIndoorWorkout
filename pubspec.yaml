@@ -8,37 +8,37 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  charts_flutter: any
+  data_connection_checker: any
+  datetime_picker_formfield: any
+  device_info: any
+  expandable: any
+  fab_circular_menu: any
+  file_picker: ^2.1.6
   floor: ^0.18.0
   flutter_blue: any
   flutter_brand_icons: any
   get: ^3.24.0
-  http: any
-  intl: any
-  http_parser: any
+  http: ^0.12.2
+  http_parser: ^3.1.4
+  intl: ^0.16.1
   listview_utils: any
+  loading_overlay: any
+  preferences: any
+  progress_indicators: any
   share_files_and_screenshot_widgets: any
   shared_preferences: any
-  sqflite: any
+  sqflite: ^1.3.2+3
   uni_links: any
   url_launcher: any
   wakelock: any
-  charts_flutter: any
-  preferences: any
-  loading_overlay: any
-  fab_circular_menu: any
-  device_info: any
-  expandable: any
-  progress_indicators: any
-  data_connection_checker: any
-  datetime_picker_formfield: any
-  file_picker: any
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  build_runner: ^1.10.11
+  build_runner: ^1.11.1
   floor_generator: 0.18.0
-  integration_test: ^1.0.1
+  integration_test: ^1.0.2+2
   mockito: any
   mock_data: any
   flutter_test:
