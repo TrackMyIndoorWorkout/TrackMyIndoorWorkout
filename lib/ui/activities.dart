@@ -11,6 +11,7 @@ import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_wi
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
+import '../persistence/font_family_properties.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';

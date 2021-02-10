@@ -1,7 +1,7 @@
 import 'package:charts_flutter/flutter.dart' hide TextStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import '../persistence/preferences.dart';
+import '../persistence/font_family_properties.dart';
 import 'find_devices.dart';
 
 class ScanResultTile extends StatelessWidget {

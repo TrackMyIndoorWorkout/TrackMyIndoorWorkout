@@ -8,6 +8,7 @@ import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../devices/devices.dart';
+import '../persistence/font_family_properties.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';

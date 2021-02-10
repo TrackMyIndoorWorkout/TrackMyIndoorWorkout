@@ -21,6 +21,7 @@ import '../devices/gatt_constants.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
+import '../persistence/font_family_properties.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
@@ -28,17 +29,9 @@ import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/utils.dart';
 import 'activities.dart';
+import 'row_configuration.dart';
 
 typedef DataFn = List<charts.Series<Record, DateTime>> Function();
-
-class RowConfig {
-  final IconData icon;
-  final String unit;
-
-  RowConfig({@required this.icon, @required this.unit})
-      : assert(icon != null),
-        assert(unit != null);
-}
 
 extension DeviceIdentification on BluetoothDevice {
   DeviceDescriptor getDescriptor() {
@@ -133,7 +126,7 @@ class RecordingState extends State<RecordingScreen> {
 
   List<Record> get graphData => _graphData.toList();
   Map<String, DataFn> _metricToDataFn = {};
-  List<RowConfig> _rowConfig;
+  List<RowConfiguration> _rowConfig;
   List<String> _values;
   bool _isLoading;
 
@@ -408,12 +401,12 @@ class RecordingState extends State<RecordingScreen> {
     };
 
     _rowConfig = [
-      RowConfig(icon: Icons.whatshot, unit: 'cal'),
-      RowConfig(icon: preferencesSpecs[0].icon, unit: preferencesSpecs[0].unit),
-      RowConfig(icon: preferencesSpecs[1].icon, unit: preferencesSpecs[1].unit),
-      RowConfig(icon: preferencesSpecs[2].icon, unit: preferencesSpecs[2].unit),
-      RowConfig(icon: preferencesSpecs[3].icon, unit: preferencesSpecs[3].unit),
-      RowConfig(icon: Icons.add_road, unit: _si ? 'm' : 'mi'),
+      RowConfiguration(icon: Icons.whatshot, unit: 'cal'),
+      RowConfiguration(icon: preferencesSpecs[0].icon, unit: preferencesSpecs[0].unit),
+      RowConfiguration(icon: preferencesSpecs[1].icon, unit: preferencesSpecs[1].unit),
+      RowConfiguration(icon: preferencesSpecs[2].icon, unit: preferencesSpecs[2].unit),
+      RowConfiguration(icon: preferencesSpecs[3].icon, unit: preferencesSpecs[3].unit),
+      RowConfiguration(icon: Icons.add_road, unit: _si ? 'm' : 'mi'),
     ];
     _expandableThemeData = ExpandableThemeData(hasIcon: false);
     _rowControllers = [];

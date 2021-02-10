@@ -4,19 +4,10 @@ import 'package:meta/meta.dart';
 
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
+import 'cadence_data.dart';
 import 'device_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
-
-class CadenceData {
-  final double seconds;
-  int revolutions;
-
-  CadenceData({
-    @required this.seconds,
-    @required this.revolutions,
-  });
-}
 
 class GattStandardDeviceDescriptor extends DeviceDescriptor {
   // Primary metrics

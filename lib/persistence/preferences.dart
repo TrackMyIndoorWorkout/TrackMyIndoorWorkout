@@ -4,6 +4,7 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
+import 'font_family_properties.dart';
 
 Color getTranslucent(Color c) {
   return Color(
@@ -314,17 +315,6 @@ const COMPRESS_DOWNLOAD_DEFAULT = true;
 const COMPRESS_DOWNLOAD_DESCRIPTION =
     "On: the downloaded file is gzip compressed (TCX.gz). " +
         "Off: the downloaded file is TCX (no compression)";
-
-class FontFamilyProperties {
-  final String primary;
-  final String secondary;
-
-  FontFamilyProperties({
-    @required this.primary,
-    @required this.secondary,
-  })  : assert(primary != null),
-        assert(secondary != null);
-}
 
 Map<String, FontFamilyProperties> fontSelectionToFamilyProperties = {
   FONT_SELECTION_REGULAR: FontFamilyProperties(

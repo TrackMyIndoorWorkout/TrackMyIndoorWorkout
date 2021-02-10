@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:expandable/expandable.dart';
@@ -7,15 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:preferences/preferences.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/devices.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../devices/device_descriptor.dart';
+import '../devices/devices.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
+import '../persistence/font_family_properties.dart';
 import '../persistence/preferences.dart';
 import '../utils/statistics_accumulator.dart';
 import 'find_devices.dart';
+import 'histogram_data.dart';
+import 'measurement_counter.dart';
+import 'tile_configuration.dart';
 
 class RecordsScreen extends StatefulWidget {
   final Activity activity;
@@ -31,150 +33,6 @@ class RecordsScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return RecordsScreenState(activity: activity, size: size);
-  }
-}
-
-class HistogramData {
-  final int index;
-  final double upper;
-  int count;
-  int percent;
-
-  HistogramData({
-    @required this.index,
-    @required this.upper,
-  })  : assert(index != null),
-        assert(upper != null) {
-    count = 0;
-    percent = 0;
-  }
-
-  increment() {
-    count++;
-  }
-
-  calculatePercent(int total) {
-    if (total > 0) {
-      percent = count * 100 ~/ total;
-    } else {
-      percent = 0;
-    }
-  }
-}
-
-const MIN_INIT = 10000;
-
-class MeasurementCounter {
-  final bool si;
-  final String sport;
-
-  int powerCounter = 0;
-  int minPower = MIN_INIT;
-  int maxPower = 0;
-
-  int speedCounter = 0;
-  double minSpeed = MIN_INIT.toDouble();
-  double maxSpeed = 0;
-
-  int cadenceCounter = 0;
-  int minCadence = MIN_INIT;
-  int maxCadence = 0;
-
-  int hrCounter = 0;
-  int minHr = MIN_INIT;
-  int maxHr = 0;
-
-  MeasurementCounter({
-    @required this.si,
-    @required this.sport,
-  })  : assert(si != null),
-        assert(sport != null);
-
-  processRecord(Record record) {
-    if (record.power > 0) {
-      powerCounter++;
-      maxPower = max(maxPower, record.power);
-      minPower = min(minPower, record.power);
-    }
-    if (record.speed > 0) {
-      speedCounter++;
-      final speed = record.speedByUnit(si, sport);
-      maxSpeed = max(maxSpeed, speed);
-      minSpeed = min(minSpeed, speed);
-    }
-    if (record.cadence > 0) {
-      cadenceCounter++;
-      maxCadence = max(maxCadence, record.cadence);
-      minCadence = min(minCadence, record.cadence);
-    }
-    if (record.heartRate > 0) {
-      hrCounter++;
-      maxHr = max(maxHr, record.heartRate);
-      minHr = min(minHr, record.heartRate);
-    }
-  }
-
-  bool get hasPower => powerCounter > 0;
-  bool get hasSpeed => speedCounter > 0;
-  bool get hasCadence => cadenceCounter > 0;
-  bool get hasHeartRate => hrCounter > 0;
-}
-
-class SelectionData {
-  DateTime time;
-  String value;
-
-  SelectionData({@required this.time, @required this.value})
-      : assert(time != null),
-        assert(value != null);
-}
-
-typedef DataFn = List<charts.Series<Record, DateTime>> Function();
-typedef DataStringFn = String Function(Record);
-typedef HistogramFn = List<charts.Series<HistogramData, double>> Function();
-
-class TileConfiguration {
-  final String title;
-  final String histogramTitle;
-  final DataFn dataFn;
-  final DataStringFn dataStringFn;
-  HistogramFn histogramFn;
-  final List<double> zoneBounds;
-  int count;
-  List<HistogramData> histogram;
-  final common.SelectionModelListener<DateTime> selectionListener;
-  final String maxString;
-  final String avgString;
-
-  TileConfiguration({
-    @required this.title,
-    @required this.histogramTitle,
-    @required this.dataFn,
-    @required this.dataStringFn,
-    @required this.selectionListener,
-    this.zoneBounds,
-    @required this.maxString,
-    @required this.avgString,
-  })  : assert(title != null),
-        assert(histogramTitle != null),
-        assert(dataFn != null),
-        assert(dataStringFn != null),
-        assert(selectionListener != null),
-        assert(maxString != null),
-        assert(avgString != null) {
-    count = 0;
-  }
-  bool get hasMeasurement => count > 0;
-
-  SelectionData getSelectionData(charts.SelectionModel<DateTime> model) {
-    final selectedDatum = model.selectedDatum;
-
-    if (selectedDatum.isNotEmpty) {
-      final datum = selectedDatum.first.datum.hydrate();
-      return SelectionData(time: datum.dt, value: dataStringFn(datum));
-    }
-
-    return SelectionData(time: null, value: "--");
   }
 }
 
