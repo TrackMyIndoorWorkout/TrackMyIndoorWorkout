@@ -1,9 +1,9 @@
-class ThreeByteMetricDescriptor {
-  final int lsb;
-  final int msb;
-  final double divider;
+import 'package:flutter/foundation.dart';
+import 'metric_descriptor.dart';
 
-  ThreeByteMetricDescriptor({this.lsb, this.msb, this.divider});
+class ThreeByteMetricDescriptor extends MetricDescriptor {
+  ThreeByteMetricDescriptor({@required lsb, @required msb, @required divider})
+      : super(lsb: lsb, msb: msb, divider: divider);
 
   double getMeasurementValue(List<int> data) {
     final dir = lsb < msb ? 1 : -1;
