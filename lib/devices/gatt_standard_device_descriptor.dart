@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
+
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import 'device_descriptor.dart';
@@ -10,7 +12,7 @@ class CadenceData {
   final double seconds;
   int revolutions;
 
-  CadenceData({this.seconds, this.revolutions});
+  CadenceData({@required this.seconds, @required this.revolutions});
 }
 
 class GattStandardDeviceDescriptor extends DeviceDescriptor {
@@ -26,12 +28,12 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
   double _residueCalories;
 
   GattStandardDeviceDescriptor({
-    sport,
-    fourCC,
-    vendorName,
-    modelName,
+    @required sport,
+    @required fourCC,
+    @required vendorName,
+    @required modelName,
     fullName = '',
-    namePrefix,
+    @required namePrefix,
     nameStart,
     manufacturer,
     model,

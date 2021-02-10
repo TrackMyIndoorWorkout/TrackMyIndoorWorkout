@@ -1,15 +1,17 @@
+import 'package:flutter/foundation.dart';
+
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import 'device_descriptor.dart';
 
 class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   FixedLayoutDeviceDescriptor({
-    sport,
-    fourCC,
-    vendorName,
-    modelName,
+    @required sport,
+    @required fourCC,
+    @required vendorName,
+    @required modelName,
     fullName = '',
-    namePrefix,
+    @required namePrefix,
     nameStart,
     manufacturer,
     model,

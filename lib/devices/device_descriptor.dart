@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:preferences/preference_service.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -53,12 +54,12 @@ abstract class DeviceDescriptor {
   bool throttleOther;
 
   DeviceDescriptor({
-    this.sport,
-    this.fourCC,
-    this.vendorName,
-    this.modelName,
+    @required this.sport,
+    @required this.fourCC,
+    @required this.vendorName,
+    @required this.modelName,
     this.fullName = '',
-    this.namePrefix,
+    @required this.namePrefix,
     this.nameStart,
     this.manufacturer,
     this.model,
@@ -78,6 +79,13 @@ abstract class DeviceDescriptor {
     this.calorieFactor = 1.0,
     this.distanceFactor = 1.0,
   }) {
+    assert(sport != null);
+    assert(fourCC != null);
+    assert(vendorName != null);
+    assert(modelName != null);
+    assert(fullName != null);
+    assert(namePrefix != null);
+
     this.fullName = '$vendorName $modelName';
     throttlePower = 1.0;
     throttleOther = THROTTLE_OTHER_DEFAULT;
