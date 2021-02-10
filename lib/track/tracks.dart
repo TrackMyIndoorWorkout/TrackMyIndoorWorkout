@@ -1,6 +1,7 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+
 import '../tcx/activity_type.dart';
 import 'constants.dart';
 

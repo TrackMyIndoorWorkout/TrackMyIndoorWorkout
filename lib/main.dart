@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:preferences/preferences.dart';
 import 'persistence/preferences.dart';
 import 'track_my_indoor_exercise_app.dart';
