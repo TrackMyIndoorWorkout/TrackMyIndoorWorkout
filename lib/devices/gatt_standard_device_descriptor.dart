@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -12,7 +12,10 @@ class CadenceData {
   final double seconds;
   int revolutions;
 
-  CadenceData({@required this.seconds, @required this.revolutions});
+  CadenceData({
+    @required this.seconds,
+    @required this.revolutions,
+  });
 }
 
 class GattStandardDeviceDescriptor extends DeviceDescriptor {

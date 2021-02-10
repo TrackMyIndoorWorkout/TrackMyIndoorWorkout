@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 import 'package:preferences/preference_service.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';

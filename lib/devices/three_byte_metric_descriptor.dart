@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
+
 import 'metric_descriptor.dart';
 
 class ThreeByteMetricDescriptor extends MetricDescriptor {

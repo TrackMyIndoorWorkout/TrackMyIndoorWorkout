@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:meta/meta.dart';
+
 import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/gatt_standard_device_descriptor.dart';
@@ -64,7 +66,11 @@ class MPowerEchelon2Importer {
   Map<int, double> _velocityForPowerDict;
   double _throttleRatio;
 
-  MPowerEchelon2Importer({this.start, String throttlePercentString}) {
+  MPowerEchelon2Importer({
+    @required this.start,
+    @required String throttlePercentString,
+  }) : assert(start != null),
+        assert(throttlePercentString != null) {
     _velocityForPowerDict = Map<int, double>();
     final throttlePercent = int.tryParse(throttlePercentString);
     _throttleRatio = (100 - throttlePercent) / 100;

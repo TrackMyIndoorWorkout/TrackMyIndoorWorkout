@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/painting.dart';
+import 'package:meta/meta.dart';
 
 import '../tcx/activity_type.dart';
 import 'constants.dart';
@@ -25,13 +26,14 @@ class TrackDescriptor {
 
   TrackDescriptor({
     this.sport,
-    this.radiusBoost,
+    @required this.radiusBoost,
     this.center,
     this.horizontalMeter,
     this.verticalMeter,
     this.altitude,
-    this.lengthFactor,
-  });
+    @required this.lengthFactor,
+  })  : assert(radiusBoost != null),
+        assert(lengthFactor != null);
 }
 
 Map<String, TrackDescriptor> trackMap = {
