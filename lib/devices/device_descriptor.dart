@@ -78,14 +78,12 @@ abstract class DeviceDescriptor {
     this.distanceMetric,
     this.calorieFactor = 1.0,
     this.distanceFactor = 1.0,
-  }) {
-    assert(sport != null);
-    assert(fourCC != null);
-    assert(vendorName != null);
-    assert(modelName != null);
-    assert(fullName != null);
-    assert(namePrefix != null);
-
+  })  : assert(sport != null),
+        assert(fourCC != null),
+        assert(vendorName != null),
+        assert(modelName != null),
+        assert(fullName != null),
+        assert(namePrefix != null) {
     this.fullName = '$vendorName $modelName';
     throttlePower = 1.0;
     throttleOther = THROTTLE_OTHER_DEFAULT;

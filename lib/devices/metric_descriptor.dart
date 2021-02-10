@@ -9,11 +9,9 @@ abstract class MetricDescriptor {
     @required this.lsb,
     @required this.msb,
     @required this.divider,
-  }) {
-    assert(lsb != null);
-    assert(msb != null);
-    assert(divider != null);
-  }
+  })  : assert(lsb != null),
+        assert(msb != null),
+        assert(divider != null);
 
   double getMeasurementValue(List<int> data);
 }

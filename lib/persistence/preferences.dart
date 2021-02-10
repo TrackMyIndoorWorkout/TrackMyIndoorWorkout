@@ -67,15 +67,22 @@ class PreferencesSpec {
   final IconData icon;
 
   PreferencesSpec({
-    this.metric,
-    this.title,
-    this.unit,
-    this.thresholdTag,
-    this.thresholdDefault,
-    this.zonesTag,
-    this.zonesDefault,
-    this.icon,
-  });
+    @required this.metric,
+    @required this.title,
+    @required this.unit,
+    @required this.thresholdTag,
+    @required this.thresholdDefault,
+    @required this.zonesTag,
+    @required this.zonesDefault,
+    @required this.icon,
+  })  : assert(metric != null),
+        assert(title != null),
+        assert(unit != null),
+        assert(thresholdTag != null),
+        assert(thresholdDefault != null),
+        assert(zonesTag != null),
+        assert(zonesDefault != null),
+        assert(icon != null);
 
   String get fullTitle => '$title ($unit)';
   String get histogramTitle => '$title zones (%)';
@@ -313,9 +320,10 @@ class FontFamilyProperties {
   final String secondary;
 
   FontFamilyProperties({
-    this.primary,
-    this.secondary,
-  });
+    @required this.primary,
+    @required this.secondary,
+  })  : assert(primary != null),
+        assert(secondary != null);
 }
 
 Map<String, FontFamilyProperties> fontSelectionToFamilyProperties = {
