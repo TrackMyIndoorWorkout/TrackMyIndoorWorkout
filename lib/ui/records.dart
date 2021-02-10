@@ -20,7 +20,13 @@ import 'find_devices.dart';
 class RecordsScreen extends StatefulWidget {
   final Activity activity;
   final Size size;
-  RecordsScreen({Key key, this.activity, this.size}) : super(key: key);
+  RecordsScreen({
+    Key key,
+    @required this.activity,
+    @required this.size,
+  })  : assert(activity != null),
+        assert(size != null),
+        super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -34,7 +40,11 @@ class HistogramData {
   int count;
   int percent;
 
-  HistogramData({this.index, this.upper}) {
+  HistogramData({
+    @required this.index,
+    @required this.upper,
+  })  : assert(index != null),
+        assert(upper != null) {
     count = 0;
     percent = 0;
   }
@@ -74,7 +84,11 @@ class MeasurementCounter {
   int minHr = MIN_INIT;
   int maxHr = 0;
 
-  MeasurementCounter({this.si, this.sport});
+  MeasurementCounter({
+    @required this.si,
+    @required this.sport,
+  })  : assert(si != null),
+        assert(sport != null);
 
   processRecord(Record record) {
     if (record.power > 0) {
@@ -110,7 +124,9 @@ class SelectionData {
   DateTime time;
   String value;
 
-  SelectionData({this.time, this.value});
+  SelectionData({@required this.time, @required this.value})
+      : assert(time != null),
+        assert(value != null);
 }
 
 typedef DataFn = List<charts.Series<Record, DateTime>> Function();
@@ -131,15 +147,21 @@ class TileConfiguration {
   final String avgString;
 
   TileConfiguration({
-    this.title,
-    this.histogramTitle,
-    this.dataFn,
-    this.dataStringFn,
-    this.selectionListener,
+    @required this.title,
+    @required this.histogramTitle,
+    @required this.dataFn,
+    @required this.dataStringFn,
+    @required this.selectionListener,
     this.zoneBounds,
-    this.maxString,
-    this.avgString,
-  }) {
+    @required this.maxString,
+    @required this.avgString,
+  })  : assert(title != null),
+        assert(histogramTitle != null),
+        assert(dataFn != null),
+        assert(dataStringFn != null),
+        assert(selectionListener != null),
+        assert(maxString != null),
+        assert(avgString != null) {
     count = 0;
   }
   bool get hasMeasurement => count > 0;
@@ -157,7 +179,11 @@ class TileConfiguration {
 }
 
 class RecordsScreenState extends State<RecordsScreen> {
-  RecordsScreenState({this.activity, this.size});
+  RecordsScreenState({
+    @required this.activity,
+    @required this.size,
+  })  : assert(activity != null),
+        assert(size != null);
 
   final Activity activity;
   final Size size;

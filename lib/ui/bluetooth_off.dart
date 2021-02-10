@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
 class BluetoothOffScreen extends StatelessWidget {
-  const BluetoothOffScreen({Key key, this.state}) : super(key: key);
+  const BluetoothOffScreen({
+    key,
+    @required this.state,
+  })  : assert(state != null),
+        super(key: key);
 
   final BluetoothState state;
 

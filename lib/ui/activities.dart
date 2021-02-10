@@ -20,7 +20,7 @@ import 'import_form.dart';
 import 'records.dart';
 
 class ActivitiesScreen extends StatefulWidget {
-  ActivitiesScreen({Key key}) : super(key: key);
+  ActivitiesScreen({key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {

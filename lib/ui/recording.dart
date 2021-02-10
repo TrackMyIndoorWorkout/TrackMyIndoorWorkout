@@ -35,7 +35,9 @@ class RowConfig {
   final IconData icon;
   final String unit;
 
-  RowConfig({this.icon, this.unit});
+  RowConfig({@required this.icon, @required this.unit})
+      : assert(icon != null),
+        assert(unit != null);
 }
 
 extension DeviceIdentification on BluetoothDevice {
@@ -58,10 +60,13 @@ class RecordingScreen extends StatefulWidget {
 
   RecordingScreen({
     Key key,
-    this.device,
-    this.initialState,
-    this.size,
-  }) : super(key: key);
+    @required this.device,
+    @required this.initialState,
+    @required this.size,
+  })  : assert(device != null),
+        assert(initialState != null),
+        assert(size != null),
+        super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -71,7 +76,13 @@ class RecordingScreen extends StatefulWidget {
 }
 
 class RecordingState extends State<RecordingScreen> {
-  RecordingState({this.device, this.initialState, this.size}) {
+  RecordingState({
+    @required this.device,
+    @required this.initialState,
+    @required this.size,
+  })  : assert(device != null),
+        assert(initialState != null),
+        assert(size != null) {
     this.descriptor = device.getDescriptor();
     _lengthFactor = this.descriptor.lengthFactor;
   }

@@ -69,7 +69,7 @@ class MPowerEchelon2Importer {
   MPowerEchelon2Importer({
     @required this.start,
     @required String throttlePercentString,
-  }) : assert(start != null),
+  })  : assert(start != null),
         assert(throttlePercentString != null) {
     _velocityForPowerDict = Map<int, double>();
     final throttlePercent = int.tryParse(throttlePercentString);
