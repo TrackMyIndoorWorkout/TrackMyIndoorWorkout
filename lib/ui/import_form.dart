@@ -72,7 +72,7 @@ class _ImportFormState extends State<ImportForm> {
                 decoration: InputDecoration(
                   labelText: 'MPower CSV File URL',
                   hintText: 'Paste the CSV file URL',
-                  suffixIcon: RaisedButton(
+                  suffixIcon: ElevatedButton(
                     child: Text(
                       '⋯',
                       style: TextStyle(fontSize: 30),
@@ -178,7 +178,7 @@ class _ImportFormState extends State<ImportForm> {
                     ),
                   ),
                   Expanded(child: Container()),
-                  RaisedButton(
+                  ElevatedButton(
                     child: Text('Reset'),
                     onPressed: () => _formKey.currentState.reset(),
                   ),

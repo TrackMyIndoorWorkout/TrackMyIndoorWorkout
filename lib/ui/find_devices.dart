@@ -369,7 +369,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 title: 'Device filtering',
                 middleText: 'Should the app try to filter supported devices? ' +
                     'Yes: filter. No: show all nearby Bluetooth devices',
-                confirm: FlatButton(
+                confirm: TextButton(
                   child: Text("Yes"),
                   onPressed: () {
                     PrefService.setBool(DEVICE_FILTERING_TAG, true);
@@ -379,7 +379,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     Get.close(1);
                   },
                 ),
-                cancel: FlatButton(
+                cancel: TextButton(
                   child: Text("No"),
                   onPressed: () {
                     PrefService.setBool(DEVICE_FILTERING_TAG, false);

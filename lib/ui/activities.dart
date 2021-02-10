@@ -134,7 +134,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             Get.defaultDialog(
               title: 'Warning!!!',
               middleText: 'Are you sure to delete this Activity?',
-              confirm: FlatButton(
+              confirm: TextButton(
                 child: Text("Yes"),
                 onPressed: () async {
                   await _database.recordDao
@@ -146,7 +146,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                   Get.close(1);
                 },
               ),
-              cancel: FlatButton(
+              cancel: TextButton(
                 child: Text("No"),
                 onPressed: () => Get.close(1),
               ),
@@ -240,7 +240,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                   return Column(
                     children: <Widget>[
                       Text(error.toString()),
-                      RaisedButton(
+                      ElevatedButton(
                         onPressed: () => state.loadMore(),
                         child: Text('Retry'),
                       ),

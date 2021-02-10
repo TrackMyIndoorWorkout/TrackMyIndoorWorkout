@@ -318,7 +318,7 @@ class RecordingState extends State<RecordingScreen> {
           middleText:
               'The device does not look like a ${descriptor.fullName}. ' +
                   'Measurement is not started',
-          confirm: FlatButton(
+          confirm: TextButton(
             child: Text("Ok"),
             onPressed: () => Get.close(1),
           ),
