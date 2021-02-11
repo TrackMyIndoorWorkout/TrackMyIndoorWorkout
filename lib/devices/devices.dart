@@ -30,12 +30,12 @@ Map<String, DeviceDescriptor> deviceMap = {
       return true;
     },
     heartRate: 5,
-    timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4, divider: 1),
-    caloriesMetric: ShortMetricDescriptor(lsb: 13, msb: 14, divider: 1),
-    speedMetric: ShortMetricDescriptor(lsb: 6, msb: 7, divider: 100),
-    powerMetric: ShortMetricDescriptor(lsb: 17, msb: 18, divider: 1),
-    cadenceMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 10),
-    distanceMetric: ThreeByteMetricDescriptor(lsb: 10, msb: 12, divider: 1),
+    timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4, divider: 1.0),
+    caloriesMetric: ShortMetricDescriptor(lsb: 13, msb: 14, divider: 1.0),
+    speedMetric: ShortMetricDescriptor(lsb: 6, msb: 7, divider: 100.0),
+    powerMetric: ShortMetricDescriptor(lsb: 17, msb: 18, divider: 1.0),
+    cadenceMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 10.0),
+    distanceMetric: ThreeByteMetricDescriptor(lsb: 10, msb: 12, divider: 1.0),
   ),
   "SIC4": GattStandardDeviceDescriptor(
     sport: ActivityType.VirtualRide,

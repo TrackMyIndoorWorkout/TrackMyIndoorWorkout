@@ -77,7 +77,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     if (hasInstantSpeed) {
       // UInt16, km/h with 0.01 resolution
       speedMetric = ShortMetricDescriptor(
-          lsb: byteCounter, msb: byteCounter + 1, divider: 100);
+          lsb: byteCounter, msb: byteCounter + 1, divider: 100.0);
       byteCounter += 2;
     }
     flag ~/= 2;
@@ -86,7 +86,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       // UInt16, km/h with 0.01 resolution
       if (!hasInstantSpeed) {
         speedMetric = ShortMetricDescriptor(
-            lsb: byteCounter, msb: byteCounter + 1, divider: 100);
+            lsb: byteCounter, msb: byteCounter + 1, divider: 100.0);
       }
       byteCounter += 2;
     }
@@ -95,7 +95,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     if (hasInstantCadence) {
       // UInt16, revolutions / minute with 0.5 resolution
       cadenceMetric = ShortMetricDescriptor(
-          lsb: byteCounter, msb: byteCounter + 1, divider: 2);
+          lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
       byteCounter += 2;
     }
     flag ~/= 2;
@@ -105,7 +105,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       // UInt16, revolutions / minute with 0.5 resolution
       if (!hasInstantCadence) {
         cadenceMetric = ShortMetricDescriptor(
-            lsb: byteCounter, msb: byteCounter + 1, divider: 2);
+            lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
       }
       byteCounter += 2;
     }
@@ -114,7 +114,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     if (flag % 2 == 1) {
       // UInt24, meters
       distanceMetric = ThreeByteMetricDescriptor(
-          lsb: byteCounter, msb: byteCounter + 2, divider: 1);
+          lsb: byteCounter, msb: byteCounter + 2, divider: 1.0);
       byteCounter += 3;
     }
     flag ~/= 2;
@@ -128,7 +128,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     if (hasInstantPower) {
       // SInt16, Watts
       powerMetric = ShortMetricDescriptor(
-          lsb: byteCounter, msb: byteCounter + 1, divider: 1);
+          lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
       byteCounter += 2;
     }
     flag ~/= 2;
@@ -138,7 +138,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
       // SInt16, Watts
       if (!hasInstantPower) {
         powerMetric = ShortMetricDescriptor(
-            lsb: byteCounter, msb: byteCounter + 1, divider: 1);
+            lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
       }
       byteCounter += 2;
     }
@@ -147,7 +147,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     if (flag % 2 == 1) {
       // Total Energy: UInt16
       caloriesMetric = ShortMetricDescriptor(
-          lsb: byteCounter, msb: byteCounter + 1, divider: 1);
+          lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
       // Also skipping Energy / hour UInt16 and Energy / minute UInt8
       byteCounter += 5;
     }
@@ -168,7 +168,7 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
     // Has Elapsed Time
     if (flag % 2 == 1) {
       timeMetric = ShortMetricDescriptor(
-          lsb: byteCounter, msb: byteCounter + 1, divider: 1);
+          lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
       byteCounter += 2;
     }
     flag ~/= 2;
@@ -290,9 +290,9 @@ class GattStandardDeviceDescriptor extends DeviceDescriptor {
         return 0;
       }
       revolutions = ShortMetricDescriptor(
-          lsb: lengthOffset, msb: lengthOffset + 1, divider: 1);
+          lsb: lengthOffset, msb: lengthOffset + 1, divider: 1.0);
       revolutionTime = ShortMetricDescriptor(
-          lsb: lengthOffset + 2, msb: lengthOffset + 3, divider: 1024);
+          lsb: lengthOffset + 2, msb: lengthOffset + 3, divider: 1024.0);
       _cadenceFlag = flag;
     }
 
