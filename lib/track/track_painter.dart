@@ -14,16 +14,13 @@ class TrackPainter extends CustomPainter {
         size.width != RecordingState.trackSize.width ||
         size.height != RecordingState.trackSize.height) {
       RecordingState.trackSize = size;
-      final rX = (size.width - 2 * THICK) /
-          (2 * track.radiusBoost + pi * track.laneShrink);
+      final rX = (size.width - 2 * THICK) / (2 * track.radiusBoost + pi * track.laneShrink);
       final rY = (size.height - 2 * THICK) / (2 * track.radiusBoost);
       final r = min(rY, rX) * track.radiusBoost;
       RecordingState.trackRadius = r;
 
       final offset = Offset(
-          rX < rY
-              ? 0
-              : (size.width - 2 * (THICK + r) - pi * r * track.laneShrink) / 2,
+          rX < rY ? 0 : (size.width - 2 * (THICK + r) - pi * r * track.laneShrink) / 2,
           rX > rY ? 0 : (size.height - 2 * (THICK + r)) / 2);
       RecordingState.trackOffset = offset;
 
@@ -33,14 +30,11 @@ class TrackPainter extends CustomPainter {
         ..strokeWidth = 2 * THICK
         ..isAntiAlias = true;
 
-      final leftHalfCircleRect = Rect.fromCircle(
-          center: Offset(r + THICK + offset.dx, r + THICK + offset.dy),
-          radius: r);
+      final leftHalfCircleRect =
+          Rect.fromCircle(center: Offset(r + THICK + offset.dx, r + THICK + offset.dy), radius: r);
 
       final rightHalfCircleRect = Rect.fromCircle(
-          center:
-              Offset(size.width - r - THICK - offset.dx, r + THICK + offset.dy),
-          radius: r);
+          center: Offset(size.width - r - THICK - offset.dx, r + THICK + offset.dy), radius: r);
 
       RecordingState.trackPath = Path()
         ..moveTo(THICK + offset.dx + r, THICK + offset.dy)

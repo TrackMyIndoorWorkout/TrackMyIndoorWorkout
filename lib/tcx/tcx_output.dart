@@ -42,8 +42,7 @@ class TCXOutput {
       ..heartRate = record.heartRate;
   }
 
-  Future<List<int>> getTcxOfActivity(
-      Activity activity, List<Record> records, bool compress) async {
+  Future<List<int>> getTcxOfActivity(Activity activity, List<Record> records, bool compress) async {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
     final descriptor = deviceMap[activity.fourCC];
     final track = getDefaultTrack(descriptor.sport);
@@ -122,14 +121,12 @@ class TCXOutput {
   addLap(TCXModel tcxInfo) {
     // Add lap
     //---------
-    _sb.write(
-        '        <Lap StartTime="${createTimestamp(tcxInfo.dateActivity)}">\n');
+    _sb.write('        <Lap StartTime="${createTimestamp(tcxInfo.dateActivity)}">\n');
 
     // Assuming that points are ordered by time stamp ascending
     TrackPoint lastTrackPoint = tcxInfo.points.last;
     if (lastTrackPoint != null) {
-      if ((tcxInfo.totalTime == null || tcxInfo.totalTime == 0) &&
-          lastTrackPoint.date != null) {
+      if ((tcxInfo.totalTime == null || tcxInfo.totalTime == 0) && lastTrackPoint.date != null) {
         tcxInfo.totalTime = lastTrackPoint.date.millisecondsSinceEpoch / 1000;
       }
       if ((tcxInfo.totalDistance == null || tcxInfo.totalDistance == 0) &&
@@ -143,12 +140,9 @@ class TCXOutput {
     addElement('DistanceMeters', tcxInfo.totalDistance.toStringAsFixed(2));
 
     final calculateMaxSpeed = tcxInfo.maxSpeed == null || tcxInfo.maxSpeed == 0;
-    final calculateAvgHeartRate =
-        tcxInfo.averageHeartRate == null || tcxInfo.averageHeartRate == 0;
-    final calculateMaxHeartRate =
-        tcxInfo.maximumHeartRate == null || tcxInfo.maximumHeartRate == 0;
-    final calculateAvgCadence =
-        tcxInfo.averageCadence == null || tcxInfo.averageCadence == 0;
+    final calculateAvgHeartRate = tcxInfo.averageHeartRate == null || tcxInfo.averageHeartRate == 0;
+    final calculateMaxHeartRate = tcxInfo.maximumHeartRate == null || tcxInfo.maximumHeartRate == 0;
+    final calculateAvgCadence = tcxInfo.averageCadence == null || tcxInfo.averageCadence == 0;
     var accu = StatisticsAccumulator(
       si: true,
       sport: ActivityType.Ride,
@@ -182,8 +176,7 @@ class TCXOutput {
     addElement('MaximumSpeed', tcxInfo.maxSpeed.toStringAsFixed(2));
 
     if (tcxInfo.averageHeartRate != null && tcxInfo.averageHeartRate > 0) {
-      addElement(
-          'AverageHeartRateBpm', tcxInfo.averageHeartRate.toStringAsFixed(2));
+      addElement('AverageHeartRateBpm', tcxInfo.averageHeartRate.toStringAsFixed(2));
     }
     if (tcxInfo.maximumHeartRate != null && tcxInfo.maximumHeartRate > 0) {
       addElement('MaximumHeartRateBpm', tcxInfo.maximumHeartRate.toString());
@@ -224,8 +217,7 @@ class TCXOutput {
   addTrackPoint(TrackPoint point) {
     _sb.write("<Trackpoint>\n");
     addElement('Time', point.timeStamp);
-    addPosition(point.latitude.toStringAsFixed(10),
-        point.longitude.toStringAsFixed(10));
+    addPosition(point.latitude.toStringAsFixed(10), point.longitude.toStringAsFixed(10));
     addElement('AltitudeMeters', point.altitude.toString());
     addElement('DistanceMeters', point.distance.toStringAsFixed(2));
     if (point.cadence != null) {
@@ -305,8 +297,7 @@ class TCXOutput {
   ///
   addHeartRate(int heartRate) {
     int _heartRate = heartRate ?? 0;
-    _sb.write(
-        """                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+    _sb.write("""                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
                 <Value>${_heartRate.toString()}</Value>
               </HeartRateBpm>\n""");
   }

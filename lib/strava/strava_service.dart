@@ -14,8 +14,7 @@ class StravaService {
   }
 
   login() async {
-    return await _strava.oauth(
-        STRAVA_CLIENT_ID, 'activity:write', STRAVA_SECRET, 'auto');
+    return await _strava.oauth(STRAVA_CLIENT_ID, 'activity:write', STRAVA_SECRET, 'auto');
   }
 
   Future<bool> hasValidToken() async {

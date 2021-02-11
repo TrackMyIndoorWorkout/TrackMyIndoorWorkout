@@ -5,8 +5,7 @@ class UploadActivity {
   String error;
   String status;
 
-  UploadActivity(
-      {this.activityId, this.externalId, this.id, this.error, this.status});
+  UploadActivity({this.activityId, this.externalId, this.id, this.error, this.status});
 
   UploadActivity.fromJson(Map<String, dynamic> json) {
     activityId = json['activity_id'];
@@ -34,8 +33,7 @@ class ResponseUploadActivity {
   String status;
   int activityId;
 
-  ResponseUploadActivity(
-      this.id, this.externalId, this.error, this.status, this.activityId);
+  ResponseUploadActivity(this.id, this.externalId, this.error, this.status, this.activityId);
 
   ResponseUploadActivity.fromJson(Map<String, dynamic> json) {
     id = json['id'];

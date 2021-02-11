@@ -18,8 +18,7 @@ import 'fault.dart';
 /// Class related to Authorization process
 ///===========================================
 abstract class Auth {
-  StreamController<String> onCodeReceived =
-      StreamController<String>.broadcast();
+  StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
   /// Save the token and the expiry date
   Future<void> _saveToken(
@@ -73,14 +72,11 @@ abstract class Auth {
     }
 
     if (localToken.expiresAt != null) {
-      final dateExpired =
-          DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt);
-      final details =
-          '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
-              '${dateExpired.hour.toString()} hours';
-      globals.displayInfo(
-          'stored token ${localToken.accessToken} ${localToken.expiresAt} ' +
-              '${localToken.scope} expires: $details');
+      final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt);
+      final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
+          '${dateExpired.hour.toString()} hours';
+      globals.displayInfo('stored token ${localToken.accessToken} ${localToken.expiresAt} ' +
+          '${localToken.scope} expires: $details');
     }
 
     return (localToken);
@@ -123,13 +119,11 @@ abstract class Auth {
       globals.displayInfo('Running in web ');
 
       // listening on http the answer from Strava
-      final server =
-          await HttpServer.bind(InternetAddress.anyIPv4, 8080, shared: true);
+      final server = await HttpServer.bind(InternetAddress.anyIPv4, 8080, shared: true);
       await for (HttpRequest request in server) {
         // Get the answer from Strava
         // final uri = request.uri;
-        globals.displayInfo(
-            'Get the answer from Strava to authenticate! ${request.uri}');
+        globals.displayInfo('Get the answer from Strava to authenticate! ${request.uri}');
       }
     } else {
       globals.displayInfo('Running on iOS or Android');
@@ -236,10 +230,9 @@ abstract class Auth {
       RefreshAnswer _refreshAnswer =
           await _getNewAccessToken(clientID, secret, tokenStored.refreshToken);
       // Update with new values if HTTP status code is 200
-      if (_refreshAnswer.fault.statusCode >= 200 &&
-          _refreshAnswer.fault.statusCode < 300) {
-        await _saveToken(_refreshAnswer.accessToken, _refreshAnswer.expiresAt,
-            scope, _refreshAnswer.refreshToken);
+      if (_refreshAnswer.fault.statusCode >= 200 && _refreshAnswer.fault.statusCode < 300) {
+        await _saveToken(_refreshAnswer.accessToken, _refreshAnswer.expiresAt, scope,
+            _refreshAnswer.refreshToken);
       } else {
         globals.displayInfo('Problem doing the refresh process');
         isAuthOk = false;
@@ -277,8 +270,7 @@ abstract class Auth {
 
       // Save the token information
       if (answer.accessToken != null && answer.expiresAt != null) {
-        await _saveToken(
-            answer.accessToken, answer.expiresAt, scope, answer.refreshToken);
+        await _saveToken(answer.accessToken, answer.expiresAt, scope, answer.refreshToken);
         returnValue = true;
       }
     } else {
@@ -332,9 +324,8 @@ abstract class Auth {
 
     globals.displayInfo('Entering getStravaToken!!');
     // Put your own secret in secret.dart
-    final urlToken =
-        '$TOKEN_ENDPOINT?client_id=$clientID&client_secret=$secret' +
-            '&code=$code&grant_type=authorization_code';
+    final urlToken = '$TOKEN_ENDPOINT?client_id=$clientID&client_secret=$secret' +
+        '&code=$code&grant_type=authorization_code';
 
     globals.displayInfo('urlToken $urlToken');
 
@@ -368,9 +359,8 @@ abstract class Auth {
   ///
   /// including when there is no token yet
   bool _isTokenExpired(Token token) {
-    globals.displayInfo(
-        ' current time in ms ${DateTime.now().millisecondsSinceEpoch / 1000}' +
-            '   exp. time: ${token.expiresAt}');
+    globals.displayInfo(' current time in ms ${DateTime.now().millisecondsSinceEpoch / 1000}' +
+        '   exp. time: ${token.expiresAt}');
 
     // when it is the first run or after a deAuthotrize
     if (token.expiresAt == null) {

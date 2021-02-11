@@ -70,11 +70,7 @@ void main() {
   });
 
   group("speedStringByUnit for water sports:", () {
-    final sports = [
-      ActivityType.Kayaking,
-      ActivityType.Canoeing,
-      ActivityType.Rowing
-    ];
+    final sports = [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing];
     speeds.forEach((speed) {
       sports.forEach((sport) {
         final pace = speed.abs() < 10e-4 ? 0.0 : 30.0 / speed;
@@ -95,10 +91,8 @@ void main() {
       test("$speed -> $expected", () {
         final record = Record(speed: speed);
         // There's no imperial for water sports, it's always 500m
-        expect(
-            record.speedStringByUnit(false, ActivityType.Elliptical), expected);
-        expect(
-            record.speedStringByUnit(true, ActivityType.Elliptical), expected);
+        expect(record.speedStringByUnit(false, ActivityType.Elliptical), expected);
+        expect(record.speedStringByUnit(true, ActivityType.Elliptical), expected);
       });
     });
   });

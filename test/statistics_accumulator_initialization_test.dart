@@ -28,8 +28,7 @@ void main() {
     expect(accu.maxCadence, null);
   });
 
-  test('StatisticsAccumulator initializes power variables when avg requested',
-      () async {
+  test('StatisticsAccumulator initializes power variables when avg requested', () async {
     final accu = StatisticsAccumulator(calculateAvgPower: true);
     expect(accu.si, null);
     expect(accu.sport, null);
@@ -55,8 +54,7 @@ void main() {
     expect(accu.maxCadence, null);
   });
 
-  test('StatisticsAccumulator initializes max power when max requested',
-      () async {
+  test('StatisticsAccumulator initializes max power when max requested', () async {
     final accu = StatisticsAccumulator(calculateMaxPower: true);
     expect(accu.si, null);
     expect(accu.sport, null);
@@ -82,8 +80,7 @@ void main() {
     expect(accu.maxCadence, null);
   });
 
-  test('StatisticsAccumulator initializes speed variables when avg requested',
-      () async {
+  test('StatisticsAccumulator initializes speed variables when avg requested', () async {
     final accu = StatisticsAccumulator(calculateAvgSpeed: true);
     expect(accu.si, null);
     expect(accu.sport, null);
@@ -109,8 +106,7 @@ void main() {
     expect(accu.maxCadence, null);
   });
 
-  test('StatisticsAccumulator initializes max speed when max requested',
-      () async {
+  test('StatisticsAccumulator initializes max speed when max requested', () async {
     final accu = StatisticsAccumulator(calculateMaxSpeed: true);
     expect(accu.si, null);
     expect(accu.sport, null);
@@ -136,8 +132,7 @@ void main() {
     expect(accu.maxCadence, null);
   });
 
-  test('StatisticsAccumulator initializes hr variables when avg requested',
-      () async {
+  test('StatisticsAccumulator initializes hr variables when avg requested', () async {
     final accu = StatisticsAccumulator(calculateAvgHeartRate: true);
     expect(accu.si, null);
     expect(accu.sport, null);
@@ -189,8 +184,7 @@ void main() {
     expect(accu.maxCadence, null);
   });
 
-  test('StatisticsAccumulator initializes cadence variables when avg requested',
-      () async {
+  test('StatisticsAccumulator initializes cadence variables when avg requested', () async {
     final accu = StatisticsAccumulator(calculateAvgCadence: true);
     expect(accu.si, null);
     expect(accu.sport, null);
@@ -216,8 +210,7 @@ void main() {
     expect(accu.maxCadence, null);
   });
 
-  test('StatisticsAccumulator initializes max cadence when max requested',
-      () async {
+  test('StatisticsAccumulator initializes max cadence when max requested', () async {
     final accu = StatisticsAccumulator(calculateMaxCadence: true);
     expect(accu.si, null);
     expect(accu.sport, null);
@@ -243,8 +236,7 @@ void main() {
     expect(accu.maxCadence, 0);
   });
 
-  test('StatisticsAccumulator initializes everything when all requested',
-      () async {
+  test('StatisticsAccumulator initializes everything when all requested', () async {
     final accu = StatisticsAccumulator(
       calculateAvgPower: true,
       calculateMaxPower: true,

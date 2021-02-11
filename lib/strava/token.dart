@@ -43,8 +43,7 @@ class RefreshAnswer {
 
   RefreshAnswer();
 
-  factory RefreshAnswer.fromJson(Map<String, dynamic> json) =>
-      RefreshAnswer.fromMap(json);
+  factory RefreshAnswer.fromJson(Map<String, dynamic> json) => RefreshAnswer.fromMap(json);
 
   static RefreshAnswer fromMap(Map<String, dynamic> map) {
     if (map == null) return null;

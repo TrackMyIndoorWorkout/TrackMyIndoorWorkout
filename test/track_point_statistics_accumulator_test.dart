@@ -249,8 +249,7 @@ void main() {
     expect(accu.avgCadence, sum ~/ cnt);
   });
 
-  test('StatisticsAccumulator initializes max cadence when max requested',
-      () async {
+  test('StatisticsAccumulator initializes max cadence when max requested', () async {
     final accu = StatisticsAccumulator(calculateMaxCadence: true);
     final rnd = Random();
     final count = rnd.nextInt(99) + 1;
@@ -283,8 +282,7 @@ void main() {
     expect(accu.maxCadence, maximum);
   });
 
-  test('StatisticsAccumulator initializes everything when all requested',
-      () async {
+  test('StatisticsAccumulator initializes everything when all requested', () async {
     final accu = StatisticsAccumulator(
       calculateAvgPower: true,
       calculateMaxPower: true,

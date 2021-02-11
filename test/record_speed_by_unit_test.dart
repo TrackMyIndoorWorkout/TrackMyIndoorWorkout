@@ -67,11 +67,7 @@ void main() {
   });
 
   group("speedByUnit for water sports:", () {
-    final sports = [
-      ActivityType.Kayaking,
-      ActivityType.Canoeing,
-      ActivityType.Rowing
-    ];
+    final sports = [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing];
     speeds.forEach((speed) {
       sports.forEach((sport) {
         final expected = speed.abs() < 10e-4 ? 0.0 : 30.0 / speed;

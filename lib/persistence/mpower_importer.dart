@@ -55,8 +55,7 @@ class MPowerEchelon2Importer {
   static const FT_TO_M = 0.3048;
   // Backup: 5.4788
   static const FRONTAL_AREA = 4 * FT_TO_M * FT_TO_M; // ft * ft_2_m^2
-  static const AIR_DENSITY =
-      0.076537 * LB_TO_KG / (FT_TO_M * FT_TO_M * FT_TO_M);
+  static const AIR_DENSITY = 0.076537 * LB_TO_KG / (FT_TO_M * FT_TO_M * FT_TO_M);
 
   final DateTime start;
   String message;
@@ -77,23 +76,16 @@ class MPowerEchelon2Importer {
   }
 
   bool _findLine(String lead) {
-    while (_linePointer < _lines.length &&
-        !_lines[_linePointer].startsWith(lead)) {
+    while (_linePointer < _lines.length && !_lines[_linePointer].startsWith(lead)) {
       _linePointer++;
     }
     return _linePointer <= _lines.length;
   }
 
   double powerForVelocity(velocity) {
-    final fRolling =
-        G_CONST * (BIKER_WEIGHT + BIKE_WEIGHT) * ROLLING_RESISTANCE_COEFFICIENT;
+    final fRolling = G_CONST * (BIKER_WEIGHT + BIKE_WEIGHT) * ROLLING_RESISTANCE_COEFFICIENT;
 
-    final fDrag = 0.5 *
-        FRONTAL_AREA *
-        DRAG_COEFFICIENT *
-        AIR_DENSITY *
-        velocity *
-        velocity;
+    final fDrag = 0.5 * FRONTAL_AREA * DRAG_COEFFICIENT * AIR_DENSITY * velocity * velocity;
 
     final totalForce = fRolling + fDrag;
     final wheelPower = totalForce * velocity;
@@ -232,18 +224,13 @@ class MPowerEchelon2Importer {
       WorkoutRow row = nextRow;
       if (row == null) {
         row = WorkoutRow(
-            rowString: _lines[_linePointer],
-            lastHr: lastHr,
-            throttleRatio: _throttleRatio);
+            rowString: _lines[_linePointer], lastHr: lastHr, throttleRatio: _throttleRatio);
       }
       if (_linePointer + 1 >= _lines.length) {
-        nextRow = WorkoutRow(
-            power: 0, rpm: 0, hr: 0, distance: 0.0, throttleRatio: 1.0);
+        nextRow = WorkoutRow(power: 0, rpm: 0, hr: 0, distance: 0.0, throttleRatio: 1.0);
       } else {
         nextRow = WorkoutRow(
-            rowString: _lines[_linePointer + 1],
-            lastHr: lastHr,
-            throttleRatio: _throttleRatio);
+            rowString: _lines[_linePointer + 1], lastHr: lastHr, throttleRatio: _throttleRatio);
       }
 
       double dPower = (nextRow.power - row.power) / recordsPerRow;
@@ -273,11 +260,8 @@ class MPowerEchelon2Importer {
         );
 
         distance += dDistance;
-        final dEnergy = power *
-            milliSecondsPerRecord /
-            1000 *
-            DeviceDescriptor.J2KCAL *
-            device.calorieFactor;
+        final dEnergy =
+            power * milliSecondsPerRecord / 1000 * DeviceDescriptor.J2KCAL * device.calorieFactor;
         energy += dEnergy;
         await db?.recordDao?.insertRecord(record);
 

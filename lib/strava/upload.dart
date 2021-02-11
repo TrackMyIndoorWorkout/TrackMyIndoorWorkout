@@ -60,14 +60,12 @@ abstract class Upload {
     request.headers.addAll(_header);
 
     request.files.add(http.MultipartFile.fromBytes('file', fileContent,
-        filename: persistenceValues["fileName"],
-        contentType: MediaType("application", "x-gzip")));
+        filename: persistenceValues["fileName"], contentType: MediaType("application", "x-gzip")));
     globals.displayInfo(request.toString());
 
     var response = await request.send();
 
-    globals.displayInfo(
-        'Response: ${response.statusCode} ${response.reasonPhrase}');
+    globals.displayInfo('Response: ${response.statusCode} ${response.reasonPhrase}');
 
     fault.statusCode = response.statusCode;
     fault.message = response.reasonPhrase;
@@ -89,8 +87,7 @@ abstract class Upload {
       response.stream.transform(utf8.decoder).listen((value) {
         debugPrint(value);
         final Map<String, dynamic> _body = json.decode(value);
-        ResponseUploadActivity _response =
-            ResponseUploadActivity.fromJson(_body);
+        ResponseUploadActivity _response = ResponseUploadActivity.fromJson(_body);
 
         $FloorAppDatabase
             .databaseBuilder('app_database.db')

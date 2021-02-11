@@ -91,8 +91,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               return;
             }
 
-            final records =
-                await _database.recordDao.findAllActivityRecords(activity.id);
+            final records = await _database.recordDao.findAllActivityRecords(activity.id);
 
             setState(() {
               _isLoading = true;
@@ -112,16 +111,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         IconButton(
           icon: Icon(Icons.file_download, color: Colors.black, size: size),
           onPressed: () async {
-            final records =
-                await _database.recordDao.findAllActivityRecords(activity.id);
-            final tcxGzip = await TCXOutput()
-                .getTcxOfActivity(activity, records, _compress);
+            final records = await _database.recordDao.findAllActivityRecords(activity.id);
+            final tcxGzip = await TCXOutput().getTcxOfActivity(activity, records, _compress);
             final persistenceValues = activity.getPersistenceValues();
-            ShareFilesAndScreenshotWidgets().shareFile(
-                persistenceValues['name'],
-                persistenceValues['fileName'],
-                tcxGzip,
-                TCXOutput.MIME_TYPE,
+            ShareFilesAndScreenshotWidgets().shareFile(persistenceValues['name'],
+                persistenceValues['fileName'], tcxGzip, TCXOutput.MIME_TYPE,
                 text: 'Share a ride on ${activity.deviceName}');
           },
         ),
@@ -135,8 +129,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               confirm: TextButton(
                 child: Text("Yes"),
                 onPressed: () async {
-                  await _database.recordDao
-                      .deleteAllActivityRecords(activity.id);
+                  await _database.recordDao.deleteAllActivityRecords(activity.id);
                   await _database.activityDao.deleteActivity(activity);
                   setState(() {
                     _editCount++;
@@ -154,8 +147,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         Spacer(),
         IconButton(
           icon: Icon(Icons.chevron_right, color: Colors.black, size: size),
-          onPressed: () async => await Get.to(
-              RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
+          onPressed: () async =>
+              await Get.to(RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
         ),
       ],
     );
@@ -229,8 +222,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     Center(child: CircularProgressIndicator()),
                 adapter: ListAdapter(
                   fetchItems: (int offset, int limit) async {
-                    final data = await _database.activityDao
-                        .findActivities(offset, limit);
+                    final data = await _database.activityDao.findActivities(offset, limit);
                     return ListItems(data, reachedToEnd: data.length < limit);
                   },
                 ),
@@ -250,8 +242,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                 ),
                 itemBuilder: (context, _, item) {
                   final activity = item as Activity;
-                  final startStamp =
-                      DateTime.fromMillisecondsSinceEpoch(activity.start);
+                  final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
                   final dateString = DateFormat.yMd().format(startStamp);
                   final timeString = DateFormat.Hms().format(startStamp);
                   return Card(
@@ -296,8 +287,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                         trailing: _actionButtonRow(activity, _sizeDefault2),
                       ),
                       expanded: ListTile(
-                        onTap: () async => await Get.to(RecordsScreen(
-                            activity: item, size: Get.mediaQuery.size)),
+                        onTap: () async =>
+                            await Get.to(RecordsScreen(activity: item, size: Get.mediaQuery.size)),
                         title: Column(
                           children: [
                             Row(

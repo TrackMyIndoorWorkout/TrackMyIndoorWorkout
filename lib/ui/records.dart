@@ -84,15 +84,13 @@ class RecordsScreenState extends State<RecordsScreen> {
           setState(() {
             _pointCount = size.width.toInt() - 20;
             if (_allRecords.length < _pointCount) {
-              _sampledRecords =
-                  _allRecords.map((r) => r.hydrate()).toList(growable: false);
+              _sampledRecords = _allRecords.map((r) => r.hydrate()).toList(growable: false);
             } else {
               final nth = _allRecords.length / _pointCount;
-              _sampledRecords = List.generate(_pointCount,
-                  (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate());
+              _sampledRecords = List.generate(
+                  _pointCount, (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate());
             }
-            final measurementCounter =
-                MeasurementCounter(si: _si, sport: _descriptor.sport);
+            final measurementCounter = MeasurementCounter(si: _si, sport: _descriptor.sport);
             _allRecords.forEach((record) {
               measurementCounter.processRecord(record);
             });
@@ -128,14 +126,13 @@ class RecordsScreenState extends State<RecordsScreen> {
                 maxString: accu.maxPower.toStringAsFixed(2),
                 avgString: accu.avgPower.toStringAsFixed(2),
               );
-              prefSpec.calculateBounds(measurementCounter.minPower.toDouble(),
-                  measurementCounter.maxPower.toDouble());
+              prefSpec.calculateBounds(
+                  measurementCounter.minPower.toDouble(), measurementCounter.maxPower.toDouble());
               tileConfig.histogram = prefSpec.zoneUpper
                   .asMap()
                   .entries
                   .map(
-                    (entry) =>
-                        HistogramData(index: entry.key, upper: entry.value),
+                    (entry) => HistogramData(index: entry.key, upper: entry.value),
                   )
                   .toList();
               _tileConfigurations["power"] = tileConfig;
@@ -154,14 +151,12 @@ class RecordsScreenState extends State<RecordsScreen> {
                 maxString: accu.maxSpeed.toStringAsFixed(2),
                 avgString: accu.avgSpeed.toStringAsFixed(2),
               );
-              prefSpec.calculateBounds(
-                  measurementCounter.minSpeed, measurementCounter.maxSpeed);
+              prefSpec.calculateBounds(measurementCounter.minSpeed, measurementCounter.maxSpeed);
               tileConfig.histogram = prefSpec.zoneUpper
                   .asMap()
                   .entries
                   .map(
-                    (entry) =>
-                        HistogramData(index: entry.key, upper: entry.value),
+                    (entry) => HistogramData(index: entry.key, upper: entry.value),
                   )
                   .toList();
               _tileConfigurations["speed"] = tileConfig;
@@ -186,8 +181,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                   .asMap()
                   .entries
                   .map(
-                    (entry) =>
-                        HistogramData(index: entry.key, upper: entry.value),
+                    (entry) => HistogramData(index: entry.key, upper: entry.value),
                   )
                   .toList();
               _tileConfigurations["cadence"] = tileConfig;
@@ -206,14 +200,13 @@ class RecordsScreenState extends State<RecordsScreen> {
                 maxString: "${accu.maxHeartRate}",
                 avgString: "${accu.avgHeartRate}",
               );
-              prefSpec.calculateBounds(measurementCounter.minHr.toDouble(),
-                  measurementCounter.maxHr.toDouble());
+              prefSpec.calculateBounds(
+                  measurementCounter.minHr.toDouble(), measurementCounter.maxHr.toDouble());
               tileConfig.histogram = prefSpec.zoneUpper
                   .asMap()
                   .entries
                   .map(
-                    (entry) =>
-                        HistogramData(index: entry.key, upper: entry.value),
+                    (entry) => HistogramData(index: entry.key, upper: entry.value),
                   )
                   .toList();
               _tileConfigurations["hr"] = tileConfig;
@@ -231,8 +224,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                 if (record.speed > 0) {
                   var tileConfig = _tileConfigurations["speed"];
                   tileConfig.count++;
-                  final binIndex = preferencesSpecs[1]
-                      .binIndex(record.speedByUnit(_si, _descriptor.sport));
+                  final binIndex =
+                      preferencesSpecs[1].binIndex(record.speedByUnit(_si, _descriptor.sport));
                   tileConfig.histogram[binIndex].increment();
                 }
               }
@@ -248,8 +241,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                 if (record.heartRate > 0) {
                   var tileConfig = _tileConfigurations["hr"];
                   tileConfig.count++;
-                  final binIndex =
-                      preferencesSpecs[3].binIndex(record.heartRate);
+                  final binIndex = preferencesSpecs[3].binIndex(record.heartRate);
                   tileConfig.histogram[binIndex].increment();
                 }
               }
@@ -314,8 +306,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'power',
-        colorFn: (Record record, __) =>
-            preferencesSpecs[0].fgColorByValue(record.power),
+        colorFn: (Record record, __) => preferencesSpecs[0].fgColorByValue(record.power),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.power,
         data: _sampledRecords,
@@ -331,8 +322,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     final selectionData = _tileConfigurations["power"].getSelectionData(model);
 
     setState(() {
-      _selectedTimes[0] =
-          selectionData.time.difference(activity.startDateTime).toDisplay();
+      _selectedTimes[0] = selectionData.time.difference(activity.startDateTime).toDisplay();
       _selectedValues[0] = selectionData.value;
     });
   }
@@ -341,13 +331,11 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'powerHistogram',
-        colorFn: (HistogramData data, __) =>
-            preferencesSpecs[0].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => preferencesSpecs[0].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["power"].histogram,
-        labelAccessorFn: (HistogramData data, _) =>
-            'Z${data.index}: ${data.percent}%',
+        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
@@ -356,11 +344,10 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'speed',
-        colorFn: (Record record, __) => preferencesSpecs[1]
-            .fgColorByValue(record.speedByUnit(_si, _descriptor.sport)),
+        colorFn: (Record record, __) =>
+            preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.sport)),
         domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) =>
-            record.speedByUnit(_si, _descriptor.sport),
+        measureFn: (Record record, _) => record.speedByUnit(_si, _descriptor.sport),
         data: _sampledRecords,
       ),
     ];
@@ -374,8 +361,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     final selectionData = _tileConfigurations["speed"].getSelectionData(model);
 
     setState(() {
-      _selectedTimes[1] =
-          selectionData.time.difference(activity.startDateTime).toDisplay();
+      _selectedTimes[1] = selectionData.time.difference(activity.startDateTime).toDisplay();
       _selectedValues[1] = selectionData.value;
     });
   }
@@ -384,13 +370,11 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'speedHistogram',
-        colorFn: (HistogramData data, __) =>
-            preferencesSpecs[1].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => preferencesSpecs[1].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["speed"].histogram,
-        labelAccessorFn: (HistogramData data, _) =>
-            'Z${data.index}: ${data.percent}%',
+        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
@@ -399,8 +383,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'cadence',
-        colorFn: (Record record, __) =>
-            preferencesSpecs[2].fgColorByValue(record.cadence),
+        colorFn: (Record record, __) => preferencesSpecs[2].fgColorByValue(record.cadence),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.cadence,
         data: _sampledRecords,
@@ -413,12 +396,10 @@ class RecordsScreenState extends State<RecordsScreen> {
   }
 
   void _cadenceSelectionListener(charts.SelectionModel<DateTime> model) {
-    final selectionData =
-        _tileConfigurations["cadence"].getSelectionData(model);
+    final selectionData = _tileConfigurations["cadence"].getSelectionData(model);
 
     setState(() {
-      _selectedTimes[2] =
-          selectionData.time.difference(activity.startDateTime).toDisplay();
+      _selectedTimes[2] = selectionData.time.difference(activity.startDateTime).toDisplay();
       _selectedValues[2] = selectionData.value;
     });
   }
@@ -427,13 +408,11 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'cadenceHistogram',
-        colorFn: (HistogramData data, __) =>
-            preferencesSpecs[2].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => preferencesSpecs[2].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["cadence"].histogram,
-        labelAccessorFn: (HistogramData data, _) =>
-            'Z${data.index}: ${data.percent}%',
+        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
@@ -442,8 +421,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'hr',
-        colorFn: (Record record, __) =>
-            preferencesSpecs[3].fgColorByValue(record.heartRate),
+        colorFn: (Record record, __) => preferencesSpecs[3].fgColorByValue(record.heartRate),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.heartRate,
         data: _sampledRecords,
@@ -459,8 +437,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     final selectionData = _tileConfigurations["hr"].getSelectionData(model);
 
     setState(() {
-      _selectedTimes[3] =
-          selectionData.time.difference(activity.startDateTime).toDisplay();
+      _selectedTimes[3] = selectionData.time.difference(activity.startDateTime).toDisplay();
       _selectedValues[3] = selectionData.value;
     });
   }
@@ -469,13 +446,11 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'hrHistogram',
-        colorFn: (HistogramData data, __) =>
-            preferencesSpecs[3].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => preferencesSpecs[3].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["hr"].histogram,
-        labelAccessorFn: (HistogramData data, _) =>
-            'Z${data.index}: ${data.percent}%',
+        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
@@ -602,8 +577,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       preferencesSpecs[index].zoneUpper[i],
                       charts.RangeAnnotationAxisType.measure,
                       color: preferencesSpecs[index].bgColorByBin(i),
-                      startLabel:
-                          preferencesSpecs[index].zoneLower[i].toString(),
+                      startLabel: preferencesSpecs[index].zoneLower[i].toString(),
                       labelAnchor: charts.AnnotationLabelAnchor.start,
                     ),
                   ));
@@ -612,8 +586,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                     (i) => charts.LineAnnotationSegment(
                       preferencesSpecs[index].zoneUpper[i],
                       charts.RangeAnnotationAxisType.measure,
-                      startLabel:
-                          preferencesSpecs[index].zoneUpper[i].toString(),
+                      startLabel: preferencesSpecs[index].zoneUpper[i].toString(),
                       labelAnchor: charts.AnnotationLabelAnchor.end,
                       strokeWidthPx: 1.0,
                       color: charts.MaterialPalette.black,
@@ -696,21 +669,18 @@ class RecordsScreenState extends State<RecordsScreen> {
                           ),
                           behaviors: [
                             charts.LinePointHighlighter(
-                              showHorizontalFollowLine: charts
-                                  .LinePointHighlighterFollowLineType.nearest,
-                              showVerticalFollowLine: charts
-                                  .LinePointHighlighterFollowLineType.nearest,
+                              showHorizontalFollowLine:
+                                  charts.LinePointHighlighterFollowLineType.nearest,
+                              showVerticalFollowLine:
+                                  charts.LinePointHighlighterFollowLineType.nearest,
                             ),
-                            charts.SelectNearest(
-                                eventTrigger:
-                                    charts.SelectionTrigger.tapAndDrag),
+                            charts.SelectNearest(eventTrigger: charts.SelectionTrigger.tapAndDrag),
                             charts.RangeAnnotation(annotationSegments),
                           ],
                           selectionModels: [
                             new charts.SelectionModelConfig(
                               type: charts.SelectionModelType.info,
-                              changedListener:
-                                  _tileConfigurations[item].selectionListener,
+                              changedListener: _tileConfigurations[item].selectionListener,
                             ),
                           ],
                         ),
@@ -738,19 +708,14 @@ class RecordsScreenState extends State<RecordsScreen> {
                           _tileConfigurations[item].histogramFn(),
                           animate: false,
                           defaultRenderer: charts.ArcRendererConfig(
-                              arcWidth: 60,
-                              arcRendererDecorators: [
-                                charts.ArcLabelDecorator()
-                              ]),
+                              arcWidth: 60, arcRendererDecorators: [charts.ArcLabelDecorator()]),
                           behaviors: [
                             charts.DatumLegend(
                               position: charts.BehaviorPosition.start,
                               horizontalFirst: false,
-                              cellPadding:
-                                  new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                              cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
                               showMeasures: true,
-                              legendDefaultMeasure:
-                                  charts.LegendDefaultMeasure.firstValue,
+                              legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
                               measureFormatter: (num value) {
                                 return value == null ? '-' : '$value %';
                               },

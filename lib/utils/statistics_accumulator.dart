@@ -32,8 +32,7 @@ class StatisticsAccumulator {
   double get avgPower => powerCount > 0 ? powerSum / powerCount : 0;
   double get avgSpeed => speedCount > 0 ? speedSum / speedCount : 0;
   int get avgCadence => cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0;
-  int get avgHeartRate =>
-      heartRateCount > 0 ? heartRateSum ~/ heartRateCount : 0;
+  int get avgHeartRate => heartRateCount > 0 ? heartRateSum ~/ heartRateCount : 0;
 
   StatisticsAccumulator({
     this.si,

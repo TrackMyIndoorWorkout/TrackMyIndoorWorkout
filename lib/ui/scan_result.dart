@@ -5,15 +5,17 @@ import '../persistence/preferences.dart';
 import 'find_devices.dart';
 
 class ScanResultTile extends StatelessWidget {
-  const ScanResultTile(
-      {Key key, this.result, @required this.onTap,}) : assert(onTap != null),
-      super(key: key);
+  const ScanResultTile({
+    Key key,
+    this.result,
+    @required this.onTap,
+  })  : assert(onTap != null),
+        super(key: key);
 
   final ScanResult result;
   final VoidCallback onTap;
 
-  Widget _buildTitle(BuildContext context, TextStyle adjustedCaptionStyle,
-      TextStyle dataStyle) {
+  Widget _buildTitle(BuildContext context, TextStyle adjustedCaptionStyle, TextStyle dataStyle) {
     if (result.device.name.length > 0) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -62,8 +64,7 @@ class ScanResultTile extends StatelessWidget {
   }
 
   String getNiceHexArray(List<int> bytes) {
-    final byteStrings =
-        bytes.map((i) => i.toRadixString(16).toUpperCase().padLeft(2, '0'));
+    final byteStrings = bytes.map((i) => i.toRadixString(16).toUpperCase().padLeft(2, '0'));
     return '[${byteStrings.join(', ')}]';
   }
 
@@ -73,8 +74,7 @@ class ScanResultTile extends StatelessWidget {
     }
     List<String> res = [];
     data.forEach((id, bytes) {
-      res.add(
-          '${id.toRadixString(16).toUpperCase()}: ${getNiceHexArray(bytes)}');
+      res.add('${id.toRadixString(16).toUpperCase()}: ${getNiceHexArray(bytes)}');
     });
     return res.join(', ');
   }
@@ -92,18 +92,14 @@ class ScanResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final adjustedCaptionStyle = Theme.of(context)
-        .textTheme
-        .caption
-        .apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
-    final secondaryStyle =
-        adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
+    final adjustedCaptionStyle =
+        Theme.of(context).textTheme.caption.apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
+    final secondaryStyle = adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
     return ExpansionTile(
       title: _buildTitle(context, adjustedCaptionStyle, secondaryStyle),
       leading: Text(
         result.rssi.toString(),
-        style: adjustedCaptionStyle.apply(
-            fontFamily: FONT_FAMILY),
+        style: adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY),
       ),
       trailing: FloatingActionButton(
         heroTag: null,
@@ -130,8 +126,7 @@ class ScanResultTile extends StatelessWidget {
         _buildAdvRow(
           context,
           'Manufacturer Data',
-          getNiceManufacturerData(result.advertisementData.manufacturerData) ??
-              'N/A',
+          getNiceManufacturerData(result.advertisementData.manufacturerData) ?? 'N/A',
           adjustedCaptionStyle,
           secondaryStyle,
         ),

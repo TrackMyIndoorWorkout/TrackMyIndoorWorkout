@@ -74,8 +74,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     // flood in batches for processing so we take their timestamp
     // instead of the current time
     // See github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/16
-    final timeStamp =
-        activity.startDateTime.add(idleDuration).add(elapsedDuration);
+    final timeStamp = activity.startDateTime.add(idleDuration).add(elapsedDuration);
     if (data != null) {
       return Record(
         activityId: activity.id,

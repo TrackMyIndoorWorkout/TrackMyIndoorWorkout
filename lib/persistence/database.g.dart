@@ -9,14 +9,12 @@ part of 'database.dart';
 class $FloorAppDatabase {
   /// Creates a database builder for a persistent database.
   /// Once a database is built, you should keep a reference to it and re-use it.
-  static _$AppDatabaseBuilder databaseBuilder(String name) =>
-      _$AppDatabaseBuilder(name);
+  static _$AppDatabaseBuilder databaseBuilder(String name) => _$AppDatabaseBuilder(name);
 
   /// Creates a database builder for an in memory database.
   /// Information stored in an in memory database disappears when the process is killed.
   /// Once a database is built, you should keep a reference to it and re-use it.
-  static _$AppDatabaseBuilder inMemoryDatabaseBuilder() =>
-      _$AppDatabaseBuilder(null);
+  static _$AppDatabaseBuilder inMemoryDatabaseBuilder() => _$AppDatabaseBuilder(null);
 }
 
 class _$AppDatabaseBuilder {
@@ -42,9 +40,7 @@ class _$AppDatabaseBuilder {
 
   /// Creates the database and initializes it.
   Future<AppDatabase> build() async {
-    final path = name != null
-        ? await sqfliteDatabaseFactory.getDatabasePath(name)
-        : ':memory:';
+    final path = name != null ? await sqfliteDatabaseFactory.getDatabasePath(name) : ':memory:';
     final database = _$AppDatabase();
     database.database = await database.open(
       path,
@@ -75,8 +71,7 @@ class _$AppDatabase extends AppDatabase {
         await callback?.onOpen?.call(database);
       },
       onUpgrade: (database, startVersion, endVersion) async {
-        await MigrationAdapter.runMigrations(
-            database, startVersion, endVersion, migrations);
+        await MigrationAdapter.runMigrations(database, startVersion, endVersion, migrations);
 
         await callback?.onUpgrade?.call(database, startVersion, endVersion);
       },
@@ -85,10 +80,9 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, `start` INTEGER, `end` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `uploaded` INTEGER, `strava_id` INTEGER, `four_cc` TEXT)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `activity_id` INTEGER, `time_stamp` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `power` INTEGER, `speed` REAL, `cadence` INTEGER, `heart_rate` INTEGER, FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
-        await database.execute(
-            'CREATE INDEX `index_activities_start` ON `activities` (`start`)');
-        await database.execute(
-            'CREATE INDEX `index_records_time_stamp` ON `records` (`time_stamp`)');
+        await database.execute('CREATE INDEX `index_activities_start` ON `activities` (`start`)');
+        await database
+            .execute('CREATE INDEX `index_records_time_stamp` ON `records` (`time_stamp`)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -122,8 +116,7 @@ class _$ActivityDao extends ActivityDao {
                   'distance': item.distance,
                   'elapsed': item.elapsed,
                   'calories': item.calories,
-                  'uploaded':
-                      item.uploaded == null ? null : (item.uploaded ? 1 : 0),
+                  'uploaded': item.uploaded == null ? null : (item.uploaded ? 1 : 0),
                   'strava_id': item.stravaId,
                   'four_cc': item.fourCC
                 },
@@ -141,8 +134,7 @@ class _$ActivityDao extends ActivityDao {
                   'distance': item.distance,
                   'elapsed': item.elapsed,
                   'calories': item.calories,
-                  'uploaded':
-                      item.uploaded == null ? null : (item.uploaded ? 1 : 0),
+                  'uploaded': item.uploaded == null ? null : (item.uploaded ? 1 : 0),
                   'strava_id': item.stravaId,
                   'four_cc': item.fourCC
                 },
@@ -160,8 +152,7 @@ class _$ActivityDao extends ActivityDao {
                   'distance': item.distance,
                   'elapsed': item.elapsed,
                   'calories': item.calories,
-                  'uploaded':
-                      item.uploaded == null ? null : (item.uploaded ? 1 : 0),
+                  'uploaded': item.uploaded == null ? null : (item.uploaded ? 1 : 0),
                   'strava_id': item.stravaId,
                   'four_cc': item.fourCC
                 },
@@ -194,8 +185,7 @@ class _$ActivityDao extends ActivityDao {
 
   @override
   Future<List<Activity>> findAllActivities() async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM activities ORDER BY start DESC',
+    return _queryAdapter.queryList('SELECT * FROM activities ORDER BY start DESC',
         mapper: _activitiesMapper);
   }
 
@@ -210,22 +200,18 @@ class _$ActivityDao extends ActivityDao {
 
   @override
   Future<List<Activity>> findActivities(int offset, int limit) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM activities ORDER BY start DESC LIMIT ?, ?',
-        arguments: <dynamic>[offset, limit],
-        mapper: _activitiesMapper);
+    return _queryAdapter.queryList('SELECT * FROM activities ORDER BY start DESC LIMIT ?, ?',
+        arguments: <dynamic>[offset, limit], mapper: _activitiesMapper);
   }
 
   @override
   Future<int> insertActivity(Activity activity) {
-    return _activityInsertionAdapter.insertAndReturnId(
-        activity, OnConflictStrategy.abort);
+    return _activityInsertionAdapter.insertAndReturnId(activity, OnConflictStrategy.abort);
   }
 
   @override
   Future<int> updateActivity(Activity activity) {
-    return _activityUpdateAdapter.updateAndReturnChangedRows(
-        activity, OnConflictStrategy.abort);
+    return _activityUpdateAdapter.updateAndReturnChangedRows(activity, OnConflictStrategy.abort);
   }
 
   @override
@@ -302,10 +288,7 @@ class _$RecordDao extends RecordDao {
   @override
   Stream<Record> findRecordById(int id) {
     return _queryAdapter.queryStream('SELECT * FROM records WHERE id = ?',
-        arguments: <dynamic>[id],
-        queryableName: 'records',
-        isView: false,
-        mapper: _recordsMapper);
+        arguments: <dynamic>[id], queryableName: 'records', isView: false, mapper: _recordsMapper);
   }
 
   @override

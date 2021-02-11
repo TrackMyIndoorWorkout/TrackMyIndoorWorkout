@@ -78,8 +78,7 @@ class _ImportFormState extends State<ImportForm> {
                       style: TextStyle(fontSize: 30),
                     ),
                     onPressed: () async {
-                      FilePickerResult result =
-                          await FilePicker.platform.pickFiles();
+                      FilePickerResult result = await FilePicker.platform.pickFiles();
                       if (result != null) {
                         _textController.text = result.files.single.path;
                       }
@@ -114,8 +113,7 @@ class _ImportFormState extends State<ImportForm> {
                   if (date != null) {
                     final time = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.fromDateTime(
-                          currentValue ?? DateTime.now()),
+                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
                     );
                     return DateTimeField.combine(date, time);
                   } else {
@@ -149,25 +147,22 @@ class _ImportFormState extends State<ImportForm> {
                             String contents = await file.readAsString();
                             final importer = MPowerEchelon2Importer(
                                 start: _activityDateTime,
-                                throttlePercentString:
-                                    PrefService.getString(THROTTLE_POWER_TAG));
-                            var activity =
-                                await importer.import(contents, setProgress);
+                                throttlePercentString: PrefService.getString(THROTTLE_POWER_TAG));
+                            var activity = await importer.import(contents, setProgress);
                             setState(() {
                               _isLoading = false;
                             });
                             if (activity != null) {
                               Get.snackbar("Success", "Workout imported!");
                             } else {
-                              Get.snackbar("Failure",
-                                  "Problem while importing: ${importer.message}");
+                              Get.snackbar(
+                                  "Failure", "Problem while importing: ${importer.message}");
                             }
                           } catch (e, callStack) {
                             setState(() {
                               _isLoading = false;
                             });
-                            Get.snackbar(
-                                "Error", "Import unsuccessful: ${e.message}");
+                            Get.snackbar("Error", "Import unsuccessful: ${e.message}");
                             debugPrintStack(stackTrace: callStack);
                           }
                         } else {

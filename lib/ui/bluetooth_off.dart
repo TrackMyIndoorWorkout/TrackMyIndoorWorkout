@@ -12,8 +12,7 @@ class BluetoothOffScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final btState =
-        state != null ? state.toString().substring(15) : 'not available';
+    final btState = state != null ? state.toString().substring(15) : 'not available';
     return Scaffold(
       backgroundColor: Colors.lightBlue,
       body: Center(
@@ -27,10 +26,7 @@ class BluetoothOffScreen extends StatelessWidget {
             ),
             Text(
               'Bluetooth Adapter is $btState.',
-              style: Theme.of(context)
-                  .primaryTextTheme
-                  .subtitle1
-                  .copyWith(color: Colors.white),
+              style: Theme.of(context).primaryTextTheme.subtitle1.copyWith(color: Colors.white),
             ),
           ],
         ),

@@ -62,8 +62,7 @@ class RecordingScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return RecordingState(
-        device: device, initialState: initialState, size: size);
+    return RecordingState(device: device, initialState: initialState, size: size);
   }
 }
 
@@ -220,8 +219,7 @@ class RecordingState extends State<RecordingScreen> {
 
   BluetoothService _filterService(List<BluetoothService> services, identifier) {
     return services.firstWhere(
-        (service) =>
-            service.uuid.toString().substring(4, 8).toLowerCase() == identifier,
+        (service) => service.uuid.toString().substring(4, 8).toLowerCase() == identifier,
         orElse: () => null);
   }
 
@@ -262,13 +260,11 @@ class RecordingState extends State<RecordingScreen> {
               _filterService(services, descriptor.cadenceMeasurementServiceId);
           if (cadenceMeasurementService != null) {
             _cadenceMeasurements = _filterCharacteristic(
-                cadenceMeasurementService.characteristics,
-                descriptor.cadenceMeasurementId);
+                cadenceMeasurementService.characteristics, descriptor.cadenceMeasurementId);
           }
           if (_cadenceMeasurements != null) {
             await _cadenceMeasurements.setNotifyValue(true);
-            _cadenceSubscription =
-                _cadenceMeasurements.value.listen((data) async {
+            _cadenceSubscription = _cadenceMeasurements.value.listen((data) async {
               if (data != null && data.length > 1) {
                 await _processCadenceMeasurement(data);
               }
@@ -279,12 +275,10 @@ class RecordingState extends State<RecordingScreen> {
             _filterService(services, descriptor.primaryMeasurementServiceId);
         if (measurementService1 != null) {
           _primaryMeasurements = _filterCharacteristic(
-              measurementService1.characteristics,
-              descriptor.primaryMeasurementId);
+              measurementService1.characteristics, descriptor.primaryMeasurementId);
           if (_primaryMeasurements != null) {
             await _primaryMeasurements.setNotifyValue(true);
-            _measurementSubscription =
-                _primaryMeasurements.value.listen((data) async {
+            _measurementSubscription = _primaryMeasurements.value.listen((data) async {
               if (data != null && data.length > 1) {
                 await _recordMeasurement(data);
               }
@@ -306,9 +300,8 @@ class RecordingState extends State<RecordingScreen> {
         }
       } else {
         Get.defaultDialog(
-          middleText:
-              'The device does not look like a ${descriptor.fullName}. ' +
-                  'Measurement is not started',
+          middleText: 'The device does not look like a ${descriptor.fullName}. ' +
+              'Measurement is not started',
           confirm: TextButton(
             child: Text("Ok"),
             onPressed: () => Get.close(1),
@@ -328,8 +321,9 @@ class RecordingState extends State<RecordingScreen> {
   _onToggleDetails(int index) {
     setState(() {
       _expandedState[index] = _rowControllers[index].expanded;
-      final expandedStateStr = List<String>.generate(_expandedState.length,
-          (index) => _expandedState[index] ? "1" : "0").join("");
+      final expandedStateStr =
+          List<String>.generate(_expandedState.length, (index) => _expandedState[index] ? "1" : "0")
+              .join("");
       PrefService.setString(MEASUREMENT_PANELS_EXPANDED_TAG, expandedStateStr);
     });
   }
@@ -357,8 +351,8 @@ class RecordingState extends State<RecordingScreen> {
   _onLongPress(int index) {
     setState(() {
       _expandedHeights[index] = (_expandedHeights[index] + 1) % 3;
-      final expandedHeightStr = List<String>.generate(_expandedHeights.length,
-          (index) => _expandedHeights[index].toString()).join("");
+      final expandedHeightStr = List<String>.generate(
+          _expandedHeights.length, (index) => _expandedHeights[index].toString()).join("");
       PrefService.setString(MEASUREMENT_DETAIL_SIZE_TAG, expandedHeightStr);
     });
   }
@@ -408,14 +402,11 @@ class RecordingState extends State<RecordingScreen> {
     _expandableThemeData = ExpandableThemeData(hasIcon: false);
     _rowControllers = [];
     _expandedHeights = [];
-    final expandedStateStr =
-        PrefService.getString(MEASUREMENT_PANELS_EXPANDED_TAG);
-    final expandedHeightStr =
-        PrefService.getString(MEASUREMENT_DETAIL_SIZE_TAG);
+    final expandedStateStr = PrefService.getString(MEASUREMENT_PANELS_EXPANDED_TAG);
+    final expandedHeightStr = PrefService.getString(MEASUREMENT_DETAIL_SIZE_TAG);
     _expandedState = List<bool>.generate(expandedStateStr.length, (int index) {
       final expanded = expandedStateStr[index] == "1";
-      ExpandableController rowController =
-          ExpandableController(initialExpanded: expanded);
+      ExpandableController rowController = ExpandableController(initialExpanded: expanded);
       _rowControllers.add(rowController);
       switch (index) {
         case 0:
@@ -539,8 +530,7 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
-    final records =
-        await _database.recordDao.findAllActivityRecords(_activity.id);
+    final records = await _database.recordDao.findAllActivityRecords(_activity.id);
     final statusCode = await stravaService.upload(_activity, records);
     Get.snackbar(
         "Upload",
@@ -595,8 +585,7 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'power',
-        colorFn: (Record record, __) =>
-            preferencesSpecs[0].fgColorByValue(record.power),
+        colorFn: (Record record, __) => preferencesSpecs[0].fgColorByValue(record.power),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.power,
         data: graphData,
@@ -608,11 +597,10 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'speed',
-        colorFn: (Record record, __) => preferencesSpecs[1]
-            .fgColorByValue(record.speedByUnit(_si, descriptor.sport)),
+        colorFn: (Record record, __) =>
+            preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, descriptor.sport)),
         domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) =>
-            record.speedByUnit(_si, descriptor.sport),
+        measureFn: (Record record, _) => record.speedByUnit(_si, descriptor.sport),
         data: graphData,
       ),
     ];
@@ -622,8 +610,7 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'cadence',
-        colorFn: (Record record, __) =>
-            preferencesSpecs[2].fgColorByValue(record.cadence),
+        colorFn: (Record record, __) => preferencesSpecs[2].fgColorByValue(record.cadence),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.cadence,
         data: graphData,
@@ -635,8 +622,7 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'hr',
-        colorFn: (Record record, __) =>
-            preferencesSpecs[3].fgColorByValue(record.heartRate),
+        colorFn: (Record record, __) => preferencesSpecs[3].fgColorByValue(record.heartRate),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.heartRate,
         data: graphData,
@@ -761,8 +747,7 @@ class RecordingState extends State<RecordingScreen> {
         );
       });
 
-      final trackMarker = calculateTrackMarker(
-          trackSize, _latestRecord.distance, _lengthFactor);
+      final trackMarker = calculateTrackMarker(trackSize, _latestRecord.distance, _lengthFactor);
       extras.add(
         CustomPaint(
           painter: TrackPainter(),
@@ -830,8 +815,7 @@ class RecordingState extends State<RecordingScreen> {
                 if (_measuring) {
                   await _finishActivity();
                 } else {
-                  if (await device.state.last ==
-                      BluetoothDeviceState.disconnected) {
+                  if (await device.state.last == BluetoothDeviceState.disconnected) {
                     await device.connect();
                   } else {
                     await _discoverServices();
@@ -853,8 +837,7 @@ class RecordingState extends State<RecordingScreen> {
             icon: Icon(Icons.list_alt),
             onPressed: () async {
               if (_measuring) {
-                Get.snackbar(
-                    "Warning", "Cannot navigate away during measurement!");
+                Get.snackbar("Warning", "Cannot navigate away during measurement!");
               } else {
                 await Get.to(ActivitiesScreen());
               }

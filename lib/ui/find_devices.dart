@@ -15,8 +15,7 @@ import 'recording.dart';
 import 'preferences.dart';
 import 'scan_result.dart';
 
-const HELP_URL =
-    "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
+const HELP_URL = "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
 
 extension DeviceMathing on BluetoothDevice {
   bool isWorthy(bool filterDevices, bool connectable) {
@@ -125,15 +124,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
           .textTheme
           .caption
           .apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
-      _subtitleStyle = _adjustedCaptionStyle.apply(
-          fontFamily: FONT_FAMILY);
+      _subtitleStyle = _adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_filterDevices
-            ? 'Supported Exercise Equipment:'
-            : 'Bluetooth Devices'),
+        title: Text(_filterDevices ? 'Supported Exercise Equipment:' : 'Bluetooth Devices'),
         actions: <Widget>[
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
@@ -163,10 +159,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           size: Get.mediaQuery.size,
                         ));
                       });
-                    } else if (_scannedDevices.length > 1 &&
-                        _lastEquipmentId.length > 0) {
-                      final lasts = _scannedDevices
-                          .where((d) => d.id.id == _lastEquipmentId);
+                    } else if (_scannedDevices.length > 1 && _lastEquipmentId.length > 0) {
+                      final lasts = _scannedDevices.where((d) => d.id.id == _lastEquipmentId);
                       if (lasts.length > 0) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           Get.to(RecordingScreen(
@@ -191,13 +185,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
           child: Column(
             children: <Widget>[
               StreamBuilder<List<BluetoothDevice>>(
-                stream: Stream.periodic(Duration(seconds: 2)).asyncMap(
-                    (_) => FlutterBlue.instance.connectedDevices),
+                stream: Stream.periodic(Duration(seconds: 2))
+                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
                 initialData: [],
                 builder: (c, snapshot) => Column(
-                  children: snapshot.data
-                      .where((d) => d.isWorthy(_filterDevices, true))
-                      .map((d) {
+                  children: snapshot.data.where((d) => d.isWorthy(_filterDevices, true)).map((d) {
                     _openedDevice = d;
                     return ListTile(
                       title: Text(d.name,
@@ -210,8 +202,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         stream: d.state,
                         initialData: BluetoothDeviceState.disconnected,
                         builder: (c, snapshot) {
-                          if (snapshot.data ==
-                              BluetoothDeviceState.connected) {
+                          if (snapshot.data == BluetoothDeviceState.connected) {
                             return FloatingActionButton(
                                 heroTag: null,
                                 child: Icon(Icons.open_in_new),
@@ -219,8 +210,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 backgroundColor: Colors.green,
                                 onPressed: () async {
                                   await FlutterBlue.instance.stopScan();
-                                  await Future.delayed(
-                                      Duration(milliseconds: 100));
+                                  await Future.delayed(Duration(milliseconds: 100));
                                   await Get.to(RecordingScreen(
                                       device: d,
                                       initialState: snapshot.data,
@@ -240,16 +230,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
-                      .where((d) => d.device.isWorthy(_filterDevices,
-                          d.advertisementData.connectable))
+                      .where(
+                          (d) => d.device.isWorthy(_filterDevices, d.advertisementData.connectable))
                       .map((r) {
-                    addScannedDevice(
-                        r.device, r.advertisementData.connectable);
-                    if (_instantWorkout &&
-                        r.device.id.id == _lastEquipmentId) {
-                      FlutterBlue.instance
-                          .stopScan()
-                          .whenComplete(() async {
+                    addScannedDevice(r.device, r.advertisementData.connectable);
+                    if (_instantWorkout && r.device.id.id == _lastEquipmentId) {
+                      FlutterBlue.instance.stopScan().whenComplete(() async {
                         await Future.delayed(Duration(milliseconds: 100));
                       });
                     }
@@ -338,8 +324,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   child: Icon(Icons.search),
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.green,
-                  onPressed: () => FlutterBlue.instance
-                      .startScan(timeout: Duration(seconds: _scanDuration)),
+                  onPressed: () =>
+                      FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration)),
                 );
               }
             },

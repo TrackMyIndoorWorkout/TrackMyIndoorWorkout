@@ -15,11 +15,9 @@ class TrackDescriptor {
   final double altitude; // in meters
   final double lengthFactor;
 
-  double get halfCircle =>
-      TRACK_QUARTER * lengthFactor * radiusBoost; // length in meters
+  double get halfCircle => TRACK_QUARTER * lengthFactor * radiusBoost; // length in meters
   double get laneShrink => 2.0 - radiusBoost; // almost a reverse ratio
-  double get laneLength =>
-      TRACK_QUARTER * lengthFactor * laneShrink; // the straight section
+  double get laneLength => TRACK_QUARTER * lengthFactor * laneShrink; // the straight section
   double get radius => halfCircle / pi;
   double get gpsRadius => radius * horizontalMeter; // lon
   double get gpsLaneHalf => laneLength / 2.0 * horizontalMeter;

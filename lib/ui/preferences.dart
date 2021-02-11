@@ -16,10 +16,8 @@ class PreferencesScreen extends StatelessWidget {
   bool isMonotoneIncreasingList(String zonesSpecStr) {
     if (!intListRule.hasMatch(zonesSpecStr)) return false;
 
-    List<int> intList = zonesSpecStr
-        .split(',')
-        .map((zs) => int.tryParse(zs))
-        .toList(growable: false);
+    List<int> intList =
+        zonesSpecStr.split(',').map((zs) => int.tryParse(zs)).toList(growable: false);
 
     for (int i = 0; i < intList.length - 1; i++) {
       if (intList[i] == null || intList[i + 1] == null) return false;

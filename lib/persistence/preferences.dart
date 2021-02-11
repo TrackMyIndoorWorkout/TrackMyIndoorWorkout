@@ -6,8 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
 
 Color getTranslucent(Color c) {
-  return Color(
-      r: c.r, g: c.g, b: c.b, a: 120, darker: c.darker, lighter: c.lighter);
+  return Color(r: c.r, g: c.g, b: c.b, a: 120, darker: c.darker, lighter: c.lighter);
 }
 
 final sevenBgPalette = [
@@ -91,12 +90,8 @@ class PreferencesSpec {
     final thresholdString = PrefService.getString(thresholdTag);
     threshold = double.tryParse(thresholdString);
     final zonesSpecStr = PrefService.getString(zonesTag);
-    zonePercents = zonesSpecStr
-        .split(',')
-        .map((zs) => int.tryParse(zs))
-        .toList(growable: false);
-    zoneBounds =
-        zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList();
+    zonePercents = zonesSpecStr.split(',').map((zs) => int.tryParse(zs)).toList(growable: false);
+    zoneBounds = zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList();
   }
 
   calculateBounds(double minVal, double maxVal) {
@@ -205,8 +200,8 @@ const UX_PREFERENCES = "UX Preferences";
 const UNIT_SYSTEM = "Unit System";
 const UNIT_SYSTEM_TAG = "unit_system";
 const UNIT_SYSTEM_DEFAULT = false;
-const UNIT_SYSTEM_DESCRIPTION = "On: metric (km/h speed, meters distance), " +
-    "Off: imperial (mp/h speed, miles distance).";
+const UNIT_SYSTEM_DESCRIPTION =
+    "On: metric (km/h speed, meters distance), " + "Off: imperial (mp/h speed, miles distance).";
 
 const INSTANT_SCAN = "Instant Scanning";
 const INSTANT_SCAN_TAG = "instant_scan";
@@ -217,8 +212,8 @@ const INSTANT_SCAN_DESCRIPTION = "On: the app will automatically start "
 const SCAN_DURATION = "Scan Duration";
 const SCAN_DURATION_TAG = "scan_duration";
 const SCAN_DURATION_DEFAULT = 3;
-const SCAN_DURATION_DESCRIPTION = "Duration in seconds the app will spend " +
-    "looking Bluetooth Low Energy exercise equipment.";
+const SCAN_DURATION_DESCRIPTION =
+    "Duration in seconds the app will spend " + "looking Bluetooth Low Energy exercise equipment.";
 
 const INSTANT_WORKOUT = "Instant Workout";
 const INSTANT_WORKOUT_TAG = "instant_workout";
@@ -261,9 +256,8 @@ const TUNING_PREFERENCES = "Tuning";
 const VIRTUAL_WORKOUT = "Virtual Workout";
 const VIRTUAL_WORKOUT_TAG = "virtual_workout";
 const VIRTUAL_WORKOUT_DEFAULT = true;
-const VIRTUAL_WORKOUT_DESCRIPTION =
-    "On: Strava upload will yield a Virtual Ride. " +
-        "Off: Strava upload will yield a Ride (non virtual).";
+const VIRTUAL_WORKOUT_DESCRIPTION = "On: Strava upload will yield a Virtual Ride. " +
+    "Off: Strava upload will yield a Ride (non virtual).";
 
 const MEASUREMENT_PANELS_EXPANDED_TAG = "measurement_panels_expanded";
 const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
@@ -281,24 +275,21 @@ const APP_DEBUG_MODE_DESCRIPTION =
 const THROTTLE_POWER = "Throttle Power";
 const THROTTLE_POWER_TAG = "throttle_power";
 const THROTTLE_POWER_DEFAULT = "0";
-const THROTTLE_POWER_DESCRIPTION =
-    "Throttle in percent. Example: 11 means that the app " +
-        "will take only 89% of the reported power reading. " +
-        "Possibly could throttle calories with certain bikes.";
+const THROTTLE_POWER_DESCRIPTION = "Throttle in percent. Example: 11 means that the app " +
+    "will take only 89% of the reported power reading. " +
+    "Possibly could throttle calories with certain bikes.";
 
 const THROTTLE_OTHER = "Throttle Other";
 const THROTTLE_OTHER_TAG = "throttle_other";
 const THROTTLE_OTHER_DEFAULT = false;
 const THROTTLE_OTHER_DESCRIPTION =
-    "Apply the power throttle to other measurements as well " +
-        "(speed, distance, calories)";
+    "Apply the power throttle to other measurements as well " + "(speed, distance, calories)";
 
 const COMPRESS_DOWNLOAD = "File download compression";
 const COMPRESS_DOWNLOAD_TAG = "compress_download";
 const COMPRESS_DOWNLOAD_DEFAULT = true;
-const COMPRESS_DOWNLOAD_DESCRIPTION =
-    "On: the downloaded file is gzip compressed (TCX.gz). " +
-        "Off: the downloaded file is TCX (no compression)";
+const COMPRESS_DOWNLOAD_DESCRIPTION = "On: the downloaded file is gzip compressed (TCX.gz). " +
+    "Off: the downloaded file is TCX (no compression)";
 
 const ZONE_PREFERENCES = "Zone Preferences";
 
