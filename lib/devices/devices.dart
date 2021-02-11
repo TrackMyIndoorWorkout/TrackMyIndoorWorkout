@@ -1,7 +1,8 @@
 import '../tcx/activity_type.dart';
 import 'device_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
-import 'gatt_standard_device_descriptor.dart';
+import 'indoor_bike_device_descriptor.dart';
+import 'rower_device_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
 
@@ -37,7 +38,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     cadenceMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 10.0),
     distanceMetric: ThreeByteMetricDescriptor(lsb: 10, msb: 12, divider: 1.0),
   ),
-  "SIC4": GattStandardDeviceDescriptor(
+  "SIC4": IndoorBikeDeviceDescriptor(
     sport: ActivityType.VirtualRide,
     fourCC: "SIC4",
     vendorName: "Nautilus, Inc",
@@ -49,8 +50,6 @@ Map<String, DeviceDescriptor> deviceMap = {
     // Nautilus, Inc
     model: [73, 67, 32, 66, 73, 75, 69],
     // IC BIKE
-    primaryMeasurementServiceId: "1826",
-    primaryMeasurementId: "2ad2",
     canPrimaryMeasurementProcessed: (List<int> data) {
       return data != null && data.length > 1;
     },
@@ -74,13 +73,15 @@ Map<String, DeviceDescriptor> deviceMap = {
     },
     calorieFactor: 1.40,
   ),
-  "SAP+": GattStandardDeviceDescriptor(
+  "SAP+": IndoorBikeDeviceDescriptor(
     sport: ActivityType.VirtualRide,
     fourCC: "SAP+",
     vendorName: "Schwinn",
     modelName: "AC Performance Plus",
     // is an ANT+ device, will never show as BLE
     namePrefix: "Schwinn AC Perf+",
+    primaryMeasurementId: null,
+    primaryMeasurementServiceId: null,
     canPrimaryMeasurementProcessed: (List<int> data) {
       return false;
     },
