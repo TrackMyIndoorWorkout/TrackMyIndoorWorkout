@@ -11,7 +11,6 @@ import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_wi
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
-import '../persistence/font_family_properties.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
@@ -35,7 +34,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   int _editCount;
   bool _si;
   bool _compress;
-  FontFamilyProperties _fontFamilyProperties;
   double _mediaWidth;
   double _sizeDefault;
   double _sizeDefault2;
@@ -53,7 +51,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _editCount = 0;
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _compress = PrefService.getBool(COMPRESS_DOWNLOAD_TAG);
-    _fontFamilyProperties = getFontFamilyProperties();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
         .addMigrations([migration1to2, migration2to3])
@@ -179,18 +176,18 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       _sizeDefault2 = _sizeDefault / 1.5;
 
       _measurementStyle = TextStyle(
-        fontFamily: _fontFamilyProperties.primary,
+        fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,
       );
       _textStyle = TextStyle(
         fontSize: _sizeDefault2,
       );
       _headerStyle = TextStyle(
-        fontFamily: _fontFamilyProperties.secondary,
+        fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault2,
       );
       _unitStyle = TextStyle(
-        fontFamily: _fontFamilyProperties.secondary,
+        fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault / 3,
         color: Colors.indigo,
       );

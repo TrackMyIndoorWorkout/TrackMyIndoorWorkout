@@ -1,15 +1,14 @@
 import 'package:charts_flutter/flutter.dart' hide TextStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import '../persistence/font_family_properties.dart';
+import '../persistence/preferences.dart';
 import 'find_devices.dart';
 
 class ScanResultTile extends StatelessWidget {
   const ScanResultTile(
-      {Key key, this.result, this.fontFamilyProperties, this.onTap})
-      : super(key: key);
+      {Key key, this.result, @required this.onTap,}) : assert(onTap != null),
+      super(key: key);
 
-  final FontFamilyProperties fontFamilyProperties;
   final ScanResult result;
   final VoidCallback onTap;
 
@@ -97,14 +96,14 @@ class ScanResultTile extends StatelessWidget {
         .textTheme
         .caption
         .apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
-    final dseg14 =
-        adjustedCaptionStyle.apply(fontFamily: fontFamilyProperties.secondary);
+    final secondaryStyle =
+        adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
     return ExpansionTile(
-      title: _buildTitle(context, adjustedCaptionStyle, dseg14),
+      title: _buildTitle(context, adjustedCaptionStyle, secondaryStyle),
       leading: Text(
         result.rssi.toString(),
         style: adjustedCaptionStyle.apply(
-            fontFamily: fontFamilyProperties.primary),
+            fontFamily: FONT_FAMILY),
       ),
       trailing: FloatingActionButton(
         heroTag: null,
@@ -126,7 +125,7 @@ class ScanResultTile extends StatelessWidget {
           'Tx Power Level',
           '${result.advertisementData.txPowerLevel ?? 'N/A'}',
           adjustedCaptionStyle,
-          dseg14,
+          secondaryStyle,
         ),
         _buildAdvRow(
           context,
@@ -134,7 +133,7 @@ class ScanResultTile extends StatelessWidget {
           getNiceManufacturerData(result.advertisementData.manufacturerData) ??
               'N/A',
           adjustedCaptionStyle,
-          dseg14,
+          secondaryStyle,
         ),
         _buildAdvRow(
           context,
@@ -147,14 +146,14 @@ class ScanResultTile extends StatelessWidget {
                   .toUpperCase()
               : 'N/A',
           adjustedCaptionStyle,
-          dseg14,
+          secondaryStyle,
         ),
         _buildAdvRow(
           context,
           'Service Data',
           getNiceServiceData(result.advertisementData.serviceData) ?? 'N/A',
           adjustedCaptionStyle,
-          dseg14,
+          secondaryStyle,
         ),
       ],
     );

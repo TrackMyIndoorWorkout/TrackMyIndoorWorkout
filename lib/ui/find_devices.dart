@@ -8,7 +8,6 @@ import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../devices/devices.dart';
-import '../persistence/font_family_properties.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';
@@ -74,9 +73,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _filterDevices;
   BluetoothDevice _openedDevice;
   List<BluetoothDevice> _scannedDevices;
-  FontFamilyProperties _fontFamilyProperties;
   TextStyle _adjustedCaptionStyle;
-  TextStyle _dseg14;
+  TextStyle _subtitleStyle;
 
   @override
   dispose() {
@@ -118,18 +116,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
         startScan();
       });
     }
-    _fontFamilyProperties = getFontFamilyProperties();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_adjustedCaptionStyle == null && _fontFamilyProperties != null) {
+    if (_adjustedCaptionStyle == null) {
       _adjustedCaptionStyle = Theme.of(context)
           .textTheme
           .caption
           .apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
-      _dseg14 = _adjustedCaptionStyle.apply(
-          fontFamily: _fontFamilyProperties.secondary);
+      _subtitleStyle = _adjustedCaptionStyle.apply(
+          fontFamily: FONT_FAMILY);
     }
 
     return Scaffold(
@@ -188,99 +185,93 @@ class FindDevicesState extends State<FindDevicesScreen> {
           ),
         ],
       ),
-      body: _fontFamilyProperties == null
-          ? Center(
-              child: JumpingDotsProgressIndicator(
-              fontSize: 30.0,
-            ))
-          : RefreshIndicator(
-              onRefresh: () => startScan(),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    StreamBuilder<List<BluetoothDevice>>(
-                      stream: Stream.periodic(Duration(seconds: 2)).asyncMap(
-                          (_) => FlutterBlue.instance.connectedDevices),
-                      initialData: [],
-                      builder: (c, snapshot) => Column(
-                        children: snapshot.data
-                            .where((d) => d.isWorthy(_filterDevices, true))
-                            .map((d) {
-                          _openedDevice = d;
-                          return ListTile(
-                            title: Text(d.name,
-                                style: standOutStyle(
-                                  _adjustedCaptionStyle,
-                                  fontSizeFactor,
-                                )),
-                            subtitle: Text(d.id.id, style: _dseg14),
-                            trailing: StreamBuilder<BluetoothDeviceState>(
-                              stream: d.state,
-                              initialData: BluetoothDeviceState.disconnected,
-                              builder: (c, snapshot) {
-                                if (snapshot.data ==
-                                    BluetoothDeviceState.connected) {
-                                  return FloatingActionButton(
-                                      heroTag: null,
-                                      child: Icon(Icons.open_in_new),
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: Colors.green,
-                                      onPressed: () async {
-                                        await FlutterBlue.instance.stopScan();
-                                        await Future.delayed(
-                                            Duration(milliseconds: 100));
-                                        await Get.to(RecordingScreen(
-                                            device: d,
-                                            initialState: snapshot.data,
-                                            size: Get.mediaQuery.size));
-                                      });
-                                } else {
-                                  return Text(snapshot.data.toString());
-                                }
-                              },
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    StreamBuilder<List<ScanResult>>(
-                      stream: FlutterBlue.instance.scanResults,
-                      initialData: [],
-                      builder: (c, snapshot) => Column(
-                        children: snapshot.data
-                            .where((d) => d.device.isWorthy(_filterDevices,
-                                d.advertisementData.connectable))
-                            .map((r) {
-                          addScannedDevice(
-                              r.device, r.advertisementData.connectable);
-                          if (_instantWorkout &&
-                              r.device.id.id == _lastEquipmentId) {
-                            FlutterBlue.instance
-                                .stopScan()
-                                .whenComplete(() async {
-                              await Future.delayed(Duration(milliseconds: 100));
-                            });
+      body: RefreshIndicator(
+        onRefresh: () => startScan(),
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              StreamBuilder<List<BluetoothDevice>>(
+                stream: Stream.periodic(Duration(seconds: 2)).asyncMap(
+                    (_) => FlutterBlue.instance.connectedDevices),
+                initialData: [],
+                builder: (c, snapshot) => Column(
+                  children: snapshot.data
+                      .where((d) => d.isWorthy(_filterDevices, true))
+                      .map((d) {
+                    _openedDevice = d;
+                    return ListTile(
+                      title: Text(d.name,
+                          style: standOutStyle(
+                            _adjustedCaptionStyle,
+                            fontSizeFactor,
+                          )),
+                      subtitle: Text(d.id.id, style: _subtitleStyle),
+                      trailing: StreamBuilder<BluetoothDeviceState>(
+                        stream: d.state,
+                        initialData: BluetoothDeviceState.disconnected,
+                        builder: (c, snapshot) {
+                          if (snapshot.data ==
+                              BluetoothDeviceState.connected) {
+                            return FloatingActionButton(
+                                heroTag: null,
+                                child: Icon(Icons.open_in_new),
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.green,
+                                onPressed: () async {
+                                  await FlutterBlue.instance.stopScan();
+                                  await Future.delayed(
+                                      Duration(milliseconds: 100));
+                                  await Get.to(RecordingScreen(
+                                      device: d,
+                                      initialState: snapshot.data,
+                                      size: Get.mediaQuery.size));
+                                });
+                          } else {
+                            return Text(snapshot.data.toString());
                           }
-                          return ScanResultTile(
-                            result: r,
-                            fontFamilyProperties: _fontFamilyProperties,
-                            onTap: () async {
-                              await FlutterBlue.instance.stopScan();
-                              await Future.delayed(Duration(milliseconds: 100));
-                              await Get.to(RecordingScreen(
-                                device: r.device,
-                                initialState: BluetoothDeviceState.disconnected,
-                                size: Get.mediaQuery.size,
-                              ));
-                            },
-                          );
-                        }).toList(),
+                        },
                       ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
                 ),
               ),
-            ),
+              StreamBuilder<List<ScanResult>>(
+                stream: FlutterBlue.instance.scanResults,
+                initialData: [],
+                builder: (c, snapshot) => Column(
+                  children: snapshot.data
+                      .where((d) => d.device.isWorthy(_filterDevices,
+                          d.advertisementData.connectable))
+                      .map((r) {
+                    addScannedDevice(
+                        r.device, r.advertisementData.connectable);
+                    if (_instantWorkout &&
+                        r.device.id.id == _lastEquipmentId) {
+                      FlutterBlue.instance
+                          .stopScan()
+                          .whenComplete(() async {
+                        await Future.delayed(Duration(milliseconds: 100));
+                      });
+                    }
+                    return ScanResultTile(
+                      result: r,
+                      onTap: () async {
+                        await FlutterBlue.instance.stopScan();
+                        await Future.delayed(Duration(milliseconds: 100));
+                        await Get.to(RecordingScreen(
+                          device: r.device,
+                          initialState: BluetoothDeviceState.disconnected,
+                          size: Get.mediaQuery.size,
+                        ));
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FabCircularMenu(
         fabOpenIcon: const Icon(Icons.menu, color: Colors.white),

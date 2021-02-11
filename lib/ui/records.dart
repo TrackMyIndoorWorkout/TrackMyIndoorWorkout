@@ -11,7 +11,6 @@ import '../devices/devices.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
-import '../persistence/font_family_properties.dart';
 import '../persistence/preferences.dart';
 import '../utils/statistics_accumulator.dart';
 import 'find_devices.dart';
@@ -63,7 +62,6 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _unitStyle;
   TextStyle _selectionStyle;
   TextStyle _selectionTextStyle;
-  FontFamilyProperties _fontFamilyProperties;
 
   @override
   initState() {
@@ -75,7 +73,6 @@ class RecordsScreenState extends State<RecordsScreen> {
     _selectedValues = [];
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _descriptor = deviceMap[activity.fourCC];
-    _fontFamilyProperties = getFontFamilyProperties();
     activity.hydrate();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
@@ -293,19 +290,19 @@ class RecordsScreenState extends State<RecordsScreen> {
     _sizeDefault = Get.mediaQuery.size.width / 7;
     _sizeDefault2 = _sizeDefault / 1.5;
     _measurementStyle = TextStyle(
-      fontFamily: _fontFamilyProperties.primary,
+      fontFamily: FONT_FAMILY,
       fontSize: _sizeDefault,
     );
     _textStyle = TextStyle(
       fontSize: _sizeDefault2,
     );
     _unitStyle = TextStyle(
-      fontFamily: _fontFamilyProperties.secondary,
+      fontFamily: FONT_FAMILY,
       fontSize: _sizeDefault2 / 2,
       color: Colors.indigo,
     );
     _selectionStyle = TextStyle(
-      fontFamily: _fontFamilyProperties.secondary,
+      fontFamily: FONT_FAMILY,
       fontSize: _sizeDefault2 / 2,
     );
     _selectionTextStyle = TextStyle(

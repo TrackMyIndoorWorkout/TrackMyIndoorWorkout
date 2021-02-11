@@ -21,7 +21,6 @@ import '../devices/gatt_constants.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
-import '../persistence/font_family_properties.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
@@ -118,7 +117,6 @@ class RecordingState extends State<RecordingScreen> {
   bool _si;
   bool _simplerUi;
   bool _instantUpload;
-  FontFamilyProperties _fontFamilyProperties;
 
   // Debugging UX without actual connected device
   Timer _timer;
@@ -370,9 +368,8 @@ class RecordingState extends State<RecordingScreen> {
     super.initState();
     _isLoading = true;
     _pointCount = size.width ~/ 2;
-    _fontFamilyProperties = getFontFamilyProperties();
     _unitStyle = TextStyle(
-      fontFamily: _fontFamilyProperties.secondary,
+      fontFamily: FONT_FAMILY,
       color: Colors.indigo,
     );
     PrefService.setString(LAST_EQUIPMENT_ID_TAG, device.id.id);
@@ -656,11 +653,11 @@ class RecordingState extends State<RecordingScreen> {
       _mediaWidth = mediaWidth;
       _sizeDefault = Get.mediaQuery.size.width / 8;
       _measurementStyle = TextStyle(
-        fontFamily: _fontFamilyProperties.primary,
+        fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,
       );
       _unitStyle = TextStyle(
-        fontFamily: _fontFamilyProperties.secondary,
+        fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault / 2,
         color: Colors.indigo,
       );
