@@ -50,12 +50,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   fonts:
-    - family: DSEG7
-      fonts:
-        - asset: fonts/DSEG7Modern-Bold.ttf
-    - family: DSEG14
-      fonts:
-        - asset: fonts/DSEG14Classic-Bold.ttf
     - family: RobotoMono
       fonts:
         - asset: fonts/RobotoMono-Bold.ttf
