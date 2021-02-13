@@ -2,16 +2,12 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import '../lib/persistence/models/record.dart';
+import 'utils.dart';
 
 String paceString(double pace) {
   final minutes = pace.truncate();
   final seconds = ((pace - minutes) * 60.0).truncate();
   return "$minutes:" + seconds.toString().padLeft(2, "0");
-}
-
-extension RangeExtension on int {
-  List<int> to(int maxInclusive, {int step = 1}) =>
-      [for (int i = this; i <= maxInclusive; i += step) i];
 }
 
 void main() {
@@ -41,7 +37,7 @@ void main() {
     });
 
     final rnd = Random();
-    1.to(20).forEach((input) {
+    1.to(REPETITION).forEach((input) {
       final randomPace = rnd.nextDouble() * 100;
       final expected = paceString(randomPace);
       test("$randomPace -> $expected", () {
