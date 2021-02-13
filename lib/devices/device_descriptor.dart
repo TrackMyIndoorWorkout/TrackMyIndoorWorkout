@@ -5,6 +5,7 @@ import '../persistence/models/record.dart';
 import '../persistence/preferences.dart';
 import '../tcx/activity_type.dart';
 import '../track/tracks.dart';
+import 'byte_metric_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
 
@@ -47,8 +48,12 @@ abstract class DeviceDescriptor {
   double distanceFactor;
 
   // Secondary (Crank cadence) metrics
-  ShortMetricDescriptor revolutions;
+  ShortMetricDescriptor revolutionsMetric;
   ShortMetricDescriptor revolutionTime;
+
+  // Special Metrics
+  ByteMetricDescriptor strokeRateMetric;
+  ShortMetricDescriptor paceMetric;
 
   double throttlePower;
   bool throttleOther;
@@ -183,11 +188,19 @@ abstract class DeviceDescriptor {
   }
 
   int getRevolutions(List<int> data) {
-    return revolutions?.getMeasurementValue(data)?.toInt();
+    return revolutionsMetric?.getMeasurementValue(data)?.toInt();
   }
 
   double getRevolutionTime(List<int> data) {
     return revolutionTime?.getMeasurementValue(data);
+  }
+
+  int getStrokeRate(List<int> data) {
+    return strokeRateMetric?.getMeasurementValue(data)?.toInt();
+  }
+
+  double getPace(List<int> data) {
+    return paceMetric?.getMeasurementValue(data);
   }
 
   double getHeartRate(List<int> data) {

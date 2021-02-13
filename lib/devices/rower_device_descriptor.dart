@@ -2,14 +2,15 @@ import 'package:meta/meta.dart';
 
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
+import 'byte_metric_descriptor.dart';
 import 'cadence_data.dart';
 import 'device_descriptor.dart';
 import 'gatt_standard_device_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
 
-class IndoorBikeDeviceDescriptor extends GattStandardDeviceDescriptor {
-  IndoorBikeDeviceDescriptor({
+class RowerDeviceDescriptor extends GattStandardDeviceDescriptor {
+  RowerDeviceDescriptor({
     @required sport,
     @required fourCC,
     @required vendorName,
@@ -20,7 +21,7 @@ class IndoorBikeDeviceDescriptor extends GattStandardDeviceDescriptor {
     manufacturer,
     model,
     primaryMeasurementServiceId = "1826",
-    primaryMeasurementId = "2ad2",
+    primaryMeasurementId = "2ad1",
     canPrimaryMeasurementProcessed,
     cadenceMeasurementServiceId,
     cadenceMeasurementId,
@@ -51,43 +52,28 @@ class IndoorBikeDeviceDescriptor extends GattStandardDeviceDescriptor {
 
   @override
   processFlag(int flag) {
-    // Schwinn IC4:
-    // 68 01000100 instant cadence, instant power
-    //  2 00000010 heart rate
+    // KayakPro Compact:
+    // 44 00101100 (stroke rate, stroke count), total distance, instant pace, instant power
+    //  9 00001001 expanded energy, (heart rate), elapsed time
     // Two flag bytes
     int byteCounter = 2;
     // negated bit!
-    final hasInstantSpeed = flag % 2 == 0;
-    if (hasInstantSpeed) {
-      // UInt16, km/h with 0.01 resolution
-      speedMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 100.0);
+    final hasMoreData = flag % 2 == 0;
+    if (hasMoreData) {
+      // UByte with 0.5 resolution
+      strokeRateMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 2.0);
+      byteCounter += 1;
+      revolutionsMetric =
+          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
       byteCounter += 2;
     }
     flag ~/= 2;
-    // Has Average Speed?
+    // Has Average Stroke?
     if (flag % 2 == 1) {
-      // UInt16, km/h with 0.01 resolution
-      if (!hasInstantSpeed) {
-        speedMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 100.0);
+      if (!hasMoreData) {
+        strokeRateMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 2.0);
       }
-      byteCounter += 2;
-    }
-    flag ~/= 2;
-    final hasInstantCadence = flag % 2 == 1;
-    if (hasInstantCadence) {
-      // UInt16, revolutions / minute with 0.5 resolution
-      cadenceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
-      byteCounter += 2;
-    }
-    flag ~/= 2;
-    // Has Average Cadence?
-    if (flag % 2 == 1) {
-      // Fall back to the less instantaneous average metric
-      // UInt16, revolutions / minute with 0.5 resolution
-      if (!hasInstantCadence) {
-        cadenceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
-      }
-      byteCounter += 2;
+      byteCounter += 1;
     }
     flag ~/= 2;
     // Has Total Distance?
@@ -98,9 +84,20 @@ class IndoorBikeDeviceDescriptor extends GattStandardDeviceDescriptor {
       byteCounter += 3;
     }
     flag ~/= 2;
-    // Has Resistance Level
+    final hasInstantPace = flag % 2 == 1;
+    if (hasInstantPace) {
+      // UInt16, seconds with 1 resolution
+      paceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
+      byteCounter += 2;
+    }
+    flag ~/= 2;
+    // Has Average Pace?
     if (flag % 2 == 1) {
-      // SInt16
+      // Fall back to the less instantaneous average metric
+      // UInt16, seconds with 1 resolution
+      if (!hasInstantPace) {
+        paceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
+      }
       byteCounter += 2;
     }
     flag ~/= 2;
@@ -121,9 +118,15 @@ class IndoorBikeDeviceDescriptor extends GattStandardDeviceDescriptor {
       byteCounter += 2;
     }
     flag ~/= 2;
-    // Has Expanded Energy
+    // Has Resistance Level
     if (flag % 2 == 1) {
-      // Total Energy: UInt16
+      // SInt16
+      byteCounter += 2;
+    }
+    flag ~/= 2;
+    // Has Energy metrics
+    if (flag % 2 == 1) {
+      // Total Energy: UInt16, kCal
       caloriesMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
       // Also skipping Energy / hour UInt16 and Energy / minute UInt8
       byteCounter += 5;

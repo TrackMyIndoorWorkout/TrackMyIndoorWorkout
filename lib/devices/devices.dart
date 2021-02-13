@@ -87,14 +87,49 @@ Map<String, DeviceDescriptor> deviceMap = {
     },
     calorieFactor: 3.9,
   ),
-  "KPro": GattStandardDeviceDescriptor(
+  "KPro": RowerDeviceDescriptor(
     sport: ActivityType.Kayaking,
     fourCC: "KPro",
     vendorName: "KayakPro",
     modelName: "KayakPro Compact",
     namePrefix: "KayakPro",
+    nameStart: [75, 97, 121, 97, 107, 80, 114, 111],
+    // KayakPro
+    manufacturer: [
+      78,
+      111,
+      114,
+      116,
+      104,
+      32,
+      80,
+      111,
+      108,
+      101,
+      32,
+      69,
+      110,
+      103,
+      105,
+      110,
+      101,
+      101,
+      114,
+      105,
+      110,
+      103,
+      32,
+      73,
+      110,
+      99,
+      46
+    ],
+    // North Pole Engineering Inc.
+    model: [54, 52],
+    // 64
+    // Rower Data
     canPrimaryMeasurementProcessed: (List<int> data) {
-      return true;
+      return data != null && data.length > 1;
     },
   ),
 };
