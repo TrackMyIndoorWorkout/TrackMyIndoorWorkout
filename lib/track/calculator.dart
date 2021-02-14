@@ -16,7 +16,7 @@ class TrackCalculator {
 
   TrackCalculator({@required this.track}) : assert(track != null);
 
-  Offset calculateTrackMarker(double distance) {
+  Offset trackMarker(double distance) {
     if (trackSize == null || trackRadius == null) return null;
     final r = trackRadius;
     final offset = trackOffset;
@@ -44,7 +44,7 @@ class TrackCalculator {
     }
   }
 
-  Offset calculateGPS(double distance) {
+  Offset gpsCoordinates(double distance) {
     final trackLength = TRACK_LENGTH * track.lengthFactor;
     final d = distance % trackLength;
 

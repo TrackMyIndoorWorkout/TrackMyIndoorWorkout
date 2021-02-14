@@ -7,7 +7,7 @@ import '../lib/track/tracks.dart';
 import 'utils.dart';
 
 void main() {
-  group("calculateGPS start point is invariant", () {
+  group("gpsCoordinates start point is invariant", () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -21,7 +21,7 @@ void main() {
 
       test("${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor",
           () {
-        final marker = calculator.calculateGPS(0);
+        final marker = calculator.gpsCoordinates(0);
 
         expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, 1e-6));
         expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf, 1e-6));
@@ -29,7 +29,7 @@ void main() {
     });
   });
 
-  group('calculateGPS whole laps are at the start point', () {
+  group('gpsCoordinates whole laps are at the start point', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -46,7 +46,7 @@ void main() {
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
           () {
-        final marker = calculator.calculateGPS(distance);
+        final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, 1e-6));
         expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf, 1e-6));
@@ -54,7 +54,7 @@ void main() {
     });
   });
 
-  group('calculateGPS on the first (left) straight is placed proportionally', () {
+  group('gpsCoordinates on the first (left) straight is placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -75,7 +75,7 @@ void main() {
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
           () {
-        final marker = calculator.calculateGPS(distance);
+        final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, 1e-6));
         expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf + displacement, 1e-6));
@@ -83,7 +83,7 @@ void main() {
     });
   });
 
-  group('calculateGPS on the first (top) chicane is placed proportionally', () {
+  group('gpsCoordinates on the first (top) chicane is placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -105,7 +105,7 @@ void main() {
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
           () {
-        final marker = calculator.calculateGPS(distance);
+        final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx,
             closeTo(track.center.dx - cos(rad) * track.radius * track.horizontalMeter, 1e-6));
@@ -118,7 +118,7 @@ void main() {
     });
   });
 
-  group('calculateGPS on the second (right) straight is placed proportionally', () {
+  group('gpsCoordinates on the second (right) straight is placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -140,7 +140,7 @@ void main() {
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
           () {
-        final marker = calculator.calculateGPS(distance);
+        final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx, closeTo(track.center.dx + track.gpsRadius, 1e-6));
         expect(marker.dy, closeTo(track.center.dy - track.gpsLaneHalf + displacement, 1e-6));
@@ -148,7 +148,7 @@ void main() {
     });
   });
 
-  group('calculateGPS on the second (bottom) chicane is placed proportionally', () {
+  group('gpsCoordinates on the second (bottom) chicane is placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -171,7 +171,7 @@ void main() {
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
           () {
-        final marker = calculator.calculateGPS(distance);
+        final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx,
             closeTo(track.center.dx + cos(rad) * track.radius * track.horizontalMeter, 1e-6));

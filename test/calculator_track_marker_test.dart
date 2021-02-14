@@ -11,7 +11,7 @@ void main() {
   final minPixel = 10;
   final maxPixel = 300;
 
-  group('calculateTrackMarker start point is invariant', () {
+  group('trackMarker start point is invariant', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -32,7 +32,7 @@ void main() {
       calculator.trackOffset = offset;
 
       test("${track.radiusBoost} $lengthFactor", () {
-        final marker = calculator.calculateTrackMarker(0);
+        final marker = calculator.trackMarker(0);
 
         expect(marker.dx, closeTo(size.width - THICK - offset.dx - r, 1e-6));
         expect(marker.dy, closeTo(THICK + offset.dy, 1e-6));
@@ -40,7 +40,7 @@ void main() {
     });
   });
 
-  group('calculateTrackMarker whole laps are at the start point', () {
+  group('trackMarker whole laps are at the start point', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -62,7 +62,7 @@ void main() {
       final laps = rnd.nextInt(100);
 
       test("${track.radiusBoost} $lengthFactor $laps", () {
-        final marker = calculator.calculateTrackMarker(laps * TRACK_LENGTH * lengthFactor);
+        final marker = calculator.trackMarker(laps * TRACK_LENGTH * lengthFactor);
 
         expect(marker.dx, closeTo(size.width - THICK - offset.dx - r, 1e-6));
         expect(marker.dy, closeTo(THICK + offset.dy, 1e-6));
@@ -70,7 +70,7 @@ void main() {
     });
   });
 
-  group('calculateTrackMarker on the first (top) straight is placed proportionally', () {
+  group('trackMarker on the first (top) straight is placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -97,7 +97,7 @@ void main() {
       final displacement = d / track.laneLength * pi * track.laneShrink / track.radiusBoost * r;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () {
-        final marker = calculator.calculateTrackMarker(distance);
+        final marker = calculator.trackMarker(distance);
 
         expect(marker.dx, closeTo(size.width - THICK - offset.dx - r - displacement, 1e-6));
         expect(marker.dy, closeTo(THICK + offset.dy, 1e-6));
@@ -105,7 +105,7 @@ void main() {
     });
   });
 
-  group('calculateTrackMarker on the first (left) chicane is placed proportionally', () {
+  group('trackMarker on the first (left) chicane is placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -133,7 +133,7 @@ void main() {
       final rad = (1 - (d - track.laneLength) / track.halfCircle) * pi;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () {
-        final marker = calculator.calculateTrackMarker(distance);
+        final marker = calculator.trackMarker(distance);
 
         expect(marker.dx, closeTo((1 - sin(rad)) * r + THICK + offset.dx, 1e-6));
         expect(marker.dy, closeTo((cos(rad) + 1) * r + THICK + offset.dy, 1e-6));
@@ -141,7 +141,7 @@ void main() {
     });
   });
 
-  group('calculateTrackMarker on the second (bottom) straight is placed proportionally', () {
+  group('trackMarker on the second (bottom) straight is placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -170,7 +170,7 @@ void main() {
           (d - trackLength / 2) / track.laneLength * pi * track.laneShrink / track.radiusBoost * r;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () {
-        final marker = calculator.calculateTrackMarker(distance);
+        final marker = calculator.trackMarker(distance);
 
         expect(marker.dx, closeTo(THICK + offset.dx + r + displacement, 1e-6));
         expect(marker.dy, closeTo(size.height - THICK - offset.dy, 1e-6));
@@ -178,7 +178,7 @@ void main() {
     });
   });
 
-  group('calculateTrackMarker on the second (right) chicane is placed proportionally', () {
+  group('trackMarker on the second (right) chicane is placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -207,7 +207,7 @@ void main() {
       final rad = (2 + (d - trackLength / 2 - track.laneLength) / track.halfCircle) * pi;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () {
-        final marker = calculator.calculateTrackMarker(distance);
+        final marker = calculator.trackMarker(distance);
 
         expect(marker.dx, closeTo(size.width - THICK - offset.dx - (1 - sin(rad)) * r, 1e-6));
         expect(marker.dy, closeTo(r * (cos(rad) + 1) + THICK + offset.dy, 1e-6));
