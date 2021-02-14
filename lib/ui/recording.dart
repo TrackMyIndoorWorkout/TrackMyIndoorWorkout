@@ -365,10 +365,12 @@ class RecordingState extends State<RecordingScreen> {
       PrefService.getString(THROTTLE_POWER_TAG),
       PrefService.getBool(THROTTLE_OTHER_TAG),
     );
-    _trackCalculator = TrackCalculator(track: TrackDescriptor(
-      radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
-      lengthFactor: descriptor.lengthFactor,
-    ));
+    _trackCalculator = TrackCalculator(
+      track: TrackDescriptor(
+        radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
+        lengthFactor: descriptor.lengthFactor,
+      ),
+    );
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _simplerUi = PrefService.getBool(SIMPLER_UI_TAG);
     _instantUpload = PrefService.getBool(INSTANT_UPLOAD_TAG);

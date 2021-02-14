@@ -8,6 +8,7 @@ import 'tracks.dart';
 class TrackCalculator {
   TrackDescriptor track;
 
+  // Cached variables
   Size trackSize;
   Paint trackStroke;
   Path trackPath;
