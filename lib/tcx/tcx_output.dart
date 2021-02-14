@@ -7,8 +7,8 @@ import '../devices/device_descriptor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../tcx/activity_type.dart';
+import '../track/calculator.dart';
 import '../track/tracks.dart';
-import '../track/utils.dart';
 import '../utils/statistics_accumulator.dart';
 import 'tcx_model.dart';
 
@@ -26,14 +26,14 @@ class TCXOutput {
     _sb = StringBuffer();
   }
 
-  TrackPoint recordToTrackPoint(Record record, TrackDescriptor track) {
+  TrackPoint recordToTrackPoint(Record record, TrackCalculator calculator) {
     final timeStamp = DateTime.fromMillisecondsSinceEpoch(record.timeStamp);
-    final gps = calculateGPS(record.distance, track);
+    final gps = calculator.calculateGPS(record.distance);
     return TrackPoint()
       ..longitude = gps.dx
       ..latitude = gps.dy
       ..timeStamp = TCXOutput.createTimestamp(timeStamp)
-      ..altitude = track.altitude
+      ..altitude = calculator.track.altitude
       ..speed = record.speed * DeviceDescriptor.KMH2MS
       ..distance = record.distance
       ..date = timeStamp
@@ -46,6 +46,7 @@ class TCXOutput {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
     final descriptor = deviceMap[activity.fourCC];
     final track = getDefaultTrack(descriptor.sport);
+    final calculator = TrackCalculator(track: track);
     TCXModel tcxInfo = TCXModel()
       ..activityType = descriptor.activityType
       ..totalDistance = activity.distance
@@ -72,7 +73,7 @@ class TCXOutput {
       ..buildVersionMinor = MINOR
       ..langID = 'en-US'
       ..partNumber = '0'
-      ..points = records.map((r) => recordToTrackPoint(r, track)).toList();
+      ..points = records.map((r) => recordToTrackPoint(r, calculator)).toList();
 
     return await TCXOutput().getTcx(tcxInfo, compress);
   }

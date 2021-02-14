@@ -14,6 +14,7 @@ import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:preferences/preferences.dart';
+import 'package:track_my_indoor_exercise/track/tracks.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
@@ -26,7 +27,7 @@ import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
-import '../track/utils.dart';
+import '../track/calculator.dart';
 import 'activities.dart';
 import 'row_configuration.dart';
 
@@ -75,21 +76,14 @@ class RecordingState extends State<RecordingScreen> {
         assert(initialState != null),
         assert(size != null) {
     this.descriptor = device.getDescriptor();
-    _lengthFactor = this.descriptor.lengthFactor;
   }
 
   Size size;
-  // Track drawing cached computed values
-  static Size trackSize;
-  static Paint trackStroke;
-  static Path trackPath;
-  static Offset trackOffset;
-  static double trackRadius;
 
   final BluetoothDevice device;
   final BluetoothDeviceState initialState;
   DeviceDescriptor descriptor;
-  double _lengthFactor;
+  TrackCalculator _trackCalculator;
   BluetoothCharacteristic _primaryMeasurements;
   StreamSubscription _measurementSubscription;
   BluetoothCharacteristic _cadenceMeasurements;
@@ -371,6 +365,10 @@ class RecordingState extends State<RecordingScreen> {
       PrefService.getString(THROTTLE_POWER_TAG),
       PrefService.getBool(THROTTLE_OTHER_TAG),
     );
+    _trackCalculator = TrackCalculator(track: TrackDescriptor(
+      radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
+      lengthFactor: descriptor.lengthFactor,
+    ));
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _simplerUi = PrefService.getBool(SIMPLER_UI_TAG);
     _instantUpload = PrefService.getBool(INSTANT_UPLOAD_TAG);
@@ -747,10 +745,10 @@ class RecordingState extends State<RecordingScreen> {
         );
       });
 
-      final trackMarker = calculateTrackMarker(trackSize, _latestRecord.distance, _lengthFactor);
+      final trackMarker = _trackCalculator.calculateTrackMarker(_latestRecord.distance);
       extras.add(
         CustomPaint(
-          painter: TrackPainter(),
+          painter: TrackPainter(calculator: _trackCalculator),
           child: SizedBox(
             width: size.width,
             height: size.width / 1.9,

@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import '../lib/track/calculator.dart';
 import '../lib/track/constants.dart';
 import '../lib/track/tracks.dart';
-import '../lib/track/utils.dart';
 import 'utils.dart';
 
 void main() {
@@ -17,10 +17,11 @@ void main() {
         verticalMeter: rnd.nextDouble() / 10000,
         lengthFactor: lengthFactor,
       );
+      final calculator = TrackCalculator(track: track);
 
       test("${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor",
           () {
-        final marker = calculateGPS(0, track);
+        final marker = calculator.calculateGPS(0);
 
         expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, 1e-6));
         expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf, 1e-6));
@@ -40,11 +41,12 @@ void main() {
       );
       final laps = rnd.nextInt(100);
       final distance = laps * TRACK_LENGTH * lengthFactor;
+      final calculator = TrackCalculator(track: track);
 
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
           () {
-        final marker = calculateGPS(distance, track);
+        final marker = calculator.calculateGPS(distance);
 
         expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, 1e-6));
         expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf, 1e-6));
@@ -68,11 +70,12 @@ void main() {
       final trackLength = TRACK_LENGTH * track.lengthFactor;
       final d = distance % trackLength;
       final displacement = -d * track.verticalMeter;
+      final calculator = TrackCalculator(track: track);
 
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
           () {
-        final marker = calculateGPS(distance, track);
+        final marker = calculator.calculateGPS(distance);
 
         expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, 1e-6));
         expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf + displacement, 1e-6));
@@ -97,11 +100,12 @@ void main() {
       final trackLength = TRACK_LENGTH * lengthFactor;
       final d = distance % trackLength;
       final rad = (d - track.laneLength) / track.halfCircle * pi;
+      final calculator = TrackCalculator(track: track);
 
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
           () {
-        final marker = calculateGPS(distance, track);
+        final marker = calculator.calculateGPS(distance);
 
         expect(marker.dx,
             closeTo(track.center.dx - cos(rad) * track.radius * track.horizontalMeter, 1e-6));
@@ -131,11 +135,12 @@ void main() {
       final trackLength = TRACK_LENGTH * lengthFactor;
       final d = distance % trackLength;
       final displacement = (d - trackLength / 2) * track.verticalMeter;
+      final calculator = TrackCalculator(track: track);
 
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
           () {
-        final marker = calculateGPS(distance, track);
+        final marker = calculator.calculateGPS(distance);
 
         expect(marker.dx, closeTo(track.center.dx + track.gpsRadius, 1e-6));
         expect(marker.dy, closeTo(track.center.dy - track.gpsLaneHalf + displacement, 1e-6));
@@ -161,11 +166,12 @@ void main() {
       final trackLength = TRACK_LENGTH * lengthFactor;
       final d = distance % trackLength;
       final rad = (d - trackLength / 2 - track.laneLength) / track.halfCircle * pi;
+      final calculator = TrackCalculator(track: track);
 
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
           () {
-        final marker = calculateGPS(distance, track);
+        final marker = calculator.calculateGPS(distance);
 
         expect(marker.dx,
             closeTo(track.center.dx + cos(rad) * track.radius * track.horizontalMeter, 1e-6));

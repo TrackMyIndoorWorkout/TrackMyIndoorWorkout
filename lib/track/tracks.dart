@@ -6,6 +6,8 @@ import 'package:meta/meta.dart';
 import '../tcx/activity_type.dart';
 import 'constants.dart';
 
+const TRACK_PAINTING_RADIUS_BOOST = 1.2;
+
 class TrackDescriptor {
   final String sport; // What sport is it intended for?
   final Offset center; // lon, lat
@@ -60,10 +62,6 @@ Map<String, TrackDescriptor> trackMap = {
     horizontalMeter: 0.000011156,
     verticalMeter: 0.000009036,
     altitude: 100.0,
-    lengthFactor: 1.0,
-  ),
-  "Painting": TrackDescriptor(
-    radiusBoost: 1.2,
     lengthFactor: 1.0,
   ),
   "SanJoaquinBluffPointe": TrackDescriptor(
