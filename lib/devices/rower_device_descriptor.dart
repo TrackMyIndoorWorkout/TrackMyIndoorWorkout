@@ -5,11 +5,11 @@ import '../persistence/models/record.dart';
 import 'byte_metric_descriptor.dart';
 import 'cadence_data.dart';
 import 'device_descriptor.dart';
-import 'gatt_standard_device_descriptor.dart';
+import 'fitness_machine_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
 
-class RowerDeviceDescriptor extends GattStandardDeviceDescriptor {
+class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   RowerDeviceDescriptor({
     @required sport,
     @required fourCC,
@@ -292,16 +292,16 @@ class RowerDeviceDescriptor extends GattStandardDeviceDescriptor {
     var secondsDiff = lastData.seconds - firstData.seconds;
     // Check overflow
     if (secondsDiff < 0) {
-      secondsDiff += GattStandardDeviceDescriptor.EVENT_TIME_OVERFLOW;
+      secondsDiff += FitnessMachineDescriptor.EVENT_TIME_OVERFLOW;
     }
 
-    while (secondsDiff > GattStandardDeviceDescriptor.REVOLUTION_SLIDING_WINDOW &&
+    while (secondsDiff > FitnessMachineDescriptor.REVOLUTION_SLIDING_WINDOW &&
         cadenceData.length > 2) {
       cadenceData.removeFirst();
       secondsDiff = cadenceData.last.seconds - cadenceData.first.seconds;
       // Check overflow
       if (secondsDiff < 0) {
-        secondsDiff += GattStandardDeviceDescriptor.EVENT_TIME_OVERFLOW;
+        secondsDiff += FitnessMachineDescriptor.EVENT_TIME_OVERFLOW;
       }
     }
 

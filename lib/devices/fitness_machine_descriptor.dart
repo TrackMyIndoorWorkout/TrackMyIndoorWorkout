@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 import 'cadence_data.dart';
 import 'device_descriptor.dart';
 
-abstract class GattStandardDeviceDescriptor extends DeviceDescriptor {
+abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   // Primary metrics
   int featuresFlag;
 
@@ -17,7 +17,7 @@ abstract class GattStandardDeviceDescriptor extends DeviceDescriptor {
   static const int EVENT_TIME_OVERFLOW = 64; // Overflows every 64 seconds
   double residueCalories;
 
-  GattStandardDeviceDescriptor({
+  FitnessMachineDescriptor({
     @required sport,
     @required fourCC,
     @required vendorName,

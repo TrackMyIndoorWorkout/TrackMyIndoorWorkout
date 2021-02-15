@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 
 import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
-import '../devices/gatt_standard_device_descriptor.dart';
+import '../devices/fitness_machine_descriptor.dart';
 import '../ui/import_form.dart';
 import 'models/activity.dart';
 import 'models/record.dart';
@@ -183,7 +183,7 @@ class MPowerEchelon2Importer {
       return null;
     }
 
-    GattStandardDeviceDescriptor device = deviceMap["SAP+"];
+    FitnessMachineDescriptor device = deviceMap["SAP+"];
     var activity = Activity(
       deviceName: device.namePrefix,
       deviceId: "",
