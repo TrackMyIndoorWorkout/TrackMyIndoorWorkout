@@ -185,6 +185,22 @@ abstract class DeviceDescriptor {
     return calories * throttlePower;
   }
 
+  double getCaloriesPerHour(List<int> data) {
+    var caloriesPerHour = caloriesPerHourMetric?.getMeasurementValue(data);
+    if (caloriesPerHour == null || !throttleOther) {
+      return caloriesPerHour;
+    }
+    return caloriesPerHour * throttlePower;
+  }
+
+  double getCaloriesPerMinute(List<int> data) {
+    var caloriesPerMinute = caloriesPerMinuteMetric?.getMeasurementValue(data);
+    if (caloriesPerMinute == null || !throttleOther) {
+      return caloriesPerMinute;
+    }
+    return caloriesPerMinute * throttlePower;
+  }
+
   double getTime(List<int> data) {
     return timeMetric?.getMeasurementValue(data);
   }

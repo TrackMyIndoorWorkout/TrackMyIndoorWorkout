@@ -327,10 +327,19 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       double calories = 0;
       if (caloriesMetric != null) {
         calories = getCalories(data);
-      } else {
-        // Instead of dT fractional second we use 1s to boost calorie counting
-        // Due to #35. On top of that
-        final deltaCalories = power * calorieFactor * DeviceDescriptor.J2KCAL;
+      } else if (caloriesPerHourMetric != null || caloriesPerMinuteMetric != null || power > 0) {
+        double deltaCalories = 0;
+        if (caloriesPerHourMetric != null) {
+          final calPerHour = getCaloriesPerHour(data);
+          deltaCalories = calPerHour / (60 * 60) * elapsedMillis / 1000;
+        } else if (caloriesPerMinuteMetric != null) {
+          final calPerMinute = getCaloriesPerMinute(data);
+          deltaCalories = calPerMinute / 60 * elapsedMillis / 1000;
+        } else {
+          // Instead of dT fractional second we use 1s to boost calorie counting
+          // Due to #35. On top of that
+          deltaCalories = power * calorieFactor * DeviceDescriptor.J2KCAL;
+        }
         residueCalories += deltaCalories;
         calories = lastRecord.calories + residueCalories;
         if (calories.floor() > lastRecord.calories) {
