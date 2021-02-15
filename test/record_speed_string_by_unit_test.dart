@@ -25,8 +25,8 @@ void main() {
     speeds.forEach((speed) {
       sports.forEach((sport) {
         final expected = speed.toStringAsFixed(2);
-        test("$speed -> $expected", () {
-          final record = Record(speed: speed);
+        test("$speed ($sport) -> $expected", () {
+          final record = Record(speed: speed, sport: sport);
           expect(record.speedStringByUnit(true, sport), expected);
         });
       });
@@ -38,8 +38,8 @@ void main() {
     speeds.forEach((speed) {
       sports.forEach((sport) {
         final expected = (speed * KM2MI).toStringAsFixed(2);
-        test("$speed -> $expected", () {
-          final record = Record(speed: speed);
+        test("$speed ($sport) -> $expected", () {
+          final record = Record(speed: speed, sport: sport);
           expect(record.speedStringByUnit(false, sport), expected);
         });
       });
@@ -53,8 +53,8 @@ void main() {
         final pace = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed;
         final expected = Record.paceString(pace);
         // final expected
-        test("$speed -> $expected", () {
-          final record = Record(speed: speed);
+        test("$speed ($sport) -> $expected", () {
+          final record = Record(speed: speed, sport: sport);
           expect(record.speedStringByUnit(true, sport), expected);
         });
       });
@@ -67,8 +67,8 @@ void main() {
       sports.forEach((sport) {
         final pace = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed / KM2MI;
         final expected = Record.paceString(pace);
-        test("$speed -> $expected", () {
-          final record = Record(speed: speed);
+        test("$speed ($sport) -> $expected", () {
+          final record = Record(speed: speed, sport: sport);
           expect(record.speedStringByUnit(false, sport), expected);
         });
       });
@@ -81,8 +81,8 @@ void main() {
       sports.forEach((sport) {
         final pace = speed.abs() < 10e-4 ? 0.0 : 30.0 / speed;
         final expected = Record.paceString(pace);
-        test("$speed -> $expected", () {
-          final record = Record(speed: speed);
+        test("$speed ($sport) -> $expected", () {
+          final record = Record(speed: speed, sport: sport);
           // There's no imperial for water sports, it's always 500m
           expect(record.speedStringByUnit(false, sport), expected);
           expect(record.speedStringByUnit(true, sport), expected);
@@ -94,8 +94,8 @@ void main() {
   group("speedStringByUnit for elliptical sports:", () {
     speeds.forEach((speed) {
       final expected = speed.toStringAsFixed(2);
-      test("$speed -> $expected", () {
-        final record = Record(speed: speed);
+      test("$speed (Elliptical) -> $expected", () {
+        final record = Record(speed: speed, sport: ActivityType.Elliptical);
         // There's no imperial for water sports, it's always 500m
         expect(record.speedStringByUnit(false, ActivityType.Elliptical), expected);
         expect(record.speedStringByUnit(true, ActivityType.Elliptical), expected);

@@ -8,15 +8,15 @@ import 'utils.dart';
 void main() {
   group('StatisticsAccumulator calculates avg power when requested', () {
     final rnd = Random();
-    1.to(SMALL_REPETITION).forEach((input) {
+    SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(calculateAvgPower: true);
       final count = rnd.nextInt(99) + 1;
       double sum = 0.0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(power: number));
+        accu.processRecord(Record(power: number, sport: sport));
         sum += number;
       });
-      test("$count -> $sum", () {
+      test("$count ($sport) -> $sum", () {
         expect(accu.si, null);
         expect(accu.sport, null);
         expect(accu.calculateAvgPower, true);
@@ -46,15 +46,15 @@ void main() {
 
   group('StatisticsAccumulator calculates max power when requested', () {
     final rnd = Random();
-    1.to(SMALL_REPETITION).forEach((input) {
+    SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(calculateMaxPower: true);
       final count = rnd.nextInt(99) + 1;
       int maximum = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(power: number));
+        accu.processRecord(Record(power: number, sport: sport));
         maximum = max(number, maximum);
       });
-      test("$count -> $maximum", () {
+      test("$count ($sport) -> $maximum", () {
         expect(accu.si, null);
         expect(accu.sport, null);
         expect(accu.calculateAvgPower, false);
@@ -83,15 +83,15 @@ void main() {
 
   group('StatisticsAccumulator calculates avg speed when requested', () {
     final rnd = Random();
-    1.to(SMALL_REPETITION).forEach((input) {
+    SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(calculateAvgSpeed: true);
       final count = rnd.nextInt(99) + 1;
       double sum = 0.0;
       getRandomDoubles(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(speed: number));
+        accu.processRecord(Record(speed: number, sport: sport));
         sum += number;
       });
-      test("$count -> $sum", () {
+      test("$count ($sport) -> $sum", () {
         expect(accu.si, null);
         expect(accu.sport, null);
         expect(accu.calculateAvgPower, false);
@@ -121,15 +121,15 @@ void main() {
 
   group('StatisticsAccumulator calculates max speed when requested', () {
     final rnd = Random();
-    1.to(SMALL_REPETITION).forEach((input) {
+    SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(calculateMaxSpeed: true);
       final count = rnd.nextInt(99) + 1;
       double maximum = 0.0;
       getRandomDoubles(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(speed: number));
+        accu.processRecord(Record(speed: number, sport: sport));
         maximum = max(number, maximum);
       });
-      test("$count -> $maximum", () {
+      test("$count ($sport) -> $maximum", () {
         expect(accu.si, null);
         expect(accu.sport, null);
         expect(accu.calculateAvgPower, false);
@@ -158,19 +158,19 @@ void main() {
 
   group('StatisticsAccumulator calculates avg hr when requested', () {
     final rnd = Random();
-    1.to(SMALL_REPETITION).forEach((input) {
+    SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(calculateAvgHeartRate: true);
       final count = rnd.nextInt(99) + 1;
       int sum = 0;
       int cnt = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(heartRate: number));
+        accu.processRecord(Record(heartRate: number, sport: sport));
         sum += number;
         if (number > 0) {
           cnt += 1;
         }
       });
-      test("$count -> $sum", () {
+      test("$count ($sport) -> $sum", () {
         expect(accu.si, null);
         expect(accu.sport, null);
         expect(accu.calculateAvgPower, false);
@@ -200,15 +200,15 @@ void main() {
 
   group('StatisticsAccumulator calculates max hr when requested', () {
     final rnd = Random();
-    1.to(SMALL_REPETITION).forEach((input) {
+    SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(calculateMaxHeartRate: true);
       final count = rnd.nextInt(99) + 1;
       int maximum = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(heartRate: number));
+        accu.processRecord(Record(heartRate: number, sport: sport));
         maximum = max(number, maximum);
       });
-      test("$count -> $maximum", () {
+      test("$count ($sport) -> $maximum", () {
         expect(accu.si, null);
         expect(accu.sport, null);
         expect(accu.calculateAvgPower, false);
@@ -237,19 +237,19 @@ void main() {
 
   group('StatisticsAccumulator calculates avg cadence when requested', () {
     final rnd = Random();
-    1.to(SMALL_REPETITION).forEach((input) {
+    SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(calculateAvgCadence: true);
       final count = rnd.nextInt(99) + 1;
       int sum = 0;
       int cnt = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(cadence: number));
+        accu.processRecord(Record(cadence: number, sport: sport));
         sum += number;
         if (number > 0) {
           cnt += 1;
         }
       });
-      test("$count -> $sum", () {
+      test("$count ($sport) -> $sum", () {
         expect(accu.si, null);
         expect(accu.sport, null);
         expect(accu.calculateAvgPower, false);
@@ -279,15 +279,15 @@ void main() {
 
   group('StatisticsAccumulator initializes max cadence when max requested', () {
     final rnd = Random();
-    1.to(SMALL_REPETITION).forEach((input) {
+    SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(calculateMaxCadence: true);
       final count = rnd.nextInt(99) + 1;
       int maximum = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(cadence: number));
+        accu.processRecord(Record(cadence: number, sport: sport));
         maximum = max(number, maximum);
       });
-      test("$count -> $maximum", () {
+      test("$count ($sport) -> $maximum", () {
         expect(accu.si, null);
         expect(accu.sport, null);
         expect(accu.calculateAvgPower, false);
@@ -316,7 +316,7 @@ void main() {
 
   group('StatisticsAccumulator initializes everything when all requested', () {
     final rnd = Random();
-    1.to(SMALL_REPETITION).forEach((input) {
+    SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(
         calculateAvgPower: true,
         calculateMaxPower: true,
@@ -348,6 +348,7 @@ void main() {
           speed: speeds[index],
           cadence: cadences[index],
           heartRate: hrs[index],
+          sport: sport,
         ));
         powerSum += powers[index];
         maxPower = max(powers[index], maxPower);
@@ -365,7 +366,7 @@ void main() {
         maxHr = max(hrs[index], maxHr);
         return index;
       });
-      test("$count -> $powerSum, $maxPower, $speedSum, $maxSpeed", () {
+      test("$count ($sport) -> $powerSum, $maxPower, $speedSum, $maxSpeed", () {
         expect(accu.si, null);
         expect(accu.sport, null);
         expect(accu.calculateAvgPower, true);

@@ -86,6 +86,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         speed: getSpeed(data),
         cadence: getCadence(data).toInt(),
         heartRate: getHeartRate(data).toInt(),
+        sport: sport,
       );
     } else {
       return Record(
@@ -98,6 +99,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         speed: lastRecord.speed,
         cadence: lastRecord.cadence,
         heartRate: lastRecord.heartRate,
+        sport: sport,
       );
     }
   }

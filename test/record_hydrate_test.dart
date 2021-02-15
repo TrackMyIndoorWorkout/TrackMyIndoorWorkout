@@ -7,16 +7,22 @@ void main() {
   group("hydrate should initialize dt based on timeStamp:", () {
     1.to(SMALL_REPETITION).forEach((input) {
       final randomDateTime = mockDate();
-      test("$input -> $randomDateTime", () {
-        var record = Record(timeStamp: randomDateTime.millisecondsSinceEpoch);
-        record.hydrate();
-        expect(record.dt, randomDateTime);
+      SPORTS.forEach((sport) {
+        test("$input -> $randomDateTime", () {
+          var record = Record(timeStamp: randomDateTime.millisecondsSinceEpoch, sport: sport);
+          record.hydrate();
+          expect(record.dt, randomDateTime);
+        });
       });
     });
+  });
 
-    test('no hydrate leaves dt as null', () async {
-      final record = Record();
-      expect(record.dt, null);
+  group('no hydrate leaves dt as null', () {
+    SPORTS.forEach((sport) {
+      test("$sport", () {
+        final record = Record(sport: sport);
+        expect(record.dt, null);
+      });
     });
   });
 }

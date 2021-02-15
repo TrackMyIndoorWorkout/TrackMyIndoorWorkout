@@ -1,4 +1,5 @@
 import 'package:floor/floor.dart';
+import 'package:meta/meta.dart';
 import '../../persistence/preferences.dart';
 import '../../tcx/activity_type.dart';
 import 'activity.dart';
@@ -25,7 +26,7 @@ class Record {
   final int elapsed; // s
   final int calories; // kCal
   final int power; // W
-  final double speed; // km/h
+  double speed; // km/h
   final int cadence;
   @ColumnInfo(name: 'heart_rate')
   final int heartRate;
@@ -34,6 +35,12 @@ class Record {
   DateTime dt;
   @ignore
   int elapsedMillis;
+  @ignore
+  double pace;
+  @ignore
+  double strokeCount;
+  @ignore
+  String sport;
 
   Record({
     this.id,
@@ -47,7 +54,29 @@ class Record {
     this.cadence,
     this.heartRate,
     this.elapsedMillis,
-  });
+    this.pace,
+    this.strokeCount,
+    @required this.sport,
+  }) : assert(sport != null) {
+    if (speed == null && pace != null) {
+      if (sport == ActivityType.Kayaking ||
+          sport == ActivityType.Canoeing ||
+          sport == ActivityType.Rowing) {
+        if (pace.abs() < 10e-4) {
+          speed = 0.0;
+        } else {
+          speed = 30.0 / (pace / 60.0);
+        }
+      } else {
+        // sport == ActivityType.Run || sport == ActivityType.VirtualRun
+        if (pace.abs() < 10e-4) {
+          speed = 0.0;
+        } else {
+          speed = 60.0 / pace;
+        }
+      }
+    }
+  }
 
   Record hydrate() {
     dt = DateTime.fromMillisecondsSinceEpoch(timeStamp);
