@@ -54,6 +54,8 @@ abstract class DeviceDescriptor {
   // Special Metrics
   ByteMetricDescriptor strokeRateMetric;
   ShortMetricDescriptor paceMetric;
+  ShortMetricDescriptor caloriesPerHourMetric;
+  ByteMetricDescriptor caloriesPerMinuteMetric;
 
   double throttlePower;
   bool throttleOther;
@@ -205,5 +207,20 @@ abstract class DeviceDescriptor {
 
   double getHeartRate(List<int> data) {
     return data[heartRate].toDouble();
+  }
+
+  clearMetrics() {
+    speedMetric = null;
+    cadenceMetric = null;
+    distanceMetric = null;
+    powerMetric = null;
+    caloriesMetric = null;
+    timeMetric = null;
+    revolutionsMetric = null;
+    revolutionTime = null;
+    strokeRateMetric = null;
+    paceMetric = null;
+    caloriesPerHourMetric = null;
+    caloriesPerMinuteMetric = null;
   }
 }
