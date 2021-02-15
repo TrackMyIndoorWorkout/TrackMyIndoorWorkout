@@ -320,6 +320,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       var cadence = lastRecord.cadence;
       if (cadenceMetric != null) {
         cadence = getCadence(data).toInt();
+      } else if (strokeRateMetric != null) {
+        cadence = getStrokeRate(data);
       }
       double power = getPower(data);
       double calories = 0;
