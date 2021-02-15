@@ -31,7 +31,7 @@ void main() {
       final lsbLocation = rnd.nextInt(len);
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
-      final expected = optional && data[lsbLocation] == 255 ? 0 : data[lsbLocation] / divider;
+      final expected = optional && data[lsbLocation] == 255 ? null : data[lsbLocation] / divider;
 
       test("($lsbLocation) ${data[lsbLocation]} / $divider -> $expected", () {
         final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider, optional: optional);
