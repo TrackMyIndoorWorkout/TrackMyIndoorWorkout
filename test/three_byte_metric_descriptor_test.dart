@@ -8,7 +8,7 @@ void main() {
   group('optional ThreeByteMetricDescriptor returns null if the value is max', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1024, rnd).forEach((divider) {
-      final len = rnd.nextInt(99) + 3;
+      final len = rnd.nextInt(99) + 5;
       final data = getRandomInts(len, 256, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 1 ? (lsbLocation < len - 2 ? rnd.nextBool() : false) : true;
@@ -31,7 +31,7 @@ void main() {
   group('ThreeByteMetricDescriptor calculates measurement as expected', () {
     final rnd = Random();
     1.to(REPETITION).forEach((input) {
-      final len = rnd.nextInt(99) + 3;
+      final len = rnd.nextInt(99) + 5;
       final data = getRandomInts(len, 256, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 1 ? (lsbLocation < len - 2 ? rnd.nextBool() : false) : true;
@@ -47,7 +47,7 @@ void main() {
           : (data[lsbLocation] + 256 * (data[midLocation] + 256 * data[msbLocation])) / divider;
 
       test(
-          "($lsbLocation $msbLocation) ${data[lsbLocation]} ${data[msbLocation]} $divider -> $expected",
+          "(${data[lsbLocation]} + ${data[midLocation]} + ${data[msbLocation]}) / $divider -> $expected",
           () {
         final desc = ThreeByteMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);

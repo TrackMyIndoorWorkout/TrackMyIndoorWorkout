@@ -41,9 +41,7 @@ void main() {
           ? 0
           : (data[lsbLocation] + data[msbLocation] * 256) / divider;
 
-      test(
-          "($lsbLocation $msbLocation) ${data[lsbLocation]} ${data[msbLocation]} / $divider -> $expected",
-          () {
+      test("(${data[lsbLocation]} + ${data[msbLocation]}) / $divider -> $expected", () {
         final desc = ShortMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);
 
