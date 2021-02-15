@@ -347,6 +347,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         speed: getSpeed(data),
         cadence: cadence,
         heartRate: getHeartRate(data).toInt(),
+        pace: getPace(data),
         elapsedMillis: elapsedMillis,
         sport: sport,
       );
@@ -361,6 +362,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         speed: lastRecord.speed,
         cadence: lastRecord.cadence,
         heartRate: lastRecord.heartRate,
+        pace: lastRecord.pace,
         elapsedMillis: elapsedMillis,
         sport: sport,
       );
