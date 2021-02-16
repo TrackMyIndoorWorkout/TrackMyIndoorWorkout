@@ -6,7 +6,7 @@ class ByteMetricDescriptor extends MetricDescriptor {
   ByteMetricDescriptor({
     @required lsb,
     @required divider,
-    optional,
+    optional = false,
   }) : super(lsb: lsb, msb: 0, divider: divider, optional: optional);
 
   double getMeasurementValue(List<int> data) {

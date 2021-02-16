@@ -7,7 +7,7 @@ class ShortMetricDescriptor extends MetricDescriptor {
     @required lsb,
     @required msb,
     @required divider,
-    optional,
+    optional = false,
   }) : super(lsb: lsb, msb: msb, divider: divider, optional: optional);
 
   double getMeasurementValue(List<int> data) {
