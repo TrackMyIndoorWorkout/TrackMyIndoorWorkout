@@ -448,6 +448,7 @@ class RecordingState extends State<RecordingScreen> {
       cadence: 0,
       heartRate: 0,
       elapsedMillis: 0,
+      sport: descriptor.sport,
     );
     _values = ["--", "--", "--", "--", "--", "--"];
 
@@ -488,6 +489,7 @@ class RecordingState extends State<RecordingScreen> {
         cadence: 30 + _random.nextInt(100),
         heartRate: 60 + _random.nextInt(120),
         elapsedMillis: newElapsed,
+        sport: descriptor.sport,
       );
       _fillValues(_latestRecord);
       _addGraphData(_latestRecord);
