@@ -34,7 +34,7 @@ void main() {
       final expected = pacePair[1];
       [ActivityType.Run, ActivityType.VirtualRun].forEach((sport) {
         test("${pacePair[0]} -> $expected", () {
-          expect(Record(pace: pacePair[0], sport: sport).speed, closeTo(expected, 1e-6));
+          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, 1e-6));
         });
       });
     });
@@ -47,7 +47,7 @@ void main() {
       final expected = 60 / randomPace;
       [ActivityType.Run, ActivityType.VirtualRun].forEach((sport) {
         test("$randomPace -> $expected", () {
-          expect(Record(pace: randomPace, sport: sport).speed, closeTo(expected, 1e-6));
+          expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, 1e-6));
         });
       });
     });
@@ -72,7 +72,7 @@ void main() {
       final expected = pacePair[1];
       [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing].forEach((sport) {
         test("${pacePair[0]} -> $expected", () {
-          expect(Record(pace: pacePair[0], sport: sport).speed, closeTo(expected, 1e-6));
+          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, 1e-6));
         });
       });
     });
@@ -85,7 +85,7 @@ void main() {
       final expected = 30.0 / (randomPace / 60.0);
       [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing].forEach((sport) {
         test("$randomPace -> $expected", () {
-          expect(Record(pace: randomPace, sport: sport).speed, closeTo(expected, 1e-6));
+          expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, 1e-6));
         });
       });
     });

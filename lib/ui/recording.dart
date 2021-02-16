@@ -438,7 +438,7 @@ class RecordingState extends State<RecordingScreen> {
     _measuring = false;
     _paused = false;
     _idleDuration = Duration();
-    _latestRecord = Record(
+    _latestRecord = RecordWithSport(
       timeStamp: 0,
       distance: uxDebug ? _random.nextInt(100000).toDouble() : 0,
       elapsed: 0,
@@ -479,7 +479,7 @@ class RecordingState extends State<RecordingScreen> {
     setState(() {
       final rightNow = DateTime.now();
       final newElapsed = _latestRecord.elapsed + 1;
-      _latestRecord = Record(
+      _latestRecord = RecordWithSport(
         timeStamp: rightNow.millisecondsSinceEpoch,
         distance: _latestRecord.distance + _random.nextInt(10),
         elapsed: newElapsed,

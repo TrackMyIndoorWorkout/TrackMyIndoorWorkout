@@ -76,7 +76,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     // See github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/16
     final timeStamp = activity.startDateTime.add(idleDuration).add(elapsedDuration);
     if (data != null) {
-      return Record(
+      return RecordWithSport(
         activityId: activity.id,
         timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: newDistance,
@@ -89,7 +89,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         sport: sport,
       );
     } else {
-      return Record(
+      return RecordWithSport(
         activityId: activity.id,
         timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: newDistance,

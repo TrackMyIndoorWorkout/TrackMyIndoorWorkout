@@ -9,7 +9,7 @@ void main() {
       final randomDateTime = mockDate();
       SPORTS.forEach((sport) {
         test("$input -> $randomDateTime", () {
-          var record = Record(timeStamp: randomDateTime.millisecondsSinceEpoch, sport: sport);
+          var record = RecordWithSport(timeStamp: randomDateTime.millisecondsSinceEpoch, sport: sport);
           record.hydrate();
           expect(record.dt, randomDateTime);
         });
@@ -20,7 +20,7 @@ void main() {
   group('no hydrate leaves dt as null', () {
     SPORTS.forEach((sport) {
       test("$sport", () {
-        final record = Record(sport: sport);
+        final record = RecordWithSport(sport: sport);
         expect(record.dt, null);
       });
     });

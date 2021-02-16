@@ -346,7 +346,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           residueCalories = calories - calories.floor();
         }
       }
-      return Record(
+      return RecordWithSport(
         activityId: activity.id,
         timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: newDistance,
@@ -361,7 +361,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         sport: sport,
       );
     } else {
-      return Record(
+      return RecordWithSport(
         activityId: activity.id,
         timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: newDistance,

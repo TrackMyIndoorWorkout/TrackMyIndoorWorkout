@@ -56,9 +56,9 @@ class Record {
     this.elapsedMillis,
     this.pace,
     this.strokeCount,
-    @required this.sport,
-  }) : assert(sport != null) {
-    if (speed == null && pace != null) {
+    this.sport,
+  }) {
+    if (sport != null && speed == null && pace != null) {
       if (sport == ActivityType.Kayaking ||
           sport == ActivityType.Canoeing ||
           sport == ActivityType.Rowing) {
@@ -139,4 +139,39 @@ class Record {
     final dist = distanceByUnit(si);
     return dist.toStringAsFixed(si ? 0 : 2);
   }
+}
+
+class RecordWithSport extends Record {
+  RecordWithSport({
+    id,
+    activityId,
+    timeStamp,
+    distance,
+    elapsed,
+    calories,
+    power,
+    speed,
+    cadence,
+    heartRate,
+    elapsedMillis,
+    pace,
+    strokeCount,
+    @required sport,
+  })  : assert(sport != null),
+        super(
+          id: id,
+          activityId: activityId,
+          timeStamp: timeStamp,
+          distance: distance,
+          elapsed: elapsed,
+          calories: calories,
+          power: power,
+          speed: speed,
+          cadence: cadence,
+          heartRate: heartRate,
+          elapsedMillis: elapsedMillis,
+          pace: pace,
+          strokeCount: strokeCount,
+          sport: sport,
+        );
 }

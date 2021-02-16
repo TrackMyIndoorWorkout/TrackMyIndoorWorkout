@@ -246,7 +246,7 @@ class MPowerEchelon2Importer {
         final speed = velocityForPower(powerInt);
         final dDistance = speed * milliSecondsPerRecord / 1000;
 
-        final record = Record(
+        final record = RecordWithSport(
           activityId: activity.id,
           timeStamp: timeStamp,
           distance: distance,

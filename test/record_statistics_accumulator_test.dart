@@ -13,7 +13,7 @@ void main() {
       final count = rnd.nextInt(99) + 1;
       double sum = 0.0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(power: number, sport: sport));
+        accu.processRecord(RecordWithSport(power: number, sport: sport));
         sum += number;
       });
       test("$count ($sport) -> $sum", () {
@@ -51,7 +51,7 @@ void main() {
       final count = rnd.nextInt(99) + 1;
       int maximum = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(power: number, sport: sport));
+        accu.processRecord(RecordWithSport(power: number, sport: sport));
         maximum = max(number, maximum);
       });
       test("$count ($sport) -> $maximum", () {
@@ -88,7 +88,7 @@ void main() {
       final count = rnd.nextInt(99) + 1;
       double sum = 0.0;
       getRandomDoubles(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(speed: number, sport: sport));
+        accu.processRecord(RecordWithSport(speed: number, sport: sport));
         sum += number;
       });
       test("$count ($sport) -> $sum", () {
@@ -126,7 +126,7 @@ void main() {
       final count = rnd.nextInt(99) + 1;
       double maximum = 0.0;
       getRandomDoubles(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(speed: number, sport: sport));
+        accu.processRecord(RecordWithSport(speed: number, sport: sport));
         maximum = max(number, maximum);
       });
       test("$count ($sport) -> $maximum", () {
@@ -164,7 +164,7 @@ void main() {
       int sum = 0;
       int cnt = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(heartRate: number, sport: sport));
+        accu.processRecord(RecordWithSport(heartRate: number, sport: sport));
         sum += number;
         if (number > 0) {
           cnt += 1;
@@ -205,7 +205,7 @@ void main() {
       final count = rnd.nextInt(99) + 1;
       int maximum = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(heartRate: number, sport: sport));
+        accu.processRecord(RecordWithSport(heartRate: number, sport: sport));
         maximum = max(number, maximum);
       });
       test("$count ($sport) -> $maximum", () {
@@ -243,7 +243,7 @@ void main() {
       int sum = 0;
       int cnt = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(cadence: number, sport: sport));
+        accu.processRecord(RecordWithSport(cadence: number, sport: sport));
         sum += number;
         if (number > 0) {
           cnt += 1;
@@ -284,7 +284,7 @@ void main() {
       final count = rnd.nextInt(99) + 1;
       int maximum = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
-        accu.processRecord(Record(cadence: number, sport: sport));
+        accu.processRecord(RecordWithSport(cadence: number, sport: sport));
         maximum = max(number, maximum);
       });
       test("$count ($sport) -> $maximum", () {
@@ -343,7 +343,7 @@ void main() {
       int maxHr = 0;
       final hrs = getRandomInts(count, 100, rnd);
       List<int>.generate(count, (index) {
-        accu.processRecord(Record(
+        accu.processRecord(RecordWithSport(
           power: powers[index],
           speed: speeds[index],
           cadence: cadences[index],
