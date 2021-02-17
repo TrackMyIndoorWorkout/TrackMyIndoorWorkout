@@ -222,6 +222,7 @@ abstract class DeviceDescriptor {
   }
 
   double getHeartRate(List<int> data) {
+    if (heartRate == null) return 0;
     return data[heartRate].toDouble();
   }
 
