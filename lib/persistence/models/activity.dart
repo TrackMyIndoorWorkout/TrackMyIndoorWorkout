@@ -41,7 +41,7 @@ class Activity {
     this.deviceId,
     this.start,
     this.end: 0,
-    this.distance: 0,
+    this.distance: 0.0,
     this.elapsed: 0,
     this.calories: 0,
     this.uploaded: false,

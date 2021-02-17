@@ -440,11 +440,11 @@ class RecordingState extends State<RecordingScreen> {
     _idleDuration = Duration();
     _latestRecord = RecordWithSport(
       timeStamp: 0,
-      distance: uxDebug ? _random.nextInt(100000).toDouble() : 0,
+      distance: uxDebug ? _random.nextInt(100000).toDouble() : 0.0,
       elapsed: 0,
       calories: 0,
       power: 0,
-      speed: 0,
+      speed: 0.0,
       cadence: 0,
       heartRate: 0,
       elapsedMillis: 0,
