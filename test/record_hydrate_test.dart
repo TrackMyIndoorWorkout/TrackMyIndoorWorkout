@@ -9,7 +9,8 @@ void main() {
       final randomDateTime = mockDate();
       SPORTS.forEach((sport) {
         test("$input -> $randomDateTime", () {
-          var record = RecordWithSport(timeStamp: randomDateTime.millisecondsSinceEpoch, sport: sport);
+          var record =
+              RecordWithSport(timeStamp: randomDateTime.millisecondsSinceEpoch, sport: sport);
           record.hydrate();
           expect(record.dt, randomDateTime);
         });
