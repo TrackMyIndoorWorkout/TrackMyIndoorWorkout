@@ -1,3 +1,4 @@
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:expandable/expandable.dart';
@@ -480,90 +481,90 @@ class RecordsScreenState extends State<RecordsScreen> {
               loadingBuilder: CustomListLoading.defaultBuilder,
               header: Card(
                 elevation: 6,
-                child: Center(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.directions_bike,
-                            color: Colors.indigo,
-                            size: _sizeDefault,
-                          ),
-                          Spacer(),
-                          Text(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.directions_bike,
+                          color: Colors.indigo,
+                          size: _sizeDefault,
+                        ),
+                        Expanded(
+                          child: TextOneLine(
                             activity.deviceName,
                             style: _textStyle,
-                            maxLines: 4,
+                            textAlign: TextAlign.right,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.timer,
-                            color: Colors.indigo,
-                            size: _sizeDefault,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.timer,
+                          color: Colors.indigo,
+                          size: _sizeDefault,
+                        ),
+                        Spacer(),
+                        Text(
+                          activity.elapsedString,
+                          style: _measurementStyle,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add_road,
+                          color: Colors.indigo,
+                          size: _sizeDefault,
+                        ),
+                        Spacer(),
+                        Text(
+                          activity.distanceString(_si),
+                          style: _measurementStyle,
+                        ),
+                        SizedBox(
+                          width: _sizeDefault,
+                          child: Text(
+                            _si ? 'm' : 'mi',
+                            style: _unitStyle,
                           ),
-                          Spacer(),
-                          Text(
-                            activity.elapsedString,
-                            style: _measurementStyle,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.whatshot,
+                          color: Colors.indigo,
+                          size: _sizeDefault,
+                        ),
+                        Spacer(),
+                        Text(
+                          '${activity.calories}',
+                          style: _measurementStyle,
+                        ),
+                        SizedBox(
+                          width: _sizeDefault,
+                          child: Text(
+                            'cal',
+                            style: _unitStyle,
                           ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_road,
-                            color: Colors.indigo,
-                            size: _sizeDefault,
-                          ),
-                          Spacer(),
-                          Text(
-                            activity.distanceString(_si),
-                            style: _measurementStyle,
-                          ),
-                          SizedBox(
-                            width: _sizeDefault,
-                            child: Text(
-                              _si ? 'm' : 'mi',
-                              style: _unitStyle,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.whatshot,
-                            color: Colors.indigo,
-                            size: _sizeDefault,
-                          ),
-                          Spacer(),
-                          Text(
-                            '${activity.calories}',
-                            style: _measurementStyle,
-                          ),
-                          SizedBox(
-                            width: _sizeDefault,
-                            child: Text(
-                              'cal',
-                              style: _unitStyle,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               adapter: StaticListAdapter(data: _tiles),
