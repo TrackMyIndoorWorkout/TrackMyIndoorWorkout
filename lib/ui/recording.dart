@@ -41,7 +41,7 @@ extension DeviceIdentification on BluetoothDevice {
       }
     }
 
-    // Default to standard GATT (Schwinn IC4/IC8)
+    // Default to FTMS Indoor Bike (Schwinn IC4/IC8)
     return deviceMap['SIC4'];
   }
 }
