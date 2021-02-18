@@ -89,7 +89,7 @@ class RecordingState extends State<RecordingScreen> {
   StreamSubscription _measurementSubscription;
   BluetoothCharacteristic _cadenceMeasurements;
   StreamSubscription _cadenceSubscription;
-  bool _discovered;
+  bool _discovering;
   bool _measuring;
   bool _paused;
   DateTime _pauseStarted;
@@ -123,12 +123,17 @@ class RecordingState extends State<RecordingScreen> {
   bool _isLoading;
 
   _initialConnectOnDemand() async {
-    if (initialState == BluetoothDeviceState.disconnected) {
-      await device.connect().then((value) async {
-        await _discoverServices();
-      });
-    } else if (initialState == BluetoothDeviceState.connected && !_discovered) {
-      await _discoverServices();
+    if (initialState == BluetoothDeviceState.disconnected ||
+        initialState == BluetoothDeviceState.disconnecting) {
+      device.connect();
+    } else if (initialState == BluetoothDeviceState.connected && !_discovering) {
+      try {
+        _discoverServices();
+      } on PlatformException catch (e, stack) {
+        debugPrint("${e.message}");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+        device.connect();
+      }
     }
   }
 
@@ -226,13 +231,16 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _discoverServices() async {
-    await device.discoverServices().then((services) async {
+    if (_discovering) {
+      return;
+    }
+    device.discoverServices().then((services) async {
       if (_primaryMeasurements != null) {
         return services;
       }
 
       setState(() {
-        _discovered = true;
+        _discovering = true;
       });
       final deviceInfo = _filterService(services, deviceInformationId);
       final nameCharacteristic =
@@ -246,6 +254,9 @@ class RecordingState extends State<RecordingScreen> {
       }
 
       if (name == null) {
+        setState(() {
+          _discovering = false;
+        });
         return services;
       }
 
@@ -303,6 +314,9 @@ class RecordingState extends State<RecordingScreen> {
           ),
         );
       }
+      setState(() {
+        _discovering = false;
+      });
       return services;
     });
   }
@@ -356,6 +370,7 @@ class RecordingState extends State<RecordingScreen> {
   initState() {
     super.initState();
     _isLoading = true;
+    _discovering = false;
     _pointCount = size.width ~/ 2;
     _unitStyle = TextStyle(
       fontFamily: FONT_FAMILY,
@@ -435,7 +450,6 @@ class RecordingState extends State<RecordingScreen> {
     });
 
     final uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
-    _discovered = false;
     _measuring = false;
     _paused = false;
     _idleDuration = Duration();
@@ -788,7 +802,7 @@ class RecordingState extends State<RecordingScreen> {
         actions: <Widget>[
           StreamBuilder<BluetoothDeviceState>(
             stream: device.state,
-            initialData: BluetoothDeviceState.connecting,
+            initialData: initialState,
             builder: (c, snapshot) {
               VoidCallback onPressed;
               IconData icon;
@@ -796,9 +810,7 @@ class RecordingState extends State<RecordingScreen> {
                 case BluetoothDeviceState.connected:
                   onPressed = null;
                   icon = Icons.bluetooth_connected;
-                  if (!_discovered) {
-                    _discoverServices();
-                  }
+                  _discoverServices();
                   break;
                 case BluetoothDeviceState.disconnected:
                   onPressed = () => device.connect();
@@ -822,9 +834,9 @@ class RecordingState extends State<RecordingScreen> {
                   await _finishActivity();
                 } else {
                   if (await device.state.last == BluetoothDeviceState.disconnected) {
-                    await device.connect();
+                    device.connect();
                   } else {
-                    await _discoverServices();
+                    _discoverServices();
                   }
                 }
               }),
