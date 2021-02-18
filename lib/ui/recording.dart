@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:data_connection_checker/data_connection_checker.dart';
@@ -25,9 +26,9 @@ import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
+import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
-import '../track/calculator.dart';
 import 'activities.dart';
 import 'row_configuration.dart';
 
@@ -780,7 +781,10 @@ class RecordingState extends State<RecordingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(device.name),
+        title: TextOneLine(
+          device.name,
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: <Widget>[
           StreamBuilder<BluetoothDeviceState>(
             stream: device.state,
