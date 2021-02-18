@@ -8,6 +8,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  assorted_layout_widgets: ^4.0.0-nullsafety.1
   charts_flutter: any
   data_connection_checker: any
   datetime_picker_formfield: any

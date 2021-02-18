@@ -1,3 +1,4 @@
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -300,11 +301,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                                   color: Colors.indigo,
                                   size: _sizeDefault,
                                 ),
-                                Spacer(),
-                                Text(
-                                  activity.deviceName,
-                                  style: _textStyle,
-                                  maxLines: 4,
+                                Expanded(
+                                  child: TextOneLine(
+                                    activity.deviceName,
+                                    style: _textStyle,
+                                    textAlign: TextAlign.right,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ],
                             ),
