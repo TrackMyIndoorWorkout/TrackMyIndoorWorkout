@@ -647,6 +647,30 @@ class RecordingState extends State<RecordingScreen> {
     ];
   }
 
+  Future<bool> _onWillPop() async {
+    if (!_measuring) {
+      return true;
+    }
+    return (await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: new Text('About to navigate away'),
+            content: new Text('Are you sure you want to finish the workout?'),
+            actions: <Widget>[
+              new TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: new Text('No'),
+              ),
+              new TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: new Text('Yes'),
+              ),
+            ],
+          ),
+        )) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final separatorHeight = 1.0;
@@ -793,122 +817,125 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: TextOneLine(
-          device.name,
-          overflow: TextOverflow.ellipsis,
-        ),
-        actions: <Widget>[
-          StreamBuilder<BluetoothDeviceState>(
-            stream: device.state,
-            initialData: initialState,
-            builder: (c, snapshot) {
-              VoidCallback onPressed;
-              IconData icon;
-              switch (snapshot.data) {
-                case BluetoothDeviceState.connected:
-                  onPressed = null;
-                  icon = Icons.bluetooth_connected;
-                  _discoverServices();
-                  break;
-                case BluetoothDeviceState.disconnected:
-                  onPressed = () => device.connect();
-                  icon = Icons.bluetooth_disabled;
-                  break;
-                default:
-                  onPressed = null;
-                  icon = Icons.bluetooth_searching;
-                  break;
-              }
-              return IconButton(
-                icon: Icon(icon),
-                onPressed: onPressed,
-              );
-            },
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          title: TextOneLine(
+            device.name,
+            overflow: TextOverflow.ellipsis,
           ),
-          IconButton(
-              icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+          actions: <Widget>[
+            StreamBuilder<BluetoothDeviceState>(
+              stream: device.state,
+              initialData: initialState,
+              builder: (c, snapshot) {
+                VoidCallback onPressed;
+                IconData icon;
+                switch (snapshot.data) {
+                  case BluetoothDeviceState.connected:
+                    onPressed = null;
+                    icon = Icons.bluetooth_connected;
+                    _discoverServices();
+                    break;
+                  case BluetoothDeviceState.disconnected:
+                    onPressed = () => device.connect();
+                    icon = Icons.bluetooth_disabled;
+                    break;
+                  default:
+                    onPressed = null;
+                    icon = Icons.bluetooth_searching;
+                    break;
+                }
+                return IconButton(
+                  icon: Icon(icon),
+                  onPressed: onPressed,
+                );
+              },
+            ),
+            IconButton(
+                icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+                onPressed: () async {
+                  if (_measuring) {
+                    await _finishActivity();
+                  } else {
+                    if (await device.state.last == BluetoothDeviceState.disconnected) {
+                      device.connect();
+                    } else {
+                      _discoverServices();
+                    }
+                  }
+                }),
+            IconButton(
+              icon: Icon(BrandIcons.strava),
               onPressed: () async {
                 if (_measuring) {
-                  await _finishActivity();
-                } else {
-                  if (await device.state.last == BluetoothDeviceState.disconnected) {
-                    device.connect();
-                  } else {
-                    _discoverServices();
-                  }
+                  Get.snackbar("Warning", "Cannot upload while measurement is under progress");
+                  return;
                 }
-              }),
-          IconButton(
-            icon: Icon(BrandIcons.strava),
-            onPressed: () async {
-              if (_measuring) {
-                Get.snackbar("Warning", "Cannot disrupt the measurement!");
-                return;
-              }
 
-              await _stravaUpload(false);
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.list_alt),
-            onPressed: () async {
-              if (_measuring) {
-                Get.snackbar("Warning", "Cannot navigate away during measurement!");
-              } else {
-                await Get.to(ActivitiesScreen());
-              }
-            },
-          ),
-        ],
-      ),
-      body: LoadingOverlay(
-        isLoading: _isLoading,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              rows[0],
-              Divider(height: separatorHeight),
-              rows[1],
-              Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[2],
-                expanded: _simplerUi ? null : extras[0],
-                controller: _rowControllers[0],
-              ),
-              Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[3],
-                expanded: _simplerUi ? null : extras[1],
-                controller: _rowControllers[1],
-              ),
-              Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[4],
-                expanded: _simplerUi ? null : extras[2],
-                controller: _rowControllers[2],
-              ),
-              Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[5],
-                expanded: _simplerUi ? null : extras[3],
-                controller: _rowControllers[3],
-              ),
-              Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[6],
-                expanded: _simplerUi ? null : extras[4],
-                controller: _rowControllers[4],
-              ),
-            ],
+                await _stravaUpload(false);
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.list_alt),
+              onPressed: () async {
+                if (_measuring) {
+                  Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
+                } else {
+                  await Get.to(ActivitiesScreen());
+                }
+              },
+            ),
+          ],
+        ),
+        body: LoadingOverlay(
+          isLoading: _isLoading,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                rows[0],
+                Divider(height: separatorHeight),
+                rows[1],
+                Divider(height: separatorHeight),
+                ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[2],
+                  expanded: _simplerUi ? null : extras[0],
+                  controller: _rowControllers[0],
+                ),
+                Divider(height: separatorHeight),
+                ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[3],
+                  expanded: _simplerUi ? null : extras[1],
+                  controller: _rowControllers[1],
+                ),
+                Divider(height: separatorHeight),
+                ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[4],
+                  expanded: _simplerUi ? null : extras[2],
+                  controller: _rowControllers[2],
+                ),
+                Divider(height: separatorHeight),
+                ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[5],
+                  expanded: _simplerUi ? null : extras[3],
+                  controller: _rowControllers[3],
+                ),
+                Divider(height: separatorHeight),
+                ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[6],
+                  expanded: _simplerUi ? null : extras[4],
+                  controller: _rowControllers[4],
+                ),
+              ],
+            ),
           ),
         ),
       ),
