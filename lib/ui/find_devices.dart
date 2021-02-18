@@ -1,3 +1,4 @@
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
@@ -11,8 +12,8 @@ import '../devices/devices.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';
-import 'recording.dart';
 import 'preferences.dart';
+import 'recording.dart';
 import 'scan_result.dart';
 
 const HELP_URL = "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
@@ -192,11 +193,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   children: snapshot.data.where((d) => d.isWorthy(_filterDevices, true)).map((d) {
                     _openedDevice = d;
                     return ListTile(
-                      title: Text(d.name,
-                          style: standOutStyle(
-                            _adjustedCaptionStyle,
-                            fontSizeFactor,
-                          )),
+                      title: TextOneLine(
+                        d.name,
+                        overflow: TextOverflow.ellipsis,
+                        style: standOutStyle(
+                          _adjustedCaptionStyle,
+                          fontSizeFactor,
+                        ),
+                      ),
                       subtitle: Text(d.id.id, style: _subtitleStyle),
                       trailing: StreamBuilder<BluetoothDeviceState>(
                         stream: d.state,
