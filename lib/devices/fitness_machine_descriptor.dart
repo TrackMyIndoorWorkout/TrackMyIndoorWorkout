@@ -329,23 +329,32 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       double calories = 0;
       if (caloriesMetric != null) {
         calories = getCalories(data);
-      } else if (caloriesPerHourMetric != null || caloriesPerMinuteMetric != null || power > 0) {
+      }
+      if (calories == 0 || calories == null) {
         double deltaCalories = 0;
         if (caloriesPerHourMetric != null) {
           final calPerHour = getCaloriesPerHour(data);
-          deltaCalories = calPerHour / (60 * 60) * elapsedMillis / 1000;
-        } else if (caloriesPerMinuteMetric != null) {
+          if (calPerHour != null) {
+            deltaCalories = calPerHour / (60 * 60) * dT;
+          }
+        }
+        if (deltaCalories == 0 && caloriesPerMinuteMetric != null) {
           final calPerMinute = getCaloriesPerMinute(data);
-          deltaCalories = calPerMinute / 60 * elapsedMillis / 1000;
-        } else {
+          if (calPerMinute != null) {
+            deltaCalories = calPerMinute / 60 * dT;
+          }
+        }
+        if (deltaCalories == 0 && power != null) {
           // Instead of dT fractional second we use 1s to boost calorie counting
           // Due to #35. On top of that
           deltaCalories = power * calorieFactor * DeviceDescriptor.J2KCAL;
         }
-        residueCalories += deltaCalories;
-        calories = lastRecord.calories + residueCalories;
-        if (calories.floor() > lastRecord.calories) {
-          residueCalories = calories - calories.floor();
+        if (deltaCalories > 0) {
+          residueCalories += deltaCalories;
+          calories = lastRecord.calories + residueCalories;
+          if (calories.floor() > lastRecord.calories) {
+            residueCalories = calories - calories.floor();
+          }
         }
       }
       return RecordWithSport(
