@@ -20,7 +20,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     cadenceMeasurementId,
     canCadenceMeasurementProcessed,
     heartRate,
-    calorieFactor,
+    calorieFactor = 1.0,
     distanceFactor = 1.0,
   }) : super(
           sport: sport,
