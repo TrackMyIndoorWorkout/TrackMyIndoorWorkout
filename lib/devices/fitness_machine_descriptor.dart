@@ -188,14 +188,27 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int processExpandedEnergyFlag(int flag) {
     if (flag % 2 == 1) {
       // Total Energy: UInt16
-      caloriesMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0, optional: true);
+      caloriesMetric = ShortMetricDescriptor(
+        lsb: byteCounter,
+        msb: byteCounter + 1,
+        divider: 1.0,
+        optional: true,
+      );
       // Energy / hour UInt16
       byteCounter += 2;
-      caloriesPerHourMetric =
-          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0, optional: true);
+      caloriesPerHourMetric = ShortMetricDescriptor(
+        lsb: byteCounter,
+        msb: byteCounter + 1,
+        divider: 1.0,
+        optional: true,
+      );
       // Energy / minute UInt8
       byteCounter += 2;
-      caloriesPerMinuteMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 1.0, optional: true);
+      caloriesPerMinuteMetric = ByteMetricDescriptor(
+        lsb: byteCounter,
+        divider: 1.0,
+        optional: true,
+      );
       byteCounter += 1;
     }
     flag ~/= 2;
