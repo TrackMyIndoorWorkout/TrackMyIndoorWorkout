@@ -130,7 +130,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   }
 
   int processSpeedFlag(int flag, bool negated) {
-    if (flag % 2 == (negated ? 1 : 0)) {
+    if (flag % 2 == (negated ? 0 : 1)) {
       if (speedMetric == null) {
         // UInt16, km/h with 0.01 resolution
         speedMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 100.0);
@@ -237,7 +237,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   }
 
   int processStrokeRateFlag(int flag, bool negated) {
-    if (flag % 2 == (negated ? 1 : 0)) {
+    if (flag % 2 == (negated ? 0 : 1)) {
       // UByte with 0.5 resolution
       strokeRateMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 2.0);
       byteCounter += 1;
