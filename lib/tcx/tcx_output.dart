@@ -226,8 +226,7 @@ class TCXOutput {
       addElement('Cadence', cadence.toString());
     }
 
-    addExtensionString('Speed', point.speed.toStringAsFixed(2));
-    addExtension('Watts', point.power);
+    addExtensions('Speed', point.speed.toStringAsFixed(2), 'Watts', point.power);
 
     if (point.heartRate != null) {
       addHeartRate(point.heartRate);
@@ -266,15 +265,7 @@ class TCXOutput {
   </Author>\n""");
   }
 
-  addExtensionString(String tag, String value) {
-    _sb.write("""    <Extensions>
-      <ns3:TPX>
-        <ns3:$tag>$value</ns3:$tag>
-      </ns3:TPX>
-    </Extensions>\n""");
-  }
-
-  /// Add an extension like
+  /// Add extension of speed and watts
   ///
   ///  <Extensions>
   ///              <ns3:TPX>
@@ -285,9 +276,14 @@ class TCXOutput {
   /// Does not handle multiple values like
   /// Speed AND Watts in the same extension
   ///
-  addExtension(String tag, double value) {
-    double _value = value ?? 0.0;
-    addExtensionString(tag, '${_value.toString()}');
+  addExtensions(String tag1, String value1, String tag2, double value2) {
+    double _value = value2 ?? 0.0;
+    _sb.write("""    <Extensions>
+      <ns3:TPX>
+        <ns3:$tag1>$value1</ns3:$tag1>
+        <ns3:$tag2>${_value.toString()}</ns3:$tag2>
+      </ns3:TPX>
+    </Extensions>\n""");
   }
 
   /// Add heartRate in TCX file to look like
