@@ -66,7 +66,7 @@ class Activity {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(start);
     final dateString = DateFormat.yMd().format(startStamp);
     final timeString = DateFormat.Hms().format(startStamp);
-    final fileName = 'VRide_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
+    final fileName = 'Activity_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
         .replaceAll('/', '-')
         .replaceAll(':', '-');
     final activityType = deviceMap[fourCC]?.activityType ?? "Ride";
