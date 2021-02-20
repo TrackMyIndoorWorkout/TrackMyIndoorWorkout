@@ -1,5 +1,4 @@
 import 'package:meta/meta.dart';
-import 'package:preferences/preference_service.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/preferences.dart';
@@ -107,33 +106,12 @@ abstract class DeviceDescriptor {
 
   int processCadenceMeasurement(List<int> data);
 
-  String get activityType {
-    if (sport != ActivityType.Ride && sport != ActivityType.Run) {
-      return sport;
-    }
-    final isVirtual = PrefService.getBool(VIRTUAL_WORKOUT_TAG);
-    if (isVirtual) {
-      if (sport == ActivityType.Ride) {
-        return ActivityType.VirtualRide;
-      }
-      if (sport == ActivityType.Run) {
-        return ActivityType.VirtualRun;
-      }
-    } else {
-      if (sport == ActivityType.VirtualRide) {
-        return ActivityType.Ride;
-      }
-      if (sport == ActivityType.VirtualRun) {
-        return ActivityType.Run;
-      }
-    }
-    return sport;
-  }
+  String get tcxSport => sport == ActivityType.Ride && sport == ActivityType.Run ? sport : "Other";
 
   String unit(bool si) {
-    if (sport == ActivityType.Ride || sport == ActivityType.VirtualRide) {
+    if (sport == ActivityType.Ride) {
       return si ? 'kmh' : 'mph';
-    } else if (sport == ActivityType.Run || sport == ActivityType.VirtualRun) {
+    } else if (sport == ActivityType.Run) {
       return si ? 'min /km' : 'min /mi';
     } else if (sport == ActivityType.Kayaking ||
         sport == ActivityType.Canoeing ||

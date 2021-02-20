@@ -48,7 +48,7 @@ class TCXOutput {
     final track = getDefaultTrack(descriptor.sport);
     final calculator = TrackCalculator(track: track);
     TCXModel tcxInfo = TCXModel()
-      ..activityType = descriptor.activityType
+      ..activityType = descriptor.tcxSport
       ..totalDistance = activity.distance
       ..totalTime = activity.elapsed.toDouble()
       ..calories = activity.calories

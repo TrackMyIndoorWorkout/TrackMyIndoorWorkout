@@ -69,10 +69,10 @@ class Activity {
     final fileName = 'Activity_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
         .replaceAll('/', '-')
         .replaceAll(':', '-');
-    final activityType = deviceMap[fourCC]?.activityType ?? "Ride";
+    final activityType = deviceMap[fourCC]?.sport ?? "Ride";
     return {
       'startStamp': startStamp,
-      'name': 'Track $activityType at $dateString $timeString',
+      'name': '$activityType at $dateString $timeString',
       'description': '$activityType by $deviceName',
       'fileName': fileName,
     };
