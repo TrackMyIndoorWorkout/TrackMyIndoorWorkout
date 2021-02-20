@@ -72,12 +72,6 @@ class PreferencesScreen extends StatelessWidget {
       ),
       PreferenceTitle(TUNING_PREFERENCES),
       SwitchPreference(
-        VIRTUAL_WORKOUT,
-        VIRTUAL_WORKOUT_TAG,
-        defaultVal: VIRTUAL_WORKOUT_DEFAULT,
-        desc: VIRTUAL_WORKOUT_DESCRIPTION,
-      ),
-      SwitchPreference(
         COMPRESS_DOWNLOAD,
         COMPRESS_DOWNLOAD_TAG,
         defaultVal: COMPRESS_DOWNLOAD_DEFAULT,

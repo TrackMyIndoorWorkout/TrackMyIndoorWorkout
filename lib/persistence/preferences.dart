@@ -253,12 +253,6 @@ const DEVICE_FILTERING_DESCRIPTION =
 
 const TUNING_PREFERENCES = "Tuning";
 
-const VIRTUAL_WORKOUT = "Virtual Workout";
-const VIRTUAL_WORKOUT_TAG = "virtual_workout";
-const VIRTUAL_WORKOUT_DEFAULT = true;
-const VIRTUAL_WORKOUT_DESCRIPTION = "On: Strava upload will yield a Virtual Ride. " +
-    "Off: Strava upload will yield a Ride (non virtual).";
-
 const MEASUREMENT_PANELS_EXPANDED_TAG = "measurement_panels_expanded";
 const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
 
