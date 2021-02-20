@@ -8,7 +8,7 @@ import 'three_byte_metric_descriptor.dart';
 
 Map<String, DeviceDescriptor> deviceMap = {
   "PSCP": FixedLayoutDeviceDescriptor(
-    sport: ActivityType.VirtualRide,
+    sport: ActivityType.Ride,
     fourCC: "PSCP",
     vendorName: "Precor",
     modelName: "Spinner Chrono Power",
@@ -39,7 +39,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     distanceMetric: ThreeByteMetricDescriptor(lsb: 10, msb: 12, divider: 1.0),
   ),
   "SIC4": IndoorBikeDeviceDescriptor(
-    sport: ActivityType.VirtualRide,
+    sport: ActivityType.Ride,
     fourCC: "SIC4",
     vendorName: "Nautilus, Inc",
     modelName: "Schwinn IC4/IC8",
@@ -74,7 +74,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     calorieFactor: 1.40,
   ),
   "SAP+": IndoorBikeDeviceDescriptor(
-    sport: ActivityType.VirtualRide,
+    sport: ActivityType.Ride,
     fourCC: "SAP+",
     vendorName: "Schwinn",
     modelName: "AC Performance Plus",

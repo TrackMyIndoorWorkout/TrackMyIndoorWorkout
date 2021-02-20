@@ -68,7 +68,7 @@ class Record {
           speed = 30.0 / (pace / 60.0);
         }
       } else {
-        // sport == ActivityType.Run || sport == ActivityType.VirtualRun
+        // sport == ActivityType.Run
         if (pace.abs() < 10e-4) {
           speed = 0.0;
         } else {
@@ -84,10 +84,10 @@ class Record {
   }
 
   double speedByUnit(bool si, String sport) {
-    if (sport == ActivityType.Ride || sport == ActivityType.VirtualRide) {
+    if (sport == ActivityType.Ride) {
       if (si) return speed;
       return speed * KM2MI;
-    } else if (sport == ActivityType.Run || sport == ActivityType.VirtualRun) {
+    } else if (sport == ActivityType.Run) {
       if (speed.abs() < 10e-4) return 0.0;
       final pace = 60.0 / speed;
       if (si) return pace;
@@ -109,10 +109,9 @@ class Record {
 
   String speedStringByUnit(bool si, String sport) {
     final spd = speedByUnit(si, sport);
-    if (sport == ActivityType.Ride || sport == ActivityType.VirtualRide) {
+    if (sport == ActivityType.Ride) {
       return spd.toStringAsFixed(2);
     } else if (sport == ActivityType.Run ||
-        sport == ActivityType.VirtualRun ||
         sport == ActivityType.Kayaking ||
         sport == ActivityType.Canoeing ||
         sport == ActivityType.Rowing) {
