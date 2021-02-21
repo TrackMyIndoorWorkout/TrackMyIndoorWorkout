@@ -1,6 +1,8 @@
 import 'dart:collection';
 
 import 'package:meta/meta.dart';
+import 'package:preferences/preferences.dart';
+import 'package:track_my_indoor_exercise/persistence/preferences.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import 'byte_metric_descriptor.dart';
@@ -21,6 +23,10 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   static const int REVOLUTION_SLIDING_WINDOW = 15; // Seconds
   static const int EVENT_TIME_OVERFLOW = 64; // Overflows every 64 seconds
   double residueCalories;
+
+  ListQueue<int> strokeRates;
+  int strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
+  int strokeRateSum;
 
   FitnessMachineDescriptor({
     @required sport,
@@ -62,12 +68,29 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           distanceFactor: distanceFactor,
         ) {
     cadenceData = ListQueue<CadenceData>();
+    strokeRates = ListQueue<int>();
+    strokeRateSum = 0;
     featuresFlag = 0;
     cadenceFlag = 0;
     residueCalories = 0;
   }
 
   processFlag(int flag);
+
+  readSettings() {
+    final strokeRateWindowSizeString = PrefService.getString(STROKE_RATE_SMOOTHING_TAG);
+    strokeRateWindowSize = int.tryParse(strokeRateWindowSizeString);
+  }
+
+  clearStrokeRates() {
+    strokeRates.clear();
+    strokeRateSum = 0;
+  }
+
+  @override
+  startWorkout() {
+    clearStrokeRates();
+  }
 
   int processCadenceMeasurement(List<int> data) {
     if (!canCadenceMeasurementProcessed(data)) return 0;
@@ -300,6 +323,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       if (flag != featuresFlag) {
         featuresFlag = flag;
         processFlag(flag);
+        readSettings();
       }
     }
 
@@ -336,7 +360,23 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       if (cadenceMetric != null) {
         cadence = getCadence(data).toInt();
       } else if (strokeRateMetric != null) {
-        cadence = getStrokeRate(data);
+        final stroke = getStrokeRate(data);
+        if (stroke == null || stroke == 0) {
+          cadence = 0;
+          clearStrokeRates();
+        } else {
+          if (strokeRateWindowSize <= 1) {
+            cadence = stroke;
+          } else {
+            strokeRates.add(stroke);
+            strokeRateSum += stroke;
+            if (strokeRates.length > strokeRateWindowSize) {
+              strokeRateSum -= strokeRates.first;
+              strokeRates.removeFirst();
+            }
+            cadence = strokeRates.length > 0 ? (strokeRateSum / strokeRates.length).round() : 0;
+          }
+        }
       }
       double power = getPower(data);
       double calories = 0;

@@ -48,6 +48,10 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         );
 
   @override
+  startWorkout() {
+  }
+
+  @override
   Record processPrimaryMeasurement(
     Activity activity,
     Duration idleDuration,

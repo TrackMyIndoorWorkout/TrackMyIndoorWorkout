@@ -195,7 +195,7 @@ final preferencesSpecs = [
   ),
 ];
 
-const UX_PREFERENCES = "UX Preferences";
+const UX_PREFERENCES = "UI / UX Preferences";
 
 const UNIT_SYSTEM = "Unit System";
 const UNIT_SYSTEM_TAG = "unit_system";
@@ -284,6 +284,14 @@ const COMPRESS_DOWNLOAD_TAG = "compress_download";
 const COMPRESS_DOWNLOAD_DEFAULT = true;
 const COMPRESS_DOWNLOAD_DESCRIPTION = "On: the downloaded file is gzip compressed (TCX.gz). " +
     "Off: the downloaded file is TCX (no compression)";
+
+const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
+const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
+const STROKE_RATE_SMOOTHING_DEFAULT = "10";
+const STROKE_RATE_SMOOTHING_DEFAULT_INT = 10;
+const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery data. Averaging " +
+    "these over time soothes the data. This setting tells the window size by how many samples " +
+    "could be in the smoothing queue. 1 means no smoothing.";
 
 const ZONE_PREFERENCES = "Zone Preferences";
 

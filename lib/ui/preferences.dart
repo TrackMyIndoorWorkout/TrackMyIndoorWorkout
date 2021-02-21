@@ -95,6 +95,18 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: THROTTLE_OTHER_DEFAULT,
         desc: THROTTLE_OTHER_DESCRIPTION,
       ),
+
+      TextFieldPreference(
+        STROKE_RATE_SMOOTHING,
+        STROKE_RATE_SMOOTHING_TAG,
+        defaultVal: STROKE_RATE_SMOOTHING_DEFAULT,
+        validator: (str) {
+          if (!isInteger(str, 1, 50)) {
+            return "Invalid window size (should be 1 <= size <= 50)";
+          }
+          return null;
+        },
+      ),
     ];
 
     if (kDebugMode) {
