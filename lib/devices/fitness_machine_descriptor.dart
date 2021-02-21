@@ -410,6 +410,11 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           }
         }
       }
+      // #93
+      int heartRate = getHeartRate(data).toInt();
+      if (heartRate == 0 && lastRecord.heartRate > 0) {
+        heartRate = lastRecord.heartRate;
+      }
       return RecordWithSport(
         activityId: activity.id,
         timeStamp: timeStamp.millisecondsSinceEpoch,
@@ -419,7 +424,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         power: power.toInt(),
         speed: getSpeed(data),
         cadence: cadence,
-        heartRate: getHeartRate(data).toInt(),
+        heartRate: heartRate,
         pace: getPace(data),
         elapsedMillis: elapsedMillis,
         sport: sport,
