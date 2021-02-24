@@ -404,7 +404,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         }
         if (deltaCalories > 0) {
           residueCalories += deltaCalories;
-          calories = lastRecord.calories + residueCalories;
+          calories = (lastRecord.calories ?? 0) + residueCalories;
           if (calories.floor() > lastRecord.calories) {
             residueCalories = calories - calories.floor();
           }
@@ -420,7 +420,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         timeStamp: timeStamp.millisecondsSinceEpoch,
         distance: newDistance,
         elapsed: elapsed.toInt(),
-        calories: calories.floor(),
+        calories: calories?.floor() ?? 0,
         power: power.toInt(),
         speed: getSpeed(data),
         cadence: cadence,
