@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import '../persistence/models/record.dart';
+import '../tcx/activity_type.dart';
 import '../tcx/tcx_model.dart';
+import '../utils/constants.dart';
 
 class StatisticsAccumulator {
   final bool si;
@@ -51,28 +53,28 @@ class StatisticsAccumulator {
       powerCount = 0;
     }
     if (calculateMaxPower) {
-      maxPower = 0;
+      maxPower = MAX_INIT.toDouble();
     }
     if (calculateAvgSpeed) {
       speedSum = 0;
       speedCount = 0;
     }
     if (calculateMaxSpeed) {
-      maxSpeed = 0;
+      maxSpeed = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
     }
     if (calculateAvgHeartRate) {
       heartRateSum = 0;
       heartRateCount = 0;
     }
     if (calculateMaxHeartRate) {
-      maxHeartRate = 0;
+      maxHeartRate = MAX_INIT;
     }
     if (calculateAvgCadence) {
       cadenceSum = 0;
       cadenceCount = 0;
     }
     if (calculateMaxCadence) {
-      maxCadence = 0;
+      maxCadence = MAX_INIT;
     }
   }
 
@@ -92,7 +94,11 @@ class StatisticsAccumulator {
         speedCount++;
       }
       if (calculateMaxSpeed) {
-        maxSpeed = max(maxSpeed, trackPoint.speed);
+        if (sport == ActivityType.Ride) {
+          maxSpeed = max(maxSpeed, trackPoint.speed);
+        } else {
+          maxSpeed = min(maxSpeed, trackPoint.speed);
+        }
       }
     }
     if (trackPoint.heartRate != null && trackPoint.heartRate > 0) {
@@ -132,7 +138,11 @@ class StatisticsAccumulator {
         speedCount++;
       }
       if (calculateMaxSpeed) {
-        maxSpeed = max(maxSpeed, speed);
+        if (sport == ActivityType.Ride) {
+          maxSpeed = max(maxSpeed, speed);
+        } else {
+          maxSpeed = min(maxSpeed, speed);
+        }
       }
     }
     if (record.heartRate != null && record.heartRate > 0) {

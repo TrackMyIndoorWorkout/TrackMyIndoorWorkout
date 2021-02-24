@@ -2,8 +2,7 @@ import 'dart:math';
 
 import 'package:meta/meta.dart';
 import '../persistence/models/record.dart';
-
-const MIN_INIT = 10000;
+import '../utils/constants.dart';
 
 class MeasurementCounter {
   final bool si;
@@ -11,19 +10,19 @@ class MeasurementCounter {
 
   int powerCounter = 0;
   int minPower = MIN_INIT;
-  int maxPower = 0;
+  int maxPower = MAX_INIT;
 
   int speedCounter = 0;
   double minSpeed = MIN_INIT.toDouble();
-  double maxSpeed = 0;
+  double maxSpeed = MAX_INIT.toDouble();
 
   int cadenceCounter = 0;
   int minCadence = MIN_INIT;
-  int maxCadence = 0;
+  int maxCadence = MAX_INIT;
 
   int hrCounter = 0;
   int minHr = MIN_INIT;
-  int maxHr = 0;
+  int maxHr = MAX_INIT;
 
   MeasurementCounter({
     @required this.si,
@@ -40,6 +39,7 @@ class MeasurementCounter {
     if (record.speed > 0) {
       speedCounter++;
       final speed = record.speedByUnit(si, sport);
+      // TODO: limit?
       maxSpeed = max(maxSpeed, speed);
       minSpeed = min(minSpeed, speed);
     }
