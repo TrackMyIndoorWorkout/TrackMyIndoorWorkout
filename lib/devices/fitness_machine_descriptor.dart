@@ -2,9 +2,9 @@ import 'dart:collection';
 
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
-import 'package:track_my_indoor_exercise/persistence/preferences.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
+import '../persistence/preferences.dart';
 import 'byte_metric_descriptor.dart';
 import 'cadence_data.dart';
 import 'device_descriptor.dart';

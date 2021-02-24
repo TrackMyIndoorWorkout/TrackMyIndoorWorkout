@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
 import '../lib/persistence/models/record.dart';
+import '../lib/tcx/activity_type.dart';
 import 'utils.dart';
 
 String paceString(double pace) {
