@@ -21,53 +21,41 @@ void main() {
     20.0,
   ];
   group("speedByUnit for metric system and riding:", () {
-    final sports = [ActivityType.Ride, ActivityType.VirtualRide];
     speeds.forEach((speed) {
-      sports.forEach((sport) {
-        final expected = speed;
-        test("$speed ($sport) -> $expected", () {
-          final record = RecordWithSport(speed: speed, sport: sport);
-          expect(record.speedByUnit(true, sport), expected);
-        });
+      final expected = speed;
+      test("$speed (Ride) -> $expected", () {
+        final record = RecordWithSport(speed: speed, sport: ActivityType.Ride);
+        expect(record.speedByUnit(true, ActivityType.Ride), expected);
       });
     });
   });
 
   group("speedByUnit for imperial system and riding:", () {
-    final sports = [ActivityType.Ride, ActivityType.VirtualRide];
     speeds.forEach((speed) {
-      sports.forEach((sport) {
-        final expected = speed * KM2MI;
-        test("$speed ($sport) -> $expected", () {
-          final record = RecordWithSport(speed: speed, sport: sport);
-          expect(record.speedByUnit(false, sport), expected);
-        });
+      final expected = speed * KM2MI;
+      test("$speed (Ride) -> $expected", () {
+        final record = RecordWithSport(speed: speed, sport: ActivityType.Ride);
+        expect(record.speedByUnit(false, ActivityType.Ride), expected);
       });
     });
   });
 
   group("speedByUnit for metric system and running:", () {
-    final sports = [ActivityType.Run, ActivityType.VirtualRun];
     speeds.forEach((speed) {
-      sports.forEach((sport) {
-        final expected = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed;
-        test("$speed ($sport) -> $expected", () {
-          final record = RecordWithSport(speed: speed, sport: sport);
-          expect(record.speedByUnit(true, sport), expected);
-        });
+      final expected = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed;
+      test("$speed (Run) -> $expected", () {
+        final record = RecordWithSport(speed: speed, sport: ActivityType.Run);
+        expect(record.speedByUnit(true, ActivityType.Run), expected);
       });
     });
   });
 
   group("speedByUnit for imperial system and running:", () {
-    final sports = [ActivityType.Run, ActivityType.VirtualRun];
     speeds.forEach((speed) {
-      sports.forEach((sport) {
-        final expected = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed / KM2MI;
-        test("$speed ($sport) -> $expected", () {
-          final record = RecordWithSport(speed: speed, sport: sport);
-          expect(record.speedByUnit(false, sport), expected);
-        });
+      final expected = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed / KM2MI;
+      test("$speed (Run) -> $expected", () {
+        final record = RecordWithSport(speed: speed, sport: ActivityType.Run);
+        expect(record.speedByUnit(false, ActivityType.Run), expected);
       });
     });
   });
