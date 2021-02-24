@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import '../lib/persistence/models/record.dart';
 import '../lib/tcx/activity_type.dart';
+import '../lib/utils/constants.dart';
 import 'utils.dart';
 
 String paceString(double pace) {
@@ -34,7 +35,7 @@ void main() {
       final expected = pacePair[1];
       [ActivityType.Run, ActivityType.VirtualRun].forEach((sport) {
         test("${pacePair[0]} -> $expected", () {
-          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, 1e-6));
+          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, EPS));
         });
       });
     });
@@ -47,7 +48,7 @@ void main() {
       final expected = 60 / randomPace;
       [ActivityType.Run, ActivityType.VirtualRun].forEach((sport) {
         test("$randomPace -> $expected", () {
-          expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, 1e-6));
+          expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, EPS));
         });
       });
     });
@@ -72,7 +73,7 @@ void main() {
       final expected = pacePair[1];
       [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing].forEach((sport) {
         test("${pacePair[0]} -> $expected", () {
-          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, 1e-6));
+          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, EPS));
         });
       });
     });
@@ -85,7 +86,7 @@ void main() {
       final expected = 30.0 / (randomPace / 60.0);
       [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing].forEach((sport) {
         test("$randomPace -> $expected", () {
-          expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, 1e-6));
+          expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, EPS));
         });
       });
     });

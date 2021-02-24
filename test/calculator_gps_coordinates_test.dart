@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../lib/track/calculator.dart';
 import '../lib/track/constants.dart';
 import '../lib/track/tracks.dart';
+import '../lib/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
@@ -23,8 +24,8 @@ void main() {
           () {
         final marker = calculator.gpsCoordinates(0);
 
-        expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, 1e-6));
-        expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf, 1e-6));
+        expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, EPS));
+        expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf, EPS));
       });
     });
   });
@@ -48,8 +49,8 @@ void main() {
           () {
         final marker = calculator.gpsCoordinates(distance);
 
-        expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, 1e-6));
-        expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf, 1e-6));
+        expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, EPS));
+        expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf, EPS));
       });
     });
   });
@@ -77,8 +78,8 @@ void main() {
           () {
         final marker = calculator.gpsCoordinates(distance);
 
-        expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, 1e-6));
-        expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf + displacement, 1e-6));
+        expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, EPS));
+        expect(marker.dy, closeTo(track.center.dy + track.gpsLaneHalf + displacement, EPS));
       });
     });
   });
@@ -108,12 +109,12 @@ void main() {
         final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx,
-            closeTo(track.center.dx - cos(rad) * track.radius * track.horizontalMeter, 1e-6));
+            closeTo(track.center.dx - cos(rad) * track.radius * track.horizontalMeter, EPS));
         expect(
             marker.dy,
             closeTo(
                 track.center.dy - track.gpsLaneHalf - sin(rad) * track.radius * track.verticalMeter,
-                1e-6));
+                EPS));
       });
     });
   });
@@ -142,8 +143,8 @@ void main() {
           () {
         final marker = calculator.gpsCoordinates(distance);
 
-        expect(marker.dx, closeTo(track.center.dx + track.gpsRadius, 1e-6));
-        expect(marker.dy, closeTo(track.center.dy - track.gpsLaneHalf + displacement, 1e-6));
+        expect(marker.dx, closeTo(track.center.dx + track.gpsRadius, EPS));
+        expect(marker.dy, closeTo(track.center.dy - track.gpsLaneHalf + displacement, EPS));
       });
     });
   });
@@ -174,12 +175,12 @@ void main() {
         final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx,
-            closeTo(track.center.dx + cos(rad) * track.radius * track.horizontalMeter, 1e-6));
+            closeTo(track.center.dx + cos(rad) * track.radius * track.horizontalMeter, EPS));
         expect(
             marker.dy,
             closeTo(
                 track.center.dy + track.gpsLaneHalf + sin(rad) * track.radius * track.verticalMeter,
-                1e-6));
+                EPS));
       });
     });
   });

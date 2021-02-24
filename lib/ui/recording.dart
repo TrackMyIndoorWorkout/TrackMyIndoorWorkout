@@ -15,7 +15,6 @@ import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:preferences/preferences.dart';
-import 'package:track_my_indoor_exercise/track/tracks.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
@@ -29,6 +28,8 @@ import '../strava/strava_service.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
+import '../track/tracks.dart';
+import '../utils/constants.dart';
 import 'activities.dart';
 import 'row_configuration.dart';
 
@@ -201,7 +202,7 @@ class RecordingState extends State<RecordingScreen> {
       _fillValues(_latestRecord);
 
       if (_measuring) {
-        if (_latestRecord?.speed <= 0) {
+        if (_latestRecord?.speed ?? 0.0 <= EPS) {
           _pauseStarted = DateTime.now();
           _paused = true;
         } else {
@@ -676,7 +677,7 @@ class RecordingState extends State<RecordingScreen> {
     final separatorHeight = 1.0;
 
     final mediaWidth = Get.mediaQuery.size.width;
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > 1e-6) {
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
       _sizeDefault = Get.mediaQuery.size.width / 8;
       _measurementStyle = TextStyle(
@@ -834,12 +835,16 @@ class RecordingState extends State<RecordingScreen> {
                 IconData icon;
                 switch (snapshot.data) {
                   case BluetoothDeviceState.connected:
-                    onPressed = null;
+                    onPressed = () {
+                      device.disconnect();
+                    };
                     icon = Icons.bluetooth_connected;
                     _discoverServices();
                     break;
                   case BluetoothDeviceState.disconnected:
-                    onPressed = () => device.connect();
+                    onPressed = () {
+                      device.connect();
+                    };
                     icon = Icons.bluetooth_disabled;
                     break;
                   default:
@@ -859,6 +864,7 @@ class RecordingState extends State<RecordingScreen> {
                   if (_measuring) {
                     await _finishActivity();
                   } else {
+                    _discoverServices();
                     if (await device.state.last == BluetoothDeviceState.disconnected) {
                       device.connect();
                     } else {

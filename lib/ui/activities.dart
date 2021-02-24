@@ -16,6 +16,7 @@ import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
 import '../tcx/tcx_output.dart';
+import '../utils/constants.dart';
 import 'find_devices.dart';
 import 'import_form.dart';
 import 'records.dart';
@@ -164,7 +165,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaWidth = Get.mediaQuery.size.width;
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > 1e-6) {
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
       _sizeDefault = _mediaWidth / 7;
       _sizeDefault2 = _sizeDefault / 1.5;

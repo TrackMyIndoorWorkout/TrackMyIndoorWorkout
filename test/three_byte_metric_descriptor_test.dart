@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import '../lib/devices/three_byte_metric_descriptor.dart';
+import '../lib/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
@@ -52,7 +53,7 @@ void main() {
         final desc = ThreeByteMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);
 
-        expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, 1e-6));
+        expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, EPS));
       });
     });
   });

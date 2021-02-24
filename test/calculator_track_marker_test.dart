@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../lib/track/calculator.dart';
 import '../lib/track/constants.dart';
 import '../lib/track/tracks.dart';
+import '../lib/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
@@ -34,8 +35,8 @@ void main() {
       test("${track.radiusBoost} $lengthFactor", () {
         final marker = calculator.trackMarker(0);
 
-        expect(marker.dx, closeTo(size.width - THICK - offset.dx - r, 1e-6));
-        expect(marker.dy, closeTo(THICK + offset.dy, 1e-6));
+        expect(marker.dx, closeTo(size.width - THICK - offset.dx - r, EPS));
+        expect(marker.dy, closeTo(THICK + offset.dy, EPS));
       });
     });
   });
@@ -64,8 +65,8 @@ void main() {
       test("${track.radiusBoost} $lengthFactor $laps", () {
         final marker = calculator.trackMarker(laps * TRACK_LENGTH * lengthFactor);
 
-        expect(marker.dx, closeTo(size.width - THICK - offset.dx - r, 1e-6));
-        expect(marker.dy, closeTo(THICK + offset.dy, 1e-6));
+        expect(marker.dx, closeTo(size.width - THICK - offset.dx - r, EPS));
+        expect(marker.dy, closeTo(THICK + offset.dy, EPS));
       });
     });
   });
@@ -99,8 +100,8 @@ void main() {
       test("${track.radiusBoost} $lengthFactor $laps $distance", () {
         final marker = calculator.trackMarker(distance);
 
-        expect(marker.dx, closeTo(size.width - THICK - offset.dx - r - displacement, 1e-6));
-        expect(marker.dy, closeTo(THICK + offset.dy, 1e-6));
+        expect(marker.dx, closeTo(size.width - THICK - offset.dx - r - displacement, EPS));
+        expect(marker.dy, closeTo(THICK + offset.dy, EPS));
       });
     });
   });
@@ -135,8 +136,8 @@ void main() {
       test("${track.radiusBoost} $lengthFactor $laps $distance", () {
         final marker = calculator.trackMarker(distance);
 
-        expect(marker.dx, closeTo((1 - sin(rad)) * r + THICK + offset.dx, 1e-6));
-        expect(marker.dy, closeTo((cos(rad) + 1) * r + THICK + offset.dy, 1e-6));
+        expect(marker.dx, closeTo((1 - sin(rad)) * r + THICK + offset.dx, EPS));
+        expect(marker.dy, closeTo((cos(rad) + 1) * r + THICK + offset.dy, EPS));
       });
     });
   });
@@ -172,8 +173,8 @@ void main() {
       test("${track.radiusBoost} $lengthFactor $laps $distance", () {
         final marker = calculator.trackMarker(distance);
 
-        expect(marker.dx, closeTo(THICK + offset.dx + r + displacement, 1e-6));
-        expect(marker.dy, closeTo(size.height - THICK - offset.dy, 1e-6));
+        expect(marker.dx, closeTo(THICK + offset.dx + r + displacement, EPS));
+        expect(marker.dy, closeTo(size.height - THICK - offset.dy, EPS));
       });
     });
   });
@@ -209,8 +210,8 @@ void main() {
       test("${track.radiusBoost} $lengthFactor $laps $distance", () {
         final marker = calculator.trackMarker(distance);
 
-        expect(marker.dx, closeTo(size.width - THICK - offset.dx - (1 - sin(rad)) * r, 1e-6));
-        expect(marker.dy, closeTo(r * (cos(rad) + 1) + THICK + offset.dy, 1e-6));
+        expect(marker.dx, closeTo(size.width - THICK - offset.dx - (1 - sin(rad)) * r, EPS));
+        expect(marker.dy, closeTo(r * (cos(rad) + 1) + THICK + offset.dy, EPS));
       });
     });
   });

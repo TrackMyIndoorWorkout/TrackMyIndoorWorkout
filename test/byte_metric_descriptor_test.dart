@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import '../lib/devices/byte_metric_descriptor.dart';
+import '../lib/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
@@ -36,7 +37,7 @@ void main() {
       test("($lsbLocation) ${data[lsbLocation]} / $divider -> $expected", () {
         final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider, optional: optional);
 
-        expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, 1e-6));
+        expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, EPS));
       });
     });
   });
