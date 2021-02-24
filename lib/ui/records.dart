@@ -55,6 +55,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<String> _selectedValues;
   bool _si;
   DeviceDescriptor _descriptor;
+  List<PreferencesSpec> _preferencesSpecs;
 
   double _sizeDefault;
   double _sizeDefault2;
@@ -74,6 +75,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     _selectedValues = [];
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _descriptor = deviceMap[activity.fourCC];
+    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor);
     activity.hydrate();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
@@ -95,7 +97,6 @@ class RecordsScreenState extends State<RecordsScreen> {
             _allRecords.forEach((record) {
               measurementCounter.processRecord(record);
             });
-            preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
 
             var accu = StatisticsAccumulator(
               si: _si,
@@ -117,7 +118,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               _tiles.add("power");
               _selectedTimes.add("--");
               _selectedValues.add("--");
-              var prefSpec = preferencesSpecs[0];
+              var prefSpec = _preferencesSpecs[0];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
                 histogramTitle: prefSpec.histogramTitle,
@@ -142,7 +143,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               _tiles.add("speed");
               _selectedTimes.add("--");
               _selectedValues.add("--");
-              var prefSpec = preferencesSpecs[1];
+              var prefSpec = _preferencesSpecs[1];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
                 histogramTitle: prefSpec.histogramTitle,
@@ -166,7 +167,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               _tiles.add("cadence");
               _selectedTimes.add("--");
               _selectedValues.add("--");
-              var prefSpec = preferencesSpecs[2];
+              var prefSpec = _preferencesSpecs[2];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
                 histogramTitle: prefSpec.histogramTitle,
@@ -191,7 +192,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               _tiles.add("hr");
               _selectedTimes.add("--");
               _selectedValues.add("--");
-              var prefSpec = preferencesSpecs[3];
+              var prefSpec = _preferencesSpecs[3];
               var tileConfig = TileConfiguration(
                 title: prefSpec.fullTitle,
                 histogramTitle: prefSpec.histogramTitle,
@@ -217,7 +218,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                 if (record.power > 0) {
                   var tileConfig = _tileConfigurations["power"];
                   tileConfig.count++;
-                  final binIndex = preferencesSpecs[0].binIndex(record.power);
+                  final binIndex = _preferencesSpecs[0].binIndex(record.power);
                   tileConfig.histogram[binIndex].increment();
                 }
               }
@@ -226,7 +227,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                   var tileConfig = _tileConfigurations["speed"];
                   tileConfig.count++;
                   final binIndex =
-                      preferencesSpecs[1].binIndex(record.speedByUnit(_si, _descriptor.sport));
+                      _preferencesSpecs[1].binIndex(record.speedByUnit(_si, _descriptor.sport));
                   tileConfig.histogram[binIndex].increment();
                 }
               }
@@ -234,7 +235,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                 if (record.cadence > 0) {
                   var tileConfig = _tileConfigurations["cadence"];
                   tileConfig.count++;
-                  final binIndex = preferencesSpecs[2].binIndex(record.cadence);
+                  final binIndex = _preferencesSpecs[2].binIndex(record.cadence);
                   tileConfig.histogram[binIndex].increment();
                 }
               }
@@ -242,7 +243,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                 if (record.heartRate > 0) {
                   var tileConfig = _tileConfigurations["hr"];
                   tileConfig.count++;
-                  final binIndex = preferencesSpecs[3].binIndex(record.heartRate);
+                  final binIndex = _preferencesSpecs[3].binIndex(record.heartRate);
                   tileConfig.histogram[binIndex].increment();
                 }
               }
@@ -307,7 +308,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'power',
-        colorFn: (Record record, __) => preferencesSpecs[0].fgColorByValue(record.power),
+        colorFn: (Record record, __) => _preferencesSpecs[0].fgColorByValue(record.power),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.power,
         data: _sampledRecords,
@@ -332,7 +333,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'powerHistogram',
-        colorFn: (HistogramData data, __) => preferencesSpecs[0].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[0].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["power"].histogram,
@@ -346,7 +347,7 @@ class RecordsScreenState extends State<RecordsScreen> {
       charts.Series<Record, DateTime>(
         id: 'speed',
         colorFn: (Record record, __) =>
-            preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.sport)),
+            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.sport)),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.speedByUnit(_si, _descriptor.sport),
         data: _sampledRecords,
@@ -371,7 +372,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'speedHistogram',
-        colorFn: (HistogramData data, __) => preferencesSpecs[1].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[1].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["speed"].histogram,
@@ -384,7 +385,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'cadence',
-        colorFn: (Record record, __) => preferencesSpecs[2].fgColorByValue(record.cadence),
+        colorFn: (Record record, __) => _preferencesSpecs[2].fgColorByValue(record.cadence),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.cadence,
         data: _sampledRecords,
@@ -409,7 +410,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'cadenceHistogram',
-        colorFn: (HistogramData data, __) => preferencesSpecs[2].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[2].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["cadence"].histogram,
@@ -422,7 +423,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'hr',
-        colorFn: (Record record, __) => preferencesSpecs[3].fgColorByValue(record.heartRate),
+        colorFn: (Record record, __) => _preferencesSpecs[3].fgColorByValue(record.heartRate),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.heartRate,
         data: _sampledRecords,
@@ -447,7 +448,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'hrHistogram',
-        colorFn: (HistogramData data, __) => preferencesSpecs[3].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[3].fgColorByBin(data.index),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["hr"].histogram,
@@ -572,22 +573,22 @@ class RecordsScreenState extends State<RecordsScreen> {
                 List<common.AnnotationSegment> annotationSegments = [];
                 if (_initialized) {
                   annotationSegments.addAll(List.generate(
-                    preferencesSpecs[index].binCount,
+                    _preferencesSpecs[index].binCount,
                     (i) => charts.RangeAnnotationSegment(
-                      preferencesSpecs[index].zoneLower[i],
-                      preferencesSpecs[index].zoneUpper[i],
+                      _preferencesSpecs[index].zoneLower[i],
+                      _preferencesSpecs[index].zoneUpper[i],
                       charts.RangeAnnotationAxisType.measure,
-                      color: preferencesSpecs[index].bgColorByBin(i),
-                      startLabel: preferencesSpecs[index].zoneLower[i].toString(),
+                      color: _preferencesSpecs[index].bgColorByBin(i),
+                      startLabel: _preferencesSpecs[index].zoneLower[i].toString(),
                       labelAnchor: charts.AnnotationLabelAnchor.start,
                     ),
                   ));
                   annotationSegments.addAll(List.generate(
-                    preferencesSpecs[index].binCount,
+                    _preferencesSpecs[index].binCount,
                     (i) => charts.LineAnnotationSegment(
-                      preferencesSpecs[index].zoneUpper[i],
+                      _preferencesSpecs[index].zoneUpper[i],
                       charts.RangeAnnotationAxisType.measure,
-                      startLabel: preferencesSpecs[index].zoneUpper[i].toString(),
+                      startLabel: _preferencesSpecs[index].zoneUpper[i].toString(),
                       labelAnchor: charts.AnnotationLabelAnchor.end,
                       strokeWidthPx: 1.0,
                       color: charts.MaterialPalette.black,
@@ -615,7 +616,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Icon(
-                              preferencesSpecs[index].icon,
+                              _preferencesSpecs[index].icon,
                               color: Colors.indigo,
                               size: _sizeDefault2,
                             ),
@@ -628,7 +629,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                             ),
                             Spacer(),
                             Text(
-                              preferencesSpecs[index].unit,
+                              _preferencesSpecs[index].unit,
                               style: _unitStyle,
                             ),
                           ],
@@ -638,7 +639,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Icon(
-                              preferencesSpecs[index].icon,
+                              _preferencesSpecs[index].icon,
                               color: Colors.indigo,
                               size: _sizeDefault2,
                             ),
@@ -651,7 +652,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                             ),
                             Spacer(),
                             Text(
-                              preferencesSpecs[index].unit,
+                              _preferencesSpecs[index].unit,
                               style: _unitStyle,
                             ),
                           ],
@@ -692,7 +693,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         children: [
                           Text(_selectedValues[index], style: _selectionStyle),
                           Text(" ", style: _selectionTextStyle),
-                          Text(preferencesSpecs[index].unit, style: _unitStyle),
+                          Text(_preferencesSpecs[index].unit, style: _unitStyle),
                           Text(" @ ", style: _selectionTextStyle),
                           Text(_selectedTimes[index], style: _selectionStyle),
                         ],

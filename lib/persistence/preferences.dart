@@ -4,6 +4,7 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
+import '../devices/device_descriptor.dart';
 
 Color getTranslucent(Color c) {
   return Color(r: c.r, g: c.g, b: c.b, a: 120, darker: c.darker, lighter: c.lighter);
@@ -51,8 +52,57 @@ double decimalRound(double value, {int precision = 100}) {
 }
 
 class PreferencesSpec {
+  static const THRESHOLD_CAPITAL = 'Threshold ';
+  static const ZONES_CAPITAL = ' Zones (list of % of threshold)';
+  static const THRESHOLD_PREFIX = 'threshold_';
+  static const ZONES_POSTFIX = '_zones';
+  static const METRICS = ['power', 'speed', 'cadence', 'hr'];
+
+  static final _preferencesSpecsTemplate = [
+    PreferencesSpec(
+      metric: METRICS[0],
+      title: 'Power',
+      unit: 'W',
+      thresholdTag: THRESHOLD_PREFIX + METRICS[0],
+      thresholdDefault: '360',
+      zonesTag: METRICS[0] + ZONES_POSTFIX,
+      zonesDefault: '55,75,90,105,120,150',
+      icon: Icons.bolt,
+    ),
+    PreferencesSpec(
+      metric: METRICS[1],
+      title: 'Speed',
+      unit: 'mph',
+      thresholdTag: THRESHOLD_PREFIX + METRICS[1],
+      thresholdDefault: '20',
+      zonesTag: METRICS[1] + ZONES_POSTFIX,
+      zonesDefault: '55,75,90,105,120,150',
+      icon: Icons.speed,
+    ),
+    PreferencesSpec(
+      metric: METRICS[2],
+      title: 'Cadence',
+      unit: 'rpm',
+      thresholdTag: THRESHOLD_PREFIX + METRICS[2],
+      thresholdDefault: '120',
+      zonesTag: METRICS[2] + ZONES_POSTFIX,
+      zonesDefault: '25,37,50,75,100,120',
+      icon: Icons.directions_bike,
+    ),
+    PreferencesSpec(
+      metric: METRICS[3],
+      title: 'Heart Rate',
+      unit: 'bpm',
+      thresholdTag: THRESHOLD_PREFIX + METRICS[3],
+      thresholdDefault: '180',
+      zonesTag: METRICS[3] + ZONES_POSTFIX,
+      zonesDefault: '50,60,70,80,90,100',
+      icon: Icons.favorite,
+    ),
+  ];
+
   final String metric;
-  final String title;
+  String title;
   String unit;
   final String thresholdTag;
   final String thresholdDefault;
@@ -63,7 +113,7 @@ class PreferencesSpec {
   List<double> zoneBounds;
   List<double> zoneLower;
   List<double> zoneUpper;
-  final IconData icon;
+  IconData icon;
 
   PreferencesSpec({
     @required this.metric,
@@ -144,56 +194,18 @@ class PreferencesSpec {
     final bin = binIndex(value);
     return fgColorByBin(bin);
   }
+
+  static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
+  static List<PreferencesSpec> getPreferencesSpecs(bool si, DeviceDescriptor deviceDescriptor) {
+    var prefSpecs = [...preferencesSpecs];
+    prefSpecs[1].unit = deviceDescriptor.getSpeedUnit(si);
+    prefSpecs[1].title = deviceDescriptor.speedTitle;
+    prefSpecs[2].icon = deviceDescriptor.getIcon();
+    prefSpecs[2].unit = deviceDescriptor.getCadenceUnit();
+    prefSpecs.forEach((prefSpec) => prefSpec.calculateZones());
+    return prefSpecs;
+  }
 }
-
-const THRESHOLD_CAPITAL = 'Threshold ';
-const ZONES_CAPITAL = ' Zones (list of % of threshold)';
-const THRESHOLD_PREFIX = 'threshold_';
-const ZONES_POSTFIX = '_zones';
-const METRICS = ['power', 'speed', 'cadence', 'hr'];
-
-final preferencesSpecs = [
-  PreferencesSpec(
-    metric: METRICS[0],
-    title: 'Power',
-    unit: 'W',
-    thresholdTag: THRESHOLD_PREFIX + METRICS[0],
-    thresholdDefault: '360',
-    zonesTag: METRICS[0] + ZONES_POSTFIX,
-    zonesDefault: '55,75,90,105,120,150',
-    icon: Icons.bolt,
-  ),
-  PreferencesSpec(
-    metric: METRICS[1],
-    title: 'Speed',
-    unit: 'mph',
-    thresholdTag: THRESHOLD_PREFIX + METRICS[1],
-    thresholdDefault: '20',
-    zonesTag: METRICS[1] + ZONES_POSTFIX,
-    zonesDefault: '55,75,90,105,120,150',
-    icon: Icons.speed,
-  ),
-  PreferencesSpec(
-    metric: METRICS[2],
-    title: 'Cadence',
-    unit: 'rpm',
-    thresholdTag: THRESHOLD_PREFIX + METRICS[2],
-    thresholdDefault: '120',
-    zonesTag: METRICS[2] + ZONES_POSTFIX,
-    zonesDefault: '25,37,50,75,100,120',
-    icon: Icons.directions_bike,
-  ),
-  PreferencesSpec(
-    metric: METRICS[3],
-    title: 'Heart Rate',
-    unit: 'bpm',
-    thresholdTag: THRESHOLD_PREFIX + METRICS[3],
-    thresholdDefault: '180',
-    zonesTag: METRICS[3] + ZONES_POSTFIX,
-    zonesDefault: '50,60,70,80,90,100',
-    icon: Icons.favorite,
-  ),
-];
 
 const UX_PREFERENCES = "UI / UX Preferences";
 

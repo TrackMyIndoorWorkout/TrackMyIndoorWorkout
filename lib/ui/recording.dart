@@ -104,6 +104,7 @@ class RecordingState extends State<RecordingScreen> {
   List<bool> _expandedState;
   List<ExpandableController> _rowControllers;
   List<int> _expandedHeights;
+  List<PreferencesSpec> _preferencesSpecs;
 
   Record _latestRecord;
   Activity _activity;
@@ -393,9 +394,8 @@ class RecordingState extends State<RecordingScreen> {
     if (!_simplerUi) {
       _graphData = ListQueue<Record>(_pointCount);
     }
-    preferencesSpecs[1].unit = descriptor.unit(_si);
-    preferencesSpecs.forEach((prefSpec) => prefSpec.calculateZones());
-    preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
+    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, descriptor);
+    _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
           prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0,
         ));
@@ -409,10 +409,10 @@ class RecordingState extends State<RecordingScreen> {
 
     _rowConfig = [
       RowConfiguration(icon: Icons.whatshot, unit: 'cal'),
-      RowConfiguration(icon: preferencesSpecs[0].icon, unit: preferencesSpecs[0].unit),
-      RowConfiguration(icon: preferencesSpecs[1].icon, unit: preferencesSpecs[1].unit),
-      RowConfiguration(icon: preferencesSpecs[2].icon, unit: preferencesSpecs[2].unit),
-      RowConfiguration(icon: preferencesSpecs[3].icon, unit: preferencesSpecs[3].unit),
+      RowConfiguration(icon: _preferencesSpecs[0].icon, unit: _preferencesSpecs[0].unit),
+      RowConfiguration(icon: _preferencesSpecs[1].icon, unit: _preferencesSpecs[1].unit),
+      RowConfiguration(icon: _preferencesSpecs[2].icon, unit: _preferencesSpecs[2].unit),
+      RowConfiguration(icon: _preferencesSpecs[3].icon, unit: _preferencesSpecs[3].unit),
       RowConfiguration(icon: Icons.add_road, unit: _si ? 'm' : 'mi'),
     ];
     _expandableThemeData = ExpandableThemeData(hasIcon: false);
@@ -602,7 +602,7 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'power',
-        colorFn: (Record record, __) => preferencesSpecs[0].fgColorByValue(record.power),
+        colorFn: (Record record, __) => _preferencesSpecs[0].fgColorByValue(record.power),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.power,
         data: graphData,
@@ -615,7 +615,7 @@ class RecordingState extends State<RecordingScreen> {
       charts.Series<Record, DateTime>(
         id: 'speed',
         colorFn: (Record record, __) =>
-            preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, descriptor.sport)),
+            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, descriptor.sport)),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.speedByUnit(_si, descriptor.sport),
         data: graphData,
@@ -627,7 +627,7 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'cadence',
-        colorFn: (Record record, __) => preferencesSpecs[2].fgColorByValue(record.cadence),
+        colorFn: (Record record, __) => _preferencesSpecs[2].fgColorByValue(record.cadence),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.cadence,
         data: graphData,
@@ -639,7 +639,7 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<Record, DateTime>>[
       charts.Series<Record, DateTime>(
         id: 'hr',
-        colorFn: (Record record, __) => preferencesSpecs[3].fgColorByValue(record.heartRate),
+        colorFn: (Record record, __) => _preferencesSpecs[3].fgColorByValue(record.heartRate),
         domainFn: (Record record, _) => record.dt,
         measureFn: (Record record, _) => record.heartRate,
         data: graphData,
@@ -728,7 +728,7 @@ class RecordingState extends State<RecordingScreen> {
 
     var extras = [];
     if (!_simplerUi) {
-      preferencesSpecs.asMap().entries.forEach((entry) {
+      _preferencesSpecs.asMap().entries.forEach((entry) {
         List<common.AnnotationSegment> annotationSegments = [];
         if (!_isLoading) {
           annotationSegments.addAll(List.generate(

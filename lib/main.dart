@@ -27,7 +27,7 @@ void main() async {
     COMPRESS_DOWNLOAD_TAG: COMPRESS_DOWNLOAD_DEFAULT,
     STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT,
   };
-  preferencesSpecs.forEach((prefSpec) {
+  PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
     prefDefaults.addAll({
       prefSpec.thresholdTag: prefSpec.thresholdDefault,
       prefSpec.zonesTag: prefSpec.zonesDefault,

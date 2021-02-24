@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -110,7 +111,7 @@ abstract class DeviceDescriptor {
 
   String get tcxSport => sport == ActivityType.Ride && sport == ActivityType.Run ? sport : "Other";
 
-  String unit(bool si) {
+  String getSpeedUnit(bool si) {
     if (sport == ActivityType.Ride) {
       return si ? 'kmh' : 'mph';
     } else if (sport == ActivityType.Run) {
@@ -121,6 +122,30 @@ abstract class DeviceDescriptor {
       return 'min /500';
     }
     return si ? 'kmh' : 'mph';
+  }
+
+  String get speedTitle => sport == ActivityType.Ride ? "Speed" : "Pace";
+
+  IconData getIcon() {
+    if (sport == ActivityType.Ride) {
+      return Icons.directions_bike;
+    } else if (sport == ActivityType.Run) {
+      return Icons.directions_run;
+    } else if (sport == ActivityType.Kayaking ||
+        sport == ActivityType.Canoeing ||
+        sport == ActivityType.Rowing) {
+      return Icons.rowing;
+    }
+    return Icons.directions_bike;
+  }
+
+  String getCadenceUnit() {
+    if (sport == ActivityType.Kayaking ||
+        sport == ActivityType.Canoeing ||
+        sport == ActivityType.Rowing) {
+      return "spm";
+    }
+    return "rpm";
   }
 
   setPowerThrottle(String throttlePercentString, bool throttleOther) {

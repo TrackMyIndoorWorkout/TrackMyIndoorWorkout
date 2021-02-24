@@ -37,8 +37,6 @@ class PreferencesScreen extends StatelessWidget {
         UNIT_SYSTEM_TAG,
         defaultVal: UNIT_SYSTEM_DEFAULT,
         desc: UNIT_SYSTEM_DESCRIPTION,
-        onEnable: () => preferencesSpecs[1].unit = 'kmh',
-        onDisable: () => preferencesSpecs[1].unit = 'mph',
       ),
       SwitchPreference(
         INSTANT_SCAN,
@@ -95,7 +93,6 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: THROTTLE_OTHER_DEFAULT,
         desc: THROTTLE_OTHER_DESCRIPTION,
       ),
-
       TextFieldPreference(
         STROKE_RATE_SMOOTHING,
         STROKE_RATE_SMOOTHING_TAG,
@@ -119,10 +116,10 @@ class PreferencesScreen extends StatelessWidget {
     }
 
     appPreferences.add(PreferenceTitle(ZONE_PREFERENCES));
-    preferencesSpecs.forEach((prefSpec) {
+    PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
       appPreferences.addAll([
         TextFieldPreference(
-          THRESHOLD_CAPITAL + prefSpec.fullTitle,
+          PreferencesSpec.THRESHOLD_CAPITAL + prefSpec.fullTitle,
           prefSpec.thresholdTag,
           defaultVal: prefSpec.thresholdDefault,
           validator: (str) {
@@ -133,7 +130,7 @@ class PreferencesScreen extends StatelessWidget {
           },
         ),
         TextFieldPreference(
-          prefSpec.title + ZONES_CAPITAL,
+          prefSpec.title + PreferencesSpec.ZONES_CAPITAL,
           prefSpec.zonesTag,
           defaultVal: prefSpec.zonesDefault,
           validator: (str) {
