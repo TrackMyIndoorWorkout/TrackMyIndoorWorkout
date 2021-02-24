@@ -835,16 +835,12 @@ class RecordingState extends State<RecordingScreen> {
                 IconData icon;
                 switch (snapshot.data) {
                   case BluetoothDeviceState.connected:
-                    onPressed = () {
-                      device.disconnect();
-                    };
+                    onPressed = null;
                     icon = Icons.bluetooth_connected;
                     _discoverServices();
                     break;
                   case BluetoothDeviceState.disconnected:
-                    onPressed = () {
-                      device.connect();
-                    };
+                    onPressed = () => device.connect();
                     icon = Icons.bluetooth_disabled;
                     break;
                   default:
@@ -864,7 +860,6 @@ class RecordingState extends State<RecordingScreen> {
                   if (_measuring) {
                     await _finishActivity();
                   } else {
-                    _discoverServices();
                     if (await device.state.last == BluetoothDeviceState.disconnected) {
                       device.connect();
                     } else {
