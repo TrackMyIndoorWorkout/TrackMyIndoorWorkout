@@ -27,6 +27,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   ListQueue<int> strokeRates;
   int strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
   int strokeRateSum;
+  int lastPositiveCadence = 0; // #101
 
   FitnessMachineDescriptor({
     @required sport,
@@ -356,6 +357,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     }
     final timeStamp = activity.startDateTime.add(idleDuration).add(elapsedDuration);
     if (data != null) {
+      final pace = getPace(data);
+
       var cadence = lastRecord.cadence;
       if (cadenceMetric != null) {
         cadence = getCadence(data).toInt();
@@ -376,6 +379,14 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
             }
             cadence = strokeRates.length > 0 ? (strokeRateSum / strokeRates.length).round() : 0;
           }
+        }
+        // #101
+        if ((cadence == null || cadence == 0) &&
+            (pace != null && pace > 0 && pace < 120) &&
+            lastPositiveCadence > 0) {
+          cadence = lastPositiveCadence;
+        } else if (cadence != null && cadence > 0) {
+          lastPositiveCadence = cadence;
         }
       }
       double power = getPower(data);
@@ -425,7 +436,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         speed: getSpeed(data),
         cadence: cadence,
         heartRate: heartRate,
-        pace: getPace(data),
+        pace: pace,
         elapsedMillis: elapsedMillis,
         sport: sport,
       );
