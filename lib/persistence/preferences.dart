@@ -104,6 +104,7 @@ class PreferencesSpec {
   final String metric;
   String title;
   String unit;
+  String multiLineUnit;
   final String thresholdTag;
   final String thresholdDefault;
   final String zonesTag;
@@ -131,10 +132,21 @@ class PreferencesSpec {
         assert(thresholdDefault != null),
         assert(zonesTag != null),
         assert(zonesDefault != null),
-        assert(icon != null);
+        assert(icon != null) {
+    updateMultiLineUnit();
+  }
 
   String get fullTitle => '$title ($unit)';
   String get histogramTitle => '$title zones (%)';
+
+  updateMultiLineUnit() {
+    multiLineUnit = unit.replaceAll(" ", "\n");
+  }
+
+  updateUnit(String newUnit) {
+    unit = newUnit;
+    updateMultiLineUnit();
+  }
 
   calculateZones() {
     final thresholdString = PrefService.getString(thresholdTag);
@@ -198,7 +210,7 @@ class PreferencesSpec {
   static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
   static List<PreferencesSpec> getPreferencesSpecs(bool si, DeviceDescriptor deviceDescriptor) {
     var prefSpecs = [...preferencesSpecs];
-    prefSpecs[1].unit = deviceDescriptor.getSpeedUnit(si);
+    prefSpecs[1].updateUnit(deviceDescriptor.getSpeedUnit(si));
     prefSpecs[1].title = deviceDescriptor.speedTitle;
     prefSpecs[2].icon = deviceDescriptor.getIcon();
     prefSpecs[2].unit = deviceDescriptor.getCadenceUnit();

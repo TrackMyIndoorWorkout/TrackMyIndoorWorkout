@@ -79,9 +79,9 @@ class RecordsScreenState extends State<RecordsScreen> {
     _descriptor = deviceMap[activity.fourCC];
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
-      0,
-      prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0,
-    ));
+          0,
+          prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0,
+        ));
     activity.hydrate();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
@@ -632,7 +632,6 @@ class RecordsScreenState extends State<RecordsScreen> {
                               color: Colors.indigo,
                               size: _sizeDefault2,
                             ),
-                            Spacer(),
                             Text("MAX", style: _unitStyle),
                             Spacer(),
                             Text(
@@ -641,7 +640,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                             ),
                             Spacer(),
                             Text(
-                              _preferencesSpecs[index].unit,
+                              _preferencesSpecs[index].multiLineUnit,
+                              textAlign: TextAlign.left,
+                              maxLines: 2,
                               style: _unitStyle,
                             ),
                           ],
@@ -655,7 +656,6 @@ class RecordsScreenState extends State<RecordsScreen> {
                               color: Colors.indigo,
                               size: _sizeDefault2,
                             ),
-                            Spacer(),
                             Text("AVG", style: _unitStyle),
                             Spacer(),
                             Text(
@@ -664,7 +664,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                             ),
                             Spacer(),
                             Text(
-                              _preferencesSpecs[index].unit,
+                              _preferencesSpecs[index].multiLineUnit,
+                              textAlign: TextAlign.left,
+                              maxLines: 2,
                               style: _unitStyle,
                             ),
                           ],
