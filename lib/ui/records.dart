@@ -78,6 +78,10 @@ class RecordsScreenState extends State<RecordsScreen> {
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _descriptor = deviceMap[activity.fourCC];
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor);
+    _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
+      0,
+      prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0,
+    ));
     activity.hydrate();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
