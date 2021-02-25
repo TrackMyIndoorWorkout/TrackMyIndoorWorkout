@@ -31,9 +31,10 @@ import '../track/track_painter.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
 import 'activities.dart';
+import 'display_record.dart';
 import 'row_configuration.dart';
 
-typedef DataFn = List<charts.Series<Record, DateTime>> Function();
+typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
 
 extension DeviceIdentification on BluetoothDevice {
   DeviceDescriptor getDescriptor() {
@@ -96,7 +97,7 @@ class RecordingState extends State<RecordingScreen> {
   DateTime _pauseStarted;
   Duration _idleDuration;
   int _pointCount;
-  ListQueue<Record> _graphData;
+  ListQueue<DisplayRecord> _graphData;
   double _mediaWidth;
   double _sizeDefault;
   TextStyle _measurementStyle;
@@ -118,7 +119,7 @@ class RecordingState extends State<RecordingScreen> {
   Timer _timer;
   final _random = Random();
 
-  List<Record> get graphData => _graphData.toList();
+  List<DisplayRecord> get graphData => _graphData.toList();
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig;
   List<String> _values;
@@ -158,7 +159,7 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
-    _graphData.add(record.hydrate());
+    _graphData.add(record.hydrate().display(_preferencesSpecs));
     if (_pointCount > 0 && _graphData.length > _pointCount) {
       _graphData.removeFirst();
     }
@@ -393,7 +394,7 @@ class RecordingState extends State<RecordingScreen> {
     _simplerUi = PrefService.getBool(SIMPLER_UI_TAG);
     _instantUpload = PrefService.getBool(INSTANT_UPLOAD_TAG);
     if (!_simplerUi) {
-      _graphData = ListQueue<Record>(_pointCount);
+      _graphData = ListQueue<DisplayRecord>(_pointCount);
     }
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, descriptor);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
@@ -599,50 +600,51 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  List<charts.Series<Record, DateTime>> _powerChartData() {
-    return <charts.Series<Record, DateTime>>[
-      charts.Series<Record, DateTime>(
+  List<charts.Series<DisplayRecord, DateTime>> _powerChartData() {
+    return <charts.Series<DisplayRecord, DateTime>>[
+      charts.Series<DisplayRecord, DateTime>(
         id: 'power',
-        colorFn: (Record record, __) => _preferencesSpecs[0].fgColorByValue(record.power),
-        domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.power,
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(record.power),
+        domainFn: (DisplayRecord record, _) => record.dt,
+        measureFn: (DisplayRecord record, _) => record.power,
         data: graphData,
       ),
     ];
   }
 
-  List<charts.Series<Record, DateTime>> _speedChartData() {
-    return <charts.Series<Record, DateTime>>[
-      charts.Series<Record, DateTime>(
+  List<charts.Series<DisplayRecord, DateTime>> _speedChartData() {
+    return <charts.Series<DisplayRecord, DateTime>>[
+      charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
-        colorFn: (Record record, __) =>
+        colorFn: (DisplayRecord record, __) =>
             _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, descriptor.sport)),
-        domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.speedByUnit(_si, descriptor.sport),
+        domainFn: (DisplayRecord record, _) => record.dt,
+        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, descriptor.sport),
         data: graphData,
       ),
     ];
   }
 
-  List<charts.Series<Record, DateTime>> _cadenceChartData() {
-    return <charts.Series<Record, DateTime>>[
-      charts.Series<Record, DateTime>(
+  List<charts.Series<DisplayRecord, DateTime>> _cadenceChartData() {
+    return <charts.Series<DisplayRecord, DateTime>>[
+      charts.Series<DisplayRecord, DateTime>(
         id: 'cadence',
-        colorFn: (Record record, __) => _preferencesSpecs[2].fgColorByValue(record.cadence),
-        domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.cadence,
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(record.cadence),
+        domainFn: (DisplayRecord record, _) => record.dt,
+        measureFn: (DisplayRecord record, _) => record.cadence,
         data: graphData,
       ),
     ];
   }
 
-  List<charts.Series<Record, DateTime>> _hRChartData() {
-    return <charts.Series<Record, DateTime>>[
-      charts.Series<Record, DateTime>(
+  List<charts.Series<DisplayRecord, DateTime>> _hRChartData() {
+    return <charts.Series<DisplayRecord, DateTime>>[
+      charts.Series<DisplayRecord, DateTime>(
         id: 'hr',
-        colorFn: (Record record, __) => _preferencesSpecs[3].fgColorByValue(record.heartRate),
-        domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.heartRate,
+        colorFn: (DisplayRecord record, __) =>
+            _preferencesSpecs[3].fgColorByValue(record.heartRate),
+        domainFn: (DisplayRecord record, _) => record.dt,
+        measureFn: (DisplayRecord record, _) => record.heartRate,
         data: graphData,
       ),
     ];

@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/persistence/models/record.dart';
 import 'utils.dart';
 
 String paceString(double pace) {
@@ -32,7 +31,7 @@ void main() {
     paces.forEach((pacePair) {
       final expected = pacePair[1];
       test("${pacePair[0]} -> $expected", () {
-        expect(Record.paceString(pacePair[0]), expected);
+        expect(paceString(pacePair[0]), expected);
       });
     });
 
@@ -41,7 +40,7 @@ void main() {
       final randomPace = rnd.nextDouble() * 100;
       final expected = paceString(randomPace);
       test("$randomPace -> $expected", () {
-        expect(Record.paceString(randomPace), expected);
+        expect(paceString(randomPace), expected);
       });
     });
   });

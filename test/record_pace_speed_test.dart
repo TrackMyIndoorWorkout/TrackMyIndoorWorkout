@@ -6,12 +6,6 @@ import '../lib/tcx/activity_type.dart';
 import '../lib/utils/constants.dart';
 import 'utils.dart';
 
-String paceString(double pace) {
-  final minutes = pace.truncate();
-  final seconds = ((pace - minutes) * 60.0).truncate();
-  return "$minutes:" + seconds.toString().padLeft(2, "0");
-}
-
 void main() {
   group("Record constructor fills speed properly if running pace is present:", () {
     final paces = [

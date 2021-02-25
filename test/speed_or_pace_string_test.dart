@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/persistence/models/record.dart';
 import '../lib/persistence/preferences.dart';
 import '../lib/tcx/activity_type.dart';
+import '../lib/utils/display.dart';
 
 void main() {
   final speeds = [
@@ -24,8 +24,7 @@ void main() {
     speeds.forEach((speed) {
       final expected = speed.toStringAsFixed(2);
       test("$speed (Ride) -> $expected", () {
-        final record = RecordWithSport(speed: speed, sport: ActivityType.Ride);
-        expect(record.speedStringByUnit(true, ActivityType.Ride), expected);
+        expect(speedOrPaceString(speed, true, ActivityType.Ride), expected);
       });
     });
   });
@@ -34,8 +33,7 @@ void main() {
     speeds.forEach((speed) {
       final expected = (speed * KM2MI).toStringAsFixed(2);
       test("$speed (Ride) -> $expected", () {
-        final record = RecordWithSport(speed: speed, sport: ActivityType.Ride);
-        expect(record.speedStringByUnit(false, ActivityType.Ride), expected);
+        expect(speedOrPaceString(speed, false, ActivityType.Ride), expected);
       });
     });
   });
@@ -43,11 +41,10 @@ void main() {
   group("speedStringByUnit for metric system and running:", () {
     speeds.forEach((speed) {
       final pace = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed;
-      final expected = Record.paceString(pace);
+      final expected = paceString(pace);
       // final expected
       test("$speed (Run) -> $expected", () {
-        final record = RecordWithSport(speed: speed, sport: ActivityType.Run);
-        expect(record.speedStringByUnit(true, ActivityType.Run), expected);
+        expect(speedOrPaceString(speed, true, ActivityType.Run), expected);
       });
     });
   });
@@ -55,10 +52,9 @@ void main() {
   group("speedStringByUnit for imperial system and running:", () {
     speeds.forEach((speed) {
       final pace = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed / KM2MI;
-      final expected = Record.paceString(pace);
+      final expected = paceString(pace);
       test("$speed (Run) -> $expected", () {
-        final record = RecordWithSport(speed: speed, sport: ActivityType.Run);
-        expect(record.speedStringByUnit(false, ActivityType.Run), expected);
+        expect(speedOrPaceString(speed, false, ActivityType.Run), expected);
       });
     });
   });
@@ -68,12 +64,11 @@ void main() {
     speeds.forEach((speed) {
       sports.forEach((sport) {
         final pace = speed.abs() < 10e-4 ? 0.0 : 30.0 / speed;
-        final expected = Record.paceString(pace);
+        final expected = paceString(pace);
         test("$speed ($sport) -> $expected", () {
-          final record = RecordWithSport(speed: speed, sport: sport);
           // There's no imperial for water sports, it's always 500m
-          expect(record.speedStringByUnit(false, sport), expected);
-          expect(record.speedStringByUnit(true, sport), expected);
+          expect(speedOrPaceString(speed, false, sport), expected);
+          expect(speedOrPaceString(speed, true, sport), expected);
         });
       });
     });
@@ -83,10 +78,9 @@ void main() {
     speeds.forEach((speed) {
       final expected = speed.toStringAsFixed(2);
       test("$speed (Elliptical) -> $expected", () {
-        final record = RecordWithSport(speed: speed, sport: ActivityType.Elliptical);
         // There's no imperial for water sports, it's always 500m
-        expect(record.speedStringByUnit(false, ActivityType.Elliptical), expected);
-        expect(record.speedStringByUnit(true, ActivityType.Elliptical), expected);
+        expect(speedOrPaceString(speed, false, ActivityType.Elliptical), expected);
+        expect(speedOrPaceString(speed, true, ActivityType.Elliptical), expected);
       });
     });
   });

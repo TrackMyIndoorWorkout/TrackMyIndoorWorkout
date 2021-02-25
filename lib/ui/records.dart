@@ -13,7 +13,9 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../utils/display.dart';
 import '../utils/statistics_accumulator.dart';
+import 'display_record.dart';
 import 'find_devices.dart';
 import 'histogram_data.dart';
 import 'measurement_counter.dart';
@@ -47,7 +49,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   final Size size;
   int _pointCount;
   List<Record> _allRecords;
-  List<Record> _sampledRecords;
+  List<DisplayRecord> _sampledRecords;
   Map<String, TileConfiguration> _tileConfigurations;
   List<String> _tiles;
   bool _initialized;
@@ -87,11 +89,16 @@ class RecordsScreenState extends State<RecordsScreen> {
           setState(() {
             _pointCount = size.width.toInt() - 20;
             if (_allRecords.length < _pointCount) {
-              _sampledRecords = _allRecords.map((r) => r.hydrate()).toList(growable: false);
+              _sampledRecords = _allRecords
+                  .map((r) => r.hydrate().display(_preferencesSpecs))
+                  .toList(growable: false);
             } else {
               final nth = _allRecords.length / _pointCount;
               _sampledRecords = List.generate(
-                  _pointCount, (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate());
+                  _pointCount,
+                  (i) => _allRecords[((i + 1) * nth - 1).round()]
+                      .hydrate()
+                      .display(_preferencesSpecs));
             }
             final measurementCounter = MeasurementCounter(si: _si, sport: _descriptor.sport);
             _allRecords.forEach((record) {
@@ -150,8 +157,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                 dataFn: _getSpeedData,
                 dataStringFn: _getSpeedString,
                 selectionListener: _speedSelectionListener,
-                maxString: Record.paceString(accu.maxSpeed),
-                avgString: Record.paceString(accu.avgSpeed),
+                maxString: paceString(accu.maxSpeed),
+                avgString: paceString(accu.avgSpeed),
               );
               prefSpec.calculateBounds(measurementCounter.minSpeed, measurementCounter.maxSpeed);
               tileConfig.histogram = prefSpec.zoneUpper
@@ -304,19 +311,19 @@ class RecordsScreenState extends State<RecordsScreen> {
     );
   }
 
-  List<charts.Series<Record, DateTime>> _getPowerData() {
-    return <charts.Series<Record, DateTime>>[
-      charts.Series<Record, DateTime>(
+  List<charts.Series<DisplayRecord, DateTime>> _getPowerData() {
+    return <charts.Series<DisplayRecord, DateTime>>[
+      charts.Series<DisplayRecord, DateTime>(
         id: 'power',
-        colorFn: (Record record, __) => _preferencesSpecs[0].fgColorByValue(record.power),
-        domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.power,
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(record.power),
+        domainFn: (DisplayRecord record, _) => record.dt,
+        measureFn: (DisplayRecord record, _) => record.power,
         data: _sampledRecords,
       ),
     ];
   }
 
-  String _getPowerString(Record record) {
+  String _getPowerString(DisplayRecord record) {
     return record.power.toString();
   }
 
@@ -342,21 +349,21 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<charts.Series<Record, DateTime>> _getSpeedData() {
-    return <charts.Series<Record, DateTime>>[
-      charts.Series<Record, DateTime>(
+  List<charts.Series<DisplayRecord, DateTime>> _getSpeedData() {
+    return <charts.Series<DisplayRecord, DateTime>>[
+      charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
-        colorFn: (Record record, __) =>
+        colorFn: (DisplayRecord record, __) =>
             _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.sport)),
-        domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.speedByUnit(_si, _descriptor.sport),
+        domainFn: (DisplayRecord record, _) => record.dt,
+        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, _descriptor.sport),
         data: _sampledRecords,
       ),
     ];
   }
 
-  String _getSpeedString(Record record) {
-    return record.speedStringByUnit(_si, _descriptor.sport);
+  String _getSpeedString(DisplayRecord record) {
+    return speedOrPaceString(record.speed, _si, _descriptor.sport);
   }
 
   void _speedSelectionListener(charts.SelectionModel<DateTime> model) {
@@ -381,19 +388,19 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<charts.Series<Record, DateTime>> _getCadenceData() {
-    return <charts.Series<Record, DateTime>>[
-      charts.Series<Record, DateTime>(
+  List<charts.Series<DisplayRecord, DateTime>> _getCadenceData() {
+    return <charts.Series<DisplayRecord, DateTime>>[
+      charts.Series<DisplayRecord, DateTime>(
         id: 'cadence',
-        colorFn: (Record record, __) => _preferencesSpecs[2].fgColorByValue(record.cadence),
-        domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.cadence,
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(record.cadence),
+        domainFn: (DisplayRecord record, _) => record.dt,
+        measureFn: (DisplayRecord record, _) => record.cadence,
         data: _sampledRecords,
       ),
     ];
   }
 
-  String _getCadenceString(Record record) {
+  String _getCadenceString(DisplayRecord record) {
     return record.cadence.toString();
   }
 
@@ -419,19 +426,20 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  List<charts.Series<Record, DateTime>> _getHrData() {
-    return <charts.Series<Record, DateTime>>[
-      charts.Series<Record, DateTime>(
+  List<charts.Series<DisplayRecord, DateTime>> _getHrData() {
+    return <charts.Series<DisplayRecord, DateTime>>[
+      charts.Series<DisplayRecord, DateTime>(
         id: 'hr',
-        colorFn: (Record record, __) => _preferencesSpecs[3].fgColorByValue(record.heartRate),
-        domainFn: (Record record, _) => record.dt,
-        measureFn: (Record record, _) => record.heartRate,
+        colorFn: (DisplayRecord record, __) =>
+            _preferencesSpecs[3].fgColorByValue(record.heartRate),
+        domainFn: (DisplayRecord record, _) => record.dt,
+        measureFn: (DisplayRecord record, _) => record.heartRate,
         data: _sampledRecords,
       ),
     ];
   }
 
-  String _getHrString(Record record) {
+  String _getHrString(DisplayRecord record) {
     return record.heartRate.toString();
   }
 

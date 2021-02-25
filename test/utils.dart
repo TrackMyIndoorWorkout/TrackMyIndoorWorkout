@@ -7,9 +7,7 @@ const REPETITION = 50;
 
 const SPORTS = [
   ActivityType.Ride,
-  ActivityType.VirtualRide,
   ActivityType.Run,
-  ActivityType.VirtualRun,
   ActivityType.Kayaking,
   ActivityType.Canoeing,
   ActivityType.Rowing,

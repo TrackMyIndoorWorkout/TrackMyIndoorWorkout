@@ -2,12 +2,12 @@ import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:meta/meta.dart';
 
-import '../persistence/models/record.dart';
+import 'display_record.dart';
 import 'histogram_data.dart';
 import 'selection_data.dart';
 
-typedef DataFn = List<charts.Series<Record, DateTime>> Function();
-typedef DataStringFn = String Function(Record);
+typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
+typedef DataStringFn = String Function(DisplayRecord);
 typedef HistogramFn = List<charts.Series<HistogramData, double>> Function();
 
 class TileConfiguration {
