@@ -233,7 +233,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         divider: 1.0,
         optional: true,
       );
-      byteCounter += 1;
+      byteCounter++;
     }
     flag ~/= 2;
     return flag;
@@ -279,7 +279,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     if (flag % 2 == (negated ? 0 : 1)) {
       // UByte with 0.5 resolution
       strokeRateMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 2.0);
-      byteCounter += 1;
+      byteCounter++;
       revolutionsMetric =
           ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
       byteCounter += 2;
@@ -294,7 +294,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         // UByte with 0.5 resolution
         strokeRateMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 2.0);
       }
-      byteCounter += 1;
+      byteCounter++;
     }
     flag ~/= 2;
     return flag;
