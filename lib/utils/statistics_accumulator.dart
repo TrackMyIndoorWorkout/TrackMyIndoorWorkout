@@ -80,7 +80,7 @@ class StatisticsAccumulator {
 
   processTrackPoint(TrackPoint trackPoint) {
     if (trackPoint.power != null) {
-      if (calculateAvgPower) {
+      if (calculateAvgPower && trackPoint.power > 0) {
         powerSum += trackPoint.power;
         powerCount++;
       }
@@ -89,7 +89,7 @@ class StatisticsAccumulator {
       }
     }
     if (trackPoint.speed != null) {
-      if (calculateAvgSpeed) {
+      if (calculateAvgSpeed && trackPoint.speed > 0) {
         speedSum += trackPoint.speed;
         speedCount++;
       }
@@ -102,7 +102,7 @@ class StatisticsAccumulator {
       }
     }
     if (trackPoint.heartRate != null && trackPoint.heartRate > 0) {
-      if (calculateAvgHeartRate) {
+      if (calculateAvgHeartRate && trackPoint.heartRate > 0) {
         heartRateSum += trackPoint.heartRate;
         heartRateCount++;
       }
@@ -111,7 +111,7 @@ class StatisticsAccumulator {
       }
     }
     if (trackPoint.cadence != null && trackPoint.cadence > 0) {
-      if (calculateAvgCadence) {
+      if (calculateAvgCadence && trackPoint.cadence > 0) {
         cadenceSum += trackPoint.cadence;
         cadenceCount++;
       }
@@ -123,7 +123,7 @@ class StatisticsAccumulator {
 
   processRecord(Record record) {
     if (record.power != null) {
-      if (calculateAvgPower) {
+      if (calculateAvgPower && record.power > 0) {
         powerSum += record.power;
         powerCount++;
       }
@@ -133,7 +133,7 @@ class StatisticsAccumulator {
     }
     if (record.speed != null) {
       final speed = record.speedByUnit(si, sport);
-      if (calculateAvgSpeed) {
+      if (calculateAvgSpeed && record.speed > 0) {
         speedSum += speed;
         speedCount++;
       }
@@ -146,7 +146,7 @@ class StatisticsAccumulator {
       }
     }
     if (record.heartRate != null && record.heartRate > 0) {
-      if (calculateAvgHeartRate) {
+      if (calculateAvgHeartRate && record.heartRate > 0) {
         heartRateSum += record.heartRate;
         heartRateCount++;
       }
@@ -155,7 +155,7 @@ class StatisticsAccumulator {
       }
     }
     if (record.cadence != null && record.cadence > 0) {
-      if (calculateAvgCadence) {
+      if (calculateAvgCadence && record.cadence > 0) {
         cadenceSum += record.cadence;
         cadenceCount++;
       }
