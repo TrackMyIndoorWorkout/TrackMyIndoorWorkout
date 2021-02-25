@@ -47,7 +47,7 @@ class TileConfiguration {
     final selectedDatum = model.selectedDatum;
 
     if (selectedDatum.isNotEmpty) {
-      final datum = selectedDatum.first.datum.hydrate();
+      final datum = selectedDatum.first.datum;
       return SelectionData(time: datum.dt, value: dataStringFn(datum));
     }
 
