@@ -719,9 +719,10 @@ class RecordingState extends State<RecordingScreen> {
           Spacer(),
           Text(_values[entry.key], style: _measurementStyle),
           SizedBox(
-            width: _sizeDefault,
+            width: _sizeDefault * 1.4,
             child: Text(
               _rowConfig[entry.key].unit,
+              maxLines: 2,
               style: _unitStyle,
             ),
           ),
