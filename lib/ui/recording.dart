@@ -8,6 +8,7 @@ import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
+import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -869,27 +870,6 @@ class RecordingState extends State<RecordingScreen> {
                     }
                   }
                 }),
-            IconButton(
-              icon: Icon(BrandIcons.strava),
-              onPressed: () async {
-                if (_measuring) {
-                  Get.snackbar("Warning", "Cannot upload while measurement is under progress");
-                  return;
-                }
-
-                await _stravaUpload(false);
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.list_alt),
-              onPressed: () async {
-                if (_measuring) {
-                  Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
-                } else {
-                  await Get.to(ActivitiesScreen());
-                }
-              },
-            ),
           ],
         ),
         body: LoadingOverlay(
@@ -935,6 +915,40 @@ class RecordingState extends State<RecordingScreen> {
               ],
             ),
           ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FabCircularMenu(
+          fabOpenIcon: const Icon(Icons.menu, color: Colors.white),
+          fabCloseIcon: const Icon(Icons.close, color: Colors.white),
+          children: [
+            FloatingActionButton(
+              heroTag: null,
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.deepOrangeAccent,
+              child: Icon(BrandIcons.strava),
+              onPressed: () async {
+                if (_measuring) {
+                  Get.snackbar("Warning", "Cannot upload while measurement is under progress");
+                  return;
+                }
+
+                await _stravaUpload(false);
+              },
+            ),
+            FloatingActionButton(
+              heroTag: null,
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.indigo,
+              child: Icon(Icons.list_alt),
+              onPressed: () async {
+                if (_measuring) {
+                  Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
+                } else {
+                  await Get.to(ActivitiesScreen());
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
