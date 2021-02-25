@@ -178,7 +178,11 @@ void main() {
     final rnd = Random();
     SPORTS.forEach((sport) {
       final si = rnd.nextBool();
-      final accu = StatisticsAccumulator(si: si, sport: sport, calculateAvgHeartRate: true,);
+      final accu = StatisticsAccumulator(
+        si: si,
+        sport: sport,
+        calculateAvgHeartRate: true,
+      );
       var count = rnd.nextInt(99) + 1;
       int sum = 0;
       getRandomInts(count, 100, rnd).forEach((number) {

@@ -16,8 +16,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double sum = 0.0;
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()
-            ..power = number);
+          accu.processTrackPoint(TrackPoint()..power = number);
           sum += number;
         });
         test("$sport, $count -> $sum", () {
@@ -57,8 +56,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double maximum = MAX_INIT.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()
-            ..power = number);
+          accu.processTrackPoint(TrackPoint()..power = number);
           maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () {
@@ -97,8 +95,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double sum = 0.0;
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()
-            ..speed = number);
+          accu.processTrackPoint(TrackPoint()..speed = number);
           sum += number;
         });
         test("$sport, $count -> $sum", () {
@@ -138,8 +135,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double maximum = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()
-            ..speed = number);
+          accu.processTrackPoint(TrackPoint()..speed = number);
           if (sport == ActivityType.Ride) {
             maximum = max(number, maximum);
           } else {
@@ -183,8 +179,7 @@ void main() {
         int sum = 0;
         int cnt = 0;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()
-            ..heartRate = number);
+          accu.processTrackPoint(TrackPoint()..heartRate = number);
           sum += number;
           if (number > 0) {
             cnt++;
@@ -227,8 +222,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         int maximum = MAX_INIT;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()
-            ..heartRate = number);
+          accu.processTrackPoint(TrackPoint()..heartRate = number);
           maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () {
@@ -268,8 +262,7 @@ void main() {
         int sum = 0;
         int cnt = 0;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()
-            ..cadence = number);
+          accu.processTrackPoint(TrackPoint()..cadence = number);
           sum += number;
           if (number > 0) {
             cnt++;
@@ -312,8 +305,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         int maximum = MAX_INIT;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()
-            ..cadence = number);
+          accu.processTrackPoint(TrackPoint()..cadence = number);
           maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () {
