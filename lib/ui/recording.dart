@@ -102,7 +102,6 @@ class RecordingState extends State<RecordingScreen> {
   double _sizeDefault;
   TextStyle _measurementStyle;
   TextStyle _unitStyle;
-  ExpandableThemeData _expandableThemeData;
   List<bool> _expandedState;
   List<ExpandableController> _rowControllers;
   List<int> _expandedHeights;
@@ -410,14 +409,13 @@ class RecordingState extends State<RecordingScreen> {
     };
 
     _rowConfig = [
-      RowConfiguration(icon: Icons.whatshot, unit: 'cal'),
+      RowConfiguration(icon: Icons.whatshot, unit: 'cal', expandable: false),
       RowConfiguration(icon: _preferencesSpecs[0].icon, unit: _preferencesSpecs[0].unit),
       RowConfiguration(icon: _preferencesSpecs[1].icon, unit: _preferencesSpecs[1].unit),
       RowConfiguration(icon: _preferencesSpecs[2].icon, unit: _preferencesSpecs[2].unit),
       RowConfiguration(icon: _preferencesSpecs[3].icon, unit: _preferencesSpecs[3].unit),
       RowConfiguration(icon: Icons.add_road, unit: _si ? 'm' : 'mi'),
     ];
-    _expandableThemeData = ExpandableThemeData(hasIcon: false);
     _rowControllers = [];
     _expandedHeights = [];
     final expandedStateStr = PrefService.getString(MEASUREMENT_PANELS_EXPANDED_TAG);
@@ -702,6 +700,7 @@ class RecordingState extends State<RecordingScreen> {
         children: [
           Icon(Icons.timer, size: _sizeDefault, color: Colors.indigo),
           Text(_timeDisplay, style: _measurementStyle),
+          SizedBox(width: _sizeDefault / 4),
         ],
       ),
     ];
@@ -719,7 +718,7 @@ class RecordingState extends State<RecordingScreen> {
           Spacer(),
           Text(_values[entry.key], style: _measurementStyle),
           SizedBox(
-            width: _sizeDefault * 1.4,
+            width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
             child: Text(
               _rowConfig[entry.key].unit,
               maxLines: 2,
@@ -905,35 +904,30 @@ class RecordingState extends State<RecordingScreen> {
                 rows[1],
                 Divider(height: separatorHeight),
                 ExpandablePanel(
-                  theme: _expandableThemeData,
                   header: rows[2],
                   expanded: _simplerUi ? null : extras[0],
                   controller: _rowControllers[0],
                 ),
                 Divider(height: separatorHeight),
                 ExpandablePanel(
-                  theme: _expandableThemeData,
                   header: rows[3],
                   expanded: _simplerUi ? null : extras[1],
                   controller: _rowControllers[1],
                 ),
                 Divider(height: separatorHeight),
                 ExpandablePanel(
-                  theme: _expandableThemeData,
                   header: rows[4],
                   expanded: _simplerUi ? null : extras[2],
                   controller: _rowControllers[2],
                 ),
                 Divider(height: separatorHeight),
                 ExpandablePanel(
-                  theme: _expandableThemeData,
                   header: rows[5],
                   expanded: _simplerUi ? null : extras[3],
                   controller: _rowControllers[3],
                 ),
                 Divider(height: separatorHeight),
                 ExpandablePanel(
-                  theme: _expandableThemeData,
                   header: rows[6],
                   expanded: _simplerUi ? null : extras[4],
                   controller: _rowControllers[4],
