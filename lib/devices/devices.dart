@@ -20,7 +20,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     // Precor
     model: [49],
     // 1
-    primaryMeasurementServiceId: PRECOR_MEASUREMENT_SERVICE_ID,
+    primaryMeasurementServiceId: PRECOR_SERVICE_ID,
     primaryMeasurementId: PRECOR_MEASUREMENT_ID,
     canPrimaryMeasurementProcessed: (List<int> data) {
       if (data == null) return false;
