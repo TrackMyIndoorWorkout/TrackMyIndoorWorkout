@@ -9,6 +9,7 @@ import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../devices/devices.dart';
+import '../devices/gatt_constants.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';
@@ -18,17 +19,17 @@ import 'scan_result.dart';
 
 const HELP_URL = "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
 
-extension DeviceMathing on BluetoothDevice {
-  bool isWorthy(bool filterDevices, bool connectable) {
-    if (!connectable) {
+extension DeviceMathing on ScanResult {
+  bool isWorthy(bool filterDevices) {
+    if (!advertisementData.connectable) {
       return false;
     }
 
-    if (name == null || name.length <= 0) {
+    if (device.name == null || device.name.length <= 0) {
       return false;
     }
 
-    if (id.id == null || id.id.length <= 0) {
+    if (device.id.id == null || device.id.id.length <= 0) {
       return false;
     }
 
@@ -37,8 +38,17 @@ extension DeviceMathing on BluetoothDevice {
     }
 
     for (var dev in deviceMap.values) {
-      if (name.startsWith(dev.namePrefix)) {
+      if (device.name.startsWith(dev.namePrefix)) {
         return true;
+      }
+      if (advertisementData.serviceUuids.isNotEmpty) {
+        final serviceUuids =
+            advertisementData.serviceUuids.map((x) => x.substring(4, 8).toLowerCase()).toList();
+        if (serviceUuids.contains(FITNESS_MACHINE_ID) ||
+            serviceUuids.contains(PRECOR_SERVICE_ID) ||
+            serviceUuids.contains(HEART_RATE_SERVICE_ID)) {
+          return true;
+        }
       }
     }
 
@@ -89,16 +99,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
     FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
   }
 
-  addScannedDevice(BluetoothDevice device, bool connectable) {
-    if (!device.isWorthy(_filterDevices, connectable)) {
+  addScannedDevice(ScanResult scanResult) {
+    if (!scanResult.isWorthy(_filterDevices)) {
       return;
     }
 
-    if (_scannedDevices.where((d) => d.id.id == device.id.id).length > 0) {
+    if (_scannedDevices.where((d) => d.id.id == scanResult.device.id.id).length > 0) {
       return;
     }
 
-    _scannedDevices.add(device);
+    _scannedDevices.add(scanResult.device);
   }
 
   @override
@@ -190,7 +200,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
                 initialData: [],
                 builder: (c, snapshot) => Column(
-                  children: snapshot.data.where((d) => d.isWorthy(_filterDevices, true)).map((d) {
+                  children: snapshot.data.map((d) {
                     _openedDevice = d;
                     return ListTile(
                       title: TextOneLine(
@@ -233,11 +243,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 stream: FlutterBlue.instance.scanResults,
                 initialData: [],
                 builder: (c, snapshot) => Column(
-                  children: snapshot.data
-                      .where(
-                          (d) => d.device.isWorthy(_filterDevices, d.advertisementData.connectable))
-                      .map((r) {
-                    addScannedDevice(r.device, r.advertisementData.connectable);
+                  children: snapshot.data.where((d) => d.isWorthy(_filterDevices)).map((r) {
+                    addScannedDevice(r);
                     if (_instantWorkout && r.device.id.id == _lastEquipmentId) {
                       FlutterBlue.instance.stopScan().whenComplete(() async {
                         await Future.delayed(Duration(milliseconds: 100));

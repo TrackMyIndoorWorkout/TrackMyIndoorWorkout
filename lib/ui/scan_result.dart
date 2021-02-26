@@ -1,6 +1,7 @@
 import 'package:charts_flutter/flutter.dart' hide TextStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import '../devices/gatt_constants.dart';
 import '../persistence/preferences.dart';
 import 'find_devices.dart';
 
@@ -103,7 +104,13 @@ class ScanResultTile extends StatelessWidget {
       ),
       trailing: FloatingActionButton(
         heroTag: null,
-        child: Icon(Icons.play_arrow),
+        child: Icon(result.advertisementData.serviceUuids.isNotEmpty &&
+                result.advertisementData.serviceUuids
+                    .map((x) => x.substring(4, 8).toLowerCase())
+                    .toList()
+                    .contains(HEART_RATE_SERVICE_ID)
+            ? Icons.favorite
+            : Icons.play_arrow),
         foregroundColor: Colors.white,
         backgroundColor: Colors.blue,
         onPressed: (result.advertisementData.connectable) ? onTap : null,
