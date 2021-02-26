@@ -210,7 +210,7 @@ class RecordingState extends State<RecordingScreen> {
       _fillValues(_latestRecord);
 
       if (_measuring) {
-        if (_latestRecord?.speed ?? 0.0 <= EPS) {
+        if ((_latestRecord?.speed ?? 0.0) <= EPS) {
           _pauseStarted = DateTime.now();
           _paused = true;
         } else {
