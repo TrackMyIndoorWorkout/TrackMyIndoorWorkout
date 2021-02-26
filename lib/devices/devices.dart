@@ -1,6 +1,7 @@
 import '../tcx/activity_type.dart';
 import 'device_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
+import 'gatt_constants.dart';
 import 'indoor_bike_device_descriptor.dart';
 import 'rower_device_descriptor.dart';
 import 'short_metric_descriptor.dart';
@@ -19,8 +20,8 @@ Map<String, DeviceDescriptor> deviceMap = {
     // Precor
     model: [49],
     // 1
-    primaryMeasurementServiceId: "ee07",
-    primaryMeasurementId: "e01d",
+    primaryMeasurementServiceId: PRECOR_MEASUREMENT_SERVICE_ID,
+    primaryMeasurementId: PRECOR_MEASUREMENT_ID,
     canPrimaryMeasurementProcessed: (List<int> data) {
       if (data == null) return false;
       if (data.length != 19) return false;
