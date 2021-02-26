@@ -53,8 +53,8 @@ Map<String, DeviceDescriptor> deviceMap = {
     canPrimaryMeasurementProcessed: (List<int> data) {
       return data != null && data.length > 1;
     },
-    // cadenceMeasurementServiceId: "1816",
-    // cadenceMeasurementId: "2a5b",
+    // cadenceMeasurementServiceId: CADENCE_MEASUREMENT_SERVICE_ID,
+    // cadenceMeasurementId: CADENCE_MEASUREMENT_ID,
     canCadenceMeasurementProcessed: (List<int> data) {
       if (data == null || data.length < 1) return false;
 

@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import 'fitness_machine_descriptor.dart';
+import 'gatt_constants.dart';
 
 class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   RowerDeviceDescriptor({
@@ -13,8 +14,8 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     nameStart,
     manufacturer,
     model,
-    primaryMeasurementServiceId = "1826",
-    primaryMeasurementId = "2ad1",
+    primaryMeasurementServiceId = FITNESS_MACHINE_ID,
+    primaryMeasurementId = ROWER_DEVICE_ID,
     canPrimaryMeasurementProcessed,
     cadenceMeasurementServiceId,
     cadenceMeasurementId,

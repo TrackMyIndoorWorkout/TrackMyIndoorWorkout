@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import 'fitness_machine_descriptor.dart';
+import 'gatt_constants.dart';
 
 class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
   IndoorBikeDeviceDescriptor({
@@ -13,8 +14,8 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     nameStart,
     manufacturer,
     model,
-    primaryMeasurementServiceId = "1826",
-    primaryMeasurementId = "2ad2",
+    primaryMeasurementServiceId = FITNESS_MACHINE_ID,
+    primaryMeasurementId = INDOOR_BIKE_ID,
     canPrimaryMeasurementProcessed,
     cadenceMeasurementServiceId,
     cadenceMeasurementId,
