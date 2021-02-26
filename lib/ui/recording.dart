@@ -252,9 +252,9 @@ class RecordingState extends State<RecordingScreen> {
       setState(() {
         _discovering = true;
       });
-      final deviceInfo = _filterService(services, deviceInformationId);
+      final deviceInfo = _filterService(services, DEVICE_INFORMATION_ID);
       final nameCharacteristic =
-          _filterCharacteristic(deviceInfo.characteristics, manufacturerNameId);
+          _filterCharacteristic(deviceInfo.characteristics, MANUFACTURER_NAME_ID);
       var name;
       try {
         name = await nameCharacteristic.read();
