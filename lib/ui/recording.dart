@@ -587,7 +587,7 @@ class RecordingState extends State<RecordingScreen> {
     });
   }
 
-  _finishActivity() async {
+  _finishActivity(bool quick) async {
     if (!_measuring) return;
 
     Duration currentIdle = Duration();
@@ -616,12 +616,12 @@ class RecordingState extends State<RecordingScreen> {
       _latestRecord.calories,
     );
     final retVal = await _database?.activityDao?.updateActivity(_activity);
-    if (retVal <= 0) {
+    if (retVal <= 0 && !quick) {
       Get.snackbar("Warning", "Could not save activity");
       return;
     }
 
-    if (_instantUpload) {
+    if (_instantUpload && !quick) {
       await _stravaUpload(true);
     }
   }
@@ -691,7 +691,10 @@ class RecordingState extends State<RecordingScreen> {
                 child: new Text('No'),
               ),
               new TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
+                onPressed: () async {
+                  await _finishActivity(true);
+                  Navigator.of(context).pop(true);
+                },
                 child: new Text('Yes'),
               ),
             ],
@@ -888,7 +891,7 @@ class RecordingState extends State<RecordingScreen> {
                 icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
                 onPressed: () async {
                   if (_measuring) {
-                    await _finishActivity();
+                    await _finishActivity(false);
                   } else {
                     if (await device.state.last == BluetoothDeviceState.disconnected) {
                       device.connect();
