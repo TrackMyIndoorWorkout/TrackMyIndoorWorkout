@@ -20,7 +20,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     // Precor
     model: [49],
     // 1
-    primaryMeasurementServiceId: PRECOR_SERVICE_ID,
+    primaryServiceId: PRECOR_SERVICE_ID,
     primaryMeasurementId: PRECOR_MEASUREMENT_ID,
     canPrimaryMeasurementProcessed: (List<int> data) {
       if (data == null) return false;
@@ -54,24 +54,6 @@ Map<String, DeviceDescriptor> deviceMap = {
     canPrimaryMeasurementProcessed: (List<int> data) {
       return data != null && data.length > 1;
     },
-    // cadenceMeasurementServiceId: CADENCE_MEASUREMENT_SERVICE_ID,
-    // cadenceMeasurementId: CADENCE_MEASUREMENT_ID,
-    canCadenceMeasurementProcessed: (List<int> data) {
-      if (data == null || data.length < 1) return false;
-
-      var flag = data[0];
-      var expectedLength = 1; // The flag
-      // Has wheel revolution? (first bit)
-      if (flag % 2 == 1) {
-        expectedLength += 6; // 32 bit revolution and 16 bit time
-      }
-      flag ~/= 2;
-      // Has crank revolution? (second bit)
-      if (flag % 2 == 1) {
-        expectedLength += 4; // 16 bit revolution and 16 bit time
-      }
-      return data.length == expectedLength;
-    },
     calorieFactor: 1.40,
   ),
   "SAP+": IndoorBikeDeviceDescriptor(
@@ -81,8 +63,8 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "AC Performance Plus",
     // is an ANT+ device, will never show as BLE
     namePrefix: "Schwinn AC Perf+",
+    primaryServiceId: null,
     primaryMeasurementId: null,
-    primaryMeasurementServiceId: null,
     canPrimaryMeasurementProcessed: (List<int> data) {
       return false;
     },

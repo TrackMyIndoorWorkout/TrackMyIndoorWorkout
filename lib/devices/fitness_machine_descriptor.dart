@@ -6,7 +6,6 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/preferences.dart';
 import 'byte_metric_descriptor.dart';
-import 'cadence_data.dart';
 import 'device_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
@@ -33,12 +32,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     nameStart,
     manufacturer,
     model,
-    primaryMeasurementServiceId,
+    primaryServiceId,
     primaryMeasurementId,
     canPrimaryMeasurementProcessed,
-    cadenceMeasurementServiceId,
-    cadenceMeasurementId,
-    canCadenceMeasurementProcessed,
     heartRate,
     calorieFactor = 1.0,
     distanceFactor = 1.0,
@@ -52,12 +48,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           nameStart: nameStart,
           manufacturer: manufacturer,
           model: model,
-          primaryMeasurementServiceId: primaryMeasurementServiceId,
+          primaryServiceId: primaryServiceId,
           primaryMeasurementId: primaryMeasurementId,
           canPrimaryMeasurementProcessed: canPrimaryMeasurementProcessed,
-          cadenceMeasurementServiceId: cadenceMeasurementServiceId,
-          cadenceMeasurementId: cadenceMeasurementId,
-          canCadenceMeasurementProcessed: canCadenceMeasurementProcessed,
           heartRate: heartRate,
           calorieFactor: calorieFactor,
           distanceFactor: distanceFactor,

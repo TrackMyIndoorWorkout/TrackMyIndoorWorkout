@@ -12,7 +12,7 @@ import 'byte_metric_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
 
-typedef MeasurementProcessing(List<int> data);
+typedef bool MeasurementProcessing(List<int> data);
 
 abstract class DeviceDescriptor {
   static const double MS2KMH = 3.6;
@@ -32,12 +32,14 @@ abstract class DeviceDescriptor {
   final List<int> nameStart;
   final List<int> manufacturer;
   final List<int> model;
-  final String primaryMeasurementServiceId;
+  final String primaryServiceId;
   final String primaryMeasurementId;
   final MeasurementProcessing canPrimaryMeasurementProcessed;
-  String cadenceMeasurementServiceId;
+  String cadenceServiceId;
   String cadenceMeasurementId;
-  final MeasurementProcessing canCadenceMeasurementProcessed;
+
+  String heartRateServiceId;
+  String heartRateMeasurementId;
   int heartRate;
 
   // Primary metrics
@@ -78,12 +80,11 @@ abstract class DeviceDescriptor {
     this.nameStart,
     this.manufacturer,
     this.model,
-    this.primaryMeasurementServiceId,
+    this.primaryServiceId,
     this.primaryMeasurementId,
     this.canPrimaryMeasurementProcessed,
-    this.cadenceMeasurementServiceId = '',
+    this.cadenceServiceId = '',
     this.cadenceMeasurementId = '',
-    this.canCadenceMeasurementProcessed,
     this.heartRate,
     this.timeMetric,
     this.caloriesMetric,
@@ -116,6 +117,25 @@ abstract class DeviceDescriptor {
     Record lastRecord,
     List<int> data,
   );
+
+  // cadenceServiceId: CADENCE_MEASUREMENT_SERVICE_ID,
+  // cadenceMeasurementId: CADENCE_MEASUREMENT_ID,
+  bool canCadenceMeasurementProcessed(List<int> data) {
+    if (data == null || data.length < 1) return false;
+
+    var flag = data[0];
+    var expectedLength = 1; // The flag
+    // Has wheel revolution? (first bit)
+    if (flag % 2 == 1) {
+      expectedLength += 6; // 32 bit revolution and 16 bit time
+    }
+    flag ~/= 2;
+    // Has crank revolution? (second bit)
+    if (flag % 2 == 1) {
+      expectedLength += 4; // 16 bit revolution and 16 bit time
+    }
+    return data.length == expectedLength;
+  }
 
   int processCadenceMeasurement(List<int> data) {
     if (!canCadenceMeasurementProcessed(data)) return 0;

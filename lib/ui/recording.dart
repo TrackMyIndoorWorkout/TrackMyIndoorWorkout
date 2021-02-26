@@ -271,9 +271,9 @@ class RecordingState extends State<RecordingScreen> {
       }
 
       if (_areListsEqual(name, descriptor.manufacturer)) {
-        if (descriptor.cadenceMeasurementServiceId != '') {
+        if (descriptor.cadenceServiceId != '') {
           final cadenceMeasurementService =
-              _filterService(services, descriptor.cadenceMeasurementServiceId);
+              _filterService(services, descriptor.cadenceServiceId);
           if (cadenceMeasurementService != null) {
             _cadenceMeasurements = _filterCharacteristic(
                 cadenceMeasurementService.characteristics, descriptor.cadenceMeasurementId);
@@ -288,7 +288,7 @@ class RecordingState extends State<RecordingScreen> {
           }
         }
         final measurementService1 =
-            _filterService(services, descriptor.primaryMeasurementServiceId);
+            _filterService(services, descriptor.primaryServiceId);
         if (measurementService1 != null) {
           _primaryMeasurements = _filterCharacteristic(
               measurementService1.characteristics, descriptor.primaryMeasurementId);
