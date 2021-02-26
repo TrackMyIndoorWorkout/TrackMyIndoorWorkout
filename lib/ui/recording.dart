@@ -119,6 +119,8 @@ class RecordingState extends State<RecordingScreen> {
   Timer _timer;
   final _random = Random();
 
+  Timer _connectionWatchdog;
+
   List<DisplayRecord> get graphData => _graphData.toList();
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig;
@@ -178,6 +180,11 @@ class RecordingState extends State<RecordingScreen> {
 
   _recordMeasurement(List<int> data) async {
     if (!descriptor.canPrimaryMeasurementProcessed(data)) return;
+
+    if (_connectionWatchdog != null) {
+      _connectionWatchdog.cancel();
+    }
+    _connectionWatchdog = Timer(Duration(seconds: 5), _reconnectionWorkaround);
 
     Duration currentIdle = Duration();
     if (_paused) {
@@ -489,6 +496,26 @@ class RecordingState extends State<RecordingScreen> {
     _database?.close();
     Wakelock.disable();
     super.dispose();
+  }
+
+  void _reconnectionWorkaround() async {
+    Get.snackbar("Warning", "Equipment might be disconnected. Workaround:");
+    _measuring = false;
+    _primaryMeasurements?.setNotifyValue(false);
+    _measurementSubscription?.cancel();
+    _cadenceMeasurements?.setNotifyValue(false);
+    _cadenceSubscription?.cancel();
+    _primaryMeasurements = null;
+    _measurementSubscription = null;
+    _cadenceMeasurements = null;
+    _cadenceSubscription = null;
+    Get.snackbar("Warning", "1. Disconnecting...");
+    await device.disconnect();
+    _discovering = false;
+    Get.snackbar("Warning", "2. Reconnecting...");
+    await device.connect();
+    Get.snackbar("Warning", "3. Restarting...");
+    _initialConnectOnDemand();
   }
 
   void _simulateMeasurements() {
