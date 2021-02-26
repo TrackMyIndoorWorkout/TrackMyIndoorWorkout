@@ -78,10 +78,6 @@ class RecordsScreenState extends State<RecordsScreen> {
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _descriptor = deviceMap[activity.fourCC];
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor);
-    _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
-          0,
-          prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0,
-        ));
     activity.hydrate();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
@@ -93,16 +89,12 @@ class RecordsScreenState extends State<RecordsScreen> {
           setState(() {
             _pointCount = size.width.toInt() - 20;
             if (_allRecords.length < _pointCount) {
-              _sampledRecords = _allRecords
-                  .map((r) => r.hydrate().display(_preferencesSpecs))
-                  .toList(growable: false);
+              _sampledRecords =
+                  _allRecords.map((r) => r.hydrate().display()).toList(growable: false);
             } else {
               final nth = _allRecords.length / _pointCount;
               _sampledRecords = List.generate(
-                  _pointCount,
-                  (i) => _allRecords[((i + 1) * nth - 1).round()]
-                      .hydrate()
-                      .display(_preferencesSpecs));
+                  _pointCount, (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate().display());
             }
             final measurementCounter = MeasurementCounter(si: _si, sport: _descriptor.sport);
             _allRecords.forEach((record) {

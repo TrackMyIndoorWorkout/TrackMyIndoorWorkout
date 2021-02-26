@@ -159,7 +159,7 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
-    _graphData.add(record.hydrate().display(_preferencesSpecs));
+    _graphData.add(record.hydrate().display());
     if (_pointCount > 0 && _graphData.length > _pointCount) {
       _graphData.removeFirst();
     }

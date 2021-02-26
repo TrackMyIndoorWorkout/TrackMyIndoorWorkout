@@ -103,8 +103,8 @@ class Record {
     return dist.toStringAsFixed(si ? 0 : 2);
   }
 
-  DisplayRecord display(List<PreferencesSpec> preferencesSpecs) {
-    return DisplayRecord(source: this, preferencesSpecs: preferencesSpecs);
+  DisplayRecord display() {
+    return DisplayRecord(this);
   }
 }
 
