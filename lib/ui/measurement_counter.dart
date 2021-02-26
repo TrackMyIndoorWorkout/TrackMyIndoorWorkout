@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:meta/meta.dart';
 import '../persistence/models/record.dart';
+import '../tcx/activity_type.dart';
 import '../utils/constants.dart';
 
 class MeasurementCounter {
@@ -38,8 +39,10 @@ class MeasurementCounter {
     }
     if (record.speed > 0) {
       speedCounter++;
-      final speed = record.speedByUnit(si, sport);
-      // TODO: limit?
+      var speed = record.speedByUnit(si, sport);
+      if (sport != ActivityType.Ride && speed > SLOW_PACE) {
+        speed = SLOW_PACE;
+      }
       maxSpeed = max(maxSpeed, speed);
       minSpeed = min(minSpeed, speed);
     }
