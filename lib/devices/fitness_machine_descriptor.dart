@@ -15,13 +15,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   // Primary metrics
   int featuresFlag;
 
-  // Secondary (Crank cadence) metrics
-  int cadenceFlag;
-
   int byteCounter;
-  ListQueue<CadenceData> cadenceData;
-  static const int REVOLUTION_SLIDING_WINDOW = 15; // Seconds
-  static const int EVENT_TIME_OVERFLOW = 64; // Overflows every 64 seconds
   double residueCalories;
 
   ListQueue<int> strokeRates;
@@ -68,11 +62,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           calorieFactor: calorieFactor,
           distanceFactor: distanceFactor,
         ) {
-    cadenceData = ListQueue<CadenceData>();
     strokeRates = ListQueue<int>();
     strokeRateSum = 0;
     featuresFlag = 0;
-    cadenceFlag = 0;
     residueCalories = 0;
   }
 
@@ -91,66 +83,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   @override
   startWorkout() {
     clearStrokeRates();
-  }
-
-  int processCadenceMeasurement(List<int> data) {
-    if (!canCadenceMeasurementProcessed(data)) return 0;
-
-    var flag = data[0];
-    // 16 bit revolution and 16 bit time
-    if (cadenceFlag != flag) {
-      var lengthOffset = 1; // The flag itself
-      // Has wheel revolution? (first bit)
-      if (flag % 2 == 1) {
-        // Skip it, we are not interested in wheel revolution
-        lengthOffset += 6; // 32 bit revolution and 16 bit time
-      }
-      flag ~/= 2;
-      // Has crank revolution? (second bit)
-      if (flag % 2 == 0) {
-        return 0;
-      }
-      revolutionsMetric =
-          ShortMetricDescriptor(lsb: lengthOffset, msb: lengthOffset + 1, divider: 1.0);
-      revolutionTime =
-          ShortMetricDescriptor(lsb: lengthOffset + 2, msb: lengthOffset + 3, divider: 1024.0);
-      cadenceFlag = flag;
-    }
-
-    // See https://web.archive.org/web/20170816162607/https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.csc_measurement.xml
-    cadenceData.add(CadenceData(
-      seconds: getRevolutionTime(data),
-      revolutions: getRevolutions(data),
-    ));
-
-    var firstData = cadenceData.first;
-    if (cadenceData.length == 1) {
-      return firstData.revolutions ~/ firstData.seconds;
-    }
-
-    var lastData = cadenceData.last;
-    var revDiff = lastData.revolutions - firstData.revolutions;
-    // Check overflow
-    if (revDiff < 0) {
-      revDiff += DeviceDescriptor.MAX_UINT16;
-    }
-    var secondsDiff = lastData.seconds - firstData.seconds;
-    // Check overflow
-    if (secondsDiff < 0) {
-      secondsDiff += FitnessMachineDescriptor.EVENT_TIME_OVERFLOW;
-    }
-
-    while (secondsDiff > FitnessMachineDescriptor.REVOLUTION_SLIDING_WINDOW &&
-        cadenceData.length > 2) {
-      cadenceData.removeFirst();
-      secondsDiff = cadenceData.last.seconds - cadenceData.first.seconds;
-      // Check overflow
-      if (secondsDiff < 0) {
-        secondsDiff += FitnessMachineDescriptor.EVENT_TIME_OVERFLOW;
-      }
-    }
-
-    return revDiff ~/ secondsDiff;
   }
 
   int processSpeedFlag(int flag, bool negated) {
