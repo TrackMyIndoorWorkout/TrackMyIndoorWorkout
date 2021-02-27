@@ -38,9 +38,8 @@ abstract class DeviceDescriptor {
   String cadenceServiceId;
   String cadenceMeasurementId;
 
-  String heartRateServiceId;
-  String heartRateMeasurementId;
-  int heartRate;
+  bool canMeasureHeartRate;
+  int heartRateByteIndex;
 
   // Primary metrics
   ShortMetricDescriptor speedMetric;
@@ -85,7 +84,8 @@ abstract class DeviceDescriptor {
     this.canPrimaryMeasurementProcessed,
     this.cadenceServiceId = '',
     this.cadenceMeasurementId = '',
-    this.heartRate,
+    this.canMeasureHeartRate = true,
+    this.heartRateByteIndex,
     this.timeMetric,
     this.caloriesMetric,
     this.speedMetric,
@@ -304,8 +304,8 @@ abstract class DeviceDescriptor {
   }
 
   double getHeartRate(List<int> data) {
-    if (heartRate == null) return 0;
-    return data[heartRate].toDouble();
+    if (heartRateByteIndex == null) return 0;
+    return data[heartRateByteIndex].toDouble();
   }
 
   clearMetrics() {

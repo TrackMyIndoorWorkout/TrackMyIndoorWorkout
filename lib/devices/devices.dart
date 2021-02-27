@@ -31,7 +31,7 @@ Map<String, DeviceDescriptor> deviceMap = {
       }
       return true;
     },
-    heartRate: 5,
+    heartRateByteIndex: 5,
     timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4),
     caloriesMetric: ShortMetricDescriptor(lsb: 13, msb: 14),
     speedMetric: ShortMetricDescriptor(lsb: 6, msb: 7, divider: 100.0),
@@ -114,5 +114,6 @@ Map<String, DeviceDescriptor> deviceMap = {
     canPrimaryMeasurementProcessed: (List<int> data) {
       return data != null && data.length > 1;
     },
+    canMeasureHeartRate: false,
   ),
 };

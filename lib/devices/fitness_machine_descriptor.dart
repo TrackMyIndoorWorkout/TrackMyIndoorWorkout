@@ -35,7 +35,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     primaryServiceId,
     primaryMeasurementId,
     canPrimaryMeasurementProcessed,
-    heartRate,
+    canMeasureHeartRate = true,
+    heartRateByteIndex,
     calorieFactor = 1.0,
     distanceFactor = 1.0,
   }) : super(
@@ -51,7 +52,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           primaryServiceId: primaryServiceId,
           primaryMeasurementId: primaryMeasurementId,
           canPrimaryMeasurementProcessed: canPrimaryMeasurementProcessed,
-          heartRate: heartRate,
+          canMeasureHeartRate: canMeasureHeartRate,
+          heartRateByteIndex: heartRateByteIndex,
           calorieFactor: calorieFactor,
           distanceFactor: distanceFactor,
         ) {
@@ -164,7 +166,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int processHeartRateFlag(int flag) {
     if (flag % 2 == 1) {
       // UInt8
-      heartRate = byteCounter;
+      heartRateByteIndex = byteCounter;
       byteCounter++;
     }
     flag ~/= 2;

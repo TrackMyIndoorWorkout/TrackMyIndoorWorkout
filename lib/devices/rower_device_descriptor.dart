@@ -17,7 +17,8 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     primaryServiceId = FITNESS_MACHINE_ID,
     primaryMeasurementId = ROWER_DEVICE_ID,
     canPrimaryMeasurementProcessed,
-    heartRate,
+    canMeasureHeartRate = true,
+    heartRateByteIndex,
     calorieFactor = 1.0,
     distanceFactor = 1.0,
   }) : super(
@@ -33,7 +34,8 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           primaryServiceId: primaryServiceId,
           primaryMeasurementId: primaryMeasurementId,
           canPrimaryMeasurementProcessed: canPrimaryMeasurementProcessed,
-          heartRate: heartRate,
+          canMeasureHeartRate: canMeasureHeartRate,
+          heartRateByteIndex: heartRateByteIndex,
           calorieFactor: calorieFactor,
           distanceFactor: distanceFactor,
         );
