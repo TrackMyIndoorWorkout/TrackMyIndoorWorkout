@@ -74,7 +74,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   }
 
   @override
-  startWorkout() {
+  restartWorkout() {
+    residueCalories = 0.0;
     clearStrokeRates();
   }
 
@@ -345,6 +346,11 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       int heartRate = getHeartRate(data).toInt();
       if (heartRate == 0 && lastRecord.heartRate > 0) {
         heartRate = lastRecord.heartRate;
+      }
+      if (lastRecord.calories != null &&
+          lastRecord.calories > 0 &&
+          (calories == null || lastRecord.calories > calories)) {
+        calories = lastRecord.calories.toDouble();
       }
       return RecordWithSport(
         activityId: activity.id,

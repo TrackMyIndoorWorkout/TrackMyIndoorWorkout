@@ -109,7 +109,7 @@ abstract class DeviceDescriptor {
 
   double get lengthFactor => getDefaultTrack(sport).lengthFactor;
 
-  startWorkout();
+  restartWorkout();
 
   Record processPrimaryMeasurement(
     Activity activity,

@@ -48,7 +48,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         );
 
   @override
-  startWorkout() {}
+  restartWorkout() {}
 
   @override
   Record processPrimaryMeasurement(

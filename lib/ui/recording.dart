@@ -114,6 +114,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _si;
   bool _simplerUi;
   bool _instantUpload;
+  bool _uxDebug;
 
   // Debugging UX without actual connected device
   Timer _timer;
@@ -375,6 +376,21 @@ class RecordingState extends State<RecordingScreen> {
     });
   }
 
+  RecordWithSport _blankRecord() {
+    return RecordWithSport(
+      timeStamp: 0,
+      distance: _uxDebug ? _random.nextInt(100000).toDouble() : 0.0,
+      elapsed: 0,
+      calories: 0,
+      power: 0,
+      speed: 0.0,
+      cadence: 0,
+      heartRate: 0,
+      elapsedMillis: 0,
+      sport: descriptor.sport,
+    );
+  }
+
   @override
   initState() {
     super.initState();
@@ -456,25 +472,14 @@ class RecordingState extends State<RecordingScreen> {
       return expanded;
     });
 
-    final uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
+    final _uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
     _measuring = false;
     _paused = false;
     _idleDuration = Duration();
-    _latestRecord = RecordWithSport(
-      timeStamp: 0,
-      distance: uxDebug ? _random.nextInt(100000).toDouble() : 0.0,
-      elapsed: 0,
-      calories: 0,
-      power: 0,
-      speed: 0.0,
-      cadence: 0,
-      heartRate: 0,
-      elapsedMillis: 0,
-      sport: descriptor.sport,
-    );
+    _latestRecord = _blankRecord();
     _values = ["--", "--", "--", "--", "--", "--"];
 
-    if (uxDebug) {
+    if (_uxDebug) {
       _simulateMeasurements();
     } else {
       _initialConnectOnDemand();
@@ -686,7 +691,7 @@ class RecordingState extends State<RecordingScreen> {
             content: Text('Are you sure you want to finish the workout?'),
             actions: <Widget>[
               TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
+                onPressed: () => Get.close(1),
                 child: Text('No'),
               ),
               TextButton(
@@ -987,11 +992,30 @@ class RecordingState extends State<RecordingScreen> {
               backgroundColor: Colors.indigo,
               child: Icon(Icons.wifi_protected_setup),
               onPressed: () async {
-                if (_measuring) {
-                  Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
-                } else {
-                  await Get.to(ActivitiesScreen());
-                }
+                await showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('About to reset the workout'),
+                    content: Text('Are you sure? This will erase existing data points!'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Get.close(1),
+                        child: Text('No'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          descriptor.restartWorkout();
+                          _latestRecord = _blankRecord();
+                          if (!_uxDebug) {
+                            await _database?.recordDao?.deleteAllActivityRecords(_activity.id);
+                          }
+                          Get.close(1);
+                        },
+                        child: Text('Yes'),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
           ],
