@@ -15,11 +15,11 @@ import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../utils/display.dart';
 import '../utils/statistics_accumulator.dart';
-import 'display_record.dart';
+import 'models/display_record.dart';
+import 'models/histogram_data.dart';
+import 'models/measurement_counter.dart';
+import 'models/tile_configuration.dart';
 import 'find_devices.dart';
-import 'histogram_data.dart';
-import 'measurement_counter.dart';
-import 'tile_configuration.dart';
 
 class RecordsScreen extends StatefulWidget {
   final Activity activity;

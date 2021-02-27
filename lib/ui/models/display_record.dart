@@ -1,7 +1,7 @@
-import '../persistence/models/record.dart';
-import '../tcx/activity_type.dart';
-import '../utils/constants.dart';
-import '../utils/display.dart';
+import '../../persistence/models/record.dart';
+import '../../tcx/activity_type.dart';
+import '../../utils/constants.dart';
+import '../../utils/display.dart';
 
 class DisplayRecord {
   int power; // W

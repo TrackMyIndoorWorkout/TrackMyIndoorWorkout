@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:meta/meta.dart';
-import '../persistence/models/record.dart';
-import '../tcx/activity_type.dart';
-import '../utils/constants.dart';
+import '../../persistence/models/record.dart';
+import '../../tcx/activity_type.dart';
+import '../../utils/constants.dart';
 
 class MeasurementCounter {
   final bool si;

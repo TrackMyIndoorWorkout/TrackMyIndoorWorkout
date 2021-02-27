@@ -38,6 +38,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           distanceFactor: distanceFactor,
         );
 
+  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override
   processFlag(int flag) {
     clearMetrics();

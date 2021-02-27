@@ -1,8 +1,8 @@
 import 'package:floor/floor.dart';
 import 'package:meta/meta.dart';
+import '../../ui/models/display_record.dart';
 import '../../persistence/preferences.dart';
 import '../../tcx/activity_type.dart';
-import '../../ui/display_record.dart';
 import '../../utils/display.dart';
 import 'activity.dart';
 

@@ -31,9 +31,9 @@ import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
+import 'models/display_record.dart';
+import 'models/row_configuration.dart';
 import 'activities.dart';
-import 'display_record.dart';
-import 'row_configuration.dart';
 
 typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
 
