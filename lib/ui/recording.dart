@@ -683,19 +683,19 @@ class RecordingState extends State<RecordingScreen> {
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: new Text('About to navigate away'),
-            content: new Text('Are you sure you want to finish the workout?'),
+            title: Text('About to navigate away'),
+            content: Text('Are you sure you want to finish the workout?'),
             actions: <Widget>[
-              new TextButton(
+              TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: new Text('No'),
+                child: Text('No'),
               ),
-              new TextButton(
+              TextButton(
                 onPressed: () async {
                   await _finishActivity(true);
                   Navigator.of(context).pop(true);
                 },
-                child: new Text('Yes'),
+                child: Text('Yes'),
               ),
             ],
           ),

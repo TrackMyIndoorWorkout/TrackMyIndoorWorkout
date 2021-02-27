@@ -686,7 +686,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                             charts.RangeAnnotation(annotationSegments),
                           ],
                           selectionModels: [
-                            new charts.SelectionModelConfig(
+                            charts.SelectionModelConfig(
                               type: charts.SelectionModelType.info,
                               changedListener: _tileConfigurations[item].selectionListener,
                             ),
@@ -721,7 +721,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                             charts.DatumLegend(
                               position: charts.BehaviorPosition.start,
                               horizontalFirst: false,
-                              cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                              cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
                               showMeasures: true,
                               legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
                               measureFormatter: (num value) {

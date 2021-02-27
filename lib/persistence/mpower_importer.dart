@@ -122,7 +122,7 @@ class MPowerEchelon2Importer {
   }
 
   Future<Activity> import(String csv, SetProgress setProgress) async {
-    LineSplitter lineSplitter = new LineSplitter();
+    LineSplitter lineSplitter = LineSplitter();
     _lines = lineSplitter.convert(csv);
     if (_lines.length < 20) {
       message = "Content too short";
