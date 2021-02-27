@@ -118,48 +118,38 @@ abstract class DeviceDescriptor {
     List<int> data,
   );
 
-  // cadenceServiceId: CADENCE_MEASUREMENT_SERVICE_ID,
-  // cadenceMeasurementId: CADENCE_MEASUREMENT_ID,
   bool canCadenceMeasurementProcessed(List<int> data) {
     if (data == null || data.length < 1) return false;
 
     var flag = data[0];
-    var expectedLength = 1; // The flag
-    // Has wheel revolution? (first bit)
-    if (flag % 2 == 1) {
-      expectedLength += 6; // 32 bit revolution and 16 bit time
+    // 16 bit revolution and 16 bit time
+    if (cadenceFlag != flag && flag > 0) {
+      var expectedLength = 1; // The flag itself
+      // Has wheel revolution? (first bit)
+      if (flag % 2 == 1) {
+        // Skip it, we are not interested in wheel revolution
+        expectedLength += 6; // 32 bit revolution and 16 bit time
+      }
+      flag ~/= 2;
+      // Has crank revolution? (second bit)
+      if (flag % 2 == 1) {
+        expectedLength += 4; // 16 bit revolution and 16 bit time
+      } else {
+        return false;
+      }
+      revolutionsMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
+      revolutionTime =
+          ShortMetricDescriptor(lsb: expectedLength + 2, msb: expectedLength + 3, divider: 1024.0);
+      cadenceFlag = flag;
+
+      return data.length == expectedLength;
     }
-    flag ~/= 2;
-    // Has crank revolution? (second bit)
-    if (flag % 2 == 1) {
-      expectedLength += 4; // 16 bit revolution and 16 bit time
-    }
-    return data.length == expectedLength;
+
+    return flag > 0;
   }
 
   int processCadenceMeasurement(List<int> data) {
     if (!canCadenceMeasurementProcessed(data)) return 0;
-
-    var flag = data[0];
-    // 16 bit revolution and 16 bit time
-    if (cadenceFlag != flag) {
-      var lengthOffset = 1; // The flag itself
-      // Has wheel revolution? (first bit)
-      if (flag % 2 == 1) {
-        // Skip it, we are not interested in wheel revolution
-        lengthOffset += 6; // 32 bit revolution and 16 bit time
-      }
-      flag ~/= 2;
-      // Has crank revolution? (second bit)
-      if (flag % 2 == 0) {
-        return 0;
-      }
-      revolutionsMetric =
-          ShortMetricDescriptor(lsb: lengthOffset, msb: lengthOffset + 1, divider: 1.0);
-      revolutionTime =
-          ShortMetricDescriptor(lsb: lengthOffset + 2, msb: lengthOffset + 3, divider: 1024.0);
-      cadenceFlag = flag;
-    }
 
     // See https://web.archive.org/web/20170816162607/https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.csc_measurement.xml
     cadenceData.add(CadenceData(
