@@ -15,6 +15,7 @@ class HeartRateMonitor {
     this.device,
   }) : assert(device != null);
 
+  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.heart_rate_measurement.xml
   bool canHeartRateMeasurementProcessed(List<int> data) {
     if (data == null || data.length < 1) return false;
 

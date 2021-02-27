@@ -118,6 +118,7 @@ abstract class DeviceDescriptor {
     List<int> data,
   );
 
+  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
   bool canCadenceMeasurementProcessed(List<int> data) {
     if (data == null || data.length < 1) return false;
 
@@ -151,7 +152,6 @@ abstract class DeviceDescriptor {
   int processCadenceMeasurement(List<int> data) {
     if (!canCadenceMeasurementProcessed(data)) return 0;
 
-    // See https://web.archive.org/web/20170816162607/https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.csc_measurement.xml
     cadenceData.add(CadenceData(
       seconds: getRevolutionTime(data),
       revolutions: getRevolutions(data),
