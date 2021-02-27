@@ -272,8 +272,7 @@ class RecordingState extends State<RecordingScreen> {
 
       if (_areListsEqual(name, descriptor.manufacturer)) {
         if (descriptor.cadenceServiceId != '') {
-          final cadenceMeasurementService =
-              _filterService(services, descriptor.cadenceServiceId);
+          final cadenceMeasurementService = _filterService(services, descriptor.cadenceServiceId);
           if (cadenceMeasurementService != null) {
             _cadenceMeasurements = _filterCharacteristic(
                 cadenceMeasurementService.characteristics, descriptor.cadenceMeasurementId);
@@ -287,8 +286,7 @@ class RecordingState extends State<RecordingScreen> {
             });
           }
         }
-        final measurementService1 =
-            _filterService(services, descriptor.primaryServiceId);
+        final measurementService1 = _filterService(services, descriptor.primaryServiceId);
         if (measurementService1 != null) {
           _primaryMeasurements = _filterCharacteristic(
               measurementService1.characteristics, descriptor.primaryMeasurementId);
@@ -296,6 +294,7 @@ class RecordingState extends State<RecordingScreen> {
             await _primaryMeasurements.setNotifyValue(true);
             _measurementSubscription = _primaryMeasurements.value.listen((data) async {
               if (data != null && data.length > 1) {
+                // if (_latestRecord != null && descriptor.cal)
                 await _recordMeasurement(data);
               }
             });
@@ -868,12 +867,16 @@ class RecordingState extends State<RecordingScreen> {
                 IconData icon;
                 switch (snapshot.data) {
                   case BluetoothDeviceState.connected:
-                    onPressed = null;
+                    onPressed = () {
+                      device.disconnect();
+                    };
                     icon = Icons.bluetooth_connected;
                     _discoverServices();
                     break;
                   case BluetoothDeviceState.disconnected:
-                    onPressed = () => device.connect();
+                    onPressed = () {
+                      device.connect();
+                    };
                     icon = Icons.bluetooth_disabled;
                     break;
                   default:
@@ -970,6 +973,19 @@ class RecordingState extends State<RecordingScreen> {
               foregroundColor: Colors.white,
               backgroundColor: Colors.indigo,
               child: Icon(Icons.list_alt),
+              onPressed: () async {
+                if (_measuring) {
+                  Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
+                } else {
+                  await Get.to(ActivitiesScreen());
+                }
+              },
+            ),
+            FloatingActionButton(
+              heroTag: null,
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.indigo,
+              child: Icon(Icons.wifi_protected_setup),
               onPressed: () async {
                 if (_measuring) {
                   Get.snackbar("Warning", "Cannot navigate while measurement is under progress");

@@ -6,7 +6,7 @@ class ShortMetricDescriptor extends MetricDescriptor {
   ShortMetricDescriptor({
     @required lsb,
     @required msb,
-    @required divider,
+    divider = 1.0,
     optional = false,
   }) : super(lsb: lsb, msb: msb, divider: divider, optional: optional);
 

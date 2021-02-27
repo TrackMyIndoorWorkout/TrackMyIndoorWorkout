@@ -105,8 +105,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int processTotalDistanceFlag(int flag) {
     if (flag % 2 == 1) {
       // UInt24, meters
-      distanceMetric =
-          ThreeByteMetricDescriptor(lsb: byteCounter, msb: byteCounter + 2, divider: 1.0);
+      distanceMetric = ThreeByteMetricDescriptor(lsb: byteCounter, msb: byteCounter + 2);
       byteCounter += 3;
     }
     flag ~/= 2;
@@ -126,7 +125,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     if (flag % 2 == 1) {
       if (powerMetric == null) {
         // SInt16, Watts
-        powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
+        powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       }
       byteCounter += 2;
     }
@@ -140,7 +139,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       caloriesMetric = ShortMetricDescriptor(
         lsb: byteCounter,
         msb: byteCounter + 1,
-        divider: 1.0,
         optional: true,
       );
       // Energy / hour UInt16
@@ -148,14 +146,12 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       caloriesPerHourMetric = ShortMetricDescriptor(
         lsb: byteCounter,
         msb: byteCounter + 1,
-        divider: 1.0,
         optional: true,
       );
       // Energy / minute UInt8
       byteCounter += 2;
       caloriesPerMinuteMetric = ByteMetricDescriptor(
         lsb: byteCounter,
-        divider: 1.0,
         optional: true,
       );
       byteCounter++;
@@ -185,7 +181,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
 
   int processElapsedTimeFlag(int flag) {
     if (flag % 2 == 1) {
-      timeMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
+      timeMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
     flag ~/= 2;
@@ -205,8 +201,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       // UByte with 0.5 resolution
       strokeRateMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 2.0);
       byteCounter++;
-      revolutionsMetric =
-          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
+      revolutionsMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
     flag ~/= 2;
@@ -229,7 +224,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     if (flag % 2 == 1) {
       // UInt16, seconds with 1 resolution
       if (paceMetric == null) {
-        paceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 1.0);
+        paceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       }
       byteCounter += 2;
     }

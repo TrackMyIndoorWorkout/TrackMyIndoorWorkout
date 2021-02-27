@@ -5,7 +5,7 @@ import 'metric_descriptor.dart';
 class ByteMetricDescriptor extends MetricDescriptor {
   ByteMetricDescriptor({
     @required lsb,
-    @required divider,
+    divider = 1.0,
     optional = false,
   }) : super(lsb: lsb, msb: 0, divider: divider, optional: optional);
 

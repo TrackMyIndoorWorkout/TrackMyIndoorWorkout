@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 import 'metric_descriptor.dart';
 
 class LongMetricDescriptor extends MetricDescriptor {
-  LongMetricDescriptor({@required lsb, @required msb, @required divider, optional = false})
+  LongMetricDescriptor({@required lsb, @required msb, divider = 1.0, optional = false})
       : super(lsb: lsb, msb: msb, divider: divider, optional: optional);
 
   double getMeasurementValue(List<int> data) {
