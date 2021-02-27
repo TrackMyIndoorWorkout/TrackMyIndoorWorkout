@@ -32,8 +32,8 @@ class HeartRateMonitor {
         expectedLength += 2; // 16 bit HR
       }
       flag ~/= 2;
-      // Sensor Contact Status Bit
-      flag ~/= 2;
+      // Sensor Contact Status Bit Pair
+      flag ~/= 4;
       // Energy Expanded Status
       if (flag % 2 == 1) {
         expectedLength += 2; // 16 bit, kJ
