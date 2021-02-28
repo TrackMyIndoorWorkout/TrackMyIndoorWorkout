@@ -1,20 +1,71 @@
 import 'package:charts_flutter/flutter.dart' hide TextStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/preferences.dart';
 import 'find_devices.dart';
+
+extension EnhancedScanResult on ScanResult {
+  bool isWorthy(bool filterDevices) {
+    if (!advertisementData.connectable) {
+      return false;
+    }
+
+    if (device.name == null || device.name.length <= 0) {
+      return false;
+    }
+
+    if (device.id.id == null || device.id.id.length <= 0) {
+      return false;
+    }
+
+    if (!filterDevices) {
+      return true;
+    }
+
+    for (var dev in deviceMap.values) {
+      if (device.name.startsWith(dev.namePrefix)) {
+        return true;
+      }
+      if (advertisementData.serviceUuids.isNotEmpty) {
+        final serviceUuids =
+            advertisementData.serviceUuids.map((x) => x.substring(4, 8).toLowerCase()).toList();
+        if (serviceUuids.contains(FITNESS_MACHINE_ID) ||
+            serviceUuids.contains(PRECOR_SERVICE_ID) ||
+            serviceUuids.contains(HEART_RATE_SERVICE_ID)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  List<String> get serviceUuids => advertisementData.serviceUuids.isEmpty
+      ? []
+      : advertisementData.serviceUuids.map((x) => x.substring(4, 8).toLowerCase()).toList();
+
+  bool hasService(String serviceId) {
+    return serviceUuids.contains(serviceId);
+  }
+
+  bool get isHeartRateMonitor => hasService(HEART_RATE_SERVICE_ID);
+}
 
 class ScanResultTile extends StatelessWidget {
   const ScanResultTile({
     Key key,
     this.result,
-    @required this.onTap,
-  })  : assert(onTap != null),
+    @required this.onEquipmentTap,
+    @required this.onHrmTap,
+  })  : assert(onEquipmentTap != null),
+        assert(onHrmTap != null),
         super(key: key);
 
   final ScanResult result;
-  final VoidCallback onTap;
+  final VoidCallback onEquipmentTap;
+  final VoidCallback onHrmTap;
 
   Widget _buildTitle(BuildContext context, TextStyle adjustedCaptionStyle, TextStyle dataStyle) {
     if (result.device.name.length > 0) {
@@ -104,16 +155,12 @@ class ScanResultTile extends StatelessWidget {
       ),
       trailing: FloatingActionButton(
         heroTag: null,
-        child: Icon(result.advertisementData.serviceUuids.isNotEmpty &&
-                result.advertisementData.serviceUuids
-                    .map((x) => x.substring(4, 8).toLowerCase())
-                    .toList()
-                    .contains(HEART_RATE_SERVICE_ID)
-            ? Icons.favorite
-            : Icons.play_arrow),
+        child: Icon(result.isHeartRateMonitor ? Icons.favorite : Icons.play_arrow),
         foregroundColor: Colors.white,
-        backgroundColor: Colors.blue,
-        onPressed: (result.advertisementData.connectable) ? onTap : null,
+        backgroundColor: result.advertisementData.connectable ? Colors.blue : Colors.grey,
+        onPressed: result.advertisementData.connectable
+            ? (result.isHeartRateMonitor ? onHrmTap : onEquipmentTap)
+            : null,
       ),
       children: <Widget>[
         _buildAdvRow(

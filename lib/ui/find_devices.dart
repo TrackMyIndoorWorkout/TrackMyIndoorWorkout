@@ -8,8 +8,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
+import '../devices/heart_rate_monitor.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';
@@ -18,43 +18,6 @@ import 'recording.dart';
 import 'scan_result.dart';
 
 const HELP_URL = "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
-
-extension DeviceMathing on ScanResult {
-  bool isWorthy(bool filterDevices) {
-    if (!advertisementData.connectable) {
-      return false;
-    }
-
-    if (device.name == null || device.name.length <= 0) {
-      return false;
-    }
-
-    if (device.id.id == null || device.id.id.length <= 0) {
-      return false;
-    }
-
-    if (!filterDevices) {
-      return true;
-    }
-
-    for (var dev in deviceMap.values) {
-      if (device.name.startsWith(dev.namePrefix)) {
-        return true;
-      }
-      if (advertisementData.serviceUuids.isNotEmpty) {
-        final serviceUuids =
-            advertisementData.serviceUuids.map((x) => x.substring(4, 8).toLowerCase()).toList();
-        if (serviceUuids.contains(FITNESS_MACHINE_ID) ||
-            serviceUuids.contains(PRECOR_SERVICE_ID) ||
-            serviceUuids.contains(HEART_RATE_SERVICE_ID)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-}
 
 class FindDevicesScreen extends StatefulWidget {
   FindDevicesScreen({Key key}) : super(key: key);
@@ -83,8 +46,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _filterDevices;
   BluetoothDevice _openedDevice;
   List<BluetoothDevice> _scannedDevices;
+  HeartRateMonitor _heartRateMonitor;
   TextStyle _adjustedCaptionStyle;
   TextStyle _subtitleStyle;
+  Map<String, List<String>> _servicesMap;
+  String _heartRateString;
 
   @override
   dispose() {
@@ -104,11 +70,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
       return;
     }
 
+    _servicesMap[scanResult.device.id.id] = scanResult.serviceUuids;
+
     if (_scannedDevices.where((d) => d.id.id == scanResult.device.id.id).length > 0) {
       return;
     }
 
     _scannedDevices.add(scanResult.device);
+  }
+
+  bool _isHeartRateMonitor(List<String> serviceUuids) {
+    return serviceUuids != null && serviceUuids.contains(HEART_RATE_SERVICE_ID);
   }
 
   @override
@@ -121,6 +93,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _instantWorkout = PrefService.getBool(INSTANT_WORKOUT_TAG);
     _lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG);
     _filterDevices = PrefService.getBool(DEVICE_FILTERING_TAG);
+    _servicesMap = Map<String, List<String>>();
+    _heartRateString = "--";
     if (_instantScan) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         startScan();
@@ -157,6 +131,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Get.to(RecordingScreen(
                         device: _openedDevice,
+                        serviceUuids: _servicesMap[_openedDevice.id.id],
                         initialState: BluetoothDeviceState.connected,
                         size: Get.mediaQuery.size,
                       ));
@@ -166,6 +141,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         Get.to(RecordingScreen(
                           device: _scannedDevices.first,
+                          serviceUuids: _servicesMap[_scannedDevices.first.id.id],
                           initialState: BluetoothDeviceState.disconnected,
                           size: Get.mediaQuery.size,
                         ));
@@ -176,6 +152,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           Get.to(RecordingScreen(
                             device: lasts.first,
+                            serviceUuids: _servicesMap[_scannedDevices.first.id.id],
                             initialState: BluetoothDeviceState.disconnected,
                             size: Get.mediaQuery.size,
                           ));
@@ -219,14 +196,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           if (snapshot.data == BluetoothDeviceState.connected) {
                             return FloatingActionButton(
                                 heroTag: null,
-                                child: Icon(Icons.open_in_new),
+                                child: Icon(_isHeartRateMonitor(_servicesMap[d.id.id])
+                                    ? Icons.favorite
+                                    : Icons.open_in_new),
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.green,
                                 onPressed: () async {
+                                  if (_isHeartRateMonitor(_servicesMap[d.id.id])) {
+                                    return;
+                                  }
                                   await FlutterBlue.instance.stopScan();
                                   await Future.delayed(Duration(milliseconds: 100));
                                   await Get.to(RecordingScreen(
                                       device: d,
+                                      serviceUuids: _servicesMap[d.id.id],
                                       initialState: snapshot.data,
                                       size: Get.mediaQuery.size));
                                 });
@@ -252,14 +235,90 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     }
                     return ScanResultTile(
                       result: r,
-                      onTap: () async {
+                      onEquipmentTap: () async {
                         await FlutterBlue.instance.stopScan();
                         await Future.delayed(Duration(milliseconds: 100));
-                        await Get.to(RecordingScreen(
-                          device: r.device,
-                          initialState: BluetoothDeviceState.disconnected,
-                          size: Get.mediaQuery.size,
-                        ));
+                        bool goOn = true;
+                        if (!r.device.getDescriptor(r.serviceUuids).canMeasureHeartRate &&
+                            _heartRateMonitor == null) {
+                          bool dialogResult = await showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Heart Rate Measurement'),
+                                  content: Text(
+                                      'Are you sure you want to continue without selecting a HRM?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Get.close(1),
+                                      child: Text('No'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(true),
+                                      child: Text('Yes'),
+                                    ),
+                                  ],
+                                ),
+                              ) ??
+                              false;
+                          goOn |= !dialogResult;
+                        }
+                        if (goOn) {
+                          await Get.to(RecordingScreen(
+                            device: r.device,
+                            serviceUuids: r.serviceUuids,
+                            initialState: BluetoothDeviceState.disconnected,
+                            size: Get.mediaQuery.size,
+                          ));
+                        }
+                      },
+                      onHrmTap: () async {
+                        if (_heartRateMonitor != null &&
+                            _heartRateMonitor.device.id.id != r.device.id.id) {
+                          if (!await showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('You are connected to a HRM right now'),
+                                  content: Text(
+                                      'Would you like to disconnect from that HRM to connect the other?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Get.close(1),
+                                      child: Text('No'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(true);
+                                      },
+                                      child: Text('Yes'),
+                                    ),
+                                  ],
+                                ),
+                              ) ??
+                              false) {
+                            return;
+                          }
+                        }
+                        if (_heartRateMonitor != null &&
+                            _heartRateMonitor.device.id.id != r.device.id.id) {
+                          await _heartRateMonitor.detach();
+                          await _heartRateMonitor.disconnect();
+                        }
+                        if (_heartRateMonitor == null ||
+                            _heartRateMonitor.device.id.id != r.device.id.id) {
+                          _heartRateMonitor = HeartRateMonitor(device: r.device);
+                          await _heartRateMonitor.connect();
+                        }
+                        await _heartRateMonitor.attach((int heartRate) {
+                          setState(() {
+                            debugPrint("HR $heartRate");
+                            _heartRateString = heartRate != null ? heartRate.toString() : "--";
+                          });
+                        });
+                        Get.bottomSheet(Container(
+                            child: Row(children: [
+                          Icon(Icons.favorite, color: Colors.red),
+                          Text(_heartRateString)
+                        ])));
                       },
                     );
                   }).toList(),

@@ -38,13 +38,15 @@ import 'activities.dart';
 typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
 
 extension DeviceIdentification on BluetoothDevice {
-  DeviceDescriptor getDescriptor() {
+  DeviceDescriptor getDescriptor(List<String> serviceUuids) {
     for (var dev in deviceMap.values) {
       if (name.startsWith(dev.namePrefix)) {
         return dev;
       }
     }
 
+    // TODO: branch here based on FTMS data
+    // TODO: Needs adding generic FTMS types #80
     // Default to FTMS Indoor Bike (Schwinn IC4/IC8)
     return deviceMap['SIC4'];
   }
@@ -52,39 +54,50 @@ extension DeviceIdentification on BluetoothDevice {
 
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
+  final List<String> serviceUuids;
   final BluetoothDeviceState initialState;
   final Size size;
 
   RecordingScreen({
     Key key,
     @required this.device,
+    @required this.serviceUuids,
     @required this.initialState,
     @required this.size,
   })  : assert(device != null),
+        assert(serviceUuids != null),
         assert(initialState != null),
         assert(size != null),
         super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return RecordingState(device: device, initialState: initialState, size: size);
+    return RecordingState(
+      device: device,
+      serviceUuids: serviceUuids,
+      initialState: initialState,
+      size: size,
+    );
   }
 }
 
 class RecordingState extends State<RecordingScreen> {
   RecordingState({
     @required this.device,
+    @required this.serviceUuids,
     @required this.initialState,
     @required this.size,
   })  : assert(device != null),
+        assert(serviceUuids != null),
         assert(initialState != null),
         assert(size != null) {
-    this.descriptor = device.getDescriptor();
+    this.descriptor = device.getDescriptor(serviceUuids);
   }
 
   Size size;
 
   final BluetoothDevice device;
+  final List<String> serviceUuids;
   final BluetoothDeviceState initialState;
   DeviceDescriptor descriptor;
   TrackCalculator _trackCalculator;
@@ -472,7 +485,7 @@ class RecordingState extends State<RecordingScreen> {
       return expanded;
     });
 
-    final _uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
+    _uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
     _measuring = false;
     _paused = false;
     _idleDuration = Duration();
