@@ -188,11 +188,7 @@ class ScanResultTile extends StatelessWidget {
           context,
           'Service UUIDs',
           (result.advertisementData.serviceUuids.isNotEmpty)
-              ? result.advertisementData.serviceUuids
-                  .map((x) => x.substring(4, 8))
-                  .toList()
-                  .join(', ')
-                  .toUpperCase()
+              ? result.serviceUuids.join(', ').toUpperCase()
               : 'N/A',
           adjustedCaptionStyle,
           secondaryStyle,

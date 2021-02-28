@@ -69,7 +69,6 @@ class RecordingScreen extends StatefulWidget {
     @required this.size,
   })  : assert(device != null),
         assert(serviceUuids != null),
-        assert(hrm != null),
         assert(initialState != null),
         assert(size != null),
         super(key: key);
@@ -95,7 +94,6 @@ class RecordingState extends State<RecordingScreen> {
     @required this.size,
   })  : assert(device != null),
         assert(serviceUuids != null),
-        assert(hrm != null),
         assert(initialState != null),
         assert(size != null) {
     this.descriptor = device.getDescriptor(serviceUuids);

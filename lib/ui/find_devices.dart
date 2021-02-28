@@ -132,6 +132,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       Get.to(RecordingScreen(
                         device: _openedDevice,
                         serviceUuids: _servicesMap[_openedDevice.id.id],
+                        hrm: _heartRateMonitor,
                         initialState: BluetoothDeviceState.connected,
                         size: Get.mediaQuery.size,
                       ));
@@ -142,6 +143,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         Get.to(RecordingScreen(
                           device: _scannedDevices.first,
                           serviceUuids: _servicesMap[_scannedDevices.first.id.id],
+                          hrm: _heartRateMonitor,
                           initialState: BluetoothDeviceState.disconnected,
                           size: Get.mediaQuery.size,
                         ));
@@ -153,6 +155,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           Get.to(RecordingScreen(
                             device: lasts.first,
                             serviceUuids: _servicesMap[_scannedDevices.first.id.id],
+                            hrm: _heartRateMonitor,
                             initialState: BluetoothDeviceState.disconnected,
                             size: Get.mediaQuery.size,
                           ));
@@ -208,10 +211,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   await FlutterBlue.instance.stopScan();
                                   await Future.delayed(Duration(milliseconds: 100));
                                   await Get.to(RecordingScreen(
-                                      device: d,
-                                      serviceUuids: _servicesMap[d.id.id],
-                                      initialState: snapshot.data,
-                                      size: Get.mediaQuery.size));
+                                    device: d,
+                                    serviceUuids: _servicesMap[d.id.id],
+                                    hrm: _heartRateMonitor,
+                                    initialState: snapshot.data,
+                                    size: Get.mediaQuery.size,
+                                  ));
                                 });
                           } else {
                             return Text(snapshot.data.toString());
@@ -266,6 +271,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           await Get.to(RecordingScreen(
                             device: r.device,
                             serviceUuids: r.serviceUuids,
+                            hrm: _heartRateMonitor,
                             initialState: BluetoothDeviceState.disconnected,
                             size: Get.mediaQuery.size,
                           ));
