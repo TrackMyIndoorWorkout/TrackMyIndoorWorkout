@@ -201,9 +201,7 @@ class RecordingState extends State<RecordingScreen> {
   _recordMeasurement(List<int> data) async {
     if (!descriptor.canPrimaryMeasurementProcessed(data)) return;
 
-    if (_connectionWatchdog != null) {
-      _connectionWatchdog.cancel();
-    }
+    _connectionWatchdog?.cancel();
     _connectionWatchdog = Timer(Duration(seconds: 5), _reconnectionWorkaround);
 
     Duration currentIdle = Duration();
@@ -315,23 +313,14 @@ class RecordingState extends State<RecordingScreen> {
             await _primaryMeasurements.setNotifyValue(true);
             _measurementSubscription = _primaryMeasurements.value.listen((data) async {
               if (data != null && data.length > 1) {
-                // if (_latestRecord != null && descriptor.cal)
+                // TODO: calorie preserve here?
                 await _recordMeasurement(data);
               }
             });
             _measuring = true;
             _paused = false;
 
-            final now = DateTime.now();
-            _activity = Activity(
-              fourCC: descriptor.fourCC,
-              deviceName: device.name,
-              deviceId: device.id.id,
-              start: now.millisecondsSinceEpoch,
-              startDateTime: now,
-            );
-            final id = await _database?.activityDao?.insertActivity(_activity);
-            _activity.id = id;
+            await _addActivity();
           }
         }
       } else {
@@ -500,9 +489,7 @@ class RecordingState extends State<RecordingScreen> {
     if (_uxDebug) {
       _simulateMeasurements();
     } else {
-      if (hrm != null) {
-        hrm.attach((heartRate) => {});
-      }
+      hrm?.attach((heartRate) => {});
       _initialConnectOnDemand();
       _openDatabase();
     }
@@ -513,9 +500,8 @@ class RecordingState extends State<RecordingScreen> {
 
   @override
   dispose() {
-    if (hrm != null) {
-      hrm.detach();
-    }
+    hrm?.detach();
+    _connectionWatchdog?.cancel();
     _timer?.cancel();
     _primaryMeasurements?.setNotifyValue(false);
     _measurementSubscription?.cancel();
@@ -526,13 +512,36 @@ class RecordingState extends State<RecordingScreen> {
     super.dispose();
   }
 
-  void _reconnectionWorkaround() async {
-    Get.snackbar("Warning", "Equipment might be disconnected. Workaround:");
+  Future<void> _addActivity() async {
+    final now = DateTime.now();
+    _activity = Activity(
+      fourCC: descriptor.fourCC,
+      deviceName: device.name,
+      deviceId: device.id.id,
+      start: now.millisecondsSinceEpoch,
+      startDateTime: now,
+    );
+    final id = await _database?.activityDao?.insertActivity(_activity);
+    _activity.id = id;
+  }
+
+  Future<void> _restartWorkout() async {
+    descriptor.restartWorkout();
+    _connectionWatchdog?.cancel();
+    _latestRecord = _blankRecord();
+    if (!_uxDebug) {
+      await _database?.recordDao?.deleteAllActivityRecords(_activity.id);
+      await _addActivity();
+    }
+  }
+
+  Future<void> _reconnectionWorkaround() async {
+    Get.snackbar("Warning", "Equipment might be disconnected. Auto-starting new workout:");
     _measuring = false;
-    _primaryMeasurements?.setNotifyValue(false);
-    _measurementSubscription?.cancel();
-    _cadenceMeasurements?.setNotifyValue(false);
-    _cadenceSubscription?.cancel();
+    await _primaryMeasurements?.setNotifyValue(false);
+    await _measurementSubscription?.cancel();
+    await _cadenceMeasurements?.setNotifyValue(false);
+    await _cadenceSubscription?.cancel();
     _primaryMeasurements = null;
     _measurementSubscription = null;
     _cadenceMeasurements = null;
@@ -543,7 +552,7 @@ class RecordingState extends State<RecordingScreen> {
     Get.snackbar("Warning", "2. Reconnecting...");
     await device.connect();
     Get.snackbar("Warning", "3. Restarting...");
-    _initialConnectOnDemand();
+    await _initialConnectOnDemand();
   }
 
   void _simulateMeasurements() {
@@ -1020,8 +1029,8 @@ class RecordingState extends State<RecordingScreen> {
                 await showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('About to reset the workout'),
-                    content: Text('Are you sure? This will erase existing data points!'),
+                    title: Text('About to restart the workout'),
+                    content: Text('This will start a new workout! Are you sure?'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Get.close(1),
@@ -1029,11 +1038,7 @@ class RecordingState extends State<RecordingScreen> {
                       ),
                       TextButton(
                         onPressed: () async {
-                          descriptor.restartWorkout();
-                          _latestRecord = _blankRecord();
-                          if (!_uxDebug) {
-                            await _database?.recordDao?.deleteAllActivityRecords(_activity.id);
-                          }
+                          await _restartWorkout();
                           Get.close(1);
                         },
                         child: Text('Yes'),
