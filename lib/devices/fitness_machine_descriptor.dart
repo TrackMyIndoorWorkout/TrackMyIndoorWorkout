@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
+import '../devices/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/preferences.dart';
@@ -241,6 +242,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     Duration idleDuration,
     Record lastRecord,
     List<int> data,
+    HeartRateMonitor hrm,
   ) {
     if (data != null && data.length > 2) {
       var flag = data[0] + 256 * data[1];
@@ -344,8 +346,14 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           }
         }
       }
+      var heartRate = 0;
+      if (hrm != null) {
+        heartRate = hrm.heartRate;
+      }
+      if (heartRate == 0) {
+        heartRate = getHeartRate(data).toInt();
+      }
       // #93
-      int heartRate = getHeartRate(data).toInt();
       if (heartRate == 0 && lastRecord.heartRate > 0) {
         heartRate = lastRecord.heartRate;
       }

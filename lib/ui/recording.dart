@@ -20,6 +20,7 @@ import 'package:wakelock/wakelock.dart';
 import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/gatt_constants.dart';
+import '../devices/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
@@ -55,6 +56,7 @@ extension DeviceIdentification on BluetoothDevice {
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
   final List<String> serviceUuids;
+  final HeartRateMonitor hrm;
   final BluetoothDeviceState initialState;
   final Size size;
 
@@ -62,10 +64,12 @@ class RecordingScreen extends StatefulWidget {
     Key key,
     @required this.device,
     @required this.serviceUuids,
+    @required this.hrm,
     @required this.initialState,
     @required this.size,
   })  : assert(device != null),
         assert(serviceUuids != null),
+        assert(hrm != null),
         assert(initialState != null),
         assert(size != null),
         super(key: key);
@@ -75,6 +79,7 @@ class RecordingScreen extends StatefulWidget {
     return RecordingState(
       device: device,
       serviceUuids: serviceUuids,
+      hrm: hrm,
       initialState: initialState,
       size: size,
     );
@@ -85,10 +90,12 @@ class RecordingState extends State<RecordingScreen> {
   RecordingState({
     @required this.device,
     @required this.serviceUuids,
+    @required this.hrm,
     @required this.initialState,
     @required this.size,
   })  : assert(device != null),
         assert(serviceUuids != null),
+        assert(hrm != null),
         assert(initialState != null),
         assert(size != null) {
     this.descriptor = device.getDescriptor(serviceUuids);
@@ -98,6 +105,7 @@ class RecordingState extends State<RecordingScreen> {
 
   final BluetoothDevice device;
   final List<String> serviceUuids;
+  final HeartRateMonitor hrm;
   final BluetoothDeviceState initialState;
   DeviceDescriptor descriptor;
   TrackCalculator _trackCalculator;
@@ -210,6 +218,7 @@ class RecordingState extends State<RecordingScreen> {
       _idleDuration + currentIdle,
       _latestRecord,
       data,
+      hrm,
     );
 
     if (!_paused && _measuring) {
@@ -475,9 +484,7 @@ class RecordingState extends State<RecordingScreen> {
           break;
         case 4:
         default:
-          {
-            rowController.addListener(_onToggleDistance);
-          }
+          rowController.addListener(_onToggleDistance);
           break;
       }
       final expandedHeight = int.tryParse(expandedHeightStr[index]);
@@ -495,6 +502,9 @@ class RecordingState extends State<RecordingScreen> {
     if (_uxDebug) {
       _simulateMeasurements();
     } else {
+      if (hrm != null) {
+        hrm.attach((heartRate) => {});
+      }
       _initialConnectOnDemand();
       _openDatabase();
     }
@@ -505,6 +515,9 @@ class RecordingState extends State<RecordingScreen> {
 
   @override
   dispose() {
+    if (hrm != null) {
+      hrm.detach();
+    }
     _timer?.cancel();
     _primaryMeasurements?.setNotifyValue(false);
     _measurementSubscription?.cancel();
@@ -623,6 +636,7 @@ class RecordingState extends State<RecordingScreen> {
       _idleDuration + currentIdle,
       _latestRecord,
       null,
+      hrm,
     );
 
     await _database?.recordDao?.insertRecord(_latestRecord);

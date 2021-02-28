@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+import '../devices/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import 'device_descriptor.dart';
@@ -57,6 +57,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     Duration idleDuration,
     Record lastRecord,
     List<int> data,
+    HeartRateMonitor hrm,
   ) {
     final elapsed = data != null ? getTime(data).toInt() : lastRecord.elapsed;
     double newDistance = 0;
@@ -80,6 +81,13 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     // See github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/16
     final timeStamp = activity.startDateTime.add(idleDuration).add(elapsedDuration);
     if (data != null) {
+      var heartRate = 0;
+      if (hrm != null) {
+        heartRate = hrm.heartRate;
+      }
+      if (heartRate == 0) {
+        heartRate = getHeartRate(data).toInt();
+      }
       return RecordWithSport(
         activityId: activity.id,
         timeStamp: timeStamp.millisecondsSinceEpoch,
@@ -89,7 +97,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         power: getPower(data).toInt(),
         speed: getSpeed(data),
         cadence: getCadence(data).toInt(),
-        heartRate: getHeartRate(data).toInt(),
+        heartRate: heartRate,
         sport: sport,
       );
     } else {

@@ -98,15 +98,21 @@ class HeartRateMonitor {
   }
 
   Future<int> _processHeartRateMeasurement(List<int> data) async {
-    if (!_canHeartRateMeasurementProcessed(data)) return 0;
-
-    if (_byteHeartRateMetric != null) {
-      return _byteHeartRateMetric?.getMeasurementValue(data)?.toInt();
+    if (_canHeartRateMeasurementProcessed(data)) {
+      if (_byteHeartRateMetric != null) {
+        final newHeartRate = _byteHeartRateMetric?.getMeasurementValue(data)?.toInt();
+        if (newHeartRate != null && newHeartRate > 0) {
+          heartRate = newHeartRate;
+        }
+      }
+      if (_shortHeartRateMetric != null) {
+        final newHeartRate = _shortHeartRateMetric?.getMeasurementValue(data)?.toInt();
+        if (newHeartRate != null && newHeartRate > 0) {
+          heartRate = newHeartRate;
+        }
+      }
     }
-    if (_shortHeartRateMetric != null) {
-      return _shortHeartRateMetric?.getMeasurementValue(data)?.toInt();
-    }
 
-    return 0;
+    return heartRate;
   }
 }

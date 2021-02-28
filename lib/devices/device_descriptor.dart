@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import '../devices/cadence_data.dart';
+import '../devices/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/preferences.dart';
@@ -116,6 +117,7 @@ abstract class DeviceDescriptor {
     Duration idleDuration,
     Record lastRecord,
     List<int> data,
+    HeartRateMonitor hrm,
   );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
