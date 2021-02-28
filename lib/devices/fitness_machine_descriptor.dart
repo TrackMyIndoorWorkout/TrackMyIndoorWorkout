@@ -336,7 +336,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         if (deltaCalories == 0 && power != null) {
           // Instead of dT fractional second we use 1s to boost calorie counting
           // Due to #35. On top of that
-          deltaCalories = power * calorieFactor * DeviceDescriptor.J2KCAL;
+          deltaCalories = power * dT * DeviceDescriptor.J2KCAL * calorieFactor;
         }
         if (deltaCalories > 0) {
           residueCalories += deltaCalories;
