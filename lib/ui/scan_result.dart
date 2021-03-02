@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
+import '../devices/heart_rate_monitor.dart';
 import '../persistence/preferences.dart';
 import 'find_devices.dart';
+import 'heart_rate_display.dart';
 
 extension EnhancedScanResult on ScanResult {
   bool isWorthy(bool filterDevices) {
@@ -57,6 +59,7 @@ class ScanResultTile extends StatelessWidget {
   const ScanResultTile({
     Key key,
     this.result,
+    @required this.hrm,
     @required this.onEquipmentTap,
     @required this.onHrmTap,
   })  : assert(onEquipmentTap != null),
@@ -64,6 +67,7 @@ class ScanResultTile extends StatelessWidget {
         super(key: key);
 
   final ScanResult result;
+  final HeartRateMonitor hrm;
   final VoidCallback onEquipmentTap;
   final VoidCallback onHrmTap;
 
@@ -155,7 +159,11 @@ class ScanResultTile extends StatelessWidget {
       ),
       trailing: FloatingActionButton(
         heroTag: null,
-        child: Icon(result.isHeartRateMonitor ? Icons.favorite : Icons.play_arrow),
+        child: result.isHeartRateMonitor
+            ? hrm?.device?.id?.id == result.device.id.id
+                ? HeartRateDisplay(hrm: hrm)
+                : Icon(Icons.favorite)
+            : Icon(Icons.play_arrow),
         foregroundColor: Colors.white,
         backgroundColor: result.advertisementData.connectable ? Colors.blue : Colors.grey,
         onPressed: result.advertisementData.connectable

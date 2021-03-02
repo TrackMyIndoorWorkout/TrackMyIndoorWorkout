@@ -13,6 +13,7 @@ import '../devices/heart_rate_monitor.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';
+import 'heart_rate_display.dart';
 import 'preferences.dart';
 import 'recording.dart';
 import 'scan_result.dart';
@@ -50,7 +51,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
   TextStyle _adjustedCaptionStyle;
   TextStyle _subtitleStyle;
   Map<String, List<String>> _servicesMap;
-  String _heartRateString;
 
   @override
   dispose() {
@@ -83,6 +83,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     return serviceUuids != null && serviceUuids.contains(HEART_RATE_SERVICE_ID);
   }
 
+  // _
+
   @override
   void initState() {
     initializeDateFormatting();
@@ -94,7 +96,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG);
     _filterDevices = PrefService.getBool(DEVICE_FILTERING_TAG);
     _servicesMap = Map<String, List<String>>();
-    _heartRateString = "--";
     if (_instantScan) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         startScan();
@@ -199,9 +200,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           if (snapshot.data == BluetoothDeviceState.connected) {
                             return FloatingActionButton(
                                 heroTag: null,
-                                child: Icon(_isHeartRateMonitor(_servicesMap[d.id.id])
-                                    ? Icons.favorite
-                                    : Icons.open_in_new),
+                                child: _isHeartRateMonitor(_servicesMap[d.id.id])
+                                    ? (_heartRateMonitor?.device?.id?.id == d.id.id
+                                        ? HeartRateDisplay(hrm: _heartRateMonitor)
+                                        : Icon(Icons.favorite))
+                                    : Icon(Icons.open_in_new),
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.green,
                                 onPressed: () async {
@@ -240,6 +243,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     }
                     return ScanResultTile(
                       result: r,
+                      hrm: _heartRateMonitor,
                       onEquipmentTap: () async {
                         await FlutterBlue.instance.stopScan();
                         await Future.delayed(Duration(milliseconds: 100));
@@ -310,21 +314,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           await _heartRateMonitor.disconnect();
                         }
                         if (_heartRateMonitor == null ||
-                            _heartRateMonitor.device.id.id != r.device.id.id) {
+                            _heartRateMonitor.device?.id?.id != r.device.id.id) {
                           _heartRateMonitor = HeartRateMonitor(device: r.device);
                           await _heartRateMonitor.connect();
                         }
-                        await _heartRateMonitor.attach((int heartRate) {
-                          setState(() {
-                            debugPrint("HR $heartRate");
-                            _heartRateString = heartRate != null ? heartRate.toString() : "--";
-                          });
-                        });
-                        Get.bottomSheet(Container(
-                            child: Row(children: [
-                          Icon(Icons.favorite, color: Colors.red),
-                          Text(_heartRateString)
-                        ])));
+                        await _heartRateMonitor.attach();
                       },
                     );
                   }).toList(),

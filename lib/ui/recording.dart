@@ -111,6 +111,7 @@ class RecordingState extends State<RecordingScreen> {
   StreamSubscription _measurementSubscription;
   BluetoothCharacteristic _cadenceMeasurements;
   StreamSubscription _cadenceSubscription;
+  StreamSubscription _heartRateSubscription;
   bool _discovering;
   bool _measuring;
   bool _paused;
@@ -489,7 +490,12 @@ class RecordingState extends State<RecordingScreen> {
     if (_uxDebug) {
       _simulateMeasurements();
     } else {
-      hrm?.attach((heartRate) => {});
+      hrm?.attach();
+      _heartRateSubscription = hrm?.listenForYourHeart?.listen((heartRate) async {
+        setState(() {
+          _values[4] = heartRate?.toString() ?? "--";
+        });
+      });
       _initialConnectOnDemand();
       _openDatabase();
     }
@@ -498,16 +504,20 @@ class RecordingState extends State<RecordingScreen> {
     Wakelock.enable();
   }
 
-  @override
-  dispose() {
-    hrm?.detach();
+  _preDispose() async {
+    await _heartRateSubscription?.cancel();
+    await hrm?.detach();
     _connectionWatchdog?.cancel();
     _timer?.cancel();
-    _primaryMeasurements?.setNotifyValue(false);
-    _measurementSubscription?.cancel();
-    _cadenceMeasurements?.setNotifyValue(false);
-    _cadenceSubscription?.cancel();
-    _database?.close();
+    await _measurementSubscription?.cancel();
+    await _primaryMeasurements?.setNotifyValue(false);
+    await _cadenceSubscription?.cancel();
+    await _cadenceMeasurements?.setNotifyValue(false);
+    await _database?.close();
+  }
+
+  @override
+  dispose() {
     Wakelock.disable();
     super.dispose();
   }
@@ -715,14 +725,11 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<bool> _onWillPop() async {
-    if (!_measuring) {
-      return true;
-    }
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: Text('About to navigate away'),
-            content: Text('Are you sure you want to finish the workout?'),
+            content: Text("If there is a workout in progress it'll be finished. Are you sure?"),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Get.close(1),
@@ -731,6 +738,7 @@ class RecordingState extends State<RecordingScreen> {
               TextButton(
                 onPressed: () async {
                   await _finishActivity(true);
+                  await _preDispose();
                   Navigator.of(context).pop(true);
                 },
                 child: Text('Yes'),

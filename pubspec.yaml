@@ -17,7 +17,7 @@ dependencies:
   fab_circular_menu: any
   file_picker: ^2.1.6
   floor: ^0.18.0
-  flutter_blue: any
+  flutter_blue: ^0.7.3
   flutter_brand_icons: any
   get: ^3.24.0
   http: ^0.12.2
@@ -28,6 +28,7 @@ dependencies:
   meta: ^1.2.4
   preferences: any
   progress_indicators: any
+  rxdart: ^0.24.0
   share_files_and_screenshot_widgets: any
   shared_preferences: any
   sqflite: ^1.3.2+3

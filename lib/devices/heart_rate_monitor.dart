@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import '../devices/gatt_constants.dart';
 import 'byte_metric_descriptor.dart';
@@ -16,13 +17,20 @@ class HeartRateMonitor {
   ByteMetricDescriptor _byteHeartRateMetric;
   ShortMetricDescriptor _shortHeartRateMetric;
   StreamSubscription _hrSubscription;
+  bool connected;
+  bool attached;
 
   HeartRateMonitor({
     this.device,
-  }) : assert(device != null);
+  }) : assert(device != null) {
+    connected = false;
+    attached = false;
+    heartRate = 0;
+  }
 
   Future<bool> connect() async {
     await device.connect();
+    connected = true;
     final services = await device.discoverServices();
     _heartRateService = services.firstWhere(
         (service) => service.uuid.toString().substring(4, 8).toLowerCase() == HEART_RATE_SERVICE_ID,
@@ -34,23 +42,29 @@ class HeartRateMonitor {
           orElse: () => null);
     }
     if (_heartRateMeasurement != null) {
+      await attach();
       return true;
     }
     return false;
   }
 
-  attach(DisplayFn displayFunction) async {
+  Stream<int> get listenForYourHeart async* {
+    if (!attached) return;
+    await for (var byteString in _heartRateMeasurement.value) {
+      heartRate = _processHeartRateMeasurement(byteString);
+      debugPrint("HR $heartRate");
+      yield heartRate;
+    }
+  }
+
+  attach() async {
     await _heartRateMeasurement.setNotifyValue(true);
-    _hrSubscription = _heartRateMeasurement.value.listen((data) async {
-      if (data != null && data.length > 1) {
-        heartRate = await _processHeartRateMeasurement(data);
-        displayFunction(heartRate);
-      }
-    });
+    attached = true;
   }
 
   detach() async {
     await _heartRateMeasurement?.setNotifyValue(false);
+    attached = false;
     await _hrSubscription?.cancel();
   }
 
@@ -59,6 +73,7 @@ class HeartRateMonitor {
     _heartRateMeasurement = null;
     _heartRateService = null;
     await device.disconnect();
+    connected = false;
   }
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.heart_rate_measurement.xml
@@ -97,15 +112,14 @@ class HeartRateMonitor {
     return flag > 0;
   }
 
-  Future<int> _processHeartRateMeasurement(List<int> data) async {
+  int _processHeartRateMeasurement(List<int> data) {
     if (_canHeartRateMeasurementProcessed(data)) {
       if (_byteHeartRateMetric != null) {
         final newHeartRate = _byteHeartRateMetric?.getMeasurementValue(data)?.toInt();
         if (newHeartRate != null && newHeartRate > 0) {
           heartRate = newHeartRate;
         }
-      }
-      if (_shortHeartRateMetric != null) {
+      } else if (_shortHeartRateMetric != null) {
         final newHeartRate = _shortHeartRateMetric?.getMeasurementValue(data)?.toInt();
         if (newHeartRate != null && newHeartRate > 0) {
           heartRate = newHeartRate;
