@@ -22,6 +22,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
   int strokeRateSum;
   int lastPositiveCadence = 0; // #101
+  bool calorieCarryoverWorkaround = CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
 
   FitnessMachineDescriptor({
     @required sport,
@@ -78,6 +79,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
 
   @override
   restartWorkout() {
+    calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG);
     residueCalories = 0.0;
     clearStrokeRates();
   }
@@ -247,6 +249,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     if (data != null && data.length > 2) {
       var flag = data[0] + 256 * data[1];
       if (flag != featuresFlag) {
+        calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG);
         featuresFlag = flag;
         processFlag(flag);
         readSettings();
@@ -357,7 +360,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       if (heartRate == 0 && lastRecord.heartRate > 0) {
         heartRate = lastRecord.heartRate;
       }
-      if (lastRecord.calories != null &&
+      if (calorieCarryoverWorkaround &&
+          lastRecord.calories != null &&
           lastRecord.calories > 0 &&
           (calories == null || lastRecord.calories > calories)) {
         calories = lastRecord.calories.toDouble();
