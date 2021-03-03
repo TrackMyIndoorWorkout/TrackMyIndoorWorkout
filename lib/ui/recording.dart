@@ -638,7 +638,7 @@ class RecordingState extends State<RecordingScreen> {
     if (!_measuring) return;
 
     Duration currentIdle = Duration();
-    if (_paused) {
+    if (_paused && _pauseStarted != null) {
       currentIdle = DateTime.now().difference(_pauseStarted);
     }
 
