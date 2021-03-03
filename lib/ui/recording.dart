@@ -548,10 +548,10 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _reconnectionWorkaround() async {
     Get.snackbar("Warning", "Equipment might be disconnected. Auto-starting new workout:");
     _measuring = false;
-    await _primaryMeasurements?.setNotifyValue(false);
     await _measurementSubscription?.cancel();
-    await _cadenceMeasurements?.setNotifyValue(false);
+    await _primaryMeasurements?.setNotifyValue(false);
     await _cadenceSubscription?.cancel();
+    await _cadenceMeasurements?.setNotifyValue(false);
     _primaryMeasurements = null;
     _measurementSubscription = null;
     _cadenceMeasurements = null;
