@@ -432,7 +432,8 @@ class RecordingState extends State<RecordingScreen> {
     if (!_simplerUi) {
       _graphData = ListQueue<DisplayRecord>(_pointCount);
     }
-    final connectionWatchdogTimeString = PrefService.getString(EQUIPMENT_DISCONNECTION_WATCHDOG_TAG);
+    final connectionWatchdogTimeString =
+        PrefService.getString(EQUIPMENT_DISCONNECTION_WATCHDOG_TAG);
     _connectionWatchdogTime = int.tryParse(connectionWatchdogTimeString);
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, descriptor);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
