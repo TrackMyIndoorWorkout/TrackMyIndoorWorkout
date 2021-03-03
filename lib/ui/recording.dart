@@ -141,6 +141,7 @@ class RecordingState extends State<RecordingScreen> {
   final _random = Random();
 
   Timer _connectionWatchdog;
+  int _connectionWatchdogTime = EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT;
 
   List<DisplayRecord> get graphData => _graphData.toList();
   Map<String, DataFn> _metricToDataFn = {};
@@ -203,7 +204,10 @@ class RecordingState extends State<RecordingScreen> {
     if (!descriptor.canPrimaryMeasurementProcessed(data)) return;
 
     _connectionWatchdog?.cancel();
-    _connectionWatchdog = Timer(Duration(seconds: 5), _reconnectionWorkaround);
+    if (_connectionWatchdogTime > 0) {
+      _connectionWatchdog =
+          Timer(Duration(seconds: _connectionWatchdogTime), _reconnectionWorkaround);
+    }
 
     Duration currentIdle = Duration();
     if (_paused) {
@@ -428,6 +432,8 @@ class RecordingState extends State<RecordingScreen> {
     if (!_simplerUi) {
       _graphData = ListQueue<DisplayRecord>(_pointCount);
     }
+    final connectionWatchdogTimeString = PrefService.getString(EQUIPMENT_DISCONNECTION_WATCHDOG_TAG);
+    _connectionWatchdogTime = int.tryParse(connectionWatchdogTimeString);
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, descriptor);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,

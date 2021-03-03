@@ -317,6 +317,16 @@ const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery da
     "these over time soothes the data. This setting tells the window size by how many samples " +
     "could be in the smoothing queue. 1 means no smoothing.";
 
+const EQUIPMENT_DISCONNECTION_WATCHDOG = "Equipment Disconnection Watchdog Timer";
+const EQUIPMENT_DISCONNECTION_WATCHDOG_TAG = "equipment_disconnection_watchdog_timer";
+const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT = "5";
+const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT = 5;
+const EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered " +
+    "as a disconnection. A watchdog would finish the workout, reconnect to the equipment, and " +
+    "start a new workout. 0 means the watchdog will be turned off. Disabling the watchdog " +
+    "if your fitness equipment stops sending data when the workout is paused to avoid unwanted " +
+    "restarts.";
+
 const ZONE_PREFERENCES = "Zone Preferences";
 
 const FONT_FAMILY = "RobotoMono";
