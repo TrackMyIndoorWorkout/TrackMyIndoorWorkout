@@ -1,32 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../devices/heart_rate_monitor.dart';
 
 class HeartRateDisplay extends StatefulWidget {
-  final HeartRateMonitor hrm;
-  HeartRateDisplay({Key key, @required this.hrm})
-      : assert(hrm != null),
-        super(key: key);
+  HeartRateDisplay({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return HeartRateDisplayState(hrm: hrm);
+    return HeartRateDisplayState();
   }
 }
 
 class HeartRateDisplayState extends State<HeartRateDisplay> {
-  final HeartRateMonitor hrm;
-
-  HeartRateDisplayState({@required this.hrm}) : assert(hrm != null);
+  HeartRateMonitor _heartRateMonitor;
 
   @override
   void initState() {
+    _heartRateMonitor = Get.find<HeartRateMonitor>();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<int>(
-        stream: hrm.listenForYourHeart,
+        stream: _heartRateMonitor.listenForYourHeart,
         initialData: 0,
         builder: (c, snapshot) {
           return Text(snapshot.data?.toString() ?? "--");

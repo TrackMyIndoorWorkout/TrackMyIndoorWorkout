@@ -83,8 +83,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
     return serviceUuids != null && serviceUuids.contains(HEART_RATE_SERVICE_ID);
   }
 
-  // _
-
   @override
   void initState() {
     initializeDateFormatting();
@@ -133,7 +131,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       Get.to(RecordingScreen(
                         device: _openedDevice,
                         serviceUuids: _servicesMap[_openedDevice.id.id],
-                        hrm: _heartRateMonitor,
                         initialState: BluetoothDeviceState.connected,
                         size: Get.mediaQuery.size,
                       ));
@@ -144,7 +141,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         Get.to(RecordingScreen(
                           device: _scannedDevices.first,
                           serviceUuids: _servicesMap[_scannedDevices.first.id.id],
-                          hrm: _heartRateMonitor,
                           initialState: BluetoothDeviceState.disconnected,
                           size: Get.mediaQuery.size,
                         ));
@@ -156,7 +152,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           Get.to(RecordingScreen(
                             device: lasts.first,
                             serviceUuids: _servicesMap[_scannedDevices.first.id.id],
-                            hrm: _heartRateMonitor,
                             initialState: BluetoothDeviceState.disconnected,
                             size: Get.mediaQuery.size,
                           ));
@@ -202,7 +197,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 heroTag: null,
                                 child: _isHeartRateMonitor(_servicesMap[d.id.id])
                                     ? (_heartRateMonitor?.device?.id?.id == d.id.id
-                                        ? HeartRateDisplay(hrm: _heartRateMonitor)
+                                        ? HeartRateDisplay()
                                         : Icon(Icons.favorite))
                                     : Icon(Icons.open_in_new),
                                 foregroundColor: Colors.white,
@@ -216,7 +211,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   await Get.to(RecordingScreen(
                                     device: d,
                                     serviceUuids: _servicesMap[d.id.id],
-                                    hrm: _heartRateMonitor,
                                     initialState: snapshot.data,
                                     size: Get.mediaQuery.size,
                                   ));
@@ -243,7 +237,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     }
                     return ScanResultTile(
                       result: r,
-                      hrm: _heartRateMonitor,
+                      heartRateMonitor: _heartRateMonitor,
                       onEquipmentTap: () async {
                         await FlutterBlue.instance.stopScan();
                         await Future.delayed(Duration(milliseconds: 100));
@@ -254,8 +248,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   title: Text('Heart Rate Measurement'),
-                                  content: Text(
-                                      'Are you sure you want to continue without selecting a HRM?'),
+                                  content: Text('Are you sure you want to continue without a HRM?'),
                                   actions: <Widget>[
                                     TextButton(
                                       onPressed: () => Get.close(1),
@@ -269,13 +262,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 ),
                               ) ??
                               false;
-                          goOn |= !dialogResult;
+                          goOn = dialogResult;
                         }
                         if (goOn) {
                           await Get.to(RecordingScreen(
                             device: r.device,
                             serviceUuids: r.serviceUuids,
-                            hrm: _heartRateMonitor,
                             initialState: BluetoothDeviceState.disconnected,
                             size: Get.mediaQuery.size,
                           ));
@@ -284,12 +276,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       onHrmTap: () async {
                         if (_heartRateMonitor != null &&
                             _heartRateMonitor.device.id.id != r.device.id.id) {
-                          if (!await showDialog(
+                          if (!(await showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   title: Text('You are connected to a HRM right now'),
-                                  content: Text(
-                                      'Would you like to disconnect from that HRM to connect the other?'),
+                                  content:
+                                      Text('Disconnect from that HRM to connect the selected one?'),
                                   actions: <Widget>[
                                     TextButton(
                                       onPressed: () => Get.close(1),
@@ -304,7 +296,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   ],
                                 ),
                               ) ??
-                              false) {
+                              false)) {
                             return;
                           }
                         }
@@ -313,12 +305,23 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           await _heartRateMonitor.detach();
                           await _heartRateMonitor.disconnect();
                         }
+                        HeartRateMonitor heartRateMonitor;
                         if (_heartRateMonitor == null ||
                             _heartRateMonitor.device?.id?.id != r.device.id.id) {
-                          _heartRateMonitor = HeartRateMonitor(device: r.device);
-                          await _heartRateMonitor.connect();
+                          if (_heartRateMonitor == null) {
+                            heartRateMonitor = new HeartRateMonitor(device: r.device);
+                            Get.put<HeartRateMonitor>(heartRateMonitor);
+                            setState(() {
+                              _heartRateMonitor = heartRateMonitor;
+                            });
+                          } else {
+                            _heartRateMonitor.device = r.device;
+                          }
+                          await heartRateMonitor.connect();
+                        } else {
+                          heartRateMonitor = _heartRateMonitor;
                         }
-                        await _heartRateMonitor.attach();
+                        await heartRateMonitor.attach();
                       },
                     );
                   }).toList(),

@@ -56,7 +56,6 @@ extension DeviceIdentification on BluetoothDevice {
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
   final List<String> serviceUuids;
-  final HeartRateMonitor hrm;
   final BluetoothDeviceState initialState;
   final Size size;
 
@@ -64,7 +63,6 @@ class RecordingScreen extends StatefulWidget {
     Key key,
     @required this.device,
     @required this.serviceUuids,
-    @required this.hrm,
     @required this.initialState,
     @required this.size,
   })  : assert(device != null),
@@ -78,7 +76,6 @@ class RecordingScreen extends StatefulWidget {
     return RecordingState(
       device: device,
       serviceUuids: serviceUuids,
-      hrm: hrm,
       initialState: initialState,
       size: size,
     );
@@ -89,23 +86,22 @@ class RecordingState extends State<RecordingScreen> {
   RecordingState({
     @required this.device,
     @required this.serviceUuids,
-    @required this.hrm,
     @required this.initialState,
     @required this.size,
   })  : assert(device != null),
         assert(serviceUuids != null),
         assert(initialState != null),
         assert(size != null) {
-    this.descriptor = device.getDescriptor(serviceUuids);
+    this._descriptor = device.getDescriptor(serviceUuids);
   }
 
   Size size;
 
   final BluetoothDevice device;
   final List<String> serviceUuids;
-  final HeartRateMonitor hrm;
   final BluetoothDeviceState initialState;
-  DeviceDescriptor descriptor;
+  HeartRateMonitor _heartRateMonitor;
+  DeviceDescriptor _descriptor;
   TrackCalculator _trackCalculator;
   BluetoothCharacteristic _primaryMeasurements;
   StreamSubscription _measurementSubscription;
@@ -193,7 +189,7 @@ class RecordingState extends State<RecordingScreen> {
     _values = [
       record.calories.toString(),
       record.power.toString(),
-      record.speedStringByUnit(_si, descriptor.sport),
+      record.speedStringByUnit(_si, _descriptor.sport),
       record.cadence.toString(),
       record.heartRate.toString(),
       record.distanceStringByUnit(_si),
@@ -201,7 +197,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _recordMeasurement(List<int> data) async {
-    if (!descriptor.canPrimaryMeasurementProcessed(data)) return;
+    if (!_descriptor.canPrimaryMeasurementProcessed(data)) return;
 
     _connectionWatchdog?.cancel();
     if (_connectionWatchdogTime > 0) {
@@ -214,12 +210,12 @@ class RecordingState extends State<RecordingScreen> {
       currentIdle = DateTime.now().difference(_pauseStarted);
     }
 
-    final latestRecord = descriptor.processPrimaryMeasurement(
+    final latestRecord = _descriptor.processPrimaryMeasurement(
       _activity,
       _idleDuration + currentIdle,
       _latestRecord,
       data,
-      hrm,
+      _heartRateMonitor,
     );
 
     if (!_paused && _measuring) {
@@ -246,9 +242,9 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _processCadenceMeasurement(List<int> data) {
-    if (!descriptor.canCadenceMeasurementProcessed(data)) return;
+    if (!_descriptor.canCadenceMeasurementProcessed(data)) return;
 
-    // _latestRecord?.cadence = descriptor.processCadenceMeasurement(data);
+    // _latestRecord?.cadence = _descriptor.processCadenceMeasurement(data);
   }
 
   BluetoothService _filterService(List<BluetoothService> services, identifier) {
@@ -294,12 +290,12 @@ class RecordingState extends State<RecordingScreen> {
         return services;
       }
 
-      if (_areListsEqual(name, descriptor.manufacturer)) {
-        if (descriptor.cadenceServiceId != '') {
-          final cadenceMeasurementService = _filterService(services, descriptor.cadenceServiceId);
+      if (_areListsEqual(name, _descriptor.manufacturer)) {
+        if (_descriptor.cadenceServiceId != '') {
+          final cadenceMeasurementService = _filterService(services, _descriptor.cadenceServiceId);
           if (cadenceMeasurementService != null) {
             _cadenceMeasurements = _filterCharacteristic(
-                cadenceMeasurementService.characteristics, descriptor.cadenceMeasurementId);
+                cadenceMeasurementService.characteristics, _descriptor.cadenceMeasurementId);
           }
           if (_cadenceMeasurements != null) {
             await _cadenceMeasurements.setNotifyValue(true);
@@ -310,10 +306,10 @@ class RecordingState extends State<RecordingScreen> {
             });
           }
         }
-        final measurementService1 = _filterService(services, descriptor.primaryServiceId);
+        final measurementService1 = _filterService(services, _descriptor.primaryServiceId);
         if (measurementService1 != null) {
           _primaryMeasurements = _filterCharacteristic(
-              measurementService1.characteristics, descriptor.primaryMeasurementId);
+              measurementService1.characteristics, _descriptor.primaryMeasurementId);
           if (_primaryMeasurements != null) {
             await _primaryMeasurements.setNotifyValue(true);
             _measurementSubscription = _primaryMeasurements.value.listen((data) async {
@@ -330,7 +326,7 @@ class RecordingState extends State<RecordingScreen> {
         }
       } else {
         Get.defaultDialog(
-          middleText: 'The device does not look like a ${descriptor.fullName}. ' +
+          middleText: 'The device does not look like a ${_descriptor.fullName}. ' +
               'Measurement is not started',
           confirm: TextButton(
             child: Text("Ok"),
@@ -401,7 +397,7 @@ class RecordingState extends State<RecordingScreen> {
       cadence: 0,
       heartRate: 0,
       elapsedMillis: 0,
-      sport: descriptor.sport,
+      sport: _descriptor.sport,
     );
   }
 
@@ -415,15 +411,16 @@ class RecordingState extends State<RecordingScreen> {
       fontFamily: FONT_FAMILY,
       color: Colors.indigo,
     );
+    _heartRateMonitor = Get.find<HeartRateMonitor>();
     PrefService.setString(LAST_EQUIPMENT_ID_TAG, device.id.id);
-    descriptor.setPowerThrottle(
+    _descriptor.setPowerThrottle(
       PrefService.getString(THROTTLE_POWER_TAG),
       PrefService.getBool(THROTTLE_OTHER_TAG),
     );
     _trackCalculator = TrackCalculator(
       track: TrackDescriptor(
         radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
-        lengthFactor: descriptor.lengthFactor,
+        lengthFactor: _descriptor.lengthFactor,
       ),
     );
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
@@ -435,7 +432,7 @@ class RecordingState extends State<RecordingScreen> {
     final connectionWatchdogTimeString =
         PrefService.getString(EQUIPMENT_DISCONNECTION_WATCHDOG_TAG);
     _connectionWatchdogTime = int.tryParse(connectionWatchdogTimeString);
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, descriptor);
+    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
           prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0,
@@ -497,8 +494,8 @@ class RecordingState extends State<RecordingScreen> {
     if (_uxDebug) {
       _simulateMeasurements();
     } else {
-      hrm?.attach();
-      _heartRateSubscription = hrm?.listenForYourHeart?.listen((heartRate) async {
+      _heartRateMonitor?.attach();
+      _heartRateSubscription = _heartRateMonitor?.listenForYourHeart?.listen((heartRate) async {
         setState(() {
           _values[4] = heartRate?.toString() ?? "--";
         });
@@ -513,7 +510,7 @@ class RecordingState extends State<RecordingScreen> {
 
   _preDispose() async {
     await _heartRateSubscription?.cancel();
-    await hrm?.detach();
+    await _heartRateMonitor?.detach();
     _connectionWatchdog?.cancel();
     _timer?.cancel();
     await _measurementSubscription?.cancel();
@@ -532,7 +529,7 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _addActivity() async {
     final now = DateTime.now();
     _activity = Activity(
-      fourCC: descriptor.fourCC,
+      fourCC: _descriptor.fourCC,
       deviceName: device.name,
       deviceId: device.id.id,
       start: now.millisecondsSinceEpoch,
@@ -543,7 +540,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _restartWorkout() async {
-    descriptor.restartWorkout();
+    _descriptor.restartWorkout();
     _connectionWatchdog?.cancel();
     _latestRecord = _blankRecord();
     if (!_uxDebug) {
@@ -586,7 +583,7 @@ class RecordingState extends State<RecordingScreen> {
         cadence: 30 + _random.nextInt(100),
         heartRate: 60 + _random.nextInt(120),
         elapsedMillis: newElapsed,
-        sport: descriptor.sport,
+        sport: _descriptor.sport,
       );
       _fillValues(_latestRecord);
       _addGraphData(_latestRecord);
@@ -655,12 +652,12 @@ class RecordingState extends State<RecordingScreen> {
     });
 
     // Add one last record for the time of stopping
-    _latestRecord = descriptor.processPrimaryMeasurement(
+    _latestRecord = _descriptor.processPrimaryMeasurement(
       _activity,
       _idleDuration + currentIdle,
       _latestRecord,
       null,
-      hrm,
+      _heartRateMonitor,
     );
 
     await _database?.recordDao?.insertRecord(_latestRecord);
@@ -698,9 +695,9 @@ class RecordingState extends State<RecordingScreen> {
       charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
         colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, descriptor.sport)),
+            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.sport)),
         domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, descriptor.sport),
+        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, _descriptor.sport),
         data: graphData,
       ),
     ];

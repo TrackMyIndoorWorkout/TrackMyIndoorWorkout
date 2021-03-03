@@ -9,7 +9,7 @@ import 'short_metric_descriptor.dart';
 typedef DisplayFn = Function(int heartRate);
 
 class HeartRateMonitor {
-  final BluetoothDevice device;
+  BluetoothDevice device;
   BluetoothService _heartRateService;
   BluetoothCharacteristic _heartRateMeasurement;
   int _heartRateFlag;

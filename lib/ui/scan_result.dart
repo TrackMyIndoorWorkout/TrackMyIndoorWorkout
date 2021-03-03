@@ -59,7 +59,7 @@ class ScanResultTile extends StatelessWidget {
   const ScanResultTile({
     Key key,
     this.result,
-    @required this.hrm,
+    @required this.heartRateMonitor,
     @required this.onEquipmentTap,
     @required this.onHrmTap,
   })  : assert(onEquipmentTap != null),
@@ -67,7 +67,7 @@ class ScanResultTile extends StatelessWidget {
         super(key: key);
 
   final ScanResult result;
-  final HeartRateMonitor hrm;
+  final HeartRateMonitor heartRateMonitor;
   final VoidCallback onEquipmentTap;
   final VoidCallback onHrmTap;
 
@@ -160,8 +160,8 @@ class ScanResultTile extends StatelessWidget {
       trailing: FloatingActionButton(
         heroTag: null,
         child: result.isHeartRateMonitor
-            ? hrm?.device?.id?.id == result.device.id.id
-                ? HeartRateDisplay(hrm: hrm)
+            ? heartRateMonitor?.device?.id?.id == result.device.id.id
+                ? HeartRateDisplay()
                 : Icon(Icons.favorite)
             : Icon(Icons.play_arrow),
         foregroundColor: Colors.white,
