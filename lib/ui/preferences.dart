@@ -30,6 +30,7 @@ class PreferencesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final descriptionStyle = TextStyle(color: Colors.black54);
     List<Widget> appPreferences = [
       PreferenceTitle(UX_PREFERENCES),
       SwitchPreference(
@@ -75,7 +76,7 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: COMPRESS_DOWNLOAD_DEFAULT,
         desc: COMPRESS_DOWNLOAD_DESCRIPTION,
       ),
-      PreferenceTitle(THROTTLE_POWER_DESCRIPTION),
+      PreferenceTitle(THROTTLE_POWER_DESCRIPTION, style: descriptionStyle),
       TextFieldPreference(
         THROTTLE_POWER,
         THROTTLE_POWER_TAG,
@@ -93,6 +94,7 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: THROTTLE_OTHER_DEFAULT,
         desc: THROTTLE_OTHER_DESCRIPTION,
       ),
+      PreferenceTitle(STROKE_RATE_SMOOTHING_DESCRIPTION, style: descriptionStyle),
       TextFieldPreference(
         STROKE_RATE_SMOOTHING,
         STROKE_RATE_SMOOTHING_TAG,
@@ -103,6 +105,24 @@ class PreferencesScreen extends StatelessWidget {
           }
           return null;
         },
+      ),
+      PreferenceTitle(EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION, style: descriptionStyle),
+      TextFieldPreference(
+        EQUIPMENT_DISCONNECTION_WATCHDOG,
+        EQUIPMENT_DISCONNECTION_WATCHDOG_TAG,
+        defaultVal: EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
+        validator: (str) {
+          if (!isInteger(str, 0, 50)) {
+            return "Invalid window size (should be 0 <= size <= 50)";
+          }
+          return null;
+        },
+      ),
+      SwitchPreference(
+        CALORIE_CARRYOVER_WORKAROUND,
+        CALORIE_CARRYOVER_WORKAROUND_TAG,
+        defaultVal: CALORIE_CARRYOVER_WORKAROUND_DEFAULT,
+        desc: CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION,
       ),
     ];
 
