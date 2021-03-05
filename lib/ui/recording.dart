@@ -17,7 +17,7 @@ import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:preferences/preferences.dart';
 import 'package:wakelock/wakelock.dart';
-import '../devices/devices.dart';
+import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/gatt_constants.dart';
 import '../devices/heart_rate_monitor.dart';
@@ -35,23 +35,9 @@ import '../utils/constants.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
 import 'activities.dart';
+import 'spin_down.dart';
 
 typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
-
-extension DeviceIdentification on BluetoothDevice {
-  DeviceDescriptor getDescriptor(List<String> serviceUuids) {
-    for (var dev in deviceMap.values) {
-      if (name.startsWith(dev.namePrefix)) {
-        return dev;
-      }
-    }
-
-    // TODO: branch here based on FTMS data
-    // TODO: Needs adding generic FTMS types #80
-    // Default to FTMS Indoor Bike (Schwinn IC4/IC8)
-    return deviceMap['SIC4'];
-  }
-}
 
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
@@ -247,19 +233,6 @@ class RecordingState extends State<RecordingScreen> {
     // _latestRecord?.cadence = _descriptor.processCadenceMeasurement(data);
   }
 
-  BluetoothService _filterService(List<BluetoothService> services, identifier) {
-    return services.firstWhere(
-        (service) => service.uuid.toString().substring(4, 8).toLowerCase() == identifier,
-        orElse: () => null);
-  }
-
-  BluetoothCharacteristic _filterCharacteristic(
-      List<BluetoothCharacteristic> characteristics, identifier) {
-    return characteristics.firstWhere(
-        (ch) => ch.uuid.toString().substring(4, 8).toLowerCase() == identifier,
-        orElse: () => null);
-  }
-
   _discoverServices() async {
     if (_discovering) {
       return;
@@ -272,9 +245,9 @@ class RecordingState extends State<RecordingScreen> {
       setState(() {
         _discovering = true;
       });
-      final deviceInfo = _filterService(services, DEVICE_INFORMATION_ID);
+      final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
       final nameCharacteristic =
-          _filterCharacteristic(deviceInfo.characteristics, MANUFACTURER_NAME_ID);
+          BluetoothDeviceEx.filterCharacteristic(deviceInfo.characteristics, MANUFACTURER_NAME_ID);
       var name;
       try {
         name = await nameCharacteristic.read();
@@ -292,9 +265,10 @@ class RecordingState extends State<RecordingScreen> {
 
       if (_areListsEqual(name, _descriptor.manufacturer)) {
         if (_descriptor.cadenceServiceId != '') {
-          final cadenceMeasurementService = _filterService(services, _descriptor.cadenceServiceId);
+          final cadenceMeasurementService =
+              BluetoothDeviceEx.filterService(services, _descriptor.cadenceServiceId);
           if (cadenceMeasurementService != null) {
-            _cadenceMeasurements = _filterCharacteristic(
+            _cadenceMeasurements = BluetoothDeviceEx.filterCharacteristic(
                 cadenceMeasurementService.characteristics, _descriptor.cadenceMeasurementId);
           }
           if (_cadenceMeasurements != null) {
@@ -306,9 +280,10 @@ class RecordingState extends State<RecordingScreen> {
             });
           }
         }
-        final measurementService1 = _filterService(services, _descriptor.primaryServiceId);
+        final measurementService1 =
+            BluetoothDeviceEx.filterService(services, _descriptor.primaryServiceId);
         if (measurementService1 != null) {
-          _primaryMeasurements = _filterCharacteristic(
+          _primaryMeasurements = BluetoothDeviceEx.filterCharacteristic(
               measurementService1.characteristics, _descriptor.primaryMeasurementId);
           if (_primaryMeasurements != null) {
             await _primaryMeasurements.setNotifyValue(true);
@@ -540,8 +515,8 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _restartWorkout() async {
-    _descriptor.restartWorkout();
     _connectionWatchdog?.cancel();
+    _descriptor.restartWorkout();
     _latestRecord = _blankRecord();
     if (!_uxDebug) {
       await _database?.recordDao?.deleteAllActivityRecords(_activity.id);
@@ -1057,6 +1032,19 @@ class RecordingState extends State<RecordingScreen> {
                       ),
                     ],
                   ),
+                );
+              },
+            ),
+            FloatingActionButton(
+              heroTag: null,
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.indigo,
+              child: Icon(Icons.settings),
+              onPressed: () async {
+                await Get.bottomSheet(
+                  SpinDownBottomSheet(device: device),
+                  isDismissible: false,
+                  enableDrag: false,
                 );
               },
             ),

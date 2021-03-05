@@ -6,6 +6,7 @@ import '../devices/devices.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/fitness_machine_descriptor.dart';
 import '../ui/import_form.dart';
+import '../utils/constants.dart';
 import 'models/activity.dart';
 import 'models/record.dart';
 import 'database.dart';
@@ -51,8 +52,6 @@ class MPowerEchelon2Importer {
   static const BIKE_WEIGHT = 9; // kg
   static const ROLLING_RESISTANCE_COEFFICIENT = 0.005;
   static const DRAG_COEFFICIENT = 0.63;
-  static const LB_TO_KG = 0.45359237;
-  static const FT_TO_M = 0.3048;
   // Backup: 5.4788
   static const FRONTAL_AREA = 4 * FT_TO_M * FT_TO_M; // ft * ft_2_m^2
   static const AIR_DENSITY = 0.076537 * LB_TO_KG / (FT_TO_M * FT_TO_M * FT_TO_M);
