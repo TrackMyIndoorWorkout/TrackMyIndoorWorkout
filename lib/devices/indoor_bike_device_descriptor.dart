@@ -43,13 +43,11 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.indoor_bike_data.xml
   @override
   processFlag(int flag) {
-    clearMetrics();
-    // Schwinn IC4:
+    super.processFlag(flag);
+    // Schwinn IC4, two flag bytes
     // 68 01000100 instant cadence, instant power
     //  2 00000010 heart rate
-    // Two flag bytes
-    byteCounter = 2;
-    // negated bit!
+    // negated first bit!
     flag = processSpeedFlag(flag, true); // Instant
     flag = processSpeedFlag(flag, false); // Average (fallback)
     flag = processCadenceFlag(flag); // Instant

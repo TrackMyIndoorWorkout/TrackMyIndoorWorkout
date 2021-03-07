@@ -43,13 +43,11 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override
   processFlag(int flag) {
-    clearMetrics();
-    // KayakPro Compact:
+    super.processFlag(flag);
+    // KayakPro Compact: two flag bytes
     // 44 00101100 (stroke rate, stroke count), total distance, instant pace, instant power
     //  9 00001001 expanded energy, (heart rate), elapsed time
-    // Two flag bytes
-    byteCounter = 2;
-    // negated bit!
+    // negated first bit!
     flag = processStrokeRateFlag(flag, true);
     flag = processAverageStrokeRateFlag(flag);
     flag = processTotalDistanceFlag(flag);
