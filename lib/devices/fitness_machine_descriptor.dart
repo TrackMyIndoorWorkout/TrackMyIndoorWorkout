@@ -21,10 +21,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   ListQueue<int> _strokeRates;
   int _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
   int _strokeRateSum;
-  int _lastPositiveCadence = 0; // #101
+  int _lastPositiveCadence; // #101
   bool _calorieCarryoverWorkaround = CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
-
-  // bool _hasTotalCalorieCounting;
+  bool _hasTotalCalorieCounting;
 
   FitnessMachineDescriptor({
     @required sport,
@@ -65,6 +64,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     _strokeRateSum = 0;
     _featuresFlag = 0;
     _residueCalories = 0;
+    _lastPositiveCadence = 0;
+    _hasTotalCalorieCounting = false;
   }
 
   processFlag(int flag) {
@@ -272,9 +273,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     // Therefore the FTMS elapsed time reading is kinda useless, causes problems.
     // With this fix the calorie zeroing bug is revealed. Calorie preserving workaround can be
     // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
-    // if (data != null && timeMetric != null) {
-    //   elapsed = getTime(data);
-    // }
+    if (data != null && timeMetric != null && _hasTotalCalorieCounting) {
+      elapsed = getTime(data);
+    }
 
     double newDistance = 0;
     final dT = (elapsedMillis - lastRecord.elapsedMillis) / 1000.0;
@@ -327,6 +328,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       double calories = 0;
       if (caloriesMetric != null) {
         calories = getCalories(data);
+        if (calories > 0) {
+          _hasTotalCalorieCounting = true;
+        }
       }
       if (calories == 0 || calories == null) {
         double deltaCalories = 0;
