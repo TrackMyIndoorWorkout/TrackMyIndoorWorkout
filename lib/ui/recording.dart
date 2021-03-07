@@ -1042,7 +1042,7 @@ class RecordingState extends State<RecordingScreen> {
               child: Icon(Icons.settings),
               onPressed: () async {
                 await Get.bottomSheet(
-                  SpinDownBottomSheet(device: device),
+                  SpinDownBottomSheet(device: device, descriptor: _descriptor),
                   isDismissible: false,
                   enableDrag: false,
                 );

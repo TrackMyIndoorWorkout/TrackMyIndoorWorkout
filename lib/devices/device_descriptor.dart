@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import '../devices/cadence_data.dart';
+import '../devices/gatt_constants.dart';
 import '../devices/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -109,6 +110,7 @@ abstract class DeviceDescriptor {
   }
 
   double get lengthFactor => getDefaultTrack(sport).lengthFactor;
+  bool get isFitnessMachine => primaryServiceId == FITNESS_MACHINE_ID;
 
   restartWorkout();
 
