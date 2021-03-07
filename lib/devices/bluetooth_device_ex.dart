@@ -17,14 +17,14 @@ extension BluetoothDeviceEx on BluetoothDevice {
   }
 
   static BluetoothService filterService(List<BluetoothService> services, identifier) {
-    return services.firstWhere(
+    return services?.firstWhere(
         (service) => service.uuid.toString().substring(4, 8).toLowerCase() == identifier,
         orElse: () => null);
   }
 
   static BluetoothCharacteristic filterCharacteristic(
       List<BluetoothCharacteristic> characteristics, identifier) {
-    return characteristics.firstWhere(
+    return characteristics?.firstWhere(
         (ch) => ch.uuid.toString().substring(4, 8).toLowerCase() == identifier,
         orElse: () => null);
   }

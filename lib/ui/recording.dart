@@ -267,10 +267,8 @@ class RecordingState extends State<RecordingScreen> {
         if (_descriptor.cadenceServiceId != '') {
           final cadenceMeasurementService =
               BluetoothDeviceEx.filterService(services, _descriptor.cadenceServiceId);
-          if (cadenceMeasurementService != null) {
-            _cadenceMeasurements = BluetoothDeviceEx.filterCharacteristic(
-                cadenceMeasurementService.characteristics, _descriptor.cadenceMeasurementId);
-          }
+          _cadenceMeasurements = BluetoothDeviceEx.filterCharacteristic(
+              cadenceMeasurementService?.characteristics, _descriptor.cadenceMeasurementId);
           if (_cadenceMeasurements != null) {
             await _cadenceMeasurements.setNotifyValue(true);
             _cadenceSubscription = _cadenceMeasurements.value.listen((data) async {
@@ -282,21 +280,19 @@ class RecordingState extends State<RecordingScreen> {
         }
         final measurementService1 =
             BluetoothDeviceEx.filterService(services, _descriptor.primaryServiceId);
-        if (measurementService1 != null) {
-          _primaryMeasurements = BluetoothDeviceEx.filterCharacteristic(
-              measurementService1.characteristics, _descriptor.primaryMeasurementId);
-          if (_primaryMeasurements != null) {
-            await _primaryMeasurements.setNotifyValue(true);
-            _measurementSubscription = _primaryMeasurements.value.listen((data) async {
-              if (data != null && data.length > 1) {
-                await _recordMeasurement(data);
-              }
-            });
-            _measuring = true;
-            _paused = false;
+        _primaryMeasurements = BluetoothDeviceEx.filterCharacteristic(
+            measurementService1?.characteristics, _descriptor.primaryMeasurementId);
+        if (_primaryMeasurements != null) {
+          await _primaryMeasurements.setNotifyValue(true);
+          _measurementSubscription = _primaryMeasurements.value.listen((data) async {
+            if (data != null && data.length > 1) {
+              await _recordMeasurement(data);
+            }
+          });
+          _measuring = true;
+          _paused = false;
 
-            await _addActivity();
-          }
+          await _addActivity();
         }
       } else {
         Get.defaultDialog(
