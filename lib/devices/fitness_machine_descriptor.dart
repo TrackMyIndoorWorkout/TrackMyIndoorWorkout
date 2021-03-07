@@ -328,7 +328,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       double calories = 0;
       if (caloriesMetric != null) {
         calories = getCalories(data);
-        if (calories > 0) {
+        if (calories != null && calories > 0) {
           _hasTotalCalorieCounting = true;
         }
       }
