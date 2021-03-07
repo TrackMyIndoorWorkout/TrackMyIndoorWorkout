@@ -263,19 +263,18 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       }
     }
 
-    double elapsed;
-    Duration elapsedDuration;
-    int elapsedMillis;
-    if (data != null && timeMetric != null) {
-      elapsed = getTime(data);
-      elapsedMillis = (elapsed * 1000.0).toInt();
-      elapsedDuration = Duration(seconds: lastRecord.elapsed);
-    } else {
-      elapsedMillis =
-          DateTime.now().subtract(idleDuration).difference(activity.startDateTime).inMilliseconds;
-      elapsed = elapsedMillis / 1000.0;
-      elapsedDuration = Duration(milliseconds: elapsedMillis);
-    }
+    int elapsedMillis =
+        DateTime.now().subtract(idleDuration).difference(activity.startDateTime).inMilliseconds;
+    double elapsed = elapsedMillis / 1000.0;
+    Duration elapsedDuration = Duration(milliseconds: elapsedMillis);
+    // When the equipment supplied multiple data read per second but the Fitness Machine
+    // standard only supplies second resolution elapsed time the delta time becomes zero
+    // Therefore the FTMS elapsed time reading is kinda useless, causes problems.
+    // With this fix the calorie zeroing bug is revealed. Calorie preserving workaround can be
+    // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
+    // if (data != null && timeMetric != null) {
+    //   elapsed = getTime(data);
+    // }
 
     double newDistance = 0;
     final dT = (elapsedMillis - lastRecord.elapsedMillis) / 1000.0;
