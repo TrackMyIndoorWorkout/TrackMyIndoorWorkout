@@ -55,18 +55,18 @@ class HeartRateMonitor {
     }
   }
 
-  attach() async {
+  Future<void> attach() async {
     await _heartRateMeasurement.setNotifyValue(true);
     attached = true;
   }
 
-  detach() async {
+  Future<void> detach() async {
     await _heartRateMeasurement?.setNotifyValue(false);
     attached = false;
     await _hrSubscription?.cancel();
   }
 
-  disconnect() async {
+  Future<void> disconnect() async {
     await detach();
     _heartRateMeasurement = null;
     _heartRateService = null;

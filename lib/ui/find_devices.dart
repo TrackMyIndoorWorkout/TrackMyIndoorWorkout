@@ -48,7 +48,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _filterDevices;
   BluetoothDevice _openedDevice;
   List<BluetoothDevice> _scannedDevices;
-  HeartRateMonitor _heartRateMonitor;
   TextStyle _adjustedCaptionStyle;
   TextStyle _subtitleStyle;
   Map<String, List<String>> _servicesMap;
@@ -197,7 +196,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             return FloatingActionButton(
                                 heroTag: null,
                                 child: _isHeartRateMonitor(_servicesMap[d.id.id])
-                                    ? (_heartRateMonitor?.device?.id?.id == d.id.id
+                                    ? ((Get.isRegistered<HeartRateMonitor>() &&
+                                            Get.find<HeartRateMonitor>()?.device?.id?.id == d.id.id)
                                         ? HeartRateDisplay()
                                         : Icon(Icons.favorite))
                                     : Icon(Icons.open_in_new),
@@ -238,13 +238,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     }
                     return ScanResultTile(
                       result: r,
-                      heartRateMonitor: _heartRateMonitor,
                       onEquipmentTap: () async {
                         await FlutterBlue.instance.stopScan();
                         await Future.delayed(Duration(milliseconds: 100));
                         bool goOn = true;
                         if (!r.device.getDescriptor(r.serviceUuids).canMeasureHeartRate &&
-                            _heartRateMonitor == null) {
+                            (!Get.isRegistered<HeartRateMonitor>() ||
+                                Get.find<HeartRateMonitor>() == null)) {
                           bool dialogResult = await showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
@@ -275,8 +275,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         }
                       },
                       onHrmTap: () async {
-                        if (_heartRateMonitor != null &&
-                            _heartRateMonitor.device.id.id != r.device.id.id) {
+                        var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                            ? Get.find<HeartRateMonitor>()
+                            : null;
+                        if (heartRateMonitor != null &&
+                            heartRateMonitor.device.id.id != r.device.id.id) {
                           if (!(await showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
@@ -301,26 +304,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             return;
                           }
                         }
-                        if (_heartRateMonitor != null &&
-                            _heartRateMonitor.device.id.id != r.device.id.id) {
-                          await _heartRateMonitor.detach();
-                          await _heartRateMonitor.disconnect();
+                        if (heartRateMonitor != null &&
+                            heartRateMonitor.device.id.id != r.device.id.id) {
+                          await heartRateMonitor.detach();
+                          await heartRateMonitor.disconnect();
                         }
-                        HeartRateMonitor heartRateMonitor;
-                        if (_heartRateMonitor == null ||
-                            _heartRateMonitor.device?.id?.id != r.device.id.id) {
-                          if (_heartRateMonitor == null) {
-                            heartRateMonitor = new HeartRateMonitor(device: r.device);
-                            Get.put<HeartRateMonitor>(heartRateMonitor);
-                            setState(() {
-                              _heartRateMonitor = heartRateMonitor;
-                            });
-                          } else {
-                            _heartRateMonitor.device = r.device;
-                          }
+                        if (heartRateMonitor == null ||
+                            heartRateMonitor.device?.id?.id != r.device.id.id) {
+                          heartRateMonitor = new HeartRateMonitor(device: r.device);
+                          Get.put<HeartRateMonitor>(heartRateMonitor);
                           await heartRateMonitor.connect();
-                        } else {
-                          heartRateMonitor = _heartRateMonitor;
                         }
                         await heartRateMonitor.attach();
                       },

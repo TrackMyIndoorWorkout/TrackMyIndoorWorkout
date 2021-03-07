@@ -385,7 +385,7 @@ class RecordingState extends State<RecordingScreen> {
       fontFamily: FONT_FAMILY,
       color: Colors.indigo,
     );
-    _heartRateMonitor = Get.find<HeartRateMonitor>();
+    _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     PrefService.setString(LAST_EQUIPMENT_ID_TAG, device.id.id);
     _descriptor.setPowerThrottle(
       PrefService.getString(THROTTLE_POWER_TAG),
@@ -468,10 +468,11 @@ class RecordingState extends State<RecordingScreen> {
     if (_uxDebug) {
       _simulateMeasurements();
     } else {
-      _heartRateMonitor?.attach();
-      _heartRateSubscription = _heartRateMonitor?.listenForYourHeart?.listen((heartRate) async {
-        setState(() {
-          _values[4] = heartRate?.toString() ?? "--";
+      _heartRateMonitor?.attach()?.then((_) {
+        _heartRateSubscription = _heartRateMonitor?.listenForYourHeart?.listen((heartRate) async {
+          setState(() {
+            _values[4] = heartRate?.toString() ?? "--";
+          });
         });
       });
       _initialConnectOnDemand();

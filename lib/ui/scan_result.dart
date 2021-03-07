@@ -1,6 +1,7 @@
 import 'package:charts_flutter/flutter.dart' hide TextStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:get/get.dart';
 import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
 import '../devices/heart_rate_monitor.dart';
@@ -59,7 +60,6 @@ class ScanResultTile extends StatelessWidget {
   const ScanResultTile({
     Key key,
     this.result,
-    @required this.heartRateMonitor,
     @required this.onEquipmentTap,
     @required this.onHrmTap,
   })  : assert(onEquipmentTap != null),
@@ -67,7 +67,6 @@ class ScanResultTile extends StatelessWidget {
         super(key: key);
 
   final ScanResult result;
-  final HeartRateMonitor heartRateMonitor;
   final VoidCallback onEquipmentTap;
   final VoidCallback onHrmTap;
 
@@ -160,7 +159,8 @@ class ScanResultTile extends StatelessWidget {
       trailing: FloatingActionButton(
         heroTag: null,
         child: result.isHeartRateMonitor
-            ? heartRateMonitor?.device?.id?.id == result.device.id.id
+            ? (Get.isRegistered<HeartRateMonitor>() &&
+                    Get.find<HeartRateMonitor>()?.device?.id?.id == result.device.id.id)
                 ? HeartRateDisplay()
                 : Icon(Icons.favorite)
             : Icon(Icons.play_arrow),

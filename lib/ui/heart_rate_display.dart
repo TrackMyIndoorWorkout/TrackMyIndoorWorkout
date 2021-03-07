@@ -16,7 +16,7 @@ class HeartRateDisplayState extends State<HeartRateDisplay> {
 
   @override
   void initState() {
-    _heartRateMonitor = Get.find<HeartRateMonitor>();
+    _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     super.initState();
   }
 
