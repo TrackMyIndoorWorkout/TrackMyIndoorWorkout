@@ -289,7 +289,6 @@ class RecordingState extends State<RecordingScreen> {
             await _primaryMeasurements.setNotifyValue(true);
             _measurementSubscription = _primaryMeasurements.value.listen((data) async {
               if (data != null && data.length > 1) {
-                // TODO: calorie preserve here?
                 await _recordMeasurement(data);
               }
             });
