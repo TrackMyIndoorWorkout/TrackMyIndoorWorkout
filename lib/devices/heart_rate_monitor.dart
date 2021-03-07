@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import '../devices/gatt_constants.dart';
 import 'byte_metric_descriptor.dart';
@@ -52,7 +51,6 @@ class HeartRateMonitor {
     if (!attached) return;
     await for (var byteString in _heartRateMeasurement.value) {
       heartRate = _processHeartRateMeasurement(byteString);
-      debugPrint("HR $heartRate");
       yield heartRate;
     }
   }
