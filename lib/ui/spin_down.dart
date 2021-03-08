@@ -303,6 +303,17 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   @override
+  dispose() {
+    _controlPointSubscription?.cancel();
+    _controlPoint?.setNotifyValue(false);
+
+    _weightDataSubscription?.cancel();
+    _weightData?.setNotifyValue(false);
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
