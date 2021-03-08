@@ -6,6 +6,7 @@ import '../devices/devices.dart';
 import '../devices/gatt_constants.dart';
 import '../devices/heart_rate_monitor.dart';
 import '../persistence/preferences.dart';
+import '../utils/string_ex.dart';
 import 'find_devices.dart';
 import 'heart_rate_display.dart';
 
@@ -32,8 +33,7 @@ extension EnhancedScanResult on ScanResult {
         return true;
       }
       if (advertisementData.serviceUuids.isNotEmpty) {
-        final serviceUuids =
-            advertisementData.serviceUuids.map((x) => x.substring(4, 8).toLowerCase()).toList();
+        final serviceUuids = advertisementData.serviceUuids.map((x) => x.uuidString()).toList();
         if (serviceUuids.contains(FITNESS_MACHINE_ID) ||
             serviceUuids.contains(PRECOR_SERVICE_ID) ||
             serviceUuids.contains(HEART_RATE_SERVICE_ID)) {
@@ -47,7 +47,7 @@ extension EnhancedScanResult on ScanResult {
 
   List<String> get serviceUuids => advertisementData.serviceUuids.isEmpty
       ? []
-      : advertisementData.serviceUuids.map((x) => x.substring(4, 8).toLowerCase()).toList();
+      : advertisementData.serviceUuids.map((x) => x.uuidString()).toList();
 
   bool hasService(String serviceId) {
     return serviceUuids.contains(serviceId);
@@ -140,7 +140,7 @@ class ScanResultTile extends StatelessWidget {
     }
     List<String> res = [];
     data.forEach((id, bytes) {
-      res.add('${id.substring(4, 8).toUpperCase()}: ${getNiceHexArray(bytes)}');
+      res.add('${id.uuidString()}: ${getNiceHexArray(bytes)}');
     });
     return res.join(', ');
   }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_blue/flutter_blue.dart';
 import '../devices/gatt_constants.dart';
+import '../utils/guid_ex.dart';
 import 'byte_metric_descriptor.dart';
 import 'short_metric_descriptor.dart';
 
@@ -32,12 +33,12 @@ class HeartRateMonitor {
     connected = true;
     final services = await device.discoverServices();
     _heartRateService = services.firstWhere(
-        (service) => service.uuid.toString().substring(4, 8).toLowerCase() == HEART_RATE_SERVICE_ID,
+        (service) => service.uuid.uuidString() == HEART_RATE_SERVICE_ID,
         orElse: () => null);
 
     if (_heartRateService != null) {
       _heartRateMeasurement = _heartRateService.characteristics.firstWhere(
-          (ch) => ch.uuid.toString().substring(4, 8).toLowerCase() == HEART_RATE_MEASUREMENT_ID,
+          (ch) => ch.uuid.uuidString() == HEART_RATE_MEASUREMENT_ID,
           orElse: () => null);
     }
     if (_heartRateMeasurement != null) {
