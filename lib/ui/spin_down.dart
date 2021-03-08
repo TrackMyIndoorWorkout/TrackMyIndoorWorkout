@@ -378,7 +378,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                           style: _weightInputButtonTextStyle(),
                         ),
                         style: _weightInputButtonStyle(),
-                        onPressed: () async => _onWeightInputButtonPressed,
+                        onPressed: () async => await _onWeightInputButtonPressed(),
                       ),
                     ],
                   ),
@@ -400,7 +400,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                     children: [
                       ElevatedButton(
                         child: Text(_calibrationButtonText(), style: _smallerTextStyle),
-                        onPressed: () async => onCalibrationButtonPressed,
+                        onPressed: () async => await onCalibrationButtonPressed(),
                       ),
                     ],
                   ),
