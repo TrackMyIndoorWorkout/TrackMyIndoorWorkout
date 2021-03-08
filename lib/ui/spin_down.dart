@@ -200,6 +200,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     final weight = (_si ? _weight : _weight * LB_TO_KG) * 100;
     final weightLsb = weight % 256;
     final weightMsb = weight ~/ 256;
+    debugPrint("Sending weight: $weight ($weightLsb $weightMsb)");
+    await _weightData.write([weightLsb, weightMsb]);
     await _weightData.setNotifyValue(true);
     _weightDataSubscription = _weightData.value.listen((response) async {
       if (response?.length == 1) {
@@ -227,7 +229,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         debugPrint("Weight response X $response");
       }
     });
-    await _weightData.write([weightLsb, weightMsb]);
   }
 
   String _calibrationInstruction() {
@@ -250,6 +251,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     setState(() {
       _calibrationState = CalibrationState.CalibrationInProgress;
     });
+    await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
     await _controlPoint.setNotifyValue(true); // Is this needed for indication?
     _controlPointSubscription = _controlPoint.value.listen((data) async {
       if (data?.length != 1 || data[0] != SPIN_DOWN_OPCODE) {
@@ -279,7 +281,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         ;
       });
     });
-    await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
   }
 
   @override
