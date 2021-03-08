@@ -132,16 +132,32 @@ class RecordingState extends State<RecordingScreen> {
   bool _isLoading;
 
   _initialConnectOnDemand() async {
+    var alreadyConnected = false;
     if (initialState == BluetoothDeviceState.disconnected ||
         initialState == BluetoothDeviceState.disconnecting) {
-      device.connect();
-    } else if (initialState == BluetoothDeviceState.connected && !_discovering) {
+      try {
+        await device.connect();
+      } catch (e) {
+        if (e.code != 'already_connected') {
+          throw e;
+        } else {
+          alreadyConnected = true;
+        }
+      }
+    }
+    if (initialState == BluetoothDeviceState.connected && !_discovering || alreadyConnected) {
       try {
         _discoverServices();
       } on PlatformException catch (e, stack) {
         debugPrint("${e.message}");
         debugPrintStack(stackTrace: stack, label: "trace:");
-        device.connect();
+        try {
+          await device.connect();
+        } catch (e) {
+          if (e.code != 'already_connected') {
+            throw e;
+          }
+        }
       }
     }
   }
@@ -883,8 +899,14 @@ class RecordingState extends State<RecordingScreen> {
                     _discoverServices();
                     break;
                   case BluetoothDeviceState.disconnected:
-                    onPressed = () {
-                      device.connect();
+                    onPressed = () async {
+                      try {
+                        await device.connect();
+                      } catch (e) {
+                        if (e.code != 'already_connected') {
+                          throw e;
+                        }
+                      }
                     };
                     icon = Icons.bluetooth_disabled;
                     break;
@@ -905,9 +927,20 @@ class RecordingState extends State<RecordingScreen> {
                   if (_measuring) {
                     await _finishActivity(false);
                   } else {
-                    if (await device.state.last == BluetoothDeviceState.disconnected) {
-                      device.connect();
-                    } else {
+                    final deviceState = await device.state.last;
+                    var alreadyConnected = false;
+                    if (deviceState == BluetoothDeviceState.disconnected) {
+                      try {
+                        await device.connect();
+                      } catch (e) {
+                        if (e.code != 'already_connected') {
+                          throw e;
+                        } else {
+                          alreadyConnected = true;
+                        }
+                      }
+                    }
+                    if (deviceState != BluetoothDeviceState.disconnected || alreadyConnected) {
                       _discoverServices();
                     }
                   }

@@ -313,7 +313,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             heartRateMonitor.device?.id?.id != r.device.id.id) {
                           heartRateMonitor = new HeartRateMonitor(device: r.device);
                           Get.put<HeartRateMonitor>(heartRateMonitor);
-                          await heartRateMonitor.connect();
+                          try {
+                            await heartRateMonitor.connect();
+                          } catch (e) {
+                            if (e.code != 'already_connected') {
+                              throw e;
+                            }
+                          }
                         }
                         await heartRateMonitor.attach();
                       },

@@ -29,23 +29,31 @@ class HeartRateMonitor {
   }
 
   Future<bool> connect() async {
-    await device.connect();
-    connected = true;
-    final services = await device.discoverServices();
-    _heartRateService = services.firstWhere(
-        (service) => service.uuid.uuidString() == HEART_RATE_SERVICE_ID,
-        orElse: () => null);
-
-    if (_heartRateService != null) {
-      _heartRateMeasurement = _heartRateService.characteristics.firstWhere(
-          (ch) => ch.uuid.uuidString() == HEART_RATE_MEASUREMENT_ID,
+    var ret = false;
+    try {
+      await device.connect();
+    } catch (e) {
+      if (e.code != 'already_connected') {
+        throw e;
+      }
+    } finally {
+      connected = true;
+      final services = await device.discoverServices();
+      _heartRateService = services.firstWhere(
+          (service) => service.uuid.uuidString() == HEART_RATE_SERVICE_ID,
           orElse: () => null);
+
+      if (_heartRateService != null) {
+        _heartRateMeasurement = _heartRateService.characteristics.firstWhere(
+            (ch) => ch.uuid.uuidString() == HEART_RATE_MEASUREMENT_ID,
+            orElse: () => null);
+      }
+      if (_heartRateMeasurement != null) {
+        await attach();
+        ret = true;
+      }
     }
-    if (_heartRateMeasurement != null) {
-      await attach();
-      return true;
-    }
-    return false;
+    return ret;
   }
 
   Stream<int> get listenForYourHeart async* {
