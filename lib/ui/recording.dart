@@ -146,20 +146,6 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  bool _areListsEqual(var list1, var list2) {
-    if (!(list1 is List && list2 is List) || list1.length != list2.length) {
-      return false;
-    }
-
-    for (int i = 0; i < list1.length; i++) {
-      if (list1[i] != list2[i]) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   _addGraphData(Record record) {
     if (_simplerUi) {
       return;
@@ -247,23 +233,24 @@ class RecordingState extends State<RecordingScreen> {
       });
       final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
       final nameCharacteristic =
-          BluetoothDeviceEx.filterCharacteristic(deviceInfo.characteristics, MANUFACTURER_NAME_ID);
-      var name;
+          BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
+      var nameString;
       try {
-        name = await nameCharacteristic.read();
+        final nameBytes = await nameCharacteristic.read();
+        nameString = String.fromCharCodes(nameBytes);
       } on PlatformException catch (e, stack) {
         debugPrint("${e.message}");
         debugPrintStack(stackTrace: stack, label: "trace:");
       }
 
-      if (name == null) {
+      if (nameString == null) {
         setState(() {
           _discovering = false;
         });
         return services;
       }
 
-      if (_areListsEqual(name, _descriptor.manufacturer)) {
+      if (nameString == _descriptor.manufacturer) {
         if (_descriptor.cadenceServiceId != '') {
           final cadenceMeasurementService =
               BluetoothDeviceEx.filterService(services, _descriptor.cadenceServiceId);

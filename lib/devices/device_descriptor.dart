@@ -31,9 +31,8 @@ abstract class DeviceDescriptor {
   final String modelName;
   var fullName;
   final String namePrefix;
-  final List<int> nameStart;
-  final List<int> manufacturer;
-  final List<int> model;
+  final String manufacturer;
+  final String model;
   final String primaryServiceId;
   final String primaryMeasurementId;
   final MeasurementProcessing canPrimaryMeasurementProcessed;
@@ -78,7 +77,6 @@ abstract class DeviceDescriptor {
     @required this.modelName,
     this.fullName = '',
     @required this.namePrefix,
-    this.nameStart,
     this.manufacturer,
     this.model,
     this.primaryServiceId,

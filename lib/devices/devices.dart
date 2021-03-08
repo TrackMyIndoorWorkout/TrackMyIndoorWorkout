@@ -14,12 +14,8 @@ Map<String, DeviceDescriptor> deviceMap = {
     vendorName: "Precor",
     modelName: "Spinner Chrono Power",
     namePrefix: "CHRONO",
-    nameStart: [67, 72, 82, 79, 78, 79],
-    // CHRONO
-    manufacturer: [80, 114, 101, 99, 111, 114],
-    // Precor
-    model: [49],
-    // 1
+    manufacturer: "Precor",
+    model: "1",
     primaryServiceId: PRECOR_SERVICE_ID,
     primaryMeasurementId: PRECOR_MEASUREMENT_ID,
     canPrimaryMeasurementProcessed: (List<int> data) {
@@ -45,12 +41,8 @@ Map<String, DeviceDescriptor> deviceMap = {
     vendorName: "Nautilus, Inc",
     modelName: "Schwinn IC4/IC8",
     namePrefix: "IC Bike",
-    nameStart: [73, 67, 32, 66, 111, 113, 105],
-    // IC Bike
-    manufacturer: [78, 97, 117, 116, 105, 108, 117, 115, 44, 32, 73, 110, 99],
-    // Nautilus, Inc
-    model: [73, 67, 32, 66, 73, 75, 69],
-    // IC BIKE
+    manufacturer: "Nautilus, Inc",
+    model: "IC BIKE",
     canPrimaryMeasurementProcessed: (List<int> data) {
       return data != null && data.length > 1;
     },
@@ -76,40 +68,8 @@ Map<String, DeviceDescriptor> deviceMap = {
     vendorName: "KayakPro",
     modelName: "KayakPro Compact",
     namePrefix: "KayakPro",
-    nameStart: [75, 97, 121, 97, 107, 80, 114, 111],
-    // KayakPro
-    manufacturer: [
-      78,
-      111,
-      114,
-      116,
-      104,
-      32,
-      80,
-      111,
-      108,
-      101,
-      32,
-      69,
-      110,
-      103,
-      105,
-      110,
-      101,
-      101,
-      114,
-      105,
-      110,
-      103,
-      32,
-      73,
-      110,
-      99,
-      46
-    ],
-    // North Pole Engineering Inc.
-    model: [54, 52],
-    // 64
+    manufacturer: "North Pole Engineering Inc.",
+    model: "64",
     // Rower Data
     canPrimaryMeasurementProcessed: (List<int> data) {
       return data != null && data.length > 1;
