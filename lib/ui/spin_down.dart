@@ -50,7 +50,7 @@ enum CalibrationState {
 
 class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   static const STEP_WEIGHT_INPUT = 0;
-  static const STEP_FLAILING = 1;
+  static const STEP_CALIBRATING = 1;
   static const STEP_DONE = 2;
   static const STEP_NOT_SUPPORTED = 3;
 
@@ -66,12 +66,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   int _step;
   int _weight;
   BluetoothCharacteristic _weightData;
+  StreamSubscription _weightDataSubscription;
   BluetoothCharacteristic _controlPoint;
   StreamSubscription _controlPointSubscription;
   BluetoothCharacteristic _fitnessMachineStatus;
   BluetoothCharacteristic _fitnessMachineData;
   CalibrationState _calibrationState;
-  String _instruction;
   double _targetSpeedHigh;
   double _targetSpeedLow;
   double _currentSpeed;
@@ -152,6 +152,136 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     });
   }
 
+  String _weightInputButtonText() {
+    if (_calibrationState == CalibrationState.WeighInSuccess) return 'Next >';
+    if (_calibrationState == CalibrationState.ReadyToWeighIn) return 'Submit';
+    if (_calibrationState == CalibrationState.WeighInProblem) return 'Retry';
+
+    return 'Wait...';
+  }
+
+  TextStyle _weightInputButtonTextStyle() {
+    return _smallerTextStyle.merge(TextStyle(
+        color: _calibrationState == CalibrationState.WeighInSuccess || _canSubmitWeight
+            ? Colors.black
+            : Colors.black54));
+  }
+
+  ButtonStyle _weightInputButtonStyle() {
+    return ElevatedButton.styleFrom(
+      primary: _calibrationState == CalibrationState.WeighInSuccess || _canSubmitWeight
+          ? Colors.lightGreen.shade100
+          : Colors.black12,
+    );
+  }
+
+  Future<void> _onWeightInputButtonPressed() async {
+    if (_calibrationState == CalibrationState.WeighInSuccess) {
+      setState(() {
+        _step = STEP_CALIBRATING;
+        _calibrationState = CalibrationState.ReadyToFlail;
+      });
+      return;
+    }
+
+    if (_calibrationState == CalibrationState.PreInit ||
+        _calibrationState == CalibrationState.Initializing) {
+      Get.snackbar("Please wait", "Initializing equipment for calibration...");
+      return;
+    }
+    if (_calibrationState == CalibrationState.WeightSubmitting) {
+      Get.snackbar("Please wait", "Weight submission is in progress...");
+      return;
+    }
+
+    setState(() {
+      _calibrationState = CalibrationState.WeightSubmitting;
+    });
+    final weight = _si ? _weight : (_weight * LB_TO_KG).toInt();
+    final weightLsb = weight % 256;
+    final weightMsb = weight ~/ 256;
+    await _weightData.setNotifyValue(true);
+    _weightDataSubscription = _weightData.value.listen((response) async {
+      if (response?.length == 1) {
+        debugPrint("Weight response 1 ${response[0]}");
+        if (response[0] != WEIGHT_SUCCESS_OPCODE) {
+          Get.snackbar("Weight setting error", "Retry weight setting to continue");
+          setState(() {
+            _calibrationState = CalibrationState.WeighInProblem;
+          });
+        }
+      } else if (response?.length == 2) {
+        debugPrint("Weight response 2 ${response[0]} ${response[1]}");
+        if (response[0] != weightLsb || response[1] != weightMsb) {
+          Get.snackbar("Weight setting error", "Retry weight setting to continue");
+          setState(() {
+            _calibrationState = CalibrationState.WeighInProblem;
+          });
+        } else {
+          Get.snackbar("Weight setting", "Successful");
+          setState(() {
+            _calibrationState = CalibrationState.WeighInSuccess;
+          });
+        }
+      } else {
+        debugPrint("Weight response X $response");
+      }
+    });
+    await _weightData.write([weightLsb, weightMsb]);
+  }
+
+  String _calibrationInstruction() {
+    if (_calibrationState == CalibrationState.ReadyToFlail) return "START!";
+
+    if (_calibrationState == CalibrationState.FlailInProgress) return "FASTER!";
+
+    return "STOP!!!";
+  }
+
+  String _calibrationButtonText() {
+    return _calibrationState == CalibrationState.ReadyToFlail ? 'Start' : 'Stop';
+  }
+
+  Future<void> onCalibrationButtonPressed() async {
+    if (_calibrationState == CalibrationState.FlailInProgress) {
+      Get.snackbar("Calibration", "Wait for instructions!");
+      return;
+    }
+    setState(() {
+      _calibrationState = CalibrationState.FlailInProgress;
+    });
+    await _controlPoint.setNotifyValue(true); // Is this needed for indication?
+    _controlPointSubscription = _controlPoint.value.listen((data) async {
+      if (data?.length != 1 || data[0] != SPIN_DOWN_OPCODE) {
+        Get.snackbar("Calibration Start error", "Please retry");
+        setState(() {
+          _step = STEP_DONE;
+          _calibrationState = CalibrationState.FlailFail;
+        });
+      }
+      final spinDownData = await _controlPoint.read();
+      if (spinDownData?.length != 7 ||
+          spinDownData[0] != CONTROL_OPCODE ||
+          spinDownData[1] != SPIN_DOWN_OPCODE ||
+          spinDownData[2] != SUCCESS_RESPONSE) {
+        Get.snackbar("Calibration Start error", "Please retry");
+        setState(() {
+          _step = STEP_DONE;
+          _calibrationState = CalibrationState.FlailFail;
+        });
+        return;
+      }
+      _targetSpeedHigh = (spinDownData[3] * 256 + spinDownData[4]) / 100;
+      _targetSpeedLow = (spinDownData[5] * 256 + spinDownData[6]) / 100;
+      Get.snackbar("Calibration started", "Go!");
+      _controlPoint.setNotifyValue(true);
+      _controlPointSubscription = _controlPoint.value.listen((data) {
+        ;
+      });
+    });
+    await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
+  }
+
   @override
   initState() {
     super.initState();
@@ -162,7 +292,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _targetSpeedHigh = 0.0;
     _targetSpeedLow = 0.0;
     _currentSpeed = 0.0;
-    _instruction = "";
     _weight = 50;
     _sizeDefault = Get.mediaQuery.size.width / 10;
     _smallerTextStyle = TextStyle(
@@ -233,85 +362,17 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                     children: [
                       ElevatedButton(
                         child: Text(
-                            _calibrationState == CalibrationState.WeighInSuccess
-                                ? 'Next >'
-                                : (_calibrationState == CalibrationState.ReadyToWeighIn
-                                    ? 'Submit'
-                                    : 'Wait...'),
-                            style: _smallerTextStyle.merge(TextStyle(
-                                color: _calibrationState == CalibrationState.WeighInSuccess ||
-                                        _canSubmitWeight
-                                    ? Colors.black
-                                    : Colors.black54))),
-                        style: ElevatedButton.styleFrom(
-                          primary: _calibrationState == CalibrationState.WeighInSuccess ||
-                                  _canSubmitWeight
-                              ? Colors.lightGreen.shade100
-                              : Colors.black12,
+                          _weightInputButtonText(),
+                          style: _weightInputButtonTextStyle(),
                         ),
-                        onPressed: () async {
-                          if (_calibrationState == CalibrationState.WeighInSuccess) {
-                            setState(() {
-                              _step = STEP_FLAILING;
-                              _calibrationState = CalibrationState.ReadyToFlail;
-                            });
-                            return;
-                          }
-
-                          if (_calibrationState == CalibrationState.PreInit ||
-                              _calibrationState == CalibrationState.Initializing) {
-                            Get.snackbar(
-                                "Please wait", "Initializing equipment for calibration...");
-                            return;
-                          }
-                          if (_calibrationState == CalibrationState.WeightSubmitting) {
-                            Get.snackbar("Please wait", "Weight submission is in progress...");
-                            return;
-                          }
-
-                          setState(() {
-                            _calibrationState = CalibrationState.WeightSubmitting;
-                          });
-                          final weight = _si ? _weight : (_weight * LB_TO_KG).toInt();
-                          final weightLsb = weight % 256;
-                          final weightMsb = weight ~/ 256;
-                          _weightData.value.listen((response) {
-                            ;
-                          });
-                          await _weightData.write([weightLsb, weightMsb]);
-                          final responseOpcode =
-                              await _weightData.read(); // TODO: stuck, need subscription?
-                          if (responseOpcode?.length != 1 ||
-                              responseOpcode[0] != WEIGHT_SUCCESS_OPCODE) {
-                            Get.snackbar(
-                                "Weight setting error", "Retry weight setting to continue");
-                            setState(() {
-                              _calibrationState = CalibrationState.WeighInProblem;
-                            });
-                            return;
-                          }
-                          final weightEcho = await _weightData.read();
-                          if (weightEcho?.length != 2 ||
-                              weightEcho[0] != weightLsb ||
-                              weightEcho[1] != weightMsb) {
-                            Get.snackbar(
-                                "Weight setting error", "Retry weight setting to continue");
-                            setState(() {
-                              _calibrationState = CalibrationState.WeighInProblem;
-                            });
-                            return;
-                          }
-                          Get.snackbar("Weight setting", "Successful");
-                          setState(() {
-                            _calibrationState = CalibrationState.WeighInSuccess;
-                          });
-                        },
+                        style: _weightInputButtonStyle(),
+                        onPressed: () async => _onWeightInputButtonPressed,
                       ),
                     ],
                   ),
                 ],
               ),
-              // 1 - STEP_FLAILING
+              // 1 - STEP_CALIBRATING
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -322,58 +383,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                   Text("Current ${descriptor.speedTitle}:", style: _smallerTextStyle),
                   Text("${speedOrPaceString(_targetSpeedHigh, _si, descriptor.sport)}",
                       style: _smallerTextStyle),
-                  Text(
-                      _calibrationState == CalibrationState.ReadyToFlail
-                          ? "START!"
-                          : (_calibrationState == CalibrationState.FlailInProgress
-                              ? "FASTER!"
-                              : "STOP!!!"),
-                      style: _largerTextStyle),
+                  Text(_calibrationInstruction(), style: _largerTextStyle),
                   Row(
                     children: [
                       ElevatedButton(
-                        child: Text(
-                            _calibrationState == CalibrationState.ReadyToFlail ? 'Start' : 'Stop',
-                            style: _smallerTextStyle),
-                        onPressed: () async {
-                          if (_calibrationState == CalibrationState.FlailInProgress) {
-                            Get.snackbar("Calibration", "Wait for instructions!");
-                            return;
-                          }
-                          setState(() {
-                            _calibrationState = CalibrationState.FlailInProgress;
-                          });
-                          await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
-                          final responseOpcode = await _controlPoint.read();
-                          if (responseOpcode?.length != 1 ||
-                              responseOpcode[0] != SPIN_DOWN_OPCODE) {
-                            Get.snackbar("Calibration Start error", "Please retry");
-                            setState(() {
-                              _step = STEP_DONE;
-                              _calibrationState = CalibrationState.FlailFail;
-                            });
-                            return;
-                          }
-                          final spinDownData = await _controlPoint.read();
-                          if (spinDownData?.length != 7 ||
-                              spinDownData[0] != CONTROL_OPCODE ||
-                              spinDownData[1] != SPIN_DOWN_OPCODE ||
-                              spinDownData[2] != SUCCESS_RESPONSE) {
-                            Get.snackbar("Calibration Start error", "Please retry");
-                            setState(() {
-                              _step = STEP_DONE;
-                              _calibrationState = CalibrationState.FlailFail;
-                            });
-                            return;
-                          }
-                          _targetSpeedHigh = (spinDownData[3] * 256 + spinDownData[4]) / 100;
-                          _targetSpeedLow = (spinDownData[5] * 256 + spinDownData[6]) / 100;
-                          Get.snackbar("Calibration started", "Go!");
-                          _controlPoint.setNotifyValue(true);
-                          _controlPointSubscription = _controlPoint.value.listen((data) {
-                            ;
-                          });
-                        },
+                        child: Text(_calibrationButtonText(), style: _smallerTextStyle),
+                        onPressed: () async => onCalibrationButtonPressed,
                       ),
                     ],
                   ),
@@ -411,8 +426,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                   textAlign: TextAlign.center,
                   softWrap: true,
                   text: TextSpan(
-                      text: "${device.name} doesn't seem to support calibration",
-                      style: _smallerTextStyle),
+                    text: "${device.name} doesn't seem to support calibration",
+                    style: _smallerTextStyle,
+                  ),
                 ),
               ),
             ],
