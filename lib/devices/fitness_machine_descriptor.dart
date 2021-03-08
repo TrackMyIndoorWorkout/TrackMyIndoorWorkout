@@ -252,7 +252,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     List<int> data,
     HeartRateMonitor hrm,
   ) {
-    if (data != null && data.length > 2) {
+    if ((data?.length ?? 0) > 2) {
       var flag = data[0] + 256 * data[1];
       if (flag != _featuresFlag) {
         _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG);

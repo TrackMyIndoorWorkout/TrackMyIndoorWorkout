@@ -44,7 +44,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturer: "Nautilus, Inc",
     model: "IC BIKE",
     canPrimaryMeasurementProcessed: (List<int> data) {
-      return data != null && data.length > 1;
+      return (data?.length ?? 0) > 1;
     },
     calorieFactor: 1.40,
   ),
@@ -72,7 +72,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: "64",
     // Rower Data
     canPrimaryMeasurementProcessed: (List<int> data) {
-      return data != null && data.length > 1;
+      return (data?.length ?? 0) > 1;
     },
     canMeasureHeartRate: false,
   ),

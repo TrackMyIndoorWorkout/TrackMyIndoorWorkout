@@ -176,13 +176,13 @@ class TCXOutput {
     // Add Maximum speed in meter/second
     addElement('MaximumSpeed', tcxInfo.maxSpeed.toStringAsFixed(2));
 
-    if (tcxInfo.averageHeartRate != null && tcxInfo.averageHeartRate > 0) {
+    if ((tcxInfo.averageHeartRate ?? 0) > 0) {
       addElement('AverageHeartRateBpm', tcxInfo.averageHeartRate.toStringAsFixed(2));
     }
-    if (tcxInfo.maximumHeartRate != null && tcxInfo.maximumHeartRate > 0) {
+    if ((tcxInfo.maximumHeartRate ?? 0) > 0) {
       addElement('MaximumHeartRateBpm', tcxInfo.maximumHeartRate.toString());
     }
-    if (tcxInfo.averageCadence != null && tcxInfo.averageCadence > 0) {
+    if ((tcxInfo.averageCadence ?? 0) > 0) {
       final cadence = min(max(tcxInfo.averageCadence, 0), 254).toInt();
       addElement('Cadence', cadence.toStringAsFixed(2));
     }

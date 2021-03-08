@@ -191,7 +191,7 @@ abstract class Auth {
     }
     final Token tokenStored = await getStoredToken();
     accessToken = tokenStored.accessToken;
-    return accessToken != null && accessToken.length > 0;
+    return (accessToken?.length ?? 0) > 0;
   }
 
   /// Do Strava Authentication.

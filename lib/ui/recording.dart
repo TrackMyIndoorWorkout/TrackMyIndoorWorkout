@@ -259,7 +259,7 @@ class RecordingState extends State<RecordingScreen> {
           if (_cadenceMeasurements != null) {
             await _cadenceMeasurements.setNotifyValue(true);
             _cadenceSubscription = _cadenceMeasurements.value.listen((data) async {
-              if (data != null && data.length > 1) {
+              if (data?.length ?? 0 > 1) {
                 await _processCadenceMeasurement(data);
               }
             });
@@ -272,7 +272,7 @@ class RecordingState extends State<RecordingScreen> {
         if (_primaryMeasurements != null) {
           await _primaryMeasurements.setNotifyValue(true);
           _measurementSubscription = _primaryMeasurements.value.listen((data) async {
-            if (data != null && data.length > 1) {
+            if ((data?.length ?? 0) > 1) {
               await _recordMeasurement(data);
             }
           });

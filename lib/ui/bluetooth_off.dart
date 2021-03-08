@@ -12,7 +12,7 @@ class BluetoothOffScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final btState = state != null ? state.toString().substring(15) : 'not available';
+    final btState = state?.toString()?.substring(15) ?? 'not available';
     return Scaffold(
       backgroundColor: Colors.lightBlue,
       body: Center(

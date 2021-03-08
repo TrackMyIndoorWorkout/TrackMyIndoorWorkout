@@ -80,7 +80,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   }
 
   bool _isHeartRateMonitor(List<String> serviceUuids) {
-    return serviceUuids != null && serviceUuids.contains(HEART_RATE_SERVICE_ID);
+    return serviceUuids?.contains(HEART_RATE_SERVICE_ID) ?? false;
   }
 
   @override
