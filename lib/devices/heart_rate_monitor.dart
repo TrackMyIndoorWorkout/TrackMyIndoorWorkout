@@ -113,12 +113,12 @@ class HeartRateMonitor {
   int _processHeartRateMeasurement(List<int> data) {
     if (_canHeartRateMeasurementProcessed(data)) {
       if (_byteHeartRateMetric != null) {
-        final newHeartRate = _byteHeartRateMetric?.getMeasurementValue(data)?.toInt();
+        final newHeartRate = _byteHeartRateMetric.getMeasurementValue(data)?.toInt();
         if (newHeartRate != null && newHeartRate > 0) {
           heartRate = newHeartRate;
         }
       } else if (_shortHeartRateMetric != null) {
-        final newHeartRate = _shortHeartRateMetric?.getMeasurementValue(data)?.toInt();
+        final newHeartRate = _shortHeartRateMetric.getMeasurementValue(data)?.toInt();
         if (newHeartRate != null && newHeartRate > 0) {
           heartRate = newHeartRate;
         }
