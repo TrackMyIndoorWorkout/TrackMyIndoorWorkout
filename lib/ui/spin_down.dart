@@ -41,10 +41,10 @@ enum CalibrationState {
   WeightSubmitting,
   WeighInProblem,
   WeighInSuccess,
-  ReadyToFlail,
-  FlailInProgress,
-  FlailSuccess,
-  FlailFail,
+  ReadyToCalibrate,
+  CalibrationInProgress,
+  CalibrationSuccess,
+  CalibrationFail,
   NotSupported,
 }
 
@@ -179,7 +179,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     if (_calibrationState == CalibrationState.WeighInSuccess) {
       setState(() {
         _step = STEP_CALIBRATING;
-        _calibrationState = CalibrationState.ReadyToFlail;
+        _calibrationState = CalibrationState.ReadyToCalibrate;
       });
       return;
     }
@@ -231,24 +231,24 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   String _calibrationInstruction() {
-    if (_calibrationState == CalibrationState.ReadyToFlail) return "START!";
+    if (_calibrationState == CalibrationState.ReadyToCalibrate) return "START!";
 
-    if (_calibrationState == CalibrationState.FlailInProgress) return "FASTER!";
+    if (_calibrationState == CalibrationState.CalibrationInProgress) return "FASTER!";
 
     return "STOP!!!";
   }
 
   String _calibrationButtonText() {
-    return _calibrationState == CalibrationState.ReadyToFlail ? 'Start' : 'Stop';
+    return _calibrationState == CalibrationState.ReadyToCalibrate ? 'Start' : 'Stop';
   }
 
   Future<void> onCalibrationButtonPressed() async {
-    if (_calibrationState == CalibrationState.FlailInProgress) {
+    if (_calibrationState == CalibrationState.CalibrationInProgress) {
       Get.snackbar("Calibration", "Wait for instructions!");
       return;
     }
     setState(() {
-      _calibrationState = CalibrationState.FlailInProgress;
+      _calibrationState = CalibrationState.CalibrationInProgress;
     });
     await _controlPoint.setNotifyValue(true); // Is this needed for indication?
     _controlPointSubscription = _controlPoint.value.listen((data) async {
@@ -256,7 +256,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         Get.snackbar("Calibration Start error", "Please retry");
         setState(() {
           _step = STEP_DONE;
-          _calibrationState = CalibrationState.FlailFail;
+          _calibrationState = CalibrationState.CalibrationFail;
         });
       }
       final spinDownData = await _controlPoint.read();
@@ -267,7 +267,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         Get.snackbar("Calibration Start error", "Please retry");
         setState(() {
           _step = STEP_DONE;
-          _calibrationState = CalibrationState.FlailFail;
+          _calibrationState = CalibrationState.CalibrationFail;
         });
         return;
       }
@@ -410,16 +410,21 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(_calibrationState == CalibrationState.FlailSuccess ? "SUCCESS" : "ERROR",
+                  Text(
+                      _calibrationState == CalibrationState.CalibrationSuccess
+                          ? "SUCCESS"
+                          : "ERROR",
                       style: _largerTextStyle),
                   Row(
                     children: [
                       ElevatedButton(
                         child: Text(
-                            _calibrationState == CalibrationState.FlailSuccess ? 'Close' : 'Retry',
+                            _calibrationState == CalibrationState.CalibrationSuccess
+                                ? 'Close'
+                                : 'Retry',
                             style: _smallerTextStyle),
                         onPressed: () {
-                          if (_calibrationState == CalibrationState.FlailSuccess) {
+                          if (_calibrationState == CalibrationState.CalibrationSuccess) {
                             Get.close(1);
                           } else {
                             _step = STEP_WEIGHT_INPUT;
