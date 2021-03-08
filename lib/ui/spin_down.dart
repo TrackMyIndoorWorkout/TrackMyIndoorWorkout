@@ -308,7 +308,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                         },
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
               // 1 - STEP_FLAILING
@@ -376,7 +376,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                         },
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
               // 2 - STEP_END
@@ -402,7 +402,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                         },
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
               // 3 - STEP_NOT_SUPPORTED
