@@ -251,7 +251,7 @@ class RecordingState extends State<RecordingScreen> {
       }
 
       if (nameString == _descriptor.manufacturer) {
-        if (_descriptor.cadenceServiceId != '') {
+        if (_descriptor.cadenceServiceId != null) {
           final cadenceMeasurementService =
               BluetoothDeviceEx.filterService(services, _descriptor.cadenceServiceId);
           _cadenceMeasurements = BluetoothDeviceEx.filterCharacteristic(
@@ -265,10 +265,10 @@ class RecordingState extends State<RecordingScreen> {
             });
           }
         }
-        final measurementService1 =
+        final measurementService =
             BluetoothDeviceEx.filterService(services, _descriptor.primaryServiceId);
         _primaryMeasurements = BluetoothDeviceEx.filterCharacteristic(
-            measurementService1?.characteristics, _descriptor.primaryMeasurementId);
+            measurementService?.characteristics, _descriptor.primaryMeasurementId);
         if (_primaryMeasurements != null) {
           await _primaryMeasurements.setNotifyValue(true);
           _measurementSubscription = _primaryMeasurements.value.listen((data) async {
