@@ -293,12 +293,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _targetSpeedHigh = 0.0;
     _targetSpeedLow = 0.0;
     _currentSpeed = 0.0;
-    _weight = 50;
     _sizeDefault = Get.mediaQuery.size.width / 10;
     _smallerTextStyle = TextStyle(
         fontFamily: FONT_FAMILY, fontSize: _sizeDefault, color: Get.textTheme.bodyText1.color);
     _largerTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault * 2);
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    _weight = _si ? 60 : 130;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _readBatteryLevels();
   }
