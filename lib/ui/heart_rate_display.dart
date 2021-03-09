@@ -23,7 +23,7 @@ class HeartRateDisplayState extends State<HeartRateDisplay> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<int>(
-        stream: _heartRateMonitor.listenForYourHeart,
+        stream: _heartRateMonitor.listenToYourHeart,
         initialData: 0,
         builder: (c, snapshot) {
           return Text(snapshot.data?.toString() ?? "--");

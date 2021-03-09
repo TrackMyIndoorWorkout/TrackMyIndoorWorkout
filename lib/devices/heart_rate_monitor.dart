@@ -56,7 +56,7 @@ class HeartRateMonitor {
     return ret;
   }
 
-  Stream<int> get listenForYourHeart async* {
+  Stream<int> get listenToYourHeart async* {
     if (!attached) return;
     await for (var byteString in _heartRateMeasurement.value) {
       heartRate = _processHeartRateMeasurement(byteString);
