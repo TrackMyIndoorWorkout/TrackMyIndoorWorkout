@@ -273,8 +273,10 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         });
         return;
       }
-      _targetSpeedHigh = (spinDownData[3] * 256 + spinDownData[4]) / 100;
-      _targetSpeedLow = (spinDownData[5] * 256 + spinDownData[6]) / 100;
+      setState(() {
+        _targetSpeedHigh = (spinDownData[3] * 256 + spinDownData[4]) / 100;
+        _targetSpeedLow = (spinDownData[5] * 256 + spinDownData[6]) / 100;
+      });
       Get.snackbar("Calibration started", "Go!");
       _controlPoint.setNotifyValue(true);
       _controlPointSubscription = _controlPoint.value.listen((data) {
