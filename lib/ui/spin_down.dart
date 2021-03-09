@@ -197,7 +197,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     setState(() {
       _calibrationState = CalibrationState.WeightSubmitting;
     });
-    final weight = (_si ? _weight : _weight * LB_TO_KG) * 100;
+    final weight = ((_si ? _weight : _weight * LB_TO_KG) * 100).round();
     final weightLsb = weight % 256;
     final weightMsb = weight ~/ 256;
     debugPrint("Sending weight: $weight ($weightLsb $weightMsb)");
