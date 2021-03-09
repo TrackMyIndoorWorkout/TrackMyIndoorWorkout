@@ -7,7 +7,6 @@ import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:spinner_input/spinner_input.dart';
 import 'package:track_my_indoor_exercise/devices/fitness_machine_descriptor.dart';
-import 'package:track_my_indoor_exercise/utils/display.dart';
 import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/gatt_constants.dart';
@@ -42,6 +41,7 @@ enum CalibrationState {
   WeighInProblem,
   WeighInSuccess,
   ReadyToCalibrate,
+  CalibrationStarting,
   CalibrationInProgress,
   CalibrationSuccess,
   CalibrationFail,
@@ -70,6 +70,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   BluetoothCharacteristic _controlPoint;
   StreamSubscription _controlPointSubscription;
   BluetoothCharacteristic _fitnessMachineStatus;
+  StreamSubscription _statusSubscription;
   BluetoothCharacteristic _fitnessMachineData;
   CalibrationState _calibrationState;
   double _targetSpeedHigh;
@@ -232,56 +233,97 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   String _calibrationInstruction() {
-    if (_calibrationState == CalibrationState.ReadyToCalibrate) return "START!";
+    if (_calibrationState == CalibrationState.ReadyToCalibrate ||
+        _calibrationState == CalibrationState.CalibrationStarting) {
+      return "START!";
+    }
 
     if (_calibrationState == CalibrationState.CalibrationInProgress) return "FASTER!";
 
     return "STOP!!!";
   }
 
+  TextStyle _calibrationInstructionStyle() {
+    var color = Colors.red;
+
+    if (_calibrationState == CalibrationState.ReadyToCalibrate ||
+        _calibrationState == CalibrationState.CalibrationStarting) {
+      color = Colors.green;
+    }
+
+    if (_calibrationState == CalibrationState.CalibrationInProgress) color = Colors.indigo;
+
+    return _largerTextStyle.merge(TextStyle(color: color));
+  }
+
   String _calibrationButtonText() {
-    return _calibrationState == CalibrationState.ReadyToCalibrate ? 'Start' : 'Stop';
+    if (_calibrationState == CalibrationState.ReadyToCalibrate) return 'Start';
+
+    if (_calibrationState == CalibrationState.CalibrationStarting) return 'Wait...';
+
+    return 'Stop';
   }
 
   Future<void> onCalibrationButtonPressed() async {
-    if (_calibrationState == CalibrationState.CalibrationInProgress) {
+    if (_calibrationState == CalibrationState.CalibrationStarting) {
       Get.snackbar("Calibration", "Wait for instructions!");
       return;
     }
     setState(() {
-      _calibrationState = CalibrationState.CalibrationInProgress;
+      _calibrationState = CalibrationState.CalibrationStarting;
     });
     await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
-    await _controlPoint.setNotifyValue(true); // Is this needed for indication?
+    await _controlPoint.setNotifyValue(true); // Is this what needed for indication?
     _controlPointSubscription = _controlPoint.value.listen((data) async {
-      if (data?.length != 1 || data[0] != SPIN_DOWN_OPCODE) {
-        Get.snackbar("Calibration Start error", "Please retry");
-        setState(() {
-          _step = STEP_DONE;
-          _calibrationState = CalibrationState.CalibrationFail;
-        });
+      if (data?.length == 1) {
+        if (data[0] != SPIN_DOWN_OPCODE) {
+          Get.snackbar("Calibration Start error", "Please retry");
+          setState(() {
+            _step = STEP_DONE;
+            _calibrationState = CalibrationState.CalibrationFail;
+          });
+        }
       }
-      final spinDownData = await _controlPoint.read();
-      if (spinDownData?.length != 7 ||
-          spinDownData[0] != CONTROL_OPCODE ||
-          spinDownData[1] != SPIN_DOWN_OPCODE ||
-          spinDownData[2] != SUCCESS_RESPONSE) {
-        Get.snackbar("Calibration Start error", "Please retry");
+      if (data?.length == 7) {
+        if (data[0] != CONTROL_OPCODE ||
+            data[1] != SPIN_DOWN_OPCODE ||
+            data[2] != SUCCESS_RESPONSE) {
+          Get.snackbar("Calibration Start error", "Please retry");
+          setState(() {
+            _step = STEP_DONE;
+            _calibrationState = CalibrationState.CalibrationFail;
+          });
+          return;
+        }
         setState(() {
-          _step = STEP_DONE;
-          _calibrationState = CalibrationState.CalibrationFail;
+          _calibrationState = CalibrationState.CalibrationInProgress;
+          _targetSpeedHigh = (data[3] * 256 + data[4]) / 100;
+          _targetSpeedLow = (data[5] * 256 + data[6]) / 100;
         });
-        return;
+        Get.snackbar("Calibration started", "Go!");
       }
-      setState(() {
-        _targetSpeedHigh = (spinDownData[3] * 256 + spinDownData[4]) / 100;
-        _targetSpeedLow = (spinDownData[5] * 256 + spinDownData[6]) / 100;
-      });
-      Get.snackbar("Calibration started", "Go!");
-      _controlPoint.setNotifyValue(true);
-      _controlPointSubscription = _controlPoint.value.listen((data) {
-        ;
-      });
+    });
+    await _fitnessMachineStatus.setNotifyValue(true);
+    _statusSubscription = _fitnessMachineStatus.value.listen((status) {
+      if (status?.length == 1) {
+        if (status[0] == SPIN_DOWN_STATUS_SUCCESS) {
+          setState(() {
+            _step = STEP_DONE;
+            _calibrationState = CalibrationState.CalibrationSuccess;
+          });
+        }
+        if (status[0] == SPIN_DOWN_STATUS_ERROR) {
+          setState(() {
+            _step = STEP_DONE;
+            _calibrationState = CalibrationState.CalibrationFail;
+          });
+        }
+        if (status[0] == SPIN_DOWN_STATUS_STOP_PEDALING) {
+          setState(() {
+            _calibrationState = CalibrationState.CalibrationSuccess;
+          });
+        }
+      }
     });
   }
 
@@ -313,6 +355,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _weightDataSubscription?.cancel();
     _weightData?.setNotifyValue(false);
 
+    _statusSubscription?.cancel();
+    _fitnessMachineStatus.setNotifyValue(false);
+
     super.dispose();
   }
 
@@ -322,7 +367,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       body: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _hrmBatteryLevel == null
@@ -345,7 +390,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
             children: <Widget>[
               // 0 - STEP_WEIGHT_INPUT
               Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text("Weight (${_si ? "kg" : "lbs"}):", style: _smallerTextStyle),
@@ -370,19 +415,15 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                       });
                     },
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        child: Text(
-                          _weightInputButtonText(),
-                          style: _weightInputButtonTextStyle(),
-                        ),
-                        style: _weightInputButtonStyle(),
-                        onPressed: () async => await _onWeightInputButtonPressed(),
+                  Center(
+                    child: ElevatedButton(
+                      child: Text(
+                        _weightInputButtonText(),
+                        style: _weightInputButtonTextStyle(),
                       ),
-                    ],
+                      style: _weightInputButtonStyle(),
+                      onPressed: () async => await _onWeightInputButtonPressed(),
+                    ),
                   ),
                 ],
               ),
@@ -391,20 +432,24 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text("Target ${descriptor.speedTitle}:", style: _smallerTextStyle),
-                  Text("${speedOrPaceString(_targetSpeedHigh, _si, descriptor.sport)}",
-                      style: _smallerTextStyle.merge(TextStyle(color: Colors.black54))),
-                  Text("Current ${descriptor.speedTitle}:", style: _smallerTextStyle),
-                  Text("${speedOrPaceString(_targetSpeedHigh, _si, descriptor.sport)}",
-                      style: _smallerTextStyle),
-                  Text(_calibrationInstruction(), style: _largerTextStyle),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ElevatedButton(
-                        child: Text(_calibrationButtonText(), style: _smallerTextStyle),
-                        onPressed: () async => await onCalibrationButtonPressed(),
-                      ),
+                      Text("$_targetSpeedLow", style: _smallerTextStyle),
+                      Icon(Icons.multiple_stop, size: _sizeDefault),
+                      Text("$_targetSpeedHigh", style: _smallerTextStyle),
+                      Text("km/h", style: _smallerTextStyle),
                     ],
+                  ),
+                  Text("$_currentSpeed",
+                      style: _largerTextStyle.merge(TextStyle(color: Colors.indigo))),
+                  Text(_calibrationInstruction(), style: _calibrationInstructionStyle()),
+                  Center(
+                    child: ElevatedButton(
+                      child: Text(_calibrationButtonText(), style: _smallerTextStyle),
+                      onPressed: () async => await onCalibrationButtonPressed(),
+                    ),
                   ),
                 ],
               ),
