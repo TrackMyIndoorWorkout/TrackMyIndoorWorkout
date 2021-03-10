@@ -12,8 +12,6 @@ import 'byte_metric_descriptor.dart';
 import 'short_metric_descriptor.dart';
 import 'three_byte_metric_descriptor.dart';
 
-typedef bool MeasurementProcessing(List<int> data);
-
 abstract class DeviceDescriptor {
   static const double MS2KMH = 3.6;
   static const double KMH2MS = 1 / MS2KMH;
@@ -30,7 +28,6 @@ abstract class DeviceDescriptor {
   final String model;
   final String primaryServiceId;
   final String primaryMeasurementId;
-  final MeasurementProcessing canPrimaryMeasurementProcessed;
 
   bool canMeasureHeartRate;
   int heartRateByteIndex;
@@ -68,7 +65,6 @@ abstract class DeviceDescriptor {
     this.model,
     this.primaryServiceId,
     this.primaryMeasurementId,
-    this.canPrimaryMeasurementProcessed,
     this.canMeasureHeartRate = true,
     this.heartRateByteIndex,
     this.timeMetric,
@@ -94,6 +90,8 @@ abstract class DeviceDescriptor {
   bool get isFitnessMachine => primaryServiceId == FITNESS_MACHINE_ID;
 
   restartWorkout();
+
+  bool canPrimaryMeasurementProcessed(List<int> data);
 
   Record processPrimaryMeasurement(
     Activity activity,

@@ -37,7 +37,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     model,
     primaryServiceId,
     primaryMeasurementId,
-    canPrimaryMeasurementProcessed,
     canMeasureHeartRate = true,
     heartRateByteIndex,
     calorieFactor = 1.0,
@@ -53,7 +52,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           model: model,
           primaryServiceId: primaryServiceId,
           primaryMeasurementId: primaryMeasurementId,
-          canPrimaryMeasurementProcessed: canPrimaryMeasurementProcessed,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
           calorieFactor: calorieFactor,
@@ -65,11 +63,18 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     _residueCalories = 0;
     _lastPositiveCadence = 0;
     _hasTotalCalorieCounting = false;
+    _byteCounter = 0;
   }
 
   processFlag(int flag) {
     clearMetrics();
     _byteCounter = 2;
+  }
+
+  @override
+  bool canPrimaryMeasurementProcessed(List<int> data) {
+    final dataLength = data?.length ?? 0;
+    return _byteCounter > 2 ? dataLength == _byteCounter : dataLength > 2;
   }
 
   readSettings() {

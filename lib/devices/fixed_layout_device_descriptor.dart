@@ -5,7 +5,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import 'device_descriptor.dart';
 
-class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
+abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   FixedLayoutDeviceDescriptor({
     @required sport,
     @required fourCC,
@@ -17,8 +17,8 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     model,
     primaryServiceId,
     primaryMeasurementId,
+    canMeasureHeartRate,
     heartRateByteIndex,
-    canPrimaryMeasurementProcessed,
     timeMetric,
     caloriesMetric,
     speedMetric,
@@ -36,9 +36,8 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
           model: model,
           primaryServiceId: primaryServiceId,
           primaryMeasurementId: primaryMeasurementId,
-          canMeasureHeartRate: true,
+          canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          canPrimaryMeasurementProcessed: canPrimaryMeasurementProcessed,
           timeMetric: timeMetric,
           caloriesMetric: caloriesMetric,
           speedMetric: speedMetric,
@@ -114,10 +113,5 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         sport: sport,
       );
     }
-  }
-
-  @override
-  int processCadenceMeasurement(List<int> data) {
-    return 0;
   }
 }
