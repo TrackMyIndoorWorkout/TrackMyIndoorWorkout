@@ -20,9 +20,7 @@ class HeartRateMonitor {
   bool connected;
   bool attached;
 
-  HeartRateMonitor({
-    this.device,
-  }) : assert(device != null) {
+  HeartRateMonitor({this.device}) : assert(device != null) {
     connected = false;
     attached = false;
     heartRate = 0;

@@ -18,6 +18,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:preferences/preferences.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/bluetooth_device_ex.dart';
+import '../devices/cadence_sensor.dart';
 import '../devices/device_descriptor.dart';
 import '../devices/gatt_constants.dart';
 import '../devices/heart_rate_monitor.dart';
@@ -87,12 +88,11 @@ class RecordingState extends State<RecordingScreen> {
   final List<String> serviceUuids;
   final BluetoothDeviceState initialState;
   HeartRateMonitor _heartRateMonitor;
+  CadenceSensor _cadenceSensor;
   DeviceDescriptor _descriptor;
   TrackCalculator _trackCalculator;
   BluetoothCharacteristic _primaryMeasurements;
   StreamSubscription _measurementSubscription;
-  BluetoothCharacteristic _cadenceMeasurements;
-  StreamSubscription _cadenceSubscription;
   StreamSubscription _heartRateSubscription;
   bool _discovering;
   bool _measuring;
@@ -129,6 +129,7 @@ class RecordingState extends State<RecordingScreen> {
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig;
   List<String> _values;
+  int _cadence;
   bool _isLoading;
 
   _initialConnectOnDemand() async {
@@ -204,6 +205,7 @@ class RecordingState extends State<RecordingScreen> {
       _latestRecord,
       data,
       _heartRateMonitor,
+      _cadenceSensor,
     );
 
     if (!_paused && _measuring) {
@@ -227,12 +229,6 @@ class RecordingState extends State<RecordingScreen> {
         }
       }
     });
-  }
-
-  _processCadenceMeasurement(List<int> data) {
-    if (!_descriptor.canCadenceMeasurementProcessed(data)) return;
-
-    // _latestRecord?.cadence = _descriptor.processCadenceMeasurement(data);
   }
 
   _discoverServices() async {
@@ -267,19 +263,13 @@ class RecordingState extends State<RecordingScreen> {
       }
 
       if (nameString == _descriptor.manufacturer) {
-        if (_descriptor.cadenceServiceId != null) {
-          final cadenceMeasurementService =
-              BluetoothDeviceEx.filterService(services, _descriptor.cadenceServiceId);
-          _cadenceMeasurements = BluetoothDeviceEx.filterCharacteristic(
-              cadenceMeasurementService?.characteristics, _descriptor.cadenceMeasurementId);
-          if (_cadenceMeasurements != null) {
-            await _cadenceMeasurements.setNotifyValue(true);
-            _cadenceSubscription = _cadenceMeasurements.value.listen((data) async {
-              if (data?.length ?? 0 > 1) {
-                await _processCadenceMeasurement(data);
-              }
-            });
-          }
+        _cadenceSensor = Get.isRegistered<CadenceSensor>() ? Get.find<CadenceSensor>() : null;
+        if (_cadenceSensor != null) {
+          await _cadenceSensor.connect();
+          await _cadenceSensor.attach();
+          _cadenceSensor.listenToCadence.listen((cadence) {
+            _cadence = cadence;
+          });
         }
         final measurementService =
             BluetoothDeviceEx.filterService(services, _descriptor.primaryServiceId);
@@ -463,6 +453,7 @@ class RecordingState extends State<RecordingScreen> {
     _idleDuration = Duration();
     _latestRecord = _blankRecord();
     _values = ["--", "--", "--", "--", "--", "--"];
+    _cadence = 0;
 
     if (_uxDebug) {
       _simulateMeasurements();
@@ -485,12 +476,12 @@ class RecordingState extends State<RecordingScreen> {
   _preDispose() async {
     await _heartRateSubscription?.cancel();
     await _heartRateMonitor?.detach();
+    await _cadenceSensor?.detach();
+    await _cadenceSensor?.disconnect();
     _connectionWatchdog?.cancel();
     _timer?.cancel();
     await _measurementSubscription?.cancel();
     await _primaryMeasurements?.setNotifyValue(false);
-    await _cadenceSubscription?.cancel();
-    await _cadenceMeasurements?.setNotifyValue(false);
     await _database?.close();
   }
 
@@ -528,12 +519,9 @@ class RecordingState extends State<RecordingScreen> {
     _measuring = false;
     await _measurementSubscription?.cancel();
     await _primaryMeasurements?.setNotifyValue(false);
-    await _cadenceSubscription?.cancel();
-    await _cadenceMeasurements?.setNotifyValue(false);
+    await _cadenceSensor?.detach();
     _primaryMeasurements = null;
     _measurementSubscription = null;
-    _cadenceMeasurements = null;
-    _cadenceSubscription = null;
     Get.snackbar("Warning", "1. Disconnecting...");
     await device.disconnect();
     _discovering = false;
@@ -632,6 +620,7 @@ class RecordingState extends State<RecordingScreen> {
       _latestRecord,
       null,
       _heartRateMonitor,
+      _cadenceSensor,
     );
 
     await _database?.recordDao?.insertRecord(_latestRecord);

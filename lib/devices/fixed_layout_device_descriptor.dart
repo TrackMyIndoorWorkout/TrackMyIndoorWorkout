@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import '../devices/cadence_sensor.dart';
 import '../devices/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -56,6 +57,7 @@ class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     Record lastRecord,
     List<int> data,
     HeartRateMonitor hrm,
+    CadenceSensor cadenceSensor,
   ) {
     final elapsed = data != null ? getTime(data).toInt() : lastRecord.elapsed;
     double newDistance = 0;

@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
+import '../devices/cadence_sensor.dart';
 import '../devices/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -213,7 +214,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       // UByte with 0.5 resolution
       strokeRateMetric = ByteMetricDescriptor(lsb: _byteCounter, divider: 2.0);
       _byteCounter++;
-      revolutionsMetric = ShortMetricDescriptor(lsb: _byteCounter, msb: _byteCounter + 1);
+      strokeCountMetric = ShortMetricDescriptor(lsb: _byteCounter, msb: _byteCounter + 1);
       _byteCounter += 2;
     }
     flag ~/= 2;
@@ -251,6 +252,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     Record lastRecord,
     List<int> data,
     HeartRateMonitor hrm,
+    CadenceSensor cadenceSensor,
   ) {
     if ((data?.length ?? 0) > 2) {
       var flag = data[0] + 256 * data[1];
