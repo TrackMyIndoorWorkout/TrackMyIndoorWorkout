@@ -310,9 +310,11 @@ packages:
   flutter_blue:
     dependency: "direct main"
     description:
-      name: flutter_blue
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: patch-1
+      resolved-ref: "3a8c3ab44361b5561a72b6b247958be3e14fb502"
+      url: "https://github.com/MrCsabaToth/flutter_blue.git"
+    source: git
     version: "0.7.3"
   flutter_brand_icons:
     dependency: "direct main"
