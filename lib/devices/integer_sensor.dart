@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'device_base.dart';
 
+typedef MetricProcessingFunction = Function(int heartRate);
+
 abstract class IntegerSensor extends DeviceBase {
   int featureFlag;
   int metric;
@@ -30,8 +32,19 @@ abstract class IntegerSensor extends DeviceBase {
     }
   }
 
-  Stream<int> get throttledMetric {
-    return _listenToMetric.throttleTime(Duration(milliseconds: 500));
+  StreamSubscription pumpMetric(MetricProcessingFunction metricProcessingFunction) {
+    if (broadcastStream == null) {
+      broadcastStream =
+          _listenToMetric.throttleTime(Duration(milliseconds: 500)).asBroadcastStream();
+    }
+    final subscription = broadcastStream.listen((newValue) {
+      metric = newValue;
+      if (metricProcessingFunction != null) {
+        metricProcessingFunction(newValue);
+      }
+    });
+    addSubscription(subscription);
+    return subscription;
   }
 
   bool canMeasurementProcessed(List<int> data);

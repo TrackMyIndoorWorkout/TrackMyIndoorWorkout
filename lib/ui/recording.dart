@@ -129,7 +129,6 @@ class RecordingState extends State<RecordingScreen> {
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig;
   List<String> _values;
-  int _cadence;
   bool _isLoading;
 
   _initialConnectOnDemand() async {
@@ -267,9 +266,7 @@ class RecordingState extends State<RecordingScreen> {
         if (_cadenceSensor != null) {
           await _cadenceSensor.connect();
           await _cadenceSensor.attach();
-          _cadenceSensor.throttledMetric.listen((cadence) {
-            _cadence = cadence;
-          });
+          _cadenceSensor.pumpMetric(null);
         }
         final measurementService =
             BluetoothDeviceEx.filterService(services, _descriptor.primaryServiceId);
@@ -453,13 +450,12 @@ class RecordingState extends State<RecordingScreen> {
     _idleDuration = Duration();
     _latestRecord = _blankRecord();
     _values = ["--", "--", "--", "--", "--", "--"];
-    _cadence = 0;
 
     if (_uxDebug) {
       _simulateMeasurements();
     } else {
       _heartRateMonitor?.attach()?.then((_) {
-        _heartRateSubscription = _heartRateMonitor?.throttledMetric?.listen((heartRate) async {
+        _heartRateSubscription = _heartRateMonitor?.pumpMetric((heartRate) async {
           setState(() {
             _values[4] = heartRate?.toString() ?? "--";
           });
@@ -474,9 +470,8 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _preDispose() async {
-    await _heartRateSubscription?.cancel();
-    await _heartRateMonitor?.detach();
-    await _cadenceSensor?.detach();
+    await _heartRateMonitor.cancelSubscription(_heartRateSubscription);
+    await _cadenceSensor?.detach(true);
     await _cadenceSensor?.disconnect();
     _connectionWatchdog?.cancel();
     _timer?.cancel();
@@ -519,7 +514,7 @@ class RecordingState extends State<RecordingScreen> {
     _measuring = false;
     await _measurementSubscription?.cancel();
     await _primaryMeasurements?.setNotifyValue(false);
-    await _cadenceSensor?.detach();
+    await _cadenceSensor?.detach(true);
     _primaryMeasurements = null;
     _measurementSubscription = null;
     Get.snackbar("Warning", "1. Disconnecting...");

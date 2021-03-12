@@ -3,8 +3,6 @@ import 'gatt_constants.dart';
 import 'integer_sensor.dart';
 import 'short_metric_descriptor.dart';
 
-typedef DisplayFn = Function(int heartRate);
-
 class HeartRateMonitor extends IntegerSensor {
   ByteMetricDescriptor _byteHeartRateMetric;
   ShortMetricDescriptor _shortHeartRateMetric;

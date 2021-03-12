@@ -306,7 +306,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         }
                         if (heartRateMonitor != null &&
                             heartRateMonitor.device.id.id != r.device.id.id) {
-                          await heartRateMonitor.detach();
+                          await heartRateMonitor.detach(true);
                           await heartRateMonitor.disconnect();
                         }
                         if (heartRateMonitor == null ||
