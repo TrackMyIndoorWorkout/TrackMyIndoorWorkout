@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:rxdart/rxdart.dart';
-import '../devices/cadence_data.dart';
-import '../devices/gatt_constants.dart';
-import '../utils/guid_ex.dart';
+import 'cadence_data.dart';
+import 'device_base.dart';
+import 'gatt_constants.dart';
 import 'short_metric_descriptor.dart';
 
-class CadenceSensor {
-  static const int REVOLUTION_SLIDING_WINDOW = 15; // Seconds
+class CadenceSensor extends DeviceBase {
+  static const int REVOLUTION_SLIDING_WINDOW = 10; // Seconds
   static const int EVENT_TIME_OVERFLOW = 64; // Overflows every 64 seconds
   static const int MAX_UINT16 = 65536;
 
@@ -19,53 +18,22 @@ class CadenceSensor {
   int cadenceFlag;
   ListQueue<CadenceData> cadenceData;
 
-  BluetoothDevice device;
-  BluetoothService _cadenceService;
-  BluetoothCharacteristic _cadenceMeasurements;
-  StreamSubscription _cadenceSubscription;
-
   int cadence;
-  bool connected;
-  bool attached;
 
-  CadenceSensor({this.device}) : assert(device != null) {
+  CadenceSensor(device)
+      : super(
+          serviceId: CADENCE_SERVICE_ID,
+          characteristicsId: CADENCE_MEASUREMENT_ID,
+          device: device,
+        ) {
     cadenceFlag = 0;
     cadenceData = ListQueue<CadenceData>();
-    connected = false;
-    attached = false;
     cadence = 0;
-  }
-
-  Future<bool> connect() async {
-    var ret = false;
-    try {
-      await device.connect();
-    } catch (e) {
-      if (e.code != 'already_connected') {
-        throw e;
-      }
-    } finally {
-      connected = true;
-      final services = await device.discoverServices();
-      _cadenceService = services.firstWhere(
-          (service) => service.uuid.uuidString() == CADENCE_SERVICE_ID,
-          orElse: () => null);
-
-      if (_cadenceService != null) {
-        _cadenceMeasurements = _cadenceService.characteristics
-            .firstWhere((ch) => ch.uuid.uuidString() == CADENCE_MEASUREMENT_ID, orElse: () => null);
-      }
-      if (_cadenceMeasurements != null) {
-        await attach();
-        ret = true;
-      }
-    }
-    return ret;
   }
 
   Stream<int> get _listenToCadence async* {
     if (!attached) return;
-    await for (var byteString in _cadenceMeasurements.value) {
+    await for (var byteString in characteristic.value) {
       if (!canCadenceMeasurementProcessed(byteString)) continue;
 
       cadence = processCadenceMeasurement(byteString);
@@ -75,25 +43,6 @@ class CadenceSensor {
 
   Stream<int> get throttledCadence {
     return _listenToCadence.throttleTime(Duration(milliseconds: 500));
-  }
-
-  Future<void> attach() async {
-    await _cadenceMeasurements.setNotifyValue(true);
-    attached = true;
-  }
-
-  Future<void> detach() async {
-    await _cadenceMeasurements?.setNotifyValue(false);
-    attached = false;
-    await _cadenceSubscription?.cancel();
-  }
-
-  Future<void> disconnect() async {
-    await detach();
-    _cadenceMeasurements = null;
-    _cadenceService = null;
-    await device.disconnect();
-    connected = false;
   }
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml

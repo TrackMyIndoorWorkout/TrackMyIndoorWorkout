@@ -1,63 +1,33 @@
 import 'dart:async';
 
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:rxdart/rxdart.dart';
-import '../devices/gatt_constants.dart';
-import '../utils/guid_ex.dart';
 import 'byte_metric_descriptor.dart';
+import 'device_base.dart';
+import 'gatt_constants.dart';
 import 'short_metric_descriptor.dart';
 
 typedef DisplayFn = Function(int heartRate);
 
-class HeartRateMonitor {
-  BluetoothDevice device;
-  BluetoothService _heartRateService;
-  BluetoothCharacteristic _heartRateMeasurement;
+class HeartRateMonitor extends DeviceBase {
   int _heartRateFlag;
   int heartRate;
   ByteMetricDescriptor _byteHeartRateMetric;
   ShortMetricDescriptor _shortHeartRateMetric;
-  StreamSubscription _hrSubscription;
   bool connected;
   bool attached;
 
-  HeartRateMonitor({this.device}) : assert(device != null) {
-    connected = false;
-    attached = false;
+  HeartRateMonitor(device)
+      : super(
+          serviceId: HEART_RATE_SERVICE_ID,
+          characteristicsId: HEART_RATE_MEASUREMENT_ID,
+          device: device,
+        ) {
     heartRate = 0;
-  }
-
-  Future<bool> connect() async {
-    var ret = false;
-    try {
-      await device.connect();
-    } catch (e) {
-      if (e.code != 'already_connected') {
-        throw e;
-      }
-    } finally {
-      connected = true;
-      final services = await device.discoverServices();
-      _heartRateService = services.firstWhere(
-          (service) => service.uuid.uuidString() == HEART_RATE_SERVICE_ID,
-          orElse: () => null);
-
-      if (_heartRateService != null) {
-        _heartRateMeasurement = _heartRateService.characteristics.firstWhere(
-            (ch) => ch.uuid.uuidString() == HEART_RATE_MEASUREMENT_ID,
-            orElse: () => null);
-      }
-      if (_heartRateMeasurement != null) {
-        await attach();
-        ret = true;
-      }
-    }
-    return ret;
   }
 
   Stream<int> get _listenToYourHeart async* {
     if (!attached) return;
-    await for (var byteString in _heartRateMeasurement.value) {
+    await for (var byteString in characteristic.value) {
       heartRate = _processHeartRateMeasurement(byteString);
       yield heartRate;
     }
@@ -65,25 +35,6 @@ class HeartRateMonitor {
 
   Stream<int> get throttledHeartRate {
     return _listenToYourHeart.throttleTime(Duration(milliseconds: 500));
-  }
-
-  Future<void> attach() async {
-    await _heartRateMeasurement.setNotifyValue(true);
-    attached = true;
-  }
-
-  Future<void> detach() async {
-    await _heartRateMeasurement?.setNotifyValue(false);
-    attached = false;
-    await _hrSubscription?.cancel();
-  }
-
-  Future<void> disconnect() async {
-    await detach();
-    _heartRateMeasurement = null;
-    _heartRateService = null;
-    await device.disconnect();
-    connected = false;
   }
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.heart_rate_measurement.xml
