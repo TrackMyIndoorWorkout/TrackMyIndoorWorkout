@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:rxdart/rxdart.dart';
 import '../devices/gatt_constants.dart';
 import '../utils/guid_ex.dart';
 import 'byte_metric_descriptor.dart';
@@ -54,12 +55,16 @@ class HeartRateMonitor {
     return ret;
   }
 
-  Stream<int> get listenToYourHeart async* {
+  Stream<int> get _listenToYourHeart async* {
     if (!attached) return;
     await for (var byteString in _heartRateMeasurement.value) {
       heartRate = _processHeartRateMeasurement(byteString);
       yield heartRate;
     }
+  }
+
+  Stream<int> get throttledHeartRate {
+    return _listenToYourHeart.throttleTime(Duration(milliseconds: 500));
   }
 
   Future<void> attach() async {

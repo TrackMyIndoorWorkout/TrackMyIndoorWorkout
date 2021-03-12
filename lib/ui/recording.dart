@@ -459,7 +459,7 @@ class RecordingState extends State<RecordingScreen> {
       _simulateMeasurements();
     } else {
       _heartRateMonitor?.attach()?.then((_) {
-        _heartRateSubscription = _heartRateMonitor?.listenToYourHeart?.listen((heartRate) async {
+        _heartRateSubscription = _heartRateMonitor?.throttledHeartRate?.listen((heartRate) async {
           setState(() {
             _values[4] = heartRate?.toString() ?? "--";
           });
