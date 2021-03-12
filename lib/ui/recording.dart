@@ -267,7 +267,7 @@ class RecordingState extends State<RecordingScreen> {
         if (_cadenceSensor != null) {
           await _cadenceSensor.connect();
           await _cadenceSensor.attach();
-          _cadenceSensor.throttledCadence.listen((cadence) {
+          _cadenceSensor.throttledMetric.listen((cadence) {
             _cadence = cadence;
           });
         }
@@ -459,7 +459,7 @@ class RecordingState extends State<RecordingScreen> {
       _simulateMeasurements();
     } else {
       _heartRateMonitor?.attach()?.then((_) {
-        _heartRateSubscription = _heartRateMonitor?.throttledHeartRate?.listen((heartRate) async {
+        _heartRateSubscription = _heartRateMonitor?.throttledMetric?.listen((heartRate) async {
           setState(() {
             _values[4] = heartRate?.toString() ?? "--";
           });

@@ -1,13 +1,11 @@
-import 'dart:async';
 import 'dart:collection';
 
-import 'package:rxdart/rxdart.dart';
 import 'cadence_data.dart';
-import 'device_base.dart';
 import 'gatt_constants.dart';
+import 'integer_sensor.dart';
 import 'short_metric_descriptor.dart';
 
-class CadenceSensor extends DeviceBase {
+class CadenceSensor extends IntegerSensor {
   static const int REVOLUTION_SLIDING_WINDOW = 10; // Seconds
   static const int EVENT_TIME_OVERFLOW = 64; // Overflows every 64 seconds
   static const int MAX_UINT16 = 65536;
@@ -15,43 +13,20 @@ class CadenceSensor extends DeviceBase {
   // Secondary (Crank cadence) metrics
   ShortMetricDescriptor revolutionsMetric;
   ShortMetricDescriptor revolutionTime;
-  int cadenceFlag;
   ListQueue<CadenceData> cadenceData;
 
-  int cadence;
-
-  CadenceSensor(device)
-      : super(
-          serviceId: CADENCE_SERVICE_ID,
-          characteristicsId: CADENCE_MEASUREMENT_ID,
-          device: device,
-        ) {
-    cadenceFlag = 0;
+  CadenceSensor(device) : super(CADENCE_SERVICE_ID, CADENCE_MEASUREMENT_ID, device) {
     cadenceData = ListQueue<CadenceData>();
-    cadence = 0;
-  }
-
-  Stream<int> get _listenToCadence async* {
-    if (!attached) return;
-    await for (var byteString in characteristic.value) {
-      if (!canCadenceMeasurementProcessed(byteString)) continue;
-
-      cadence = processCadenceMeasurement(byteString);
-      yield cadence;
-    }
-  }
-
-  Stream<int> get throttledCadence {
-    return _listenToCadence.throttleTime(Duration(milliseconds: 500));
   }
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
-  bool canCadenceMeasurementProcessed(List<int> data) {
+  @override
+  bool canMeasurementProcessed(List<int> data) {
     if (data == null || data.length < 1) return false;
 
     var flag = data[0];
     // 16 bit revolution and 16 bit time
-    if (cadenceFlag != flag && flag > 0) {
+    if (featureFlag != flag && flag > 0) {
       var expectedLength = 1; // The flag itself
       // Has wheel revolution? (first bit)
       if (flag % 2 == 1) {
@@ -68,7 +43,7 @@ class CadenceSensor extends DeviceBase {
       revolutionsMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
       revolutionTime =
           ShortMetricDescriptor(lsb: expectedLength + 2, msb: expectedLength + 3, divider: 1024.0);
-      cadenceFlag = flag;
+      featureFlag = flag;
 
       return data.length == expectedLength;
     }
@@ -76,8 +51,9 @@ class CadenceSensor extends DeviceBase {
     return flag > 0;
   }
 
-  int processCadenceMeasurement(List<int> data) {
-    if (!canCadenceMeasurementProcessed(data)) return 0;
+  @override
+  int processMeasurement(List<int> data) {
+    if (!canMeasurementProcessed(data)) return 0;
 
     cadenceData.add(CadenceData(
       seconds: getRevolutionTime(data),
@@ -110,7 +86,8 @@ class CadenceSensor extends DeviceBase {
       }
     }
 
-    return revDiff ~/ secondsDiff;
+    metric = revDiff ~/ secondsDiff;
+    return metric;
   }
 
   int getRevolutions(List<int> data) {
@@ -121,6 +98,7 @@ class CadenceSensor extends DeviceBase {
     return revolutionTime?.getMeasurementValue(data);
   }
 
+  @override
   clearMetrics() {
     revolutionsMetric = null;
     revolutionTime = null;

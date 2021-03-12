@@ -82,7 +82,7 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     if (data != null) {
       var heartRate = 0;
       if (hrm != null) {
-        heartRate = hrm.heartRate;
+        heartRate = hrm.metric;
       }
       if (heartRate == 0) {
         heartRate = getHeartRate(data).toInt();
