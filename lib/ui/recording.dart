@@ -267,7 +267,7 @@ class RecordingState extends State<RecordingScreen> {
         if (_cadenceSensor != null) {
           await _cadenceSensor.connect();
           await _cadenceSensor.attach();
-          _cadenceSensor.listenToCadence.listen((cadence) {
+          _cadenceSensor.throttledCadence.listen((cadence) {
             _cadence = cadence;
           });
         }

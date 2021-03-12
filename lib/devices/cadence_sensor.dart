@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:rxdart/rxdart.dart';
 import '../devices/cadence_data.dart';
 import '../devices/gatt_constants.dart';
 import '../utils/guid_ex.dart';
@@ -62,7 +63,7 @@ class CadenceSensor {
     return ret;
   }
 
-  Stream<int> get listenToCadence async* {
+  Stream<int> get _listenToCadence async* {
     if (!attached) return;
     await for (var byteString in _cadenceMeasurements.value) {
       if (!canCadenceMeasurementProcessed(byteString)) continue;
@@ -70,6 +71,10 @@ class CadenceSensor {
       cadence = processCadenceMeasurement(byteString);
       yield cadence;
     }
+  }
+
+  Stream<int> get throttledCadence {
+    return _listenToCadence.throttleTime(Duration(milliseconds: 500));
   }
 
   Future<void> attach() async {
