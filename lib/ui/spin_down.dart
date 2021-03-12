@@ -202,7 +202,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     final weightLsb = weight % 256;
     final weightMsb = weight ~/ 256;
     debugPrint("Sending weight: $weight ($weightLsb $weightMsb)");
-    await _weightData.write([weightLsb, weightMsb]);
     await _weightData.setNotifyValue(true);
     _weightDataSubscription = _weightData.value.listen((response) async {
       if (response?.length == 1) {
@@ -230,6 +229,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         debugPrint("Weight response X $response");
       }
     });
+    await _weightData.write([weightLsb, weightMsb]);
   }
 
   String _calibrationInstruction() {
@@ -272,7 +272,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     setState(() {
       _calibrationState = CalibrationState.CalibrationStarting;
     });
-    await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
     await _controlPoint.setNotifyValue(true); // Is this what needed for indication?
     _controlPointSubscription = _controlPoint.value.listen((data) async {
       if (data?.length == 1) {
@@ -303,6 +302,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         Get.snackbar("Calibration started", "Go!");
       }
     });
+    await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
     await _fitnessMachineStatus.setNotifyValue(true);
     _statusSubscription = _fitnessMachineStatus.value.listen((status) {
       if (status?.length == 1) {
