@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:preferences/preferences.dart';
 import 'persistence/preferences.dart';
+import 'strava/constants.dart';
 import 'track_my_indoor_exercise_app.dart';
 
 void main() async {
@@ -36,6 +40,13 @@ void main() async {
     });
   });
   PrefService.setDefaultValues(prefDefaults);
+
+  DataConnectionChecker().addresses = STRAVA_AWS_US_EAST
+      .map((ip) => AddressCheckOptions(
+            InternetAddress(ip),
+            port: HTTPS_PORT,
+          ))
+      .toList();
 
   runApp(TrackMyIndoorExerciseApp());
 }
