@@ -22,6 +22,7 @@ abstract class DeviceBase {
   })  : assert(serviceId != null),
         assert(characteristicsId != null),
         assert(device != null) {
+    subscriptions = [];
     connected = false;
     attached = false;
   }
