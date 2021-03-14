@@ -23,6 +23,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
   int _strokeRateSum;
   int _lastPositiveCadence; // #101
+  double _lastPositiveCalories; // #111
   bool _calorieCarryoverWorkaround = CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
   bool _hasTotalCalorieCounting;
 
@@ -62,6 +63,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     _featuresFlag = 0;
     _residueCalories = 0;
     _lastPositiveCadence = 0;
+    _lastPositiveCalories = 0.0;
     _hasTotalCalorieCounting = false;
     _byteCounter = 0;
   }
@@ -91,6 +93,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   restartWorkout() {
     _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG);
     _residueCalories = 0.0;
+    _lastPositiveCalories = 0.0;
     clearStrokeRates();
   }
 
@@ -364,6 +367,21 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           }
         }
       }
+      // #101
+      if ((calories == null || calories == 0) &&
+          (pace != null && pace > 0 && pace < 120) &&
+          _lastPositiveCalories > 0) {
+        calories = _lastPositiveCalories;
+      } else if (calories != null && calories > 0) {
+        _lastPositiveCalories = calories;
+      }
+      if (_calorieCarryoverWorkaround &&
+          lastRecord.calories != null &&
+          lastRecord.calories > 0 &&
+          (calories == null || lastRecord.calories > calories)) {
+        calories = lastRecord.calories.toDouble();
+      }
+
       var heartRate = 0;
       if (hrm != null) {
         heartRate = hrm.metric;
@@ -374,12 +392,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       // #93
       if (heartRate == 0 && lastRecord.heartRate > 0) {
         heartRate = lastRecord.heartRate;
-      }
-      if (_calorieCarryoverWorkaround &&
-          lastRecord.calories != null &&
-          lastRecord.calories > 0 &&
-          (calories == null || lastRecord.calories > calories)) {
-        calories = lastRecord.calories.toDouble();
       }
       return RecordWithSport(
         activityId: activity.id,
