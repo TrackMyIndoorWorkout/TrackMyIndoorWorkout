@@ -32,19 +32,13 @@ abstract class IntegerSensor extends DeviceBase {
     }
   }
 
-  StreamSubscription pumpMetric(MetricProcessingFunction metricProcessingFunction) {
-    if (broadcastStream == null) {
-      broadcastStream =
-          _listenToMetric.throttleTime(Duration(milliseconds: 500)).asBroadcastStream();
-    }
-    final subscription = broadcastStream.listen((newValue) {
+  pumpMetric(MetricProcessingFunction metricProcessingFunction) {
+    subscription = _listenToMetric.throttleTime(Duration(milliseconds: 500)).listen((newValue) {
       metric = newValue;
       if (metricProcessingFunction != null) {
         metricProcessingFunction(newValue);
       }
     });
-    addSubscription(subscription);
-    return subscription;
   }
 
   bool canMeasurementProcessed(List<int> data);

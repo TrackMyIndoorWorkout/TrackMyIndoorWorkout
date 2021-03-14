@@ -9,8 +9,7 @@ abstract class DeviceBase {
   BluetoothDevice device;
   BluetoothService _service;
   BluetoothCharacteristic characteristic;
-  List<StreamSubscription> subscriptions;
-  Stream broadcastStream;
+  StreamSubscription subscription;
 
   bool connected;
   bool attached;
@@ -22,7 +21,6 @@ abstract class DeviceBase {
   })  : assert(serviceId != null),
         assert(characteristicsId != null),
         assert(device != null) {
-    subscriptions = [];
     connected = false;
     attached = false;
   }
@@ -54,31 +52,26 @@ abstract class DeviceBase {
   }
 
   Future<void> attach() async {
+    if (attached) return;
     await characteristic.setNotifyValue(true);
     attached = true;
   }
 
-  addSubscription(StreamSubscription subscription) {
-    subscriptions.add(subscription);
-  }
-
-  Future<void> cancelSubscription(StreamSubscription subscription) async {
+  Future<void> cancelSubscription() async {
     await subscription?.cancel();
-    subscriptions.remove(subscription);
+    subscription = null;
   }
 
-  Future<void> detach(bool cancelAll) async {
-    await characteristic?.setNotifyValue(false);
-    attached = false;
-    if (cancelAll) {
-      subscriptions.forEach((subscription) async {
-        await subscription?.cancel();
-      });
+  Future<void> detach() async {
+    if (!attached) {
+      await characteristic?.setNotifyValue(false);
+      attached = false;
     }
+    await cancelSubscription();
   }
 
   Future<void> disconnect() async {
-    await detach(true);
+    await detach();
     characteristic = null;
     _service = null;
     await device.disconnect();

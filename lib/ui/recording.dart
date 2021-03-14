@@ -93,7 +93,6 @@ class RecordingState extends State<RecordingScreen> {
   TrackCalculator _trackCalculator;
   BluetoothCharacteristic _primaryMeasurements;
   StreamSubscription _measurementSubscription;
-  StreamSubscription _heartRateSubscription;
   bool _discovering;
   bool _measuring;
   bool _paused;
@@ -455,7 +454,7 @@ class RecordingState extends State<RecordingScreen> {
       _simulateMeasurements();
     } else {
       _heartRateMonitor?.attach()?.then((_) {
-        _heartRateSubscription = _heartRateMonitor?.pumpMetric((heartRate) async {
+        _heartRateMonitor?.pumpMetric((heartRate) async {
           setState(() {
             _values[4] = heartRate?.toString() ?? "--";
           });
@@ -470,8 +469,8 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _preDispose() async {
-    await _heartRateMonitor.cancelSubscription(_heartRateSubscription);
-    await _cadenceSensor?.detach(true);
+    await _heartRateMonitor.cancelSubscription();
+    await _cadenceSensor?.detach();
     await _cadenceSensor?.disconnect();
     _connectionWatchdog?.cancel();
     _timer?.cancel();
@@ -514,7 +513,7 @@ class RecordingState extends State<RecordingScreen> {
     _measuring = false;
     await _measurementSubscription?.cancel();
     await _primaryMeasurements?.setNotifyValue(false);
-    await _cadenceSensor?.detach(true);
+    await _cadenceSensor?.detach();
     _primaryMeasurements = null;
     _measurementSubscription = null;
     Get.snackbar("Warning", "1. Disconnecting...");

@@ -14,7 +14,6 @@ import '../devices/heart_rate_monitor.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import 'activities.dart';
-import 'heart_rate_display.dart';
 import 'preferences.dart';
 import 'recording.dart';
 import 'scan_result.dart';
@@ -51,10 +50,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
   TextStyle _adjustedCaptionStyle;
   TextStyle _subtitleStyle;
   Map<String, List<String>> _servicesMap;
+  int _heartRate;
 
   @override
   dispose() {
     FlutterBlue.instance.stopScan();
+    var heartRateMonitor =
+        Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
+    heartRateMonitor?.cancelSubscription();
     super.dispose();
   }
 
@@ -99,6 +102,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
         startScan();
       });
     }
+    var heartRateMonitor =
+        Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
+    heartRateMonitor?.pumpMetric((heartRate) {
+      setState(() {
+        _heartRate = heartRate;
+      });
+    });
   }
 
   @override
@@ -198,7 +208,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 child: _isHeartRateMonitor(_servicesMap[d.id.id])
                                     ? ((Get.isRegistered<HeartRateMonitor>() &&
                                             Get.find<HeartRateMonitor>()?.device?.id?.id == d.id.id)
-                                        ? HeartRateDisplay()
+                                        ? Text(_heartRate?.toString() ?? "--")
                                         : Icon(Icons.favorite))
                                     : Icon(Icons.open_in_new),
                                 foregroundColor: Colors.white,
@@ -306,22 +316,21 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         }
                         if (heartRateMonitor != null &&
                             heartRateMonitor.device.id.id != r.device.id.id) {
-                          await heartRateMonitor.detach(true);
+                          await heartRateMonitor.detach();
                           await heartRateMonitor.disconnect();
                         }
                         if (heartRateMonitor == null ||
                             heartRateMonitor.device?.id?.id != r.device.id.id) {
                           heartRateMonitor = new HeartRateMonitor(r.device);
                           Get.put<HeartRateMonitor>(heartRateMonitor);
-                          try {
-                            await heartRateMonitor.connect();
-                          } catch (e) {
-                            if (e.code != 'already_connected') {
-                              throw e;
-                            }
-                          }
+                          await heartRateMonitor.connect();
                         }
                         await heartRateMonitor.attach();
+                        heartRateMonitor.pumpMetric((heartRate) {
+                          setState(() {
+                            _heartRate = heartRate;
+                          });
+                        });
                       },
                     );
                   }).toList(),
