@@ -50,7 +50,7 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   restartWorkout() {}
 
   @override
-  Record processPrimaryMeasurement(
+  Record processData(
     Activity activity,
     Duration idleDuration,
     Record lastRecord,

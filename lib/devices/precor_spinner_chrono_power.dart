@@ -28,7 +28,7 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
         );
 
   @override
-  bool canPrimaryMeasurementProcessed(List<int> data) {
+  bool canDataProcessed(List<int> data) {
     if (data == null) return false;
 
     if (data.length != 19) return false;

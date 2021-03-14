@@ -74,7 +74,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   }
 
   @override
-  bool canPrimaryMeasurementProcessed(List<int> data) {
+  bool canDataProcessed(List<int> data) {
     final dataLength = data?.length ?? 0;
     return _byteCounter > 2 ? dataLength == _byteCounter : dataLength > 2;
   }
@@ -254,7 +254,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   }
 
   @override
-  Record processPrimaryMeasurement(
+  Record processData(
     Activity activity,
     Duration idleDuration,
     Record lastRecord,

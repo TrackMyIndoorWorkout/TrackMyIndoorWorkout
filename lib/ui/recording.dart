@@ -184,7 +184,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _recordMeasurement(List<int> data) async {
-    if (!_descriptor.canPrimaryMeasurementProcessed(data)) return;
+    if (!_descriptor.canDataProcessed(data)) return;
 
     _connectionWatchdog?.cancel();
     if (_connectionWatchdogTime > 0) {
@@ -197,7 +197,7 @@ class RecordingState extends State<RecordingScreen> {
       currentIdle = DateTime.now().difference(_pauseStarted);
     }
 
-    final latestRecord = _descriptor.processPrimaryMeasurement(
+    final latestRecord = _descriptor.processData(
       _activity,
       _idleDuration + currentIdle,
       _latestRecord,
@@ -608,7 +608,7 @@ class RecordingState extends State<RecordingScreen> {
     });
 
     // Add one last record for the time of stopping
-    _latestRecord = _descriptor.processPrimaryMeasurement(
+    _latestRecord = _descriptor.processData(
       _activity,
       _idleDuration + currentIdle,
       _latestRecord,

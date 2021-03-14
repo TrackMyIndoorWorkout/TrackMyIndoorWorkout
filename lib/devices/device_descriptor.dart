@@ -91,9 +91,9 @@ abstract class DeviceDescriptor {
 
   restartWorkout();
 
-  bool canPrimaryMeasurementProcessed(List<int> data);
+  bool canDataProcessed(List<int> data);
 
-  Record processPrimaryMeasurement(
+  Record processData(
     Activity activity,
     Duration idleDuration,
     Record lastRecord,

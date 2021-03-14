@@ -21,7 +21,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
         );
 
   @override
-  bool canPrimaryMeasurementProcessed(List<int> data) {
+  bool canDataProcessed(List<int> data) {
     return false;
   }
 
@@ -31,7 +31,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   }
 
   @override
-  Record processPrimaryMeasurement(
+  Record processData(
     Activity activity,
     Duration idleDuration,
     Record lastRecord,
