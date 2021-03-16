@@ -239,10 +239,10 @@ const SCAN_DURATION_DEFAULT = 3;
 const SCAN_DURATION_DESCRIPTION =
     "Duration in seconds the app will spend " + "looking Bluetooth Low Energy exercise equipment.";
 
-const INSTANT_WORKOUT = "Instant Workout";
-const INSTANT_WORKOUT_TAG = "instant_workout";
-const INSTANT_WORKOUT_DEFAULT = false;
-const INSTANT_WORKOUT_DESCRIPTION = "On: if there's only a single " +
+const AUTO_CONNECT = "Auto Connect";
+const AUTO_CONNECT_TAG = "auto_connect";
+const AUTO_CONNECT_DEFAULT = false;
+const AUTO_CONNECT_DESCRIPTION = "On: if there's only a single " +
     "equipment after scan, or one of the devices match the " +
     "last exercise machine the app will automatically move to the " +
     "measurement screen to start recording.";
@@ -252,6 +252,13 @@ const LAST_EQUIPMENT_ID_TAG = "last_equipment";
 const LAST_EQUIPMENT_ID_DEFAULT = "";
 const LAST_EQUIPMENT_ID_DESCRIPTION =
     "The last exercise equipment ID " + "the app recorded a workout for";
+
+const INSTANT_MEASUREMENT_START = "Instant Measurement Start";
+const INSTANT_MEASUREMENT_TAG = "instant_measurement_start";
+const INSTANT_MEASUREMENT_DEFAULT = true;
+const INSTANT_MEASUREMENT_DESCRIPTION = "On: when navigating to the measurement screen the " +
+    "workout recording will start immediately. Off: the workout has to be started manually by " +
+    "pressing the play button.";
 
 const INSTANT_UPLOAD = "Instant Upload";
 const INSTANT_UPLOAD_TAG = "instant_upload";

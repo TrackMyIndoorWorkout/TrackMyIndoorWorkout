@@ -46,10 +46,16 @@ class PreferencesScreen extends StatelessWidget {
         desc: INSTANT_SCAN_DESCRIPTION,
       ),
       SwitchPreference(
-        INSTANT_WORKOUT,
-        INSTANT_WORKOUT_TAG,
-        defaultVal: INSTANT_WORKOUT_DEFAULT,
-        desc: INSTANT_WORKOUT_DESCRIPTION,
+        AUTO_CONNECT,
+        AUTO_CONNECT_TAG,
+        defaultVal: AUTO_CONNECT_DEFAULT,
+        desc: AUTO_CONNECT_DESCRIPTION,
+      ),
+      SwitchPreference(
+        INSTANT_MEASUREMENT_START,
+        INSTANT_MEASUREMENT_TAG,
+        defaultVal: INSTANT_MEASUREMENT_DEFAULT,
+        desc: INSTANT_MEASUREMENT_DESCRIPTION,
       ),
       SwitchPreference(
         INSTANT_UPLOAD,

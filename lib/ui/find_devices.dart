@@ -42,7 +42,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   bool _instantScan;
   int _scanDuration;
-  bool _instantWorkout;
+  bool _autoConnect;
   String _lastEquipmentId;
   bool _filterDevices;
   BluetoothDevice _openedDevice;
@@ -93,7 +93,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _scannedDevices = [];
     _instantScan = PrefService.getBool(INSTANT_SCAN_TAG);
     _scanDuration = PrefService.getInt(SCAN_DURATION_TAG);
-    _instantWorkout = PrefService.getBool(INSTANT_WORKOUT_TAG);
+    _autoConnect = PrefService.getBool(AUTO_CONNECT_TAG);
     _lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG);
     _filterDevices = PrefService.getBool(DEVICE_FILTERING_TAG);
     _servicesMap = Map<String, List<String>>();
@@ -135,7 +135,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   color: Colors.white,
                 );
               } else {
-                if (_instantWorkout) {
+                if (_autoConnect) {
                   if (_openedDevice != null) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Get.to(RecordingScreen(
@@ -241,7 +241,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 builder: (c, snapshot) => Column(
                   children: snapshot.data.where((d) => d.isWorthy(_filterDevices)).map((r) {
                     addScannedDevice(r);
-                    if (_instantWorkout && r.device.id.id == _lastEquipmentId) {
+                    if (_autoConnect && r.device.id.id == _lastEquipmentId) {
                       FlutterBlue.instance.stopScan().whenComplete(() async {
                         await Future.delayed(Duration(milliseconds: 100));
                       });
