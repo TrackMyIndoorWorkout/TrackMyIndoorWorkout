@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
+import '../persistence/models/record.dart';
 import 'fitness_machine_descriptor.dart';
 import 'gatt_constants.dart';
 
@@ -13,8 +14,8 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     @required namePrefix,
     manufacturer,
     model,
-    primaryServiceId = FITNESS_MACHINE_ID,
-    primaryMeasurementId = INDOOR_BIKE_ID,
+    dataServiceId = FITNESS_MACHINE_ID,
+    dataCharacteristicId = INDOOR_BIKE_ID,
     canMeasureHeartRate = true,
     heartRateByteIndex,
     calorieFactor = 1.0,
@@ -28,8 +29,8 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
           namePrefix: namePrefix,
           manufacturer: manufacturer,
           model: model,
-          primaryServiceId: primaryServiceId,
-          primaryMeasurementId: primaryMeasurementId,
+          dataServiceId: dataServiceId,
+          dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
           calorieFactor: calorieFactor,
@@ -58,4 +59,21 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     flag = processElapsedTimeFlag(flag);
     flag = processRemainingTimeFlag(flag);
   }
+
+  @override
+  Record stubRecord(List<int> data) {
+    super.stubRecord(data);
+    return Record(
+      distance: getDistance(data),
+      elapsed: getTime(data).toInt(),
+      calories: getCalories(data).toInt(),
+      power: getPower(data).toInt(),
+      speed: getSpeed(data),
+      cadence: getCadence(data).toInt(),
+      heartRate: getHeartRate(data).toInt(),
+    );
+  }
+
+  @override
+  stopWorkout() {}
 }

@@ -24,7 +24,7 @@ abstract class IntegerSensor extends DeviceBase {
 
   Stream<int> get _listenToMetric async* {
     if (!attached) return;
-    await for (var byteString in characteristic.value) {
+    await for (var byteString in characteristic.value.throttleTime(Duration(milliseconds: 500))) {
       if (!canMeasurementProcessed(byteString)) continue;
 
       metric = processMeasurement(byteString);
@@ -33,7 +33,7 @@ abstract class IntegerSensor extends DeviceBase {
   }
 
   pumpMetric(MetricProcessingFunction metricProcessingFunction) {
-    subscription = _listenToMetric.throttleTime(Duration(milliseconds: 500)).listen((newValue) {
+    subscription = _listenToMetric.listen((newValue) {
       metric = newValue;
       if (metricProcessingFunction != null) {
         metricProcessingFunction(newValue);

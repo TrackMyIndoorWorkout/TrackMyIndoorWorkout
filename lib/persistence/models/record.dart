@@ -21,17 +21,17 @@ class Record {
   @PrimaryKey(autoGenerate: true)
   int id;
   @ColumnInfo(name: 'activity_id')
-  final int activityId;
+  int activityId;
   @ColumnInfo(name: 'time_stamp')
-  final int timeStamp; // ms since epoch
-  final double distance; // m
-  final int elapsed; // s
-  final int calories; // kCal
-  final int power; // W
+  int timeStamp; // ms since epoch
+  double distance; // m
+  int elapsed; // s
+  int calories; // kCal
+  int power; // W
   double speed; // km/h
-  final int cadence;
+  int cadence;
   @ColumnInfo(name: 'heart_rate')
-  final int heartRate;
+  int heartRate;
 
   @ignore
   DateTime dt;
@@ -43,6 +43,10 @@ class Record {
   double strokeCount;
   @ignore
   String sport;
+  @ignore
+  double caloriesPerHour;
+  @ignore
+  double caloriesPerMinute;
 
   Record({
     this.id,
@@ -59,7 +63,25 @@ class Record {
     this.pace,
     this.strokeCount,
     this.sport,
+    this.caloriesPerHour,
+    this.caloriesPerMinute,
   }) {
+    if (dt == null) {
+      if (timeStamp != null || timeStamp > 0) {
+        _timeStampFromDt();
+      } else {
+        dt = DateTime.now();
+      }
+    }
+
+    if ((timeStamp == null || timeStamp == 0) && dt != null) {
+      timeStamp = dt.millisecondsSinceEpoch;
+    }
+
+    paceToSpeed();
+  }
+
+  paceToSpeed() {
     if (sport != null && speed == null && pace != null) {
       if (sport == ActivityType.Kayaking ||
           sport == ActivityType.Canoeing ||
@@ -80,8 +102,12 @@ class Record {
     }
   }
 
-  Record hydrate() {
+  _timeStampFromDt() {
     dt = DateTime.fromMillisecondsSinceEpoch(timeStamp);
+  }
+
+  Record hydrate() {
+    _timeStampFromDt();
     return this;
   }
 

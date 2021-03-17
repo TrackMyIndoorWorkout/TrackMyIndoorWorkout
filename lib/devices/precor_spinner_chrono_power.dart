@@ -15,8 +15,8 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
           namePrefix: "CHRONO",
           manufacturer: "Precor",
           model: "1",
-          primaryServiceId: PRECOR_SERVICE_ID,
-          primaryMeasurementId: PRECOR_MEASUREMENT_ID,
+          dataServiceId: PRECOR_SERVICE_ID,
+          dataCharacteristicId: PRECOR_MEASUREMENT_ID,
           canMeasureHeartRate: true,
           heartRateByteIndex: 5,
           timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4),
@@ -39,4 +39,7 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
     }
     return true;
   }
+
+  @override
+  stopWorkout() {}
 }

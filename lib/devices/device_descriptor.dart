@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import '../devices/cadence_sensor.dart';
 import '../devices/gatt_constants.dart';
-import '../devices/heart_rate_monitor.dart';
-import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/preferences.dart';
 import '../tcx/activity_type.dart';
@@ -26,31 +23,29 @@ abstract class DeviceDescriptor {
   final String namePrefix;
   final String manufacturer;
   final String model;
-  final String primaryServiceId;
-  final String primaryMeasurementId;
+  final String dataServiceId;
+  final String dataCharacteristicId;
+
+  int featuresFlag;
+  int byteCounter;
 
   bool canMeasureHeartRate;
   int heartRateByteIndex;
 
-  // Primary metrics
+  // Common metrics
   ShortMetricDescriptor speedMetric;
   ShortMetricDescriptor cadenceMetric;
   ThreeByteMetricDescriptor distanceMetric;
   ShortMetricDescriptor powerMetric;
   ShortMetricDescriptor caloriesMetric;
   ShortMetricDescriptor timeMetric;
+  ShortMetricDescriptor caloriesPerHourMetric;
+  ByteMetricDescriptor caloriesPerMinuteMetric;
+
   // Adjusting skewed calories
   double calorieFactor;
   // Adjusting skewed distance
   double distanceFactor;
-
-  // Special Metrics
-  ByteMetricDescriptor strokeRateMetric;
-  ShortMetricDescriptor strokeCountMetric;
-  ShortMetricDescriptor paceMetric;
-  ShortMetricDescriptor caloriesPerHourMetric;
-  ByteMetricDescriptor caloriesPerMinuteMetric;
-
   double throttlePower;
   bool throttleOther;
 
@@ -63,8 +58,8 @@ abstract class DeviceDescriptor {
     @required this.namePrefix,
     this.manufacturer,
     this.model,
-    this.primaryServiceId,
-    this.primaryMeasurementId,
+    this.dataServiceId,
+    this.dataCharacteristicId,
     this.canMeasureHeartRate = true,
     this.heartRateByteIndex,
     this.timeMetric,
@@ -82,25 +77,34 @@ abstract class DeviceDescriptor {
         assert(fullName != null),
         assert(namePrefix != null) {
     this.fullName = '$vendorName $modelName';
+    featuresFlag = 0;
+    byteCounter = 0;
     throttlePower = 1.0;
     throttleOther = THROTTLE_OTHER_DEFAULT;
   }
 
   double get lengthFactor => getDefaultTrack(sport).lengthFactor;
-  bool get isFitnessMachine => primaryServiceId == FITNESS_MACHINE_ID;
+  bool get isFitnessMachine => dataServiceId == FITNESS_MACHINE_ID;
 
-  restartWorkout();
+  stopWorkout();
 
   bool canDataProcessed(List<int> data);
 
-  Record processData(
-    Activity activity,
-    Duration idleDuration,
-    Record lastRecord,
-    List<int> data,
-    HeartRateMonitor hrm,
-    CadenceSensor cadenceSensor,
-  );
+  processFlag(int flag) {
+    clearMetrics();
+    byteCounter = 2;
+  }
+
+  Record stubRecord(List<int> data) {
+    if ((data?.length ?? 0) > 2) {
+      var flag = data[0] + 256 * data[1];
+      if (flag != featuresFlag) {
+        featuresFlag = flag;
+        processFlag(flag);
+      }
+    }
+    return null;
+  }
 
   String get tcxSport => sport == ActivityType.Ride && sport == ActivityType.Run ? sport : "Other";
 
@@ -203,14 +207,6 @@ abstract class DeviceDescriptor {
     return timeMetric?.getMeasurementValue(data);
   }
 
-  int getStrokeRate(List<int> data) {
-    return strokeRateMetric?.getMeasurementValue(data)?.toInt();
-  }
-
-  double getPace(List<int> data) {
-    return paceMetric?.getMeasurementValue(data);
-  }
-
   double getHeartRate(List<int> data) {
     if (heartRateByteIndex == null) return 0;
     return data[heartRateByteIndex].toDouble();
@@ -223,8 +219,6 @@ abstract class DeviceDescriptor {
     powerMetric = null;
     caloriesMetric = null;
     timeMetric = null;
-    strokeRateMetric = null;
-    paceMetric = null;
     caloriesPerHourMetric = null;
     caloriesPerMinuteMetric = null;
   }

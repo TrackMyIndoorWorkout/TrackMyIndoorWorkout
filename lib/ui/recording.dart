@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
@@ -10,7 +9,6 @@ import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
@@ -18,12 +16,10 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:preferences/preferences.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/bluetooth_device_ex.dart';
-import '../devices/cadence_sensor.dart';
 import '../devices/device_descriptor.dart';
-import '../devices/gatt_constants.dart';
+import '../devices/fitness_equipment.dart';
 import '../devices/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
@@ -83,21 +79,14 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Size size;
-
   final BluetoothDevice device;
   final List<String> serviceUuids;
   final BluetoothDeviceState initialState;
+  FitnessEquipment _fitnessEquipment;
   HeartRateMonitor _heartRateMonitor;
-  CadenceSensor _cadenceSensor;
   DeviceDescriptor _descriptor;
   TrackCalculator _trackCalculator;
-  BluetoothCharacteristic _primaryMeasurements;
-  StreamSubscription _measurementSubscription;
-  bool _discovering;
   bool _measuring;
-  bool _paused;
-  DateTime _pauseStarted;
-  Duration _idleDuration;
   int _pointCount;
   ListQueue<DisplayRecord> _graphData;
   double _mediaWidth;
@@ -109,17 +98,12 @@ class RecordingState extends State<RecordingScreen> {
   List<int> _expandedHeights;
   List<PreferencesSpec> _preferencesSpecs;
 
-  Record _latestRecord;
   Activity _activity;
   AppDatabase _database;
   bool _si;
   bool _simplerUi;
   bool _instantUpload;
   bool _uxDebug;
-
-  // Debugging UX without actual connected device
-  Timer _timer;
-  final _random = Random();
 
   Timer _connectionWatchdog;
   int _connectionWatchdogTime = EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT;
@@ -128,160 +112,21 @@ class RecordingState extends State<RecordingScreen> {
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig;
   List<String> _values;
+  double _distance;
+  int _elapsed;
   bool _isLoading;
 
-  _initialConnectOnDemand() async {
-    var alreadyConnected = false;
-    if (initialState == BluetoothDeviceState.disconnected ||
-        initialState == BluetoothDeviceState.disconnecting) {
-      try {
-        await device.connect();
-      } catch (e) {
-        if (e.code != 'already_connected') {
-          throw e;
-        } else {
-          alreadyConnected = true;
-        }
-      }
+  _connectOnDemand(BluetoothDeviceState deviceState) async {
+    if (deviceState == BluetoothDeviceState.disconnected ||
+        deviceState == BluetoothDeviceState.disconnecting) {
+      await _fitnessEquipment.connect();
     }
-    if (initialState == BluetoothDeviceState.connected && !_discovering || alreadyConnected) {
-      try {
-        _discoverServices();
-      } on PlatformException catch (e, stack) {
-        debugPrint("${e.message}");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-        try {
-          await device.connect();
-        } catch (e) {
-          if (e.code != 'already_connected') {
-            throw e;
-          }
-        }
-      }
-    }
-  }
-
-  _addGraphData(Record record) {
-    if (_simplerUi) {
-      return;
-    }
-
-    _graphData.add(record.hydrate().display());
-    if (_pointCount > 0 && _graphData.length > _pointCount) {
-      _graphData.removeFirst();
-    }
-  }
-
-  _fillValues(Record record) {
-    _values = [
-      record.calories.toString(),
-      record.power.toString(),
-      record.speedStringByUnit(_si, _descriptor.sport),
-      record.cadence.toString(),
-      record.heartRate.toString(),
-      record.distanceStringByUnit(_si),
-    ];
-  }
-
-  _recordMeasurement(List<int> data) async {
-    if (!_descriptor.canDataProcessed(data)) return;
-
-    _connectionWatchdog?.cancel();
-    if (_connectionWatchdogTime > 0) {
-      _connectionWatchdog =
-          Timer(Duration(seconds: _connectionWatchdogTime), _reconnectionWorkaround);
-    }
-
-    Duration currentIdle = Duration();
-    if (_paused) {
-      currentIdle = DateTime.now().difference(_pauseStarted);
-    }
-
-    final latestRecord = _descriptor.processData(
-      _activity,
-      _idleDuration + currentIdle,
-      _latestRecord,
-      data,
-      _heartRateMonitor,
-      _cadenceSensor,
-    );
-
-    if (!_paused && _measuring) {
-      if (latestRecord.elapsed != _latestRecord?.elapsed) {
-        await _database?.recordDao?.insertRecord(latestRecord);
-      }
-      _addGraphData(latestRecord);
-    }
-
-    setState(() {
-      _latestRecord = latestRecord;
-      _fillValues(_latestRecord);
-
-      if (_measuring) {
-        if ((_latestRecord?.speed ?? 0.0) <= EPS) {
-          _pauseStarted = DateTime.now();
-          _paused = true;
-        } else {
-          _paused = false;
-          _idleDuration += currentIdle;
-        }
-      }
-    });
-  }
-
-  _discoverServices() async {
-    if (_discovering) {
-      return;
-    }
-    device.discoverServices().then((services) async {
-      if (_primaryMeasurements != null) {
-        return services;
-      }
-
-      setState(() {
-        _discovering = true;
-      });
-      final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
-      final nameCharacteristic =
-          BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
-      var nameString;
-      try {
-        final nameBytes = await nameCharacteristic.read();
-        nameString = String.fromCharCodes(nameBytes);
-      } on PlatformException catch (e, stack) {
-        debugPrint("${e.message}");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-      }
-
-      if (nameString == null) {
-        setState(() {
-          _discovering = false;
-        });
-        return services;
-      }
-
-      if (nameString == _descriptor.manufacturer) {
-        _cadenceSensor = Get.isRegistered<CadenceSensor>() ? Get.find<CadenceSensor>() : null;
-        if (_cadenceSensor != null) {
-          await _cadenceSensor.connect();
-          await _cadenceSensor.attach();
-          _cadenceSensor.pumpMetric(null);
-        }
-        final measurementService =
-            BluetoothDeviceEx.filterService(services, _descriptor.primaryServiceId);
-        _primaryMeasurements = BluetoothDeviceEx.filterCharacteristic(
-            measurementService?.characteristics, _descriptor.primaryMeasurementId);
-        if (_primaryMeasurements != null) {
-          await _primaryMeasurements.setNotifyValue(true);
-          _measurementSubscription = _primaryMeasurements.value.listen((data) async {
-            if ((data?.length ?? 0) > 1) {
-              await _recordMeasurement(data);
-            }
-          });
-          _measuring = true;
-          _paused = false;
-
-          await _addActivity();
+    if (deviceState == BluetoothDeviceState.connected && !_fitnessEquipment.discovering ||
+        _fitnessEquipment.connected) {
+      final supported = await _fitnessEquipment.discover();
+      if (supported) {
+        if (PrefService.getBool(INSTANT_MEASUREMENT_START_TAG)) {
+          await _startMeasurement();
         }
       } else {
         Get.defaultDialog(
@@ -293,10 +138,62 @@ class RecordingState extends State<RecordingScreen> {
           ),
         );
       }
-      setState(() {
-        _discovering = false;
-      });
-      return services;
+    }
+  }
+
+  _startMeasurement() async {
+    if (!_uxDebug) {
+      final now = DateTime.now();
+      _activity = Activity(
+        fourCC: _descriptor.fourCC,
+        deviceName: device.name,
+        deviceId: device.id.id,
+        start: now.millisecondsSinceEpoch,
+        startDateTime: now,
+      );
+      final id = await _database?.activityDao?.insertActivity(_activity);
+      _activity.id = id;
+      _fitnessEquipment.setActivity(_activity);
+    }
+
+    await _fitnessEquipment.attach();
+    setState(() {
+      _measuring = true;
+    });
+    _fitnessEquipment.measuring = true;
+
+    _fitnessEquipment.pumpData((record) async {
+      _connectionWatchdog?.cancel();
+      if (_connectionWatchdogTime > 0) {
+        _connectionWatchdog =
+            Timer(Duration(seconds: _connectionWatchdogTime), _reconnectionWorkaround);
+      }
+
+      if (_measuring) {
+        if (!_uxDebug &&
+            (_fitnessEquipment.lastRecord == null ||
+                (_fitnessEquipment.lastRecord?.elapsed ?? 0) != (record?.elapsed ?? 0))) {
+          await _database?.recordDao?.insertRecord(record);
+        }
+        setState(() {
+          if (!_simplerUi) {
+            _graphData.add(record.display());
+            if (_pointCount > 0 && _graphData.length > _pointCount) {
+              _graphData.removeFirst();
+            }
+          }
+          _distance = record.distance;
+          _elapsed = record.elapsed;
+          _values = [
+            record.calories.toString(),
+            record.power.toString(),
+            record.speedStringByUnit(_si, _descriptor.sport),
+            record.cadence.toString(),
+            record.heartRate.toString(),
+            record.distanceStringByUnit(_si),
+          ];
+        });
+      }
     });
   }
 
@@ -345,26 +242,10 @@ class RecordingState extends State<RecordingScreen> {
     });
   }
 
-  RecordWithSport _blankRecord() {
-    return RecordWithSport(
-      timeStamp: 0,
-      distance: _uxDebug ? _random.nextInt(100000).toDouble() : 0.0,
-      elapsed: 0,
-      calories: 0,
-      power: 0,
-      speed: 0.0,
-      cadence: 0,
-      heartRate: 0,
-      elapsedMillis: 0,
-      sport: _descriptor.sport,
-    );
-  }
-
   @override
   initState() {
     super.initState();
     _isLoading = true;
-    _discovering = false;
     _pointCount = size.width ~/ 2;
     _unitStyle = TextStyle(
       fontFamily: FONT_FAMILY,
@@ -376,6 +257,8 @@ class RecordingState extends State<RecordingScreen> {
       PrefService.getString(THROTTLE_POWER_TAG),
       PrefService.getBool(THROTTLE_OTHER_TAG),
     );
+    _fitnessEquipment =
+        Get.put<FitnessEquipment>(FitnessEquipment(descriptor: _descriptor, device: device));
     _trackCalculator = TrackCalculator(
       track: TrackDescriptor(
         radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
@@ -445,24 +328,20 @@ class RecordingState extends State<RecordingScreen> {
 
     _uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
     _measuring = false;
-    _paused = false;
-    _idleDuration = Duration();
-    _latestRecord = _blankRecord();
+    _fitnessEquipment.measuring = false;
     _values = ["--", "--", "--", "--", "--", "--"];
+    _distance = 0.0;
+    _elapsed = 0;
 
-    if (_uxDebug) {
-      _simulateMeasurements();
-    } else {
-      _heartRateMonitor?.attach()?.then((_) {
-        _heartRateMonitor?.pumpMetric((heartRate) async {
-          setState(() {
-            _values[4] = heartRate?.toString() ?? "--";
-          });
+    _heartRateMonitor?.attach()?.then((_) {
+      _heartRateMonitor?.pumpMetric((heartRate) async {
+        setState(() {
+          _values[4] = heartRate?.toString() ?? "--";
         });
       });
-      _initialConnectOnDemand();
-      _openDatabase();
-    }
+    });
+    _connectOnDemand(initialState);
+    _openDatabase();
 
     _isLoading = false;
     Wakelock.enable();
@@ -470,12 +349,9 @@ class RecordingState extends State<RecordingScreen> {
 
   _preDispose() async {
     await _heartRateMonitor.cancelSubscription();
-    await _cadenceSensor?.detach();
-    await _cadenceSensor?.disconnect();
     _connectionWatchdog?.cancel();
-    _timer?.cancel();
-    await _measurementSubscription?.cancel();
-    await _primaryMeasurements?.setNotifyValue(false);
+    // TODO stopWorkout
+    await _fitnessEquipment?.detach();
     await _database?.close();
   }
 
@@ -485,72 +361,17 @@ class RecordingState extends State<RecordingScreen> {
     super.dispose();
   }
 
-  Future<void> _addActivity() async {
-    final now = DateTime.now();
-    _activity = Activity(
-      fourCC: _descriptor.fourCC,
-      deviceName: device.name,
-      deviceId: device.id.id,
-      start: now.millisecondsSinceEpoch,
-      startDateTime: now,
-    );
-    final id = await _database?.activityDao?.insertActivity(_activity);
-    _activity.id = id;
-  }
-
-  Future<void> _restartWorkout() async {
-    _connectionWatchdog?.cancel();
-    _descriptor.restartWorkout();
-    _latestRecord = _blankRecord();
-    if (!_uxDebug) {
-      await _database?.recordDao?.deleteAllActivityRecords(_activity.id);
-      await _addActivity();
-    }
-  }
-
   Future<void> _reconnectionWorkaround() async {
     Get.snackbar("Warning", "Equipment might be disconnected. Auto-starting new workout:");
-    _measuring = false;
-    await _measurementSubscription?.cancel();
-    await _primaryMeasurements?.setNotifyValue(false);
-    await _cadenceSensor?.detach();
-    _primaryMeasurements = null;
-    _measurementSubscription = null;
-    Get.snackbar("Warning", "1. Disconnecting...");
-    await device.disconnect();
-    _discovering = false;
-    Get.snackbar("Warning", "2. Reconnecting...");
-    await device.connect();
-    Get.snackbar("Warning", "3. Restarting...");
-    await _initialConnectOnDemand();
-  }
-
-  void _simulateMeasurements() {
     setState(() {
-      final rightNow = DateTime.now();
-      final newElapsed = _latestRecord.elapsed + 1;
-      _latestRecord = RecordWithSport(
-        timeStamp: rightNow.millisecondsSinceEpoch,
-        distance: _latestRecord.distance + _random.nextInt(10),
-        elapsed: newElapsed,
-        calories: _random.nextInt(1500),
-        power: 50 + _random.nextInt(500),
-        speed: 15.0 + _random.nextDouble() * 15.0,
-        cadence: 30 + _random.nextInt(100),
-        heartRate: 60 + _random.nextInt(120),
-        elapsedMillis: newElapsed,
-        sport: _descriptor.sport,
-      );
-      _fillValues(_latestRecord);
-      _addGraphData(_latestRecord);
-
-      // Update once per second, but make sure to do it at the beginning of each
-      // new second, so that the clock is accurate.
-      _timer = Timer(
-        Duration(seconds: 1) - Duration(milliseconds: rightNow.millisecond),
-        _simulateMeasurements,
-      );
+      _measuring = false;
     });
+    _fitnessEquipment.measuring = false;
+    await _fitnessEquipment?.detach();
+    await _fitnessEquipment?.disconnect();
+    final success = await _fitnessEquipment?.connect();
+    await _connectOnDemand(
+        success ? BluetoothDeviceState.connected : BluetoothDeviceState.disconnected);
   }
 
   _stravaUpload(bool onlyWhenAuthenticated) async {
@@ -594,44 +415,30 @@ class RecordingState extends State<RecordingScreen> {
     });
   }
 
-  _finishActivity(bool quick) async {
+  _stopMeasurement(bool quick) async {
     if (!_measuring) return;
-
-    Duration currentIdle = Duration();
-    if (_paused && _pauseStarted != null) {
-      currentIdle = DateTime.now().difference(_pauseStarted);
-    }
 
     setState(() {
       _measuring = false;
-      _paused = true;
     });
-
-    // Add one last record for the time of stopping
-    _latestRecord = _descriptor.processData(
-      _activity,
-      _idleDuration + currentIdle,
-      _latestRecord,
-      null,
-      _heartRateMonitor,
-      _cadenceSensor,
-    );
-
-    await _database?.recordDao?.insertRecord(_latestRecord);
+    _fitnessEquipment.measuring = false;
+    _fitnessEquipment.detach();
 
     _activity.finish(
-      _latestRecord.distance,
-      _latestRecord.elapsed,
-      _latestRecord.calories,
+      _fitnessEquipment.lastRecord.distance,
+      _fitnessEquipment.lastRecord.elapsed,
+      _fitnessEquipment.lastRecord.calories,
     );
-    final retVal = await _database?.activityDao?.updateActivity(_activity);
-    if (retVal <= 0 && !quick) {
-      Get.snackbar("Warning", "Could not save activity");
-      return;
-    }
+    if (!_uxDebug) {
+      final retVal = await _database?.activityDao?.updateActivity(_activity);
+      if (retVal <= 0 && !quick) {
+        Get.snackbar("Warning", "Could not save activity");
+        return;
+      }
 
-    if (_instantUpload && !quick) {
-      await _stravaUpload(true);
+      if (_instantUpload && !quick) {
+        await _stravaUpload(true);
+      }
     }
   }
 
@@ -698,7 +505,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               TextButton(
                 onPressed: () async {
-                  await _finishActivity(true);
+                  await _stopMeasurement(true);
                   await _preDispose();
                   Navigator.of(context).pop(true);
                 },
@@ -729,7 +536,7 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
-    final _timeDisplay = Duration(seconds: _latestRecord.elapsed).toDisplay();
+    final _timeDisplay = Duration(seconds: _elapsed).toDisplay();
 
     List<Widget> rows = [
       Row(
@@ -829,7 +636,7 @@ class RecordingState extends State<RecordingScreen> {
         );
       });
 
-      final trackMarker = _trackCalculator.trackMarker(_latestRecord.distance);
+      final trackMarker = _trackCalculator.trackMarker(_distance);
       extras.add(
         CustomPaint(
           painter: TrackPainter(calculator: _trackCalculator),
@@ -875,21 +682,14 @@ class RecordingState extends State<RecordingScreen> {
                 IconData icon;
                 switch (snapshot.data) {
                   case BluetoothDeviceState.connected:
-                    onPressed = () {
-                      device.disconnect();
+                    onPressed = () async {
+                      await _fitnessEquipment.disconnect();
                     };
                     icon = Icons.bluetooth_connected;
-                    _discoverServices();
                     break;
                   case BluetoothDeviceState.disconnected:
                     onPressed = () async {
-                      try {
-                        await device.connect();
-                      } catch (e) {
-                        if (e.code != 'already_connected') {
-                          throw e;
-                        }
-                      }
+                      await _fitnessEquipment.connect();
                     };
                     icon = Icons.bluetooth_disabled;
                     break;
@@ -908,24 +708,9 @@ class RecordingState extends State<RecordingScreen> {
                 icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
                 onPressed: () async {
                   if (_measuring) {
-                    await _finishActivity(false);
+                    await _stopMeasurement(false);
                   } else {
-                    final deviceState = await device.state.last;
-                    var alreadyConnected = false;
-                    if (deviceState == BluetoothDeviceState.disconnected) {
-                      try {
-                        await device.connect();
-                      } catch (e) {
-                        if (e.code != 'already_connected') {
-                          throw e;
-                        } else {
-                          alreadyConnected = true;
-                        }
-                      }
-                    }
-                    if (deviceState != BluetoothDeviceState.disconnected || alreadyConnected) {
-                      _discoverServices();
-                    }
+                    await _startMeasurement();
                   }
                 }),
           ],
@@ -1004,34 +789,6 @@ class RecordingState extends State<RecordingScreen> {
                 } else {
                   await Get.to(ActivitiesScreen());
                 }
-              },
-            ),
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.indigo,
-              child: Icon(Icons.wifi_protected_setup),
-              onPressed: () async {
-                await showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('About to restart the workout'),
-                    content: Text('This will start a new workout! Are you sure?'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Get.close(1),
-                        child: Text('No'),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          await _restartWorkout();
-                          Get.close(1);
-                        },
-                        child: Text('Yes'),
-                      ),
-                    ],
-                  ),
-                );
               },
             ),
             FloatingActionButton(

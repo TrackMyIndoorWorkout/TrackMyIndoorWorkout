@@ -324,6 +324,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           heartRateMonitor = new HeartRateMonitor(r.device);
                           Get.put<HeartRateMonitor>(heartRateMonitor);
                           await heartRateMonitor.connect();
+                          await heartRateMonitor.discover();
                         }
                         await heartRateMonitor.attach();
                         heartRateMonitor.pumpMetric((heartRate) {
