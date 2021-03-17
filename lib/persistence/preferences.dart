@@ -254,9 +254,9 @@ const LAST_EQUIPMENT_ID_DESCRIPTION =
     "The last exercise equipment ID " + "the app recorded a workout for";
 
 const INSTANT_MEASUREMENT_START = "Instant Measurement Start";
-const INSTANT_MEASUREMENT_TAG = "instant_measurement_start";
-const INSTANT_MEASUREMENT_DEFAULT = true;
-const INSTANT_MEASUREMENT_DESCRIPTION = "On: when navigating to the measurement screen the " +
+const INSTANT_MEASUREMENT_START_TAG = "instant_measurement_start";
+const INSTANT_MEASUREMENT_START_DEFAULT = true;
+const INSTANT_MEASUREMENT_START_DESCRIPTION = "On: when navigating to the measurement screen the " +
     "workout recording will start immediately. Off: the workout has to be started manually by " +
     "pressing the play button.";
 

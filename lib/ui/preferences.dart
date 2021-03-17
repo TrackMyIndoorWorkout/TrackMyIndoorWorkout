@@ -53,9 +53,9 @@ class PreferencesScreen extends StatelessWidget {
       ),
       SwitchPreference(
         INSTANT_MEASUREMENT_START,
-        INSTANT_MEASUREMENT_TAG,
-        defaultVal: INSTANT_MEASUREMENT_DEFAULT,
-        desc: INSTANT_MEASUREMENT_DESCRIPTION,
+        INSTANT_MEASUREMENT_START_TAG,
+        defaultVal: INSTANT_MEASUREMENT_START_DEFAULT,
+        desc: INSTANT_MEASUREMENT_START_DESCRIPTION,
       ),
       SwitchPreference(
         INSTANT_UPLOAD,
