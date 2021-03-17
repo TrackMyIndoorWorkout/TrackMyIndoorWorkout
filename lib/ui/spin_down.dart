@@ -101,9 +101,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         fitnessMachine?.characteristics, FITNESS_MACHINE_STATUS);
     final dataService = descriptor.isFitnessMachine
         ? fitnessMachine
-        : BluetoothDeviceEx.filterService(services, descriptor.primaryServiceId);
+        : BluetoothDeviceEx.filterService(services, descriptor.dataServiceId);
     _fitnessMachineData = BluetoothDeviceEx.filterCharacteristic(dataService?.characteristics,
-        (descriptor as FitnessMachineDescriptor).primaryMeasurementId);
+        (descriptor as FitnessMachineDescriptor).dataCharacteristicId);
     setState(() {
       if (!_spinDownPossible) {
         _step = STEP_NOT_SUPPORTED;
