@@ -153,6 +153,10 @@ class FitnessEquipment extends DeviceBase {
       stub.elapsed = elapsed.round();
     }
 
+    if (stub.elapsedMillis == null || stub.elapsedMillis == 0) {
+      stub.elapsedMillis = elapsedMillis;
+    }
+
     final dT = (elapsedMillis - lastRecord.elapsedMillis) / 1000.0;
     if ((stub.distance ?? 0.0) < EPS && (stub.speed ?? 0.0) > 0 && dT > EPS) {
       double dD = stub.speed * DeviceDescriptor.KMH2MS * descriptor.distanceFactor * dT;
