@@ -68,7 +68,7 @@ class Record {
   }) {
     if (dt == null) {
       if (timeStamp != null || timeStamp > 0) {
-        _timeStampFromDt();
+        _dtFromTimeStamp();
       } else {
         dt = DateTime.now();
       }
@@ -102,12 +102,12 @@ class Record {
     }
   }
 
-  _timeStampFromDt() {
+  _dtFromTimeStamp() {
     dt = DateTime.fromMillisecondsSinceEpoch(timeStamp);
   }
 
   Record hydrate() {
-    _timeStampFromDt();
+    _dtFromTimeStamp();
     return this;
   }
 
