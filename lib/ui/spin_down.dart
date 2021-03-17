@@ -218,10 +218,11 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       } else if (response?.length == 2) {
         debugPrint("Weight response 2 ${response[0]} ${response[1]}");
         if (response[0] != weightLsb || response[1] != weightMsb) {
-          Get.snackbar("Weight setting error", "Retry weight setting to continue");
-          setState(() {
-            _calibrationState = CalibrationState.WeighInProblem;
-          });
+          debugPrint("Old weight ${response[0] + 256 * response[1]}");
+          // Get.snackbar("Weight setting error", "Retry weight setting to continue");
+          // setState(() {
+          //   _calibrationState = CalibrationState.WeighInProblem;
+          // });
         } else {
           Get.snackbar("Weight setting", "Successful");
           setState(() {
@@ -229,7 +230,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
           });
         }
       } else {
-        debugPrint("Weight response X $response");
+        setState(() {
+          _calibrationState = CalibrationState.WeighInSuccess;
+        });
       }
     });
     await _weightData.write([weightLsb, weightMsb]);
