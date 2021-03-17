@@ -208,7 +208,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         _weightData.value.throttleTime(Duration(milliseconds: 500)).listen((response) async {
       debugPrint("debug Weight response $response");
       if (response?.length == 1) {
-        debugPrint("Weight response 1 ${response[0]}");
         if (response[0] != WEIGHT_SUCCESS_OPCODE) {
           Get.snackbar("Weight setting error", "Retry weight setting to continue");
           setState(() {
@@ -216,7 +215,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
           });
         }
       } else if (response?.length == 2) {
-        debugPrint("Weight response 2 ${response[0]} ${response[1]}");
         if (response[0] != weightLsb || response[1] != weightMsb) {
           debugPrint("Old weight ${response[0] + 256 * response[1]}");
           // Get.snackbar("Weight setting error", "Retry weight setting to continue");
@@ -224,7 +222,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
           //   _calibrationState = CalibrationState.WeighInProblem;
           // });
         } else {
-          Get.snackbar("Weight setting", "Successful");
+          Get.snackbar("debug Weight setting", "Successful");
           setState(() {
             _calibrationState = CalibrationState.WeighInSuccess;
           });
@@ -284,6 +282,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       debugPrint("debug Control Point $data");
       if (data?.length == 1) {
         if (data[0] != SPIN_DOWN_OPCODE) {
+          debugPrint("debug Control Point non spin down");
           Get.snackbar("Calibration Start error", "Please retry");
           setState(() {
             _step = STEP_DONE;
@@ -295,6 +294,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         if (data[0] != CONTROL_OPCODE ||
             data[1] != SPIN_DOWN_OPCODE ||
             data[2] != SUCCESS_RESPONSE) {
+          debugPrint("debug Control Point cali error");
           Get.snackbar("Calibration Start error", "Please retry");
           setState(() {
             _step = STEP_DONE;
@@ -307,6 +307,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
           _targetSpeedHigh = (data[3] * 256 + data[4]) / 100;
           _targetSpeedLow = (data[5] * 256 + data[6]) / 100;
         });
+        debugPrint("debug Control Point cali started");
         Get.snackbar("Calibration started", "Go!");
       }
     });
@@ -317,18 +318,21 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       debugPrint("debug FM status $status");
       if (status?.length == 1) {
         if (status[0] == SPIN_DOWN_STATUS_SUCCESS) {
+          debugPrint("debug FM status success");
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationSuccess;
           });
         }
         if (status[0] == SPIN_DOWN_STATUS_ERROR) {
+          debugPrint("debug FM status error");
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationFail;
           });
         }
         if (status[0] == SPIN_DOWN_STATUS_STOP_PEDALING) {
+          debugPrint("debug FM status stop");
           setState(() {
             _calibrationState = CalibrationState.CalibrationSuccess;
           });
