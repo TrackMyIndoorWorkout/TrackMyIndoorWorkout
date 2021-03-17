@@ -146,7 +146,7 @@ class FitnessEquipment extends DeviceBase {
     // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
     _hasTotalCalorieCounting = stub.calories != null && stub.calories > 0;
     if (_hasTotalCalorieCounting && (stub.elapsed ?? 0) > 0) {
-      elapsed = stub.elapsed * 1000.0;
+      elapsed = stub.elapsed.toDouble();
     }
 
     if (stub.elapsed == null || stub.elapsed == 0) {
