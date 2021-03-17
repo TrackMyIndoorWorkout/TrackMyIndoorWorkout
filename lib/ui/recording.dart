@@ -493,11 +493,13 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<bool> _onWillPop() async {
+    if (!_measuring) return true;
+
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: Text('About to navigate away'),
-            content: Text("If there is a workout in progress it'll be finished. Are you sure?"),
+            content: Text("The workout in progress will be finished. Are you sure?"),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Get.close(1),
