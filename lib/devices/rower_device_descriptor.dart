@@ -98,7 +98,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
         _strokeRateSum -= _strokeRates.first;
         _strokeRates.removeFirst();
       }
-      strokeRate = _strokeRates.length > 0 ? _strokeRateSum / _strokeRates.length : 0;
+      strokeRate = _strokeRates.length > 0 ? (_strokeRateSum / _strokeRates.length).round() : 0;
     }
 
     return Record(
@@ -108,7 +108,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       power: getPower(data).toInt(),
       speed: getSpeed(data),
       cadence: strokeRate,
-      heartRate: getHeartRate(data).toInt(),
+      heartRate: getHeartRate(data)?.toInt(),
       pace: pace,
     );
   }
