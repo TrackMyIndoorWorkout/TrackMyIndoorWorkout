@@ -45,6 +45,18 @@ class FitnessEquipment extends DeviceBase {
     _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG);
     measuring = false;
     _random = Random();
+    lastRecord = RecordWithSport(
+      timeStamp: 0,
+      distance: uxDebug ? _random.nextInt(5000).toDouble() : 0.0,
+      elapsed: 0,
+      calories: 0,
+      power: 0,
+      speed: 0.0,
+      cadence: 0,
+      heartRate: 0,
+      elapsedMillis: 0,
+      sport: descriptor.sport,
+    );
   }
 
   Stream<Record> get _listenToData async* {
@@ -71,6 +83,7 @@ class FitnessEquipment extends DeviceBase {
             speed: 15.0 + _random.nextDouble() * 15.0,
             cadence: 30 + _random.nextInt(100),
             heartRate: 60 + _random.nextInt(120),
+            sport: descriptor.sport,
           ));
           recordHandlerFunction(record);
           pumpData(recordHandlerFunction);
