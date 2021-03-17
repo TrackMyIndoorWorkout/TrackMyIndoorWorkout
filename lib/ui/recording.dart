@@ -142,19 +142,20 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _startMeasurement() async {
+    final now = DateTime.now();
+    _activity = Activity(
+      fourCC: _descriptor.fourCC,
+      deviceName: device.name,
+      deviceId: device.id.id,
+      start: now.millisecondsSinceEpoch,
+      startDateTime: now,
+    );
     if (!_uxDebug) {
-      final now = DateTime.now();
-      _activity = Activity(
-        fourCC: _descriptor.fourCC,
-        deviceName: device.name,
-        deviceId: device.id.id,
-        start: now.millisecondsSinceEpoch,
-        startDateTime: now,
-      );
       final id = await _database?.activityDao?.insertActivity(_activity);
       _activity.id = id;
-      _fitnessEquipment.setActivity(_activity);
     }
+
+    _fitnessEquipment.setActivity(_activity);
 
     await _fitnessEquipment.attach();
     setState(() {
