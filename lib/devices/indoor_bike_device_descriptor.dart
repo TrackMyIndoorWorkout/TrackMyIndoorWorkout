@@ -65,12 +65,12 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     super.stubRecord(data);
     return Record(
       distance: getDistance(data),
-      elapsed: getTime(data).toInt(),
-      calories: getCalories(data).toInt(),
-      power: getPower(data).toInt(),
+      elapsed: getTime(data)?.toInt(),
+      calories: getCalories(data)?.toInt(),
+      power: getPower(data)?.toInt(),
       speed: getSpeed(data),
-      cadence: getCadence(data).toInt(),
-      heartRate: getHeartRate(data).toInt(),
+      cadence: getCadence(data)?.toInt(),
+      heartRate: getHeartRate(data)?.toInt(),
     );
   }
 
