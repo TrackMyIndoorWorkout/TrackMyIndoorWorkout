@@ -349,9 +349,8 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _preDispose() async {
-    await _heartRateMonitor.cancelSubscription();
+    await _heartRateMonitor?.cancelSubscription();
     _connectionWatchdog?.cancel();
-    // TODO stopWorkout
     await _fitnessEquipment?.detach();
     await _database?.close();
   }
@@ -426,9 +425,9 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment.detach();
 
     _activity.finish(
-      _fitnessEquipment.lastRecord.distance,
-      _fitnessEquipment.lastRecord.elapsed,
-      _fitnessEquipment.lastRecord.calories,
+      _fitnessEquipment.lastRecord?.distance,
+      _fitnessEquipment.lastRecord?.elapsed,
+      _fitnessEquipment.lastRecord?.calories,
     );
     if (!_uxDebug) {
       final retVal = await _database?.activityDao?.updateActivity(_activity);
