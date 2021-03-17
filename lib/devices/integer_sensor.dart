@@ -23,7 +23,8 @@ abstract class IntegerSensor extends DeviceBase {
   }
 
   Stream<int> get _listenToMetric async* {
-    if (!attached) return;
+    if (!attached || characteristic == null) return;
+
     await for (var byteString in characteristic.value.throttleTime(Duration(milliseconds: 500))) {
       if (!canMeasurementProcessed(byteString)) continue;
 
