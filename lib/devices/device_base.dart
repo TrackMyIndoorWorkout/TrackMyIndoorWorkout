@@ -39,8 +39,13 @@ abstract class DeviceBase {
   }
 
   Future<bool> connect() async {
-    if (uxDebug) return true;
+    if (uxDebug) {
+      connected = true;
+      return true;
+    }
+
     if (connected || connecting) return false;
+
     try {
       connecting = true;
       await device.connect();
@@ -56,8 +61,13 @@ abstract class DeviceBase {
   }
 
   Future<bool> discover({bool retry = false}) async {
-    if (uxDebug) return true;
+    if (uxDebug) {
+      discovered = true;
+      return true;
+    }
+
     if (discovering || discovered) return false;
+
     discovering = true;
     try {
       services = await device.discoverServices();
@@ -85,20 +95,30 @@ abstract class DeviceBase {
   }
 
   Future<void> attach() async {
-    if (uxDebug) return;
+    if (uxDebug) {
+      attached = true;
+      return;
+    }
+
     if (attached) return;
+
     await characteristic.setNotifyValue(true);
     attached = true;
   }
 
   Future<void> cancelSubscription() async {
     if (uxDebug) return;
+
     await subscription?.cancel();
     subscription = null;
   }
 
   Future<void> detach() async {
-    if (uxDebug) return;
+    if (uxDebug) {
+      attached = false;
+      return;
+    }
+
     if (attached) {
       await characteristic?.setNotifyValue(false);
       attached = false;
@@ -107,12 +127,13 @@ abstract class DeviceBase {
   }
 
   Future<void> disconnect() async {
-    if (uxDebug) return;
-    await detach();
-    characteristic = null;
-    services = null;
-    _service = null;
-    await device.disconnect();
+    if (!uxDebug) {
+      await detach();
+      characteristic = null;
+      services = null;
+      _service = null;
+      await device.disconnect();
+    }
     connected = false;
     connecting = false;
     discovering = false;
