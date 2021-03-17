@@ -5,6 +5,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:spinner_input/spinner_input.dart';
 import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptor.dart';
@@ -203,7 +204,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     final weightMsb = weight ~/ 256;
     debugPrint("Sending weight: $weight ($weightLsb $weightMsb)");
     await _weightData.setNotifyValue(true);
-    _weightDataSubscription = _weightData.value.listen((response) async {
+    _weightDataSubscription =
+        _weightData.value.throttleTime(Duration(milliseconds: 500)).listen((response) async {
+      debugPrint("debug Weight response $response");
       if (response?.length == 1) {
         debugPrint("Weight response 1 ${response[0]}");
         if (response[0] != WEIGHT_SUCCESS_OPCODE) {
@@ -273,7 +276,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       _calibrationState = CalibrationState.CalibrationStarting;
     });
     await _controlPoint.setNotifyValue(true); // Is this what needed for indication?
-    _controlPointSubscription = _controlPoint.value.listen((data) async {
+    _controlPointSubscription =
+        _controlPoint.value.throttleTime(Duration(milliseconds: 500)).listen((data) async {
+      debugPrint("debug Control Point $data");
       if (data?.length == 1) {
         if (data[0] != SPIN_DOWN_OPCODE) {
           Get.snackbar("Calibration Start error", "Please retry");
@@ -304,7 +309,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     });
     await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
     await _fitnessMachineStatus.setNotifyValue(true);
-    _statusSubscription = _fitnessMachineStatus.value.listen((status) {
+    _statusSubscription =
+        _fitnessMachineStatus.value.throttleTime(Duration(milliseconds: 500)).listen((status) {
+      debugPrint("debug FM status $status");
       if (status?.length == 1) {
         if (status[0] == SPIN_DOWN_STATUS_SUCCESS) {
           setState(() {
