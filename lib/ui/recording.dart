@@ -816,13 +816,17 @@ class RecordingState extends State<RecordingScreen> {
               heroTag: null,
               foregroundColor: Colors.white,
               backgroundColor: Colors.indigo,
-              child: Icon(Icons.settings),
+              child: Icon(Icons.speed),
               onPressed: () async {
-                await Get.bottomSheet(
-                  SpinDownBottomSheet(device: device, descriptor: _descriptor),
-                  isDismissible: false,
-                  enableDrag: false,
-                );
+                if (!_fitnessEquipment.descriptor.isFitnessMachine) {
+                  Get.snackbar("Error", "Not compatible with the calibration method");
+                } else {
+                  await Get.bottomSheet(
+                    SpinDownBottomSheet(),
+                    isDismissible: false,
+                    enableDrag: false,
+                  );
+                }
               },
             ),
           ],
