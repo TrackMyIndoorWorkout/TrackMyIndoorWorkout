@@ -334,16 +334,16 @@ class RecordingState extends State<RecordingScreen> {
     _distance = 0.0;
     _elapsed = 0;
 
-    _heartRateMonitor?.attach()?.then((_) {
-      _heartRateMonitor?.discover()?.then((discovered) {
-        if (discovered) {
+    _heartRateMonitor?.discover()?.then((discovered) {
+      if (discovered) {
+        _heartRateMonitor?.attach()?.then((_) {
           _heartRateMonitor?.pumpMetric((heartRate) async {
             setState(() {
               _values[4] = heartRate?.toString() ?? "--";
             });
           });
-        }
-      });
+        });
+      }
     });
     _connectOnDemand(initialState);
     _openDatabase();
