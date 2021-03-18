@@ -426,6 +426,7 @@ class RecordingState extends State<RecordingScreen> {
     setState(() {
       _measuring = false;
     });
+    _connectionWatchdog?.cancel();
     _fitnessEquipment.measuring = false;
     _fitnessEquipment.detach();
 
