@@ -82,7 +82,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   @override
-  Record stubRecord(List<int> data) {
+  RecordWithSport stubRecord(List<int> data) {
     super.stubRecord(data);
 
     final pace = getPace(data);
@@ -101,7 +101,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       strokeRate = _strokeRates.length > 0 ? (_strokeRateSum / _strokeRates.length).round() : 0;
     }
 
-    return Record(
+    return RecordWithSport(
       distance: getDistance(data),
       elapsed: getTime(data)?.toInt(),
       calories: getCalories(data)?.toInt(),
@@ -110,6 +110,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       cadence: strokeRate,
       heartRate: getHeartRate(data)?.toInt(),
       pace: pace,
+      sport: sport,
     );
   }
 

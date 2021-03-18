@@ -44,9 +44,9 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         );
 
   @override
-  Record stubRecord(List<int> data) {
+  RecordWithSport stubRecord(List<int> data) {
     super.stubRecord(data);
-    return Record(
+    return RecordWithSport(
       distance: getDistance(data),
       elapsed: getTime(data)?.toInt(),
       calories: getCalories(data)?.toInt(),
@@ -54,6 +54,7 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
       heartRate: getHeartRate(data)?.toInt(),
+      sport: sport,
     );
   }
 }

@@ -95,7 +95,7 @@ abstract class DeviceDescriptor {
     byteCounter = 2;
   }
 
-  Record stubRecord(List<int> data) {
+  RecordWithSport stubRecord(List<int> data) {
     if ((data?.length ?? 0) > 2) {
       var flag = data[0] + 256 * data[1];
       if (flag != featuresFlag) {
