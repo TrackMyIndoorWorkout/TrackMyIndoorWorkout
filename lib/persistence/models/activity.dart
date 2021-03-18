@@ -1,6 +1,6 @@
 import 'package:floor/floor.dart';
 import 'package:intl/intl.dart';
-import '../../devices/devices.dart';
+import '../../devices/device_map.dart';
 import '../../persistence/preferences.dart';
 import '../../tcx/tcx_output.dart';
 

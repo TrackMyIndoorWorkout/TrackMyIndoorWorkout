@@ -2,10 +2,10 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 
-import '../devices/devices.dart';
-import '../devices/device_descriptor.dart';
+import '../devices/device_descriptors/device_descriptor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
+import '../devices/device_map.dart';
 import '../tcx/activity_type.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';

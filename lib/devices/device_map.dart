@@ -1,9 +1,9 @@
 import '../tcx/activity_type.dart';
-import 'device_descriptor.dart';
-import 'indoor_bike_device_descriptor.dart';
-import 'precor_spinner_chrono_power.dart';
-import 'rower_device_descriptor.dart';
-import 'schwinn_ac_performance_plus.dart';
+import 'device_descriptors/device_descriptor.dart';
+import 'device_descriptors/indoor_bike_device_descriptor.dart';
+import 'device_descriptors/precor_spinner_chrono_power.dart';
+import 'device_descriptors/rower_device_descriptor.dart';
+import 'device_descriptors/schwinn_ac_performance_plus.dart';
 
 Map<String, DeviceDescriptor> deviceMap = {
   "PSCP": PrecorSpinnerChronoPower(),

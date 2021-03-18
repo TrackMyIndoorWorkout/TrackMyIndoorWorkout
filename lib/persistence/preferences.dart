@@ -4,7 +4,7 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
-import '../devices/device_descriptor.dart';
+import '../devices/device_descriptors/device_descriptor.dart';
 
 Color getTranslucent(Color c) {
   return Color(r: c.r, g: c.g, b: c.b, a: 120, darker: c.darker, lighter: c.lighter);

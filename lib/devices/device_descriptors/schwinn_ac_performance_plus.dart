@@ -1,4 +1,4 @@
-import '../tcx/activity_type.dart';
+import '../../tcx/activity_type.dart';
 import 'device_descriptor.dart';
 
 class SchwinnACPerformancePlus extends DeviceDescriptor {

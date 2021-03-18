@@ -1,7 +1,7 @@
 import 'package:charts_flutter/flutter.dart' hide TextStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import '../devices/devices.dart';
+import '../devices/device_map.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/preferences.dart';
 import '../utils/string_ex.dart';

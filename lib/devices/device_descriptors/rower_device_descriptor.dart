@@ -2,13 +2,13 @@ import 'dart:collection';
 
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
-import '../persistence/models/record.dart';
-import '../persistence/preferences.dart';
-import '../utils/constants.dart';
-import 'byte_metric_descriptor.dart';
+import '../../persistence/models/record.dart';
+import '../../persistence/preferences.dart';
+import '../../utils/constants.dart';
+import '../metric_descriptors/byte_metric_descriptor.dart';
+import '../metric_descriptors/short_metric_descriptor.dart';
+import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
-import 'gatt_constants.dart';
-import 'short_metric_descriptor.dart';
 
 class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   ByteMetricDescriptor strokeRateMetric;

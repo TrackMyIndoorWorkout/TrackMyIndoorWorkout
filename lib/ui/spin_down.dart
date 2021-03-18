@@ -7,11 +7,11 @@ import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:spinner_input/spinner_input.dart';
+import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_descriptors/fitness_machine_descriptor.dart';
+import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/bluetooth_device_ex.dart';
-import '../devices/device_descriptor.dart';
-import '../devices/fitness_machine_descriptor.dart';
 import '../devices/gatt_constants.dart';
-import '../devices/heart_rate_monitor.dart';
 import '../persistence/preferences.dart';
 import '../utils/constants.dart';
 

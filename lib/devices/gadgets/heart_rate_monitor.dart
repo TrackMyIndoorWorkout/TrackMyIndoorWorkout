@@ -1,7 +1,7 @@
-import 'byte_metric_descriptor.dart';
-import 'gatt_constants.dart';
+import '../metric_descriptors/byte_metric_descriptor.dart';
+import '../metric_descriptors/short_metric_descriptor.dart';
+import '../gatt_constants.dart';
 import 'integer_sensor.dart';
-import 'short_metric_descriptor.dart';
 
 class HeartRateMonitor extends IntegerSensor {
   ByteMetricDescriptor _byteHeartRateMetric;

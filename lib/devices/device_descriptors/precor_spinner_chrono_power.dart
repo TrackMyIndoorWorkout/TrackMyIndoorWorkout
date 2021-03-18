@@ -1,8 +1,8 @@
-import '../tcx/activity_type.dart';
+import '../../tcx/activity_type.dart';
+import '../metric_descriptors/short_metric_descriptor.dart';
+import '../metric_descriptors/three_byte_metric_descriptor.dart';
+import '../gatt_constants.dart';
 import 'fixed_layout_device_descriptor.dart';
-import 'gatt_constants.dart';
-import 'short_metric_descriptor.dart';
-import 'three_byte_metric_descriptor.dart';
 
 class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
   PrecorSpinnerChronoPower()

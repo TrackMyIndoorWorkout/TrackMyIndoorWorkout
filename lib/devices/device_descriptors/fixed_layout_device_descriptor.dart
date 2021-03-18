@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-import '../persistence/models/record.dart';
+import '../../persistence/models/record.dart';
 import 'device_descriptor.dart';
 
 abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {

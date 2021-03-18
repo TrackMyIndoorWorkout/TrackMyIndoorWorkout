@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/devices/byte_metric_descriptor.dart';
+import '../lib/devices/metric_descriptors/byte_metric_descriptor.dart';
 import '../lib/utils/constants.dart';
 import 'utils.dart';
 

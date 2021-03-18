@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:preferences/preferences.dart';
-import '../persistence/preferences.dart';
-import '../utils/guid_ex.dart';
+import '../../persistence/preferences.dart';
+import '../../utils/guid_ex.dart';
 
 abstract class DeviceBase {
   final String serviceId;

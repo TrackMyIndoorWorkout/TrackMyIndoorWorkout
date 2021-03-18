@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 
-import '../devices/devices.dart';
-import '../devices/device_descriptor.dart';
-import '../devices/fitness_machine_descriptor.dart';
+import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_descriptors/fitness_machine_descriptor.dart';
+import '../devices/device_map.dart';
 import '../ui/import_form.dart';
 import '../utils/constants.dart';
 import 'models/activity.dart';

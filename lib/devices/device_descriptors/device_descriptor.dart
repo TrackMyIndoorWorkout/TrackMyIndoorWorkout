@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import '../devices/gatt_constants.dart';
-import '../persistence/models/record.dart';
-import '../persistence/preferences.dart';
-import '../tcx/activity_type.dart';
-import '../track/tracks.dart';
-import 'byte_metric_descriptor.dart';
-import 'short_metric_descriptor.dart';
-import 'three_byte_metric_descriptor.dart';
+import '../../persistence/models/record.dart';
+import '../../persistence/preferences.dart';
+import '../../tcx/activity_type.dart';
+import '../../track/tracks.dart';
+import '../metric_descriptors/byte_metric_descriptor.dart';
+import '../metric_descriptors/short_metric_descriptor.dart';
+import '../metric_descriptors/three_byte_metric_descriptor.dart';
+import '../gatt_constants.dart';
 
 abstract class DeviceDescriptor {
   static const double MS2KMH = 3.6;

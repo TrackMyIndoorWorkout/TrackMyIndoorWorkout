@@ -1,9 +1,9 @@
 import 'dart:collection';
 
+import '../metric_descriptors/short_metric_descriptor.dart';
+import '../gatt_constants.dart';
 import 'cadence_data.dart';
-import 'gatt_constants.dart';
 import 'integer_sensor.dart';
-import 'short_metric_descriptor.dart';
 
 class CadenceSensor extends IntegerSensor {
   static const int REVOLUTION_SLIDING_WINDOW = 10; // Seconds

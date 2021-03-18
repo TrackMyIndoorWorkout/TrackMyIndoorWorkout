@@ -1,7 +1,7 @@
 import 'package:flutter_blue/flutter_blue.dart';
 import '../utils/guid_ex.dart';
-import 'devices.dart';
-import 'device_descriptor.dart';
+import 'device_descriptors/device_descriptor.dart';
+import 'device_map.dart';
 
 extension BluetoothDeviceEx on BluetoothDevice {
   DeviceDescriptor getDescriptor(List<String> serviceUuids) {
