@@ -32,6 +32,7 @@ import '../utils/constants.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
 import 'activities.dart';
+import 'battery_status.dart';
 import 'spin_down.dart';
 
 typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
@@ -795,6 +796,19 @@ class RecordingState extends State<RecordingScreen> {
                 } else {
                   await Get.to(ActivitiesScreen());
                 }
+              },
+            ),
+            FloatingActionButton(
+              heroTag: null,
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.indigo,
+              child: Icon(Icons.battery_unknown),
+              onPressed: () async {
+                await Get.bottomSheet(
+                  BatteryStatusBottomSheet(),
+                  isDismissible: false,
+                  enableDrag: false,
+                );
               },
             ),
             FloatingActionButton(
