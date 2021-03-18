@@ -9,6 +9,7 @@ import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
 import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 import 'fitness_equipment_process_record_test.mocks.dart';
 
@@ -107,7 +108,7 @@ void main() {
     });
   });
 
-  group('processRecord does not override calories with power or caloriesPerHour', () {
+  group('processRecord does not override calories when explicitly reported available', () {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 300, rnd).forEach((calories) {
       test('$calories', () async {
@@ -123,6 +124,49 @@ void main() {
         final record = equipment.processRecord(Record(calories: calories));
 
         expect(record.calories, calories);
+      });
+    });
+  });
+
+  group('processRecord calculates distance from speed', () {
+    final rnd = Random();
+    getRandomDoubles(SMALL_REPETITION, 10, rnd).forEach((speed) {
+      test('$speed', () async {
+        await PrefService.init(prefix: 'pref_');
+        final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
+        final activity = Activity(startDateTime: oneSecondAgo);
+        final equipment =
+            FitnessEquipment(descriptor: deviceMap["SIC4"], device: MockBluetoothDevice());
+        equipment.setActivity(activity);
+        equipment.lastRecord =
+            Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, distance: 10);
+
+        final record = equipment.processRecord(Record(speed: speed));
+
+        expect(record.distance, closeTo(10 + speed * DeviceDescriptor.KMH2MS, EPS));
+      });
+    });
+  });
+
+  group('processRecord does not override distance when explicitly reported available', () {
+    final rnd = Random();
+    getRandomDoubles(SMALL_REPETITION, 1000, rnd).forEach((distance) {
+      test('$distance', () async {
+        await PrefService.init(prefix: 'pref_');
+        final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
+        final activity = Activity(startDateTime: oneSecondAgo);
+        final equipment =
+            FitnessEquipment(descriptor: deviceMap["SIC4"], device: MockBluetoothDevice());
+        equipment.setActivity(activity);
+        equipment.lastRecord = Record(
+            timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+            elapsedMillis: 0,
+            distance: 10,
+            speed: 10);
+
+        final record = equipment.processRecord(Record(distance: distance));
+
+        expect(record.distance, distance);
       });
     });
   });
