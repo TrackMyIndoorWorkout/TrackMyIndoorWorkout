@@ -67,7 +67,7 @@ class Record {
     this.caloriesPerMinute,
   }) {
     if (dt == null) {
-      if (timeStamp != null || timeStamp > 0) {
+      if (timeStamp != null && timeStamp > 0) {
         _dtFromTimeStamp();
       } else {
         dt = DateTime.now();
