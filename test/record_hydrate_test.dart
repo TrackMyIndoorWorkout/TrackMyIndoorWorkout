@@ -18,11 +18,12 @@ void main() {
     });
   });
 
-  group('no hydrate leaves dt as null', () {
+  group('Constructor initializes dt', () {
     SPORTS.forEach((sport) {
       test("$sport", () {
+        final now = DateTime.now();
         final record = RecordWithSport(sport: sport);
-        expect(record.dt, null);
+        expect(now.millisecondsSinceEpoch - record.dt.millisecondsSinceEpoch < 100, true);
       });
     });
   });
