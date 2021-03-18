@@ -167,6 +167,7 @@ class FitnessEquipment extends DeviceBase {
 
     var calories = 0.0;
     if (stub.calories != null && stub.calories > 0) {
+      calories = stub.calories.toDouble();
       hasTotalCalorieCounting = true;
     } else {
       double deltaCalories = 0;
