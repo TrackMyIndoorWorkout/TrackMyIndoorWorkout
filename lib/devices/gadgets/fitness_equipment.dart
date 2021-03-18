@@ -22,7 +22,7 @@ class FitnessEquipment extends DeviceBase {
   double _residueCalories;
   int _lastPositiveCadence; // #101
   double _lastPositiveCalories; // #111
-  bool _hasTotalCalorieCounting;
+  bool hasTotalCalorieCounting;
   bool _calorieCarryoverWorkaround = CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
   Timer _timer;
   Record lastRecord;
@@ -41,10 +41,11 @@ class FitnessEquipment extends DeviceBase {
     _residueCalories = 0.0;
     _lastPositiveCadence = 0;
     _lastPositiveCalories = 0.0;
-    _hasTotalCalorieCounting = false;
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG);
+    hasTotalCalorieCounting = false;
+    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ?? true;
     measuring = false;
     _random = Random();
+    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
     lastRecord = RecordWithSport(
       timeStamp: 0,
       distance: uxDebug ? _random.nextInt(5000).toDouble() : 0.0,
@@ -103,7 +104,7 @@ class FitnessEquipment extends DeviceBase {
 
   setActivity(Activity activity) {
     this._activity = activity;
-    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
+    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
   }
 
   Future<bool> discover({bool retry = false}) async {
@@ -137,15 +138,16 @@ class FitnessEquipment extends DeviceBase {
   }
 
   Record processRecord(Record stub) {
-    int elapsedMillis = DateTime.now().difference(_activity.startDateTime).inMilliseconds;
+    final now = DateTime.now();
+    int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
     double elapsed = elapsedMillis / 1000.0;
     // When the equipment supplied multiple data read per second but the Fitness Machine
     // standard only supplies second resolution elapsed time the delta time becomes zero
     // Therefore the FTMS elapsed time reading is kinda useless, causes problems.
     // With this fix the calorie zeroing bug is revealed. Calorie preserving workaround can be
     // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
-    _hasTotalCalorieCounting = stub.calories != null && stub.calories > 0;
-    if (_hasTotalCalorieCounting && (stub.elapsed ?? 0) > 0) {
+    hasTotalCalorieCounting = stub.calories != null && stub.calories > 0;
+    if (hasTotalCalorieCounting && (stub.elapsed ?? 0) > 0) {
       elapsed = stub.elapsed.toDouble();
     }
 
@@ -165,7 +167,7 @@ class FitnessEquipment extends DeviceBase {
 
     var calories = 0.0;
     if (stub.calories != null && stub.calories > 0) {
-      _hasTotalCalorieCounting = true;
+      hasTotalCalorieCounting = true;
     } else {
       double deltaCalories = 0;
       if (stub.caloriesPerHour != null && stub.caloriesPerHour > EPS) {
@@ -224,15 +226,15 @@ class FitnessEquipment extends DeviceBase {
       stub.heartRate = lastRecord.heartRate;
     }
 
-    stub.activityId = _activity.id;
+    stub.activityId = _activity?.id;
     stub.sport = descriptor.sport;
     lastRecord = stub;
     return stub;
   }
 
   stopWorkout() {
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG);
-    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
+    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ?? true;
+    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();
