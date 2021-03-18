@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/persistence/models/record.dart';
-import '../lib/tcx/activity_type.dart';
-import '../lib/utils/constants.dart';
-import '../lib/utils/display.dart';
-import '../lib/utils/statistics_accumulator.dart';
+import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/display.dart';
+import 'package:track_my_indoor_exercise/utils/statistics_accumulator.dart';
 import 'utils.dart';
 
 void main() {

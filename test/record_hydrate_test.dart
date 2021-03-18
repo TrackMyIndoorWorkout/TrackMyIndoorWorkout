@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mock_data/mock_data.dart';
-import '../lib/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'utils.dart';
 
 void main() {

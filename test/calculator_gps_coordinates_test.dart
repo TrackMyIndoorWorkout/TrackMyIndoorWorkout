@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/track/calculator.dart';
-import '../lib/track/constants.dart';
-import '../lib/track/tracks.dart';
-import '../lib/utils/constants.dart';
+import 'package:track_my_indoor_exercise/track/calculator.dart';
+import 'package:track_my_indoor_exercise/track/constants.dart';
+import 'package:track_my_indoor_exercise/track/tracks.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
