@@ -88,9 +88,6 @@ abstract class DeviceBase {
       characteristic = _service.characteristics
           .firstWhere((ch) => ch.uuid.uuidString() == characteristicsId, orElse: () => null);
     }
-    if (characteristic != null) {
-      await attach();
-    }
     return discovered;
   }
 
