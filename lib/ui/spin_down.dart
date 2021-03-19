@@ -29,6 +29,7 @@ enum CalibrationState {
   ReadyToCalibrate,
   CalibrationStarting,
   CalibrationInProgress,
+  CalibrationOver,
   CalibrationSuccess,
   CalibrationFail,
   NotSupported,
@@ -336,7 +337,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         }
         if (status[1] == SPIN_DOWN_STATUS_STOP_PEDALING) {
           setState(() {
-            _calibrationState = CalibrationState.CalibrationSuccess;
+            _calibrationState = CalibrationState.CalibrationOver;
           });
         }
       }
