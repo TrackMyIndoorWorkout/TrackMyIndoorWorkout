@@ -816,7 +816,7 @@ class RecordingState extends State<RecordingScreen> {
               heroTag: null,
               foregroundColor: Colors.white,
               backgroundColor: Colors.indigo,
-              child: Icon(Icons.speed),
+              child: Icon(Icons.build),
               onPressed: () async {
                 if (!_fitnessEquipment.descriptor.isFitnessMachine) {
                   Get.snackbar("Error", "Not compatible with the calibration method");
