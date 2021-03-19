@@ -5,10 +5,10 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/device_base.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
-import '../devices/gadgets/heart_rate_monitor.dart';
-import '../devices/bluetooth_device_ex.dart';
-import '../devices/gatt_constants.dart';
-import '../persistence/preferences.dart';
+import '../../devices/gadgets/heart_rate_monitor.dart';
+import '../../devices/bluetooth_device_ex.dart';
+import '../../devices/gatt_constants.dart';
+import '../../persistence/preferences.dart';
 
 class BatteryStatusBottomSheet extends StatefulWidget {
   @override

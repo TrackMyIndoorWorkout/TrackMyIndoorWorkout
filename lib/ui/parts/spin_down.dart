@@ -7,12 +7,12 @@ import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:spinner_input/spinner_input.dart';
-import '../devices/gadgets/fitness_equipment.dart';
-import '../devices/bluetooth_device_ex.dart';
-import '../devices/gatt_constants.dart';
-import '../persistence/preferences.dart';
-import '../utils/constants.dart';
-import '../utils/display.dart';
+import '../../devices/gadgets/fitness_equipment.dart';
+import '../../devices/bluetooth_device_ex.dart';
+import '../../devices/gatt_constants.dart';
+import '../../persistence/preferences.dart';
+import '../../utils/constants.dart';
+import '../../utils/display.dart';
 
 class SpinDownBottomSheet extends StatefulWidget {
   @override

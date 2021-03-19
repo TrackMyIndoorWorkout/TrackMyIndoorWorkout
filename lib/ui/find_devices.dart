@@ -13,10 +13,10 @@ import '../devices/bluetooth_device_ex.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
+import 'parts/scan_result.dart';
 import 'activities.dart';
 import 'preferences.dart';
 import 'recording.dart';
-import 'scan_result.dart';
 
 const HELP_URL = "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
 
@@ -325,7 +325,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           Get.put<HeartRateMonitor>(heartRateMonitor);
                           await heartRateMonitor.connect();
                           await heartRateMonitor.discover();
-                          await heartRateMonitor.attach();
                         }
                         await heartRateMonitor.attach();
                         heartRateMonitor.pumpMetric((heartRate) {

@@ -31,9 +31,10 @@ import '../track/tracks.dart';
 import '../utils/constants.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
+import 'parts/battery_status.dart';
+import 'parts/heart_rate_monitor_pairing.dart';
+import 'parts/spin_down.dart';
 import 'activities.dart';
-import 'battery_status.dart';
-import 'spin_down.dart';
 
 typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
 
@@ -243,6 +244,24 @@ class RecordingState extends State<RecordingScreen> {
     });
   }
 
+  _initializeHeartRateMonitor() {
+    _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
+    _heartRateMonitor?.discover()?.then((discovered) {
+      _fitnessEquipment.setHeartRateMonitor(_heartRateMonitor);
+      if (discovered) {
+        _heartRateMonitor?.attach()?.then((_) {
+          if (_heartRateMonitor.subscription == null) {
+            _heartRateMonitor?.pumpMetric((heartRate) async {
+              setState(() {
+                _values[4] = heartRate?.toString() ?? "--";
+              });
+            });
+          }
+        });
+      }
+    });
+  }
+
   @override
   initState() {
     super.initState();
@@ -252,7 +271,6 @@ class RecordingState extends State<RecordingScreen> {
       fontFamily: FONT_FAMILY,
       color: Colors.indigo,
     );
-    _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     PrefService.setString(LAST_EQUIPMENT_ID_TAG, device.id.id);
     _descriptor.setPowerThrottle(
       PrefService.getString(THROTTLE_POWER_TAG),
@@ -334,17 +352,7 @@ class RecordingState extends State<RecordingScreen> {
     _distance = 0.0;
     _elapsed = 0;
 
-    _heartRateMonitor?.discover()?.then((discovered) {
-      if (discovered) {
-        _heartRateMonitor?.attach()?.then((_) {
-          _heartRateMonitor?.pumpMetric((heartRate) async {
-            setState(() {
-              _values[4] = heartRate?.toString() ?? "--";
-            });
-          });
-        });
-      }
-    });
+    _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
     _openDatabase();
 
@@ -572,7 +580,7 @@ class RecordingState extends State<RecordingScreen> {
           SizedBox(
             width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
             child: Center(
-                child: Text(
+              child: Text(
                 _rowConfig[entry.key].unit,
                 maxLines: 2,
                 style: _unitStyle,
@@ -830,6 +838,20 @@ class RecordingState extends State<RecordingScreen> {
                     enableDrag: false,
                   );
                 }
+              },
+            ),
+            FloatingActionButton(
+              heroTag: null,
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.indigo,
+              child: Icon(Icons.favorite),
+              onPressed: () async {
+                await Get.bottomSheet(
+                  HeartRateMonitorPairingBottomSheet(),
+                  isDismissible: false,
+                  enableDrag: false,
+                );
+                _initializeHeartRateMonitor();
               },
             ),
           ],

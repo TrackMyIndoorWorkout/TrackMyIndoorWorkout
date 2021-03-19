@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import '../devices/device_map.dart';
-import '../devices/gatt_constants.dart';
-import '../persistence/preferences.dart';
-import '../utils/string_ex.dart';
-import 'find_devices.dart';
+import '../../devices/device_map.dart';
+import '../../devices/gatt_constants.dart';
+import '../../persistence/preferences.dart';
+import '../../utils/string_ex.dart';
+import '../find_devices.dart';
 
 extension EnhancedScanResult on ScanResult {
   bool isWorthy(bool filterDevices) {
