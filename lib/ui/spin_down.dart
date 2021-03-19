@@ -339,7 +339,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   @override
   initState() {
-    super.initState();
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _step = STEP_WEIGHT_INPUT;
     _calibrationState = CalibrationState.PreInit;
@@ -354,6 +353,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _weight = _si ? 60 : 130;
     _weightRetry = false;
     _prepareSpinDown();
+    super.initState();
   }
 
   @override
