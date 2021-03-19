@@ -152,11 +152,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   Future<void> _onWeightInputButtonPressed() async {
     if (_calibrationState == CalibrationState.WeighInSuccess) {
-      setState(() {
-        _step = STEP_CALIBRATING;
-        _calibrationState = CalibrationState.ReadyToCalibrate;
-        _weightRetry = false;
-      });
       return;
     }
 
@@ -196,7 +191,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       } else if (response?.length == 2) {
         if (response[0] == weightLsb && response[1] == weightMsb) {
           setState(() {
-            _calibrationState = CalibrationState.WeighInSuccess;
+            _step = STEP_CALIBRATING;
+            _calibrationState = CalibrationState.ReadyToCalibrate;
+            _weightRetry = false;
           });
         } else {
           setState(() {
