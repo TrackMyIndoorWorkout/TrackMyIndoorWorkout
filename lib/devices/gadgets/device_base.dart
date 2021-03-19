@@ -117,7 +117,12 @@ abstract class DeviceBase {
     }
 
     if (attached) {
-      await characteristic?.setNotifyValue(false);
+      try {
+        await characteristic?.setNotifyValue(false);
+      } on PlatformException catch (e, stack) {
+        debugPrint("${e.message}");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
       attached = false;
     }
     await cancelSubscription();
