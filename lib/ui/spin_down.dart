@@ -55,9 +55,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   BluetoothCharacteristic _fitnessMachineStatus;
   StreamSubscription _statusSubscription;
   CalibrationState _calibrationState;
-  String _targetSpeedHigh;
-  String _targetSpeedLow;
-  String _currentSpeed;
+  double _targetSpeedHigh;
+  double _targetSpeedLow;
+  double _currentSpeed;
+  String _targetSpeedHighString;
+  String _targetSpeedLowString;
+  String _currentSpeedString;
 
   bool get _spinDownPossible =>
       _weightData != null &&
@@ -231,9 +234,16 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       return "START!";
     }
 
-    if (_calibrationState == CalibrationState.CalibrationInProgress) return "FASTER!";
-
-    return "STOP!!!";
+    if (_calibrationState == CalibrationState.CalibrationInProgress) {
+      if (_currentSpeed < EPS || _currentSpeed < _targetSpeedLow) {
+        return "FASTER";
+      } else if (_currentSpeed > _targetSpeedHigh) {
+        return "SLOWER";
+      } else {
+        return "CARRY ON";
+      }
+    }
+    return "STOP!";
   }
 
   TextStyle _calibrationInstructionStyle() {
@@ -293,10 +303,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         }
         setState(() {
           _calibrationState = CalibrationState.CalibrationInProgress;
-          _targetSpeedHigh = speedOrPaceString(
-              (data[3] * 256 + data[4]) / 100, _si, _fitnessEquipment.descriptor.sport);
-          _targetSpeedLow = speedOrPaceString(
-              (data[5] * 256 + data[6]) / 100, _si, _fitnessEquipment.descriptor.sport);
+          _targetSpeedHigh = (data[3] * 256 + data[4]) / 100;
+          _targetSpeedHighString =
+              speedOrPaceString(_targetSpeedHigh, _si, _fitnessEquipment.descriptor.sport);
+          _targetSpeedLow = (data[5] * 256 + data[6]) / 100;
+          _targetSpeedLowString =
+              speedOrPaceString(_targetSpeedLow, _si, _fitnessEquipment.descriptor.sport);
         });
       }
     });
@@ -333,7 +345,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _fitnessEquipment.calibrating = true;
     _fitnessEquipment.pumpData((record) async {
       setState(() {
-        _currentSpeed = record.speedStringByUnit(_si, _fitnessEquipment.descriptor.sport);
+        _currentSpeed = record.speed;
+        _currentSpeedString = record.speedStringByUnit(_si, _fitnessEquipment.descriptor.sport);
       });
     });
   }
@@ -343,9 +356,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _step = STEP_WEIGHT_INPUT;
     _calibrationState = CalibrationState.PreInit;
-    _targetSpeedHigh = "N/A";
-    _targetSpeedLow = "N/A";
-    _currentSpeed = "N/A";
+    _targetSpeedHighString = "N/A";
+    _targetSpeedLowString = "N/A";
+    _currentSpeedString = "N/A";
+    _targetSpeedHigh = 0.0;
+    _targetSpeedLow = 0.0;
+    _currentSpeed = 0.0;
     _sizeDefault = Get.mediaQuery.size.width / 10;
     _smallerTextStyle = TextStyle(
         fontFamily: FONT_FAMILY, fontSize: _sizeDefault, color: Get.textTheme.bodyText1.color);
@@ -433,12 +449,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(_targetSpeedLow, style: _smallerTextStyle),
+                    Text(_targetSpeedLowString, style: _smallerTextStyle),
                     Icon(Icons.compare_arrows, size: _sizeDefault),
-                    Text(_targetSpeedHigh, style: _smallerTextStyle),
+                    Text(_targetSpeedHighString, style: _smallerTextStyle),
                   ],
                 ),
-                Text(_currentSpeed,
+                Text(_currentSpeedString,
                     style: _largerTextStyle.merge(TextStyle(color: Colors.indigo))),
                 Text(_calibrationInstruction(), style: _calibrationInstructionStyle()),
                 ElevatedButton(
