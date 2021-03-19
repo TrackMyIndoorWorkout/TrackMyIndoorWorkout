@@ -356,18 +356,22 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     super.initState();
   }
 
+  _reset() async {
+    await _controlPoint?.setNotifyValue(false);
+    await _controlPointSubscription?.cancel();
+
+    await _weightData?.setNotifyValue(false);
+    await _weightDataSubscription?.cancel();
+
+    await _fitnessMachineStatus.setNotifyValue(false);
+    await _statusSubscription?.cancel();
+
+    await _fitnessEquipment.detach();
+  }
+
   @override
   dispose() {
-    _controlPointSubscription?.cancel();
-    _controlPoint?.setNotifyValue(false);
-
-    _weightDataSubscription?.cancel();
-    _weightData?.setNotifyValue(false);
-
-    _statusSubscription?.cancel();
-    _fitnessMachineStatus.setNotifyValue(false);
-
-    _fitnessEquipment.detach();
+    _reset();
 
     super.dispose();
   }
