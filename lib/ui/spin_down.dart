@@ -6,12 +6,12 @@ import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:spinner_input/spinner_input.dart';
-import '../devices/device_descriptors/fitness_machine_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/bluetooth_device_ex.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/preferences.dart';
 import '../utils/constants.dart';
+import '../utils/display.dart';
 
 class SpinDownBottomSheet extends StatefulWidget {
   @override
@@ -52,17 +52,16 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   StreamSubscription _controlPointSubscription;
   BluetoothCharacteristic _fitnessMachineStatus;
   StreamSubscription _statusSubscription;
-  BluetoothCharacteristic _fitnessMachineData;
   CalibrationState _calibrationState;
-  double _targetSpeedHigh;
-  double _targetSpeedLow;
-  double _currentSpeed;
+  String _targetSpeedHigh;
+  String _targetSpeedLow;
+  String _currentSpeed;
 
   bool get _spinDownPossible =>
       _weightData != null &&
       _controlPoint != null &&
       _fitnessMachineStatus != null &&
-      _fitnessMachineData != null;
+      _fitnessEquipment.characteristic != null;
   bool get _canSubmitWeight =>
       _spinDownPossible && _calibrationState == CalibrationState.ReadyToWeighIn;
 
@@ -90,8 +89,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         fitnessMachine?.characteristics, FITNESS_MACHINE_CONTROL_POINT);
     _fitnessMachineStatus = BluetoothDeviceEx.filterCharacteristic(
         fitnessMachine?.characteristics, FITNESS_MACHINE_STATUS);
-    _fitnessMachineData = BluetoothDeviceEx.filterCharacteristic(fitnessMachine?.characteristics,
-        (_fitnessEquipment.descriptor as FitnessMachineDescriptor).dataCharacteristicId);
 
     return _spinDownPossible;
   }
@@ -258,8 +255,10 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         }
         setState(() {
           _calibrationState = CalibrationState.CalibrationInProgress;
-          _targetSpeedHigh = (data[3] * 256 + data[4]) / 100;
-          _targetSpeedLow = (data[5] * 256 + data[6]) / 100;
+          _targetSpeedHigh = speedOrPaceString(
+              (data[3] * 256 + data[4]) / 100, _si, _fitnessEquipment.descriptor.sport);
+          _targetSpeedLow = speedOrPaceString(
+              (data[5] * 256 + data[6]) / 100, _si, _fitnessEquipment.descriptor.sport);
         });
         debugPrint("debug Control Point cali started");
         Get.snackbar("Calibration started", "Go!");
@@ -293,6 +292,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         }
       }
     });
+    await _fitnessEquipment.attach();
+    _fitnessEquipment.pumpData((record) async {
+      setState(() {
+        _currentSpeed = record.speedStringByUnit(_si, _fitnessEquipment.descriptor.sport);
+      });
+    });
   }
 
   @override
@@ -301,9 +306,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _step = STEP_WEIGHT_INPUT;
     _calibrationState = CalibrationState.PreInit;
-    _targetSpeedHigh = 0.0;
-    _targetSpeedLow = 0.0;
-    _currentSpeed = 0.0;
+    _targetSpeedHigh = "N/A";
+    _targetSpeedLow = "N/A";
+    _currentSpeed = "N/A";
     _sizeDefault = Get.mediaQuery.size.width / 10;
     _smallerTextStyle = TextStyle(
         fontFamily: FONT_FAMILY, fontSize: _sizeDefault, color: Get.textTheme.bodyText1.color);
@@ -323,6 +328,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
     _statusSubscription?.cancel();
     _fitnessMachineStatus.setNotifyValue(false);
+
+    _fitnessEquipment.detach();
 
     super.dispose();
   }
