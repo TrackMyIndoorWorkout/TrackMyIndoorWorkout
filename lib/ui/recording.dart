@@ -818,7 +818,9 @@ class RecordingState extends State<RecordingScreen> {
               backgroundColor: Colors.indigo,
               child: Icon(Icons.build),
               onPressed: () async {
-                if (!_fitnessEquipment.descriptor.isFitnessMachine) {
+                if (_measuring) {
+                  Get.snackbar("Warning", "Cannot calibrate while measurement is under progress");
+                } else if (!_fitnessEquipment.descriptor.isFitnessMachine) {
                   Get.snackbar("Error", "Not compatible with the calibration method");
                 } else {
                   await Get.bottomSheet(
