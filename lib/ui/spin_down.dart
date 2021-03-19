@@ -113,11 +113,14 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   ButtonStyle _buttonBackgroundStyle() {
     var backColor = Colors.black12;
-    if (_calibrationState == CalibrationState.WeighInProblem || _calibrationState == CalibrationState.CalibrationFail ||
+    if (_calibrationState == CalibrationState.WeighInProblem ||
+        _calibrationState == CalibrationState.CalibrationFail ||
         _calibrationState == CalibrationState.NotSupported) {
       backColor = Colors.red.shade50;
-    } else if (_calibrationState == CalibrationState.ReadyToWeighIn || _calibrationState == CalibrationState.WeighInSuccess ||
-        _calibrationState == CalibrationState.ReadyToCalibrate || _calibrationState == CalibrationState.CalibrationSuccess) {
+    } else if (_calibrationState == CalibrationState.ReadyToWeighIn ||
+        _calibrationState == CalibrationState.WeighInSuccess ||
+        _calibrationState == CalibrationState.ReadyToCalibrate ||
+        _calibrationState == CalibrationState.CalibrationSuccess) {
       backColor = Colors.lightGreen.shade100;
     }
 
@@ -476,9 +479,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                     style: _largerTextStyle),
                 ElevatedButton(
                   child: Text(
-                      _calibrationState == CalibrationState.CalibrationSuccess
-                          ? 'Close'
-                          : 'Retry',
+                      _calibrationState == CalibrationState.CalibrationSuccess ? 'Close' : 'Retry',
                       style: _smallerTextStyle),
                   style: _buttonBackgroundStyle(),
                   onPressed: () {
