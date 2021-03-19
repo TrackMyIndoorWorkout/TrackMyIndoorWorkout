@@ -182,14 +182,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       });
       if (response?.length == 1) {
         if (response[0] != WEIGHT_SUCCESS_OPCODE) {
-          Get.snackbar("Weight setting error", "Retry weight setting to continue");
           setState(() {
             _calibrationState = CalibrationState.WeighInProblem;
           });
         }
       } else if (response?.length == 2) {
         if (response[0] == weightLsb && response[1] == weightMsb) {
-          Get.snackbar("debug Weight setting", "Successful");
           setState(() {
             _calibrationState = CalibrationState.WeighInSuccess;
           });
@@ -270,11 +268,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     await _controlPoint.setNotifyValue(true); // Is this what needed for indication?
     _controlPointSubscription =
         _controlPoint.value.throttleTime(Duration(milliseconds: 500)).listen((data) async {
-      debugPrint("debug Control Point $data");
       if (data?.length == 1) {
         if (data[0] != SPIN_DOWN_OPCODE) {
-          debugPrint("debug Control Point non spin down");
-          Get.snackbar("Calibration Start error", "Please retry");
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationFail;
@@ -285,8 +280,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         if (data[0] != CONTROL_OPCODE ||
             data[1] != SPIN_DOWN_OPCODE ||
             data[2] != SUCCESS_RESPONSE) {
-          debugPrint("debug Control Point cali error");
-          Get.snackbar("Calibration Start error", "Please retry");
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationFail;
@@ -300,25 +293,20 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
           _targetSpeedLow = speedOrPaceString(
               (data[5] * 256 + data[6]) / 100, _si, _fitnessEquipment.descriptor.sport);
         });
-        debugPrint("debug Control Point cali started");
-        Get.snackbar("Calibration started", "Go!");
       }
     });
     await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
     await _fitnessMachineStatus.setNotifyValue(true);
     _statusSubscription =
         _fitnessMachineStatus.value.throttleTime(Duration(milliseconds: 250)).listen((status) {
-      debugPrint("debug FM status $status");
       if (status?.length == 2 && status[0] == SPIN_DOWN_STATUS) {
         if (status[1] == SPIN_DOWN_STATUS_SUCCESS) {
-          debugPrint("debug FM status success");
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationSuccess;
           });
         }
         if (status[1] == SPIN_DOWN_STATUS_ERROR) {
-          debugPrint("debug FM status error");
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationFail;
