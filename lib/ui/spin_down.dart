@@ -270,22 +270,22 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _statusSubscription =
         _fitnessMachineStatus.value.throttleTime(Duration(milliseconds: 500)).listen((status) {
       debugPrint("debug FM status $status");
-      if (status?.length == 1) {
-        if (status[0] == SPIN_DOWN_STATUS_SUCCESS) {
+      if (status?.length == 2 && status[0] == SPIN_DOWN_STATUS) {
+        if (status[1] == SPIN_DOWN_STATUS_SUCCESS) {
           debugPrint("debug FM status success");
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationSuccess;
           });
         }
-        if (status[0] == SPIN_DOWN_STATUS_ERROR) {
+        if (status[1] == SPIN_DOWN_STATUS_ERROR) {
           debugPrint("debug FM status error");
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationFail;
           });
         }
-        if (status[0] == SPIN_DOWN_STATUS_STOP_PEDALING) {
+        if (status[1] == SPIN_DOWN_STATUS_STOP_PEDALING) {
           debugPrint("debug FM status stop");
           setState(() {
             _calibrationState = CalibrationState.CalibrationSuccess;
