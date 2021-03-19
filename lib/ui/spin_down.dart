@@ -327,12 +327,14 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         _fitnessMachineStatus.value.throttleTime(Duration(milliseconds: 250)).listen((status) {
       if (status?.length == 2 && status[0] == SPIN_DOWN_STATUS) {
         if (status[1] == SPIN_DOWN_STATUS_SUCCESS) {
+          _reset();
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationSuccess;
           });
         }
         if (status[1] == SPIN_DOWN_STATUS_ERROR) {
+          _reset();
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationFail;
