@@ -166,17 +166,17 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
           });
         }
       } else if (response?.length == 2) {
-        if (response[0] != weightLsb || response[1] != weightMsb) {
+        if (response[0] == weightLsb && response[1] == weightMsb) {
+          Get.snackbar("debug Weight setting", "Successful");
+          setState(() {
+            _calibrationState = CalibrationState.WeighInSuccess;
+          });
+        } else {
           debugPrint("Old weight ${response[0] + 256 * response[1]}");
           // Get.snackbar("Weight setting error", "Retry weight setting to continue");
           // setState(() {
           //   _calibrationState = CalibrationState.WeighInProblem;
           // });
-        } else {
-          Get.snackbar("debug Weight setting", "Successful");
-          setState(() {
-            _calibrationState = CalibrationState.WeighInSuccess;
-          });
         }
       } else {
         setState(() {
