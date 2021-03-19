@@ -230,8 +230,11 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   String _calibrationInstruction() {
-    if (_calibrationState == CalibrationState.ReadyToCalibrate ||
-        _calibrationState == CalibrationState.CalibrationStarting) {
+    if (_calibrationState == CalibrationState.ReadyToCalibrate) {
+      return "READY!";
+    }
+
+    if (_calibrationState == CalibrationState.CalibrationStarting) {
       return "START!";
     }
 
@@ -241,7 +244,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       } else if (_currentSpeed > _targetSpeedHigh) {
         return "SLOWER";
       } else {
-        return "CARRY ON";
+        return "_";
       }
     }
     return "STOP!";
