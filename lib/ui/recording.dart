@@ -172,11 +172,10 @@ class RecordingState extends State<RecordingScreen> {
       }
 
       if (_measuring) {
-        if (!_uxDebug &&
-            (_fitnessEquipment.lastRecord == null ||
-                (_fitnessEquipment.lastRecord?.elapsed ?? 0) != (record?.elapsed ?? 0))) {
+        if (!_uxDebug) {
           await _database?.recordDao?.insertRecord(record);
         }
+        _fitnessEquipment.lastRecord = record;
         setState(() {
           if (!_simplerUi) {
             _graphData.add(record.display());
@@ -572,10 +571,12 @@ class RecordingState extends State<RecordingScreen> {
           Text(_values[entry.key], style: _measurementStyle),
           SizedBox(
             width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
-            child: Text(
-              _rowConfig[entry.key].unit,
-              maxLines: 2,
-              style: _unitStyle,
+            child: Center(
+                child: Text(
+                _rowConfig[entry.key].unit,
+                maxLines: 2,
+                style: _unitStyle,
+              ),
             ),
           ),
         ],

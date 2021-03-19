@@ -232,7 +232,6 @@ class FitnessEquipment extends DeviceBase {
 
     stub.activityId = _activity?.id;
     stub.sport = descriptor.sport;
-    lastRecord = stub;
     return stub;
   }
 
