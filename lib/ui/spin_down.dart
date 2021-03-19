@@ -107,6 +107,19 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     });
   }
 
+  ButtonStyle _buttonBackgroundStyle() {
+    var backColor = Colors.black12;
+    if (_calibrationState == CalibrationState.WeighInProblem || _calibrationState == CalibrationState.CalibrationFail ||
+        _calibrationState == CalibrationState.NotSupported) {
+      backColor = Colors.red.shade50;
+    } else if (_calibrationState == CalibrationState.ReadyToWeighIn || _calibrationState == CalibrationState.WeighInSuccess ||
+        _calibrationState == CalibrationState.ReadyToCalibrate || _calibrationState == CalibrationState.CalibrationSuccess) {
+      backColor = Colors.lightGreen.shade100;
+    }
+
+    return ElevatedButton.styleFrom(primary: backColor);
+  }
+
   String _weightInputButtonText() {
     if (_calibrationState == CalibrationState.WeighInSuccess) return 'Next >';
     if (_calibrationState == CalibrationState.ReadyToWeighIn) return 'Submit';
@@ -119,7 +132,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     return _smallerTextStyle.merge(TextStyle(
         color: _calibrationState == CalibrationState.WeighInSuccess || _canSubmitWeight
             ? Colors.black
-            : Colors.black54));
+            : Colors.black87));
   }
 
   ButtonStyle _weightInputButtonStyle() {
@@ -312,7 +325,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
           });
         }
         if (status[1] == SPIN_DOWN_STATUS_STOP_PEDALING) {
-          debugPrint("debug FM status stop");
           setState(() {
             _calibrationState = CalibrationState.CalibrationSuccess;
           });
@@ -428,6 +440,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
               Center(
                 child: ElevatedButton(
                   child: Text(_calibrationButtonText(), style: _smallerTextStyle),
+                  style: _buttonBackgroundStyle(),
                   onPressed: () async => await onCalibrationButtonPressed(),
                 ),
               ),
