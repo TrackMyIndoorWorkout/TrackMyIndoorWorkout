@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
@@ -46,6 +47,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   bool _si;
   int _step;
   int _weight;
+  bool _weightRetry;
   BluetoothCharacteristic _weightData;
   StreamSubscription _weightDataSubscription;
   BluetoothCharacteristic _controlPoint;
@@ -133,6 +135,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       setState(() {
         _step = STEP_CALIBRATING;
         _calibrationState = CalibrationState.ReadyToCalibrate;
+        _weightRetry = false;
       });
       return;
     }
@@ -153,11 +156,17 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     final weight = ((_si ? _weight : _weight * LB_TO_KG) * 100).round();
     final weightLsb = weight % 256;
     final weightMsb = weight ~/ 256;
-    debugPrint("Sending weight: $weight ($weightLsb $weightMsb)");
-    await _weightData.setNotifyValue(true);
+    try {
+      await _weightData.setNotifyValue(true);
+    } on PlatformException catch (e, stack) {
+      debugPrint("${e.message}");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
     _weightDataSubscription =
         _weightData.value.throttleTime(Duration(milliseconds: 500)).listen((response) async {
-      debugPrint("debug Weight response $response");
+      setState(() {
+        _weightRetry = false;
+      });
       if (response?.length == 1) {
         if (response[0] != WEIGHT_SUCCESS_OPCODE) {
           Get.snackbar("Weight setting error", "Retry weight setting to continue");
@@ -172,19 +181,37 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
             _calibrationState = CalibrationState.WeighInSuccess;
           });
         } else {
-          debugPrint("Old weight ${response[0] + 256 * response[1]}");
-          // Get.snackbar("Weight setting error", "Retry weight setting to continue");
-          // setState(() {
-          //   _calibrationState = CalibrationState.WeighInProblem;
-          // });
+          setState(() {
+            _calibrationState = CalibrationState.WeighInProblem;
+          });
         }
       } else {
-        setState(() {
-          _calibrationState = CalibrationState.WeighInSuccess;
-        });
+        if (_weightRetry) {
+          setState(() {
+            _calibrationState = CalibrationState.WeighInProblem;
+          });
+        } else {
+          setState(() {
+            _weightRetry = true;
+          });
+          try {
+            await _weightData.write([weightLsb, weightMsb]);
+          } on PlatformException catch (e, stack) {
+            debugPrint("${e.message}");
+            debugPrintStack(stackTrace: stack, label: "trace:");
+          }
+        }
       }
     });
-    await _weightData.write([weightLsb, weightMsb]);
+    try {
+      await _weightData.write([weightLsb, weightMsb]);
+    } on PlatformException catch (e, stack) {
+      debugPrint("${e.message}");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      setState(() {
+        _calibrationState = CalibrationState.WeighInProblem;
+      });
+    }
   }
 
   String _calibrationInstruction() {
@@ -315,6 +342,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _largerTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault * 2);
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _weight = _si ? 60 : 130;
+    _weightRetry = false;
     _prepareSpinDown();
   }
 
