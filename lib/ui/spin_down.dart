@@ -267,7 +267,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
     await _fitnessMachineStatus.setNotifyValue(true);
     _statusSubscription =
-        _fitnessMachineStatus.value.throttleTime(Duration(milliseconds: 500)).listen((status) {
+        _fitnessMachineStatus.value.throttleTime(Duration(milliseconds: 250)).listen((status) {
       debugPrint("debug FM status $status");
       if (status?.length == 2 && status[0] == SPIN_DOWN_STATUS) {
         if (status[1] == SPIN_DOWN_STATUS_SUCCESS) {
