@@ -265,7 +265,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     setState(() {
       _calibrationState = CalibrationState.CalibrationStarting;
     });
-    await _controlPoint.setNotifyValue(true); // Is this what needed for indication?
+    try {
+      await _controlPoint.setNotifyValue(true); // Is this what needed for indication?
+    } on PlatformException catch (e, stack) {
+      debugPrint("${e.message}");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
     _controlPointSubscription =
         _controlPoint.value.throttleTime(Duration(milliseconds: 500)).listen((data) async {
       if (data?.length == 1) {
@@ -295,8 +300,13 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         });
       }
     });
-    await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
-    await _fitnessMachineStatus.setNotifyValue(true);
+    try {
+      await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
+      await _fitnessMachineStatus.setNotifyValue(true);
+    } on PlatformException catch (e, stack) {
+      debugPrint("${e.message}");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
     _statusSubscription =
         _fitnessMachineStatus.value.throttleTime(Duration(milliseconds: 250)).listen((status) {
       if (status?.length == 2 && status[0] == SPIN_DOWN_STATUS) {
