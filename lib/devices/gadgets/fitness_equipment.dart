@@ -29,6 +29,7 @@ class FitnessEquipment extends DeviceBase {
   HeartRateMonitor heartRateMonitor;
   Activity _activity;
   bool measuring;
+  bool calibrating;
   Random _random;
 
   FitnessEquipment({this.descriptor, device})
@@ -44,6 +45,7 @@ class FitnessEquipment extends DeviceBase {
     hasTotalCalorieCounting = false;
     _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ?? true;
     measuring = false;
+    calibrating = false;
     _random = Random();
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
     lastRecord = RecordWithSport(
@@ -64,7 +66,7 @@ class FitnessEquipment extends DeviceBase {
     if (!attached) return;
     await for (var byteString in characteristic.value.throttleTime(Duration(milliseconds: 500))) {
       if (!descriptor.canDataProcessed(byteString)) continue;
-      if (!measuring) continue;
+      if (!measuring && !calibrating) continue;
 
       final record = descriptor.stubRecord(byteString);
       if (record == null) continue;

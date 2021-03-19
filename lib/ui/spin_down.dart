@@ -330,6 +330,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       }
     });
     await _fitnessEquipment.attach();
+    _fitnessEquipment.calibrating = true;
     _fitnessEquipment.pumpData((record) async {
       setState(() {
         _currentSpeed = record.speedStringByUnit(_si, _fitnessEquipment.descriptor.sport);
@@ -366,6 +367,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     await _fitnessMachineStatus.setNotifyValue(false);
     await _statusSubscription?.cancel();
 
+    _fitnessEquipment.calibrating = false;
     await _fitnessEquipment.detach();
   }
 
