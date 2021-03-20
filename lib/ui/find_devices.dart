@@ -9,7 +9,6 @@ import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
-import '../devices/bluetooth_device_ex.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
@@ -251,38 +250,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       onEquipmentTap: () async {
                         await FlutterBlue.instance.stopScan();
                         await Future.delayed(Duration(milliseconds: 100));
-                        bool goOn = true;
-                        if (!r.device.getDescriptor(r.serviceUuids).canMeasureHeartRate &&
-                            (!Get.isRegistered<HeartRateMonitor>() ||
-                                Get.find<HeartRateMonitor>() == null)) {
-                          bool dialogResult = await showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text('Heart Rate Measurement'),
-                                  content: Text('Are you sure you want to continue without a HRM?'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () => Get.close(1),
-                                      child: Text('No'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () => Navigator.of(context).pop(true),
-                                      child: Text('Yes'),
-                                    ),
-                                  ],
-                                ),
-                              ) ??
-                              false;
-                          goOn = dialogResult;
-                        }
-                        if (goOn) {
-                          await Get.to(RecordingScreen(
-                            device: r.device,
-                            serviceUuids: r.serviceUuids,
-                            initialState: BluetoothDeviceState.disconnected,
-                            size: Get.mediaQuery.size,
-                          ));
-                        }
+                        await Get.to(RecordingScreen(
+                          device: r.device,
+                          serviceUuids: r.serviceUuids,
+                          initialState: BluetoothDeviceState.disconnected,
+                          size: Get.mediaQuery.size,
+                        ));
                       },
                       onHrmTap: () async {
                         var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
