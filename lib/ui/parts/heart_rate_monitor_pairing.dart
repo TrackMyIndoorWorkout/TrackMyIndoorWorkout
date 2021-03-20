@@ -120,7 +120,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
         foregroundColor: Colors.white,
         backgroundColor: Colors.indigo,
         child: Icon(Icons.clear),
-        onPressed: () => Get.close(1),
+        onPressed: () => Get.back(result: true),
       ),
     );
   }

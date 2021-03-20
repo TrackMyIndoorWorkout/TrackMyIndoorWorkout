@@ -244,23 +244,26 @@ class RecordingState extends State<RecordingScreen> {
     });
   }
 
-  _initializeHeartRateMonitor() {
+  _initializeHeartRateMonitor() async {
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    _heartRateMonitor?.discover()?.then((discovered) {
-      _fitnessEquipment.setHeartRateMonitor(_heartRateMonitor);
-      if (discovered) {
-        _heartRateMonitor?.attach()?.then((_) async {
-          if (_heartRateMonitor?.subscription != null) {
-            await _heartRateMonitor?.cancelSubscription();
-          }
-          _heartRateMonitor?.pumpMetric((heartRate) async {
-            setState(() {
-              _values[4] = heartRate?.toString() ?? "--";
-            });
+    final discovered = (await _heartRateMonitor?.discover()) ?? false;
+    debugPrint("Discovered $discovered");
+    if (discovered) {
+      if (_heartRateMonitor.device.id.id !=
+          (_fitnessEquipment.heartRateMonitor?.device?.id?.id ?? "N/A")) {
+        _fitnessEquipment.setHeartRateMonitor(_heartRateMonitor);
+      }
+      _heartRateMonitor.attach().then((_) async {
+        if (_heartRateMonitor.subscription != null) {
+          await _heartRateMonitor.cancelSubscription();
+        }
+        _heartRateMonitor.pumpMetric((heartRate) async {
+          setState(() {
+            _values[4] = heartRate?.toString() ?? "--";
           });
         });
-      }
-    });
+      });
+    }
   }
 
   @override
@@ -852,7 +855,7 @@ class RecordingState extends State<RecordingScreen> {
                   isDismissible: false,
                   enableDrag: false,
                 );
-                _initializeHeartRateMonitor();
+                await _initializeHeartRateMonitor();
               },
             ),
           ],
