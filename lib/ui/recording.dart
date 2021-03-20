@@ -249,14 +249,15 @@ class RecordingState extends State<RecordingScreen> {
     _heartRateMonitor?.discover()?.then((discovered) {
       _fitnessEquipment.setHeartRateMonitor(_heartRateMonitor);
       if (discovered) {
-        _heartRateMonitor?.attach()?.then((_) {
-          if (_heartRateMonitor.subscription == null) {
-            _heartRateMonitor?.pumpMetric((heartRate) async {
-              setState(() {
-                _values[4] = heartRate?.toString() ?? "--";
-              });
-            });
+        _heartRateMonitor?.attach()?.then((_) async {
+          if (_heartRateMonitor?.subscription != null) {
+            await _heartRateMonitor?.cancelSubscription();
           }
+          _heartRateMonitor?.pumpMetric((heartRate) async {
+            setState(() {
+              _values[4] = heartRate?.toString() ?? "--";
+            });
+          });
         });
       }
     });
