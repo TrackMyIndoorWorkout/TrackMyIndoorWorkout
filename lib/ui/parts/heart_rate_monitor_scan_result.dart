@@ -70,9 +70,12 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var heartRateMonitor =
+        Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     final adjustedCaptionStyle =
         Theme.of(context).textTheme.caption.apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
     final secondaryStyle = adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
+
     return ExpansionTile(
       title: _buildTitle(context, adjustedCaptionStyle, secondaryStyle),
       leading: Text(
@@ -83,11 +86,12 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         heroTag: null,
         child: Icon(Icons.favorite),
         foregroundColor: Colors.white,
-        backgroundColor: result.advertisementData.connectable ? Colors.blue : Colors.grey,
+        backgroundColor: (heartRateMonitor?.device?.id?.id ?? "N/A") == result.device.id.id
+            ? Colors.green
+            : Colors.blue,
         onPressed: () async {
-          var heartRateMonitor =
-              Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-          if (heartRateMonitor != null && heartRateMonitor.device.id.id != result.device.id.id) {
+          final existingId = heartRateMonitor?.device?.id?.id ?? "N/A";
+          if (existingId != "N/A" && existingId != result.device.id.id) {
             if (!(await showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
