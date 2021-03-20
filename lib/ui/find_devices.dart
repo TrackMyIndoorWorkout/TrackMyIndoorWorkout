@@ -12,6 +12,7 @@ import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
+import 'parts/common.dart';
 import 'parts/scan_result.dart';
 import 'activities.dart';
 import 'preferences.dart';
@@ -28,17 +29,7 @@ class FindDevicesScreen extends StatefulWidget {
   }
 }
 
-standOutStyle(TextStyle style, double fontSizeFactor) {
-  return style.apply(
-    fontSizeFactor: fontSizeFactor,
-    color: Colors.black,
-    fontWeightDelta: 3,
-  );
-}
-
 class FindDevicesState extends State<FindDevicesScreen> {
-  static const fontSizeFactor = 1.5;
-
   bool _instantScan;
   int _scanDuration;
   bool _autoConnect;
@@ -113,10 +104,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
   @override
   Widget build(BuildContext context) {
     if (_adjustedCaptionStyle == null) {
-      _adjustedCaptionStyle = Theme.of(context)
-          .textTheme
-          .caption
-          .apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
+      _adjustedCaptionStyle =
+          Theme.of(context).textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
       _subtitleStyle = _adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
     }
 
@@ -191,10 +180,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       title: TextOneLine(
                         d.name,
                         overflow: TextOverflow.ellipsis,
-                        style: standOutStyle(
-                          _adjustedCaptionStyle,
-                          fontSizeFactor,
-                        ),
+                        style: standOutStyle(_adjustedCaptionStyle, FONT_SIZE_FACTOR),
                       ),
                       subtitle: Text(d.id.id, style: _subtitleStyle),
                       trailing: StreamBuilder<BluetoothDeviceState>(

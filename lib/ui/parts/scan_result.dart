@@ -4,7 +4,7 @@ import '../../devices/device_map.dart';
 import '../../devices/gatt_constants.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/string_ex.dart';
-import '../find_devices.dart';
+import 'common.dart';
 
 extension EnhancedScanResult on ScanResult {
   bool isWorthy(bool filterDevices) {
@@ -74,10 +74,7 @@ class ScanResultTile extends StatelessWidget {
         children: [
           Text(
             result.device.name,
-            style: standOutStyle(
-              adjustedCaptionStyle,
-              FindDevicesState.fontSizeFactor,
-            ),
+            style: standOutStyle(adjustedCaptionStyle, FONT_SIZE_FACTOR),
             overflow: TextOverflow.ellipsis,
           ),
           Text(
@@ -144,7 +141,7 @@ class ScanResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final adjustedCaptionStyle =
-        Theme.of(context).textTheme.caption.apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
+        Theme.of(context).textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     final secondaryStyle = adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
     return ExpansionTile(
       title: _buildTitle(context, adjustedCaptionStyle, secondaryStyle),

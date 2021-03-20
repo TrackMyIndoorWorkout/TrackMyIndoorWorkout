@@ -5,7 +5,7 @@ import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/gatt_constants.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/string_ex.dart';
-import '../find_devices.dart';
+import 'common.dart';
 
 extension HeartRateMonitorScanResult on ScanResult {
   bool isWorthy() {
@@ -51,10 +51,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         children: [
           Text(
             result.device.name,
-            style: standOutStyle(
-              adjustedCaptionStyle,
-              FindDevicesState.fontSizeFactor,
-            ),
+            style: standOutStyle(adjustedCaptionStyle, FONT_SIZE_FACTOR),
             overflow: TextOverflow.ellipsis,
           ),
           Text(
@@ -73,7 +70,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     final adjustedCaptionStyle =
-        Theme.of(context).textTheme.caption.apply(fontSizeFactor: FindDevicesState.fontSizeFactor);
+        Theme.of(context).textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     final secondaryStyle = adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
 
     return ExpansionTile(
