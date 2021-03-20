@@ -510,7 +510,10 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<bool> _onWillPop() async {
-    if (!_measuring) return true;
+    if (!_measuring) {
+      _preDispose();
+      return true;
+    }
 
     return (await showDialog(
           context: context,
