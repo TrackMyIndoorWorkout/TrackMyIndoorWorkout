@@ -19,6 +19,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   int _scanDuration;
   TextStyle _adjustedCaptionStyle;
   TextStyle _subtitleStyle;
+  List<String> _scanResults;
 
   @override
   dispose() {
@@ -27,6 +28,9 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   }
 
   startScan() {
+    setState(() {
+      _scanResults.clear();
+    });
     FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
   }
 
@@ -34,6 +38,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   initState() {
     initializeDateFormatting();
     super.initState();
+    _scanResults = [];
     _scanDuration = PrefService.getInt(SCAN_DURATION_TAG);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       startScan();
@@ -42,9 +47,6 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
 
   @override
   Widget build(BuildContext context) {
-    var heartRateMonitor =
-        Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-
     if (_adjustedCaptionStyle == null) {
       _adjustedCaptionStyle =
           Theme.of(context).textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
@@ -62,8 +64,12 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
                 initialData: [],
                 builder: (c, snapshot) => Column(
-                  children:
-                      snapshot.data.where((h) => h.id.id == heartRateMonitor.device.id.id).map((d) {
+                  children: snapshot.data
+                      .where((h) =>
+                          _scanResults.contains(h.id.id) ||
+                          (Get.isRegistered<HeartRateMonitor>() &&
+                              Get.find<HeartRateMonitor>()?.device?.id?.id == h.id.id))
+                      .map((d) {
                     return ListTile(
                       title: TextOneLine(
                         d.name,
@@ -100,11 +106,10 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                 stream: FlutterBlue.instance.scanResults,
                 initialData: [],
                 builder: (c, snapshot) => Column(
-                  children: snapshot.data
-                      .where((d) => d.isWorthy())
-                      .map((r) => HeartRateMonitorScanResultTile(result: r))
-                      .toList(),
-                ),
+                    children: snapshot.data.where((d) => d.isWorthy()).map((r) {
+                  _scanResults.add(r.device.id.id);
+                  return HeartRateMonitorScanResultTile(result: r);
+                }).toList()),
               ),
             ],
           ),
