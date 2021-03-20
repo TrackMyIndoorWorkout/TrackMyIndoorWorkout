@@ -175,7 +175,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data.map((d) {
-                    _openedDevice = d;
+                    if (!_isHeartRateMonitor(_servicesMap[d.id.id])) {
+                      _openedDevice = d;
+                    }
+
                     return ListTile(
                       title: TextOneLine(
                         d.name,
