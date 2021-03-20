@@ -513,7 +513,7 @@ class RecordingState extends State<RecordingScreen> {
           builder: (context) => AlertDialog(
             title: Text('About to navigate away'),
             content: Text("The workout in progress will be finished. Are you sure?"),
-            actions: <Widget>[
+            actions: [
               TextButton(
                 onPressed: () => Get.close(1),
                 child: Text('No'),
@@ -663,7 +663,7 @@ class RecordingState extends State<RecordingScreen> {
             child: trackMarker == null
                 ? null
                 : Stack(
-                    children: <Widget>[
+                    children: [
                       Positioned(
                         left: trackMarker.dx - THICK,
                         top: trackMarker.dy - THICK,
@@ -690,7 +690,7 @@ class RecordingState extends State<RecordingScreen> {
             device.name,
             overflow: TextOverflow.ellipsis,
           ),
-          actions: <Widget>[
+          actions: [
             StreamBuilder<BluetoothDeviceState>(
               stream: device.state,
               initialData: initialState,

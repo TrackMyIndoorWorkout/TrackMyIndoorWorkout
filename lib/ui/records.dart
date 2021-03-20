@@ -465,7 +465,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Activities'),
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: Icon(Icons.help),
             onPressed: () async {

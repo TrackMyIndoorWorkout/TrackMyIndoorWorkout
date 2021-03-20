@@ -18,7 +18,7 @@ class BluetoothOffScreen extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
+          children: [
             Icon(
               Icons.bluetooth_disabled,
               size: 200.0,

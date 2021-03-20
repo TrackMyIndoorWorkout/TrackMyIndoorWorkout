@@ -48,7 +48,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
+        children: [
           Text(
             result.device.name,
             style: standOutStyle(
@@ -93,7 +93,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
                   builder: (context) => AlertDialog(
                     title: Text('You are connected to a HRM right now'),
                     content: Text('Disconnect from that HRM to connect the selected one?'),
-                    actions: <Widget>[
+                    actions: [
                       TextButton(
                         onPressed: () => Get.close(1),
                         child: Text('No'),

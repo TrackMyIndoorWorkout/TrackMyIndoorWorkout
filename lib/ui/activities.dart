@@ -191,7 +191,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Activities'),
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: Icon(Icons.file_upload),
             onPressed: () async {
@@ -230,7 +230,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                 ),
                 errorBuilder: (context, error, state) {
                   return Column(
-                    children: <Widget>[
+                    children: [
                       Text(error.toString()),
                       ElevatedButton(
                         onPressed: () => state.loadMore(),

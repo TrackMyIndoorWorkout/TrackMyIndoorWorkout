@@ -405,7 +405,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     return Scaffold(
       body: IndexedStack(
         index: _step,
-        children: <Widget>[
+        children: [
           // 0 - STEP_WEIGHT_INPUT
           Center(
             child: Column(

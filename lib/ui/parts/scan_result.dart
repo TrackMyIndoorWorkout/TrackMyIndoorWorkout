@@ -71,7 +71,7 @@ class ScanResultTile extends StatelessWidget {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
+        children: [
           Text(
             result.device.name,
             style: standOutStyle(
@@ -97,7 +97,7 @@ class ScanResultTile extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
+        children: [
           Text(title, style: adjustedCaptionStyle),
           SizedBox(
             width: 12.0,
@@ -161,7 +161,7 @@ class ScanResultTile extends StatelessWidget {
             ? (result.isHeartRateMonitor ? onHrmTap : onEquipmentTap)
             : null,
       ),
-      children: <Widget>[
+      children: [
         _buildAdvRow(
           context,
           'Complete Local Name',

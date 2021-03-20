@@ -68,7 +68,7 @@ class _ImportFormState extends State<ImportForm> {
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'MPower CSV File URL',

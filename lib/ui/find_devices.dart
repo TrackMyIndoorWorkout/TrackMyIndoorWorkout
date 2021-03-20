@@ -123,7 +123,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_filterDevices ? 'Supported Exercise Equipment:' : 'Bluetooth Devices'),
-        actions: <Widget>[
+        actions: [
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
             initialData: _instantScan,
@@ -179,7 +179,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         onRefresh: () => startScan(),
         child: SingleChildScrollView(
           child: Column(
-            children: <Widget>[
+            children: [
               StreamBuilder<List<BluetoothDevice>>(
                 stream: Stream.periodic(Duration(seconds: 2))
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
@@ -269,7 +269,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   title: Text('You are connected to a HRM right now'),
                                   content:
                                       Text('Disconnect from that HRM to connect the selected one?'),
-                                  actions: <Widget>[
+                                  actions: [
                                     TextButton(
                                       onPressed: () => Get.close(1),
                                       child: Text('No'),
