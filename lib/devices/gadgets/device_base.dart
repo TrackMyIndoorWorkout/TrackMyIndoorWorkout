@@ -61,12 +61,12 @@ abstract class DeviceBase {
   }
 
   Future<bool> discover({bool retry = false}) async {
-    if (uxDebug) {
+    if (uxDebug || discovered) {
       discovered = true;
       return true;
     }
 
-    if (discovering || discovered) return false;
+    if (discovering) return false;
 
     discovering = true;
     try {
