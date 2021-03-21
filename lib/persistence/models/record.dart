@@ -150,6 +150,8 @@ class RecordWithSport extends Record {
     pace,
     strokeCount,
     @required sport,
+    caloriesPerHour,
+    caloriesPerMinute,
   })  : assert(sport != null),
         super(
           id: id,
@@ -166,5 +168,7 @@ class RecordWithSport extends Record {
           pace: pace,
           strokeCount: strokeCount,
           sport: sport,
+          caloriesPerHour: caloriesPerHour,
+          caloriesPerMinute: caloriesPerMinute,
         );
 }

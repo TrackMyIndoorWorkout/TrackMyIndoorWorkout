@@ -111,6 +111,8 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       heartRate: getHeartRate(data)?.toInt(),
       pace: pace,
       sport: sport,
+      caloriesPerHour: getCaloriesPerHour(data),
+      caloriesPerMinute: getCaloriesPerMinute(data),
     );
   }
 
