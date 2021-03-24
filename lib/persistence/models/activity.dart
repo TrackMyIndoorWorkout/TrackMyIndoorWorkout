@@ -50,14 +50,14 @@ class Activity {
     this.fourCC,
   });
 
-  finish(double distance, int elapsed, int calories) {
+  void finish(double distance, int elapsed, int calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;
     this.distance = distance;
     this.elapsed = elapsed;
     this.calories = calories;
   }
 
-  markUploaded(int stravaId) {
+  void markUploaded(int stravaId) {
     this.uploaded = true;
     this.stravaId = stravaId;
   }

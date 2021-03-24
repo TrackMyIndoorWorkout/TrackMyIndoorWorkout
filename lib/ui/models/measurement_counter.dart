@@ -31,7 +31,7 @@ class MeasurementCounter {
   })  : assert(si != null),
         assert(sport != null);
 
-  processRecord(Record record) {
+  void processRecord(Record record) {
     if (record.power > 0) {
       powerCounter++;
       maxPower = max(maxPower, record.power);

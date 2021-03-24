@@ -57,7 +57,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override
-  processFlag(int flag) {
+  void processFlag(int flag) {
     super.processFlag(flag);
     final strokeRateWindowSizeString = PrefService.getString(STROKE_RATE_SMOOTHING_TAG);
     _strokeRateWindowSize = int.tryParse(strokeRateWindowSizeString);
@@ -116,13 +116,13 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     );
   }
 
-  clearStrokeRates() {
+  void clearStrokeRates() {
     _strokeRates.clear();
     _strokeRateSum = 0;
   }
 
   @override
-  stopWorkout() {
+  void stopWorkout() {
     clearStrokeRates();
   }
 
@@ -171,7 +171,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   @override
-  clearMetrics() {
+  void clearMetrics() {
     super.clearMetrics();
     strokeRateMetric = null;
     paceMetric = null;

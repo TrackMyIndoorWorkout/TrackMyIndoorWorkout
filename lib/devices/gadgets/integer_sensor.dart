@@ -33,7 +33,7 @@ abstract class IntegerSensor extends DeviceBase {
     }
   }
 
-  pumpMetric(MetricProcessingFunction metricProcessingFunction) {
+  void pumpMetric(MetricProcessingFunction metricProcessingFunction) {
     subscription = _listenToMetric.listen((newValue) {
       metric = newValue;
       if (metricProcessingFunction != null) {
@@ -46,5 +46,5 @@ abstract class IntegerSensor extends DeviceBase {
 
   int processMeasurement(List<int> data);
 
-  clearMetrics();
+  void clearMetrics();
 }

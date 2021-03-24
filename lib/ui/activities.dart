@@ -47,7 +47,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase get database => _database;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _isLoading = true;
     _editCount = 0;
@@ -157,7 +157,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     _database.close();
     super.dispose();
   }

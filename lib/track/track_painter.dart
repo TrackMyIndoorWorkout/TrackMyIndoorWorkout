@@ -12,7 +12,7 @@ class TrackPainter extends CustomPainter {
   TrackPainter({@required this.calculator}) : assert(calculator != null);
 
   @override
-  paint(Canvas canvas, Size size) {
+  void paint(Canvas canvas, Size size) {
     final track = calculator.track;
     if (calculator.trackSize == null ||
         size.width != calculator.trackSize.width ||

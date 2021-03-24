@@ -43,7 +43,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   int _heartRate;
 
   @override
-  dispose() {
+  void dispose() {
     FlutterBlue.instance.stopScan();
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
@@ -51,14 +51,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
     super.dispose();
   }
 
-  startScan() {
+  void startScan() {
     setState(() {
       _scannedDevices.clear();
     });
     FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
   }
 
-  addScannedDevice(ScanResult scanResult) {
+  void addScannedDevice(ScanResult scanResult) {
     if (!scanResult.isWorthy(_filterDevices)) {
       return;
     }
@@ -165,7 +165,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => startScan(),
+        onRefresh: () { startScan(); return; },
         child: SingleChildScrollView(
           child: Column(
             children: [

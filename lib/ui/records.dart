@@ -68,7 +68,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _selectionTextStyle;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _initialized = false;
     _tileConfigurations = {};

@@ -74,7 +74,7 @@ class FitnessEquipment extends DeviceBase {
     }
   }
 
-  pumpData(RecordHandlerFunction recordHandlerFunction) {
+  void pumpData(RecordHandlerFunction recordHandlerFunction) {
     if (uxDebug) {
       _timer = Timer(
         Duration(seconds: 1),
@@ -100,11 +100,11 @@ class FitnessEquipment extends DeviceBase {
     }
   }
 
-  setHeartRateMonitor(HeartRateMonitor heartRateMonitor) {
+  void setHeartRateMonitor(HeartRateMonitor heartRateMonitor) {
     this.heartRateMonitor = heartRateMonitor;
   }
 
-  setActivity(Activity activity) {
+  void setActivity(Activity activity) {
     this._activity = activity;
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
   }
@@ -235,7 +235,7 @@ class FitnessEquipment extends DeviceBase {
     return stub;
   }
 
-  stopWorkout() {
+  void stopWorkout() {
     _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ?? true;
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
     _residueCalories = 0.0;

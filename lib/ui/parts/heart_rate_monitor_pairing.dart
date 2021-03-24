@@ -22,12 +22,12 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   List<String> _scanResults;
 
   @override
-  dispose() {
+  void dispose() {
     FlutterBlue.instance.stopScan();
     super.dispose();
   }
 
-  startScan() {
+  void startScan() {
     setState(() {
       _scanResults.clear();
     });
@@ -35,7 +35,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   }
 
   @override
-  initState() {
+  void initState() {
     initializeDateFormatting();
     super.initState();
     _scanResults = [];
@@ -55,7 +55,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
 
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () => startScan(),
+        onRefresh: () { startScan(); return; },
         child: SingleChildScrollView(
           child: Column(
             children: [

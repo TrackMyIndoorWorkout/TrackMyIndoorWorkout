@@ -13,7 +13,7 @@ class StravaService {
     _strava = Strava(kDebugMode, STRAVA_SECRET);
   }
 
-  login() async {
+  Future<bool> login() async {
     return await _strava.oauth(STRAVA_CLIENT_ID, 'activity:write', STRAVA_SECRET, 'auto');
   }
 

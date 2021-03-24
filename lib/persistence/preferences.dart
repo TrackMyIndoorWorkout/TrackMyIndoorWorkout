@@ -139,16 +139,16 @@ class PreferencesSpec {
   String get fullTitle => '$title ($unit)';
   String get histogramTitle => '$title zones (%)';
 
-  updateMultiLineUnit() {
+  void updateMultiLineUnit() {
     multiLineUnit = unit.replaceAll(" ", "\n");
   }
 
-  updateUnit(String newUnit) {
+  void updateUnit(String newUnit) {
     unit = newUnit;
     updateMultiLineUnit();
   }
 
-  calculateZones() {
+  void calculateZones() {
     final thresholdString = PrefService.getString(thresholdTag);
     threshold = double.tryParse(thresholdString);
     final zonesSpecStr = PrefService.getString(zonesTag);
@@ -156,7 +156,7 @@ class PreferencesSpec {
     zoneBounds = zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList();
   }
 
-  calculateBounds(double minVal, double maxVal) {
+  void calculateBounds(double minVal, double maxVal) {
     zoneLower = [...zoneBounds];
     if (minVal < 0 || minVal > 0 && minVal > zoneLower[0]) {
       minVal = zoneLower[0] * 0.75;

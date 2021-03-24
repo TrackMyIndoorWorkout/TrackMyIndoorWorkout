@@ -71,6 +71,30 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   bool get _canSubmitWeight =>
       _spinDownPossible && _calibrationState == CalibrationState.ReadyToWeighIn;
 
+  @override
+  void initState() {
+    _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
+    _step = STEP_WEIGHT_INPUT;
+    _calibrationState = CalibrationState.PreInit;
+    _targetSpeedHighString = "N/A";
+    _targetSpeedLowString = "N/A";
+    _currentSpeedString = "N/A";
+    _targetSpeedHigh = 0.0;
+    _targetSpeedLow = 0.0;
+    _currentSpeed = 0.0;
+    _sizeDefault = Get.mediaQuery.size.width / 10;
+    _smallerTextStyle = TextStyle(
+        fontFamily: FONT_FAMILY, fontSize: _sizeDefault, color: Get.textTheme.bodyText1.color);
+    _largerTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault * 2);
+    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    _weight = _si ? 60 : 130;
+    _weightRetry = false;
+    _weightLsb = 0;
+    _weightMsb = 0;
+    _prepareSpinDown();
+    super.initState();
+  }
+
   Future<bool> _prepareSpinDownCore() async {
     if (_fitnessEquipment?.device == null) return false;
 
@@ -99,7 +123,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     return _spinDownPossible;
   }
 
-  _prepareSpinDown() async {
+  Future<void> _prepareSpinDown() async {
     final success = await _prepareSpinDownCore();
     setState(() {
       if (!success) {
@@ -357,29 +381,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     });
   }
 
-  @override
-  initState() {
-    _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-    _step = STEP_WEIGHT_INPUT;
-    _calibrationState = CalibrationState.PreInit;
-    _targetSpeedHighString = "N/A";
-    _targetSpeedLowString = "N/A";
-    _currentSpeedString = "N/A";
-    _targetSpeedHigh = 0.0;
-    _targetSpeedLow = 0.0;
-    _currentSpeed = 0.0;
-    _sizeDefault = Get.mediaQuery.size.width / 10;
-    _smallerTextStyle = TextStyle(
-        fontFamily: FONT_FAMILY, fontSize: _sizeDefault, color: Get.textTheme.bodyText1.color);
-    _largerTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault * 2);
-    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
-    _weight = _si ? 60 : 130;
-    _weightRetry = false;
-    _prepareSpinDown();
-    super.initState();
-  }
-
-  _reset() async {
+  Future<void> _reset() async {
     await _controlPoint?.setNotifyValue(false);
     await _controlPointSubscription?.cancel();
 
@@ -394,7 +396,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     _reset();
 
     super.dispose();

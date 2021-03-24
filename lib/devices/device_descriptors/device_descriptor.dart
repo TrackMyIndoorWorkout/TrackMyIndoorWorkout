@@ -86,11 +86,11 @@ abstract class DeviceDescriptor {
   double get lengthFactor => getDefaultTrack(sport).lengthFactor;
   bool get isFitnessMachine => dataServiceId == FITNESS_MACHINE_ID;
 
-  stopWorkout();
+  void stopWorkout();
 
   bool canDataProcessed(List<int> data);
 
-  processFlag(int flag) {
+  void processFlag(int flag) {
     clearMetrics();
     byteCounter = 2;
   }
@@ -145,7 +145,7 @@ abstract class DeviceDescriptor {
     return "rpm";
   }
 
-  setPowerThrottle(String throttlePercentString, bool throttleOther) {
+  void setPowerThrottle(String throttlePercentString, bool throttleOther) {
     int throttlePercent = int.tryParse(throttlePercentString);
     throttlePower = (100 - throttlePercent) / 100;
     this.throttleOther = throttleOther;
@@ -212,7 +212,7 @@ abstract class DeviceDescriptor {
     return data[heartRateByteIndex].toDouble();
   }
 
-  clearMetrics() {
+  void clearMetrics() {
     speedMetric = null;
     cadenceMetric = null;
     distanceMetric = null;

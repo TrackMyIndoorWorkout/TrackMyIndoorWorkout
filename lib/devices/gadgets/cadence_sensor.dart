@@ -99,7 +99,7 @@ class CadenceSensor extends IntegerSensor {
   }
 
   @override
-  clearMetrics() {
+  void clearMetrics() {
     revolutionsMetric = null;
     revolutionTime = null;
   }

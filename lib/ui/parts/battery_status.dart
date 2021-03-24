@@ -70,7 +70,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     return await _readBatteryLevelCore(device.services);
   }
 
-  _readBatteryLevels() async {
+  Future<void> _readBatteryLevels() async {
     var batteryLevel = await _readBatteryLevel(_fitnessEquipment);
     setState(() {
       _batteryLevel = batteryLevel;
@@ -82,7 +82,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   }
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
@@ -98,7 +98,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     super.dispose();
   }
 

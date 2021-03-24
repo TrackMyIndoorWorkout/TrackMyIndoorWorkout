@@ -81,7 +81,7 @@ class Record {
     paceToSpeed();
   }
 
-  paceToSpeed() {
+  void paceToSpeed() {
     if (sport != null && speed == null && pace != null) {
       if (sport == ActivityType.Kayaking ||
           sport == ActivityType.Canoeing ||
@@ -102,7 +102,7 @@ class Record {
     }
   }
 
-  _dtFromTimeStamp() {
+  void _dtFromTimeStamp() {
     dt = DateTime.fromMillisecondsSinceEpoch(timeStamp);
   }
 

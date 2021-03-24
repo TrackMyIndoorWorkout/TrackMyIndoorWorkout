@@ -66,5 +66,5 @@ class HeartRateMonitor extends IntegerSensor {
   }
 
   @override
-  clearMetrics() {}
+  void clearMetrics() {}
 }

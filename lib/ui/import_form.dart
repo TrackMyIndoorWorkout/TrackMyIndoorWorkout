@@ -29,7 +29,7 @@ class _ImportFormState extends State<ImportForm> {
   TextEditingController _textController;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _isLoading = false;
     _formKey = GlobalKey<FormState>();
@@ -37,7 +37,7 @@ class _ImportFormState extends State<ImportForm> {
     _textController = TextEditingController();
   }
 
-  setProgress(double progress) {
+  void setProgress(double progress) {
     setState(() {
       _progressValue = progress;
     });

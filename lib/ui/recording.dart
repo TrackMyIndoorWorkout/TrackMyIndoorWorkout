@@ -118,7 +118,7 @@ class RecordingState extends State<RecordingScreen> {
   int _elapsed;
   bool _isLoading;
 
-  _connectOnDemand(BluetoothDeviceState deviceState) async {
+  Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     if (deviceState == BluetoothDeviceState.disconnected ||
         deviceState == BluetoothDeviceState.disconnecting) {
       await _fitnessEquipment.connect();
@@ -143,7 +143,7 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  _startMeasurement() async {
+  Future<void> _startMeasurement() async {
     final now = DateTime.now();
     _activity = Activity(
       fourCC: _descriptor.fourCC,
@@ -199,13 +199,13 @@ class RecordingState extends State<RecordingScreen> {
     });
   }
 
-  _openDatabase() async {
+  Future<void> _openDatabase() async {
     _database = await $FloorAppDatabase
         .databaseBuilder('app_database.db')
         .addMigrations([migration1to2, migration2to3]).build();
   }
 
-  _onToggleDetails(int index) {
+  void _onToggleDetails(int index) {
     setState(() {
       _expandedState[index] = _rowControllers[index].expanded;
       final expandedStateStr =
@@ -215,27 +215,27 @@ class RecordingState extends State<RecordingScreen> {
     });
   }
 
-  _onTogglePower() {
+  void _onTogglePower() {
     _onToggleDetails(0);
   }
 
-  _onToggleSpeed() {
+  void _onToggleSpeed() {
     _onToggleDetails(1);
   }
 
-  _onToggleRpm() {
+  void _onToggleRpm() {
     _onToggleDetails(2);
   }
 
-  _onToggleHr() {
+  void _onToggleHr() {
     _onToggleDetails(3);
   }
 
-  _onToggleDistance() {
+  void _onToggleDistance() {
     _onToggleDetails(4);
   }
 
-  _onLongPress(int index) {
+  void _onLongPress(int index) {
     setState(() {
       _expandedHeights[index] = (_expandedHeights[index] + 1) % 3;
       final expandedHeightStr = List<String>.generate(
@@ -244,7 +244,7 @@ class RecordingState extends State<RecordingScreen> {
     });
   }
 
-  _initializeHeartRateMonitor() async {
+  Future<void> _initializeHeartRateMonitor() async {
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     final discovered = (await _heartRateMonitor?.discover()) ?? false;
     debugPrint("Discovered $discovered");
@@ -267,7 +267,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _isLoading = true;
     _pointCount = size.width ~/ 2;
@@ -372,7 +372,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     Wakelock.disable();
     super.dispose();
   }

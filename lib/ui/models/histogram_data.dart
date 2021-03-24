@@ -15,11 +15,11 @@ class HistogramData {
     percent = 0;
   }
 
-  increment() {
+  void increment() {
     count++;
   }
 
-  calculatePercent(int total) {
+  void calculatePercent(int total) {
     if (total > 0) {
       percent = count * 100 ~/ total;
     } else {
