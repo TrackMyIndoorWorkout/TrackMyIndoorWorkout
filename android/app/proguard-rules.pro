@@ -13,6 +13,14 @@
     @androidx.lifecycle.OnLifecycleEvent *;
 }
 
+# https://github.com/flutter/flutter/issues/78625#issuecomment-804164524
+-keep class io.flutter.app.** { *; }
+-keep class io.flutter.plugin.** { *; }
+-keep class io.flutter.util.** { *; }
+-keep class io.flutter.view.** { *; }
+-keep class io.flutter.** { *; }
+-keep class io.flutter.plugins.** { *; }
+
 -keep class com.pauldemarco.flutter_blue.** { *; }
 -keepclassmembernames class com.pauldemarco.flutter_blue.* { *; }
 -keep class io.flutter.plugins.deviceinfo.** { *; }
