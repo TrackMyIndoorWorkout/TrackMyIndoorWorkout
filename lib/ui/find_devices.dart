@@ -165,7 +165,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () { startScan(); return; },
+        onRefresh: () {
+          startScan();
+          return;
+        },
         child: SingleChildScrollView(
           child: Column(
             children: [

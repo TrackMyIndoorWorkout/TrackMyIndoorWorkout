@@ -55,7 +55,10 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
 
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () { startScan(); return; },
+        onRefresh: () {
+          startScan();
+          return;
+        },
         child: SingleChildScrollView(
           child: Column(
             children: [
