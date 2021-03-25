@@ -149,7 +149,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           Get.to(RecordingScreen(
                             device: lasts.first,
-                            serviceUuids: _servicesMap[_scannedDevices.first.id.id],
+                            serviceUuids: _servicesMap[lasts.first.id.id],
                             initialState: BluetoothDeviceState.disconnected,
                             size: Get.mediaQuery.size,
                           ));
