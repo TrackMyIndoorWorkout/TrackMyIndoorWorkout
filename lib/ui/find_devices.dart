@@ -123,7 +123,18 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   color: Colors.white,
                 );
               } else {
-                if (_autoConnect) {
+                final lasts = _scannedDevices.where((d) => d.id.id == _lastEquipmentId);
+                if (_openedDevice != null && !_servicesMap.containsKey(_openedDevice.id.id) ||
+                    _filterDevices &&
+                        _scannedDevices.length == 1 &&
+                        !_servicesMap.containsKey(_scannedDevices.first.id.id) ||
+                    _scannedDevices.length > 1 &&
+                        _lastEquipmentId.length > 0 &&
+                        lasts.length > 0 &&
+                        !_servicesMap.containsKey(_lastEquipmentId)) {
+                  startScan();
+                  return Container();
+                } else if (_autoConnect) {
                   if (_openedDevice != null) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Get.to(RecordingScreen(
