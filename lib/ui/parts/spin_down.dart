@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:spinner_input/spinner_input.dart';
+import 'package:tuple/tuple.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
@@ -48,7 +49,10 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   bool _si;
   int _step;
   int _weight;
-  bool _weightRetry;
+  int _oldWeightLsb;
+  int _oldWeightMsb;
+  int _newWeightLsb;
+  int _newWeightMsb;
   BluetoothCharacteristic _weightData;
   StreamSubscription _weightDataSubscription;
   BluetoothCharacteristic _controlPoint;
@@ -71,6 +75,15 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   bool get _canSubmitWeight =>
       _spinDownPossible && _calibrationState == CalibrationState.ReadyToWeighIn;
 
+  Tuple2<int, int> getWeightBytes(int weight) {
+    final weightTransport = (weight * (_si ? 1.0 : LB_TO_KG) * 200).round();
+    return Tuple2<int, int>(weightTransport % 256, weightTransport ~/ 256);
+  }
+
+  int getWeightFromBytes(int weightLsb, int weightMsb) {
+    return (weightLsb + weightMsb * 256) / (_si ? 1.0 : LB_TO_KG) ~/ 200;
+  }
+
   @override
   void initState() {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
@@ -88,11 +101,23 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _largerTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault * 2);
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _weight = _si ? 60 : 130;
-    _weightRetry = false;
-    _weightLsb = 0;
-    _weightMsb = 0;
+    final weightBytes = getWeightBytes(_weight);
+    _oldWeightLsb = weightBytes.item1;
+    _oldWeightMsb = weightBytes.item2;
+    _newWeightLsb = weightBytes.item1;
+    _newWeightMsb = weightBytes.item2;
     _prepareSpinDown();
     super.initState();
+  }
+
+  // Crazy! https://stackoverflow.com/a/50337157/292502
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    } else {
+      debugPrint("Turd in the punch bowl!");
+    }
   }
 
   Future<bool> _prepareSpinDownCore() async {
@@ -119,6 +144,96 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         fitnessMachine?.characteristics, FITNESS_MACHINE_CONTROL_POINT);
     _fitnessMachineStatus = BluetoothDeviceEx.filterCharacteristic(
         fitnessMachine?.characteristics, FITNESS_MACHINE_STATUS);
+
+    // #117 Attach the handler way ahead of the actual weight write
+    try {
+      await _weightData.setNotifyValue(true);
+    } on PlatformException catch (e, stack) {
+      debugPrint("${e.message}");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+
+    _weightDataSubscription =
+        _weightData.value.throttleTime(Duration(milliseconds: 500)).listen((response) async {
+      if (response?.length == 1 && _calibrationState == CalibrationState.WeightSubmitting) {
+        if (response[0] != WEIGHT_SUCCESS_OPCODE) {
+          setState(() {
+            _calibrationState = CalibrationState.WeighInProblem;
+          });
+        }
+      } else if (response?.length == 2) {
+        if (_calibrationState == CalibrationState.ReadyToWeighIn) {
+          setState(() {
+            _calibrationState = CalibrationState.WeighInProblem;
+            _oldWeightLsb = response[0];
+            _oldWeightMsb = response[1];
+            _weight = getWeightFromBytes(_oldWeightLsb, _oldWeightMsb);
+          });
+        } else {
+          if (response[0] == _newWeightLsb && response[1] == _newWeightMsb) {
+            setState(() {
+              _step = STEP_CALIBRATING;
+              _calibrationState = CalibrationState.ReadyToCalibrate;
+            });
+          } else {
+            setState(() {
+              _calibrationState = CalibrationState.WeighInProblem;
+            });
+          }
+        }
+      } else if (_calibrationState == CalibrationState.WeightSubmitting) {
+        try {
+          await _weightData.write([_newWeightLsb, _newWeightMsb]);
+        } on PlatformException catch (e, stack) {
+          debugPrint("${e.message}");
+          debugPrintStack(stackTrace: stack, label: "trace:");
+          setState(() {
+            _calibrationState = CalibrationState.WeighInProblem;
+          });
+        }
+      }
+    });
+
+    // #117 Attach the handler way ahead of the spin down start command write
+    try {
+      await _controlPoint.setNotifyValue(true); // Is this what needed for indication?
+    } on PlatformException catch (e, stack) {
+      debugPrint("${e.message}");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+
+    _controlPointSubscription =
+        _controlPoint.value.throttleTime(Duration(milliseconds: 500)).listen((data) async {
+      if (data?.length == 1) {
+        if (data[0] != SPIN_DOWN_OPCODE) {
+          setState(() {
+            _step = STEP_DONE;
+            _calibrationState = CalibrationState.CalibrationFail;
+          });
+        }
+      }
+
+      if (data?.length == 7) {
+        if (data[0] != CONTROL_OPCODE ||
+            data[1] != SPIN_DOWN_OPCODE ||
+            data[2] != SUCCESS_RESPONSE) {
+          setState(() {
+            _step = STEP_DONE;
+            _calibrationState = CalibrationState.CalibrationFail;
+          });
+          return;
+        }
+        setState(() {
+          _calibrationState = CalibrationState.CalibrationInProgress;
+          _targetSpeedHigh = (data[3] * 256 + data[4]) / 100;
+          _targetSpeedHighString =
+              speedOrPaceString(_targetSpeedHigh, _si, _fitnessEquipment.descriptor.sport);
+          _targetSpeedLow = (data[5] * 256 + data[6]) / 100;
+          _targetSpeedLowString =
+              speedOrPaceString(_targetSpeedLow, _si, _fitnessEquipment.descriptor.sport);
+        });
+      }
+    });
 
     return _spinDownPossible;
   }
@@ -192,58 +307,11 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     setState(() {
       _calibrationState = CalibrationState.WeightSubmitting;
     });
-    final weight = ((_si ? _weight : _weight * LB_TO_KG) * 100).round();
-    final weightLsb = weight % 256;
-    final weightMsb = weight ~/ 256;
+    final newWeightBytes = getWeightBytes(_weight);
+    _newWeightLsb = newWeightBytes.item1;
+    _newWeightMsb = newWeightBytes.item2;
     try {
-      await _weightData.setNotifyValue(true);
-    } on PlatformException catch (e, stack) {
-      debugPrint("${e.message}");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-    _weightDataSubscription =
-        _weightData.value.throttleTime(Duration(milliseconds: 500)).listen((response) async {
-      setState(() {
-        _weightRetry = false;
-      });
-      if (response?.length == 1) {
-        if (response[0] != WEIGHT_SUCCESS_OPCODE) {
-          setState(() {
-            _calibrationState = CalibrationState.WeighInProblem;
-          });
-        }
-      } else if (response?.length == 2) {
-        if (response[0] == weightLsb && response[1] == weightMsb) {
-          setState(() {
-            _step = STEP_CALIBRATING;
-            _calibrationState = CalibrationState.ReadyToCalibrate;
-            _weightRetry = false;
-          });
-        } else {
-          setState(() {
-            _calibrationState = CalibrationState.WeighInProblem;
-          });
-        }
-      } else {
-        if (_weightRetry) {
-          setState(() {
-            _calibrationState = CalibrationState.WeighInProblem;
-          });
-        } else {
-          setState(() {
-            _weightRetry = true;
-          });
-          try {
-            await _weightData.write([weightLsb, weightMsb]);
-          } on PlatformException catch (e, stack) {
-            debugPrint("${e.message}");
-            debugPrintStack(stackTrace: stack, label: "trace:");
-          }
-        }
-      }
-    });
-    try {
-      await _weightData.write([weightLsb, weightMsb]);
+      await _weightData.write([_newWeightLsb, _newWeightMsb]);
     } on PlatformException catch (e, stack) {
       debugPrint("${e.message}");
       debugPrintStack(stackTrace: stack, label: "trace:");
@@ -303,43 +371,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     setState(() {
       _calibrationState = CalibrationState.CalibrationStarting;
     });
-    try {
-      await _controlPoint.setNotifyValue(true); // Is this what needed for indication?
-    } on PlatformException catch (e, stack) {
-      debugPrint("${e.message}");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-    _controlPointSubscription =
-        _controlPoint.value.throttleTime(Duration(milliseconds: 500)).listen((data) async {
-      if (data?.length == 1) {
-        if (data[0] != SPIN_DOWN_OPCODE) {
-          setState(() {
-            _step = STEP_DONE;
-            _calibrationState = CalibrationState.CalibrationFail;
-          });
-        }
-      }
-      if (data?.length == 7) {
-        if (data[0] != CONTROL_OPCODE ||
-            data[1] != SPIN_DOWN_OPCODE ||
-            data[2] != SUCCESS_RESPONSE) {
-          setState(() {
-            _step = STEP_DONE;
-            _calibrationState = CalibrationState.CalibrationFail;
-          });
-          return;
-        }
-        setState(() {
-          _calibrationState = CalibrationState.CalibrationInProgress;
-          _targetSpeedHigh = (data[3] * 256 + data[4]) / 100;
-          _targetSpeedHighString =
-              speedOrPaceString(_targetSpeedHigh, _si, _fitnessEquipment.descriptor.sport);
-          _targetSpeedLow = (data[5] * 256 + data[6]) / 100;
-          _targetSpeedLowString =
-              speedOrPaceString(_targetSpeedLow, _si, _fitnessEquipment.descriptor.sport);
-        });
-      }
-    });
+
     try {
       await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
       await _fitnessMachineStatus.setNotifyValue(true);
@@ -347,6 +379,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       debugPrint("${e.message}");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
+
     _statusSubscription =
         _fitnessMachineStatus.value.throttleTime(Duration(milliseconds: 250)).listen((status) {
       if (status?.length == 2 && status[0] == SPIN_DOWN_STATUS) {
@@ -371,6 +404,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         }
       }
     });
+
     await _fitnessEquipment.attach();
     _fitnessEquipment.calibrating = true;
     _fitnessEquipment.pumpData((record) async {
