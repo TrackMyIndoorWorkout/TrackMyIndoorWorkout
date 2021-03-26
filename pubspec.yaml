@@ -17,10 +17,7 @@ dependencies:
   fab_circular_menu: any
   file_picker: ^2.1.6
   floor: ^0.18.0
-  flutter_blue:
-    git:
-      url: https://github.com/MrCsabaToth/flutter_blue.git
-      ref: patch-1
+  flutter_blue: 0.7.3
   flutter_brand_icons: any
   get: ^3.24.0
   http: ^0.12.2
@@ -44,7 +41,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^1.11.1
-  floor_generator: 0.18.0
+  floor_generator: ^0.18.0
   integration_test: ^1.0.2+2
   mockito: any
   mock_data: any

@@ -56,7 +56,7 @@ packages:
       name: build
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.0"
+    version: "1.6.2"
   build_config:
     dependency: transitive
     description:
@@ -161,7 +161,7 @@ packages:
       name: code_builder
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.5.0"
+    version: "3.7.0"
   collection:
     dependency: transitive
     description:
@@ -310,11 +310,9 @@ packages:
   flutter_blue:
     dependency: "direct main"
     description:
-      path: "."
-      ref: patch-1
-      resolved-ref: "3a8c3ab44361b5561a72b6b247958be3e14fb502"
-      url: "https://github.com/MrCsabaToth/flutter_blue.git"
-    source: git
+      name: flutter_blue
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.7.3"
   flutter_brand_icons:
     dependency: "direct main"
@@ -725,7 +723,7 @@ packages:
       name: source_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.10+1"
+    version: "0.9.10+2"
   source_span:
     dependency: transitive
     description:
