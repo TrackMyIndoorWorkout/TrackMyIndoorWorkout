@@ -11,6 +11,7 @@ const SPORTS = [
   ActivityType.Kayaking,
   ActivityType.Canoeing,
   ActivityType.Rowing,
+  ActivityType.Swim,
   ActivityType.Elliptical,
 ];
 

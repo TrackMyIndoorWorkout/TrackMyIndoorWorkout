@@ -57,7 +57,7 @@ void main() {
     });
   });
 
-  group("speedOrPace for water sports:", () {
+  group("speedOrPace for paddle sports:", () {
     final sports = [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing];
     speeds.forEach((speed) {
       sports.forEach((sport) {
@@ -67,6 +67,16 @@ void main() {
           expect(speedOrPace(speed, false, sport), expected);
           expect(speedOrPace(speed, true, sport), expected);
         });
+      });
+    });
+  });
+
+  group("speedOrPace for metric system and swimming:", () {
+    speeds.forEach((speed) {
+      final expected = speed.abs() < DISPLAY_EPS ? 0.0 : 6.0 / speed;
+      test("$speed (Swim) -> $expected", () {
+        expect(speedOrPace(speed, false, ActivityType.Swim), expected);
+        expect(speedOrPace(speed, true, ActivityType.Swim), expected);
       });
     });
   });

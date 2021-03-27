@@ -60,7 +60,7 @@ void main() {
     });
   });
 
-  group("speedStringByUnit for water sports:", () {
+  group("speedStringByUnit for paddle sports:", () {
     final sports = [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing];
     speeds.forEach((speed) {
       sports.forEach((sport) {
@@ -71,6 +71,18 @@ void main() {
           expect(speedOrPaceString(speed, false, sport), expected);
           expect(speedOrPaceString(speed, true, sport), expected);
         });
+      });
+    });
+  });
+
+  group("speedStringByUnit for swimming:", () {
+    speeds.forEach((speed) {
+      final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 6.0 / speed;
+      final expected = paceString(pace);
+      test("$speed (Swim) -> $expected", () {
+        // There's no imperial for water sports, it's always 100m
+        expect(speedOrPaceString(speed, false, ActivityType.Swim), expected);
+        expect(speedOrPaceString(speed, true, ActivityType.Swim), expected);
       });
     });
   });
