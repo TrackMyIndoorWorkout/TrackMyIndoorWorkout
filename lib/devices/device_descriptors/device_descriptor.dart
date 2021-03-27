@@ -16,6 +16,7 @@ abstract class DeviceDescriptor {
   static const double J2KCAL = J2CAL / 1000.0;
 
   final String sport;
+  final bool isMultiSport;
   final String fourCC;
   final String vendorName;
   final String modelName;
@@ -51,6 +52,7 @@ abstract class DeviceDescriptor {
 
   DeviceDescriptor({
     @required this.sport,
+    @required this.isMultiSport,
     @required this.fourCC,
     @required this.vendorName,
     @required this.modelName,
@@ -71,6 +73,7 @@ abstract class DeviceDescriptor {
     this.calorieFactor = 1.0,
     this.distanceFactor = 1.0,
   })  : assert(sport != null),
+        assert(isMultiSport != null),
         assert(fourCC != null),
         assert(vendorName != null),
         assert(modelName != null),

@@ -5,6 +5,7 @@ import 'device_descriptor.dart';
 abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   FixedLayoutDeviceDescriptor({
     @required sport,
+    @required isMultiSport,
     @required fourCC,
     @required vendorName,
     @required modelName,
@@ -24,6 +25,7 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     distanceMetric,
   }) : super(
           sport: sport,
+          isMultiSport: isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,

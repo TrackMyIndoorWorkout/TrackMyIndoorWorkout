@@ -36,6 +36,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     distanceFactor = 1.0,
   }) : super(
           sport: sport,
+          isMultiSport: true,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,

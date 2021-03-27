@@ -5,6 +5,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   SchwinnACPerformancePlus()
       : super(
           sport: ActivityType.Ride,
+          isMultiSport: false,
           fourCC: "SAP+",
           vendorName: "Schwinn",
           modelName: "AC Performance Plus",

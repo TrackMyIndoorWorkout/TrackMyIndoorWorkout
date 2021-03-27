@@ -8,6 +8,7 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
   PrecorSpinnerChronoPower()
       : super(
           sport: ActivityType.Ride,
+          isMultiSport: false,
           fourCC: "PSCP",
           vendorName: "Precor",
           modelName: "Spinner Chrono Power",

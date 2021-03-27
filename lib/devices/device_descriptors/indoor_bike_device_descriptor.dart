@@ -1,12 +1,12 @@
 import 'package:meta/meta.dart';
 
 import '../../persistence/models/record.dart';
+import '../../tcx/activity_type.dart';
 import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 
 class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
   IndoorBikeDeviceDescriptor({
-    @required sport,
     @required fourCC,
     @required vendorName,
     @required modelName,
@@ -21,7 +21,8 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     calorieFactor = 1.0,
     distanceFactor = 1.0,
   }) : super(
-          sport: sport,
+          sport: ActivityType.Ride,
+          isMultiSport: false,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,

@@ -8,7 +8,6 @@ import 'device_descriptors/schwinn_ac_performance_plus.dart';
 Map<String, DeviceDescriptor> deviceMap = {
   "PSCP": PrecorSpinnerChronoPower(),
   "SIC4": IndoorBikeDeviceDescriptor(
-    sport: ActivityType.Ride,
     fourCC: "SIC4",
     vendorName: "Nautilus, Inc",
     modelName: "Schwinn IC4/IC8",
