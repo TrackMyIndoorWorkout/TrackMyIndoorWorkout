@@ -1,4 +1,5 @@
 const EPS = 1e-6;
+const DISPLAY_EPS = 1e-4;
 const MIN_INIT = 10000;
 const MAX_INIT = -10000;
 const MIN_SPEED = 3.0;

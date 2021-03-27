@@ -1,22 +1,30 @@
+import '../utils/constants.dart';
 import '../persistence/preferences.dart';
 import '../tcx/activity_type.dart';
 
 double speedOrPace(double speed, bool si, String sport) {
   if (sport == ActivityType.Ride) {
     if (si) return speed;
+
     return speed * KM2MI;
-  } else if (sport == ActivityType.Run) {
-    if (speed.abs() < 10e-4) return 0.0;
-    final pace = 60.0 / speed;
-    if (si) return pace;
-    return pace / KM2MI; // mph is lower than kmh but pace is reciprocal
-  } else if (sport == ActivityType.Kayaking ||
-      sport == ActivityType.Canoeing ||
-      sport == ActivityType.Rowing) {
-    if (speed.abs() < 10e-4) return 0.0;
-    return 30.0 / speed;
+  } else {
+    if (speed.abs() < DISPLAY_EPS) return 0.0;
+
+    if (sport == ActivityType.Run) {
+      final pace = 60.0 / speed;
+
+      if (si) return pace;
+
+      return pace / KM2MI; // mph is lower than kmh but pace is reciprocal
+    } else if (sport == ActivityType.Kayaking ||
+        sport == ActivityType.Canoeing ||
+        sport == ActivityType.Rowing) {
+      return 30.0 / speed;
+    } else if (sport == ActivityType.Swim) {
+      return 6.0 / speed;
+    }
+    return speed;
   }
-  return speed;
 }
 
 String speedOrPaceString(double speed, bool si, String sport) {
@@ -26,13 +34,16 @@ String speedOrPaceString(double speed, bool si, String sport) {
   } else if (sport == ActivityType.Run ||
       sport == ActivityType.Kayaking ||
       sport == ActivityType.Canoeing ||
-      sport == ActivityType.Rowing) {
-    if (speed.abs() < 10e-4) return "0:00";
+      sport == ActivityType.Rowing ||
+      sport == ActivityType.Swim) {
+    if (speed.abs() < DISPLAY_EPS) return "0:00";
     var pace = 60.0 / speed;
     if (sport == ActivityType.Kayaking ||
         sport == ActivityType.Canoeing ||
         sport == ActivityType.Rowing) {
       pace /= 2.0;
+    } else if (sport == ActivityType.Swim) {
+      pace /= 10.0;
     } else if (!si) {
       pace /= KM2MI;
     }

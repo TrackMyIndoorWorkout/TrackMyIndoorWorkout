@@ -120,6 +120,8 @@ abstract class DeviceDescriptor {
         defaultSport == ActivityType.Canoeing ||
         defaultSport == ActivityType.Rowing) {
       return 'min /500';
+    } else if (defaultSport == ActivityType.Swim) {
+      return 'min /100';
     }
     return si ? 'kmh' : 'mph';
   }
@@ -135,14 +137,17 @@ abstract class DeviceDescriptor {
         defaultSport == ActivityType.Canoeing ||
         defaultSport == ActivityType.Rowing) {
       return Icons.rowing;
+    } else if (defaultSport == ActivityType.Swim) {
+      return Icons.waves;
     }
     return Icons.directions_bike;
   }
 
   String getCadenceUnit() {
-    if (sport == ActivityType.Kayaking ||
-        sport == ActivityType.Canoeing ||
-        sport == ActivityType.Rowing) {
+    if (defaultSport == ActivityType.Kayaking ||
+        defaultSport == ActivityType.Canoeing ||
+        defaultSport == ActivityType.Rowing ||
+        defaultSport == ActivityType.Swim) {
       return "spm";
     }
     return "rpm";

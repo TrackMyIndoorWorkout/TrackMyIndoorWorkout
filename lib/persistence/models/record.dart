@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import '../../ui/models/display_record.dart';
 import '../../persistence/preferences.dart';
 import '../../tcx/activity_type.dart';
+import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import 'activity.dart';
 
@@ -83,19 +84,18 @@ class Record {
 
   void paceToSpeed() {
     if (sport != null && speed == null && pace != null) {
-      if (sport == ActivityType.Kayaking ||
-          sport == ActivityType.Canoeing ||
-          sport == ActivityType.Rowing) {
-        if (pace.abs() < 10e-4) {
-          speed = 0.0;
-        } else {
-          speed = 30.0 / (pace / 60.0);
-        }
+      if (pace.abs() < DISPLAY_EPS) {
+        speed = 0.0;
       } else {
-        // sport == ActivityType.Run
-        if (pace.abs() < 10e-4) {
-          speed = 0.0;
+        if (sport == ActivityType.Kayaking ||
+            sport == ActivityType.Canoeing ||
+            sport == ActivityType.Rowing) {
+          speed = 30.0 / (pace / 60.0);
+        } else if (sport == ActivityType.Swim) {
+          // 100m pace
+          speed = 6.0 / (pace / 60.0);
         } else {
+          // sport == ActivityType.Run
           speed = 60.0 / pace;
         }
       }

@@ -85,6 +85,7 @@ Map<String, String> defaultTrackMap = {
   ActivityType.Kayaking: "SanJoaquinBluffPointe",
   ActivityType.Canoeing: "SanJoaquinBluffPointe",
   ActivityType.Rowing: "SanJoaquinBluffPointe",
+  ActivityType.Swim: "SanJoaquinBluffPointe",
 };
 
 TrackDescriptor getDefaultTrack(String sport) {

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/persistence/preferences.dart';
 import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/display.dart';
 
 void main() {
@@ -40,7 +41,7 @@ void main() {
 
   group("speedStringByUnit for metric system and running:", () {
     speeds.forEach((speed) {
-      final pace = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed;
+      final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed;
       final expected = paceString(pace);
       // final expected
       test("$speed (Run) -> $expected", () {
@@ -51,7 +52,7 @@ void main() {
 
   group("speedStringByUnit for imperial system and running:", () {
     speeds.forEach((speed) {
-      final pace = speed.abs() < 10e-4 ? 0.0 : 60.0 / speed / KM2MI;
+      final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed / KM2MI;
       final expected = paceString(pace);
       test("$speed (Run) -> $expected", () {
         expect(speedOrPaceString(speed, false, ActivityType.Run), expected);
@@ -63,7 +64,7 @@ void main() {
     final sports = [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing];
     speeds.forEach((speed) {
       sports.forEach((sport) {
-        final pace = speed.abs() < 10e-4 ? 0.0 : 30.0 / speed;
+        final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 30.0 / speed;
         final expected = paceString(pace);
         test("$speed ($sport) -> $expected", () {
           // There's no imperial for water sports, it's always 500m
