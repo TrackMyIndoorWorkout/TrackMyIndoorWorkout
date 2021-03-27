@@ -96,14 +96,14 @@ class RecordsScreenState extends State<RecordsScreen> {
               _sampledRecords = List.generate(
                   _pointCount, (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate().display());
             }
-            final measurementCounter = MeasurementCounter(si: _si, sport: _descriptor.sport);
+            final measurementCounter = MeasurementCounter(si: _si, sport: _descriptor.defaultSport);
             _allRecords.forEach((record) {
               measurementCounter.processRecord(record);
             });
 
             var accu = StatisticsAccumulator(
               si: _si,
-              sport: _descriptor.sport,
+              sport: _descriptor.defaultSport,
               calculateAvgPower: measurementCounter.hasPower,
               calculateMaxPower: measurementCounter.hasPower,
               calculateAvgSpeed: measurementCounter.hasSpeed,
@@ -230,7 +230,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                   var tileConfig = _tileConfigurations["speed"];
                   tileConfig.count++;
                   final binIndex =
-                      _preferencesSpecs[1].binIndex(record.speedByUnit(_si, _descriptor.sport));
+                      _preferencesSpecs[1].binIndex(record.speedByUnit(_si, _descriptor.defaultSport));
                   tileConfig.histogram[binIndex].increment();
                 }
               }
@@ -350,16 +350,16 @@ class RecordsScreenState extends State<RecordsScreen> {
       charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
         colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.sport)),
+            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.defaultSport)),
         domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, _descriptor.sport),
+        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, _descriptor.defaultSport),
         data: _sampledRecords,
       ),
     ];
   }
 
   String _getSpeedString(DisplayRecord record) {
-    return speedOrPaceString(record.speed, _si, _descriptor.sport);
+    return speedOrPaceString(record.speed, _si, _descriptor.defaultSport);
   }
 
   void _speedSelectionListener(charts.SelectionModel<DateTime> model) {

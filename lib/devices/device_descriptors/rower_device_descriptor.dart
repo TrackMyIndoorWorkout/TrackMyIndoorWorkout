@@ -20,7 +20,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   int _strokeRateSum;
 
   RowerDeviceDescriptor({
-    @required sport,
+    @required defaultSport,
     @required fourCC,
     @required vendorName,
     @required modelName,
@@ -35,7 +35,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     calorieFactor = 1.0,
     distanceFactor = 1.0,
   }) : super(
-          sport: sport,
+          defaultSport: defaultSport,
           isMultiSport: true,
           fourCC: fourCC,
           vendorName: vendorName,
@@ -111,7 +111,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       cadence: strokeRate,
       heartRate: getHeartRate(data)?.toInt(),
       pace: pace,
-      sport: sport,
+      sport: defaultSport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
     );

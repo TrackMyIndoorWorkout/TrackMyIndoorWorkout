@@ -189,7 +189,7 @@ class RecordingState extends State<RecordingScreen> {
           _values = [
             record.calories.toString(),
             record.power.toString(),
-            record.speedStringByUnit(_si, _descriptor.sport),
+            record.speedStringByUnit(_si, _descriptor.defaultSport),
             record.cadence.toString(),
             record.heartRate.toString(),
             record.distanceStringByUnit(_si),
@@ -476,9 +476,9 @@ class RecordingState extends State<RecordingScreen> {
       charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
         colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.sport)),
+            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.defaultSport)),
         domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, _descriptor.sport),
+        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, _descriptor.defaultSport),
         data: graphData,
       ),
     ];

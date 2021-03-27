@@ -6,7 +6,7 @@ import 'device_descriptor.dart';
 
 abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   FitnessMachineDescriptor({
-    @required sport,
+    @required defaultSport,
     @required isMultiSport,
     @required fourCC,
     @required vendorName,
@@ -22,7 +22,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     calorieFactor = 1.0,
     distanceFactor = 1.0,
   }) : super(
-          sport: sport,
+          defaultSport: defaultSport,
           isMultiSport: isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,

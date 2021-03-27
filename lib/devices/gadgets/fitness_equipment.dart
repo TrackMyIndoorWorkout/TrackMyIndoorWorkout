@@ -58,7 +58,7 @@ class FitnessEquipment extends DeviceBase {
       cadence: 0,
       heartRate: 0,
       elapsedMillis: 0,
-      sport: descriptor.sport,
+      sport: descriptor.defaultSport,
     );
   }
 
@@ -86,7 +86,7 @@ class FitnessEquipment extends DeviceBase {
             speed: 15.0 + _random.nextDouble() * 15.0,
             cadence: 30 + _random.nextInt(100),
             heartRate: 60 + _random.nextInt(120),
-            sport: descriptor.sport,
+            sport: descriptor.defaultSport,
           ));
           recordHandlerFunction(record);
           pumpData(recordHandlerFunction);
@@ -231,7 +231,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     stub.activityId = _activity?.id;
-    stub.sport = descriptor.sport;
+    stub.sport = descriptor.defaultSport;
     return stub;
   }
 

@@ -7,7 +7,7 @@ import 'fixed_layout_device_descriptor.dart';
 class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
   PrecorSpinnerChronoPower()
       : super(
-          sport: ActivityType.Ride,
+          defaultSport: ActivityType.Ride,
           isMultiSport: false,
           fourCC: "PSCP",
           vendorName: "Precor",

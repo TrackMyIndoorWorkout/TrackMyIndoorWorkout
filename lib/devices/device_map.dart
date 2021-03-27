@@ -18,7 +18,7 @@ Map<String, DeviceDescriptor> deviceMap = {
   ),
   "SAP+": SchwinnACPerformancePlus(),
   "KPro": RowerDeviceDescriptor(
-    sport: ActivityType.Kayaking,
+    defaultSport: ActivityType.Kayaking,
     fourCC: "KPro",
     vendorName: "KayakPro",
     modelName: "KayakPro Compact",

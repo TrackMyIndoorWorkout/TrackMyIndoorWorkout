@@ -21,7 +21,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     calorieFactor = 1.0,
     distanceFactor = 1.0,
   }) : super(
-          sport: ActivityType.Ride,
+          defaultSport: ActivityType.Ride,
           isMultiSport: false,
           fourCC: fourCC,
           vendorName: vendorName,
@@ -72,7 +72,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
       heartRate: getHeartRate(data)?.toInt(),
-      sport: sport,
+      sport: defaultSport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
     );

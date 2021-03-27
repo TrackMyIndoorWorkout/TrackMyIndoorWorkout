@@ -227,10 +227,10 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
           _calibrationState = CalibrationState.CalibrationInProgress;
           _targetSpeedHigh = (data[3] * 256 + data[4]) / 100;
           _targetSpeedHighString =
-              speedOrPaceString(_targetSpeedHigh, _si, _fitnessEquipment.descriptor.sport);
+              speedOrPaceString(_targetSpeedHigh, _si, _fitnessEquipment.descriptor.defaultSport);
           _targetSpeedLow = (data[5] * 256 + data[6]) / 100;
           _targetSpeedLowString =
-              speedOrPaceString(_targetSpeedLow, _si, _fitnessEquipment.descriptor.sport);
+              speedOrPaceString(_targetSpeedLow, _si, _fitnessEquipment.descriptor.defaultSport);
         });
       }
     });
@@ -410,7 +410,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _fitnessEquipment.pumpData((record) async {
       setState(() {
         _currentSpeed = record.speed;
-        _currentSpeedString = record.speedStringByUnit(_si, _fitnessEquipment.descriptor.sport);
+        _currentSpeedString = record.speedStringByUnit(_si, _fitnessEquipment.descriptor.defaultSport);
       });
     });
   }

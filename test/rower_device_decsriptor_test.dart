@@ -18,7 +18,7 @@ void main() {
     final rower = deviceMap["KPro"];
 
     expect(rower.canMeasureHeartRate, false);
-    expect(rower.sport, ActivityType.Kayaking);
+    expect(rower.defaultSport, ActivityType.Kayaking);
     expect(rower.fourCC, "KPro");
   });
 

@@ -45,7 +45,7 @@ class TCXOutput {
   Future<List<int>> getTcxOfActivity(Activity activity, List<Record> records, bool compress) async {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
     final descriptor = deviceMap[activity.fourCC];
-    final track = getDefaultTrack(descriptor.sport);
+    final track = getDefaultTrack(descriptor.defaultSport);
     final calculator = TrackCalculator(track: track);
     TCXModel tcxInfo = TCXModel()
       ..activityType = descriptor.tcxSport

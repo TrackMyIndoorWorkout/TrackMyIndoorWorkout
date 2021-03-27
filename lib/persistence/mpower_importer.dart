@@ -256,7 +256,7 @@ class MPowerEchelon2Importer {
           cadence: rpm.round(),
           heartRate: hr.round(),
           elapsedMillis: elapsed.round(),
-          sport: device.sport,
+          sport: device.defaultSport,
         );
 
         distance += dDistance;

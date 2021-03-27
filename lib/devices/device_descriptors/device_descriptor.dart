@@ -15,7 +15,7 @@ abstract class DeviceDescriptor {
   static const double J2CAL = 0.2390057;
   static const double J2KCAL = J2CAL / 1000.0;
 
-  final String sport;
+  final String defaultSport;
   final bool isMultiSport;
   final String fourCC;
   final String vendorName;
@@ -51,7 +51,7 @@ abstract class DeviceDescriptor {
   bool throttleOther;
 
   DeviceDescriptor({
-    @required this.sport,
+    @required this.defaultSport,
     @required this.isMultiSport,
     @required this.fourCC,
     @required this.vendorName,
@@ -72,7 +72,7 @@ abstract class DeviceDescriptor {
     this.distanceMetric,
     this.calorieFactor = 1.0,
     this.distanceFactor = 1.0,
-  })  : assert(sport != null),
+  })  : assert(defaultSport != null),
         assert(isMultiSport != null),
         assert(fourCC != null),
         assert(vendorName != null),
@@ -86,7 +86,7 @@ abstract class DeviceDescriptor {
     throttleOther = THROTTLE_OTHER_DEFAULT;
   }
 
-  double get lengthFactor => getDefaultTrack(sport).lengthFactor;
+  double get lengthFactor => getDefaultTrack(defaultSport).lengthFactor;
   bool get isFitnessMachine => dataServiceId == FITNESS_MACHINE_ID;
 
   void stopWorkout();
@@ -109,31 +109,31 @@ abstract class DeviceDescriptor {
     return null;
   }
 
-  String get tcxSport => sport == ActivityType.Ride && sport == ActivityType.Run ? sport : "Other";
+  String get tcxSport => defaultSport == ActivityType.Ride && defaultSport == ActivityType.Run ? defaultSport : "Other";
 
   String getSpeedUnit(bool si) {
-    if (sport == ActivityType.Ride) {
+    if (defaultSport == ActivityType.Ride) {
       return si ? 'kmh' : 'mph';
-    } else if (sport == ActivityType.Run) {
+    } else if (defaultSport == ActivityType.Run) {
       return si ? 'min /km' : 'min /mi';
-    } else if (sport == ActivityType.Kayaking ||
-        sport == ActivityType.Canoeing ||
-        sport == ActivityType.Rowing) {
+    } else if (defaultSport == ActivityType.Kayaking ||
+        defaultSport == ActivityType.Canoeing ||
+        defaultSport == ActivityType.Rowing) {
       return 'min /500';
     }
     return si ? 'kmh' : 'mph';
   }
 
-  String get speedTitle => sport == ActivityType.Ride ? "Speed" : "Pace";
+  String get speedTitle => defaultSport == ActivityType.Ride ? "Speed" : "Pace";
 
   IconData getIcon() {
-    if (sport == ActivityType.Ride) {
+    if (defaultSport == ActivityType.Ride) {
       return Icons.directions_bike;
-    } else if (sport == ActivityType.Run) {
+    } else if (defaultSport == ActivityType.Run) {
       return Icons.directions_run;
-    } else if (sport == ActivityType.Kayaking ||
-        sport == ActivityType.Canoeing ||
-        sport == ActivityType.Rowing) {
+    } else if (defaultSport == ActivityType.Kayaking ||
+        defaultSport == ActivityType.Canoeing ||
+        defaultSport == ActivityType.Rowing) {
       return Icons.rowing;
     }
     return Icons.directions_bike;
