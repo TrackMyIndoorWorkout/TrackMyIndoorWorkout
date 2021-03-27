@@ -229,8 +229,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                 if (record.speed > 0) {
                   var tileConfig = _tileConfigurations["speed"];
                   tileConfig.count++;
-                  final binIndex =
-                      _preferencesSpecs[1].binIndex(record.speedByUnit(_si, _descriptor.defaultSport));
+                  final binIndex = _preferencesSpecs[1]
+                      .binIndex(record.speedByUnit(_si, _descriptor.defaultSport));
                   tileConfig.histogram[binIndex].increment();
                 }
               }

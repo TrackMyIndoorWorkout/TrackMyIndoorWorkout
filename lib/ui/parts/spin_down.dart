@@ -410,7 +410,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _fitnessEquipment.pumpData((record) async {
       setState(() {
         _currentSpeed = record.speed;
-        _currentSpeedString = record.speedStringByUnit(_si, _fitnessEquipment.descriptor.defaultSport);
+        _currentSpeedString =
+            record.speedStringByUnit(_si, _fitnessEquipment.descriptor.defaultSport);
       });
     });
   }

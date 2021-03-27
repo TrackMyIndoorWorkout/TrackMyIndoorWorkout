@@ -109,7 +109,9 @@ abstract class DeviceDescriptor {
     return null;
   }
 
-  String get tcxSport => defaultSport == ActivityType.Ride && defaultSport == ActivityType.Run ? defaultSport : "Other";
+  String get tcxSport => defaultSport == ActivityType.Ride && defaultSport == ActivityType.Run
+      ? defaultSport
+      : "Other";
 
   String getSpeedUnit(bool si) {
     if (defaultSport == ActivityType.Ride) {
