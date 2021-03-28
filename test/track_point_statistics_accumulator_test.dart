@@ -291,7 +291,7 @@ void main() {
           expect(accu.cadenceSum, sum);
           expect(accu.cadenceCount, cnt);
           expect(accu.maxCadence, null);
-          expect(accu.avgCadence, sum ~/ cnt);
+          expect(accu.avgCadence, cnt > 0 ? sum ~/ cnt : 0);
         });
       });
     });
