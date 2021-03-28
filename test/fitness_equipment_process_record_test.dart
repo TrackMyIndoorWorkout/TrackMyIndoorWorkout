@@ -72,9 +72,15 @@ void main() {
       test('$calPerHour', () async {
         await PrefService.init(prefix: 'pref_');
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
-        final activity = Activity(startDateTime: oneSecondAgo);
-        final equipment =
-            FitnessEquipment(descriptor: deviceMap["SIC4"], device: MockBluetoothDevice());
+        final descriptor = deviceMap["SIC4"];
+        final activity = Activity(
+          deviceId: "",
+          deviceName: descriptor.modelName,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.lastRecord =
             Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, calories: 0);
@@ -95,7 +101,13 @@ void main() {
       test('$power', () async {
         await PrefService.init(prefix: 'pref_');
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
-        final activity = Activity(startDateTime: oneSecondAgo);
+        final activity = Activity(
+          deviceId: "",
+          deviceName: descriptor.modelName,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+        );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.lastRecord =
@@ -114,9 +126,15 @@ void main() {
       test('$calories', () async {
         await PrefService.init(prefix: 'pref_');
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
-        final activity = Activity(startDateTime: oneSecondAgo);
-        final equipment =
-            FitnessEquipment(descriptor: deviceMap["SIC4"], device: MockBluetoothDevice());
+        final descriptor = deviceMap["SIC4"];
+        final activity = Activity(
+          deviceId: "",
+          deviceName: descriptor.modelName,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.lastRecord =
             Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, calories: 0);
@@ -134,9 +152,15 @@ void main() {
       test('$speed', () async {
         await PrefService.init(prefix: 'pref_');
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
-        final activity = Activity(startDateTime: oneSecondAgo);
-        final equipment =
-            FitnessEquipment(descriptor: deviceMap["SIC4"], device: MockBluetoothDevice());
+        final descriptor = deviceMap["SIC4"];
+        final activity = Activity(
+          deviceId: "",
+          deviceName: descriptor.modelName,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.lastRecord =
             Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, distance: 10);
@@ -154,9 +178,15 @@ void main() {
       test('$distance', () async {
         await PrefService.init(prefix: 'pref_');
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
-        final activity = Activity(startDateTime: oneSecondAgo);
-        final equipment =
-            FitnessEquipment(descriptor: deviceMap["SIC4"], device: MockBluetoothDevice());
+        final descriptor = deviceMap["SIC4"];
+        final activity = Activity(
+          deviceId: "",
+          deviceName: descriptor.modelName,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.lastRecord = Record(
             timeStamp: oneSecondAgo.millisecondsSinceEpoch,

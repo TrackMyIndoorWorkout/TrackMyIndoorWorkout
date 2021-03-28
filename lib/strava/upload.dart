@@ -91,7 +91,7 @@ abstract class Upload {
 
         $FloorAppDatabase
             .databaseBuilder('app_database.db')
-            .addMigrations([migration1to2, migration2to3])
+            .addMigrations([migration1to2, migration2to3, migration3to4])
             .build()
             .then((db) async {
               activity.markUploaded(_response.id);

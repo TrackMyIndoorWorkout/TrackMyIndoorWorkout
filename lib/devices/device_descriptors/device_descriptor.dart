@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
-import '../../tcx/activity_type.dart';
 import '../../track/tracks.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
@@ -86,7 +85,7 @@ abstract class DeviceDescriptor {
     throttleOther = THROTTLE_OTHER_DEFAULT;
   }
 
-  double get lengthFactor => getDefaultTrack(defaultSport).lengthFactor;
+  double get lengthFactor => getDefaultTrack(defaultSport).lengthFactor; // TODO?
   bool get isFitnessMachine => dataServiceId == FITNESS_MACHINE_ID;
 
   void stopWorkout();
@@ -107,52 +106,6 @@ abstract class DeviceDescriptor {
       }
     }
     return null;
-  }
-
-  String get tcxSport => defaultSport == ActivityType.Ride && defaultSport == ActivityType.Run
-      ? defaultSport
-      : "Other";
-
-  String getSpeedUnit(bool si) {
-    if (defaultSport == ActivityType.Ride) {
-      return si ? 'kmh' : 'mph';
-    } else if (defaultSport == ActivityType.Run) {
-      return si ? 'min /km' : 'min /mi';
-    } else if (defaultSport == ActivityType.Kayaking ||
-        defaultSport == ActivityType.Canoeing ||
-        defaultSport == ActivityType.Rowing) {
-      return 'min /500';
-    } else if (defaultSport == ActivityType.Swim) {
-      return 'min /100';
-    }
-    return si ? 'kmh' : 'mph';
-  }
-
-  String get speedTitle => defaultSport == ActivityType.Ride ? "Speed" : "Pace";
-
-  IconData getIcon() {
-    if (defaultSport == ActivityType.Ride) {
-      return Icons.directions_bike;
-    } else if (defaultSport == ActivityType.Run) {
-      return Icons.directions_run;
-    } else if (defaultSport == ActivityType.Kayaking ||
-        defaultSport == ActivityType.Canoeing ||
-        defaultSport == ActivityType.Rowing) {
-      return Icons.rowing;
-    } else if (defaultSport == ActivityType.Swim) {
-      return Icons.waves;
-    }
-    return Icons.directions_bike;
-  }
-
-  String getCadenceUnit() {
-    if (defaultSport == ActivityType.Kayaking ||
-        defaultSport == ActivityType.Canoeing ||
-        defaultSport == ActivityType.Rowing ||
-        defaultSport == ActivityType.Swim) {
-      return "spm";
-    }
-    return "rpm";
   }
 
   void setPowerThrottle(String throttlePercentString, bool throttleOther) {

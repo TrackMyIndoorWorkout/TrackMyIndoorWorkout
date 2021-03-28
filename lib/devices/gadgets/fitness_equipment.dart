@@ -58,9 +58,11 @@ class FitnessEquipment extends DeviceBase {
       cadence: 0,
       heartRate: 0,
       elapsedMillis: 0,
-      sport: descriptor.defaultSport,
+      sport: sport,
     );
   }
+
+  String get sport => _activity?.sport ?? descriptor.defaultSport;
 
   Stream<Record> get _listenToData async* {
     if (!attached) return;
@@ -86,7 +88,7 @@ class FitnessEquipment extends DeviceBase {
             speed: 15.0 + _random.nextDouble() * 15.0,
             cadence: 30 + _random.nextInt(100),
             heartRate: 60 + _random.nextInt(120),
-            sport: descriptor.defaultSport,
+            sport: sport,
           ));
           recordHandlerFunction(record);
           pumpData(recordHandlerFunction);

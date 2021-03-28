@@ -9,7 +9,7 @@ import 'models/record.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 3, entities: [Activity, Record])
+@Database(version: 4, entities: [Activity, Record])
 abstract class AppDatabase extends FloorDatabase {
   ActivityDao get activityDao;
   RecordDao get recordDao;
@@ -21,4 +21,9 @@ final migration1to2 = Migration(1, 2, (database) async {
 
 final migration2to3 = Migration(2, 3, (database) async {
   await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET four_cc='PSCP' WHERE 1=1");
+});
+
+final migration3to4 = Migration(3, 4, (database) async {
+  await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET sport='Kayaking' WHERE four_cc='KPro'");
+  await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET sport='Ride' WHERE sport IS NULL");
 });

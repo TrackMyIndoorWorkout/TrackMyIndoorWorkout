@@ -7,8 +7,6 @@ import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:preferences/preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../devices/device_descriptors/device_descriptor.dart';
-import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
@@ -56,7 +54,6 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<String> _selectedTimes;
   List<String> _selectedValues;
   bool _si;
-  DeviceDescriptor _descriptor;
   List<PreferencesSpec> _preferencesSpecs;
 
   double _sizeDefault;
@@ -76,12 +73,11 @@ class RecordsScreenState extends State<RecordsScreen> {
     _selectedTimes = [];
     _selectedValues = [];
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
-    _descriptor = deviceMap[activity.fourCC];
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor);
+    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, activity.sport);
     activity.hydrate();
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2, migration2to3])
+        .addMigrations([migration1to2, migration2to3, migration3to4])
         .build()
         .then((db) async {
           _allRecords = await db.recordDao.findAllActivityRecords(activity.id);
@@ -96,14 +92,14 @@ class RecordsScreenState extends State<RecordsScreen> {
               _sampledRecords = List.generate(
                   _pointCount, (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate().display());
             }
-            final measurementCounter = MeasurementCounter(si: _si, sport: _descriptor.defaultSport);
+            final measurementCounter = MeasurementCounter(si: _si, sport: activity.sport);
             _allRecords.forEach((record) {
               measurementCounter.processRecord(record);
             });
 
             var accu = StatisticsAccumulator(
               si: _si,
-              sport: _descriptor.defaultSport,
+              sport: activity.sport,
               calculateAvgPower: measurementCounter.hasPower,
               calculateMaxPower: measurementCounter.hasPower,
               calculateAvgSpeed: measurementCounter.hasSpeed,
@@ -229,8 +225,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                 if (record.speed > 0) {
                   var tileConfig = _tileConfigurations["speed"];
                   tileConfig.count++;
-                  final binIndex = _preferencesSpecs[1]
-                      .binIndex(record.speedByUnit(_si, _descriptor.defaultSport));
+                  final binIndex =
+                      _preferencesSpecs[1].binIndex(record.speedByUnit(_si, activity.sport));
                   tileConfig.histogram[binIndex].increment();
                 }
               }
@@ -350,16 +346,16 @@ class RecordsScreenState extends State<RecordsScreen> {
       charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
         colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.defaultSport)),
+            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, activity.sport)),
         domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, _descriptor.defaultSport),
+        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, activity.sport),
         data: _sampledRecords,
       ),
     ];
   }
 
   String _getSpeedString(DisplayRecord record) {
-    return speedOrPaceString(record.speed, _si, _descriptor.defaultSport);
+    return speedOrPaceString(record.speed, _si, activity.sport);
   }
 
   void _speedSelectionListener(charts.SelectionModel<DateTime> model) {

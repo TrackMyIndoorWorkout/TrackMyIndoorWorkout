@@ -9,7 +9,6 @@ import 'constants.dart';
 const TRACK_PAINTING_RADIUS_BOOST = 1.2;
 
 class TrackDescriptor {
-  final String sport; // What sport is it intended for?
   final Offset center; // lon, lat
   final double radiusBoost;
   final double horizontalMeter; // in GPS coordinates
@@ -25,7 +24,6 @@ class TrackDescriptor {
   double get gpsLaneHalf => laneLength / 2.0 * horizontalMeter;
 
   TrackDescriptor({
-    this.sport,
     @required this.radiusBoost,
     this.center,
     this.horizontalMeter,
@@ -38,7 +36,6 @@ class TrackDescriptor {
 
 Map<String, TrackDescriptor> trackMap = {
   "Marymoor": TrackDescriptor(
-    sport: ActivityType.Ride,
     center: Offset(-122.112045, 47.665821),
     radiusBoost: 1.2,
     horizontalMeter: 0.000013356,
@@ -47,7 +44,6 @@ Map<String, TrackDescriptor> trackMap = {
     lengthFactor: 1.0,
   ),
   "Lincoln": TrackDescriptor(
-    sport: ActivityType.Run,
     center: Offset(-119.77381, 36.846039),
     radiusBoost: 1.18,
     horizontalMeter: 0.00001121,
@@ -56,7 +52,6 @@ Map<String, TrackDescriptor> trackMap = {
     lengthFactor: 1.0,
   ),
   "Hoover": TrackDescriptor(
-    sport: ActivityType.Run,
     center: Offset(-119.768433, 36.8195),
     radiusBoost: 1.15,
     horizontalMeter: 0.000011156,
@@ -65,7 +60,6 @@ Map<String, TrackDescriptor> trackMap = {
     lengthFactor: 1.0,
   ),
   "SanJoaquinBluffPointe": TrackDescriptor(
-    sport: ActivityType.Kayaking,
     center: Offset(-119.8730278, 36.84823845),
     radiusBoost: 1.2,
     horizontalMeter: 0.00001121,

@@ -4,7 +4,7 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
-import '../devices/device_descriptors/device_descriptor.dart';
+import '../utils/display.dart';
 
 Color getTranslucent(Color c) {
   return Color(r: c.r, g: c.g, b: c.b, a: 120, darker: c.darker, lighter: c.lighter);
@@ -208,12 +208,12 @@ class PreferencesSpec {
   }
 
   static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
-  static List<PreferencesSpec> getPreferencesSpecs(bool si, DeviceDescriptor deviceDescriptor) {
+  static List<PreferencesSpec> getPreferencesSpecs(bool si, String sport) {
     var prefSpecs = [...preferencesSpecs];
-    prefSpecs[1].updateUnit(deviceDescriptor.getSpeedUnit(si));
-    prefSpecs[1].title = deviceDescriptor.speedTitle;
-    prefSpecs[2].icon = deviceDescriptor.getIcon();
-    prefSpecs[2].unit = deviceDescriptor.getCadenceUnit();
+    prefSpecs[1].updateUnit(getSpeedUnit(si, sport));
+    prefSpecs[1].title = speedTitle(sport);
+    prefSpecs[2].icon = getIcon(sport);
+    prefSpecs[2].unit = getCadenceUnit(sport);
     prefSpecs.forEach((prefSpec) => prefSpec.calculateZones());
     return prefSpecs;
   }

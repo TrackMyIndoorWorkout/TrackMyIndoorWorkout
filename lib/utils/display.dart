@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../utils/constants.dart';
 import '../persistence/preferences.dart';
 import '../tcx/activity_type.dart';
@@ -56,4 +58,52 @@ String paceString(double pace) {
   final minutes = pace.truncate();
   final seconds = ((pace - minutes) * 60.0).truncate();
   return "$minutes:" + seconds.toString().padLeft(2, "0");
+}
+
+String tcxSport(String sport) {
+  return sport == ActivityType.Ride && sport == ActivityType.Run ? sport : "Other";
+}
+
+String getSpeedUnit(bool si, String sport) {
+  if (sport == ActivityType.Ride) {
+    return si ? 'kmh' : 'mph';
+  } else if (sport == ActivityType.Run) {
+    return si ? 'min /km' : 'min /mi';
+  } else if (sport == ActivityType.Kayaking ||
+      sport == ActivityType.Canoeing ||
+      sport == ActivityType.Rowing) {
+    return 'min /500';
+  } else if (sport == ActivityType.Swim) {
+    return 'min /100';
+  }
+  return si ? 'kmh' : 'mph';
+}
+
+String speedTitle(String sport) {
+  return sport == ActivityType.Ride ? "Speed" : "Pace";
+}
+
+IconData getIcon(String sport) {
+  if (sport == ActivityType.Ride) {
+    return Icons.directions_bike;
+  } else if (sport == ActivityType.Run) {
+    return Icons.directions_run;
+  } else if (sport == ActivityType.Kayaking ||
+      sport == ActivityType.Canoeing ||
+      sport == ActivityType.Rowing) {
+    return Icons.rowing;
+  } else if (sport == ActivityType.Swim) {
+    return Icons.waves;
+  }
+  return Icons.directions_bike;
+}
+
+String getCadenceUnit(String sport) {
+  if (sport == ActivityType.Kayaking ||
+      sport == ActivityType.Canoeing ||
+      sport == ActivityType.Rowing ||
+      sport == ActivityType.Swim) {
+    return "spm";
+  }
+  return "rpm";
 }

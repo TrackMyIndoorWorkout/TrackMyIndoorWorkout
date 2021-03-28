@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
-import 'package:track_my_indoor_exercise/devices/gadgets/device_base.dart';
-import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
+import '../../devices/gadgets/device_base.dart';
+import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/display.dart';
 
 class BatteryStatusBottomSheet extends StatefulWidget {
   @override
@@ -113,8 +114,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(_fitnessEquipment.descriptor.getIcon(),
-                  color: Colors.indigo, size: _sizeDefault),
+              Icon(getIcon(_fitnessEquipment.sport), color: Colors.indigo, size: _sizeDefault),
               Icon(Icons.battery_full, color: Colors.indigo, size: _sizeDefault),
               Text(_batteryLevel, style: _textStyle),
             ],

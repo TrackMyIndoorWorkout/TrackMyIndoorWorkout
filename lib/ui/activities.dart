@@ -55,7 +55,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _compress = PrefService.getBool(COMPRESS_DOWNLOAD_TAG);
     $FloorAppDatabase
         .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2, migration2to3])
+        .addMigrations([migration1to2, migration2to3, migration3to4])
         .build()
         .then((db) {
           setState(() {

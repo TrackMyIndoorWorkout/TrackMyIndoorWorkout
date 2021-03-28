@@ -35,6 +35,7 @@ class WorkoutRow {
       if (this.hr == 0 && lastHr > 0) {
         this.hr = lastHr;
       }
+
       this.distance = double.tryParse(values[3]);
     }
   }
@@ -78,6 +79,7 @@ class MPowerEchelon2Importer {
     while (_linePointer < _lines.length && !_lines[_linePointer].startsWith(lead)) {
       _linePointer++;
     }
+
     return _linePointer <= _lines.length;
   }
 
@@ -139,12 +141,14 @@ class MPowerEchelon2Importer {
       message = "Couldn't find total time";
       return null;
     }
+
     final timeLine = _lines[_linePointer].split(",");
     final timeValue = double.tryParse(timeLine[1]);
     if (timeValue == null) {
       message = "Couldn't parse total time";
       return null;
     }
+
     int totalElapsed = 0;
     if (timeLine[2] == " Minutes") {
       totalElapsed = (timeValue * 60).round();
@@ -157,12 +161,14 @@ class MPowerEchelon2Importer {
       message = "Couldn't find total distance";
       return null;
     }
+
     final distanceLine = _lines[_linePointer].split(",");
     final distanceValue = double.tryParse(distanceLine[1]);
     if (distanceValue == null) {
       message = "Couldn't parse total distance";
       return null;
     }
+
     double totalDistance = 0.0;
     if (distanceLine[2] == " MI") {
       totalDistance = distanceValue * 1000 * MI2KM;
@@ -176,7 +182,9 @@ class MPowerEchelon2Importer {
       message = "Cannot locate ride data";
       return null;
     }
+
     _linePointer++;
+
     if (_lines[_linePointer] != "Power, RPM, HR, DISTANCE,") {
       message = "Unexpected detailed ride data format";
       return null;
@@ -193,11 +201,12 @@ class MPowerEchelon2Importer {
       calories: 0,
       startDateTime: start,
       fourCC: device.fourCC,
+      sport: device.defaultSport, // TODO
     );
 
     AppDatabase db = await $FloorAppDatabase
         .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2, migration2to3]).build();
+        .addMigrations([migration1to2, migration2to3, migration3to4]).build();
     final id = await db?.activityDao?.insertActivity(activity);
     activity.id = id;
 
@@ -225,6 +234,7 @@ class MPowerEchelon2Importer {
         row = WorkoutRow(
             rowString: _lines[_linePointer], lastHr: lastHr, throttleRatio: _throttleRatio);
       }
+
       if (_linePointer + 1 >= _lines.length) {
         nextRow = WorkoutRow(power: 0, rpm: 0, hr: 0, distance: 0.0, throttleRatio: 1.0);
       } else {
@@ -256,7 +266,7 @@ class MPowerEchelon2Importer {
           cadence: rpm.round(),
           heartRate: hr.round(),
           elapsedMillis: elapsed.round(),
-          sport: device.defaultSport,
+          sport: activity.sport,
         );
 
         distance += dDistance;

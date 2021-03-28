@@ -1,6 +1,6 @@
 import 'package:floor/floor.dart';
 import 'package:intl/intl.dart';
-import '../../devices/device_map.dart';
+import 'package:meta/meta.dart';
 import '../../persistence/preferences.dart';
 import '../../tcx/tcx_output.dart';
 
@@ -16,8 +16,10 @@ class Activity {
   @PrimaryKey(autoGenerate: true)
   int id;
   @ColumnInfo(name: 'device_name')
+  @required
   final String deviceName;
   @ColumnInfo(name: 'device_id')
+  @required
   final String deviceId;
   final int start; // ms since epoch
   int end; // ms since epoch
@@ -28,7 +30,10 @@ class Activity {
   @ColumnInfo(name: 'strava_id')
   int stravaId;
   @ColumnInfo(name: 'four_cc')
+  @required
   final String fourCC;
+  @required
+  final String sport;
 
   @ignore
   DateTime startDateTime;
@@ -48,7 +53,11 @@ class Activity {
     this.stravaId,
     this.startDateTime,
     this.fourCC,
-  });
+    this.sport,
+  })  : assert(deviceName != null),
+        assert(deviceId != null),
+        assert(fourCC != null),
+        assert(sport != null);
 
   void finish(double distance, int elapsed, int calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;
@@ -69,11 +78,10 @@ class Activity {
     final fileName = 'Activity_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
         .replaceAll('/', '-')
         .replaceAll(':', '-');
-    final activityType = deviceMap[fourCC]?.defaultSport ?? "Ride";
     return {
       'startStamp': startStamp,
-      'name': '$activityType at $dateString $timeString',
-      'description': '$activityType by $deviceName',
+      'name': '$sport at $dateString $timeString',
+      'description': '$sport by $deviceName',
       'fileName': fileName,
     };
   }

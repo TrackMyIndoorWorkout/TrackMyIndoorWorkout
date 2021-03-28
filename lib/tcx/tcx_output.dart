@@ -9,6 +9,7 @@ import '../devices/device_map.dart';
 import '../tcx/activity_type.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';
+import '../utils/display.dart';
 import '../utils/statistics_accumulator.dart';
 import 'tcx_model.dart';
 
@@ -45,10 +46,10 @@ class TCXOutput {
   Future<List<int>> getTcxOfActivity(Activity activity, List<Record> records, bool compress) async {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
     final descriptor = deviceMap[activity.fourCC];
-    final track = getDefaultTrack(descriptor.defaultSport);
+    final track = getDefaultTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     TCXModel tcxInfo = TCXModel()
-      ..activityType = descriptor.tcxSport
+      ..activityType = tcxSport(activity.sport)
       ..totalDistance = activity.distance
       ..totalTime = activity.elapsed.toDouble()
       ..calories = activity.calories

@@ -151,6 +151,7 @@ class RecordingState extends State<RecordingScreen> {
       deviceId: device.id.id,
       start: now.millisecondsSinceEpoch,
       startDateTime: now,
+      sport: _descriptor.defaultSport, // TODO
     );
     if (!_uxDebug) {
       final id = await _database?.activityDao?.insertActivity(_activity);
@@ -202,7 +203,7 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _openDatabase() async {
     _database = await $FloorAppDatabase
         .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2, migration2to3]).build();
+        .addMigrations([migration1to2, migration2to3, migration3to4]).build();
   }
 
   void _onToggleDetails(int index) {
@@ -297,7 +298,7 @@ class RecordingState extends State<RecordingScreen> {
     final connectionWatchdogTimeString =
         PrefService.getString(EQUIPMENT_DISCONNECTION_WATCHDOG_TAG);
     _connectionWatchdogTime = int.tryParse(connectionWatchdogTimeString);
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor);
+    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor.defaultSport); // TODO
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
           prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0,
