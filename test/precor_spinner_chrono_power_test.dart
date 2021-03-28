@@ -23,7 +23,8 @@ void main() {
   test('Precor Spinner Chrono Power interprets Data flags properly', () async {
     final bike = deviceMap["PSCP"] as PrecorSpinnerChronoPower;
 
-    expect(bike.canDataProcessed([83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), true);
+    expect(
+        bike.canDataProcessed([83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), true);
 
     expect(bike.speedMetric != null, true);
     expect(bike.cadenceMetric != null, true);
