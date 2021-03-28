@@ -13,30 +13,30 @@ class TestPair {
 
 void main() {
   test('Schwinn IC4 constructor tests', () async {
-    final rower = deviceMap["SIC4"];
+    final bike = deviceMap["SIC4"];
 
-    expect(rower.canMeasureHeartRate, true);
-    expect(rower.defaultSport, ActivityType.Ride);
-    expect(rower.fourCC, "SIC4");
+    expect(bike.canMeasureHeartRate, true);
+    expect(bike.defaultSport, ActivityType.Ride);
+    expect(bike.fourCC, "SIC4");
   });
 
   test('Schwinn IC4 interprets FTMS Indoor Bike Data flags properly', () async {
-    final rower = deviceMap["SIC4"] as IndoorBikeDeviceDescriptor;
+    final bike = deviceMap["SIC4"] as IndoorBikeDeviceDescriptor;
     final lsb = 68;
     final msb = 2;
     final flag = 256 * msb + lsb;
-    rower.stopWorkout();
+    bike.stopWorkout();
 
-    rower.processFlag(flag);
+    bike.processFlag(flag);
 
-    expect(rower.speedMetric != null, true);
-    expect(rower.cadenceMetric != null, true);
-    expect(rower.distanceMetric, null);
-    expect(rower.powerMetric != null, true);
-    expect(rower.caloriesMetric, null);
-    expect(rower.timeMetric, null);
-    expect(rower.caloriesPerHourMetric, null);
-    expect(rower.caloriesPerMinuteMetric, null);
+    expect(bike.speedMetric != null, true);
+    expect(bike.cadenceMetric != null, true);
+    expect(bike.distanceMetric, null);
+    expect(bike.powerMetric != null, true);
+    expect(bike.caloriesMetric, null);
+    expect(bike.timeMetric, null);
+    expect(bike.caloriesPerHourMetric, null);
+    expect(bike.caloriesPerMinuteMetric, null);
   });
 
   group('Schwinn IC4 interprets FTMS Indoor Bike Data properly', () {
@@ -156,10 +156,10 @@ void main() {
     ].forEach((testPair) {
       final sum = testPair.data.fold(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final rower = deviceMap["SIC4"];
-        rower.stopWorkout();
+        final bike = deviceMap["SIC4"];
+        bike.stopWorkout();
 
-        final record = rower.stubRecord(testPair.data);
+        final record = bike.stubRecord(testPair.data);
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);
