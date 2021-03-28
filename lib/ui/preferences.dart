@@ -70,6 +70,12 @@ class PreferencesScreen extends StatelessWidget {
         desc: DEVICE_FILTERING_DESCRIPTION,
       ),
       SwitchPreference(
+        MULTI_SPORT_DEVICE_SUPPORT,
+        MULTI_SPORT_DEVICE_SUPPORT_TAG,
+        defaultVal: MULTI_SPORT_DEVICE_SUPPORT_DEFAULT,
+        desc: MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION,
+      ),
+      SwitchPreference(
         SIMPLER_UI,
         SIMPLER_UI_TAG,
         defaultVal: SIMPLER_UI_FAST_DEFAULT,

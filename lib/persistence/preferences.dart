@@ -282,6 +282,14 @@ const DEVICE_FILTERING_DESCRIPTION =
     "Off: the app won't filter the list of Bluetooth device while scanning. " +
         "Useful if your equipment has an unexpected Bluetooth name.";
 
+const MULTI_SPORT_DEVICE_SUPPORT = "Multi-Sport Device Support";
+const MULTI_SPORT_DEVICE_SUPPORT_TAG = "multi_sport_device_support";
+const MULTI_SPORT_DEVICE_SUPPORT_DEFAULT = false;
+const MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION =
+    "Turn this on only if you use a device (like Genesis Port) with multiple equipment of " +
+        "different sport (like Kayaking, Canoeing, Rowing, and Swimming). In that case each " +
+        "time before a workout you'll be prompted to select the sport.";
+
 const TUNING_PREFERENCES = "Tuning";
 
 const MEASUREMENT_PANELS_EXPANDED_TAG = "measurement_panels_expanded";
