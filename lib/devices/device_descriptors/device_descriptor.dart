@@ -19,7 +19,6 @@ abstract class DeviceDescriptor {
   final String fourCC;
   final String vendorName;
   final String modelName;
-  var fullName;
   final String namePrefix;
   final String manufacturer;
   final String model;
@@ -55,7 +54,6 @@ abstract class DeviceDescriptor {
     @required this.fourCC,
     @required this.vendorName,
     @required this.modelName,
-    this.fullName = '',
     @required this.namePrefix,
     this.manufacturer,
     this.model,
@@ -76,15 +74,14 @@ abstract class DeviceDescriptor {
         assert(fourCC != null),
         assert(vendorName != null),
         assert(modelName != null),
-        assert(fullName != null),
         assert(namePrefix != null) {
-    this.fullName = '$vendorName $modelName';
     featuresFlag = 0;
     byteCounter = 0;
     throttlePower = 1.0;
     throttleOther = THROTTLE_OTHER_DEFAULT;
   }
 
+  String get fullName => '$vendorName $modelName';
   double get lengthFactor => getDefaultTrack(defaultSport).lengthFactor; // TODO?
   bool get isFitnessMachine => dataServiceId == FITNESS_MACHINE_ID;
 

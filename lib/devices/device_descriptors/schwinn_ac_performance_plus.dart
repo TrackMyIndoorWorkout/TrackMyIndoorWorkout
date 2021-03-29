@@ -9,7 +9,6 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           fourCC: "SAP+",
           vendorName: "Schwinn",
           modelName: "AC Performance Plus",
-          fullName: '',
           namePrefix: "Schwinn AC Perf+",
           manufacturer: "Schwinn",
           dataServiceId: null,

@@ -12,7 +12,6 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
           fourCC: "PSCP",
           vendorName: "Precor",
           modelName: "Spinner Chrono Power",
-          fullName: '',
           namePrefix: "CHRONO",
           manufacturer: "Precor",
           model: "1",
