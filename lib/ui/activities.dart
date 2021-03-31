@@ -158,7 +158,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
   @override
   void dispose() {
-    _database.close();
+    _database?.close();
     super.dispose();
   }
 
