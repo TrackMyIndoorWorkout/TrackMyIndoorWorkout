@@ -89,9 +89,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _step = STEP_WEIGHT_INPUT;
     _calibrationState = CalibrationState.PreInit;
-    _targetSpeedHighString = "N/A";
-    _targetSpeedLowString = "N/A";
-    _currentSpeedString = "N/A";
+    _targetSpeedHighString = "...";
+    _targetSpeedLowString = "...";
+    _currentSpeedString = "...";
     _targetSpeedHigh = 0.0;
     _targetSpeedLow = 0.0;
     _currentSpeed = 0.0;
