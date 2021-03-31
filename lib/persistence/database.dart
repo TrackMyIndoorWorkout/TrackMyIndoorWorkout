@@ -24,6 +24,7 @@ final migration2to3 = Migration(2, 3, (database) async {
 });
 
 final migration3to4 = Migration(3, 4, (database) async {
+  await database.execute("ALTER TABLE $ACTIVITIES_TABLE_NAME ADD COLUMN sport TEXT");
   await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET sport='Kayaking' WHERE four_cc='KPro'");
   await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET sport='Ride' WHERE sport IS NULL");
 });
