@@ -57,3 +57,5 @@ flutter:
     - family: RobotoMono
       fonts:
         - asset: fonts/RobotoMono-Bold.ttf
+  assets:
+    - assets/CompanyNames.txt.gz

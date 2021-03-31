@@ -9,9 +9,10 @@ import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
-import '../devices/gatt_constants.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
+import '../utils/scan_result_ex.dart';
+import 'models/advertisement_cache.dart';
 import 'parts/common.dart';
 import 'parts/scan_result.dart';
 import 'activities.dart';
@@ -39,8 +40,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
   List<BluetoothDevice> _scannedDevices;
   TextStyle _adjustedCaptionStyle;
   TextStyle _subtitleStyle;
-  Map<String, List<String>> _servicesMap;
   int _heartRate;
+  AdvertisementCache _advertisementCache;
 
   @override
   void dispose() {
@@ -63,17 +64,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
       return;
     }
 
-    _servicesMap[scanResult.device.id.id] = scanResult.serviceUuids;
+    final advertisementCache = Get.find<AdvertisementCache>();
+    advertisementCache.addEntry(scanResult);
 
     if (_scannedDevices.where((d) => d.id.id == scanResult.device.id.id).length > 0) {
       return;
     }
 
     _scannedDevices.add(scanResult.device);
-  }
-
-  bool _isHeartRateMonitor(List<String> serviceUuids) {
-    return serviceUuids?.contains(HEART_RATE_SERVICE_ID) ?? false;
   }
 
   @override
@@ -86,12 +84,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _autoConnect = PrefService.getBool(AUTO_CONNECT_TAG);
     _lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG);
     _filterDevices = PrefService.getBool(DEVICE_FILTERING_TAG);
-    _servicesMap = Map<String, List<String>>();
     if (_instantScan) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         startScan();
       });
     }
+
+    _advertisementCache = Get.find<AdvertisementCache>();
+
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     heartRateMonitor?.pumpMetric((heartRate) {
@@ -124,14 +124,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 );
               } else {
                 final lasts = _scannedDevices.where((d) => d.id.id == _lastEquipmentId);
-                if (_openedDevice != null && !_servicesMap.containsKey(_openedDevice.id.id) ||
+                if (_openedDevice != null && !_advertisementCache.hasEntry(_openedDevice.id.id) ||
                     _filterDevices &&
                         _scannedDevices.length == 1 &&
-                        !_servicesMap.containsKey(_scannedDevices.first.id.id) ||
+                        !_advertisementCache.hasEntry(_scannedDevices.first.id.id) ||
                     _scannedDevices.length > 1 &&
                         _lastEquipmentId.length > 0 &&
                         lasts.length > 0 &&
-                        !_servicesMap.containsKey(_lastEquipmentId)) {
+                        !_advertisementCache.hasEntry(_lastEquipmentId)) {
                   startScan();
                   return Container();
                 } else if (_autoConnect) {
@@ -139,7 +139,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Get.to(RecordingScreen(
                         device: _openedDevice,
-                        serviceUuids: _servicesMap[_openedDevice.id.id],
+                        advertisementDigest: _advertisementCache.getEntry(_openedDevice.id.id),
                         initialState: BluetoothDeviceState.connected,
                         size: Get.mediaQuery.size,
                       ));
@@ -149,7 +149,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         Get.to(RecordingScreen(
                           device: _scannedDevices.first,
-                          serviceUuids: _servicesMap[_scannedDevices.first.id.id],
+                          advertisementDigest:
+                              _advertisementCache.getEntry(_scannedDevices.first.id.id),
                           initialState: BluetoothDeviceState.disconnected,
                           size: Get.mediaQuery.size,
                         ));
@@ -160,7 +161,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           Get.to(RecordingScreen(
                             device: lasts.first,
-                            serviceUuids: _servicesMap[lasts.first.id.id],
+                            advertisementDigest: _advertisementCache.getEntry(lasts.first.id.id),
                             initialState: BluetoothDeviceState.disconnected,
                             size: Get.mediaQuery.size,
                           ));
@@ -189,7 +190,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data.map((d) {
-                    if (!_isHeartRateMonitor(_servicesMap[d.id.id])) {
+                    if (!(_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ?? false)) {
                       _openedDevice = d;
                     }
 
@@ -207,7 +208,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           if (snapshot.data == BluetoothDeviceState.connected) {
                             return FloatingActionButton(
                                 heroTag: null,
-                                child: _isHeartRateMonitor(_servicesMap[d.id.id])
+                                child: (_advertisementCache
+                                            .getEntry(d.id.id)
+                                            ?.isHeartRateMonitor() ??
+                                        false)
                                     ? ((Get.isRegistered<HeartRateMonitor>() &&
                                             Get.find<HeartRateMonitor>()?.device?.id?.id == d.id.id)
                                         ? Text(_heartRate?.toString() ?? "--")
@@ -216,14 +220,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.green,
                                 onPressed: () async {
-                                  if (_isHeartRateMonitor(_servicesMap[d.id.id])) {
+                                  if (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
+                                      false) {
                                     return;
                                   }
                                   await FlutterBlue.instance.stopScan();
                                   await Future.delayed(Duration(milliseconds: 100));
                                   await Get.to(RecordingScreen(
                                     device: d,
-                                    serviceUuids: _servicesMap[d.id.id],
+                                    advertisementDigest: _advertisementCache.getEntry(d.id.id),
                                     initialState: snapshot.data,
                                     size: Get.mediaQuery.size,
                                   ));
@@ -255,7 +260,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         await Future.delayed(Duration(milliseconds: 100));
                         await Get.to(RecordingScreen(
                           device: r.device,
-                          serviceUuids: r.serviceUuids,
+                          advertisementDigest: _advertisementCache.getEntry(r.device.id.id),
                           initialState: BluetoothDeviceState.disconnected,
                           size: Get.mediaQuery.size,
                         ));

@@ -29,6 +29,7 @@ import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
+import 'models/advertisement_digest.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
 import 'parts/battery_status.dart';
@@ -40,18 +41,18 @@ typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
 
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
-  final List<String> serviceUuids;
+  final AdvertisementDigest advertisementDigest;
   final BluetoothDeviceState initialState;
   final Size size;
 
   RecordingScreen({
     Key key,
     @required this.device,
-    @required this.serviceUuids,
+    @required this.advertisementDigest,
     @required this.initialState,
     @required this.size,
   })  : assert(device != null),
-        assert(serviceUuids != null),
+        assert(advertisementDigest != null),
         assert(initialState != null),
         assert(size != null),
         super(key: key);
@@ -60,7 +61,7 @@ class RecordingScreen extends StatefulWidget {
   State<StatefulWidget> createState() {
     return RecordingState(
       device: device,
-      serviceUuids: serviceUuids,
+      advertisementDigest: advertisementDigest,
       initialState: initialState,
       size: size,
     );
@@ -70,19 +71,19 @@ class RecordingScreen extends StatefulWidget {
 class RecordingState extends State<RecordingScreen> {
   RecordingState({
     @required this.device,
-    @required this.serviceUuids,
+    @required this.advertisementDigest,
     @required this.initialState,
     @required this.size,
   })  : assert(device != null),
-        assert(serviceUuids != null),
+        assert(advertisementDigest != null),
         assert(initialState != null),
         assert(size != null) {
-    this._descriptor = device.getDescriptor(serviceUuids);
+    this._descriptor = device.getDescriptor(advertisementDigest.serviceUuids);
   }
 
   Size size;
   final BluetoothDevice device;
-  final List<String> serviceUuids;
+  final AdvertisementDigest advertisementDigest;
   final BluetoothDeviceState initialState;
   FitnessEquipment _fitnessEquipment;
   HeartRateMonitor _heartRateMonitor;
@@ -251,7 +252,7 @@ class RecordingState extends State<RecordingScreen> {
     debugPrint("Discovered $discovered");
     if (discovered) {
       if (_heartRateMonitor.device.id.id !=
-          (_fitnessEquipment.heartRateMonitor?.device?.id?.id ?? "N/A")) {
+          (_fitnessEquipment.heartRateMonitor?.device?.id?.id ?? NOT_AVAILABLE)) {
         _fitnessEquipment.setHeartRateMonitor(_heartRateMonitor);
       }
       _heartRateMonitor.attach().then((_) async {

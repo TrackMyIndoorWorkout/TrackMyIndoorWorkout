@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/gatt_constants.dart';
 import '../../persistence/preferences.dart';
-import '../../utils/string_ex.dart';
+import '../../utils/advertisement_data_ex.dart';
+import '../../utils/constants.dart';
 import 'common.dart';
 
 extension HeartRateMonitorScanResult on ScanResult {
@@ -24,9 +25,7 @@ extension HeartRateMonitorScanResult on ScanResult {
     return isHeartRateMonitor;
   }
 
-  List<String> get serviceUuids => advertisementData.serviceUuids.isEmpty
-      ? []
-      : advertisementData.serviceUuids.map((x) => x.uuidString()).toList();
+  List<String> get serviceUuids => advertisementData.uuids;
 
   bool hasService(String serviceId) {
     return serviceUuids.contains(serviceId);
@@ -83,12 +82,12 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         heroTag: null,
         child: Icon(Icons.favorite),
         foregroundColor: Colors.white,
-        backgroundColor: (heartRateMonitor?.device?.id?.id ?? "N/A") == result.device.id.id
+        backgroundColor: (heartRateMonitor?.device?.id?.id ?? NOT_AVAILABLE) == result.device.id.id
             ? Colors.green
             : Colors.blue,
         onPressed: () async {
-          final existingId = heartRateMonitor?.device?.id?.id ?? "N/A";
-          if (existingId != "N/A" && existingId != result.device.id.id) {
+          final existingId = heartRateMonitor?.device?.id?.id ?? NOT_AVAILABLE;
+          if (existingId != NOT_AVAILABLE && existingId != result.device.id.id) {
             if (!(await showDialog(
                   context: context,
                   builder: (context) => AlertDialog(

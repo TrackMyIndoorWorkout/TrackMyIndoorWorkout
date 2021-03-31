@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
+import 'ui/models/advertisement_cache.dart';
+import 'devices/company_registry.dart';
 import 'persistence/preferences.dart';
 import 'strava/constants.dart';
 import 'track_my_indoor_exercise_app.dart';
@@ -49,6 +52,12 @@ void main() async {
             port: HTTPS_PORT,
           ))
       .toList();
+
+  final companyRegistry = CompanyRegistry();
+  await companyRegistry.loadCompanyIdentifiers();
+  Get.put<CompanyRegistry>(companyRegistry);
+
+  Get.put<AdvertisementCache>(AdvertisementCache());
 
   runApp(TrackMyIndoorExerciseApp());
 }

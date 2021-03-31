@@ -1,56 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import '../../devices/device_map.dart';
-import '../../devices/gatt_constants.dart';
+import 'package:get/get.dart';
+import '../../devices/company_registry.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/scan_result_ex.dart';
 import '../../utils/string_ex.dart';
 import 'common.dart';
-
-extension EnhancedScanResult on ScanResult {
-  bool isWorthy(bool filterDevices) {
-    if (!advertisementData.connectable) {
-      return false;
-    }
-
-    if (device.name == null || device.name.length <= 0) {
-      return false;
-    }
-
-    if (device.id.id == null || device.id.id.length <= 0) {
-      return false;
-    }
-
-    if (!filterDevices) {
-      return true;
-    }
-
-    for (var dev in deviceMap.values) {
-      if (device.name.startsWith(dev.namePrefix)) {
-        return true;
-      }
-      if (advertisementData.serviceUuids.isNotEmpty) {
-        final serviceUuids = advertisementData.serviceUuids.map((x) => x.uuidString()).toList();
-        if (serviceUuids.contains(FITNESS_MACHINE_ID) ||
-            serviceUuids.contains(PRECOR_SERVICE_ID) ||
-            serviceUuids.contains(HEART_RATE_SERVICE_ID)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  List<String> get serviceUuids => advertisementData.serviceUuids.isEmpty
-      ? []
-      : advertisementData.serviceUuids.map((x) => x.uuidString()).toList();
-
-  bool hasService(String serviceId) {
-    return serviceUuids.contains(serviceId);
-  }
-
-  bool get isHeartRateMonitor => hasService(HEART_RATE_SERVICE_ID);
-}
 
 class ScanResultTile extends StatelessWidget {
   const ScanResultTile({
@@ -113,28 +68,34 @@ class ScanResultTile extends StatelessWidget {
 
   String getNiceHexArray(List<int> bytes) {
     final byteStrings = bytes.map((i) => i.toRadixString(16).toUpperCase().padLeft(2, '0'));
+
     return '[${byteStrings.join(', ')}]';
   }
 
-  String getNiceManufacturerData(Map<int, List<int>> data) {
-    if (data.isEmpty) {
+  String getNiceManufacturerData(List<int> companyIds) {
+    if (companyIds.isEmpty) {
       return null;
     }
-    List<String> res = [];
-    data.forEach((id, bytes) {
-      res.add('${id.toRadixString(16).toUpperCase()}: ${getNiceHexArray(bytes)}');
+
+    final companyRegistry = Get.find<CompanyRegistry>();
+    List<String> nameStrings = [];
+    companyIds.forEach((companyId) {
+      nameStrings.add(companyRegistry.nameForId(companyId));
     });
-    return res.join(', ');
+
+    return nameStrings.join(', ');
   }
 
   String getNiceServiceData(Map<String, List<int>> data) {
     if (data.isEmpty) {
       return null;
     }
+
     List<String> res = [];
     data.forEach((id, bytes) {
       res.add('${id.uuidString()}: ${getNiceHexArray(bytes)}');
     });
+
     return res.join(', ');
   }
 
@@ -176,7 +137,9 @@ class ScanResultTile extends StatelessWidget {
         _buildAdvRow(
           context,
           'Manufacturer Data',
-          getNiceManufacturerData(result.advertisementData.manufacturerData) ?? 'N/A',
+          getNiceManufacturerData(
+                  result.advertisementData.manufacturerData?.keys?.toList(growable: false)) ??
+              'N/A',
           adjustedCaptionStyle,
           secondaryStyle,
         ),

@@ -9,6 +9,7 @@ import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/constants.dart';
 import '../../utils/display.dart';
 
 class BatteryStatusBottomSheet extends StatefulWidget {
@@ -42,31 +43,33 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   Future<String> _readBatteryLevelCore(List<BluetoothService> services) async {
     final batteryService = BluetoothDeviceEx.filterService(services, BATTERY_SERVICE_ID);
     if (batteryService == null) {
-      return "N/A";
+      return NOT_AVAILABLE;
     }
+
     final batteryLevel =
         BluetoothDeviceEx.filterCharacteristic(batteryService.characteristics, BATTERY_LEVEL_ID);
     if (batteryLevel == null) {
-      return "N/A";
+      return NOT_AVAILABLE;
     }
+
     final batteryLevelData = await batteryLevel.read();
     return "${batteryLevelData[0]}%";
   }
 
   Future<String> _readBatteryLevel(DeviceBase device) async {
-    if (device?.device == null) return "N/A";
+    if (device?.device == null) return NOT_AVAILABLE;
 
     if (!device.connected) {
       await device.connect();
     }
 
-    if (!device.connected) return "N/A";
+    if (!device.connected) return NOT_AVAILABLE;
 
     if (!device.discovered) {
       await device.discover();
     }
 
-    if (!device.discovered) return "N/A";
+    if (!device.discovered) return NOT_AVAILABLE;
 
     return await _readBatteryLevelCore(device.services);
   }
@@ -87,8 +90,8 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     super.initState();
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-    _hrmBatteryLevel = "N/A";
-    _batteryLevel = "N/A";
+    _hrmBatteryLevel = NOT_AVAILABLE;
+    _batteryLevel = NOT_AVAILABLE;
     _sizeDefault = Get.mediaQuery.size.width / 5;
     _textStyle = TextStyle(
       fontFamily: FONT_FAMILY,
