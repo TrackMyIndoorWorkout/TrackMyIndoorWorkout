@@ -2,7 +2,6 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:preferences/preference_service.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../persistence/preferences.dart';
@@ -36,7 +35,6 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
 
   @override
   void initState() {
-    initializeDateFormatting();
     super.initState();
     _scanResults = [];
     _scanDuration = PrefService.getInt(SCAN_DURATION_TAG);
