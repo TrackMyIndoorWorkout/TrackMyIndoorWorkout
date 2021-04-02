@@ -171,8 +171,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
         initialOffset: 0,
-        loadingBuilder: (BuildContext context) =>
-            Center(child: CircularProgressIndicator()),
+        loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int offset, int limit) async {
             final data = await _database.activityDao.findActivities(offset, limit);

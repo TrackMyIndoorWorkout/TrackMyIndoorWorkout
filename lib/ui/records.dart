@@ -71,8 +71,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     setState(() {
       _pointCount = size.width.toInt() - 20;
       if (_allRecords.length < _pointCount) {
-        _sampledRecords =
-            _allRecords.map((r) => r.hydrate().display()).toList(growable: false);
+        _sampledRecords = _allRecords.map((r) => r.hydrate().display()).toList(growable: false);
       } else {
         final nth = _allRecords.length / _pointCount;
         _sampledRecords = List.generate(
@@ -120,7 +119,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             .entries
             .map(
               (entry) => HistogramData(index: entry.key, upper: entry.value),
-        )
+            )
             .toList();
         _tileConfigurations["power"] = tileConfig;
       }
@@ -144,7 +143,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             .entries
             .map(
               (entry) => HistogramData(index: entry.key, upper: entry.value),
-        )
+            )
             .toList();
         _tileConfigurations["speed"] = tileConfig;
       }
@@ -162,14 +161,14 @@ class RecordsScreenState extends State<RecordsScreen> {
           maxString: "${accu.maxCadence}",
           avgString: "${accu.avgCadence}",
         );
-        prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
-            measurementCounter.maxCadence.toDouble());
+        prefSpec.calculateBounds(
+            measurementCounter.minCadence.toDouble(), measurementCounter.maxCadence.toDouble());
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
             .map(
               (entry) => HistogramData(index: entry.key, upper: entry.value),
-        )
+            )
             .toList();
         _tileConfigurations["cadence"] = tileConfig;
       }
@@ -194,7 +193,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             .entries
             .map(
               (entry) => HistogramData(index: entry.key, upper: entry.value),
-        )
+            )
             .toList();
         _tileConfigurations["hr"] = tileConfig;
       }
@@ -211,8 +210,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           if (record.speed > 0) {
             var tileConfig = _tileConfigurations["speed"];
             tileConfig.count++;
-            final binIndex =
-            _preferencesSpecs[1].binIndex(record.speedByUnit(_si, activity.sport));
+            final binIndex = _preferencesSpecs[1].binIndex(record.speedByUnit(_si, activity.sport));
             tileConfig.histogram[binIndex].increment();
           }
         }
