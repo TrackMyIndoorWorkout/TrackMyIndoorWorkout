@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../persistence/models/activity.dart';
@@ -84,19 +85,14 @@ abstract class Upload {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       // response.statusCode == 201
       globals.displayInfo('Activity successfully created');
-      response.stream.transform(utf8.decoder).listen((value) {
+      response.stream.transform(utf8.decoder).listen((value) async {
         debugPrint(value);
         final Map<String, dynamic> _body = json.decode(value);
         ResponseUploadActivity _response = ResponseUploadActivity.fromJson(_body);
 
-        $FloorAppDatabase
-            .databaseBuilder('app_database.db')
-            .addMigrations([migration1to2, migration2to3, migration3to4])
-            .build()
-            .then((db) async {
-              activity.markUploaded(_response.id);
-              await db.activityDao.updateActivity(activity);
-            });
+        final database = Get.find<AppDatabase>();
+        activity.markUploaded(_response.id);
+        await database?.activityDao?.updateActivity(activity);
         debugPrint('id ${_response.id}');
         idUpload = _response.id;
         onUploadPending.add(idUpload);

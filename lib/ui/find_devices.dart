@@ -8,7 +8,11 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
+import '../persistence/models/device_usage.dart';
+import '../devices/bluetooth_device_ex.dart';
+import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import '../utils/scan_result_ex.dart';
@@ -52,6 +56,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
     super.dispose();
   }
 
+  Future<void> _openDatabase() async {
+    final database = await $FloorAppDatabase
+        .databaseBuilder('app_database.db')
+        .addMigrations([migration1to2, migration2to3, migration3to4, migration4to5]).build();
+    Get.put<AppDatabase>(database);
+  }
+
   void startScan() {
     setState(() {
       _scannedDevices.clear();
@@ -89,6 +100,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         startScan();
       });
     }
+    _openDatabase();
 
     _advertisementCache = Get.find<AdvertisementCache>();
 

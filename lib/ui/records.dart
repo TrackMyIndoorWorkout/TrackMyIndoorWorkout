@@ -64,6 +64,208 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _selectionStyle;
   TextStyle _selectionTextStyle;
 
+  Future<void> extraInit() async {
+    final database = Get.find<AppDatabase>();
+    _allRecords = await database.recordDao.findAllActivityRecords(activity.id);
+
+    setState(() {
+      _pointCount = size.width.toInt() - 20;
+      if (_allRecords.length < _pointCount) {
+        _sampledRecords =
+            _allRecords.map((r) => r.hydrate().display()).toList(growable: false);
+      } else {
+        final nth = _allRecords.length / _pointCount;
+        _sampledRecords = List.generate(
+            _pointCount, (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate().display());
+      }
+      final measurementCounter = MeasurementCounter(si: _si, sport: activity.sport);
+      _allRecords.forEach((record) {
+        measurementCounter.processRecord(record);
+      });
+
+      var accu = StatisticsAccumulator(
+        si: _si,
+        sport: activity.sport,
+        calculateAvgPower: measurementCounter.hasPower,
+        calculateMaxPower: measurementCounter.hasPower,
+        calculateAvgSpeed: measurementCounter.hasSpeed,
+        calculateMaxSpeed: measurementCounter.hasSpeed,
+        calculateAvgCadence: measurementCounter.hasCadence,
+        calculateMaxCadence: measurementCounter.hasCadence,
+        calculateAvgHeartRate: measurementCounter.hasHeartRate,
+        calculateMaxHeartRate: measurementCounter.hasHeartRate,
+      );
+      _allRecords.forEach((record) {
+        accu.processRecord(record);
+      });
+
+      if (measurementCounter.hasPower) {
+        _tiles.add("power");
+        _selectedTimes.add("--");
+        _selectedValues.add("--");
+        var prefSpec = _preferencesSpecs[0];
+        var tileConfig = TileConfiguration(
+          title: prefSpec.fullTitle,
+          histogramTitle: prefSpec.histogramTitle,
+          dataFn: _getPowerData,
+          dataStringFn: _getPowerString,
+          selectionListener: _powerSelectionListener,
+          maxString: accu.maxPower.toStringAsFixed(2),
+          avgString: accu.avgPower.toStringAsFixed(2),
+        );
+        prefSpec.calculateBounds(
+            measurementCounter.minPower.toDouble(), measurementCounter.maxPower.toDouble());
+        tileConfig.histogram = prefSpec.zoneUpper
+            .asMap()
+            .entries
+            .map(
+              (entry) => HistogramData(index: entry.key, upper: entry.value),
+        )
+            .toList();
+        _tileConfigurations["power"] = tileConfig;
+      }
+      if (measurementCounter.hasSpeed) {
+        _tiles.add("speed");
+        _selectedTimes.add("--");
+        _selectedValues.add("--");
+        var prefSpec = _preferencesSpecs[1];
+        var tileConfig = TileConfiguration(
+          title: prefSpec.fullTitle,
+          histogramTitle: prefSpec.histogramTitle,
+          dataFn: _getSpeedData,
+          dataStringFn: _getSpeedString,
+          selectionListener: _speedSelectionListener,
+          maxString: paceString(accu.maxSpeed),
+          avgString: paceString(accu.avgSpeed),
+        );
+        prefSpec.calculateBounds(measurementCounter.minSpeed, measurementCounter.maxSpeed);
+        tileConfig.histogram = prefSpec.zoneUpper
+            .asMap()
+            .entries
+            .map(
+              (entry) => HistogramData(index: entry.key, upper: entry.value),
+        )
+            .toList();
+        _tileConfigurations["speed"] = tileConfig;
+      }
+      if (measurementCounter.hasCadence) {
+        _tiles.add("cadence");
+        _selectedTimes.add("--");
+        _selectedValues.add("--");
+        var prefSpec = _preferencesSpecs[2];
+        var tileConfig = TileConfiguration(
+          title: prefSpec.fullTitle,
+          histogramTitle: prefSpec.histogramTitle,
+          dataFn: _getCadenceData,
+          dataStringFn: _getCadenceString,
+          selectionListener: _cadenceSelectionListener,
+          maxString: "${accu.maxCadence}",
+          avgString: "${accu.avgCadence}",
+        );
+        prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
+            measurementCounter.maxCadence.toDouble());
+        tileConfig.histogram = prefSpec.zoneUpper
+            .asMap()
+            .entries
+            .map(
+              (entry) => HistogramData(index: entry.key, upper: entry.value),
+        )
+            .toList();
+        _tileConfigurations["cadence"] = tileConfig;
+      }
+      if (measurementCounter.hasHeartRate) {
+        _tiles.add("hr");
+        _selectedTimes.add("--");
+        _selectedValues.add("--");
+        var prefSpec = _preferencesSpecs[3];
+        var tileConfig = TileConfiguration(
+          title: prefSpec.fullTitle,
+          histogramTitle: prefSpec.histogramTitle,
+          dataFn: _getHrData,
+          dataStringFn: _getHrString,
+          selectionListener: _hrSelectionListener,
+          maxString: "${accu.maxHeartRate}",
+          avgString: "${accu.avgHeartRate}",
+        );
+        prefSpec.calculateBounds(
+            measurementCounter.minHr.toDouble(), measurementCounter.maxHr.toDouble());
+        tileConfig.histogram = prefSpec.zoneUpper
+            .asMap()
+            .entries
+            .map(
+              (entry) => HistogramData(index: entry.key, upper: entry.value),
+        )
+            .toList();
+        _tileConfigurations["hr"] = tileConfig;
+      }
+      _allRecords.forEach((record) {
+        if (measurementCounter.hasPower) {
+          if (record.power > 0) {
+            var tileConfig = _tileConfigurations["power"];
+            tileConfig.count++;
+            final binIndex = _preferencesSpecs[0].binIndex(record.power);
+            tileConfig.histogram[binIndex].increment();
+          }
+        }
+        if (measurementCounter.hasSpeed) {
+          if (record.speed > 0) {
+            var tileConfig = _tileConfigurations["speed"];
+            tileConfig.count++;
+            final binIndex =
+            _preferencesSpecs[1].binIndex(record.speedByUnit(_si, activity.sport));
+            tileConfig.histogram[binIndex].increment();
+          }
+        }
+        if (measurementCounter.hasCadence) {
+          if (record.cadence > 0) {
+            var tileConfig = _tileConfigurations["cadence"];
+            tileConfig.count++;
+            final binIndex = _preferencesSpecs[2].binIndex(record.cadence);
+            tileConfig.histogram[binIndex].increment();
+          }
+        }
+        if (measurementCounter.hasHeartRate) {
+          if (record.heartRate > 0) {
+            var tileConfig = _tileConfigurations["hr"];
+            tileConfig.count++;
+            final binIndex = _preferencesSpecs[3].binIndex(record.heartRate);
+            tileConfig.histogram[binIndex].increment();
+          }
+        }
+      });
+      if (measurementCounter.hasPower) {
+        var tileConfig = _tileConfigurations["power"];
+        tileConfig.histogram.forEach((h) {
+          h.calculatePercent(tileConfig.count);
+        });
+        tileConfig.histogramFn = _getPowerHistogram;
+      }
+      if (measurementCounter.hasSpeed) {
+        var tileConfig = _tileConfigurations["speed"];
+        tileConfig.histogram.forEach((h) {
+          h.calculatePercent(tileConfig.count);
+        });
+        tileConfig.histogramFn = _getSpeedHistogram;
+      }
+      if (measurementCounter.hasCadence) {
+        var tileConfig = _tileConfigurations["cadence"];
+        tileConfig.histogram.forEach((h) {
+          h.calculatePercent(tileConfig.count);
+        });
+        tileConfig.histogramFn = _getCadenceHistogram;
+      }
+      if (measurementCounter.hasHeartRate) {
+        var tileConfig = _tileConfigurations["hr"];
+        tileConfig.histogram.forEach((h) {
+          h.calculatePercent(tileConfig.count);
+        });
+        tileConfig.histogramFn = _getHrHistogram;
+      }
+      _allRecords = null;
+      _initialized = true;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -75,210 +277,6 @@ class RecordsScreenState extends State<RecordsScreen> {
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, activity.sport);
     activity.hydrate();
-    $FloorAppDatabase
-        .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2, migration2to3, migration3to4])
-        .build()
-        .then((db) async {
-          _allRecords = await db.recordDao.findAllActivityRecords(activity.id);
-
-          setState(() {
-            _pointCount = size.width.toInt() - 20;
-            if (_allRecords.length < _pointCount) {
-              _sampledRecords =
-                  _allRecords.map((r) => r.hydrate().display()).toList(growable: false);
-            } else {
-              final nth = _allRecords.length / _pointCount;
-              _sampledRecords = List.generate(
-                  _pointCount, (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate().display());
-            }
-            final measurementCounter = MeasurementCounter(si: _si, sport: activity.sport);
-            _allRecords.forEach((record) {
-              measurementCounter.processRecord(record);
-            });
-
-            var accu = StatisticsAccumulator(
-              si: _si,
-              sport: activity.sport,
-              calculateAvgPower: measurementCounter.hasPower,
-              calculateMaxPower: measurementCounter.hasPower,
-              calculateAvgSpeed: measurementCounter.hasSpeed,
-              calculateMaxSpeed: measurementCounter.hasSpeed,
-              calculateAvgCadence: measurementCounter.hasCadence,
-              calculateMaxCadence: measurementCounter.hasCadence,
-              calculateAvgHeartRate: measurementCounter.hasHeartRate,
-              calculateMaxHeartRate: measurementCounter.hasHeartRate,
-            );
-            _allRecords.forEach((record) {
-              accu.processRecord(record);
-            });
-
-            if (measurementCounter.hasPower) {
-              _tiles.add("power");
-              _selectedTimes.add("--");
-              _selectedValues.add("--");
-              var prefSpec = _preferencesSpecs[0];
-              var tileConfig = TileConfiguration(
-                title: prefSpec.fullTitle,
-                histogramTitle: prefSpec.histogramTitle,
-                dataFn: _getPowerData,
-                dataStringFn: _getPowerString,
-                selectionListener: _powerSelectionListener,
-                maxString: accu.maxPower.toStringAsFixed(2),
-                avgString: accu.avgPower.toStringAsFixed(2),
-              );
-              prefSpec.calculateBounds(
-                  measurementCounter.minPower.toDouble(), measurementCounter.maxPower.toDouble());
-              tileConfig.histogram = prefSpec.zoneUpper
-                  .asMap()
-                  .entries
-                  .map(
-                    (entry) => HistogramData(index: entry.key, upper: entry.value),
-                  )
-                  .toList();
-              _tileConfigurations["power"] = tileConfig;
-            }
-            if (measurementCounter.hasSpeed) {
-              _tiles.add("speed");
-              _selectedTimes.add("--");
-              _selectedValues.add("--");
-              var prefSpec = _preferencesSpecs[1];
-              var tileConfig = TileConfiguration(
-                title: prefSpec.fullTitle,
-                histogramTitle: prefSpec.histogramTitle,
-                dataFn: _getSpeedData,
-                dataStringFn: _getSpeedString,
-                selectionListener: _speedSelectionListener,
-                maxString: paceString(accu.maxSpeed),
-                avgString: paceString(accu.avgSpeed),
-              );
-              prefSpec.calculateBounds(measurementCounter.minSpeed, measurementCounter.maxSpeed);
-              tileConfig.histogram = prefSpec.zoneUpper
-                  .asMap()
-                  .entries
-                  .map(
-                    (entry) => HistogramData(index: entry.key, upper: entry.value),
-                  )
-                  .toList();
-              _tileConfigurations["speed"] = tileConfig;
-            }
-            if (measurementCounter.hasCadence) {
-              _tiles.add("cadence");
-              _selectedTimes.add("--");
-              _selectedValues.add("--");
-              var prefSpec = _preferencesSpecs[2];
-              var tileConfig = TileConfiguration(
-                title: prefSpec.fullTitle,
-                histogramTitle: prefSpec.histogramTitle,
-                dataFn: _getCadenceData,
-                dataStringFn: _getCadenceString,
-                selectionListener: _cadenceSelectionListener,
-                maxString: "${accu.maxCadence}",
-                avgString: "${accu.avgCadence}",
-              );
-              prefSpec.calculateBounds(measurementCounter.minCadence.toDouble(),
-                  measurementCounter.maxCadence.toDouble());
-              tileConfig.histogram = prefSpec.zoneUpper
-                  .asMap()
-                  .entries
-                  .map(
-                    (entry) => HistogramData(index: entry.key, upper: entry.value),
-                  )
-                  .toList();
-              _tileConfigurations["cadence"] = tileConfig;
-            }
-            if (measurementCounter.hasHeartRate) {
-              _tiles.add("hr");
-              _selectedTimes.add("--");
-              _selectedValues.add("--");
-              var prefSpec = _preferencesSpecs[3];
-              var tileConfig = TileConfiguration(
-                title: prefSpec.fullTitle,
-                histogramTitle: prefSpec.histogramTitle,
-                dataFn: _getHrData,
-                dataStringFn: _getHrString,
-                selectionListener: _hrSelectionListener,
-                maxString: "${accu.maxHeartRate}",
-                avgString: "${accu.avgHeartRate}",
-              );
-              prefSpec.calculateBounds(
-                  measurementCounter.minHr.toDouble(), measurementCounter.maxHr.toDouble());
-              tileConfig.histogram = prefSpec.zoneUpper
-                  .asMap()
-                  .entries
-                  .map(
-                    (entry) => HistogramData(index: entry.key, upper: entry.value),
-                  )
-                  .toList();
-              _tileConfigurations["hr"] = tileConfig;
-            }
-            _allRecords.forEach((record) {
-              if (measurementCounter.hasPower) {
-                if (record.power > 0) {
-                  var tileConfig = _tileConfigurations["power"];
-                  tileConfig.count++;
-                  final binIndex = _preferencesSpecs[0].binIndex(record.power);
-                  tileConfig.histogram[binIndex].increment();
-                }
-              }
-              if (measurementCounter.hasSpeed) {
-                if (record.speed > 0) {
-                  var tileConfig = _tileConfigurations["speed"];
-                  tileConfig.count++;
-                  final binIndex =
-                      _preferencesSpecs[1].binIndex(record.speedByUnit(_si, activity.sport));
-                  tileConfig.histogram[binIndex].increment();
-                }
-              }
-              if (measurementCounter.hasCadence) {
-                if (record.cadence > 0) {
-                  var tileConfig = _tileConfigurations["cadence"];
-                  tileConfig.count++;
-                  final binIndex = _preferencesSpecs[2].binIndex(record.cadence);
-                  tileConfig.histogram[binIndex].increment();
-                }
-              }
-              if (measurementCounter.hasHeartRate) {
-                if (record.heartRate > 0) {
-                  var tileConfig = _tileConfigurations["hr"];
-                  tileConfig.count++;
-                  final binIndex = _preferencesSpecs[3].binIndex(record.heartRate);
-                  tileConfig.histogram[binIndex].increment();
-                }
-              }
-            });
-            if (measurementCounter.hasPower) {
-              var tileConfig = _tileConfigurations["power"];
-              tileConfig.histogram.forEach((h) {
-                h.calculatePercent(tileConfig.count);
-              });
-              tileConfig.histogramFn = _getPowerHistogram;
-            }
-            if (measurementCounter.hasSpeed) {
-              var tileConfig = _tileConfigurations["speed"];
-              tileConfig.histogram.forEach((h) {
-                h.calculatePercent(tileConfig.count);
-              });
-              tileConfig.histogramFn = _getSpeedHistogram;
-            }
-            if (measurementCounter.hasCadence) {
-              var tileConfig = _tileConfigurations["cadence"];
-              tileConfig.histogram.forEach((h) {
-                h.calculatePercent(tileConfig.count);
-              });
-              tileConfig.histogramFn = _getCadenceHistogram;
-            }
-            if (measurementCounter.hasHeartRate) {
-              var tileConfig = _tileConfigurations["hr"];
-              tileConfig.histogram.forEach((h) {
-                h.calculatePercent(tileConfig.count);
-              });
-              tileConfig.histogramFn = _getHrHistogram;
-            }
-            _allRecords = null;
-            _initialized = true;
-          });
-        });
 
     _sizeDefault = Get.mediaQuery.size.width / 7;
     _sizeDefault2 = _sizeDefault / 1.5;

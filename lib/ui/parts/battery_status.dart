@@ -102,11 +102,6 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(

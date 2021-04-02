@@ -14,7 +14,7 @@ abstract class DeviceDescriptor {
   static const double J2CAL = 0.2390057;
   static const double J2KCAL = J2CAL / 1000.0;
 
-  final String defaultSport;
+  String defaultSport;
   final bool isMultiSport;
   final String fourCC;
   final String vendorName;

@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
-import 'package:loading_overlay/loading_overlay.dart';
 import 'package:preferences/preferences.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -117,30 +116,21 @@ class RecordingState extends State<RecordingScreen> {
   List<String> _values;
   double _distance;
   int _elapsed;
-  bool _isLoading;
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
-    if (deviceState == BluetoothDeviceState.disconnected ||
-        deviceState == BluetoothDeviceState.disconnecting) {
-      await _fitnessEquipment.connect();
-    }
-    if (deviceState == BluetoothDeviceState.connected && !_fitnessEquipment.discovering ||
-        _fitnessEquipment.connected) {
-      final supported = await _fitnessEquipment.discover();
-      if (supported) {
-        if (PrefService.getBool(INSTANT_MEASUREMENT_START_TAG)) {
-          await _startMeasurement();
-        }
-      } else {
-        Get.defaultDialog(
-          middleText: 'The device does not look like a ${_descriptor.fullName}. ' +
-              'Measurement is not started',
-          confirm: TextButton(
-            child: Text("Ok"),
-            onPressed: () => Get.close(1),
-          ),
-        );
+    bool success = await _fitnessEquipment.connectOnDemand(deviceState);
+    if (success) {
+      if (PrefService.getBool(INSTANT_MEASUREMENT_START_TAG)) {
+        await _startMeasurement();
       }
+    } else {
+      Get.defaultDialog(
+        middleText: 'Problem co-operating with ${_descriptor.fullName}. Aborting...',
+        confirm: TextButton(
+          child: Text("Ok"),
+          onPressed: () => Get.close(1),
+        ),
+      );
     }
   }
 
@@ -199,12 +189,6 @@ class RecordingState extends State<RecordingScreen> {
         });
       }
     });
-  }
-
-  Future<void> _openDatabase() async {
-    _database = await $FloorAppDatabase
-        .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2, migration2to3, migration3to4]).build();
   }
 
   void _onToggleDetails(int index) {
@@ -271,7 +255,6 @@ class RecordingState extends State<RecordingScreen> {
   @override
   void initState() {
     super.initState();
-    _isLoading = true;
     _pointCount = size.width ~/ 2;
     _unitStyle = TextStyle(
       fontFamily: FONT_FAMILY,
@@ -282,8 +265,12 @@ class RecordingState extends State<RecordingScreen> {
       PrefService.getString(THROTTLE_POWER_TAG),
       PrefService.getBool(THROTTLE_OTHER_TAG),
     );
-    _fitnessEquipment =
-        Get.put<FitnessEquipment>(FitnessEquipment(descriptor: _descriptor, device: device));
+    if (Get.isRegistered<FitnessEquipment>()) {
+      _fitnessEquipment = Get.find<FitnessEquipment>();
+    } else {
+      _fitnessEquipment =
+          Get.put<FitnessEquipment>(FitnessEquipment(descriptor: _descriptor, device: device));
+    }
     _trackCalculator = TrackCalculator(
       track: TrackDescriptor(
         radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
@@ -360,9 +347,8 @@ class RecordingState extends State<RecordingScreen> {
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
-    _openDatabase();
+    _database = Get.find<AppDatabase>();
 
-    _isLoading = false;
     Wakelock.enable();
   }
 
@@ -370,7 +356,6 @@ class RecordingState extends State<RecordingScreen> {
     await _heartRateMonitor?.cancelSubscription();
     _connectionWatchdog?.cancel();
     await _fitnessEquipment?.detach();
-    await _database?.close();
   }
 
   @override
@@ -409,15 +394,9 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
     final success = await stravaService.login();
     if (!success) {
       Get.snackbar("Warning", "Strava login unsuccessful");
-      setState(() {
-        _isLoading = false;
-      });
       return;
     }
 
@@ -428,9 +407,6 @@ class RecordingState extends State<RecordingScreen> {
         statusCode == statusOk || statusCode >= 200 && statusCode < 300
             ? "Activity ${_activity.id} submitted successfully"
             : "Activity ${_activity.id} upload failure");
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   _stopMeasurement(bool quick) async {
@@ -604,30 +580,28 @@ class RecordingState extends State<RecordingScreen> {
     if (!_simplerUi) {
       _preferencesSpecs.asMap().entries.forEach((entry) {
         List<common.AnnotationSegment> annotationSegments = [];
-        if (!_isLoading) {
-          annotationSegments.addAll(List.generate(
-            entry.value.binCount,
-            (i) => charts.RangeAnnotationSegment(
-              entry.value.zoneLower[i],
-              entry.value.zoneUpper[i],
-              charts.RangeAnnotationAxisType.measure,
-              color: entry.value.bgColorByBin(i),
-              startLabel: entry.value.zoneLower[i].toString(),
-              labelAnchor: charts.AnnotationLabelAnchor.start,
-            ),
-          ));
-          annotationSegments.addAll(List.generate(
-            entry.value.binCount,
-            (i) => charts.LineAnnotationSegment(
-              entry.value.zoneUpper[i],
-              charts.RangeAnnotationAxisType.measure,
-              startLabel: entry.value.zoneUpper[i].toString(),
-              labelAnchor: charts.AnnotationLabelAnchor.end,
-              strokeWidthPx: 1.0,
-              color: charts.MaterialPalette.black,
-            ),
-          ));
-        }
+        annotationSegments.addAll(List.generate(
+          entry.value.binCount,
+          (i) => charts.RangeAnnotationSegment(
+            entry.value.zoneLower[i],
+            entry.value.zoneUpper[i],
+            charts.RangeAnnotationAxisType.measure,
+            color: entry.value.bgColorByBin(i),
+            startLabel: entry.value.zoneLower[i].toString(),
+            labelAnchor: charts.AnnotationLabelAnchor.start,
+          ),
+        ));
+        annotationSegments.addAll(List.generate(
+          entry.value.binCount,
+          (i) => charts.LineAnnotationSegment(
+            entry.value.zoneUpper[i],
+            charts.RangeAnnotationAxisType.measure,
+            startLabel: entry.value.zoneUpper[i].toString(),
+            labelAnchor: charts.AnnotationLabelAnchor.end,
+            strokeWidthPx: 1.0,
+            color: charts.MaterialPalette.black,
+          ),
+        ));
 
         var height = 0.0;
         switch (_expandedHeights[entry.key]) {
@@ -741,48 +715,45 @@ class RecordingState extends State<RecordingScreen> {
                 }),
           ],
         ),
-        body: LoadingOverlay(
-          isLoading: _isLoading,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                rows[0],
-                Divider(height: separatorHeight),
-                rows[1],
-                Divider(height: separatorHeight),
-                ExpandablePanel(
-                  header: rows[2],
-                  expanded: _simplerUi ? null : extras[0],
-                  controller: _rowControllers[0],
-                ),
-                Divider(height: separatorHeight),
-                ExpandablePanel(
-                  header: rows[3],
-                  expanded: _simplerUi ? null : extras[1],
-                  controller: _rowControllers[1],
-                ),
-                Divider(height: separatorHeight),
-                ExpandablePanel(
-                  header: rows[4],
-                  expanded: _simplerUi ? null : extras[2],
-                  controller: _rowControllers[2],
-                ),
-                Divider(height: separatorHeight),
-                ExpandablePanel(
-                  header: rows[5],
-                  expanded: _simplerUi ? null : extras[3],
-                  controller: _rowControllers[3],
-                ),
-                Divider(height: separatorHeight),
-                ExpandablePanel(
-                  header: rows[6],
-                  expanded: _simplerUi ? null : extras[4],
-                  controller: _rowControllers[4],
-                ),
-              ],
-            ),
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              rows[0],
+              Divider(height: separatorHeight),
+              rows[1],
+              Divider(height: separatorHeight),
+              ExpandablePanel(
+                header: rows[2],
+                expanded: _simplerUi ? null : extras[0],
+                controller: _rowControllers[0],
+              ),
+              Divider(height: separatorHeight),
+              ExpandablePanel(
+                header: rows[3],
+                expanded: _simplerUi ? null : extras[1],
+                controller: _rowControllers[1],
+              ),
+              Divider(height: separatorHeight),
+              ExpandablePanel(
+                header: rows[4],
+                expanded: _simplerUi ? null : extras[2],
+                controller: _rowControllers[2],
+              ),
+              Divider(height: separatorHeight),
+              ExpandablePanel(
+                header: rows[5],
+                expanded: _simplerUi ? null : extras[3],
+                controller: _rowControllers[3],
+              ),
+              Divider(height: separatorHeight),
+              ExpandablePanel(
+                header: rows[6],
+                expanded: _simplerUi ? null : extras[4],
+                controller: _rowControllers[4],
+              ),
+            ],
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

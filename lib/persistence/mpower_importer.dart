@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -201,13 +202,11 @@ class MPowerEchelon2Importer {
       calories: 0,
       startDateTime: start,
       fourCC: device.fourCC,
-      sport: device.defaultSport, // TODO
+      sport: device.defaultSport,
     );
 
-    AppDatabase db = await $FloorAppDatabase
-        .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2, migration2to3, migration3to4]).build();
-    final id = await db?.activityDao?.insertActivity(activity);
+    final database = Get.find<AppDatabase>();
+    final id = await database?.activityDao?.insertActivity(activity);
     activity.id = id;
 
     final numRow = _lines.length - _linePointer;
@@ -273,7 +272,7 @@ class MPowerEchelon2Importer {
         final dEnergy =
             power * milliSecondsPerRecord / 1000 * DeviceDescriptor.J2KCAL * device.calorieFactor;
         energy += dEnergy;
-        await db?.recordDao?.insertRecord(record);
+        await database?.recordDao?.insertRecord(record);
 
         timeStamp += milliSecondsPerRecordInt;
         elapsed += milliSecondsPerRecord;
@@ -292,7 +291,7 @@ class MPowerEchelon2Importer {
 
     activity.distance = distance;
     activity.calories = energy.round();
-    await db?.activityDao?.updateActivity(activity);
+    await database?.activityDao?.updateActivity(activity);
 
     return activity;
   }

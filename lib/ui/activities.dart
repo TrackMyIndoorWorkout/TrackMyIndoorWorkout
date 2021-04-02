@@ -1,12 +1,12 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
+import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
-import 'package:loading_overlay/loading_overlay.dart';
 import 'package:preferences/preferences.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,7 +32,6 @@ class ActivitiesScreen extends StatefulWidget {
 
 class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database;
-  bool _isLoading;
   int _editCount;
   bool _si;
   bool _compress;
@@ -44,25 +43,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   TextStyle _headerStyle;
   TextStyle _unitStyle;
 
-  AppDatabase get database => _database;
-
   @override
   void initState() {
     super.initState();
-    _isLoading = true;
     _editCount = 0;
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _compress = PrefService.getBool(COMPRESS_DOWNLOAD_TAG);
-    $FloorAppDatabase
-        .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2, migration2to3, migration3to4])
-        .build()
-        .then((db) {
-          setState(() {
-            _database = db;
-            _isLoading = false;
-          });
-        });
+    _database = Get.find<AppDatabase>();
   }
 
   Widget _actionButtonRow(Activity activity, double size) {
@@ -95,12 +82,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
             final records = await _database.recordDao.findAllActivityRecords(activity.id);
 
-            setState(() {
-              _isLoading = true;
-            });
             final statusCode = await stravaService.upload(activity, records);
             setState(() {
-              _isLoading = false;
               _editCount++;
             });
             Get.snackbar(
@@ -157,12 +140,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   @override
-  void dispose() {
-    _database?.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final mediaWidth = Get.mediaQuery.size.width;
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
@@ -189,199 +166,125 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Activities'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.file_upload),
-            onPressed: () async {
-              await Get.to(ImportForm()).whenComplete(() => setState(() {
-                    _editCount++;
-                  }));
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.help),
-            onPressed: () async {
-              if (await canLaunch(HELP_URL)) {
-                launch(HELP_URL);
-              } else {
-                Get.snackbar("Attention", "Cannot open URL");
-              }
-            },
-          ),
-        ],
-      ),
-      body: LoadingOverlay(
-        isLoading: _isLoading,
-        child: _database == null
-            ? Container()
-            : CustomListView(
-                key: Key("CLV$_editCount"),
-                paginationMode: PaginationMode.page,
-                initialOffset: 0,
-                loadingBuilder: (BuildContext context) =>
-                    Center(child: CircularProgressIndicator()),
-                adapter: ListAdapter(
-                  fetchItems: (int offset, int limit) async {
-                    final data = await _database.activityDao.findActivities(offset, limit);
-                    return ListItems(data, reachedToEnd: data.length < limit);
-                  },
-                ),
-                errorBuilder: (context, error, state) {
-                  return Column(
-                    children: [
-                      Text(error.toString()),
-                      ElevatedButton(
-                        onPressed: () => state.loadMore(),
-                        child: Text('Retry'),
-                      ),
-                    ],
-                  );
-                },
-                empty: Center(
-                  child: Text('No activities found'),
-                ),
-                itemBuilder: (context, _, item) {
-                  final activity = item as Activity;
-                  final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
-                  final dateString = DateFormat.yMd().format(startStamp);
-                  final timeString = DateFormat.Hms().format(startStamp);
-                  return Card(
-                    elevation: 6,
-                    child: ExpandablePanel(
-                      key: Key("${activity.id} ${activity.stravaId}"),
-                      header: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.calendar_today,
-                                color: Colors.indigo,
-                                size: _sizeDefault2,
-                              ),
-                              Text(
-                                dateString,
-                                style: _headerStyle,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.watch,
-                                color: Colors.indigo,
-                                size: _sizeDefault2,
-                              ),
-                              Text(
-                                timeString,
-                                style: _headerStyle,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      collapsed: ListTile(
-                        trailing: _actionButtonRow(activity, _sizeDefault2),
-                      ),
-                      expanded: ListTile(
-                        onTap: () async =>
-                            await Get.to(RecordsScreen(activity: item, size: Get.mediaQuery.size)),
-                        title: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.directions_bike,
-                                  color: Colors.indigo,
-                                  size: _sizeDefault,
-                                ),
-                                Expanded(
-                                  child: TextOneLine(
-                                    activity.deviceName,
-                                    style: _textStyle,
-                                    textAlign: TextAlign.right,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.timer,
-                                  color: Colors.indigo,
-                                  size: _sizeDefault,
-                                ),
-                                Spacer(),
-                                Text(
-                                  activity.elapsedString,
-                                  style: _measurementStyle,
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.add_road,
-                                  color: Colors.indigo,
-                                  size: _sizeDefault,
-                                ),
-                                Spacer(),
-                                Text(
-                                  activity.distanceString(_si),
-                                  style: _measurementStyle,
-                                ),
-                                SizedBox(
-                                  width: _sizeDefault,
-                                  child: Text(
-                                    _si ? 'm' : 'mi',
-                                    style: _unitStyle,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.whatshot,
-                                  color: Colors.indigo,
-                                  size: _sizeDefault,
-                                ),
-                                Spacer(),
-                                Text(
-                                  '${activity.calories}',
-                                  style: _measurementStyle,
-                                ),
-                                SizedBox(
-                                  width: _sizeDefault,
-                                  child: Text(
-                                    'cal',
-                                    style: _unitStyle,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            _actionButtonRow(activity, _sizeDefault2),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
+      appBar: AppBar(title: Text('Activities')),
+      body: CustomListView(
+        key: Key("CLV$_editCount"),
+        paginationMode: PaginationMode.page,
+        initialOffset: 0,
+        loadingBuilder: (BuildContext context) =>
+            Center(child: CircularProgressIndicator()),
+        adapter: ListAdapter(
+          fetchItems: (int offset, int limit) async {
+            final data = await _database.activityDao.findActivities(offset, limit);
+            return ListItems(data, reachedToEnd: data.length < limit);
+          },
+        ),
+        errorBuilder: (context, error, state) {
+          return Column(
+            children: [
+              Text(error.toString()),
+              ElevatedButton(
+                onPressed: () => state.loadMore(),
+                child: Text('Retry'),
               ),
+            ],
+          );
+        },
+        empty: Center(
+          child: Text('No activities found'),
+        ),
+        itemBuilder: (context, _, item) {
+          final activity = item as Activity;
+          final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
+          final dateString = DateFormat.yMd().format(startStamp);
+          final timeString = DateFormat.Hms().format(startStamp);
+          return Card(
+            elevation: 6,
+            child: ExpandablePanel(
+              key: Key("${activity.id} ${activity.stravaId}"),
+              header: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(Icons.calendar_today, color: Colors.indigo, size: _sizeDefault2),
+                      Text(dateString, style: _headerStyle),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(Icons.watch, color: Colors.indigo, size: _sizeDefault2),
+                      Text(timeString, style: _headerStyle),
+                    ],
+                  ),
+                ],
+              ),
+              collapsed: ListTile(trailing: _actionButtonRow(activity, _sizeDefault2)),
+              expanded: ListTile(
+                onTap: () async =>
+                    await Get.to(RecordsScreen(activity: item, size: Get.mediaQuery.size)),
+                title: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.directions_bike, color: Colors.indigo, size: _sizeDefault),
+                        Expanded(
+                          child: TextOneLine(
+                            activity.deviceName,
+                            style: _textStyle,
+                            textAlign: TextAlign.right,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.timer, color: Colors.indigo, size: _sizeDefault),
+                        Spacer(),
+                        Text(activity.elapsedString, style: _measurementStyle),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add_road, color: Colors.indigo, size: _sizeDefault),
+                        Spacer(),
+                        Text(activity.distanceString(_si), style: _measurementStyle),
+                        SizedBox(
+                          width: _sizeDefault,
+                          child: Text(_si ? 'm' : 'mi', style: _unitStyle),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.whatshot, color: Colors.indigo, size: _sizeDefault),
+                        Spacer(),
+                        Text('${activity.calories}', style: _measurementStyle),
+                        SizedBox(
+                          width: _sizeDefault,
+                          child: Text('cal', style: _unitStyle),
+                        ),
+                      ],
+                    ),
+                    _actionButtonRow(activity, _sizeDefault2),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
