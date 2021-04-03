@@ -33,8 +33,7 @@ final migration3to4 = Migration(3, 4, (database) async {
 });
 
 final migration4to5 = Migration(4, 5, (database) async {
-  await database.execute(
-      "CREATE TABLE IF NOT EXISTS `$DEVICE_USAGE_TABLE_NAME` " +
-          "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT, `mac` TEXT, `name` TEXT, " +
-          "`manufacturer` TEXT, `manufacturer_name` TEXT, `time` INTEGER)");
+  await database.execute("CREATE TABLE IF NOT EXISTS `$DEVICE_USAGE_TABLE_NAME` " +
+      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT, `mac` TEXT, `name` TEXT, " +
+      "`manufacturer` TEXT, `manufacturer_name` TEXT, `time` INTEGER)");
 });
