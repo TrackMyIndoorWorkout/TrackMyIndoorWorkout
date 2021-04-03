@@ -631,6 +631,7 @@ class RecordingState extends State<RecordingScreen> {
               child: charts.TimeSeriesChart(
                 _metricToDataFn[entry.value.metric](),
                 animate: false,
+                flipVerticalAxis: entry.value.metric == "speed" && _activity.isPaceSport,
                 primaryMeasureAxis: charts.NumericAxisSpec(
                   renderSpec: charts.NoneRenderSpec(),
                 ),

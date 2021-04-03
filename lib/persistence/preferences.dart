@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
+import '../tcx/activity_type.dart';
 import '../utils/display.dart';
 
 Color getTranslucent(Color c) {
@@ -115,6 +117,7 @@ class PreferencesSpec {
   List<double> zoneLower;
   List<double> zoneUpper;
   IconData icon;
+  String sport;
 
   PreferencesSpec({
     @required this.metric,
@@ -148,7 +151,8 @@ class PreferencesSpec {
     updateMultiLineUnit();
   }
 
-  void calculateZones() {
+  void calculateZones(String sport) {
+    this.sport = sport;
     final thresholdString = PrefService.getString(thresholdTag);
     threshold = double.tryParse(thresholdString);
     final zonesSpecStr = PrefService.getString(zonesTag);
@@ -172,14 +176,21 @@ class PreferencesSpec {
 
   int get binCount => zonePercents.length + 1;
 
+  bool get flipZones => sport != ActivityType.Ride && metric == "speed";
+
+  int transformedBinIndex(int bin) {
+    bin = min(max(0, bin), zonePercents.length - 1);
+    return flipZones ? zonePercents.length - 1 - bin : bin;
+  }
+
   int binIndex(num value) {
     int i = 0;
     for (; i < zoneBounds.length; i++) {
       if (value < zoneBounds[i]) {
-        return i;
+        return transformedBinIndex(i);
       }
     }
-    return i;
+    return transformedBinIndex(i);
   }
 
   Color bgColorByBin(int bin) {
@@ -187,9 +198,9 @@ class PreferencesSpec {
       return getTranslucent(MaterialPalette.blue.shadeDefault.lighter);
     }
     if (zonePercents.length <= 5) {
-      return fiveBgPalette[bin];
+      return fiveBgPalette[transformedBinIndex(bin)];
     }
-    return sevenBgPalette[bin];
+    return sevenBgPalette[transformedBinIndex(bin)];
   }
 
   Color fgColorByBin(int bin) {
@@ -208,13 +219,14 @@ class PreferencesSpec {
   }
 
   static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
+
   static List<PreferencesSpec> getPreferencesSpecs(bool si, String sport) {
     var prefSpecs = [...preferencesSpecs];
     prefSpecs[1].updateUnit(getSpeedUnit(si, sport));
     prefSpecs[1].title = speedTitle(sport);
     prefSpecs[2].icon = getIcon(sport);
     prefSpecs[2].unit = getCadenceUnit(sport);
-    prefSpecs.forEach((prefSpec) => prefSpec.calculateZones());
+    prefSpecs.forEach((prefSpec) => prefSpec.calculateZones(sport));
     return prefSpecs;
   }
 }

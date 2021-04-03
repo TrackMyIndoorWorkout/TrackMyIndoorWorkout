@@ -666,6 +666,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         child: charts.TimeSeriesChart(
                           _tileConfigurations[item].dataFn(),
                           animate: false,
+                          flipVerticalAxis: item == "speed" && activity.isPaceSport,
                           primaryMeasureAxis: charts.NumericAxisSpec(
                             renderSpec: charts.NoneRenderSpec(),
                           ),
