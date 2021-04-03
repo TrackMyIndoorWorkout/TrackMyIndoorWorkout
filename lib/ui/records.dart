@@ -276,6 +276,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, activity.sport);
     activity.hydrate();
 
+    extraInit();
+
     _sizeDefault = Get.mediaQuery.size.width / 7;
     _sizeDefault2 = _sizeDefault / 1.5;
     _measurementStyle = TextStyle(
