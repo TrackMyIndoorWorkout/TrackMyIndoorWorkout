@@ -16,7 +16,9 @@ import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
 import '../tcx/tcx_output.dart';
+import '../ui/device_usages.dart';
 import '../utils/constants.dart';
+import '../utils/display.dart';
 import 'find_devices.dart';
 import 'import_form.dart';
 import 'records.dart';
@@ -221,7 +223,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                   ),
                 ],
               ),
-              collapsed: ListTile(trailing: _actionButtonRow(activity, _sizeDefault2)),
               expanded: ListTile(
                 onTap: () async =>
                     await Get.to(RecordsScreen(activity: item, size: Get.mediaQuery.size)),
@@ -231,7 +232,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.directions_bike, color: Colors.indigo, size: _sizeDefault),
+                        Icon(getIcon(activity.sport), color: Colors.indigo, size: _sizeDefault),
                         Expanded(
                           child: TextOneLine(
                             activity.deviceName,
@@ -284,6 +285,46 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             ),
           );
         },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FabCircularMenu(
+        fabOpenIcon: const Icon(Icons.menu, color: Colors.white),
+        fabCloseIcon: const Icon(Icons.close, color: Colors.white),
+        children: [
+          FloatingActionButton(
+            heroTag: null,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.indigo,
+            child: Icon(Icons.collections_bookmark),
+            onPressed: () async {
+              await Get.to(DeviceUsagesScreen());
+            },
+          ),
+          FloatingActionButton(
+            heroTag: null,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.indigo,
+            child: Icon(Icons.file_upload),
+            onPressed: () async {
+              await Get.to(ImportForm()).whenComplete(() => setState(() {
+                    _editCount++;
+                  }));
+            },
+          ),
+          FloatingActionButton(
+            heroTag: null,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.indigo,
+            child: Icon(Icons.help),
+            onPressed: () async {
+              if (await canLaunch(HELP_URL)) {
+                launch(HELP_URL);
+              } else {
+                Get.snackbar("Attention", "Cannot open URL");
+              }
+            },
+          ),
+        ],
       ),
     );
   }

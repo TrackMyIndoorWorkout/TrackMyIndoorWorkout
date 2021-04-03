@@ -287,8 +287,8 @@ const MULTI_SPORT_DEVICE_SUPPORT_TAG = "multi_sport_device_support";
 const MULTI_SPORT_DEVICE_SUPPORT_DEFAULT = false;
 const MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION =
     "Turn this on only if you use a device (like Genesis Port) with multiple equipment of " +
-        "different sport (like Kayaking, Canoeing, Rowing, and Swimming). In that case each " +
-        "time before a workout you'll be prompted to select the sport.";
+        "different sport (like Kayaking, Canoeing, Rowing, and Swimming). In that case you'll " +
+        "be prompted to select a sport before every workout.";
 
 const TUNING_PREFERENCES = "Tuning";
 

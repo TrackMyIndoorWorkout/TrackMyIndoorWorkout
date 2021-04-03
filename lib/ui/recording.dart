@@ -43,6 +43,7 @@ class RecordingScreen extends StatefulWidget {
   final AdvertisementDigest advertisementDigest;
   final BluetoothDeviceState initialState;
   final Size size;
+  final String sport;
 
   RecordingScreen({
     Key key,
@@ -50,10 +51,12 @@ class RecordingScreen extends StatefulWidget {
     @required this.advertisementDigest,
     @required this.initialState,
     @required this.size,
+    @required this.sport,
   })  : assert(device != null),
         assert(advertisementDigest != null),
         assert(initialState != null),
         assert(size != null),
+        assert(sport != null),
         super(key: key);
 
   @override
@@ -63,6 +66,7 @@ class RecordingScreen extends StatefulWidget {
       advertisementDigest: advertisementDigest,
       initialState: initialState,
       size: size,
+      sport: sport,
     );
   }
 }
@@ -73,10 +77,12 @@ class RecordingState extends State<RecordingScreen> {
     @required this.advertisementDigest,
     @required this.initialState,
     @required this.size,
+    @required this.sport,
   })  : assert(device != null),
         assert(advertisementDigest != null),
         assert(initialState != null),
-        assert(size != null) {
+        assert(size != null),
+        assert(sport != null) {
     this._descriptor = device.getDescriptor(advertisementDigest.serviceUuids);
   }
 
@@ -84,6 +90,7 @@ class RecordingState extends State<RecordingScreen> {
   final BluetoothDevice device;
   final AdvertisementDigest advertisementDigest;
   final BluetoothDeviceState initialState;
+  final String sport;
   FitnessEquipment _fitnessEquipment;
   HeartRateMonitor _heartRateMonitor;
   DeviceDescriptor _descriptor;

@@ -19,6 +19,7 @@ import '../utils/scan_result_ex.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/common.dart';
 import 'parts/scan_result.dart';
+import 'parts/sport_picker.dart';
 import 'activities.dart';
 import 'preferences.dart';
 import 'recording.dart';
@@ -113,6 +114,79 @@ class FindDevicesState extends State<FindDevicesScreen> {
     });
   }
 
+  Future<bool> goToRecording(BluetoothDevice device, BluetoothDeviceState initialState) async {
+    final advertisementDigest = _advertisementCache.getEntry(device.id.id);
+    final descriptor = device.getDescriptor(advertisementDigest.serviceUuids);
+    DeviceUsage deviceUsage;
+    AppDatabase database;
+    if (descriptor.isMultiSport) {
+      database = Get.find<AppDatabase>();
+      final result = await database.database
+          .rawQuery("SELECT COUNT(id) FROM $DEVICE_USAGE_TABLE_NAME WHERE mac = ?", [device.id.id]);
+      if (result[0]['COUNT(id)'] > 0) {
+        deviceUsage = await database?.deviceUsageDao?.findDeviceUsageByMac(device.id.id)?.first;
+      }
+      final multiSportSupport = PrefService.getBool(MULTI_SPORT_DEVICE_SUPPORT_TAG);
+      if (deviceUsage == null || multiSportSupport) {
+        final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
+        final sportPick = await Get.bottomSheet(
+          SportPickerBottomSheet(initialSport: initialSport, allSports: false),
+          isDismissible: false,
+          enableDrag: false,
+        );
+        if (sportPick == null) {
+          return false;
+        }
+
+        descriptor.defaultSport = sportPick;
+        if (deviceUsage != null) {
+          deviceUsage.sport = sportPick;
+          deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
+          await database?.deviceUsageDao?.updateDeviceUsage(deviceUsage);
+        } else {
+          deviceUsage = DeviceUsage(
+            sport: sportPick,
+            mac: device.id.id,
+            name: device.name,
+            manufacturer: advertisementDigest.manufacturer,
+          );
+          await database?.deviceUsageDao?.insertDeviceUsage(deviceUsage);
+        }
+      } else {
+        descriptor.defaultSport = deviceUsage.sport;
+        await database?.deviceUsageDao?.updateDeviceUsage(deviceUsage);
+      }
+    }
+
+    final fitnessEquipment =
+        Get.put<FitnessEquipment>(FitnessEquipment(descriptor: descriptor, device: device));
+    bool success = await fitnessEquipment.connectOnDemand(initialState);
+    if (!success) {
+      Get.defaultDialog(
+        middleText: 'Problem co-operating with ${descriptor.fullName}.',
+        confirm: TextButton(
+          child: Text("Ok"),
+          onPressed: () => Get.close(1),
+        ),
+      );
+    } else {
+      if (deviceUsage != null) {
+        deviceUsage.manufacturerName = fitnessEquipment.manufacturerName;
+        deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
+        await database?.deviceUsageDao?.updateDeviceUsage(deviceUsage);
+      }
+      Get.to(RecordingScreen(
+        device: device,
+        advertisementDigest: advertisementDigest,
+        initialState: initialState,
+        size: Get.mediaQuery.size,
+        sport: descriptor.defaultSport,
+      ));
+    }
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_adjustedCaptionStyle == null) {
@@ -149,34 +223,18 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 } else if (_autoConnect) {
                   if (_openedDevice != null) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Get.to(RecordingScreen(
-                        device: _openedDevice,
-                        advertisementDigest: _advertisementCache.getEntry(_openedDevice.id.id),
-                        initialState: BluetoothDeviceState.connected,
-                        size: Get.mediaQuery.size,
-                      ));
+                      goToRecording(_openedDevice, BluetoothDeviceState.connected);
                     });
                   } else {
                     if (_filterDevices && _scannedDevices.length == 1) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        Get.to(RecordingScreen(
-                          device: _scannedDevices.first,
-                          advertisementDigest:
-                              _advertisementCache.getEntry(_scannedDevices.first.id.id),
-                          initialState: BluetoothDeviceState.disconnected,
-                          size: Get.mediaQuery.size,
-                        ));
+                        goToRecording(_scannedDevices.first, BluetoothDeviceState.disconnected);
                       });
                     } else if (_scannedDevices.length > 1 && _lastEquipmentId.length > 0) {
                       final lasts = _scannedDevices.where((d) => d.id.id == _lastEquipmentId);
                       if (lasts.length > 0) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          Get.to(RecordingScreen(
-                            device: lasts.first,
-                            advertisementDigest: _advertisementCache.getEntry(lasts.first.id.id),
-                            initialState: BluetoothDeviceState.disconnected,
-                            size: Get.mediaQuery.size,
-                          ));
+                          goToRecording(lasts.first, BluetoothDeviceState.disconnected);
                         });
                       }
                     }
@@ -238,12 +296,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   }
                                   await FlutterBlue.instance.stopScan();
                                   await Future.delayed(Duration(milliseconds: 100));
-                                  await Get.to(RecordingScreen(
-                                    device: d,
-                                    advertisementDigest: _advertisementCache.getEntry(d.id.id),
-                                    initialState: snapshot.data,
-                                    size: Get.mediaQuery.size,
-                                  ));
+                                  await goToRecording(d, snapshot.data);
                                 });
                           } else {
                             return Text(snapshot.data.toString());
@@ -270,12 +323,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       onEquipmentTap: () async {
                         await FlutterBlue.instance.stopScan();
                         await Future.delayed(Duration(milliseconds: 100));
-                        await Get.to(RecordingScreen(
-                          device: r.device,
-                          advertisementDigest: _advertisementCache.getEntry(r.device.id.id),
-                          initialState: BluetoothDeviceState.disconnected,
-                          size: Get.mediaQuery.size,
-                        ));
+                        await goToRecording(r.device, BluetoothDeviceState.disconnected);
                       },
                       onHrmTap: () async {
                         var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()

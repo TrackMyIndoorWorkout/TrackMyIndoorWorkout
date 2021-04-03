@@ -20,6 +20,7 @@ typedef RecordHandlerFunction = Function(Record data);
 
 class FitnessEquipment extends DeviceBase {
   final DeviceDescriptor descriptor;
+  String manufacturerName;
   double _residueCalories;
   int _lastPositiveCadence; // #101
   double _lastPositiveCalories; // #111
@@ -135,24 +136,23 @@ class FitnessEquipment extends DeviceBase {
     final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
     final nameCharacteristic =
         BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
-    var nameString;
     try {
       final nameBytes = await nameCharacteristic.read();
-      nameString = String.fromCharCodes(nameBytes);
+      manufacturerName = String.fromCharCodes(nameBytes);
     } on PlatformException catch (e, stack) {
       debugPrint("${e.message}");
       debugPrintStack(stackTrace: stack, label: "trace:");
       // 2nd try
       try {
         final nameBytes = await nameCharacteristic.read();
-        nameString = String.fromCharCodes(nameBytes);
+        manufacturerName = String.fromCharCodes(nameBytes);
       } on PlatformException catch (e, stack) {
         debugPrint("${e.message}");
         debugPrintStack(stackTrace: stack, label: "trace:");
       }
     }
 
-    return nameString == descriptor.manufacturer;
+    return manufacturerName == descriptor.manufacturer;
   }
 
   Record processRecord(Record stub) {
