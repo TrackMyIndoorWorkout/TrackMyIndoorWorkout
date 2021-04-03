@@ -573,8 +573,12 @@ class RecordsScreenState extends State<RecordsScreen> {
                   annotationSegments.addAll(List.generate(
                     _preferencesSpecs[index].binCount,
                     (i) => charts.RangeAnnotationSegment(
-                      _preferencesSpecs[index].zoneLower[i],
-                      _preferencesSpecs[index].zoneUpper[i],
+                      activity.flipForPace(item)
+                          ? _preferencesSpecs[index].zoneUpper[i]
+                          : _preferencesSpecs[index].zoneLower[i],
+                      activity.flipForPace(item)
+                          ? _preferencesSpecs[index].zoneLower[i]
+                          : _preferencesSpecs[index].zoneUpper[i],
                       charts.RangeAnnotationAxisType.measure,
                       color: _preferencesSpecs[index].bgColorByBin(i),
                       startLabel: _preferencesSpecs[index].zoneLower[i].toString(),
@@ -666,7 +670,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         child: charts.TimeSeriesChart(
                           _tileConfigurations[item].dataFn(),
                           animate: false,
-                          flipVerticalAxis: item == "speed" && activity.isPaceSport,
+                          flipVerticalAxis: activity.flipForPace(item),
                           primaryMeasureAxis: charts.NumericAxisSpec(
                             renderSpec: charts.NoneRenderSpec(),
                           ),

@@ -2,6 +2,7 @@ import 'package:floor/floor.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import '../../persistence/preferences.dart';
+import '../../tcx/activity_type.dart';
 import '../../tcx/tcx_output.dart';
 
 const String ACTIVITIES_TABLE_NAME = 'activities';
@@ -58,6 +59,10 @@ class Activity {
         assert(deviceId != null),
         assert(fourCC != null),
         assert(sport != null);
+
+  bool flipForPace(String item) {
+    return item == "speed" && sport != ActivityType.Ride;
+  }
 
   void finish(double distance, int elapsed, int calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;

@@ -590,8 +590,12 @@ class RecordingState extends State<RecordingScreen> {
         annotationSegments.addAll(List.generate(
           entry.value.binCount,
           (i) => charts.RangeAnnotationSegment(
-            entry.value.zoneLower[i],
-            entry.value.zoneUpper[i],
+            _activity.flipForPace(entry.value.metric)
+                ? entry.value.zoneUpper[i]
+                : entry.value.zoneLower[i],
+            _activity.flipForPace(entry.value.metric)
+                ? entry.value.zoneLower[i]
+                : entry.value.zoneUpper[i],
             charts.RangeAnnotationAxisType.measure,
             color: entry.value.bgColorByBin(i),
             startLabel: entry.value.zoneLower[i].toString(),
@@ -631,7 +635,7 @@ class RecordingState extends State<RecordingScreen> {
               child: charts.TimeSeriesChart(
                 _metricToDataFn[entry.value.metric](),
                 animate: false,
-                flipVerticalAxis: entry.value.metric == "speed" && _activity.isPaceSport,
+                flipVerticalAxis: _activity.flipForPace(entry.value.metric),
                 primaryMeasureAxis: charts.NumericAxisSpec(
                   renderSpec: charts.NoneRenderSpec(),
                 ),
