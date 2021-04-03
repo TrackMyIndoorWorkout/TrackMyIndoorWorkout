@@ -487,7 +487,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.directions_bike,
+                          getIcon(activity.sport),
                           color: Colors.indigo,
                           size: _sizeDefault,
                         ),
