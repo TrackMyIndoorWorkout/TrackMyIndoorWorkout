@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
@@ -148,7 +149,7 @@ class PreferencesSpec {
       },
       icon: Icons.favorite,
     ),
-  ];
+  ].toList(growable: false);
 
   final String metric;
   String title;
@@ -166,6 +167,8 @@ class PreferencesSpec {
   IconData icon;
   String sport;
   bool flipZones;
+
+  List<common.AnnotationSegment> annotationSegments;
 
   PreferencesSpec({
     @required this.metric,
@@ -186,6 +189,7 @@ class PreferencesSpec {
         assert(icon != null) {
     flipZones = false;
     updateMultiLineUnit();
+    annotationSegments = [];
   }
 
   String get fullTitle => '$title ($unit)';
@@ -248,6 +252,31 @@ class PreferencesSpec {
       maxVal = zoneLower.last * 1.15;
     }
     zoneUpper.add(decimalRound(maxVal));
+
+    List<common.AnnotationSegment> segments = [];
+    segments.addAll(List.generate(
+      binCount,
+      (i) => RangeAnnotationSegment(
+        flipZones ? zoneUpper[i] : zoneLower[i],
+        flipZones ? zoneLower[i] : zoneUpper[i],
+        RangeAnnotationAxisType.measure,
+        color: bgColorByBin(i),
+        startLabel: zoneLower[i].toString(),
+        labelAnchor: AnnotationLabelAnchor.start,
+      ),
+    ));
+    segments.addAll(List.generate(
+      binCount,
+      (i) => LineAnnotationSegment(
+        zoneUpper[i],
+        RangeAnnotationAxisType.measure,
+        startLabel: zoneUpper[i].toString(),
+        labelAnchor: AnnotationLabelAnchor.end,
+        strokeWidthPx: 1.0,
+        color: MaterialPalette.black,
+      ),
+    ));
+    annotationSegments = segments.toList(growable: false);
   }
 
   int get binCount => zonePercents.length + 1;

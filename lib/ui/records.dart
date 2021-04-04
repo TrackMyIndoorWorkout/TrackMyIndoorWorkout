@@ -1,5 +1,4 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -571,36 +570,6 @@ class RecordsScreenState extends State<RecordsScreen> {
               ),
               adapter: StaticListAdapter(data: _tiles),
               itemBuilder: (context, index, item) {
-                List<common.AnnotationSegment> annotationSegments = [];
-                if (_initialized) {
-                  annotationSegments.addAll(List.generate(
-                    _preferencesSpecs[index].binCount,
-                    (i) => charts.RangeAnnotationSegment(
-                      activity.flipForPace(item)
-                          ? _preferencesSpecs[index].zoneUpper[i]
-                          : _preferencesSpecs[index].zoneLower[i],
-                      activity.flipForPace(item)
-                          ? _preferencesSpecs[index].zoneLower[i]
-                          : _preferencesSpecs[index].zoneUpper[i],
-                      charts.RangeAnnotationAxisType.measure,
-                      color: _preferencesSpecs[index].bgColorByBin(i),
-                      startLabel: _preferencesSpecs[index].zoneLower[i].toString(),
-                      labelAnchor: charts.AnnotationLabelAnchor.start,
-                    ),
-                  ));
-                  annotationSegments.addAll(List.generate(
-                    _preferencesSpecs[index].binCount,
-                    (i) => charts.LineAnnotationSegment(
-                      _preferencesSpecs[index].zoneUpper[i],
-                      charts.RangeAnnotationAxisType.measure,
-                      startLabel: _preferencesSpecs[index].zoneUpper[i].toString(),
-                      labelAnchor: charts.AnnotationLabelAnchor.end,
-                      strokeWidthPx: 1.0,
-                      color: charts.MaterialPalette.black,
-                    ),
-                  ));
-                }
-
                 return Card(
                   elevation: 6,
                   child: ExpandablePanel(
@@ -685,7 +654,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                                   charts.LinePointHighlighterFollowLineType.nearest,
                             ),
                             charts.SelectNearest(eventTrigger: charts.SelectionTrigger.tapAndDrag),
-                            charts.RangeAnnotation(annotationSegments),
+                            charts.RangeAnnotation(_preferencesSpecs[index].annotationSegments),
                           ],
                           selectionModels: [
                             charts.SelectionModelConfig(

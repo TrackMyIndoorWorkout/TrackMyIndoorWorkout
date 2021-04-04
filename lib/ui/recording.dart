@@ -4,7 +4,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
@@ -616,30 +615,6 @@ class RecordingState extends State<RecordingScreen> {
     var extras = [];
     if (!_simplerUi) {
       _preferencesSpecs.asMap().entries.forEach((entry) {
-        List<common.AnnotationSegment> annotationSegments = [];
-        annotationSegments.addAll(List.generate(
-          entry.value.binCount,
-          (i) => charts.RangeAnnotationSegment(
-            entry.value.flipZones ? entry.value.zoneUpper[i] : entry.value.zoneLower[i],
-            entry.value.flipZones ? entry.value.zoneLower[i] : entry.value.zoneUpper[i],
-            charts.RangeAnnotationAxisType.measure,
-            color: entry.value.bgColorByBin(i),
-            startLabel: entry.value.zoneLower[i].toString(),
-            labelAnchor: charts.AnnotationLabelAnchor.start,
-          ),
-        ));
-        annotationSegments.addAll(List.generate(
-          entry.value.binCount,
-          (i) => charts.LineAnnotationSegment(
-            entry.value.zoneUpper[i],
-            charts.RangeAnnotationAxisType.measure,
-            startLabel: entry.value.zoneUpper[i].toString(),
-            labelAnchor: charts.AnnotationLabelAnchor.end,
-            strokeWidthPx: 1.0,
-            color: charts.MaterialPalette.black,
-          ),
-        ));
-
         var height = 0.0;
         switch (_expandedHeights[entry.key]) {
           case 0:
@@ -663,7 +638,7 @@ class RecordingState extends State<RecordingScreen> {
                 animate: false,
                 flipVerticalAxis: entry.value.flipZones,
                 primaryMeasureAxis: charts.NumericAxisSpec(renderSpec: charts.NoneRenderSpec()),
-                behaviors: [charts.RangeAnnotation(annotationSegments)],
+                behaviors: [charts.RangeAnnotation(entry.value.annotationSegments)],
               ),
             ),
           ),
