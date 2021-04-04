@@ -87,13 +87,14 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                         builder: (c, snapshot) {
                           if (snapshot.data == BluetoothDeviceState.connected) {
                             return FloatingActionButton(
-                                heroTag: null,
-                                child: Icon(Icons.favorite),
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.green,
-                                onPressed: () {
-                                  Get.snackbar("Info", "Already connected");
-                                });
+                              heroTag: null,
+                              child: Icon(Icons.favorite),
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                              onPressed: () {
+                                Get.snackbar("Info", "Already connected");
+                              },
+                            );
                           } else {
                             return Text(snapshot.data.toString());
                           }

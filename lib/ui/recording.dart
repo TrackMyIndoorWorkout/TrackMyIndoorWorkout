@@ -280,6 +280,7 @@ class RecordingState extends State<RecordingScreen> {
       _fitnessEquipment =
           Get.put<FitnessEquipment>(FitnessEquipment(descriptor: _descriptor, device: device));
     }
+
     _trackCalculator = TrackCalculator(
       track: TrackDescriptor(
         radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
@@ -292,6 +293,7 @@ class RecordingState extends State<RecordingScreen> {
     if (!_simplerUi) {
       _graphData = ListQueue<DisplayRecord>(_pointCount);
     }
+
     final connectionWatchdogTimeString =
         PrefService.getString(EQUIPMENT_DISCONNECTION_WATCHDOG_TAG);
     _connectionWatchdogTime = int.tryParse(connectionWatchdogTimeString);
@@ -367,6 +369,7 @@ class RecordingState extends State<RecordingScreen> {
           rowController.addListener(_onToggleDistance);
           break;
       }
+
       final expandedHeight = int.tryParse(expandedHeightStr[index]);
       _expandedHeights.add(expandedHeight);
       return expanded;
@@ -617,12 +620,8 @@ class RecordingState extends State<RecordingScreen> {
         annotationSegments.addAll(List.generate(
           entry.value.binCount,
           (i) => charts.RangeAnnotationSegment(
-            entry.value.flipZones
-                ? entry.value.zoneUpper[i]
-                : entry.value.zoneLower[i],
-            entry.value.flipZones
-                ? entry.value.zoneLower[i]
-                : entry.value.zoneUpper[i],
+            entry.value.flipZones ? entry.value.zoneUpper[i] : entry.value.zoneLower[i],
+            entry.value.flipZones ? entry.value.zoneLower[i] : entry.value.zoneUpper[i],
             charts.RangeAnnotationAxisType.measure,
             color: entry.value.bgColorByBin(i),
             startLabel: entry.value.zoneLower[i].toString(),
@@ -663,12 +662,8 @@ class RecordingState extends State<RecordingScreen> {
                 _metricToDataFn[entry.value.metric](),
                 animate: false,
                 flipVerticalAxis: entry.value.flipZones,
-                primaryMeasureAxis: charts.NumericAxisSpec(
-                  renderSpec: charts.NoneRenderSpec(),
-                ),
-                behaviors: [
-                  charts.RangeAnnotation(annotationSegments),
-                ],
+                primaryMeasureAxis: charts.NumericAxisSpec(renderSpec: charts.NoneRenderSpec()),
+                behaviors: [charts.RangeAnnotation(annotationSegments)],
               ),
             ),
           ),
@@ -690,12 +685,13 @@ class RecordingState extends State<RecordingScreen> {
                         left: trackMarker.dx - THICK,
                         top: trackMarker.dy - THICK,
                         child: Container(
-                            decoration: BoxDecoration(
-                              color: Color(0x88FF0000),
-                              borderRadius: BorderRadius.circular(THICK),
-                            ),
-                            width: THICK * 2,
-                            height: THICK * 2),
+                          decoration: BoxDecoration(
+                            color: Color(0x88FF0000),
+                            borderRadius: BorderRadius.circular(THICK),
+                          ),
+                          width: THICK * 2,
+                          height: THICK * 2,
+                        ),
                       ),
                     ],
                   ),

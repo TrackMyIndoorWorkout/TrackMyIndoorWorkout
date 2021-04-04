@@ -277,27 +277,26 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         builder: (c, snapshot) {
                           if (snapshot.data == BluetoothDeviceState.connected) {
                             return FloatingActionButton(
-                                heroTag: null,
-                                child: (_advertisementCache
-                                            .getEntry(d.id.id)
-                                            ?.isHeartRateMonitor() ??
-                                        false)
-                                    ? ((Get.isRegistered<HeartRateMonitor>() &&
-                                            Get.find<HeartRateMonitor>()?.device?.id?.id == d.id.id)
-                                        ? Text(_heartRate?.toString() ?? "--")
-                                        : Icon(Icons.favorite))
-                                    : Icon(Icons.open_in_new),
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.green,
-                                onPressed: () async {
-                                  if (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
-                                      false) {
-                                    return;
-                                  }
-                                  await FlutterBlue.instance.stopScan();
-                                  await Future.delayed(Duration(milliseconds: 100));
-                                  await goToRecording(d, snapshot.data);
-                                });
+                              heroTag: null,
+                              child: (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
+                                      false)
+                                  ? ((Get.isRegistered<HeartRateMonitor>() &&
+                                          Get.find<HeartRateMonitor>()?.device?.id?.id == d.id.id)
+                                      ? Text(_heartRate?.toString() ?? "--")
+                                      : Icon(Icons.favorite))
+                                  : Icon(Icons.open_in_new),
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                              onPressed: () async {
+                                if (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
+                                    false) {
+                                  return;
+                                }
+                                await FlutterBlue.instance.stopScan();
+                                await Future.delayed(Duration(milliseconds: 100));
+                                await goToRecording(d, snapshot.data);
+                              },
+                            );
                           } else {
                             return Text(snapshot.data.toString());
                           }
