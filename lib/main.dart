@@ -9,6 +9,7 @@ import 'ui/models/advertisement_cache.dart';
 import 'devices/company_registry.dart';
 import 'persistence/preferences.dart';
 import 'strava/constants.dart';
+import 'tcx/activity_type.dart';
 import 'track_my_indoor_exercise_app.dart';
 
 void main() async {
@@ -18,6 +19,7 @@ void main() async {
 
   await PrefService.init(prefix: 'pref_');
   Map<String, dynamic> prefDefaults = {
+    PREFERENCES_VERSION_TAG: PREFERENCES_VERSION_DEFAULT,
     UNIT_SYSTEM_TAG: UNIT_SYSTEM_DEFAULT,
     INSTANT_SCAN_TAG: INSTANT_SCAN_DEFAULT,
     SCAN_DURATION_TAG: SCAN_DURATION_DEFAULT,
@@ -38,13 +40,29 @@ void main() async {
     EQUIPMENT_DISCONNECTION_WATCHDOG_TAG: EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
     CALORIE_CARRYOVER_WORKAROUND_TAG: CALORIE_CARRYOVER_WORKAROUND_DEFAULT,
   };
-  PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
-    prefDefaults.addAll({
-      prefSpec.thresholdTag: prefSpec.thresholdDefault,
-      prefSpec.zonesTag: prefSpec.zonesDefault,
+  PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
+    PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+      prefDefaults.addAll({
+        prefSpec.thresholdTag(sport): prefSpec.thresholdDefault(sport),
+        prefSpec.zonesTag(sport): prefSpec.zonesDefault(sport),
+      });
     });
   });
   PrefService.setDefaultValues(prefDefaults);
+
+  if (PrefService.getInt(PREFERENCES_VERSION_TAG) < 1) {
+    PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+      final thresholdTag = PreferencesSpec.THRESHOLD_PREFIX + prefSpec.metric;
+      var thresholdString = PrefService.getString(thresholdTag);
+      if (prefSpec.metric == "speed") {
+        thresholdString = decimalRound(double.tryParse(thresholdString) * MI2KM).toString();
+      }
+      PrefService.setString(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
+      final zoneTag = prefSpec.metric + PreferencesSpec.ZONES_POSTFIX;
+      PrefService.setString(prefSpec.zonesTag(ActivityType.Ride), PrefService.getString(zoneTag));
+      PrefService.setInt(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_DEFAULT + 1);
+    });
+  }
 
   DataConnectionChecker().addresses = STRAVA_AWS_US_EAST
       .map((ip) => AddressCheckOptions(

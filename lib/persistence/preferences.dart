@@ -54,8 +54,15 @@ double decimalRound(double value, {int precision = 100}) {
 }
 
 class PreferencesSpec {
-  static const THRESHOLD_CAPITAL = 'Threshold ';
+  static const THRESHOLD_CAPITAL = ' Threshold ';
   static const ZONES_CAPITAL = ' Zones (list of % of threshold)';
+  static const PADDLE_SPORT = "Paddle";
+  static const SPORT_PREFIXES = [
+    ActivityType.Ride,
+    ActivityType.Run,
+    PADDLE_SPORT,
+    ActivityType.Swim
+  ];
   static const THRESHOLD_PREFIX = 'threshold_';
   static const ZONES_POSTFIX = '_zones';
   static const METRICS = ['power', 'speed', 'cadence', 'hr'];
@@ -65,40 +72,80 @@ class PreferencesSpec {
       metric: METRICS[0],
       title: 'Power',
       unit: 'W',
-      thresholdTag: THRESHOLD_PREFIX + METRICS[0],
-      thresholdDefault: '360',
-      zonesTag: METRICS[0] + ZONES_POSTFIX,
-      zonesDefault: '55,75,90,105,120,150',
+      thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[0],
+      thresholdDefaultInts: {
+        SPORT_PREFIXES[0]: 360,
+        SPORT_PREFIXES[1]: 360,
+        SPORT_PREFIXES[2]: 120,
+        SPORT_PREFIXES[3]: 120,
+      },
+      zonesTagPostfix: METRICS[0] + ZONES_POSTFIX,
+      zonesDefaultInts: {
+        SPORT_PREFIXES[0]: [55, 75, 90, 105, 120, 150],
+        SPORT_PREFIXES[1]: [55, 75, 90, 105, 120, 150],
+        SPORT_PREFIXES[2]: [55, 75, 90, 105, 120, 150],
+        SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
+      },
       icon: Icons.bolt,
     ),
     PreferencesSpec(
       metric: METRICS[1],
       title: 'Speed',
       unit: 'mph',
-      thresholdTag: THRESHOLD_PREFIX + METRICS[1],
-      thresholdDefault: '20',
-      zonesTag: METRICS[1] + ZONES_POSTFIX,
-      zonesDefault: '55,75,90,105,120,150',
+      thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[1],
+      thresholdDefaultInts: {
+        SPORT_PREFIXES[0]: 32,
+        SPORT_PREFIXES[1]: 16,
+        SPORT_PREFIXES[2]: 7,
+        SPORT_PREFIXES[3]: 1,
+      },
+      zonesTagPostfix: METRICS[1] + ZONES_POSTFIX,
+      zonesDefaultInts: {
+        SPORT_PREFIXES[0]: [55, 75, 90, 105, 120, 150],
+        SPORT_PREFIXES[1]: [55, 75, 90, 105, 120, 150],
+        SPORT_PREFIXES[2]: [55, 75, 90, 105, 120, 150],
+        SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
+      },
       icon: Icons.speed,
     ),
     PreferencesSpec(
       metric: METRICS[2],
       title: 'Cadence',
       unit: 'rpm',
-      thresholdTag: THRESHOLD_PREFIX + METRICS[2],
-      thresholdDefault: '120',
-      zonesTag: METRICS[2] + ZONES_POSTFIX,
-      zonesDefault: '25,37,50,75,100,120',
+      thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[2],
+      thresholdDefaultInts: {
+        SPORT_PREFIXES[0]: 120,
+        SPORT_PREFIXES[1]: 180,
+        SPORT_PREFIXES[2]: 90,
+        SPORT_PREFIXES[3]: 90,
+      },
+      zonesTagPostfix: METRICS[2] + ZONES_POSTFIX,
+      zonesDefaultInts: {
+        SPORT_PREFIXES[0]: [25, 37, 50, 75, 100, 120],
+        SPORT_PREFIXES[1]: [25, 37, 50, 75, 100, 120],
+        SPORT_PREFIXES[2]: [25, 37, 50, 75, 100, 120],
+        SPORT_PREFIXES[3]: [25, 37, 50, 75, 100, 120],
+      },
       icon: Icons.directions_bike,
     ),
     PreferencesSpec(
       metric: METRICS[3],
       title: 'Heart Rate',
       unit: 'bpm',
-      thresholdTag: THRESHOLD_PREFIX + METRICS[3],
-      thresholdDefault: '180',
-      zonesTag: METRICS[3] + ZONES_POSTFIX,
-      zonesDefault: '50,60,70,80,90,100',
+      thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[3],
+      thresholdDefaultInts: {
+        SPORT_PREFIXES[0]: 180,
+        SPORT_PREFIXES[1]: 180,
+        SPORT_PREFIXES[2]: 180,
+        SPORT_PREFIXES[3]: 180,
+      },
+      zonesTagPostfix: METRICS[3] + ZONES_POSTFIX,
+      zonesDefaultInts: {
+        SPORT_PREFIXES[0]: [50, 60, 70, 80, 90, 100],
+        SPORT_PREFIXES[1]: [50, 60, 70, 80, 90, 100],
+        SPORT_PREFIXES[2]: [50, 60, 70, 80, 90, 100],
+        SPORT_PREFIXES[3]: [50, 60, 70, 80, 90, 100],
+      },
       icon: Icons.favorite,
     ),
   ];
@@ -107,10 +154,10 @@ class PreferencesSpec {
   String title;
   String unit;
   String multiLineUnit;
-  final String thresholdTag;
-  final String thresholdDefault;
-  final String zonesTag;
-  final String zonesDefault;
+  final String thresholdTagPostfix;
+  final Map<String, int> thresholdDefaultInts;
+  final String zonesTagPostfix;
+  final Map<String, List<int>> zonesDefaultInts;
   double threshold;
   List<int> zonePercents;
   List<double> zoneBounds;
@@ -124,25 +171,50 @@ class PreferencesSpec {
     @required this.metric,
     @required this.title,
     @required this.unit,
-    @required this.thresholdTag,
-    @required this.thresholdDefault,
-    @required this.zonesTag,
-    @required this.zonesDefault,
+    @required this.thresholdTagPostfix,
+    @required this.thresholdDefaultInts,
+    @required this.zonesTagPostfix,
+    @required this.zonesDefaultInts,
     @required this.icon,
   })  : assert(metric != null),
         assert(title != null),
         assert(unit != null),
-        assert(thresholdTag != null),
-        assert(thresholdDefault != null),
-        assert(zonesTag != null),
-        assert(zonesDefault != null),
+        assert(thresholdTagPostfix != null),
+        assert(thresholdDefaultInts != null),
+        assert(zonesTagPostfix != null),
+        assert(zonesDefaultInts != null),
         assert(icon != null) {
     flipZones = false;
     updateMultiLineUnit();
   }
 
   String get fullTitle => '$title ($unit)';
+  String get kmhTitle => '$title (kmh)';
   String get histogramTitle => '$title zones (%)';
+
+  String sport2Sport(String sport) {
+    return sport == ActivityType.Kayaking ||
+            sport == ActivityType.Canoeing ||
+            sport == ActivityType.Rowing
+        ? PADDLE_SPORT
+        : sport;
+  }
+
+  String thresholdDefault(String sport) {
+    return thresholdDefaultInts[sport2Sport(sport)].toString();
+  }
+
+  String zonesDefault(String sport) {
+    return zonesDefaultInts[sport2Sport(sport)].map((z) => z.toString()).join(",");
+  }
+
+  String thresholdTag(String sport) {
+    return '${sport2Sport(sport)}_$thresholdTagPostfix';
+  }
+
+  String zonesTag(String sport) {
+    return '${sport2Sport(sport)}_$zonesTagPostfix';
+  }
 
   void updateMultiLineUnit() {
     multiLineUnit = unit.replaceAll(" ", "\n");
@@ -158,7 +230,7 @@ class PreferencesSpec {
     flipZones = sport != ActivityType.Ride && metric == "speed";
     final thresholdString = PrefService.getString(thresholdTag(sport));
     threshold = double.tryParse(thresholdString);
-    final zonesSpecStr = PrefService.getString(zonesTag);
+    final zonesSpecStr = PrefService.getString(zonesTag(sport));
     zonePercents = zonesSpecStr.split(',').map((zs) => int.tryParse(zs)).toList(growable: false);
     zoneBounds = zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList();
   }
@@ -232,6 +304,9 @@ class PreferencesSpec {
     return prefSpecs;
   }
 }
+
+const PREFERENCES_VERSION_TAG = "version";
+const PREFERENCES_VERSION_DEFAULT = 0; // TODO: bump to 1
 
 const UX_PREFERENCES = "UI / UX Preferences";
 
@@ -364,7 +439,7 @@ const CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION = "On: Calorie count could be pre
     "(Note that data points will be still missing.) " +
     "Off: Calorie count will start from zero after workout restart.";
 
-const ZONE_PREFERENCES = "Zone Preferences";
+const ZONE_PREFERENCES = " Zone Preferences";
 
 const FONT_FAMILY = "RobotoMono";
 

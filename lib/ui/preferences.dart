@@ -6,23 +6,23 @@ import '../persistence/preferences.dart';
 RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
 
 class PreferencesScreen extends StatelessWidget {
-  bool isInteger(String str, lowerLimit, upperLimit) {
-    int integer = int.tryParse(str);
-    return integer != null &&
-        (lowerLimit < 0 || integer >= lowerLimit) &&
-        (upperLimit < 0 || integer <= upperLimit);
+  bool isNumber(String str, double lowerLimit, double upperLimit) {
+    double number = double.tryParse(str);
+    return number != null &&
+        (lowerLimit < 0.0 || number >= lowerLimit) &&
+        (upperLimit < 0.0 || number <= upperLimit);
   }
 
   bool isMonotoneIncreasingList(String zonesSpecStr) {
     if (!intListRule.hasMatch(zonesSpecStr)) return false;
 
-    List<int> intList =
-        zonesSpecStr.split(',').map((zs) => int.tryParse(zs)).toList(growable: false);
+    List<double> numberList =
+        zonesSpecStr.split(',').map((zs) => double.tryParse(zs)).toList(growable: false);
 
-    for (int i = 0; i < intList.length - 1; i++) {
-      if (intList[i] == null || intList[i + 1] == null) return false;
+    for (int i = 0; i < numberList.length - 1; i++) {
+      if (numberList[i] == null || numberList[i + 1] == null) return false;
 
-      if (intList[i] >= intList[i + 1]) return false;
+      if (numberList[i] >= numberList[i + 1]) return false;
     }
 
     return true;
@@ -94,8 +94,8 @@ class PreferencesScreen extends StatelessWidget {
         THROTTLE_POWER_TAG,
         defaultVal: THROTTLE_POWER_DEFAULT,
         validator: (str) {
-          if (!isInteger(str, 0, 100)) {
-            return "Invalid throttle (should be 0 <= percent <= 100)";
+          if (!isNumber(str, 0.0, 100.0)) {
+            return "Invalid throttle (should be 0.0 <= percent <= 100.0)";
           }
           return null;
         },
@@ -112,8 +112,8 @@ class PreferencesScreen extends StatelessWidget {
         STROKE_RATE_SMOOTHING_TAG,
         defaultVal: STROKE_RATE_SMOOTHING_DEFAULT,
         validator: (str) {
-          if (!isInteger(str, 1, 50)) {
-            return "Invalid window size (should be 1 <= size <= 50)";
+          if (!isNumber(str, 1.0, 50.0)) {
+            return "Invalid window size (should be 1.0 <= size <= 50.0)";
           }
           return null;
         },
@@ -124,8 +124,8 @@ class PreferencesScreen extends StatelessWidget {
         EQUIPMENT_DISCONNECTION_WATCHDOG_TAG,
         defaultVal: EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
         validator: (str) {
-          if (!isInteger(str, 0, 50)) {
-            return "Invalid window size (should be 0 <= size <= 50)";
+          if (!isNumber(str, 0.0, 50.0)) {
+            return "Invalid window size (should be 0.0 <= size <= 50.0)";
           }
           return null;
         },
@@ -147,33 +147,37 @@ class PreferencesScreen extends StatelessWidget {
       ));
     }
 
-    appPreferences.add(PreferenceTitle(ZONE_PREFERENCES));
-    PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
-      appPreferences.addAll([
-        TextFieldPreference(
-          PreferencesSpec.THRESHOLD_CAPITAL + prefSpec.fullTitle,
-          prefSpec.thresholdTag,
-          defaultVal: prefSpec.thresholdDefault,
-          validator: (str) {
-            if (!isInteger(str, 1, -1)) {
-              return "Invalid threshold (should be integer >= 1)";
-            }
-            return null;
-          },
-        ),
-        TextFieldPreference(
-          prefSpec.title + PreferencesSpec.ZONES_CAPITAL,
-          prefSpec.zonesTag,
-          defaultVal: prefSpec.zonesDefault,
-          validator: (str) {
-            if (!isMonotoneIncreasingList(str)) {
-              return "Invalid zones (should be comma separated list of " +
-                  "monotonically increasing integers)";
-            }
-            return null;
-          },
-        ),
-      ]);
+    PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
+      appPreferences.add(PreferenceTitle(sport + ZONE_PREFERENCES));
+      PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+        appPreferences.addAll([
+          TextFieldPreference(
+            sport +
+                PreferencesSpec.THRESHOLD_CAPITAL +
+                (prefSpec.metric == "speed" ? prefSpec.kmhTitle : prefSpec.fullTitle),
+            prefSpec.thresholdTag(sport),
+            defaultVal: prefSpec.thresholdDefault(sport),
+            validator: (str) {
+              if (!isNumber(str, 0.1, -1)) {
+                return "Invalid threshold (should be integer >= 0.1)";
+              }
+              return null;
+            },
+          ),
+          TextFieldPreference(
+            sport + " " + prefSpec.title + PreferencesSpec.ZONES_CAPITAL,
+            prefSpec.zonesTag(sport),
+            defaultVal: prefSpec.zonesDefault(sport),
+            validator: (str) {
+              if (!isMonotoneIncreasingList(str)) {
+                return "Invalid zones (should be comma separated list of " +
+                    "monotonically increasing numbers)";
+              }
+              return null;
+            },
+          ),
+        ]);
+      });
     });
 
     return Scaffold(
