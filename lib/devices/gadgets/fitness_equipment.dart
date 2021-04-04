@@ -68,7 +68,7 @@ class FitnessEquipment extends DeviceBase {
 
   Stream<Record> get _listenToData async* {
     if (!attached) return;
-    await for (var byteString in characteristic.value.throttleTime(Duration(milliseconds: 500))) {
+    await for (var byteString in characteristic.value.throttleTime(Duration(milliseconds: 450))) {
       if (!descriptor.canDataProcessed(byteString)) continue;
       if (!measuring && !calibrating) continue;
 
