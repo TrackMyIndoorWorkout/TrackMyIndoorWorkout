@@ -100,7 +100,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                         },
                       ),
                     );
-                  }).toList(),
+                  }).toList(growable: false),
                 ),
               ),
               StreamBuilder<List<ScanResult>>(
@@ -110,7 +110,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                     children: snapshot.data.where((d) => d.isWorthy()).map((r) {
                   _scanResults.add(r.device.id.id);
                   return HeartRateMonitorScanResultTile(result: r);
-                }).toList()),
+                }).toList(growable: false)),
               ),
             ],
           ),

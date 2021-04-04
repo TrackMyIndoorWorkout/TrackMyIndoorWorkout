@@ -304,7 +304,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         },
                       ),
                     );
-                  }).toList(),
+                  }).toList(growable: false),
                 ),
               ),
               StreamBuilder<List<ScanResult>>(
@@ -375,7 +375,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         });
                       },
                     );
-                  }).toList(),
+                  }).toList(growable: false),
                 ),
               ),
             ],

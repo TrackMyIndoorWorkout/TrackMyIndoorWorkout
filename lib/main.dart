@@ -69,7 +69,7 @@ void main() async {
             InternetAddress(ip),
             port: HTTPS_PORT,
           ))
-      .toList();
+      .toList(growable: false);
 
   final companyRegistry = CompanyRegistry();
   await companyRegistry.loadCompanyIdentifiers();

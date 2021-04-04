@@ -232,7 +232,8 @@ class PreferencesSpec {
     threshold = double.tryParse(thresholdString);
     final zonesSpecStr = PrefService.getString(zonesTag(sport));
     zonePercents = zonesSpecStr.split(',').map((zs) => int.tryParse(zs)).toList(growable: false);
-    zoneBounds = zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList();
+    zoneBounds =
+        zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList(growable: false);
   }
 
   void calculateBounds(double minVal, double maxVal) {
@@ -250,7 +251,6 @@ class PreferencesSpec {
   }
 
   int get binCount => zonePercents.length + 1;
-
 
   int transformedBinIndex(int bin) {
     bin = min(max(0, bin), zonePercents.length - 1);

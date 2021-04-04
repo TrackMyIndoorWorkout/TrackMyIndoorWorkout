@@ -109,7 +109,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
                 ],
               ),
             )
-            .toList(),
+            .toList(growable: false),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(

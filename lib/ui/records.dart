@@ -75,7 +75,10 @@ class RecordsScreenState extends State<RecordsScreen> {
       } else {
         final nth = _allRecords.length / _pointCount;
         _sampledRecords = List.generate(
-            _pointCount, (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate().display());
+          _pointCount,
+          (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate().display(),
+          growable: false,
+        );
       }
       final measurementCounter = MeasurementCounter(si: _si, sport: activity.sport);
       _allRecords.forEach((record) {
@@ -120,7 +123,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             .map(
               (entry) => HistogramData(index: entry.key, upper: entry.value),
             )
-            .toList();
+            .toList(growable: false);
         _tileConfigurations["power"] = tileConfig;
       }
       if (measurementCounter.hasSpeed) {
@@ -144,7 +147,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             .map(
               (entry) => HistogramData(index: entry.key, upper: entry.value),
             )
-            .toList();
+            .toList(growable: false);
         _tileConfigurations["speed"] = tileConfig;
       }
       if (measurementCounter.hasCadence) {
@@ -169,7 +172,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             .map(
               (entry) => HistogramData(index: entry.key, upper: entry.value),
             )
-            .toList();
+            .toList(growable: false);
         _tileConfigurations["cadence"] = tileConfig;
       }
       if (measurementCounter.hasHeartRate) {
@@ -194,7 +197,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             .map(
               (entry) => HistogramData(index: entry.key, upper: entry.value),
             )
-            .toList();
+            .toList(growable: false);
         _tileConfigurations["hr"] = tileConfig;
       }
       _allRecords.forEach((record) {

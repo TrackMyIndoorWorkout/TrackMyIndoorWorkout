@@ -74,7 +74,7 @@ class TCXOutput {
       ..buildVersionMinor = MINOR
       ..langID = 'en-US'
       ..partNumber = '0'
-      ..points = records.map((r) => recordToTrackPoint(r, calculator)).toList();
+      ..points = records.map((r) => recordToTrackPoint(r, calculator)).toList(growable: false);
 
     return await TCXOutput().getTcx(tcxInfo, compress);
   }
