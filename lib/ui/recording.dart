@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
@@ -262,7 +263,7 @@ class RecordingState extends State<RecordingScreen> {
   @override
   void initState() {
     super.initState();
-    _pointCount = size.width ~/ 2;
+    _pointCount = min(60, size.width ~/ 2);
     _unitStyle = TextStyle(
       fontFamily: FONT_FAMILY,
       color: Colors.indigo,
