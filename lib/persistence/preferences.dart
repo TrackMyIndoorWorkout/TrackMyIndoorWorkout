@@ -118,6 +118,7 @@ class PreferencesSpec {
   List<double> zoneUpper;
   IconData icon;
   String sport;
+  bool flipZones;
 
   PreferencesSpec({
     @required this.metric,
@@ -136,6 +137,7 @@ class PreferencesSpec {
         assert(zonesTag != null),
         assert(zonesDefault != null),
         assert(icon != null) {
+    flipZones = false;
     updateMultiLineUnit();
   }
 
@@ -153,7 +155,8 @@ class PreferencesSpec {
 
   void calculateZones(String sport) {
     this.sport = sport;
-    final thresholdString = PrefService.getString(thresholdTag);
+    flipZones = sport != ActivityType.Ride && metric == "speed";
+    final thresholdString = PrefService.getString(thresholdTag(sport));
     threshold = double.tryParse(thresholdString);
     final zonesSpecStr = PrefService.getString(zonesTag);
     zonePercents = zonesSpecStr.split(',').map((zs) => int.tryParse(zs)).toList(growable: false);
@@ -176,7 +179,6 @@ class PreferencesSpec {
 
   int get binCount => zonePercents.length + 1;
 
-  bool get flipZones => sport != ActivityType.Ride && metric == "speed";
 
   int transformedBinIndex(int bin) {
     bin = min(max(0, bin), zonePercents.length - 1);

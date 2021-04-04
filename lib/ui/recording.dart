@@ -590,10 +590,10 @@ class RecordingState extends State<RecordingScreen> {
         annotationSegments.addAll(List.generate(
           entry.value.binCount,
           (i) => charts.RangeAnnotationSegment(
-            _activity.flipForPace(entry.value.metric)
+            entry.value.flipZones
                 ? entry.value.zoneUpper[i]
                 : entry.value.zoneLower[i],
-            _activity.flipForPace(entry.value.metric)
+            entry.value.flipZones
                 ? entry.value.zoneLower[i]
                 : entry.value.zoneUpper[i],
             charts.RangeAnnotationAxisType.measure,
@@ -635,7 +635,7 @@ class RecordingState extends State<RecordingScreen> {
               child: charts.TimeSeriesChart(
                 _metricToDataFn[entry.value.metric](),
                 animate: false,
-                flipVerticalAxis: _activity.flipForPace(entry.value.metric),
+                flipVerticalAxis: entry.value.flipZones,
                 primaryMeasureAxis: charts.NumericAxisSpec(
                   renderSpec: charts.NoneRenderSpec(),
                 ),
