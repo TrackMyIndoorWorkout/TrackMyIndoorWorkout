@@ -25,7 +25,6 @@ void main() async {
     SCAN_DURATION_TAG: SCAN_DURATION_DEFAULT,
     AUTO_CONNECT_TAG: AUTO_CONNECT_DEFAULT,
     INSTANT_MEASUREMENT_START_TAG: INSTANT_MEASUREMENT_START_DEFAULT,
-    LAST_EQUIPMENT_ID_TAG: LAST_EQUIPMENT_ID_DEFAULT,
     INSTANT_UPLOAD_TAG: INSTANT_UPLOAD_DEFAULT,
     SIMPLER_UI_TAG: await getSimplerUiDefault(),
     DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT,
@@ -48,9 +47,12 @@ void main() async {
       });
     });
   });
+  PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
+    prefDefaults.addAll({LAST_EQUIPMENT_ID_TAG_PREFIX + sport: LAST_EQUIPMENT_ID_DEFAULT});
+  });
   PrefService.setDefaultValues(prefDefaults);
 
-  if (PrefService.getInt(PREFERENCES_VERSION_TAG) < 1) {
+  if (PrefService.getInt(PREFERENCES_VERSION_TAG) < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
     PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
       final thresholdTag = PreferencesSpec.THRESHOLD_PREFIX + prefSpec.metric;
       var thresholdString = PrefService.getString(thresholdTag);
@@ -60,9 +62,16 @@ void main() async {
       PrefService.setString(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
       final zoneTag = prefSpec.metric + PreferencesSpec.ZONES_POSTFIX;
       PrefService.setString(prefSpec.zonesTag(ActivityType.Ride), PrefService.getString(zoneTag));
-      PrefService.setInt(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_DEFAULT + 1);
     });
   }
+  if (PrefService.getInt(PREFERENCES_VERSION_TAG) <
+      PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT) {
+    final lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG);
+    if (lastEquipmentId.length > 0) {
+      PrefService.setString(LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride, lastEquipmentId);
+    }
+  }
+  PrefService.setInt(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_DEFAULT + 1);
 
   DataConnectionChecker().addresses = STRAVA_AWS_US_EAST
       .map((ip) => AddressCheckOptions(

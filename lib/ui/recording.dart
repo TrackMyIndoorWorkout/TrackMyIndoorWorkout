@@ -268,7 +268,8 @@ class RecordingState extends State<RecordingScreen> {
       fontFamily: FONT_FAMILY,
       color: Colors.indigo,
     );
-    PrefService.setString(LAST_EQUIPMENT_ID_TAG, device.id.id);
+    PrefService.setString(
+        LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport), device.id.id);
     _descriptor.setPowerThrottle(
       PrefService.getString(THROTTLE_POWER_TAG),
       PrefService.getBool(THROTTLE_OTHER_TAG),

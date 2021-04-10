@@ -23,6 +23,10 @@ class AdvertisementCache {
     return _advertisementMap.containsKey(id);
   }
 
+  bool hasAnyEntry(List<String> ids) {
+    return ids.fold(false, (a, b) => a || _advertisementMap.containsKey(b));
+  }
+
   AdvertisementDigest getEntry(String id) {
     if (_advertisementMap.containsKey(id)) return _advertisementMap[id];
 

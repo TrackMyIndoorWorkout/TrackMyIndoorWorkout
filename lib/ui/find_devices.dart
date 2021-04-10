@@ -39,7 +39,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _instantScan;
   int _scanDuration;
   bool _autoConnect;
-  String _lastEquipmentId;
+  List<String> _lastEquipmentIds;
   bool _filterDevices;
   BluetoothDevice _openedDevice;
   List<BluetoothDevice> _scannedDevices;
@@ -94,7 +94,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _instantScan = PrefService.getBool(INSTANT_SCAN_TAG);
     _scanDuration = PrefService.getInt(SCAN_DURATION_TAG);
     _autoConnect = PrefService.getBool(AUTO_CONNECT_TAG);
-    _lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG);
+    PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
+      final lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG_PREFIX + sport);
+      if (lastEquipmentId.length > 0) {
+        _lastEquipmentIds.add(lastEquipmentId);
+      }
+    });
     _filterDevices = PrefService.getBool(DEVICE_FILTERING_TAG);
     if (_instantScan) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -115,6 +120,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
   }
 
   Future<bool> goToRecording(BluetoothDevice device, BluetoothDeviceState initialState) async {
+    if (!_advertisementCache.hasEntry(device.id.id)) {
+      return false;
+    }
+
     final advertisementDigest = _advertisementCache.getEntry(device.id.id);
     final descriptor = device.getDescriptor(advertisementDigest.serviceUuids);
     DeviceUsage deviceUsage;
@@ -209,15 +218,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   color: Colors.white,
                 );
               } else {
-                final lasts = _scannedDevices.where((d) => d.id.id == _lastEquipmentId);
+                final lasts = _scannedDevices.where((d) => _lastEquipmentIds.contains(d.id.id));
                 if (_openedDevice != null && !_advertisementCache.hasEntry(_openedDevice.id.id) ||
                     _filterDevices &&
                         _scannedDevices.length == 1 &&
                         !_advertisementCache.hasEntry(_scannedDevices.first.id.id) ||
                     _scannedDevices.length > 1 &&
-                        _lastEquipmentId.length > 0 &&
+                        _lastEquipmentIds.length > 0 &&
                         lasts.length > 0 &&
-                        !_advertisementCache.hasEntry(_lastEquipmentId)) {
+                        !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
                   startScan();
                   return Container();
                 } else if (_autoConnect) {
@@ -230,9 +239,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         goToRecording(_scannedDevices.first, BluetoothDeviceState.disconnected);
                       });
-                    } else if (_scannedDevices.length > 1 && _lastEquipmentId.length > 0) {
-                      final lasts = _scannedDevices.where((d) => d.id.id == _lastEquipmentId);
+                    } else if (_scannedDevices.length > 1 && _lastEquipmentIds.length > 0) {
+                      final lasts = _scannedDevices.where((d) =>
+                          _lastEquipmentIds.contains(d.id.id) &&
+                          _advertisementCache.hasEntry(d.id.id));
                       if (lasts.length > 0) {
+                        // TODO: sort by txLevel #105
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           goToRecording(lasts.first, BluetoothDeviceState.disconnected);
                         });
@@ -312,7 +324,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 builder: (c, snapshot) => Column(
                   children: snapshot.data.where((d) => d.isWorthy(_filterDevices)).map((r) {
                     addScannedDevice(r);
-                    if (_autoConnect && r.device.id.id == _lastEquipmentId) {
+                    if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {
                       FlutterBlue.instance.stopScan().whenComplete(() async {
                         await Future.delayed(Duration(milliseconds: 100));
                       });

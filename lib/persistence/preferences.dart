@@ -197,7 +197,7 @@ class PreferencesSpec {
   String get kmhTitle => '$title (kmh)';
   String get histogramTitle => '$title zones (%)';
 
-  String sport2Sport(String sport) {
+  static String sport2Sport(String sport) {
     return sport == ActivityType.Kayaking ||
             sport == ActivityType.Canoeing ||
             sport == ActivityType.Rowing
@@ -354,7 +354,10 @@ class PreferencesSpec {
 }
 
 const PREFERENCES_VERSION_TAG = "version";
-const PREFERENCES_VERSION_DEFAULT = 0; // TODO: bump to 1
+const PREFERENCES_VERSION_DEFAULT = 1;
+const PREFERENCES_VERSION_SPORT_THRESHOLDS = 1;
+const PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT = 2;
+const PREFERENCES_VERSION_NEXT = PREFERENCES_VERSION_DEFAULT + 1;
 
 const UX_PREFERENCES = "UI / UX Preferences";
 
@@ -384,11 +387,9 @@ const AUTO_CONNECT_DESCRIPTION = "On: if there's only a single " +
     "last exercise machine the app will automatically move to the " +
     "measurement screen to start recording.";
 
-const LAST_EQUIPMENT_ID = "Last Equipment ID";
-const LAST_EQUIPMENT_ID_TAG = "last_equipment";
+const LAST_EQUIPMENT_ID_TAG = "last_equipment_";
+const LAST_EQUIPMENT_ID_TAG_PREFIX = LAST_EQUIPMENT_ID_TAG + "_";
 const LAST_EQUIPMENT_ID_DEFAULT = "";
-const LAST_EQUIPMENT_ID_DESCRIPTION =
-    "The last exercise equipment ID " + "the app recorded a workout for";
 
 const INSTANT_MEASUREMENT_START = "Instant Measurement Start";
 const INSTANT_MEASUREMENT_START_TAG = "instant_measurement_start";
