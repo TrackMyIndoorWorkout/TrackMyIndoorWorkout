@@ -362,7 +362,7 @@ const UNIT_SYSTEM = "Unit System";
 const UNIT_SYSTEM_TAG = "unit_system";
 const UNIT_SYSTEM_DEFAULT = false;
 const UNIT_SYSTEM_DESCRIPTION =
-    "On: metric (km/h speed, meters distance), " + "Off: imperial (mp/h speed, miles distance).";
+    "On: metric (km/h speed, meters distance), Off: imperial (mp/h speed, miles distance).";
 
 const INSTANT_SCAN = "Instant Scanning";
 const INSTANT_SCAN_TAG = "instant_scan";
@@ -374,7 +374,7 @@ const SCAN_DURATION = "Scan Duration";
 const SCAN_DURATION_TAG = "scan_duration";
 const SCAN_DURATION_DEFAULT = 3;
 const SCAN_DURATION_DESCRIPTION =
-    "Duration in seconds the app will spend " + "looking Bluetooth Low Energy exercise equipment.";
+    "Duration in seconds the app will spend looking Bluetooth Low Energy exercise equipment.";
 
 const AUTO_CONNECT = "Auto Connect";
 const AUTO_CONNECT_TAG = "auto_connect";
@@ -453,7 +453,7 @@ const THROTTLE_OTHER = "Throttle Other";
 const THROTTLE_OTHER_TAG = "throttle_other";
 const THROTTLE_OTHER_DEFAULT = false;
 const THROTTLE_OTHER_DESCRIPTION =
-    "Apply the power throttle to other measurements as well " + "(speed, distance, calories)";
+    "Apply the power throttle to other measurements as well (speed, distance, calories)";
 
 const COMPRESS_DOWNLOAD = "File download compression";
 const COMPRESS_DOWNLOAD_TAG = "compress_download";
