@@ -21,6 +21,7 @@
 -keep class io.flutter.** { *; }
 -keep class io.flutter.plugins.** { *; }
 
+# This is from iterating over GeneratedPLuginRegistrant.java [
 -keep class com.pauldemarco.flutter_blue.** { *; }
 -keepclassmembernames class com.pauldemarco.flutter_blue.* { *; }
 -keep class io.flutter.plugins.deviceinfo.** { *; }
@@ -45,6 +46,7 @@
 -keepclassmembernames class io.flutter.plugins.urllauncher.** { *; }
 -keep class creativemaybeno.wakelock.** { *; }
 -keepclassmembernames class creativemaybeno.wakelock.** { *; }
+# ] This is from iterating over GeneratedPLuginRegistrant.java
 
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
 
