@@ -165,6 +165,7 @@ class PreferencesSpec {
   List<double> zoneLower;
   List<double> zoneUpper;
   IconData icon;
+  bool si;
   String sport;
   bool flipZones;
 
@@ -229,36 +230,53 @@ class PreferencesSpec {
     updateMultiLineUnit();
   }
 
-  void calculateZones(String sport) {
+  void calculateZones(bool si, String sport) {
+    this.si = si;
     this.sport = sport;
     flipZones = sport != ActivityType.Ride && metric == "speed";
     final thresholdString = PrefService.getString(thresholdTag(sport));
     threshold = double.tryParse(thresholdString);
+    if (metric == "speed") {
+      threshold = speedOrPace(threshold, si, sport);
+    }
+
     final zonesSpecStr = PrefService.getString(zonesTag(sport));
     zonePercents = zonesSpecStr.split(',').map((zs) => int.tryParse(zs)).toList(growable: false);
     zoneBounds =
         zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList(growable: false);
+    if (flipZones) {
+      zoneBounds = zoneBounds.reversed.toList(growable: false);
+    }
   }
 
   void calculateBounds(double minVal, double maxVal) {
     zoneLower = [...zoneBounds];
-    if (minVal < 0 || minVal > 0 && minVal > zoneLower[0]) {
-      minVal = zoneLower[0] * 0.75;
-    }
-    zoneLower.insert(0, decimalRound(minVal));
-
     zoneUpper = [...zoneBounds];
-    if (maxVal < 0 || maxVal > 0 && maxVal < zoneLower.last) {
-      maxVal = zoneLower.last * 1.15;
+
+    final zoneMin = flipZones ? zoneUpper.last : zoneLower[0];
+    if (minVal < 0 || minVal > 0 && minVal > zoneMin) {
+      minVal = zoneMin * 0.7;
     }
-    zoneUpper.add(decimalRound(maxVal));
+
+    final zoneMax = flipZones ? zoneLower[0] : zoneUpper.last;
+    if (maxVal < 0 || maxVal > 0 && maxVal < zoneMax) {
+      maxVal = zoneMax * 1.2;
+    }
+
+    if (flipZones) {
+      zoneLower.insert(0, decimalRound(maxVal));
+      zoneUpper.add(decimalRound(minVal));
+    } else {
+      zoneLower.insert(0, decimalRound(minVal));
+      zoneUpper.add(decimalRound(maxVal));
+    }
 
     List<common.AnnotationSegment> segments = [];
     segments.addAll(List.generate(
       binCount,
       (i) => RangeAnnotationSegment(
-        flipZones ? zoneUpper[i] : zoneLower[i],
-        flipZones ? zoneLower[i] : zoneUpper[i],
+        zoneLower[i],
+        zoneUpper[i],
         RangeAnnotationAxisType.measure,
         color: bgColorByBin(i),
         startLabel: zoneLower[i].toString(),
@@ -290,10 +308,11 @@ class PreferencesSpec {
     int i = 0;
     for (; i < zoneBounds.length; i++) {
       if (value < zoneBounds[i]) {
-        return transformedBinIndex(i);
+        return i;
       }
     }
-    return transformedBinIndex(i);
+
+    return i;
   }
 
   Color bgColorByBin(int bin) {
@@ -301,9 +320,9 @@ class PreferencesSpec {
       return getTranslucent(MaterialPalette.blue.shadeDefault.lighter);
     }
     if (zonePercents.length <= 5) {
-      return fiveBgPalette[transformedBinIndex(bin)];
+      return fiveBgPalette[bin];
     }
-    return sevenBgPalette[transformedBinIndex(bin)];
+    return sevenBgPalette[bin];
   }
 
   Color fgColorByBin(int bin) {
@@ -311,9 +330,9 @@ class PreferencesSpec {
       return MaterialPalette.blue.shadeDefault.darker;
     }
     if (zonePercents.length <= 5) {
-      return fiveFgPalette[bin];
+      return fiveFgPalette[transformedBinIndex(bin)];
     }
-    return sevenFgPalette[bin];
+    return sevenFgPalette[transformedBinIndex(bin)];
   }
 
   Color fgColorByValue(num value) {
@@ -329,7 +348,7 @@ class PreferencesSpec {
     prefSpecs[1].title = speedTitle(sport);
     prefSpecs[2].icon = getIcon(sport);
     prefSpecs[2].unit = getCadenceUnit(sport);
-    prefSpecs.forEach((prefSpec) => prefSpec.calculateZones(sport));
+    prefSpecs.forEach((prefSpec) => prefSpec.calculateZones(si, sport));
     return prefSpecs;
   }
 }

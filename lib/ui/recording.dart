@@ -299,7 +299,7 @@ class RecordingState extends State<RecordingScreen> {
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor.defaultSport);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
-          prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0,
+          decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
         ));
 
     _metricToDataFn = {
