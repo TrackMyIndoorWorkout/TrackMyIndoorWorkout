@@ -240,13 +240,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         goToRecording(_scannedDevices.first, BluetoothDeviceState.disconnected);
                       });
                     } else if (_scannedDevices.length > 1 && _lastEquipmentIds.length > 0) {
-                      final lasts = _scannedDevices.where((d) =>
-                          _lastEquipmentIds.contains(d.id.id) &&
-                          _advertisementCache.hasEntry(d.id.id));
+                      final lasts = _scannedDevices
+                          .where((d) =>
+                              _lastEquipmentIds.contains(d.id.id) &&
+                              _advertisementCache.hasEntry(d.id.id))
+                          .toList(growable: false);
                       if (lasts.length > 0) {
-                        // TODO: sort by txLevel #105
+                        lasts.sort((a, b) {
+                          return _advertisementCache
+                              .getEntry(a.id.id)
+                              .txPower
+                              .compareTo(_advertisementCache.getEntry(b.id.id).txPower);
+                        });
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          goToRecording(lasts.first, BluetoothDeviceState.disconnected);
+                          goToRecording(lasts.last, BluetoothDeviceState.disconnected);
                         });
                       }
                     }

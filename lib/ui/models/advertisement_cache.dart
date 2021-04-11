@@ -16,6 +16,7 @@ class AdvertisementCache {
       id: id,
       serviceUuids: scanResult.serviceUuids,
       manufacturer: scanResult.manufacturerName(),
+      txPower: scanResult.advertisementData.txPowerLevel ?? -120,
     );
   }
 
