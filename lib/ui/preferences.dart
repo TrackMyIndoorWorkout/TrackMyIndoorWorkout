@@ -193,7 +193,7 @@ class PreferencesScreen extends StatelessWidget {
             },
             onChange: (str) {
               PreferencesSpec.slowSpeeds[sport] = double.tryParse(str);
-            }
+            },
           ),
         ]);
       }
