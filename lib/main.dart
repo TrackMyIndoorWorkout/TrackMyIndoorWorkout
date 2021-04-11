@@ -67,7 +67,7 @@ void main() async {
   if (PrefService.getInt(PREFERENCES_VERSION_TAG) <
       PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT) {
     final lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG);
-    if (lastEquipmentId.length > 0) {
+    if ((lastEquipmentId?.length ?? 0) > 0) {
       PrefService.setString(LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride, lastEquipmentId);
     }
   }

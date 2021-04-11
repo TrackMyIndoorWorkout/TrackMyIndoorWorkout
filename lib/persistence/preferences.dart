@@ -387,7 +387,7 @@ const AUTO_CONNECT_DESCRIPTION = "On: if there's only a single " +
     "last exercise machine the app will automatically move to the " +
     "measurement screen to start recording.";
 
-const LAST_EQUIPMENT_ID_TAG = "last_equipment_";
+const LAST_EQUIPMENT_ID_TAG = "last_equipment";
 const LAST_EQUIPMENT_ID_TAG_PREFIX = LAST_EQUIPMENT_ID_TAG + "_";
 const LAST_EQUIPMENT_ID_DEFAULT = "";
 
