@@ -70,12 +70,13 @@ class RecordsScreenState extends State<RecordsScreen> {
     setState(() {
       _pointCount = size.width.toInt() - 20;
       if (_allRecords.length < _pointCount) {
-        _sampledRecords = _allRecords.map((r) => r.hydrate().display()).toList(growable: false);
+        _sampledRecords =
+            _allRecords.map((r) => r.hydrate(activity.sport).display()).toList(growable: false);
       } else {
         final nth = _allRecords.length / _pointCount;
         _sampledRecords = List.generate(
           _pointCount,
-          (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate().display(),
+          (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate(activity.sport).display(),
           growable: false,
         );
       }

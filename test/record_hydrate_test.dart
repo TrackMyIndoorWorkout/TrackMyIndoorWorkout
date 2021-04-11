@@ -11,7 +11,7 @@ void main() {
         test("$input -> $randomDateTime", () {
           var record =
               RecordWithSport(timeStamp: randomDateTime.millisecondsSinceEpoch, sport: sport);
-          record.hydrate();
+          record.hydrate(sport);
           expect(record.dt, randomDateTime);
         });
       });

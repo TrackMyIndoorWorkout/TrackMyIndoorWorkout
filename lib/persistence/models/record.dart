@@ -106,8 +106,11 @@ class Record {
     dt = DateTime.fromMillisecondsSinceEpoch(timeStamp);
   }
 
-  Record hydrate() {
+  Record hydrate(String sport) {
     _dtFromTimeStamp();
+    if (sport != null) {
+      this.sport = sport;
+    }
     return this;
   }
 
