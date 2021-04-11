@@ -33,6 +33,7 @@ class FitnessEquipment extends DeviceBase {
   bool measuring;
   bool calibrating;
   Random _random;
+  double slowPace;
 
   FitnessEquipment({this.descriptor, device})
       : assert(descriptor != null),
@@ -211,7 +212,7 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    if (stub.pace != null && stub.pace > 0 && stub.pace < SLOW_PACE ||
+    if (stub.pace != null && stub.pace > 0 && stub.pace < slowPace ||
         stub.speed != null && stub.speed > EPS) {
       // #101
       if ((stub.cadence == null || stub.cadence == 0) && _lastPositiveCadence > 0) {

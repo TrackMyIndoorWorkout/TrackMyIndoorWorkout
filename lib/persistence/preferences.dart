@@ -68,6 +68,13 @@ class PreferencesSpec {
   static const ZONES_POSTFIX = '_zones';
   static const METRICS = ['power', 'speed', 'cadence', 'hr'];
 
+  static final slowSpeeds = {
+    ActivityType.Ride: 5.0,
+    ActivityType.Run: 3.0,
+    PADDLE_SPORT: 2.0,
+    ActivityType.Swim: 1.0,
+  };
+
   static final _preferencesSpecsTemplate = [
     PreferencesSpec(
       metric: METRICS[0],
@@ -214,11 +221,15 @@ class PreferencesSpec {
   }
 
   String thresholdTag(String sport) {
-    return '${sport2Sport(sport)}_$thresholdTagPostfix';
+    return sport2Sport(sport) + "_" + thresholdTagPostfix;
   }
 
   String zonesTag(String sport) {
-    return '${sport2Sport(sport)}_$zonesTagPostfix';
+    return sport2Sport(sport) + "_" + zonesTagPostfix;
+  }
+
+  static String slowSpeedTag(String sport) {
+    return SLOW_SPEED_TAG_PREFIX + sport2Sport(sport);
   }
 
   void updateMultiLineUnit() {
@@ -487,6 +498,9 @@ const CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION = "On: Calorie count could be pre
     "workout is restarted accidentally or automatically. " +
     "(Note that data points will be still missing.) " +
     "Off: Calorie count will start from zero after workout restart.";
+
+const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
+const SLOW_SPEED_TAG_PREFIX = "slow_speed_";
 
 const ZONE_PREFERENCES = " Zone Preferences";
 

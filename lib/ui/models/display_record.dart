@@ -1,6 +1,6 @@
 import '../../persistence/models/record.dart';
+import '../../persistence/preferences.dart';
 import '../../tcx/activity_type.dart';
-import '../../utils/constants.dart';
 import '../../utils/display.dart';
 
 class DisplayRecord {
@@ -12,14 +12,16 @@ class DisplayRecord {
   String sport;
 
   DisplayRecord(Record source) {
+    sport = source.sport;
     power = source.power;
-    speed = (sport != ActivityType.Ride && source.speed > 0 && source.speed < MIN_SPEED)
+    speed = (sport != ActivityType.Ride &&
+            source.speed > 0 &&
+            source.speed < PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)])
         ? 0
         : source.speed;
     cadence = source.cadence;
     heartRate = source.heartRate;
     dt = source.dt;
-    sport = source.sport;
   }
 
   double speedByUnit(bool si, String sport) {

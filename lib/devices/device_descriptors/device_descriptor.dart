@@ -47,6 +47,7 @@ abstract class DeviceDescriptor {
   double distanceFactor;
   double throttlePower;
   bool throttleOther;
+  double slowPace;
 
   DeviceDescriptor({
     @required this.defaultSport,

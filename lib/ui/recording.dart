@@ -23,6 +23,7 @@ import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
+import '../tcx/activity_type.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
@@ -292,6 +293,12 @@ class RecordingState extends State<RecordingScreen> {
     _instantUpload = PrefService.getBool(INSTANT_UPLOAD_TAG);
     if (!_simplerUi) {
       _graphData = ListQueue<DisplayRecord>(_pointCount);
+    }
+
+    if (sport != ActivityType.Ride) {
+      final slowPace = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)];
+      _descriptor.slowPace = slowPace;
+      _fitnessEquipment.slowPace = slowPace;
     }
 
     final connectionWatchdogTimeString =

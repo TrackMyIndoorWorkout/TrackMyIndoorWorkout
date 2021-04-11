@@ -46,9 +46,11 @@ void main() async {
         prefSpec.zonesTag(sport): prefSpec.zonesDefault(sport),
       });
     });
-  });
-  PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
     prefDefaults.addAll({LAST_EQUIPMENT_ID_TAG_PREFIX + sport: LAST_EQUIPMENT_ID_DEFAULT});
+    if (sport != ActivityType.Ride) {
+      prefDefaults.addAll(
+          {PreferencesSpec.slowSpeedTag(sport): PreferencesSpec.slowSpeeds[sport].toString()});
+    }
   });
   PrefService.setDefaultValues(prefDefaults);
 
@@ -72,6 +74,13 @@ void main() async {
     }
   }
   PrefService.setInt(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_DEFAULT + 1);
+
+  PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
+    if (sport != ActivityType.Ride) {
+      final slowSpeedString = PrefService.getString(PreferencesSpec.slowSpeedTag(sport));
+      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString);
+    }
+  });
 
   DataConnectionChecker().addresses = STRAVA_AWS_US_EAST
       .map((ip) => AddressCheckOptions(

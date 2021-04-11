@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
-import '../../utils/constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../gatt_constants.dart';
@@ -87,7 +86,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     final pace = getPace(data);
 
     var strokeRate = getStrokeRate(data);
-    if ((strokeRate == null || strokeRate == 0) && (pace == 0 || pace > SLOW_PACE)) {
+    if ((strokeRate == null || strokeRate == 0) && (pace == 0 || pace > slowPace)) {
       clearStrokeRates();
     }
     if (_strokeRateWindowSize > 1) {

@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:meta/meta.dart';
 import '../../persistence/models/record.dart';
+import '../../persistence/preferences.dart';
 import '../../tcx/activity_type.dart';
 import '../../utils/constants.dart';
+import '../../utils/display.dart';
 
 class MeasurementCounter {
   final bool si;
@@ -25,11 +27,18 @@ class MeasurementCounter {
   int minHr = MIN_INIT;
   int maxHr = MAX_INIT;
 
+  double slowPace;
+
   MeasurementCounter({
     @required this.si,
     @required this.sport,
   })  : assert(si != null),
-        assert(sport != null);
+        assert(sport != null) {
+    if (sport != ActivityType.Ride) {
+      final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)];
+      slowPace = speedOrPace(slowSpeed, si, sport);
+    }
+  }
 
   void processRecord(Record record) {
     if (record.power > 0) {
@@ -40,8 +49,8 @@ class MeasurementCounter {
     if (record.speed > 0) {
       speedCounter++;
       var speed = record.speedByUnit(si, sport);
-      if (sport != ActivityType.Ride && speed > SLOW_PACE) {
-        speed = SLOW_PACE;
+      if (sport != ActivityType.Ride && speed > slowPace) {
+        speed = slowPace;
       }
       maxSpeed = max(maxSpeed, speed);
       minSpeed = min(minSpeed, speed);

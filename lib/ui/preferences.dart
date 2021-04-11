@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
 import '../persistence/preferences.dart';
+import '../tcx/activity_type.dart';
 
 RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
 
@@ -178,6 +179,24 @@ class PreferencesScreen extends StatelessWidget {
           ),
         ]);
       });
+      if (sport != ActivityType.Ride) {
+        appPreferences.addAll([
+          TextFieldPreference(
+            sport + SLOW_SPEED_POSTFIX,
+            PreferencesSpec.slowSpeedTag(sport),
+            defaultVal: PreferencesSpec.slowSpeeds[sport].toString(),
+            validator: (str) {
+              if (!isNumber(str, 0.01, -1)) {
+                return "Slow speed has to be positive";
+              }
+              return null;
+            },
+            onChange: (str) {
+              PreferencesSpec.slowSpeeds[sport] = double.tryParse(str);
+            }
+          ),
+        ]);
+      }
     });
 
     return Scaffold(

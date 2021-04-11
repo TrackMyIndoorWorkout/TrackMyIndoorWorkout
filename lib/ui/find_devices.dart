@@ -94,6 +94,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _instantScan = PrefService.getBool(INSTANT_SCAN_TAG);
     _scanDuration = PrefService.getInt(SCAN_DURATION_TAG);
     _autoConnect = PrefService.getBool(AUTO_CONNECT_TAG);
+    _lastEquipmentIds = [];
     PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
       final lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG_PREFIX + sport);
       if (lastEquipmentId.length > 0) {
