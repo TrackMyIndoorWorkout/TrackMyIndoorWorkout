@@ -99,10 +99,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           icon: Icon(Icons.file_download, color: Colors.black, size: size),
           onPressed: () async {
             final records = await _database.recordDao.findAllActivityRecords(activity.id);
-            final tcxGzip = await TCXOutput().getTcxOfActivity(activity, records, _compress);
-            final persistenceValues = activity.getPersistenceValues();
+            final tcxStream = await TCXOutput().getTcxOfActivity(activity, records, _compress);
+            final persistenceValues = activity.getPersistenceValues(_compress);
             ShareFilesAndScreenshotWidgets().shareFile(persistenceValues['name'],
-                persistenceValues['fileName'], tcxGzip, TCXOutput.MIME_TYPE,
+                persistenceValues['fileName'], tcxStream, TCXOutput.mimeType(_compress),
                 text: 'Share a ride on ${activity.deviceName}');
           },
         ),

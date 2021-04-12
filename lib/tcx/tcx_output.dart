@@ -16,8 +16,10 @@ import 'tcx_model.dart';
 class TCXOutput {
   static const MAJOR = '1';
   static const MINOR = '0';
-  static const FILE_EXTENSION = 'tcx.gz';
-  static const MIME_TYPE = 'application/x-gzip';
+  static const FILE_EXTENSION = 'tcx';
+  static const COMPRESSED_FILE_EXTENSION = FILE_EXTENSION + '.gz';
+  static const MIME_TYPE = 'text/xml';
+  static const COMPRESSED_MIME_TYPE = 'application/x-gzip';
 
   StringBuffer _sb;
 
@@ -25,6 +27,14 @@ class TCXOutput {
 
   TCXOutput() {
     _sb = StringBuffer();
+  }
+
+  static String fileExtension(bool compressed) {
+    return compressed ? COMPRESSED_FILE_EXTENSION : FILE_EXTENSION;
+  }
+
+  static String mimeType(bool compressed) {
+    return compressed ? COMPRESSED_MIME_TYPE : MIME_TYPE;
   }
 
   TrackPoint recordToTrackPoint(Record record, TrackCalculator calculator) {

@@ -76,11 +76,11 @@ class Activity {
     this.stravaId = stravaId;
   }
 
-  Map<String, dynamic> getPersistenceValues() {
+  Map<String, dynamic> getPersistenceValues(bool compressed) {
     final startStamp = DateTime.fromMillisecondsSinceEpoch(start);
     final dateString = DateFormat.yMd().format(startStamp);
     final timeString = DateFormat.Hms().format(startStamp);
-    final fileName = 'Activity_${dateString}_$timeString.${TCXOutput.FILE_EXTENSION}'
+    final fileName = 'Activity_${dateString}_$timeString.${TCXOutput.fileExtension(compressed)}'
         .replaceAll('/', '-')
         .replaceAll(':', '-');
     return {

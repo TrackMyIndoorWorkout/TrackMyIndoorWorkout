@@ -41,9 +41,9 @@ abstract class Upload {
 
     var fault = Fault(888, '');
 
-    final persistenceValues = activity.getPersistenceValues();
+    final persistenceValues = activity.getPersistenceValues(true);
     var request = http.MultipartRequest("POST", postUri);
-    request.fields['data_type'] = TCXOutput.FILE_EXTENSION;
+    request.fields['data_type'] = TCXOutput.COMPRESSED_FILE_EXTENSION;
     request.fields['trainer'] = 'false';
     request.fields['commute'] = 'false';
     request.fields['name'] = persistenceValues["name"];
