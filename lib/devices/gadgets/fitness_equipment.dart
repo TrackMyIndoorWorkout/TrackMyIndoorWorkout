@@ -34,6 +34,7 @@ class FitnessEquipment extends DeviceBase {
   bool calibrating;
   Random _random;
   double slowPace;
+  bool equipmentDiscovery;
 
   FitnessEquipment({this.descriptor, device})
       : assert(descriptor != null),
@@ -63,6 +64,7 @@ class FitnessEquipment extends DeviceBase {
       elapsedMillis: 0,
       sport: sport,
     );
+    equipmentDiscovery = false;
   }
 
   String get sport => _activity?.sport ?? descriptor.defaultSport;
@@ -129,9 +131,13 @@ class FitnessEquipment extends DeviceBase {
 
   Future<bool> discover({bool retry = false}) async {
     if (uxDebug) return true;
+
     final success = await super.discover(retry: retry);
     if (!success) return false;
 
+    if (equipmentDiscovery) return false;
+
+    equipmentDiscovery = true;
     // Check manufacturer name
     // Will need to elaborate when generic GATT Fitness Machine support is added
     final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
@@ -153,6 +159,7 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
+    equipmentDiscovery = false;
     return manufacturerName == descriptor.manufacturer;
   }
 
