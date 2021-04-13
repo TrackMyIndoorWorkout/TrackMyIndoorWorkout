@@ -39,6 +39,9 @@ class TCXOutput {
 
   TrackPoint recordToTrackPoint(Record record, TrackCalculator calculator) {
     final timeStamp = DateTime.fromMillisecondsSinceEpoch(record.timeStamp);
+    if (record.distance == null) {
+      record.distance = 0.0;
+    }
     final gps = calculator.gpsCoordinates(record.distance);
     return TrackPoint()
       ..longitude = gps.dx

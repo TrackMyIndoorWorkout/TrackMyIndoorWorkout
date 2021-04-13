@@ -182,7 +182,7 @@ class FitnessEquipment extends DeviceBase {
     final dT = (elapsedMillis - lastRecord.elapsedMillis) / 1000.0;
     if ((stub.distance ?? 0.0) < EPS && (stub.speed ?? 0.0) > 0 && dT > EPS) {
       double dD = stub.speed * DeviceDescriptor.KMH2MS * descriptor.distanceFactor * dT;
-      stub.distance = lastRecord.distance + dD;
+      stub.distance = (lastRecord.distance ?? 0) + dD;
     }
 
     var calories = 0.0;
