@@ -147,14 +147,14 @@ class FitnessEquipment extends DeviceBase {
       final nameBytes = await nameCharacteristic.read();
       manufacturerName = String.fromCharCodes(nameBytes);
     } on PlatformException catch (e, stack) {
-      debugPrint("${e.message}");
+      debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
       // 2nd try
       try {
         final nameBytes = await nameCharacteristic.read();
         manufacturerName = String.fromCharCodes(nameBytes);
       } on PlatformException catch (e, stack) {
-        debugPrint("${e.message}");
+        debugPrint("$e");
         debugPrintStack(stackTrace: stack, label: "trace:");
       }
     }

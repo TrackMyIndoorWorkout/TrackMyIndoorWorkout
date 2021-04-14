@@ -72,7 +72,7 @@ abstract class DeviceBase {
     try {
       services = await device.discoverServices();
     } on PlatformException catch (e, stack) {
-      debugPrint("${e.message}");
+      debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
       discovering = false;
       if (retry) return false;
@@ -120,7 +120,7 @@ abstract class DeviceBase {
       try {
         await characteristic?.setNotifyValue(false);
       } on PlatformException catch (e, stack) {
-        debugPrint("${e.message}");
+        debugPrint("$e");
         debugPrintStack(stackTrace: stack, label: "trace:");
       }
       attached = false;
