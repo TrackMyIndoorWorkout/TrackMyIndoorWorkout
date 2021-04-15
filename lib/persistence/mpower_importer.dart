@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 
 import '../devices/device_descriptors/device_descriptor.dart';
-import '../devices/device_descriptors/fitness_machine_descriptor.dart';
 import '../devices/device_map.dart';
 import '../ui/import_form.dart';
 import '../utils/constants.dart';
@@ -191,7 +190,7 @@ class MPowerEchelon2Importer {
       return null;
     }
 
-    FitnessMachineDescriptor device = deviceMap["SAP+"];
+    DeviceDescriptor device = deviceMap["SAP+"];
     var activity = Activity(
       deviceName: device.namePrefix,
       deviceId: "",
