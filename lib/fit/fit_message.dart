@@ -1,7 +1,7 @@
 import 'binary_serializable.dart';
 import 'fit_field.dart';
 
-class FitRecord extends BinarySerializable {
+class FitDefinitionMessage extends BinarySerializable {
   static const int LITTLE_ENDIAN = 0;
   static const int BIG_ENDIAN = 1;
 
@@ -17,6 +17,6 @@ class FitRecord extends BinarySerializable {
   List<FitField> fields;
 
   List<int> binarySerialize() {
-    // Assemble header from the architecture
+    // Assemble header from the architecture 
   }
 }
