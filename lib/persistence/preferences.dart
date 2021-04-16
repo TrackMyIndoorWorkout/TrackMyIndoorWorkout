@@ -440,6 +440,7 @@ const MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION =
         "be prompted to select a sport before every workout.";
 
 const TUNING_PREFERENCES = "Tuning";
+const WORKAROUND_PREFERENCES = "Workarounds";
 
 const MEASUREMENT_PANELS_EXPANDED_TAG = "measurement_panels_expanded";
 const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
@@ -498,6 +499,14 @@ const CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION = "On: Calorie count could be pre
     "workout is restarted accidentally or automatically. " +
     "(Note that data points will be still missing.) " +
     "Off: Calorie count will start from zero after workout restart.";
+
+const CADENCE_GAP_PATCHING_WORKAROUND = "Cadence / Stroke Gap Patching Workaround";
+const CADENCE_GAP_PATCHING_WORKAROUND_TAG = "cadence_gap_patching_workaround";
+const CADENCE_GAP_PATCHING_WORKAROUND_DEFAULT = true;
+const CADENCE_GAP_PATCHING_WORKAROUND_DESCRIPTION = "On: When speed / pace is non zero but the " +
+    "cadence / stroke rate is zero the application will substitute the zero with the last " +
+    "positive cadence reading. " +
+    "Off: Zero cadence will be recorded without modification.";
 
 const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
 const SLOW_SPEED_TAG_PREFIX = "slow_speed_";

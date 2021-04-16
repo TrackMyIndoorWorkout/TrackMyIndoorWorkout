@@ -23,6 +23,7 @@ class FitnessEquipment extends DeviceBase {
   String manufacturerName;
   double _residueCalories;
   int _lastPositiveCadence; // #101
+  bool _cadenceGapPatchingWorkaround = CADENCE_GAP_PATCHING_WORKAROUND_DEFAULT;
   double _lastPositiveCalories; // #111
   bool hasTotalCalorieCounting;
   bool _calorieCarryoverWorkaround = CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
@@ -45,13 +46,16 @@ class FitnessEquipment extends DeviceBase {
         ) {
     _residueCalories = 0.0;
     _lastPositiveCadence = 0;
+    _cadenceGapPatchingWorkaround = PrefService.getBool(CADENCE_GAP_PATCHING_WORKAROUND_TAG) ??
+        CADENCE_GAP_PATCHING_WORKAROUND_DEFAULT;
     _lastPositiveCalories = 0.0;
     hasTotalCalorieCounting = false;
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ?? true;
+    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
+        CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
     measuring = false;
     calibrating = false;
     _random = Random();
-    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
+    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     lastRecord = RecordWithSport(
       timeStamp: 0,
       distance: uxDebug ? _random.nextInt(5000).toDouble() : 0.0,
@@ -113,7 +117,7 @@ class FitnessEquipment extends DeviceBase {
 
   void setActivity(Activity activity) {
     this._activity = activity;
-    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
+    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }
 
   Future<bool> connectOnDemand(BluetoothDeviceState deviceState) async {
@@ -222,7 +226,9 @@ class FitnessEquipment extends DeviceBase {
     if (stub.pace != null && stub.pace > 0 && stub.pace < slowPace ||
         stub.speed != null && stub.speed > EPS) {
       // #101
-      if ((stub.cadence == null || stub.cadence == 0) && _lastPositiveCadence > 0) {
+      if ((stub.cadence == null || stub.cadence == 0) &&
+          _lastPositiveCadence > 0 &&
+          _cadenceGapPatchingWorkaround) {
         stub.cadence = _lastPositiveCadence;
       } else if (stub.cadence != null && stub.cadence > 0) {
         _lastPositiveCadence = stub.cadence;
@@ -260,8 +266,9 @@ class FitnessEquipment extends DeviceBase {
   }
 
   void stopWorkout() {
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ?? true;
-    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
+    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
+        CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
+    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();

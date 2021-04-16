@@ -119,6 +119,7 @@ class PreferencesScreen extends StatelessWidget {
           return null;
         },
       ),
+      PreferenceTitle(WORKAROUND_PREFERENCES),
       PreferenceTitle(EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION, style: descriptionStyle),
       TextFieldPreference(
         EQUIPMENT_DISCONNECTION_WATCHDOG,
@@ -136,6 +137,12 @@ class PreferencesScreen extends StatelessWidget {
         CALORIE_CARRYOVER_WORKAROUND_TAG,
         defaultVal: CALORIE_CARRYOVER_WORKAROUND_DEFAULT,
         desc: CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION,
+      ),
+      SwitchPreference(
+        CADENCE_GAP_PATCHING_WORKAROUND,
+        CADENCE_GAP_PATCHING_WORKAROUND_TAG,
+        defaultVal: CADENCE_GAP_PATCHING_WORKAROUND_DEFAULT,
+        desc: CADENCE_GAP_PATCHING_WORKAROUND_DESCRIPTION,
       ),
     ];
 

@@ -382,7 +382,7 @@ class RecordingState extends State<RecordingScreen> {
       return expanded;
     });
 
-    _uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
+    _uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _measuring = false;
     _fitnessEquipment.measuring = false;
     _values = ["--", "--", "--", "--", "--", "--"];
