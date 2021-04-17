@@ -493,10 +493,10 @@ const CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION = "On: Calorie count could be pre
     "(Note that data points will be still missing.) " +
     "Off: Calorie count will start from zero after workout restart.";
 
-const CADENCE_GAP_PATCHING_WORKAROUND = "Cadence / Stroke Gap Patching Workaround";
-const CADENCE_GAP_PATCHING_WORKAROUND_TAG = "cadence_gap_patching_workaround";
-const CADENCE_GAP_PATCHING_WORKAROUND_DEFAULT = true;
-const CADENCE_GAP_PATCHING_WORKAROUND_DESCRIPTION = "On: When speed / pace is non zero but the " +
+const CADENCE_GAP_WORKAROUND = "Cadence Data Gap Workaround";
+const CADENCE_GAP_WORKAROUND_TAG = "cadence_data_gap_workaround";
+const CADENCE_GAP_WORKAROUND_DEFAULT = true;
+const CADENCE_GAP_WORKAROUND_DESCRIPTION = "On: When speed / pace is non zero but the " +
     "cadence / stroke rate is zero the application will substitute the zero with the last " +
     "positive cadence reading. " +
     "Off: Zero cadence will be recorded without modification.";

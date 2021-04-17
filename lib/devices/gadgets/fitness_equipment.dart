@@ -23,7 +23,7 @@ class FitnessEquipment extends DeviceBase {
   String manufacturerName;
   double _residueCalories;
   int _lastPositiveCadence; // #101
-  bool _cadenceGapPatchingWorkaround = CADENCE_GAP_PATCHING_WORKAROUND_DEFAULT;
+  bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
   double _lastPositiveCalories; // #111
   bool hasTotalCalorieCounting;
   bool _calorieCarryoverWorkaround = CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
@@ -46,8 +46,8 @@ class FitnessEquipment extends DeviceBase {
         ) {
     _residueCalories = 0.0;
     _lastPositiveCadence = 0;
-    _cadenceGapPatchingWorkaround = PrefService.getBool(CADENCE_GAP_PATCHING_WORKAROUND_TAG) ??
-        CADENCE_GAP_PATCHING_WORKAROUND_DEFAULT;
+    _cadenceGapWorkaround = PrefService.getBool(CADENCE_GAP_WORKAROUND_TAG) ??
+        CADENCE_GAP_WORKAROUND_DEFAULT;
     _lastPositiveCalories = 0.0;
     hasTotalCalorieCounting = false;
     _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
@@ -225,10 +225,10 @@ class FitnessEquipment extends DeviceBase {
 
     if (stub.pace != null && stub.pace > 0 && stub.pace < slowPace ||
         stub.speed != null && stub.speed > EPS) {
-      // #101
+      // #101, #122
       if ((stub.cadence == null || stub.cadence == 0) &&
           _lastPositiveCadence > 0 &&
-          _cadenceGapPatchingWorkaround) {
+          _cadenceGapWorkaround) {
         stub.cadence = _lastPositiveCadence;
       } else if (stub.cadence != null && stub.cadence > 0) {
         _lastPositiveCadence = stub.cadence;
