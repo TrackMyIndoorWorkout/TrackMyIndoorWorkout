@@ -448,13 +448,6 @@ const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
 const MEASUREMENT_DETAIL_SIZE_TAG = "measurement_detail_size";
 const MEASUREMENT_DETAIL_SIZE_DEFAULT = "00000";
 
-const APP_DEBUG_MODE = "Application Debug Mode";
-const APP_DEBUG_MODE_TAG = "app_debug_mode";
-const APP_DEBUG_MODE_DEFAULT = false;
-const APP_DEBUG_MODE_DESCRIPTION =
-    "On: The Recording UI runs on simulated data, no equipment required. " +
-        "Off: The recording works as it should in release.";
-
 const THROTTLE_POWER = "Throttle Power";
 const THROTTLE_POWER_TAG = "throttle_power";
 const THROTTLE_POWER_DEFAULT = "0";
@@ -508,10 +501,30 @@ const CADENCE_GAP_PATCHING_WORKAROUND_DESCRIPTION = "On: When speed / pace is no
     "positive cadence reading. " +
     "Off: Zero cadence will be recorded without modification.";
 
-const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
-const SLOW_SPEED_TAG_PREFIX = "slow_speed_";
+const EXPERT_PREFERENCES = "Expert Preferences";
+
+const APP_DEBUG_MODE = "Application Debug Mode";
+const APP_DEBUG_MODE_TAG = "app_debug_mode";
+const APP_DEBUG_MODE_DEFAULT = false;
+const APP_DEBUG_MODE_DESCRIPTION =
+    "On: The Recording UI runs on simulated data, no equipment required. " +
+        "Off: The recording works as it should in release.";
+
+const DATA_CONNECTION_ADDRESSES = "Data Connection Addresses";
+const DATA_CONNECTION_ADDRESSES_TAG = "data_connection_addresses";
+const DATA_CONNECTION_ADDRESSES_DEFAULT =
+    "52.44.84.95,54.160.234.139,52.87.57.116,3.93.102.29," + "54.157.131.119,3.226.9.14";
+
+const DATA_CONNECTION_ADDRESSES_DESCRIPTION =
+    "Following is a comma separated list of IP addresses with optional comma separated port " +
+        "numbers. Lack of a port number will mean 443 (HTTPS). " +
+        "The application will reach out to these endpoints to determine if there " +
+        "is really a data connection.";
 
 const ZONE_PREFERENCES = " Zone Preferences";
+
+const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
+const SLOW_SPEED_TAG_PREFIX = "slow_speed_";
 
 const FONT_FAMILY = "RobotoMono";
 

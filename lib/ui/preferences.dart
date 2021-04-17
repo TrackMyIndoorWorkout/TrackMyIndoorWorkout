@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
 import '../persistence/preferences.dart';
 import '../tcx/activity_type.dart';
+import '../utils/preferences.dart';
 
 RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
 
@@ -146,15 +147,6 @@ class PreferencesScreen extends StatelessWidget {
       ),
     ];
 
-    if (kDebugMode) {
-      appPreferences.add(SwitchPreference(
-        APP_DEBUG_MODE,
-        APP_DEBUG_MODE_TAG,
-        defaultVal: APP_DEBUG_MODE_DEFAULT,
-        desc: APP_DEBUG_MODE_DESCRIPTION,
-      ));
-    }
-
     PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
       appPreferences.add(PreferenceTitle(sport + ZONE_PREFERENCES));
       PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
@@ -205,6 +197,36 @@ class PreferencesScreen extends StatelessWidget {
         ]);
       }
     });
+
+    appPreferences.addAll([
+      PreferenceTitle(EXPERT_PREFERENCES),
+      PreferenceTitle(DATA_CONNECTION_ADDRESSES_DESCRIPTION, style: descriptionStyle),
+      TextFieldPreference(
+        DATA_CONNECTION_ADDRESSES,
+        DATA_CONNECTION_ADDRESSES_TAG,
+        defaultVal: DATA_CONNECTION_ADDRESSES_DEFAULT,
+        validator: (str) {
+          final addressTuples = parseIpAddresses(str);
+          if (addressTuples == null || addressTuples.isEmpty) {
+            return "Invalid or empty addresses, default DNS servers will be used";
+          } else {
+            if (str.split(",").length > addressTuples.length) {
+              return "There's some malformed address(es) in the configuration";
+            }
+          }
+          return null;
+        },
+      ),
+    ]);
+
+    if (kDebugMode) {
+      appPreferences.add(SwitchPreference(
+        APP_DEBUG_MODE,
+        APP_DEBUG_MODE_TAG,
+        defaultVal: APP_DEBUG_MODE_DEFAULT,
+        desc: APP_DEBUG_MODE_DESCRIPTION,
+      ));
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text('Preferences')),

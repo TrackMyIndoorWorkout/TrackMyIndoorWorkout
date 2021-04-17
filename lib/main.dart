@@ -8,8 +8,8 @@ import 'package:preferences/preferences.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'devices/company_registry.dart';
 import 'persistence/preferences.dart';
-import 'strava/constants.dart';
 import 'tcx/activity_type.dart';
+import 'utils/preferences.dart';
 import 'track_my_indoor_exercise_app.dart';
 
 void main() async {
@@ -83,12 +83,18 @@ void main() async {
     }
   });
 
-  DataConnectionChecker().addresses = STRAVA_AWS_US_EAST
-      .map((ip) => AddressCheckOptions(
-            InternetAddress(ip),
-            port: HTTPS_PORT,
-          ))
-      .toList(growable: false);
+  final addressesString = PrefService.getString(DATA_CONNECTION_ADDRESSES) ?? "";
+  if (addressesString.trim().isNotEmpty) {
+    final addressTuples = parseIpAddresses(addressesString);
+    if (addressTuples.length > 0) {
+      DataConnectionChecker().addresses = addressTuples
+          .map((addressTuple) => AddressCheckOptions(
+                InternetAddress(addressTuple.item1),
+                port: addressTuple.item2,
+              ))
+          .toList(growable: false);
+    }
+  }
 
   final companyRegistry = CompanyRegistry();
   await companyRegistry.loadCompanyIdentifiers();
