@@ -145,6 +145,30 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: CADENCE_GAP_WORKAROUND_DEFAULT,
         desc: CADENCE_GAP_WORKAROUND_DESCRIPTION,
       ),
+      PreferenceDialogLink(
+        HRM_GAP_WORKAROUND,
+        dialog: PreferenceDialog(
+          [
+            RadioPreference(
+              DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION,
+              DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE,
+              HRM_GAP_WORKAROUND_TAG,
+            ),
+            RadioPreference(
+              DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION,
+              DATA_GAP_WORKAROUND_NO_WORKAROUND,
+              HRM_GAP_WORKAROUND_TAG,
+            ),
+            RadioPreference(
+              DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION,
+              DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS,
+              HRM_GAP_WORKAROUND_TAG,
+            ),
+          ],
+          title: 'Select workaround type',
+          cancelText: 'Close',
+        ),
+      ),
     ];
 
     PreferencesSpec.SPORT_PREFIXES.forEach((sport) {

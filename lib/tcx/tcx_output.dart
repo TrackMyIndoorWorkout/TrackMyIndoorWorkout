@@ -2,10 +2,13 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:preferences/preferences.dart';
+
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../devices/device_map.dart';
+import '../persistence/preferences.dart';
 import '../tcx/activity_type.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';
@@ -21,12 +24,16 @@ class TCXOutput {
   static const MIME_TYPE = 'text/xml';
   static const COMPRESSED_MIME_TYPE = 'application/x-gzip';
 
+  String _heartRateGapWorkaround = HRM_GAP_WORKAROUND_DEFAULT;
+
   StringBuffer _sb;
 
   StringBuffer get sb => _sb;
 
   TCXOutput() {
     _sb = StringBuffer();
+    _heartRateGapWorkaround =
+        PrefService.getString(HRM_GAP_WORKAROUND_TAG) ?? HRM_GAP_WORKAROUND_DEFAULT;
   }
 
   static String fileExtension(bool compressed) {
@@ -242,7 +249,8 @@ class TCXOutput {
 
     addExtensions('Speed', point.speed.toStringAsFixed(2), 'Watts', point.power);
 
-    if (point.heartRate != null) {
+    if (point.heartRate != null &&
+        (point.heartRate > 0 || _heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND)) {
       addHeartRate(point.heartRate);
     }
 

@@ -501,6 +501,19 @@ const CADENCE_GAP_WORKAROUND_DESCRIPTION = "On: When speed / pace is non zero bu
     "positive cadence reading. " +
     "Off: Zero cadence will be recorded without modification.";
 
+const HRM_GAP_WORKAROUND = "Heart Rate Data Gap Workaround";
+const HRM_GAP_WORKAROUND_TAG = "hrm_gap_workaround";
+const DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE = "last_positive_value";
+const DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION =
+    "Persist the last known positive reading when a zero intermittent reading is encountered.";
+const DATA_GAP_WORKAROUND_NO_WORKAROUND = "no_workaround";
+const DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION =
+    "Persist any values (including zeros) just as they are read from the device.";
+const DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS = "do_not_write_zeros";
+const DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION =
+    "Don't output any reading when zero data is recorded. Certain standards may not support that.";
+const HRM_GAP_WORKAROUND_DEFAULT = DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
+
 const EXPERT_PREFERENCES = "Expert Preferences";
 
 const APP_DEBUG_MODE = "Application Debug Mode";

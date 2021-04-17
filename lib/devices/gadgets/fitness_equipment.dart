@@ -30,6 +30,7 @@ class FitnessEquipment extends DeviceBase {
   Timer _timer;
   Record lastRecord;
   HeartRateMonitor heartRateMonitor;
+  String _heartRateGapWorkaround = HRM_GAP_WORKAROUND_DEFAULT;
   Activity _activity;
   bool measuring;
   bool calibrating;
@@ -46,8 +47,8 @@ class FitnessEquipment extends DeviceBase {
         ) {
     _residueCalories = 0.0;
     _lastPositiveCadence = 0;
-    _cadenceGapWorkaround = PrefService.getBool(CADENCE_GAP_WORKAROUND_TAG) ??
-        CADENCE_GAP_WORKAROUND_DEFAULT;
+    _cadenceGapWorkaround =
+        PrefService.getBool(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
     _lastPositiveCalories = 0.0;
     hasTotalCalorieCounting = false;
     _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
@@ -68,6 +69,8 @@ class FitnessEquipment extends DeviceBase {
       elapsedMillis: 0,
       sport: sport,
     );
+    _heartRateGapWorkaround =
+        PrefService.getString(HRM_GAP_WORKAROUND_TAG) ?? HRM_GAP_WORKAROUND_DEFAULT;
     equipmentDiscovery = false;
   }
 
@@ -255,8 +258,10 @@ class FitnessEquipment extends DeviceBase {
       stub.heartRate = heartRateMonitor.metric;
     }
 
-    // #93
-    if (stub.heartRate == 0 && lastRecord.heartRate > 0) {
+    // #93, #113
+    if (stub.heartRate == 0 &&
+        lastRecord.heartRate > 0 &&
+        _heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
       stub.heartRate = lastRecord.heartRate;
     }
 
