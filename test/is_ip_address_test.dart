@@ -43,8 +43,13 @@ void main() {
       TestPair(input: "1.2.3.4", expected: true),
       TestPair(input: " 1.2.3.4 ", expected: true),
       TestPair(input: "1.2.3.4 ", expected: true),
-      TestPair(input: "1.2. 3.4", expected: true),
+      TestPair(input: "1.2. 3.4", expected: false),
       TestPair(input: " 1 . 2 . 3 . 4 ", expected: false),
+      TestPair(input: "0.1.2.3", expected: false),
+      TestPair(input: "1.2.3.0", expected: true),
+      TestPair(input: "192.0.0.0", expected: true),
+      TestPair(input: "192.0.0.1", expected: true),
+      TestPair(input: "192.168.1.1", expected: true),
     ].forEach((testPair) {
       test("${testPair.input} -> ${testPair.expected}", () async {
         expect(isIpAddress(testPair.input), testPair.expected);
@@ -56,7 +61,7 @@ void main() {
     final rnd = Random();
     List.generate(REPETITION, (index) => index).forEach((index) {
       final ipParts = getRandomInts(4, 320, rnd);
-      final expected = ipParts.fold(true, (prev, part) => prev && part < 256);
+      final expected = ipParts.fold(true, (prev, part) => prev && part < 256) && ipParts[0] > 0;
       final addressString = ipParts.map((part) => part.toString()).join(".");
       test('$addressString -> $expected', () async {
         expect(isIpAddress(addressString), expected);
