@@ -14,26 +14,26 @@ import 'preferences.dart';
 
 class WorkoutRow {
   int power;
-  int rpm;
-  int hr;
+  int cadence;
+  int heartRate;
   double distance;
 
   WorkoutRow({
     this.power,
-    this.rpm,
-    this.hr,
+    this.cadence,
+    this.heartRate,
     this.distance,
     String rowString,
-    int lastHr,
+    int lastHeartRate,
     double throttleRatio,
   }) {
     if (rowString != null) {
       final values = rowString.split(",");
       this.power = (int.tryParse(values[0]) * throttleRatio).round();
-      this.rpm = int.tryParse(values[1]);
-      this.hr = int.tryParse(values[2]);
-      if (this.hr == 0 && lastHr > 0) {
-        this.hr = lastHr;
+      this.cadence = int.tryParse(values[1]);
+      this.heartRate = int.tryParse(values[2]);
+      if (this.heartRate == 0 && lastHeartRate > 0) {
+        this.heartRate = lastHeartRate;
       }
 
       this.distance = double.tryParse(values[3]);
@@ -224,29 +224,29 @@ class MPowerEchelon2Importer {
     double distance = 0;
     double elapsed = 0;
     WorkoutRow nextRow;
-    int lastHr = 0;
+    int lastHeartRate = 0;
     int timeStamp = start.millisecondsSinceEpoch;
     while (_linePointer < _lines.length) {
       WorkoutRow row = nextRow;
       if (row == null) {
         row = WorkoutRow(
-            rowString: _lines[_linePointer], lastHr: lastHr, throttleRatio: _throttleRatio);
+            rowString: _lines[_linePointer], lastHeartRate: lastHeartRate, throttleRatio: _throttleRatio,);
       }
 
       if (_linePointer + 1 >= _lines.length) {
-        nextRow = WorkoutRow(power: 0, rpm: 0, hr: 0, distance: 0.0, throttleRatio: 1.0);
+        nextRow = WorkoutRow(power: 0, cadence: 0, heartRate: 0, distance: 0.0, throttleRatio: 1.0,);
       } else {
         nextRow = WorkoutRow(
-            rowString: _lines[_linePointer + 1], lastHr: lastHr, throttleRatio: _throttleRatio);
+            rowString: _lines[_linePointer + 1], lastHeartRate: lastHeartRate, throttleRatio: _throttleRatio,);
       }
 
       double dPower = (nextRow.power - row.power) / recordsPerRow;
-      double dCadence = (nextRow.rpm - row.rpm) / recordsPerRow;
-      double dHr = (nextRow.hr - row.hr) / recordsPerRow;
+      double dCadence = (nextRow.cadence - row.cadence) / recordsPerRow;
+      double dHeartRate = (nextRow.heartRate - row.heartRate) / recordsPerRow;
       double power = row.power.toDouble();
-      double rpm = row.rpm.toDouble();
-      double hr = row.hr.toDouble();
-      lastHr = row.hr;
+      double cadence = row.cadence.toDouble();
+      double heartRate = row.heartRate.toDouble();
+      lastHeartRate = row.heartRate;
 
       for (int i = 0; i < recordsPerRow; i++) {
         final powerInt = power.round();
@@ -261,8 +261,8 @@ class MPowerEchelon2Importer {
           calories: energy.round(),
           power: powerInt,
           speed: speed * DeviceDescriptor.MS2KMH,
-          cadence: rpm.round(),
-          heartRate: hr.round(),
+          cadence: cadence.round(),
+          heartRate: heartRate.round(),
           elapsedMillis: elapsed.round(),
           sport: activity.sport,
         );
@@ -276,8 +276,8 @@ class MPowerEchelon2Importer {
         timeStamp += milliSecondsPerRecordInt;
         elapsed += milliSecondsPerRecord;
         power += dPower;
-        rpm += dCadence;
-        hr += dHr;
+        cadence += dCadence;
+        heartRate += dHeartRate;
         recordCounter++;
         progressCounter++;
         if (progressCounter == progressSteps) {
