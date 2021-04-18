@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
+import 'package:preferences/preferences.dart';
 
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
@@ -25,6 +26,7 @@ class WorkoutRow {
     this.distance,
     String rowString,
     int lastHeartRate,
+    bool heartRateGapWorkaround,
     double throttleRatio,
   }) {
     if (rowString != null) {
@@ -32,7 +34,7 @@ class WorkoutRow {
       this.power = (int.tryParse(values[0]) * throttleRatio).round();
       this.cadence = int.tryParse(values[1]);
       this.heartRate = int.tryParse(values[2]);
-      if (this.heartRate == 0 && lastHeartRate > 0) {
+      if (this.heartRate == 0 && lastHeartRate > 0 && heartRateGapWorkaround) {
         this.heartRate = lastHeartRate;
       }
 
@@ -226,18 +228,38 @@ class MPowerEchelon2Importer {
     WorkoutRow nextRow;
     int lastHeartRate = 0;
     int timeStamp = start.millisecondsSinceEpoch;
+    String heartRateGapWorkaroundSetting =
+        PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+    bool heartRateGapWorkaround =
+        heartRateGapWorkaroundSetting == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
+
     while (_linePointer < _lines.length) {
       WorkoutRow row = nextRow;
       if (row == null) {
         row = WorkoutRow(
-            rowString: _lines[_linePointer], lastHeartRate: lastHeartRate, throttleRatio: _throttleRatio,);
+          rowString: _lines[_linePointer],
+          lastHeartRate: lastHeartRate,
+          heartRateGapWorkaround: heartRateGapWorkaround,
+          throttleRatio: _throttleRatio,
+        );
       }
 
       if (_linePointer + 1 >= _lines.length) {
-        nextRow = WorkoutRow(power: 0, cadence: 0, heartRate: 0, distance: 0.0, throttleRatio: 1.0,);
+        nextRow = WorkoutRow(
+          power: 0,
+          cadence: 0,
+          heartRate: 0,
+          distance: 0.0,
+          throttleRatio: 1.0,
+          heartRateGapWorkaround: heartRateGapWorkaround,
+        );
       } else {
         nextRow = WorkoutRow(
-            rowString: _lines[_linePointer + 1], lastHeartRate: lastHeartRate, throttleRatio: _throttleRatio,);
+          rowString: _lines[_linePointer + 1],
+          lastHeartRate: lastHeartRate,
+          heartRateGapWorkaround: heartRateGapWorkaround,
+          throttleRatio: _throttleRatio,
+        );
       }
 
       double dPower = (nextRow.power - row.power) / recordsPerRow;
