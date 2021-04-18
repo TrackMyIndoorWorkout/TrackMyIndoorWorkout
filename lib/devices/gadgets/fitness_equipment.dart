@@ -30,7 +30,7 @@ class FitnessEquipment extends DeviceBase {
   Timer _timer;
   Record lastRecord;
   HeartRateMonitor heartRateMonitor;
-  String _heartRateGapWorkaround = HRM_GAP_WORKAROUND_DEFAULT;
+  String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
   Activity _activity;
   bool measuring;
   bool calibrating;
@@ -70,7 +70,7 @@ class FitnessEquipment extends DeviceBase {
       sport: sport,
     );
     _heartRateGapWorkaround =
-        PrefService.getString(HRM_GAP_WORKAROUND_TAG) ?? HRM_GAP_WORKAROUND_DEFAULT;
+        PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     equipmentDiscovery = false;
   }
 

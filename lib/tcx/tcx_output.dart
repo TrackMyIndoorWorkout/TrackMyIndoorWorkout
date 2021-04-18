@@ -24,7 +24,7 @@ class TCXOutput {
   static const MIME_TYPE = 'text/xml';
   static const COMPRESSED_MIME_TYPE = 'application/x-gzip';
 
-  String _heartRateGapWorkaround = HRM_GAP_WORKAROUND_DEFAULT;
+  String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
 
   StringBuffer _sb;
 
@@ -33,7 +33,7 @@ class TCXOutput {
   TCXOutput() {
     _sb = StringBuffer();
     _heartRateGapWorkaround =
-        PrefService.getString(HRM_GAP_WORKAROUND_TAG) ?? HRM_GAP_WORKAROUND_DEFAULT;
+        PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
   }
 
   static String fileExtension(bool compressed) {
