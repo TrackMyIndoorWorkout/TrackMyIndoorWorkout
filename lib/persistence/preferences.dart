@@ -514,6 +514,28 @@ const DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION =
     "Don't output any reading when zero data is recorded. Certain standards may not support that.";
 const HEART_RATE_GAP_WORKAROUND_DEFAULT = DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
 
+const HEART_RATE_UPPER_LIMIT = "Heart Rate Upper Limit";
+const HEART_RATE_UPPER_LIMIT_TAG = "heart_rate_upper_limit";
+const HEART_RATE_UPPER_LIMIT_DEFAULT = "0";
+const HEART_RATE_UPPER_LIMIT_DEFAULT_INT = 0;
+const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is the heart rate upper bound where the methods" +
+    "bellow would be applied. 0 means no limiting is performed.";
+
+const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection";
+const HEART_RATE_LIMITING_METHOD_TAG = "heart_rate_limiting_method";
+const HEART_RATE_LIMITING_WRITE_ZERO = "write_zero";
+const HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION =
+    "Persist zero when the heart rate limit is reached.";
+const HEART_RATE_LIMITING_WRITE_NOTHING = "write_nothing";
+const HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION =
+    "Don't persist any heart rate when the limit is reached.";
+const HEART_RATE_LIMITING_CAP_AT_LIMIT = "cap_at_limit";
+const HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION =
+    "Cap the value at the level configured bellow.";
+const HEART_RATE_LIMITING_NO_LIMIT = "no_limit";
+const HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION = "Don't apply any limiting.";
+const HEART_RATE_LIMITING_METHOD_DEFAULT = HEART_RATE_LIMITING_WRITE_NOTHING;
+
 const EXPERT_PREFERENCES = "Expert Preferences";
 
 const APP_DEBUG_MODE = "Application Debug Mode";

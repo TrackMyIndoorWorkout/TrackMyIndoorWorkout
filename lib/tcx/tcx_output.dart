@@ -25,6 +25,8 @@ class TCXOutput {
   static const COMPRESSED_MIME_TYPE = 'application/x-gzip';
 
   String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
+  int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT_INT;
+  String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
 
   StringBuffer _sb;
 
@@ -34,6 +36,11 @@ class TCXOutput {
     _sb = StringBuffer();
     _heartRateGapWorkaround =
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+    final heartRateUpperLimitString =
+        PrefService.getString(HEART_RATE_UPPER_LIMIT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+    _heartRateUpperLimit = int.tryParse(heartRateUpperLimitString);
+    _heartRateLimitingMethod =
+        PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
   }
 
   static String fileExtension(bool compressed) {
@@ -249,9 +256,27 @@ class TCXOutput {
 
     addExtensions('Speed', point.speed.toStringAsFixed(2), 'Watts', point.power);
 
-    if (point.heartRate != null &&
-        (point.heartRate > 0 || _heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND)) {
-      addHeartRate(point.heartRate);
+    if (point.heartRate != null) {
+      if (_heartRateUpperLimit > 0 &&
+          point.heartRate > _heartRateUpperLimit &&
+          _heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
+        bool persist = false;
+        if (_heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+          point.heartRate = _heartRateUpperLimit;
+          persist = true;
+        } else {
+          point.heartRate = 0;
+          persist = _heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO;
+        }
+
+        if (persist) {
+          addHeartRate(point.heartRate);
+        }
+      } else if (point.heartRate > 0 ||
+          _heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND ||
+          _heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
+        addHeartRate(point.heartRate);
+      }
     }
 
     _sb.write("</Trackpoint>\n");

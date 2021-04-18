@@ -31,6 +31,8 @@ class FitnessEquipment extends DeviceBase {
   Record lastRecord;
   HeartRateMonitor heartRateMonitor;
   String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
+  int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT_INT;
+  String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
   Activity _activity;
   bool measuring;
   bool calibrating;
@@ -71,6 +73,11 @@ class FitnessEquipment extends DeviceBase {
     );
     _heartRateGapWorkaround =
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+    final heartRateUpperLimitString =
+        PrefService.getString(HEART_RATE_UPPER_LIMIT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+    _heartRateUpperLimit = int.tryParse(heartRateUpperLimitString);
+    _heartRateLimitingMethod =
+        PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
     equipmentDiscovery = false;
   }
 
@@ -263,6 +270,16 @@ class FitnessEquipment extends DeviceBase {
         lastRecord.heartRate > 0 &&
         _heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
       stub.heartRate = lastRecord.heartRate;
+    }
+    // #114
+    if (_heartRateUpperLimit > 0 &&
+        stub.heartRate > _heartRateUpperLimit &&
+        _heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
+      if (_heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+        stub.heartRate = _heartRateUpperLimit;
+      } else {
+        stub.heartRate = 0;
+      }
     }
 
     stub.activityId = _activity?.id;

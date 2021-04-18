@@ -27,6 +27,8 @@ class WorkoutRow {
     String rowString,
     int lastHeartRate,
     bool heartRateGapWorkaround,
+    int heartRateUpperLimit,
+    String heartRateLimitingMethod,
     double throttleRatio,
   }) {
     if (rowString != null) {
@@ -36,6 +38,14 @@ class WorkoutRow {
       this.heartRate = int.tryParse(values[2]);
       if (this.heartRate == 0 && lastHeartRate > 0 && heartRateGapWorkaround) {
         this.heartRate = lastHeartRate;
+      } else if (heartRateUpperLimit > 0 &&
+          this.heartRate > heartRateUpperLimit &&
+          heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
+        if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+          this.heartRate = heartRateUpperLimit;
+        } else {
+          this.heartRate = 0;
+        }
       }
 
       this.distance = double.tryParse(values[3]);
@@ -232,6 +242,11 @@ class MPowerEchelon2Importer {
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     bool heartRateGapWorkaround =
         heartRateGapWorkaroundSetting == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
+    String heartRateUpperLimitString =
+        PrefService.getString(HEART_RATE_UPPER_LIMIT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+    int heartRateUpperLimit = int.tryParse(heartRateUpperLimitString);
+    String heartRateLimitingMethod =
+        PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
 
     while (_linePointer < _lines.length) {
       WorkoutRow row = nextRow;
@@ -240,6 +255,8 @@ class MPowerEchelon2Importer {
           rowString: _lines[_linePointer],
           lastHeartRate: lastHeartRate,
           heartRateGapWorkaround: heartRateGapWorkaround,
+          heartRateUpperLimit: heartRateUpperLimit,
+          heartRateLimitingMethod: heartRateLimitingMethod,
           throttleRatio: _throttleRatio,
         );
       }
@@ -250,14 +267,18 @@ class MPowerEchelon2Importer {
           cadence: 0,
           heartRate: 0,
           distance: 0.0,
-          throttleRatio: 1.0,
           heartRateGapWorkaround: heartRateGapWorkaround,
+          heartRateUpperLimit: heartRateUpperLimit,
+          heartRateLimitingMethod: heartRateLimitingMethod,
+          throttleRatio: 1.0,
         );
       } else {
         nextRow = WorkoutRow(
           rowString: _lines[_linePointer + 1],
           lastHeartRate: lastHeartRate,
           heartRateGapWorkaround: heartRateGapWorkaround,
+          heartRateUpperLimit: heartRateUpperLimit,
+          heartRateLimitingMethod: heartRateLimitingMethod,
           throttleRatio: _throttleRatio,
         );
       }

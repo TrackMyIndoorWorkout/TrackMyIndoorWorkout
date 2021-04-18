@@ -30,6 +30,13 @@ class PreferencesScreen extends StatelessWidget {
     return true;
   }
 
+  bool isInteger(String str, lowerLimit, upperLimit) {
+    int integer = int.tryParse(str);
+    return integer != null &&
+        (lowerLimit < 0 || integer >= lowerLimit) &&
+        (upperLimit < 0 || integer <= upperLimit);
+  }
+
   @override
   Widget build(BuildContext context) {
     final descriptionStyle = TextStyle(color: Colors.black54);
@@ -166,6 +173,47 @@ class PreferencesScreen extends StatelessWidget {
             ),
           ],
           title: 'Select workaround type',
+          cancelText: 'Close',
+        ),
+      ),
+      PreferenceTitle(HEART_RATE_UPPER_LIMIT_DESCRIPTION, style: descriptionStyle),
+      TextFieldPreference(
+        HEART_RATE_UPPER_LIMIT,
+        HEART_RATE_UPPER_LIMIT_TAG,
+        defaultVal: HEART_RATE_UPPER_LIMIT_DEFAULT,
+        validator: (str) {
+          if (!isInteger(str, 0, 300)) {
+            return "Invalid heart rate limit (should be 0 <= size <= 300)";
+          }
+          return null;
+        },
+      ),
+      PreferenceDialogLink(
+        HEART_RATE_LIMITING_METHOD,
+        dialog: PreferenceDialog(
+          [
+            RadioPreference(
+              HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION,
+              HEART_RATE_LIMITING_WRITE_ZERO,
+              HEART_RATE_LIMITING_METHOD_TAG,
+            ),
+            RadioPreference(
+              HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION,
+              HEART_RATE_LIMITING_WRITE_NOTHING,
+              HEART_RATE_LIMITING_METHOD_TAG,
+            ),
+            RadioPreference(
+              HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION,
+              HEART_RATE_LIMITING_CAP_AT_LIMIT,
+              HEART_RATE_LIMITING_METHOD_TAG,
+            ),
+            RadioPreference(
+              HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION,
+              HEART_RATE_LIMITING_NO_LIMIT,
+              HEART_RATE_LIMITING_METHOD_TAG,
+            ),
+          ],
+          title: 'Select HR limiting method',
           cancelText: 'Close',
         ),
       ),
