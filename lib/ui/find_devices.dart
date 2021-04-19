@@ -97,7 +97,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _lastEquipmentIds = [];
     PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
       final lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG_PREFIX + sport);
-      if (lastEquipmentId.length > 0) {
+      if (lastEquipmentId.isNotEmpty) {
         _lastEquipmentIds.add(lastEquipmentId);
       }
     });

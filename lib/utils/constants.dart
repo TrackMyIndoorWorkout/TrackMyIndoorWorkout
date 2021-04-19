@@ -5,3 +5,4 @@ const MAX_INIT = -10000;
 const LB_TO_KG = 0.45359237;
 const FT_TO_M = 0.3048;
 const NOT_AVAILABLE = "N/A";
+const HTTPS_PORT = 443;

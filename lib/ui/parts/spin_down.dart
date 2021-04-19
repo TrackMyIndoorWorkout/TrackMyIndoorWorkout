@@ -149,7 +149,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     try {
       await _weightData.setNotifyValue(true);
     } on PlatformException catch (e, stack) {
-      debugPrint("${e.message}");
+      debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
@@ -185,7 +185,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         try {
           await _weightData.write([_newWeightLsb, _newWeightMsb]);
         } on PlatformException catch (e, stack) {
-          debugPrint("${e.message}");
+          debugPrint("$e");
           debugPrintStack(stackTrace: stack, label: "trace:");
           setState(() {
             _calibrationState = CalibrationState.WeighInProblem;
@@ -198,7 +198,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     try {
       await _controlPoint.setNotifyValue(true); // Is this what needed for indication?
     } on PlatformException catch (e, stack) {
-      debugPrint("${e.message}");
+      debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
@@ -313,7 +313,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     try {
       await _weightData.write([_newWeightLsb, _newWeightMsb]);
     } on PlatformException catch (e, stack) {
-      debugPrint("${e.message}");
+      debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
       setState(() {
         _calibrationState = CalibrationState.WeighInProblem;
@@ -376,7 +376,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       await _controlPoint.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
       await _fitnessMachineStatus.setNotifyValue(true);
     } on PlatformException catch (e, stack) {
-      debugPrint("${e.message}");
+      debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 

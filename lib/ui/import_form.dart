@@ -163,7 +163,7 @@ class _ImportFormState extends State<ImportForm> {
                             setState(() {
                               _isLoading = false;
                             });
-                            Get.snackbar("Error", "Import unsuccessful: ${e.message}");
+                            Get.snackbar("Error", "Import unsuccessful: $e");
                             debugPrintStack(stackTrace: callStack);
                           }
                         } else {
