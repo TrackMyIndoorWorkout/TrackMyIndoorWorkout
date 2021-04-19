@@ -13,11 +13,11 @@ extension ScanResultEx on ScanResult {
       return false;
     }
 
-    if (device.name == null || device.name.length <= 0) {
+    if (device.name == null || device.name.isEmpty) {
       return false;
     }
 
-    if (device.id.id == null || device.id.id.length <= 0) {
+    if (device.id.id == null || device.id.id.isEmpty) {
       return false;
     }
 

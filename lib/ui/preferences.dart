@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
 import '../persistence/preferences.dart';
 import '../tcx/activity_type.dart';
+import '../utils/preferences.dart';
 
 RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
 
@@ -27,6 +28,13 @@ class PreferencesScreen extends StatelessWidget {
     }
 
     return true;
+  }
+
+  bool isInteger(String str, lowerLimit, upperLimit) {
+    int integer = int.tryParse(str);
+    return integer != null &&
+        (lowerLimit < 0 || integer >= lowerLimit) &&
+        (upperLimit < 0 || integer <= upperLimit);
   }
 
   @override
@@ -119,6 +127,7 @@ class PreferencesScreen extends StatelessWidget {
           return null;
         },
       ),
+      PreferenceTitle(WORKAROUND_PREFERENCES),
       PreferenceTitle(EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION, style: descriptionStyle),
       TextFieldPreference(
         EQUIPMENT_DISCONNECTION_WATCHDOG,
@@ -137,16 +146,78 @@ class PreferencesScreen extends StatelessWidget {
         defaultVal: CALORIE_CARRYOVER_WORKAROUND_DEFAULT,
         desc: CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION,
       ),
+      SwitchPreference(
+        CADENCE_GAP_WORKAROUND,
+        CADENCE_GAP_WORKAROUND_TAG,
+        defaultVal: CADENCE_GAP_WORKAROUND_DEFAULT,
+        desc: CADENCE_GAP_WORKAROUND_DESCRIPTION,
+      ),
+      PreferenceDialogLink(
+        HEART_RATE_GAP_WORKAROUND,
+        dialog: PreferenceDialog(
+          [
+            RadioPreference(
+              DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION,
+              DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE,
+              HEART_RATE_GAP_WORKAROUND_TAG,
+            ),
+            RadioPreference(
+              DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION,
+              DATA_GAP_WORKAROUND_NO_WORKAROUND,
+              HEART_RATE_GAP_WORKAROUND_TAG,
+            ),
+            RadioPreference(
+              DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION,
+              DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS,
+              HEART_RATE_GAP_WORKAROUND_TAG,
+            ),
+          ],
+          title: 'Select workaround type',
+          cancelText: 'Close',
+        ),
+      ),
+      PreferenceTitle(HEART_RATE_UPPER_LIMIT_DESCRIPTION, style: descriptionStyle),
+      TextFieldPreference(
+        HEART_RATE_UPPER_LIMIT,
+        HEART_RATE_UPPER_LIMIT_TAG,
+        defaultVal: HEART_RATE_UPPER_LIMIT_DEFAULT,
+        validator: (str) {
+          if (!isInteger(str, 0, 300)) {
+            return "Invalid heart rate limit (should be 0 <= size <= 300)";
+          }
+          return null;
+        },
+      ),
+      PreferenceDialogLink(
+        HEART_RATE_LIMITING_METHOD,
+        dialog: PreferenceDialog(
+          [
+            RadioPreference(
+              HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION,
+              HEART_RATE_LIMITING_WRITE_ZERO,
+              HEART_RATE_LIMITING_METHOD_TAG,
+            ),
+            RadioPreference(
+              HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION,
+              HEART_RATE_LIMITING_WRITE_NOTHING,
+              HEART_RATE_LIMITING_METHOD_TAG,
+            ),
+            RadioPreference(
+              HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION,
+              HEART_RATE_LIMITING_CAP_AT_LIMIT,
+              HEART_RATE_LIMITING_METHOD_TAG,
+            ),
+            RadioPreference(
+              HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION,
+              HEART_RATE_LIMITING_NO_LIMIT,
+              HEART_RATE_LIMITING_METHOD_TAG,
+            ),
+          ],
+          title: 'Select HR limiting method',
+          cancelText: 'Close',
+        ),
+      ),
     ];
-
-    if (kDebugMode) {
-      appPreferences.add(SwitchPreference(
-        APP_DEBUG_MODE,
-        APP_DEBUG_MODE_TAG,
-        defaultVal: APP_DEBUG_MODE_DEFAULT,
-        desc: APP_DEBUG_MODE_DESCRIPTION,
-      ));
-    }
 
     PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
       appPreferences.add(PreferenceTitle(sport + ZONE_PREFERENCES));
@@ -198,6 +269,36 @@ class PreferencesScreen extends StatelessWidget {
         ]);
       }
     });
+
+    appPreferences.addAll([
+      PreferenceTitle(EXPERT_PREFERENCES),
+      PreferenceTitle(DATA_CONNECTION_ADDRESSES_DESCRIPTION, style: descriptionStyle),
+      TextFieldPreference(
+        DATA_CONNECTION_ADDRESSES,
+        DATA_CONNECTION_ADDRESSES_TAG,
+        defaultVal: DATA_CONNECTION_ADDRESSES_DEFAULT,
+        validator: (str) {
+          final addressTuples = parseIpAddresses(str);
+          if (addressTuples == null || addressTuples.isEmpty) {
+            return "Invalid or empty addresses, default DNS servers will be used";
+          } else {
+            if (str.split(",").length > addressTuples.length) {
+              return "There's some malformed address(es) in the configuration";
+            }
+          }
+          return null;
+        },
+      ),
+    ]);
+
+    if (kDebugMode) {
+      appPreferences.add(SwitchPreference(
+        APP_DEBUG_MODE,
+        APP_DEBUG_MODE_TAG,
+        defaultVal: APP_DEBUG_MODE_DEFAULT,
+        desc: APP_DEBUG_MODE_DESCRIPTION,
+      ));
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text('Preferences')),

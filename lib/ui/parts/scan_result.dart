@@ -22,7 +22,7 @@ class ScanResultTile extends StatelessWidget {
   final VoidCallback onHrmTap;
 
   Widget _buildTitle(BuildContext context, TextStyle adjustedCaptionStyle, TextStyle dataStyle) {
-    if (result.device.name.length > 0) {
+    if (result.device.name.isNotEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,

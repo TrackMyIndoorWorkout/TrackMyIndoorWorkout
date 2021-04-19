@@ -23,12 +23,16 @@ class FitnessEquipment extends DeviceBase {
   String manufacturerName;
   double _residueCalories;
   int _lastPositiveCadence; // #101
+  bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
   double _lastPositiveCalories; // #111
   bool hasTotalCalorieCounting;
   bool _calorieCarryoverWorkaround = CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
   Timer _timer;
   Record lastRecord;
   HeartRateMonitor heartRateMonitor;
+  String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
+  int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT_INT;
+  String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
   Activity _activity;
   bool measuring;
   bool calibrating;
@@ -45,13 +49,16 @@ class FitnessEquipment extends DeviceBase {
         ) {
     _residueCalories = 0.0;
     _lastPositiveCadence = 0;
+    _cadenceGapWorkaround =
+        PrefService.getBool(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
     _lastPositiveCalories = 0.0;
     hasTotalCalorieCounting = false;
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ?? true;
+    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
+        CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
     measuring = false;
     calibrating = false;
     _random = Random();
-    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
+    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     lastRecord = RecordWithSport(
       timeStamp: 0,
       distance: uxDebug ? _random.nextInt(5000).toDouble() : 0.0,
@@ -64,6 +71,13 @@ class FitnessEquipment extends DeviceBase {
       elapsedMillis: 0,
       sport: sport,
     );
+    _heartRateGapWorkaround =
+        PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+    final heartRateUpperLimitString =
+        PrefService.getString(HEART_RATE_UPPER_LIMIT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+    _heartRateUpperLimit = int.tryParse(heartRateUpperLimitString);
+    _heartRateLimitingMethod =
+        PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
     equipmentDiscovery = false;
   }
 
@@ -113,7 +127,7 @@ class FitnessEquipment extends DeviceBase {
 
   void setActivity(Activity activity) {
     this._activity = activity;
-    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
+    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }
 
   Future<bool> connectOnDemand(BluetoothDeviceState deviceState) async {
@@ -221,8 +235,10 @@ class FitnessEquipment extends DeviceBase {
 
     if (stub.pace != null && stub.pace > 0 && stub.pace < slowPace ||
         stub.speed != null && stub.speed > EPS) {
-      // #101
-      if ((stub.cadence == null || stub.cadence == 0) && _lastPositiveCadence > 0) {
+      // #101, #122
+      if ((stub.cadence == null || stub.cadence == 0) &&
+          _lastPositiveCadence > 0 &&
+          _cadenceGapWorkaround) {
         stub.cadence = _lastPositiveCadence;
       } else if (stub.cadence != null && stub.cadence > 0) {
         _lastPositiveCadence = stub.cadence;
@@ -249,9 +265,21 @@ class FitnessEquipment extends DeviceBase {
       stub.heartRate = heartRateMonitor.metric;
     }
 
-    // #93
-    if (stub.heartRate == 0 && lastRecord.heartRate > 0) {
+    // #93, #113
+    if (stub.heartRate == 0 &&
+        lastRecord.heartRate > 0 &&
+        _heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
       stub.heartRate = lastRecord.heartRate;
+    }
+    // #114
+    if (_heartRateUpperLimit > 0 &&
+        stub.heartRate > _heartRateUpperLimit &&
+        _heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
+      if (_heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+        stub.heartRate = _heartRateUpperLimit;
+      } else {
+        stub.heartRate = 0;
+      }
     }
 
     stub.activityId = _activity?.id;
@@ -260,8 +288,9 @@ class FitnessEquipment extends DeviceBase {
   }
 
   void stopWorkout() {
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ?? true;
-    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? true;
+    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
+        CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
+    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();

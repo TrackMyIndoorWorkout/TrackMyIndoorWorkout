@@ -8,8 +8,8 @@ import 'package:preferences/preferences.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'devices/company_registry.dart';
 import 'persistence/preferences.dart';
-import 'strava/constants.dart';
 import 'tcx/activity_type.dart';
+import 'utils/preferences.dart';
 import 'track_my_indoor_exercise_app.dart';
 
 void main() async {
@@ -38,6 +38,10 @@ void main() async {
     STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT,
     EQUIPMENT_DISCONNECTION_WATCHDOG_TAG: EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
     CALORIE_CARRYOVER_WORKAROUND_TAG: CALORIE_CARRYOVER_WORKAROUND_DEFAULT,
+    CADENCE_GAP_WORKAROUND_TAG: CADENCE_GAP_WORKAROUND_DEFAULT,
+    HEART_RATE_GAP_WORKAROUND_TAG: HEART_RATE_GAP_WORKAROUND_DEFAULT,
+    HEART_RATE_UPPER_LIMIT_TAG: HEART_RATE_UPPER_LIMIT_DEFAULT,
+    HEART_RATE_LIMITING_METHOD_TAG: HEART_RATE_LIMITING_METHOD_DEFAULT,
   };
   PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
     PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
@@ -82,12 +86,18 @@ void main() async {
     }
   });
 
-  DataConnectionChecker().addresses = STRAVA_AWS_US_EAST
-      .map((ip) => AddressCheckOptions(
-            InternetAddress(ip),
-            port: HTTPS_PORT,
-          ))
-      .toList(growable: false);
+  final addressesString = PrefService.getString(DATA_CONNECTION_ADDRESSES) ?? "";
+  if (addressesString.trim().isNotEmpty) {
+    final addressTuples = parseIpAddresses(addressesString);
+    if (addressTuples.length > 0) {
+      DataConnectionChecker().addresses = addressTuples
+          .map((addressTuple) => AddressCheckOptions(
+                InternetAddress(addressTuple.item1),
+                port: addressTuple.item2,
+              ))
+          .toList(growable: false);
+    }
+  }
 
   final companyRegistry = CompanyRegistry();
   await companyRegistry.loadCompanyIdentifiers();
