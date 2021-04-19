@@ -208,7 +208,7 @@ void main() {
           expect(accu.cadenceSum, null);
           expect(accu.cadenceCount, null);
           expect(accu.maxCadence, null);
-          expect(accu.avgHeartRate, sum ~/ cnt);
+          expect(accu.avgHeartRate, cnt > 0 ? sum ~/ cnt : 0);
         });
       });
     });

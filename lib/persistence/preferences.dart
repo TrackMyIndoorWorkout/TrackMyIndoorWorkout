@@ -440,19 +440,13 @@ const MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION =
         "be prompted to select a sport before every workout.";
 
 const TUNING_PREFERENCES = "Tuning";
+const WORKAROUND_PREFERENCES = "Workarounds";
 
 const MEASUREMENT_PANELS_EXPANDED_TAG = "measurement_panels_expanded";
 const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
 
 const MEASUREMENT_DETAIL_SIZE_TAG = "measurement_detail_size";
 const MEASUREMENT_DETAIL_SIZE_DEFAULT = "00000";
-
-const APP_DEBUG_MODE = "Application Debug Mode";
-const APP_DEBUG_MODE_TAG = "app_debug_mode";
-const APP_DEBUG_MODE_DEFAULT = false;
-const APP_DEBUG_MODE_DESCRIPTION =
-    "On: The Recording UI runs on simulated data, no equipment required. " +
-        "Off: The recording works as it should in release.";
 
 const THROTTLE_POWER = "Throttle Power";
 const THROTTLE_POWER_TAG = "throttle_power";
@@ -499,10 +493,73 @@ const CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION = "On: Calorie count could be pre
     "(Note that data points will be still missing.) " +
     "Off: Calorie count will start from zero after workout restart.";
 
-const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
-const SLOW_SPEED_TAG_PREFIX = "slow_speed_";
+const CADENCE_GAP_WORKAROUND = "Cadence Data Gap Workaround";
+const CADENCE_GAP_WORKAROUND_TAG = "cadence_data_gap_workaround";
+const CADENCE_GAP_WORKAROUND_DEFAULT = true;
+const CADENCE_GAP_WORKAROUND_DESCRIPTION = "On: When speed / pace is non zero but the " +
+    "cadence / stroke rate is zero the application will substitute the zero with the last " +
+    "positive cadence reading. " +
+    "Off: Zero cadence will be recorded without modification.";
+
+const HEART_RATE_GAP_WORKAROUND = "Heart Rate Data Gap Workaround Selection";
+const HEART_RATE_GAP_WORKAROUND_TAG = "heart_rate_gap_workaround";
+const DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE = "last_positive_value";
+const DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION =
+    "Persist the last known positive reading when a zero intermittent reading is encountered.";
+const DATA_GAP_WORKAROUND_NO_WORKAROUND = "no_workaround";
+const DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION =
+    "Persist any values (including zeros) just as they are read from the device.";
+const DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS = "do_not_write_zeros";
+const DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION =
+    "Don't output any reading when zero data is recorded. Certain standards may not support that.";
+const HEART_RATE_GAP_WORKAROUND_DEFAULT = DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
+
+const HEART_RATE_UPPER_LIMIT = "Heart Rate Upper Limit";
+const HEART_RATE_UPPER_LIMIT_TAG = "heart_rate_upper_limit";
+const HEART_RATE_UPPER_LIMIT_DEFAULT = "0";
+const HEART_RATE_UPPER_LIMIT_DEFAULT_INT = 0;
+const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is the heart rate upper bound where the methods" +
+    "bellow would be applied. 0 means no limiting is performed.";
+
+const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection";
+const HEART_RATE_LIMITING_METHOD_TAG = "heart_rate_limiting_method";
+const HEART_RATE_LIMITING_WRITE_ZERO = "write_zero";
+const HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION =
+    "Persist zero when the heart rate limit is reached.";
+const HEART_RATE_LIMITING_WRITE_NOTHING = "write_nothing";
+const HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION =
+    "Don't persist any heart rate when the limit is reached.";
+const HEART_RATE_LIMITING_CAP_AT_LIMIT = "cap_at_limit";
+const HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION =
+    "Cap the value at the level configured bellow.";
+const HEART_RATE_LIMITING_NO_LIMIT = "no_limit";
+const HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION = "Don't apply any limiting.";
+const HEART_RATE_LIMITING_METHOD_DEFAULT = HEART_RATE_LIMITING_NO_LIMIT;
+
+const EXPERT_PREFERENCES = "Expert Preferences";
+
+const APP_DEBUG_MODE = "Application Debug Mode";
+const APP_DEBUG_MODE_TAG = "app_debug_mode";
+const APP_DEBUG_MODE_DEFAULT = false;
+const APP_DEBUG_MODE_DESCRIPTION =
+    "On: The Recording UI runs on simulated data, no equipment required. " +
+        "Off: The recording works as it should in release.";
+
+const DATA_CONNECTION_ADDRESSES = "Data Connection Addresses";
+const DATA_CONNECTION_ADDRESSES_TAG = "data_connection_addresses";
+const DATA_CONNECTION_ADDRESSES_DEFAULT =
+    "52.44.84.95,54.160.234.139,52.87.57.116,3.93.102.29," + "54.157.131.119,3.226.9.14";
+
+const DATA_CONNECTION_ADDRESSES_DESCRIPTION =
+    "Following is a comma separated list of IP addresses with optional comma separated port " +
+        "numbers. Lack of a port number will mean 443 (HTTPS). " +
+        "The application will reach out to these endpoints to determine if there " +
+        "is really a data connection.";
 
 const ZONE_PREFERENCES = " Zone Preferences";
+
+const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
+const SLOW_SPEED_TAG_PREFIX = "slow_speed_";
 
 const FONT_FAMILY = "RobotoMono";
 

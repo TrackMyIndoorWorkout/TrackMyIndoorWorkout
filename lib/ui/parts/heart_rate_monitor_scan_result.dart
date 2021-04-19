@@ -14,11 +14,11 @@ extension HeartRateMonitorScanResult on ScanResult {
       return false;
     }
 
-    if (device.name == null || device.name.length <= 0) {
+    if (device.name == null || device.name.isEmpty) {
       return false;
     }
 
-    if (device.id.id == null || device.id.id.length <= 0) {
+    if (device.id.id == null || device.id.id.isEmpty) {
       return false;
     }
 
@@ -43,7 +43,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   final ScanResult result;
 
   Widget _buildTitle(BuildContext context, TextStyle adjustedCaptionStyle, TextStyle dataStyle) {
-    if (result.device.name.length > 0) {
+    if (result.device.name.isNotEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
