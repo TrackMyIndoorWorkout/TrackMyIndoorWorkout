@@ -62,14 +62,15 @@ class TCXExport extends ActivityExport {
     _sb.write('        <Lap StartTime="${timeStampString(exportModel.dateActivity)}">\n');
 
     // Assuming that points are ordered by time stamp ascending
-    ExportRecord lastTrackPoint = exportModel.points.last;
-    if (lastTrackPoint != null) {
-      if ((exportModel.totalTime == null || exportModel.totalTime == 0) && lastTrackPoint.date != null) {
-        exportModel.totalTime = lastTrackPoint.date.millisecondsSinceEpoch / 1000;
+    ExportRecord lastRecord = exportModel.points.last;
+    if (lastRecord != null) {
+      if ((exportModel.totalTime == null || exportModel.totalTime == 0) &&
+          lastRecord.date != null) {
+        exportModel.totalTime = lastRecord.date.millisecondsSinceEpoch / 1000;
       }
       if ((exportModel.totalDistance == null || exportModel.totalDistance == 0) &&
-          lastTrackPoint.distance > 0) {
-        exportModel.totalDistance = lastTrackPoint.distance;
+          lastRecord.distance > 0) {
+        exportModel.totalDistance = lastRecord.distance;
       }
     }
 
@@ -78,9 +79,12 @@ class TCXExport extends ActivityExport {
     addElement('DistanceMeters', exportModel.totalDistance.toStringAsFixed(2));
 
     final calculateMaxSpeed = exportModel.maxSpeed == null || exportModel.maxSpeed == 0;
-    final calculateAvgHeartRate = exportModel.averageHeartRate == null || exportModel.averageHeartRate == 0;
-    final calculateMaxHeartRate = exportModel.maximumHeartRate == null || exportModel.maximumHeartRate == 0;
-    final calculateAvgCadence = exportModel.averageCadence == null || exportModel.averageCadence == 0;
+    final calculateAvgHeartRate =
+        exportModel.averageHeartRate == null || exportModel.averageHeartRate == 0;
+    final calculateMaxHeartRate =
+        exportModel.maximumHeartRate == null || exportModel.maximumHeartRate == 0;
+    final calculateAvgCadence =
+        exportModel.averageCadence == null || exportModel.averageCadence == 0;
     var accu = StatisticsAccumulator(
       si: true,
       sport: ActivityType.Ride,

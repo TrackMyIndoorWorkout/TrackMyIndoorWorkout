@@ -25,7 +25,11 @@ abstract class Upload {
   /// 201 activity created
   /// 400 problem could be that activity already uploaded
   ///
-  Future<Fault> uploadActivity(Activity activity, List<int> fileContent, ActivityExport exporter,) async {
+  Future<Fault> uploadActivity(
+    Activity activity,
+    List<int> fileContent,
+    ActivityExport exporter,
+  ) async {
     globals.displayInfo('Starting to upload activity');
 
     // To check if the activity has been uploaded successfully
