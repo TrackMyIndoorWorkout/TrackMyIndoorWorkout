@@ -15,6 +15,11 @@ abstract class BinarySerializable {
       output.add(number % 256);
       number ~/= 256;
     }
+    assert(number == 0);
+  }
+
+  void addByte(int byte) {
+    addNonFloatingNumber(byte, 1);
   }
 
   void addInteger(int integer) {

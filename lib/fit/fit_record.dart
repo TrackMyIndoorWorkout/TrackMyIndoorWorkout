@@ -1,5 +1,4 @@
 import 'binary_serializable.dart';
-import 'fit_field.dart';
 
 class FitRecord extends BinarySerializable {
   static const int LITTLE_ENDIAN = 0;
@@ -11,12 +10,15 @@ class FitRecord extends BinarySerializable {
   int header;
   final int reserved = 0;
   final int architecture = LITTLE_ENDIAN;
-  int localMessageType; // 3 bits
+  int localMessageType = 0; // 3 bits
   int globalMessageNumber; // 2 bytes
-  int numberOfFields;
-  List<FitField> fields;
+
+  FitRecord({this.localMessageType, this.globalMessageNumber}) : super() {
+    header = localMessageType;
+  }
 
   List<int> binarySerialize() {
-    // Assemble header from the architecture
+    addByte(header);
+    return output;
   }
 }
