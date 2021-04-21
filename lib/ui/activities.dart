@@ -10,7 +10,7 @@ import 'package:listview_utils/listview_utils.dart';
 import 'package:preferences/preferences.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../export/tcx/tcx_output.dart';
+import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
@@ -99,10 +99,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           icon: Icon(Icons.file_download, color: Colors.black, size: size),
           onPressed: () async {
             final records = await _database.recordDao.findAllActivityRecords(activity.id);
-            final tcxStream = await TCXOutput().getTcxOfActivity(activity, records, _compress);
-            final persistenceValues = activity.getPersistenceValues(_compress);
+            final exporter = TCXExport();
+            final fileStream = await exporter.getExport(activity, records, _compress);
+            final persistenceValues = exporter.getPersistenceValues(activity, _compress);
             ShareFilesAndScreenshotWidgets().shareFile(persistenceValues['name'],
-                persistenceValues['fileName'], tcxStream, TCXOutput.mimeType(_compress),
+                persistenceValues['fileName'], fileStream, exporter.mimeType(_compress),
                 text: 'Share a ride on ${activity.deviceName}');
           },
         ),

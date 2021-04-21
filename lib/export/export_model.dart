@@ -1,4 +1,6 @@
-class TCXModel {
+import 'export_record.dart';
+
+class ExportModel {
   String activityType;
   double totalDistance; // Total distance in meters
   double totalTime; // in seconds
@@ -9,7 +11,7 @@ class TCXModel {
   int averageCadence;
   String intensity;
   DateTime dateActivity; // Date of the activity
-  List<TrackPoint> points;
+  List<ExportRecord> points;
 
   // Related to device that generated the data
   String creator;
@@ -30,18 +32,4 @@ class TCXModel {
   String buildVersionMinor;
   String langID;
   String partNumber;
-}
-
-class TrackPoint {
-  double latitude; // in degrees
-  double longitude;
-  String timeStamp;
-  double altitude; // in meters
-  double speed; // Inst speed in m/s
-  double distance; // in meters
-  DateTime date;
-
-  int cadence;
-  double power;
-  int heartRate;
 }

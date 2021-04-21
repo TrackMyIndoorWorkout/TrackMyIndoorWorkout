@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../export/tcx/tcx_model.dart';
+import '../export/export_record.dart';
 import '../persistence/models/record.dart';
 import 'constants.dart';
 
@@ -77,45 +77,45 @@ class StatisticsAccumulator {
     }
   }
 
-  processTrackPoint(TrackPoint trackPoint) {
-    if (trackPoint.power != null) {
-      if (calculateAvgPower && trackPoint.power > 0) {
-        powerSum += trackPoint.power;
+  processExportRecord(ExportRecord exportRecord) {
+    if (exportRecord.power != null) {
+      if (calculateAvgPower && exportRecord.power > 0) {
+        powerSum += exportRecord.power;
         powerCount++;
       }
       if (calculateMaxPower) {
-        maxPower = max(maxPower, trackPoint.power);
+        maxPower = max(maxPower, exportRecord.power);
       }
     }
-    if (trackPoint.speed != null) {
-      if (calculateAvgSpeed && trackPoint.speed > 0) {
-        speedSum += trackPoint.speed;
+    if (exportRecord.speed != null) {
+      if (calculateAvgSpeed && exportRecord.speed > 0) {
+        speedSum += exportRecord.speed;
         speedCount++;
       }
       if (calculateMaxSpeed) {
         if (sport == ActivityType.Ride) {
-          maxSpeed = max(maxSpeed, trackPoint.speed);
+          maxSpeed = max(maxSpeed, exportRecord.speed);
         } else {
-          maxSpeed = min(maxSpeed, trackPoint.speed);
+          maxSpeed = min(maxSpeed, exportRecord.speed);
         }
       }
     }
-    if (trackPoint.heartRate != null && trackPoint.heartRate > 0) {
-      if (calculateAvgHeartRate && trackPoint.heartRate > 0) {
-        heartRateSum += trackPoint.heartRate;
+    if (exportRecord.heartRate != null && exportRecord.heartRate > 0) {
+      if (calculateAvgHeartRate && exportRecord.heartRate > 0) {
+        heartRateSum += exportRecord.heartRate;
         heartRateCount++;
       }
       if (calculateMaxHeartRate) {
-        maxHeartRate = max(maxHeartRate, trackPoint.heartRate);
+        maxHeartRate = max(maxHeartRate, exportRecord.heartRate);
       }
     }
-    if (trackPoint.cadence != null && trackPoint.cadence > 0) {
-      if (calculateAvgCadence && trackPoint.cadence > 0) {
-        cadenceSum += trackPoint.cadence;
+    if (exportRecord.cadence != null && exportRecord.cadence > 0) {
+      if (calculateAvgCadence && exportRecord.cadence > 0) {
+        cadenceSum += exportRecord.cadence;
         cadenceCount++;
       }
       if (calculateMaxCadence) {
-        maxCadence = max(maxCadence, trackPoint.cadence);
+        maxCadence = max(maxCadence, exportRecord.cadence);
       }
     }
   }

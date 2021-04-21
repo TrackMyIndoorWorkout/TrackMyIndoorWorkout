@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import '../export/tcx/tcx_output.dart';
+import '../export/activity_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 
@@ -25,7 +25,7 @@ abstract class Upload {
   /// 201 activity created
   /// 400 problem could be that activity already uploaded
   ///
-  Future<Fault> uploadActivity(Activity activity, List<int> fileContent) async {
+  Future<Fault> uploadActivity(Activity activity, List<int> fileContent, ActivityExport exporter,) async {
     globals.displayInfo('Starting to upload activity');
 
     // To check if the activity has been uploaded successfully
@@ -41,9 +41,9 @@ abstract class Upload {
 
     var fault = Fault(888, '');
 
-    final persistenceValues = activity.getPersistenceValues(true);
+    final persistenceValues = exporter.getPersistenceValues(activity, true);
     var request = http.MultipartRequest("POST", postUri);
-    request.fields['data_type'] = TCXOutput.COMPRESSED_FILE_EXTENSION;
+    request.fields['data_type'] = exporter.fileExtension(true);
     request.fields['trainer'] = 'false';
     request.fields['commute'] = 'false';
     request.fields['name'] = persistenceValues["name"];

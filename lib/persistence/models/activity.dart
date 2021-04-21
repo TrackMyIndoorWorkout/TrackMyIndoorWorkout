@@ -1,7 +1,5 @@
 import 'package:floor/floor.dart';
-import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
-import '../../export/tcx/tcx_output.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 
@@ -74,21 +72,6 @@ class Activity {
   void markUploaded(int stravaId) {
     this.uploaded = true;
     this.stravaId = stravaId;
-  }
-
-  Map<String, dynamic> getPersistenceValues(bool compressed) {
-    final startStamp = DateTime.fromMillisecondsSinceEpoch(start);
-    final dateString = DateFormat.yMd().format(startStamp);
-    final timeString = DateFormat.Hms().format(startStamp);
-    final fileName = 'Activity_${dateString}_$timeString.${TCXOutput.fileExtension(compressed)}'
-        .replaceAll('/', '-')
-        .replaceAll(':', '-');
-    return {
-      'startStamp': startStamp,
-      'name': '$sport at $dateString $timeString',
-      'description': '$sport by $deviceName',
-      'fileName': fileName,
-    };
   }
 
   String distanceString(bool si) {

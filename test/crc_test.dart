@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/fit/fit_crc.dart';
+import 'package:track_my_indoor_exercise/export/fit/fit_crc.dart';
 
 class TestPair {
   final List<int> data;

@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/export/tcx/tcx_model.dart';
+import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/statistics_accumulator.dart';
 import 'utils.dart';
@@ -15,7 +15,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double sum = 0.0;
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()..power = number);
+          accu.processExportRecord(ExportRecord()..power = number);
           sum += number;
         });
         test("$sport, $count -> $sum", () {
@@ -55,7 +55,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double maximum = MAX_INIT.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()..power = number);
+          accu.processExportRecord(ExportRecord()..power = number);
           maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () {
@@ -94,7 +94,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double sum = 0.0;
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()..speed = number);
+          accu.processExportRecord(ExportRecord()..speed = number);
           sum += number;
         });
         test("$sport, $count -> $sum", () {
@@ -134,7 +134,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double maximum = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()..speed = number);
+          accu.processExportRecord(ExportRecord()..speed = number);
           if (sport == ActivityType.Ride) {
             maximum = max(number, maximum);
           } else {
@@ -178,7 +178,7 @@ void main() {
         int sum = 0;
         int cnt = 0;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()..heartRate = number);
+          accu.processExportRecord(ExportRecord()..heartRate = number);
           sum += number;
           if (number > 0) {
             cnt++;
@@ -221,7 +221,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         int maximum = MAX_INIT;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()..heartRate = number);
+          accu.processExportRecord(ExportRecord()..heartRate = number);
           maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () {
@@ -261,7 +261,7 @@ void main() {
         int sum = 0;
         int cnt = 0;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()..cadence = number);
+          accu.processExportRecord(ExportRecord()..cadence = number);
           sum += number;
           if (number > 0) {
             cnt++;
@@ -304,7 +304,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         int maximum = MAX_INIT;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processTrackPoint(TrackPoint()..cadence = number);
+          accu.processExportRecord(ExportRecord()..cadence = number);
           maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () {
@@ -366,7 +366,7 @@ void main() {
         int maxHr = MAX_INIT;
         final hrs = getRandomInts(count, 100, rnd);
         List<int>.generate(count, (index) {
-          accu.processTrackPoint(TrackPoint()
+          accu.processExportRecord(ExportRecord()
             ..power = powers[index]
             ..speed = speeds[index]
             ..cadence = cadences[index]

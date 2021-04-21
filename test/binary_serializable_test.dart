@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mock_data/mock_data.dart';
-import 'package:track_my_indoor_exercise/fit/binary_serializable.dart';
+import 'package:track_my_indoor_exercise/export/fit/binary_serializable.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 import 'utils.dart';
