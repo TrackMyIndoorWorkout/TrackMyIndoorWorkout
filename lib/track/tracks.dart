@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/painting.dart';
 import 'package:meta/meta.dart';
 
-import '../tcx/activity_type.dart';
+import '../utils/constants.dart';
 import 'constants.dart';
 
 const TRACK_PAINTING_RADIUS_BOOST = 1.2;

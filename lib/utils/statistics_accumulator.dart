@@ -1,9 +1,8 @@
 import 'dart:math';
 
 import '../persistence/models/record.dart';
-import '../tcx/activity_type.dart';
 import '../tcx/tcx_model.dart';
-import '../utils/constants.dart';
+import 'constants.dart';
 
 class StatisticsAccumulator {
   final bool si;

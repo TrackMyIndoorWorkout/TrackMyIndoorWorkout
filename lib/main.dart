@@ -8,7 +8,7 @@ import 'package:preferences/preferences.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'devices/company_registry.dart';
 import 'persistence/preferences.dart';
-import 'tcx/activity_type.dart';
+import 'utils/constants.dart';
 import 'utils/preferences.dart';
 import 'track_my_indoor_exercise_app.dart';
 

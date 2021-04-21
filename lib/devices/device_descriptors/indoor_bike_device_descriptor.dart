@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../../persistence/models/record.dart';
-import '../../tcx/activity_type.dart';
+import '../../utils/constants.dart';
 import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 

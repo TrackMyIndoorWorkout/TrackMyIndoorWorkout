@@ -6,7 +6,7 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
-import '../tcx/activity_type.dart';
+import '../utils/constants.dart';
 import '../utils/display.dart';
 
 Color getTranslucent(Color c) {

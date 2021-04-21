@@ -1,4 +1,4 @@
-import '../tcx/activity_type.dart';
+import '../utils/constants.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
 import 'device_descriptors/precor_spinner_chrono_power.dart';

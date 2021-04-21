@@ -1,4 +1,4 @@
-import '../../tcx/activity_type.dart';
+import '../../utils/constants.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import '../gatt_constants.dart';
