@@ -3,12 +3,12 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mock_data/mock_data.dart';
-import 'package:track_my_indoor_exercise/export/fit/binary_serializable.dart';
+import 'package:track_my_indoor_exercise/export/fit/fit_serializable.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 import 'utils.dart';
 
-class TestSubject extends BinarySerializable {}
+class TestSubject extends FitSerializable {}
 
 final fitEpochDateTime = DateTime.utc(1989, 12, 31, 0, 0, 0);
 
@@ -44,7 +44,7 @@ void main() {
   group('setTimeStamp test', () {
     1.to(SMALL_REPETITION).forEach((index) {
       final testDateTime = mockDate(fitEpochDateTime);
-      final expected = (testDateTime.millisecondsSinceEpoch ~/ 1000 - BinarySerializable.fitEpoch);
+      final expected = (testDateTime.millisecondsSinceEpoch ~/ 1000 - FitSerializable.fitEpoch);
       test('$testDateTime -> $expected', () async {
         final subject = TestSubject();
 
@@ -58,7 +58,7 @@ void main() {
   group('setDateTime test', () {
     1.to(SMALL_REPETITION).forEach((index) {
       final testDateTime = mockDate(fitEpochDateTime);
-      final expected = (testDateTime.millisecondsSinceEpoch ~/ 1000 - BinarySerializable.fitEpoch);
+      final expected = (testDateTime.millisecondsSinceEpoch ~/ 1000 - FitSerializable.fitEpoch);
       test('$testDateTime -> $expected', () async {
         final subject = TestSubject();
 

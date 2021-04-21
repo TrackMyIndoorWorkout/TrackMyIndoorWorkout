@@ -1,6 +1,6 @@
-import 'binary_serializable.dart';
+import 'fit_serializable.dart';
 
-class FitRecord extends BinarySerializable {
+class FitRecord extends FitSerializable {
   static const int LITTLE_ENDIAN = 0;
   static const int BIG_ENDIAN = 1;
 

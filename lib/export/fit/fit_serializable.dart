@@ -1,12 +1,12 @@
 import 'fit_crc.dart';
 
-abstract class BinarySerializable {
+abstract class FitSerializable {
   static final fitEpoch = DateTime.utc(1989, 12, 31, 0, 0, 0).millisecondsSinceEpoch;
 
   int timeStamp; // seconds since FIT epoch (1989/12/31 UTC)
   List<int> output;
 
-  BinarySerializable() {
+  FitSerializable() {
     output = [];
   }
 
@@ -35,8 +35,16 @@ abstract class BinarySerializable {
     return output;
   }
 
+  static int fitTimeStamp(int unixMilliseconds) {
+    return unixMilliseconds ~/ 1000 - fitEpoch;
+  }
+
+  static int fitDateTime(DateTime dateTime) {
+    return fitTimeStamp(dateTime.millisecondsSinceEpoch);
+  }
+
   int setTimeStamp(int unixMilliseconds) {
-    timeStamp = unixMilliseconds ~/ 1000 - fitEpoch;
+    timeStamp = fitTimeStamp(unixMilliseconds);
     return timeStamp;
   }
 

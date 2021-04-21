@@ -1,6 +1,6 @@
-import 'binary_serializable.dart';
+import 'fit_serializable.dart';
 
-class FitHeader extends BinarySerializable {
+class FitHeader extends FitSerializable {
   static const GYM_TRACKER_PROFILE_VERSION = 2066; // 0x0812, little endian
   static const SUUNTO_PROFILE_VERSION = 2083; // 0x0823, little endian
 

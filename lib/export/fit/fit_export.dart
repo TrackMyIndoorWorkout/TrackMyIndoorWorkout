@@ -1,5 +1,7 @@
 import '../activity_export.dart';
 import '../export_model.dart';
+import 'fit_header.dart';
+import 'fit_serializable.dart';
 
 class FitExport extends ActivityExport {
   static String nonCompressedFileExtension = 'fit';
@@ -9,16 +11,14 @@ class FitExport extends ActivityExport {
 
   List<int> _bytes;
 
-  FitExport(): super() {
+  FitExport() : super() {
     _bytes = [];
   }
 
   Future<List<int>> getFileCore(ExportModel tcxInfo) async {
-    return [];
-  }
-
-  static String createTimestamp(DateTime dateTime) {
-    return dateTime.toUtc().toString().replaceFirst(' ', 'T');
+    final header = FitHeader();
+    _bytes.addAll(header.binarySerialize());
+    return _bytes;
   }
 
   String timeStampString(DateTime dateTime) {
@@ -26,6 +26,6 @@ class FitExport extends ActivityExport {
   }
 
   int timeStampInteger(DateTime dateTime) {
-    return 0;  // TODO
+    return FitSerializable.fitDateTime(dateTime);
   }
 }

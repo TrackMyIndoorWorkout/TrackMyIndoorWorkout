@@ -1,6 +1,6 @@
-import 'binary_serializable.dart';
+import 'fit_serializable.dart';
 
-class FitField extends BinarySerializable {
+class FitField extends FitSerializable {
   int definitionNumber;
   int size;
   int baseType;
