@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import '../persistence/models/record.dart';
-import '../tcx/tcx_model.dart';
+import '../export/tcx/tcx_model.dart';
 import 'constants.dart';
 
 class StatisticsAccumulator {

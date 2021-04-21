@@ -15,7 +15,7 @@ import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
-import '../tcx/tcx_output.dart';
+import '../export/tcx/tcx_output.dart';
 import '../ui/device_usages.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';

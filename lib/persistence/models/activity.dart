@@ -1,8 +1,8 @@
 import 'package:floor/floor.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
+import '../../export/tcx/tcx_output.dart';
 import '../../persistence/preferences.dart';
-import '../../tcx/tcx_output.dart';
 import '../../utils/constants.dart';
 
 const String ACTIVITIES_TABLE_NAME = 'activities';

@@ -3,7 +3,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/secret.dart';
 import '../strava/error_codes.dart';
-import '../tcx/tcx_output.dart';
+import '../export/tcx/tcx_output.dart';
 import 'fault.dart';
 import 'strava.dart';
 

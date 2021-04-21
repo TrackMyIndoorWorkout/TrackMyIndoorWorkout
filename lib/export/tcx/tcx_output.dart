@@ -4,16 +4,16 @@ import 'dart:math';
 
 import 'package:preferences/preferences.dart';
 
-import '../devices/device_descriptors/device_descriptor.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
-import '../devices/device_map.dart';
-import '../persistence/preferences.dart';
-import '../track/calculator.dart';
-import '../track/tracks.dart';
-import '../utils/constants.dart';
-import '../utils/display.dart';
-import '../utils/statistics_accumulator.dart';
+import '../../devices/device_descriptors/device_descriptor.dart';
+import '../../persistence/models/activity.dart';
+import '../../persistence/models/record.dart';
+import '../../devices/device_map.dart';
+import '../../persistence/preferences.dart';
+import '../../track/calculator.dart';
+import '../../track/tracks.dart';
+import '../../utils/constants.dart';
+import '../../utils/display.dart';
+import '../../utils/statistics_accumulator.dart';
 import 'tcx_model.dart';
 
 class TCXOutput {

@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
-import '../tcx/tcx_output.dart';
+import '../export/tcx/tcx_output.dart';
 
 import 'constants.dart';
 import 'error_codes.dart' as error;
