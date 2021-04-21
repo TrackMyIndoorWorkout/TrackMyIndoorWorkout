@@ -5,9 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import '../export/tcx/tcx_output.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
-import '../export/tcx/tcx_output.dart';
 
 import 'constants.dart';
 import 'error_codes.dart' as error;
