@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'dart:math';
 
 import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_map.dart';
+import '../export/tcx/tcx_model.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
-import '../devices/device_map.dart';
-import '../tcx/activity_type.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';
+import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/statistics_accumulator.dart';
-import '../tcx/tcx_model.dart';
 
 class FitOutput {
   static const MAJOR = '1';
@@ -21,12 +21,12 @@ class FitOutput {
   static const MIME_TYPE = 'text/xml';
   static const COMPRESSED_MIME_TYPE = 'application/x-gzip';
 
+  List<int> _bytes;
+
   StringBuffer _sb;
 
-  StringBuffer get sb => _sb;
-
   FitOutput() {
-    _sb = StringBuffer();
+    _bytes = [];
   }
 
   static String fileExtension(bool compressed) {
