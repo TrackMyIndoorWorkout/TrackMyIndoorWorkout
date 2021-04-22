@@ -1,3 +1,5 @@
+import '../utils/constants.dart';
+import '../utils/statistics_accumulator.dart';
 import 'export_record.dart';
 
 class ExportModel {
@@ -32,4 +34,50 @@ class ExportModel {
   String buildVersionMinor;
   String langID;
   String partNumber;
+
+  process() {
+    // Assuming that points are ordered by time stamp ascending
+    ExportRecord lastRecord = points.last;
+    if (lastRecord != null) {
+      if ((totalTime == null || totalTime == 0) && lastRecord.date != null) {
+        totalTime = lastRecord.date.millisecondsSinceEpoch / 1000;
+      }
+      if ((totalDistance == null || totalDistance == 0) && lastRecord.distance > 0) {
+        totalDistance = lastRecord.distance;
+      }
+    }
+
+    final calculateMaxSpeed = maxSpeed == null || maxSpeed == 0;
+    final calculateAvgHeartRate = averageHeartRate == null || averageHeartRate == 0;
+    final calculateMaxHeartRate = maximumHeartRate == null || maximumHeartRate == 0;
+    final calculateAvgCadence = averageCadence == null || averageCadence == 0;
+    var accu = StatisticsAccumulator(
+      si: true,
+      sport: ActivityType.Ride,
+      calculateMaxSpeed: calculateMaxSpeed,
+      calculateAvgHeartRate: calculateAvgHeartRate,
+      calculateMaxHeartRate: calculateMaxHeartRate,
+      calculateAvgCadence: calculateAvgCadence,
+    );
+    if (calculateMaxSpeed ||
+        calculateAvgHeartRate ||
+        calculateMaxHeartRate ||
+        calculateAvgCadence) {
+      points.forEach((trackPoint) {
+        accu.processExportRecord(trackPoint);
+      });
+    }
+    if (calculateMaxSpeed) {
+      maxSpeed = accu.maxSpeed;
+    }
+    if (calculateAvgHeartRate && accu.heartRateCount > 0) {
+      averageHeartRate = accu.avgHeartRate;
+    }
+    if (calculateMaxHeartRate && accu.maxHeartRate > 0) {
+      maximumHeartRate = accu.maxHeartRate;
+    }
+    if (calculateAvgCadence && accu.cadenceCount > 0) {
+      averageCadence = accu.avgCadence;
+    }
+  }
 }

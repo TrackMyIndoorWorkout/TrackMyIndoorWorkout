@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import '../../persistence/preferences.dart';
-import '../../utils/constants.dart';
-import '../../utils/statistics_accumulator.dart';
 import '../activity_export.dart';
 import '../export_model.dart';
 import '../export_record.dart';
@@ -61,58 +59,9 @@ class TCXExport extends ActivityExport {
     //---------
     _sb.write('        <Lap StartTime="${timeStampString(exportModel.dateActivity)}">\n');
 
-    // Assuming that points are ordered by time stamp ascending
-    ExportRecord lastRecord = exportModel.points.last;
-    if (lastRecord != null) {
-      if ((exportModel.totalTime == null || exportModel.totalTime == 0) &&
-          lastRecord.date != null) {
-        exportModel.totalTime = lastRecord.date.millisecondsSinceEpoch / 1000;
-      }
-      if ((exportModel.totalDistance == null || exportModel.totalDistance == 0) &&
-          lastRecord.distance > 0) {
-        exportModel.totalDistance = lastRecord.distance;
-      }
-    }
-
     addElement('TotalTimeSeconds', exportModel.totalTime.toString());
     // Add Total distance in meters
     addElement('DistanceMeters', exportModel.totalDistance.toStringAsFixed(2));
-
-    final calculateMaxSpeed = exportModel.maxSpeed == null || exportModel.maxSpeed == 0;
-    final calculateAvgHeartRate =
-        exportModel.averageHeartRate == null || exportModel.averageHeartRate == 0;
-    final calculateMaxHeartRate =
-        exportModel.maximumHeartRate == null || exportModel.maximumHeartRate == 0;
-    final calculateAvgCadence =
-        exportModel.averageCadence == null || exportModel.averageCadence == 0;
-    var accu = StatisticsAccumulator(
-      si: true,
-      sport: ActivityType.Ride,
-      calculateMaxSpeed: calculateMaxSpeed,
-      calculateAvgHeartRate: calculateAvgHeartRate,
-      calculateMaxHeartRate: calculateMaxHeartRate,
-      calculateAvgCadence: calculateAvgCadence,
-    );
-    if (calculateMaxSpeed ||
-        calculateAvgHeartRate ||
-        calculateMaxHeartRate ||
-        calculateAvgCadence) {
-      exportModel.points.forEach((trackPoint) {
-        accu.processExportRecord(trackPoint);
-      });
-    }
-    if (calculateMaxSpeed) {
-      exportModel.maxSpeed = accu.maxSpeed;
-    }
-    if (calculateAvgHeartRate && accu.heartRateCount > 0) {
-      exportModel.averageHeartRate = accu.avgHeartRate;
-    }
-    if (calculateMaxHeartRate && accu.maxHeartRate > 0) {
-      exportModel.maximumHeartRate = accu.maxHeartRate;
-    }
-    if (calculateAvgCadence && accu.cadenceCount > 0) {
-      exportModel.averageCadence = accu.avgCadence;
-    }
 
     // Add Maximum speed in meter/second
     addElement('MaximumSpeed', exportModel.maxSpeed.toStringAsFixed(2));

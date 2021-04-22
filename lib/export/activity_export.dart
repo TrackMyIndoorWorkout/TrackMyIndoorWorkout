@@ -96,11 +96,13 @@ abstract class ActivityExport {
       ..partNumber = '0'
       ..points = records.map((r) => recordToExport(r, calculator)).toList(growable: false);
 
+    exportModel.process();
+
     return await getFile(exportModel, compress);
   }
 
-  Future<List<int>> getFile(ExportModel tcxInfo, bool compress) async {
-    final fileBytes = await getFileCore(tcxInfo);
+  Future<List<int>> getFile(ExportModel exportModel, bool compress) async {
+    final fileBytes = await getFileCore(exportModel);
     if (!compress) {
       return fileBytes;
     }
@@ -122,7 +124,7 @@ abstract class ActivityExport {
     };
   }
 
-  Future<List<int>> getFileCore(ExportModel tcxInfo);
+  Future<List<int>> getFileCore(ExportModel exportModel);
 
   String timeStampString(DateTime dateTime);
 
