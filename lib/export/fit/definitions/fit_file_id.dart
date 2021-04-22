@@ -10,11 +10,12 @@ class FitFileId extends FitDefinitionMessage {
           globalMessageNumber: FitMessage.FileId,
         ) {
     fields = [
-      FitField(3, FitBaseTypes.uint32zType), // serial number
-      FitField(4, FitBaseTypes.uint32Type), // time created
+      FitField(0, FitBaseTypes.enumType), // type
       FitField(1, FitBaseTypes.uint16Type), // manufacturer
       FitField(2, FitBaseTypes.uint16Type), // product
-      FitField(0, FitBaseTypes.enumType), // type
+      FitField(3, FitBaseTypes.uint32zType), // serial number
+      FitField(4, FitBaseTypes.uint32Type), // time created
+      FitField(8, FitBaseTypes.stringType), // product name
     ];
   }
 }

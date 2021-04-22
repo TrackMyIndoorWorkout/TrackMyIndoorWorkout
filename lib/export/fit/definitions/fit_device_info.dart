@@ -17,6 +17,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
       FitField(4, FitBaseTypes.uint16Type), // Product
       FitField(5, FitBaseTypes.uint16Type), // SoftwareRevision
       FitField(6, FitBaseTypes.uint8Type), // HardwareRevision
+      FitField(27, FitBaseTypes.stringType), // ProductName
     ];
   }
 }
