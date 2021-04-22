@@ -6,9 +6,9 @@ import '../fit_message.dart';
 class FitDataRecord extends FitDefinitionMessage {
   FitDataRecord({localMessageType})
       : super(
-    localMessageType: localMessageType,
-    globalMessageNumber: FitMessage.Record,
-  ) {
+          localMessageType: localMessageType,
+          globalMessageNumber: FitMessage.Record,
+        ) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
       FitField(0, FitBaseTypes.sint32Type), // PositionLat
