@@ -13,9 +13,12 @@ class FitLap extends FitDefinitionMessage {
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
       FitField(0, FitBaseTypes.enumType), // Event
       FitField(1, FitBaseTypes.enumType), // EventType
+      FitField(2, FitBaseTypes.uint32Type), // MessageIndex
+      FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
+      FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
+      FitField(5, FitBaseTypes.sint32Type), // EndPositionLat
+      FitField(6, FitBaseTypes.sint32Type), // EndPositionLong
 
-      FitField(0, FitBaseTypes.sint32Type), // PositionLat
-      FitField(1, FitBaseTypes.sint32Type), // PositionLong
       FitField(4, FitBaseTypes.uint8Type), // Cadence
       FitField(5, FitBaseTypes.uint32Type), // Distance
       FitField(6, FitBaseTypes.uint16Type), // Speed
