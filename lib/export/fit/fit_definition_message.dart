@@ -1,7 +1,7 @@
 import 'fit_field.dart';
 import 'fit_record.dart';
 
-class FitDefinitionMessage extends FitRecord {
+abstract class FitDefinitionMessage extends FitRecord {
   static const int FORTY_RECORD = 0x40;
 
   List<FitField> fields;
@@ -27,4 +27,6 @@ class FitDefinitionMessage extends FitRecord {
 
     return output;
   }
+
+  // List<int> serializeData(dynamic parameter);
 }
