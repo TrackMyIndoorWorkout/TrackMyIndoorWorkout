@@ -1,4 +1,5 @@
 import 'package:tuple/tuple.dart';
+import '../../utils/constants.dart';
 
 const FITNESS_EQUIPMENT_SPORT_ID = 4;
 const GENERIC_SPORT_ID = 0;
@@ -54,3 +55,21 @@ Map<String, Tuple2<int, int>> fitSport = {
   "Workout": Tuple2(GENERIC_SPORT_ID, 0),
   "Yoga": Tuple2(TRAINING_SPORT_ID, 43),
 };
+
+Tuple2 activityType2FitSport(String sport) {
+  if (sport == ActivityType.Swim) {
+    sport = "OpenWaterSwim";
+  } else if (sport == ActivityType.Canoeing) {
+    sport = ActivityType.Kayaking;
+  } else if (sport == ActivityType.Run) {
+    sport = "TrackRun";
+  } else if (sport == ActivityType.Ride) {
+    sport = "TrackRide";
+  }
+
+  if (!fitSport.containsKey(sport)) {
+    sport = "Workout";
+  }
+
+  return fitSport[sport];
+}
