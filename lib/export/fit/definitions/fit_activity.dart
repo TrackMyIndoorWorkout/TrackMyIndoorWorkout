@@ -1,4 +1,7 @@
 import '../../export_model.dart';
+import '../enums/fit_activity.dart';
+import '../enums/fit_event.dart';
+import '../enums/fit_event_type.dart';
 import '../fit_base_type.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
@@ -15,9 +18,9 @@ class FitActivity extends FitDefinitionMessage {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
       FitField(1, FitBaseTypes.uint16Type), // NumSessions: 1
-      FitField(2, FitBaseTypes.enumType), // Timestamp or Activity?: 0
-      FitField(3, FitBaseTypes.enumType), // Event: 1A
-      FitField(4, FitBaseTypes.enumType), // EventType: 1
+      FitField(2, FitBaseTypes.enumType), // Activity (Manual)
+      FitField(3, FitBaseTypes.enumType), // Event (Activity)
+      FitField(4, FitBaseTypes.enumType), // EventType (Stop)
     ];
   }
 
@@ -27,7 +30,10 @@ class FitActivity extends FitDefinitionMessage {
     var dummy = FitHeader();
     dummy.output = [localMessageType];
     dummy.addLong(FitSerializable.fitDateTime(model.dateActivity));
-    dummy.output.addAll([1, 0, 0x1A, 1]);
+    dummy.addShort(1);
+    dummy.addByte(FitActivityEnum.Manual);
+    dummy.addByte(FitEvent.Activity);
+    dummy.addByte(FitEventType.Stop);
 
     return dummy.output;
   }
