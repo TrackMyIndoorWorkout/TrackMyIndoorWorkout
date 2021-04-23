@@ -11,7 +11,10 @@ class FitFileCreator extends FitDefinitionMessage {
         ) {
     fields = [
       FitField(1, FitBaseTypes.uint16Type), // SoftwareRevision
-      FitField(2, FitBaseTypes.uint8Type), // HardwareRevision
     ];
+  }
+
+  List<int> serializeData(dynamic parameter) {
+    return [localMessageType, 33];
   }
 }
