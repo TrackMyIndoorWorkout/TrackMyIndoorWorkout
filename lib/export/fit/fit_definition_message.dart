@@ -19,7 +19,7 @@ abstract class FitDefinitionMessage extends FitRecord {
     super.binarySerialize();
     addByte(reserved);
     addByte(architecture);
-    addInteger(globalMessageNumber);
+    addShort(globalMessageNumber);
     addByte(fields.length);
     fields.forEach((field) {
       output.addAll(field.binarySerialize());
@@ -28,5 +28,5 @@ abstract class FitDefinitionMessage extends FitRecord {
     return output;
   }
 
-  // List<int> serializeData(dynamic parameter);
+  List<int> serializeData(dynamic parameter);
 }
