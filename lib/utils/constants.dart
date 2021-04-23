@@ -6,7 +6,11 @@ const LB_TO_KG = 0.45359237;
 const FT_TO_M = 0.3048;
 const NOT_AVAILABLE = "N/A";
 const HTTPS_PORT = 443;
+const MAX_UINT8 = 256;
 const MAX_UINT16 = 65536;
+const MAX_UINT24 = MAX_UINT8 * 65536;
+const MAX_UINT32 = MAX_UINT16 * MAX_UINT16;
+const DEG_TO_FIT_GPS = 2^32 ~/ 360; // 11930465
 
 class ActivityType {
   static const String AlpineSki = "AlpineSki";
