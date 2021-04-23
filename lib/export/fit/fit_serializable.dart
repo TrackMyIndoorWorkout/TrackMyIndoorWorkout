@@ -1,3 +1,4 @@
+import '../../utils/constants.dart';
 import 'fit_crc.dart';
 
 abstract class FitSerializable {
@@ -11,6 +12,20 @@ abstract class FitSerializable {
   }
 
   void addNonFloatingNumber(int number, int length) {
+    if (number < 0) {
+      // Two compliments flipping
+      int threshold = MAX_UINT8;
+      if (length == 2) {
+        threshold = MAX_UINT16;
+      } else if (length == 3) {
+        threshold = MAX_UINT24;
+      } else if (length == 4) {
+        threshold = MAX_UINT32;
+      }
+
+      number += threshold;
+    }
+
     for (int i = 0; i < length; i++) {
       output.add(number % 256);
       number ~/= 256;
