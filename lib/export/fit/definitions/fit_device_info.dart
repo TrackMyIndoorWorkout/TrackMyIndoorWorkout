@@ -20,4 +20,9 @@ class FitDeviceInfo extends FitDefinitionMessage {
       FitField(27, FitBaseTypes.stringType), // ProductName
     ];
   }
+
+  List<int> serializeData(dynamic parameter) {
+    // TODO
+    return null;
+  }
 }

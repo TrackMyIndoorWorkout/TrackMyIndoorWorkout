@@ -18,4 +18,9 @@ class FitFileId extends FitDefinitionMessage {
       FitField(8, FitBaseTypes.stringType), // product name
     ];
   }
+
+  List<int> serializeData(dynamic parameter) {
+    // TODO
+    return null;
+  }
 }
