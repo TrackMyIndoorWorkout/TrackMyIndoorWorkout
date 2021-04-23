@@ -39,7 +39,7 @@ void main() {
 
         List<int> expected = [header.headerSize, header.profileVersion];
         var temp = FitHeader();
-        temp.addInteger(header.profileVersion);
+        temp.addShort(header.profileVersion);
         expected.addAll(temp.output);
         temp.output = [];
         temp.addLong(header.dataSize);
@@ -48,7 +48,7 @@ void main() {
         expected.addAll(header.dataType);
         temp.output = [];
         final crc = crcData(expected);
-        temp.addInteger(crc);
+        temp.addShort(crc);
         expected.addAll(temp.output);
 
         expect(listEquals(output, expected), true);

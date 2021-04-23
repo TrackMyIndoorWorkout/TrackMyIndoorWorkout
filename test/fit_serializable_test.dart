@@ -20,7 +20,7 @@ void main() {
       test('$integer -> $expected', () async {
         final subject = TestSubject();
 
-        subject.addInteger(integer);
+        subject.addShort(integer);
 
         expect(listEquals(subject.output, expected), true);
       });

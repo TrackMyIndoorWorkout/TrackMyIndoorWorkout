@@ -37,7 +37,7 @@ abstract class FitSerializable {
     addNonFloatingNumber(byte, 1);
   }
 
-  void addInteger(int integer) {
+  void addShort(int integer) {
     addNonFloatingNumber(integer, 2);
   }
 
@@ -46,7 +46,7 @@ abstract class FitSerializable {
   }
 
   List<int> binarySerialize() {
-    addInteger(crcData(output));
+    addShort(crcData(output));
     return output;
   }
 
