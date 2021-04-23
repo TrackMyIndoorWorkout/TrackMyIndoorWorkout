@@ -64,7 +64,7 @@ class TCXExport extends ActivityExport {
     addElement('DistanceMeters', exportModel.totalDistance.toStringAsFixed(2));
 
     // Add Maximum speed in meter/second
-    addElement('MaximumSpeed', exportModel.maxSpeed.toStringAsFixed(2));
+    addElement('MaximumSpeed', exportModel.maximumSpeed.toStringAsFixed(2));
 
     if ((exportModel.averageHeartRate ?? 0) > 0) {
       addElement('AverageHeartRateBpm', exportModel.averageHeartRate.toStringAsFixed(2));
