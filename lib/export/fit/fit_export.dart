@@ -47,7 +47,7 @@ class FitExport extends ActivityExport {
     // 4. Sport
     final fitSport = FitSport(localMessageType: localMessageType);
     body.output.addAll(fitSport.binarySerialize());
-    body.output.addAll(fitSport.serializeData(exportModel));
+    body.output.addAll(fitSport.serializeData(exportModel.activityType));
     localMessageType++;
     // 5. Lap
     final lap = FitLap(localMessageType: localMessageType);
