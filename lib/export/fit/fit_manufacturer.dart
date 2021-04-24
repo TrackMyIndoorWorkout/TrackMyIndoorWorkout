@@ -160,3 +160,5 @@ Map<int, String> fitManufacturer = {
   293: 'jetblack',
   5759: 'actigraphcorp',
 };
+
+// TODO: Jaro-Winkler with https://pub.dev/packages/edit_distance
