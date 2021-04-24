@@ -37,7 +37,12 @@ class FitExport extends ActivityExport {
     localMessageType++;
 
     // 3. Data Records
-    final dataRecord = FitDataRecord(localMessageType: localMessageType);
+    final dataRecord = FitDataRecord(
+      localMessageType: localMessageType,
+      heartRateGapWorkaround: heartRateGapWorkaround,
+      heartRateUpperLimit: heartRateUpperLimit,
+      heartRateLimitingMethod: heartRateLimitingMethod,
+    );
     body.output.addAll(dataRecord.binarySerialize());
     exportModel.records.forEach((record) {
       body.output.addAll(dataRecord.serializeData(record));

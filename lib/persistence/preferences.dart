@@ -519,7 +519,7 @@ const HEART_RATE_UPPER_LIMIT_TAG = "heart_rate_upper_limit";
 const HEART_RATE_UPPER_LIMIT_DEFAULT = "0";
 const HEART_RATE_UPPER_LIMIT_DEFAULT_INT = 0;
 const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is the heart rate upper bound where the methods" +
-    "bellow would be applied. 0 means no limiting is performed.";
+    "bellow would be applied. 0 means no upper limiting is performed.";
 
 const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection";
 const HEART_RATE_LIMITING_METHOD_TAG = "heart_rate_limiting_method";

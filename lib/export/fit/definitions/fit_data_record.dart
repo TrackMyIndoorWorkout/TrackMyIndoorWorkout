@@ -1,3 +1,4 @@
+import '../../../persistence/preferences.dart';
 import '../../../utils/constants.dart';
 import '../../export_record.dart';
 import '../fit_base_type.dart';
@@ -8,8 +9,16 @@ import '../fit_message.dart';
 import '../fit_serializable.dart';
 
 class FitDataRecord extends FitDefinitionMessage {
-  FitDataRecord({localMessageType})
-      : super(
+  final String heartRateGapWorkaround;
+  final int heartRateUpperLimit;
+  final String heartRateLimitingMethod;
+
+  FitDataRecord({
+    localMessageType,
+    this.heartRateGapWorkaround,
+    this.heartRateUpperLimit,
+    this.heartRateLimitingMethod,
+  }) : super(
           localMessageType: localMessageType,
           globalMessageNumber: FitMessage.Record,
         ) {
@@ -33,9 +42,29 @@ class FitDataRecord extends FitDefinitionMessage {
     dummy.addLong(FitSerializable.fitDateTime(model.date));
     dummy.addLong((model.latitude * DEG_TO_FIT_GPS).round());
     dummy.addLong((model.longitude * DEG_TO_FIT_GPS).round());
-    // TODO
+    if (model.heartRate != null) {
+      if (heartRateUpperLimit > 0 &&
+          model.heartRate > heartRateUpperLimit &&
+          heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
+        // #114
+        if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+          model.heartRate = heartRateUpperLimit;
+        } else {
+          model.heartRate = heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO
+              ? 0
+              : FitBaseTypes.uint8Type.invalidValue;
+        }
+      } else if (model.heartRate == 0 &&
+              heartRateGapWorkaround == DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS ||
+          heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_NOTHING) {
+        // #93 #113 #114
+        model.heartRate = FitBaseTypes.uint8Type.invalidValue;
+      }
+    } else {
+      model.heartRate = FitBaseTypes.uint8Type.invalidValue;
+    }
+
     dummy.addByte(model.heartRate);
-    // TODO
     dummy.addByte(model.cadence);
     dummy.addLong((model.distance * 100).round());
     dummy.addShort((model.speed * 1000).round());
