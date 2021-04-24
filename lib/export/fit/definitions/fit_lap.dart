@@ -46,8 +46,8 @@ class FitLap extends FitDefinitionMessage {
 
   List<int> serializeData(dynamic parameter) {
     ExportModel model = parameter;
-    final first = model.points.first;
-    final last = model.points.last;
+    final first = model.records.first;
+    final last = model.records.last;
     var dummy = FitHeader();
     dummy.output = [localMessageType, 0];
     dummy.addLong(FitSerializable.fitTimeStamp(last.timeStampInteger));

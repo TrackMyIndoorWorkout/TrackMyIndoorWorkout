@@ -17,7 +17,7 @@ class ExportModel {
   double maximumPower;
   String intensity;
   DateTime dateActivity; // Date of the activity
-  List<ExportRecord> points;
+  List<ExportRecord> records;
 
   // Related to device that generated the data
   String creator;
@@ -41,9 +41,9 @@ class ExportModel {
 
   process() {
     // Assuming that points are ordered by time stamp ascending
-    ExportRecord lastRecord = points.last;
+    ExportRecord lastRecord = records.last;
     if (lastRecord != null) {
-      ExportRecord firstRecord = points.first;
+      ExportRecord firstRecord = records.first;
       if ((totalTime == null || totalTime == 0) &&
           lastRecord.date != null &&
           firstRecord.date != null) {
@@ -86,7 +86,7 @@ class ExportModel {
         calculateMaxCadence ||
         calculateAvgPower ||
         calculateMaxPower) {
-      points.forEach((trackPoint) {
+      records.forEach((trackPoint) {
         accu.processExportRecord(trackPoint);
       });
     }

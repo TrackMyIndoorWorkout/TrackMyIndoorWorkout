@@ -94,7 +94,7 @@ abstract class ActivityExport {
       ..buildVersionMinor = MINOR
       ..langID = 'en-US'
       ..partNumber = '0'
-      ..points = records.map((r) => recordToExport(r, calculator)).toList(growable: false);
+      ..records = records.map((r) => recordToExport(r, calculator)).toList(growable: false);
 
     exportModel.process();
 

@@ -93,8 +93,8 @@ class TCXExport extends ActivityExport {
     _sb.write('          <Track>\n');
 
     // Add track inside the lap
-    for (var point in exportModel.points) {
-      addTrackPoint(point);
+    for (var record in exportModel.records) {
+      addTrackPoint(record);
     }
 
     _sb.write('          </Track>\n');
