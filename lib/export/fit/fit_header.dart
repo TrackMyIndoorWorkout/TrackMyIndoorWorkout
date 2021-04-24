@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'fit_serializable.dart';
 
 class FitHeader extends FitSerializable {
@@ -7,16 +9,16 @@ class FitHeader extends FitSerializable {
   final int headerSize = 14;
   int protocolVersion = 32; // 0x20
   int profileVersion = SUUNTO_PROFILE_VERSION;
-  int dataSize; // 4 bytes, little endian
-  final List<int> dataType = [0x2E, 0x46, 0x49, 0x54]; // ".FIT"
+  final int dataSize; // 4 bytes, little endian
+  final String dataType = ".FIT";
 
-  FitHeader({this.protocolVersion, this.profileVersion}) : super();
+  FitHeader({this.protocolVersion, this.profileVersion, this.dataSize}) : super();
 
   List<int> binarySerialize() {
     output = [headerSize, profileVersion];
     addShort(profileVersion);
     addLong(dataSize);
-    output.addAll(dataType);
+    output.addAll(utf8.encode(dataType));
     return super.binarySerialize();
   }
 }

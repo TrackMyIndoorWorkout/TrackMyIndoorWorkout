@@ -32,8 +32,10 @@ void main() {
           "${testData.protocolVersion} ${testData.profileVersion} ${testData.dataSize} ${testData.crc}",
           () async {
         final header = FitHeader(
-            protocolVersion: testData.protocolVersion, profileVersion: testData.profileVersion);
-        header.dataSize = testData.dataSize;
+          protocolVersion: testData.protocolVersion,
+          profileVersion: testData.profileVersion,
+          dataSize: testData.dataSize,
+        );
 
         final output = header.binarySerialize();
 
@@ -45,7 +47,7 @@ void main() {
         temp.addLong(header.dataSize);
         expected.addAll(temp.output);
         temp.output = [];
-        expected.addAll(header.dataType);
+        expected.addAll([0x2E, 0x46, 0x49, 0x54]); // ".FIT"
         temp.output = [];
         final crc = crcData(expected);
         temp.addShort(crc);
