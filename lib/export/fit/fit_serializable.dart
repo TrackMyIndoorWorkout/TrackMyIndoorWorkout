@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../../utils/constants.dart';
 import 'fit_crc.dart';
 
@@ -43,6 +45,11 @@ abstract class FitSerializable {
 
   void addLong(int long) {
     addNonFloatingNumber(long, 4);
+  }
+
+  void addString(String text) {
+    output.addAll(utf8.encode(text));
+    output.add(0);
   }
 
   List<int> binarySerialize() {

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -123,6 +124,21 @@ void main() {
         subject.setDateTime(testDateTime);
 
         expect(subject.timeStamp, expected);
+      });
+    });
+  });
+
+  group('addString test', () {
+    final rnd = Random();
+    getRandomInts(SMALL_REPETITION, MAX_UINT8 ~/ 4, rnd).forEach((length) {
+      final string = mockString(length);
+      final expected = utf8.encode(string) + [0];
+      test('$string -> $expected', () async {
+        final subject = TestSubject();
+
+        subject.addString(string);
+
+        expect(listEquals(subject.output, expected), true);
       });
     });
   });
