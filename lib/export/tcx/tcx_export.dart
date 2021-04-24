@@ -105,39 +105,39 @@ class TCXExport extends ActivityExport {
   ///
   /// Extension handling is missing for the moment
   ///
-  void addTrackPoint(ExportRecord point) {
+  void addTrackPoint(ExportRecord record) {
     _sb.write("<Trackpoint>\n");
-    addElement('Time', point.timeStampString);
-    addPosition(point.latitude.toStringAsFixed(10), point.longitude.toStringAsFixed(10));
-    addElement('AltitudeMeters', point.altitude.toString());
-    addElement('DistanceMeters', point.distance.toStringAsFixed(2));
-    if (point.cadence != null) {
-      final cadence = min(max(point.cadence, 0), 254).toInt();
+    addElement('Time', record.timeStampString);
+    addPosition(record.latitude.toStringAsFixed(10), record.longitude.toStringAsFixed(10));
+    addElement('AltitudeMeters', record.altitude.toString());
+    addElement('DistanceMeters', record.distance.toStringAsFixed(2));
+    if (record.cadence != null) {
+      final cadence = min(max(record.cadence, 0), 254).toInt();
       addElement('Cadence', cadence.toString());
     }
 
-    addExtensions('Speed', point.speed.toStringAsFixed(2), 'Watts', point.power);
+    addExtensions('Speed', record.speed.toStringAsFixed(2), 'Watts', record.power);
 
-    if (point.heartRate != null) {
+    if (record.heartRate != null) {
       if (heartRateUpperLimit > 0 &&
-          point.heartRate > heartRateUpperLimit &&
+          record.heartRate > heartRateUpperLimit &&
           heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
         bool persist = false;
         if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
-          point.heartRate = heartRateUpperLimit;
+          record.heartRate = heartRateUpperLimit;
           persist = true;
         } else {
-          point.heartRate = 0;
+          record.heartRate = 0;
           persist = heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO;
         }
 
         if (persist) {
-          addHeartRate(point.heartRate);
+          addHeartRate(record.heartRate);
         }
-      } else if (point.heartRate > 0 ||
+      } else if (record.heartRate > 0 ||
           heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND ||
           heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
-        addHeartRate(point.heartRate);
+        addHeartRate(record.heartRate);
       }
     }
 
