@@ -1,6 +1,9 @@
+import '../../export_model.dart';
+import '../enums/fit_file_type.dart';
 import '../fit_base_type.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
+import '../fit_header.dart';
 import '../fit_message.dart';
 
 class FitFileId extends FitDefinitionMessage {
@@ -10,7 +13,7 @@ class FitFileId extends FitDefinitionMessage {
           globalMessageNumber: FitMessage.FileId,
         ) {
     fields = [
-      FitField(0, FitBaseTypes.enumType), // type
+      FitField(0, FitBaseTypes.enumType), // type (Activity)
       FitField(1, FitBaseTypes.uint16Type), // manufacturer
       FitField(2, FitBaseTypes.uint16Type), // product
       FitField(3, FitBaseTypes.uint32zType), // serial number
@@ -20,7 +23,16 @@ class FitFileId extends FitDefinitionMessage {
   }
 
   List<int> serializeData(dynamic parameter) {
-    // TODO
-    return null;
+    ExportModel model = parameter;
+
+    var dummy = FitHeader();
+    dummy.output = [localMessageType, 0];
+    dummy.addByte(FitFileType.Activity);
+    // TODO: manufacturer
+    // TODO: product
+    dummy.addLong(1);
+    dummy.setDateTime(DateTime.now());
+    dummy.addString(model.deviceName);
+    return dummy.output;
   }
 }
