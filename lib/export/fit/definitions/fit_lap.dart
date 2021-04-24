@@ -46,6 +46,7 @@ class FitLap extends FitDefinitionMessage {
 
   List<int> serializeData(dynamic parameter) {
     ExportModel model = parameter;
+
     final first = model.records.first;
     final last = model.records.last;
     var dummy = FitHeader();
