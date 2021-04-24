@@ -96,6 +96,9 @@ abstract class ActivityExport {
       ..partNumber = '0'
       ..records = records.map((r) => recordToExport(r, calculator)).toList(growable: false);
 
+    // TODO: optionally apply heart rate gap workaround export time #93, #113
+    // TODO: optionally apply cadence gap workaround at export time #101, #122
+    // TODO: optionally apply cadence limit workaround at export time #114
     exportModel.process();
 
     return await getFile(exportModel, compress);
