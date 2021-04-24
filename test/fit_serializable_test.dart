@@ -13,14 +13,57 @@ class TestSubject extends FitSerializable {}
 final fitEpochDateTime = DateTime.utc(1989, 12, 31, 0, 0, 0);
 
 void main() {
-  group('addInteger test', () {
+  group('addByte test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT16, rnd).forEach((integer) {
-      final expected = [integer % 256, integer ~/ 256];
-      test('$integer -> $expected', () async {
+    getRandomInts(SMALL_REPETITION, MAX_UINT8, rnd).forEach((byte) {
+      final expected = [byte];
+      test('$byte -> $expected', () async {
         final subject = TestSubject();
 
-        subject.addShort(integer);
+        subject.addByte(byte);
+
+        expect(listEquals(subject.output, expected), true);
+      });
+    });
+  });
+
+  group('addByte negative numbers (2 complement) test', () {
+    final rnd = Random();
+    getRandomInts(SMALL_REPETITION, MAX_UINT8 ~/ 2, rnd).forEach((byte) {
+      final expected = [MAX_UINT8 - byte];
+      test('-$byte -> $expected', () async {
+        final subject = TestSubject();
+
+        subject.addByte(-byte);
+
+        expect(listEquals(subject.output, expected), true);
+      });
+    });
+  });
+
+  group('addShort test', () {
+    final rnd = Random();
+    getRandomInts(SMALL_REPETITION, MAX_UINT16, rnd).forEach((short) {
+      final expected = [short % 256, short ~/ 256];
+      test('$short -> $expected', () async {
+        final subject = TestSubject();
+
+        subject.addShort(short);
+
+        expect(listEquals(subject.output, expected), true);
+      });
+    });
+  });
+
+  group('addShort negative numbers (2 complement) test', () {
+    final rnd = Random();
+    getRandomInts(SMALL_REPETITION, MAX_UINT16 ~/ 2, rnd).forEach((short) {
+      final complemented = MAX_UINT16 - short;
+      final expected = [complemented % 256, complemented ~/ 256];
+      test('-$short -> $expected', () async {
+        final subject = TestSubject();
+
+        subject.addShort(-short);
 
         expect(listEquals(subject.output, expected), true);
       });
@@ -29,12 +72,27 @@ void main() {
 
   group('addLong test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT16 * MAX_UINT16, rnd).forEach((long) {
+    getRandomInts(SMALL_REPETITION, MAX_UINT32, rnd).forEach((long) {
       final expected = [long % 256, long ~/ 256 % 256, long ~/ 65536 % 256, long ~/ 16777216];
       test('$long -> $expected', () async {
         final subject = TestSubject();
 
         subject.addLong(long);
+
+        expect(listEquals(subject.output, expected), true);
+      });
+    });
+  });
+
+  group('addLong negative numbers (2 complement) test', () {
+    final rnd = Random();
+    getRandomInts(SMALL_REPETITION, MAX_UINT32 ~/ 2, rnd).forEach((long) {
+      final comp = MAX_UINT32 - long;
+      final expected = [comp % 256, comp ~/ 256 % 256, comp ~/ 65536 % 256, comp ~/ 16777216];
+      test('-$long -> $expected', () async {
+        final subject = TestSubject();
+
+        subject.addLong(-long);
 
         expect(listEquals(subject.output, expected), true);
       });
