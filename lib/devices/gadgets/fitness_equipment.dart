@@ -227,12 +227,10 @@ class FitnessEquipment extends DeviceBase {
         deltaCalories = stub.power * dT * DeviceDescriptor.J2KCAL * descriptor.calorieFactor;
       }
 
-      if (deltaCalories > 0) {
-        _residueCalories += deltaCalories;
-        calories = (lastRecord.calories ?? 0) + _residueCalories;
-        if (calories.floor() > lastRecord.calories) {
-          _residueCalories = calories - calories.floor();
-        }
+      _residueCalories += deltaCalories;
+      calories = (lastRecord.calories ?? 0) + _residueCalories;
+      if (calories.floor() > lastRecord.calories) {
+        _residueCalories = calories - calories.floor();
       }
     }
 
