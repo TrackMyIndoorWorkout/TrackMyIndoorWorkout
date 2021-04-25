@@ -56,7 +56,11 @@ class Activity {
   })  : assert(deviceName != null),
         assert(deviceId != null),
         assert(fourCC != null),
-        assert(sport != null);
+        assert(sport != null) {
+    if (distance == null) {
+      distance = 0;
+    }
+  }
 
   bool flipForPace(String item) {
     return item == "speed" && sport != ActivityType.Ride;
@@ -64,9 +68,9 @@ class Activity {
 
   void finish(double distance, int elapsed, int calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;
-    this.distance = distance;
-    this.elapsed = elapsed;
-    this.calories = calories;
+    this.distance = distance ?? 0.0;
+    this.elapsed = elapsed ?? 0;
+    this.calories = calories ?? 0;
   }
 
   void markUploaded(int stravaId) {

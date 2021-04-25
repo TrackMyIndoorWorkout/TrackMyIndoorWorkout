@@ -127,7 +127,7 @@ class Record {
   }
 
   String distanceStringByUnit(bool si) {
-    final dist = distanceByUnit(si);
+    final dist = distanceByUnit(si) ?? 0.0;
     return dist.toStringAsFixed(si ? 0 : 2);
   }
 
