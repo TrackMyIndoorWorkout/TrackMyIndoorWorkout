@@ -1,4 +1,9 @@
 import 'package:edit_distance/edit_distance.dart';
+import 'fit_base_type.dart';
+
+const NAUTILUS_FIT_ID = 14;
+const NORTH_POLE_ENGINEERING_FIT_ID = 66;
+const PRECOR_FIT_ID = 266;
 
 Map<int, String> fitManufacturer = {
   1: 'garmin',
@@ -14,7 +19,7 @@ Map<int, String> fitManufacturer = {
   11: 'tanita',
   12: 'echowell',
   13: 'dynastream oem',
-  14: 'nautilus',
+  NAUTILUS_FIT_ID: 'nautilus',
   15: 'dynastream',
   16: 'timex',
   17: 'metrigear',
@@ -65,7 +70,7 @@ Map<int, String> fitManufacturer = {
   63: 'specialized',
   64: 'wtek',
   65: 'physical enterprises',
-  66: 'north pole engineering',
+  NORTH_POLE_ENGINEERING_FIT_ID: 'north pole engineering',
   67: 'bkool',
   68: 'cateye',
   69: 'stages cycling',
@@ -132,7 +137,7 @@ Map<int, String> fitManufacturer = {
   263: 'favero electronics',
   264: 'dynovelo',
   265: 'strava',
-  266: 'precor', // Amer Sports
+  PRECOR_FIT_ID: 'precor', // Amer Sports
   267: 'bryton',
   268: 'sram',
   269: 'navman', // MiTAC Global Corporation (Mio Technology)
@@ -164,15 +169,28 @@ Map<int, String> fitManufacturer = {
 };
 
 int getFitManufacturer(String manufacturer) {
+  if (manufacturer == null) {
+    return FitBaseTypes.uint16Type.invalidValue;
+  }
+
   var bestId = 0;
   var bestDistance = 1.0;
   JaroWinkler jaroWinkler = JaroWinkler();
+  final manufacturerLower = manufacturer.toLowerCase();
   fitManufacturer.forEach((id, text) {
-    final distance = jaroWinkler.normalizedDistance(manufacturer, text);
+    final manufacturerCropped = manufacturerLower.length <= text.length
+        ? manufacturerLower
+        : manufacturerLower.substring(0, text.length - 1);
+    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, text);
     if (distance < bestDistance) {
       bestDistance = distance;
       bestId = id;
     }
   });
+
+  if (bestDistance > 0.1) {
+    bestId = FitBaseTypes.uint16Type.invalidValue;
+  }
+
   return bestId;
 }

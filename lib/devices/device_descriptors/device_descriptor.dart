@@ -21,6 +21,7 @@ abstract class DeviceDescriptor {
   final String modelName;
   final String namePrefix;
   final String manufacturer;
+  final int manufacturerFitId;
   final String model;
   final String dataServiceId;
   final String dataCharacteristicId;
@@ -57,6 +58,7 @@ abstract class DeviceDescriptor {
     @required this.modelName,
     @required this.namePrefix,
     this.manufacturer,
+    this.manufacturerFitId,
     this.model,
     this.dataServiceId,
     this.dataCharacteristicId,
