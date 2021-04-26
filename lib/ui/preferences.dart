@@ -141,12 +141,6 @@ class PreferencesScreen extends StatelessWidget {
         },
       ),
       SwitchPreference(
-        CALORIE_CARRYOVER_WORKAROUND,
-        CALORIE_CARRYOVER_WORKAROUND_TAG,
-        defaultVal: CALORIE_CARRYOVER_WORKAROUND_DEFAULT,
-        desc: CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION,
-      ),
-      SwitchPreference(
         CADENCE_GAP_WORKAROUND,
         CADENCE_GAP_WORKAROUND_TAG,
         defaultVal: CADENCE_GAP_WORKAROUND_DEFAULT,

@@ -26,7 +26,6 @@ class FitnessEquipment extends DeviceBase {
   bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
   double _lastPositiveCalories; // #111
   bool hasTotalCalorieCounting;
-  bool _calorieCarryoverWorkaround = CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
   Timer _timer;
   Record lastRecord;
   HeartRateMonitor heartRateMonitor;
@@ -53,8 +52,6 @@ class FitnessEquipment extends DeviceBase {
         PrefService.getBool(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
     _lastPositiveCalories = 0.0;
     hasTotalCalorieCounting = false;
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
-        CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
     measuring = false;
     calibrating = false;
     _random = Random();
@@ -253,13 +250,6 @@ class FitnessEquipment extends DeviceBase {
       _lastPositiveCalories = calories;
     }
 
-    if (_calorieCarryoverWorkaround &&
-        lastRecord.calories != null &&
-        lastRecord.calories > 0 &&
-        (calories == null || lastRecord.calories > calories)) {
-      calories = lastRecord.calories.toDouble();
-    }
-
     stub.calories = calories?.floor() ?? 0;
 
     if (stub.heartRate == 0 && (heartRateMonitor?.metric ?? 0) > 0) {
@@ -289,8 +279,6 @@ class FitnessEquipment extends DeviceBase {
   }
 
   void stopWorkout() {
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
-        CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;

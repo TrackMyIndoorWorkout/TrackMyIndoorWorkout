@@ -485,14 +485,6 @@ const EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION = "How many seconds of data g
     "if your fitness equipment stops sending data when the workout is paused to avoid unwanted " +
     "restarts.";
 
-const CALORIE_CARRYOVER_WORKAROUND = "Calorie Carryover Workaround";
-const CALORIE_CARRYOVER_WORKAROUND_TAG = "calorie_carryover_workaround";
-const CALORIE_CARRYOVER_WORKAROUND_DEFAULT = false;
-const CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION = "On: Calorie count could be preserved if the " +
-    "workout is restarted accidentally or automatically. " +
-    "(Note that data points will be still missing.) " +
-    "Off: Calorie count will start from zero after workout restart.";
-
 const CADENCE_GAP_WORKAROUND = "Cadence Data Gap Workaround";
 const CADENCE_GAP_WORKAROUND_TAG = "cadence_data_gap_workaround";
 const CADENCE_GAP_WORKAROUND_DEFAULT = true;
