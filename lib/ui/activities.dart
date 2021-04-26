@@ -176,8 +176,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         initialOffset: 0,
         loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
-          fetchItems: (int offset, int limit) async {
-            final data = await _database.activityDao.findActivities(offset, limit);
+          fetchItems: (int page, int limit) async {
+            final offset = page * limit;
+            final data = await _database.activityDao.findActivities(limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

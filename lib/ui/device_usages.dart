@@ -104,8 +104,9 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
         initialOffset: 0,
         loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
-          fetchItems: (int offset, int limit) async {
-            final data = await _database.deviceUsageDao.findDeviceUsages(offset, limit);
+          fetchItems: (int page, int limit) async {
+            final offset = page * limit;
+            final data = await _database.deviceUsageDao.findDeviceUsages(limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
