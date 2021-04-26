@@ -32,7 +32,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
     dummy.output = [localMessageType, 0];
     dummy.setDateTime(DateTime.now());
     dummy.addByte(FitDeviceType.FitnessEquipment);
-    dummy.addByte(getFitManufacturer(model.deviceName));
+    dummy.addShort(getFitManufacturer(model.deviceName));
     dummy.addLong(1);
     // TODO: product
     dummy.addByte(FitSourceType.BluetoothLowEnergy);

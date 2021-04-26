@@ -29,7 +29,7 @@ class FitFileId extends FitDefinitionMessage {
     var dummy = FitHeader();
     dummy.output = [localMessageType, 0];
     dummy.addByte(FitFileType.Activity);
-    dummy.addByte(getFitManufacturer(model.deviceName));
+    dummy.addShort(getFitManufacturer(model.deviceName));
     // TODO: product
     dummy.addLong(1);
     dummy.setDateTime(DateTime.now());
