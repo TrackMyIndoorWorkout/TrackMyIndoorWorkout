@@ -9,6 +9,7 @@ import '../devices/device_map.dart';
 import '../persistence/preferences.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';
+import '../utils/constants.dart';
 import '../utils/display.dart';
 import 'export_model.dart';
 import 'export_record.dart';
@@ -21,11 +22,18 @@ abstract class ActivityExport {
   static String nonCompressedMimeType;
   static String compressedMimeType;
 
+  int _lastPositiveCadence; // #101
+  bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
+  int _lastPositiveHeartRate;
   String heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
   int heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT_INT;
   String heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
 
   ActivityExport() {
+    _lastPositiveCadence = 0;
+    _cadenceGapWorkaround =
+        PrefService.getBool(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
+    _lastPositiveHeartRate = 0;
     heartRateGapWorkaround =
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     final heartRateUpperLimitString =
@@ -94,11 +102,46 @@ abstract class ActivityExport {
       ..buildVersionMinor = MINOR
       ..langID = 'en-US'
       ..partNumber = '0'
-      ..records = records.map((r) => recordToExport(r, calculator)).toList(growable: false);
+      ..records = records.map((r) {
+        final record = recordToExport(r, calculator);
 
-    // TODO: optionally apply heart rate gap workaround export time #93, #113
-    // TODO: optionally apply cadence gap workaround at export time #101, #122
-    // TODO: optionally apply heart rate limit workaround at export time #114
+        if (record.speed != null && record.speed > EPS) {
+          // #101, #122
+          if ((record.cadence == null || record.cadence == 0) &&
+              _lastPositiveCadence > 0 &&
+              _cadenceGapWorkaround) {
+            record.cadence = _lastPositiveCadence;
+          } else if (record.cadence != null && record.cadence > 0) {
+            _lastPositiveCadence = record.cadence;
+          }
+        }
+
+        if (record.heartRate == null && heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
+          record.heartRate = 0;
+        }
+        // #93, #113
+        if ((record.heartRate == 0 || record.heartRate == null) &&
+            _lastPositiveHeartRate > 0 &&
+            heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
+          record.heartRate = _lastPositiveHeartRate;
+        } else if (record.heartRate != null && record.heartRate > 0) {
+          _lastPositiveHeartRate = record.heartRate;
+        }
+        // #114
+        if (heartRateUpperLimit > 0 &&
+            record.heartRate != null &&
+            record.heartRate > heartRateUpperLimit &&
+            heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
+          if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+            record.heartRate = heartRateUpperLimit;
+          } else {
+            record.heartRate = 0;
+          }
+        }
+
+        return record;
+      }).toList(growable: false);
+
     exportModel.process();
 
     return await getFile(exportModel, compress);
