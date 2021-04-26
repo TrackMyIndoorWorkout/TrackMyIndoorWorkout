@@ -131,7 +131,7 @@ void main() {
   group('addString test', () {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, MAX_UINT8 ~/ 4, rnd).forEach((length) {
-      final string = mockString(length);
+      final string = mockString(length + 1);
       final expected = utf8.encode(string) + [0];
       test('$string -> $expected', () async {
         final subject = TestSubject();
