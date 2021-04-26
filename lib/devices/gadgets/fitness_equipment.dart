@@ -244,13 +244,13 @@ class FitnessEquipment extends DeviceBase {
       } else if (stub.cadence != null && stub.cadence > 0) {
         _lastPositiveCadence = stub.cadence;
       }
+    }
 
-      // #111
-      if ((calories == null || calories < EPS) && _lastPositiveCalories > 0) {
-        calories = _lastPositiveCalories;
-      } else if (calories != null && calories > EPS) {
-        _lastPositiveCalories = calories;
-      }
+    // #111
+    if ((calories == null || calories < EPS) && _lastPositiveCalories > 0) {
+      calories = _lastPositiveCalories;
+    } else if (calories != null && calories > EPS) {
+      _lastPositiveCalories = calories;
     }
 
     if (_calorieCarryoverWorkaround &&
