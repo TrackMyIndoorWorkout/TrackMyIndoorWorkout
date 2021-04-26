@@ -118,12 +118,11 @@ class TCXExport extends ActivityExport {
 
     addExtensions('Speed', record.speed.toStringAsFixed(2), 'Watts', record.power);
 
-    if (record.heartRate != null) {
-      if (record.heartRate > 0 ||
-          heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND ||
-          heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
-        addHeartRate(record.heartRate);
-      }
+    if (record.heartRate != null &&
+        (record.heartRate > 0 ||
+            heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND ||
+            heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO)) {
+      addHeartRate(record.heartRate);
     }
 
     _sb.write("</Trackpoint>\n");
