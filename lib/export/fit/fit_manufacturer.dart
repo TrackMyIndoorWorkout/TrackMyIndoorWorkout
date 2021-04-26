@@ -1,3 +1,5 @@
+import 'package:edit_distance/edit_distance.dart';
+
 Map<int, String> fitManufacturer = {
   1: 'garmin',
   2: 'garmin fr405 antfs', // Do not use. Used by FR405 for ANTFS man id.
@@ -161,4 +163,16 @@ Map<int, String> fitManufacturer = {
   5759: 'actigraphcorp',
 };
 
-// TODO: Jaro-Winkler with https://pub.dev/packages/edit_distance
+int getFitManufacturer(String manufacturer) {
+  var bestId = 0;
+  var bestDistance = 1.0;
+  JaroWinkler jaroWinkler = JaroWinkler();
+  fitManufacturer.forEach((id, text) {
+    final distance = jaroWinkler.normalizedDistance(manufacturer, text);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestId = id;
+    }
+  });
+  return bestId;
+}
