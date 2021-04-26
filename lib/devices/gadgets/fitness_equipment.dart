@@ -211,7 +211,7 @@ class FitnessEquipment extends DeviceBase {
       calories = stub.calories.toDouble();
       hasTotalCalorieCounting = true;
     } else {
-      double deltaCalories = 0;
+      var deltaCalories = 0.0;
       if (stub.caloriesPerHour != null && stub.caloriesPerHour > EPS) {
         deltaCalories = stub.caloriesPerHour / (60 * 60) * dT;
       }
@@ -225,8 +225,9 @@ class FitnessEquipment extends DeviceBase {
       }
 
       _residueCalories += deltaCalories;
-      calories = (lastRecord.calories ?? 0) + _residueCalories;
-      if (calories.floor() > lastRecord.calories) {
+      final lastCalories = lastRecord.calories ?? 0.0;
+      calories = lastCalories + _residueCalories;
+      if (calories.floor() > lastCalories) {
         _residueCalories = calories - calories.floor();
       }
     }
