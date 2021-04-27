@@ -3,9 +3,9 @@ import '../enums/fit_activity.dart';
 import '../enums/fit_event.dart';
 import '../enums/fit_event_type.dart';
 import '../fit_base_type.dart';
+import '../fit_data.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
-import '../fit_header.dart';
 import '../fit_message.dart';
 import '../fit_serializable.dart';
 
@@ -27,7 +27,7 @@ class FitActivity extends FitDefinitionMessage {
   List<int> serializeData(dynamic parameter) {
     ExportModel model = parameter;
 
-    var dummy = FitHeader();
+    var dummy = FitData();
     dummy.output = [localMessageType];
     dummy.addLong(FitSerializable.fitDateTime(model.dateActivity));
     dummy.addShort(1);

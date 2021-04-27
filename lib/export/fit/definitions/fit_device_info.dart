@@ -2,9 +2,9 @@ import '../../export_model.dart';
 import '../enums/fit_device_type.dart';
 import '../enums/fir_source_type.dart';
 import '../fit_base_type.dart';
+import '../fit_data.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
-import '../fit_header.dart';
 import '../fit_message.dart';
 
 class FitDeviceInfo extends FitDefinitionMessage {
@@ -26,16 +26,16 @@ class FitDeviceInfo extends FitDefinitionMessage {
   List<int> serializeData(dynamic parameter) {
     ExportModel model = parameter;
 
-    var dummy = FitHeader();
-    dummy.output = [localMessageType, 0];
-    dummy.setDateTime(DateTime.now());
-    dummy.addByte(FitDeviceType.FitnessEquipment);
-    dummy.addShort(model.descriptor.manufacturerFitId);
-    // dummy.addShort(1);
-    dummy.addByte(
+    var data = FitData();
+    data.output = [localMessageType, 0];
+    data.setDateTime(DateTime.now());
+    data.addByte(FitDeviceType.FitnessEquipment);
+    data.addShort(model.descriptor.manufacturerFitId);
+    // data.addShort(1);
+    data.addByte(
         model.descriptor.antPlus ? FitSourceType.Antplus : FitSourceType.BluetoothLowEnergy);
-    dummy.addString(model.descriptor.fullName);
+    data.addString(model.descriptor.fullName);
 
-    return dummy.output;
+    return data.output;
   }
 }

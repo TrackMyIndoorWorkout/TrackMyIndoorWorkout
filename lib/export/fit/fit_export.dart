@@ -8,6 +8,7 @@ import 'definitions/fit_file_id.dart';
 import 'definitions/fit_lap.dart';
 import 'definitions/fit_session.dart';
 import 'definitions/fit_sport.dart';
+import 'fit_data.dart';
 import 'fit_header.dart';
 import 'fit_serializable.dart';
 
@@ -16,7 +17,7 @@ class FitExport extends ActivityExport {
       : super(nonCompressedFileExtension: 'fit', nonCompressedMimeType: 'application/octet-stream');
 
   Future<List<int>> getFileCore(ExportModel exportModel) async {
-    var body = FitHeader();
+    var body = FitData();
     // 0. File ID
     var localMessageType = 0;
     final fileId = FitFileId(localMessageType: localMessageType);

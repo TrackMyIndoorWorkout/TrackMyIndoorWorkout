@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:track_my_indoor_exercise/export/fit/fit_data.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_crc.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_header.dart';
 
@@ -31,16 +32,14 @@ void main() {
       test(
           "${testData.protocolVersion} ${testData.profileVersion} ${testData.dataSize} ${testData.crc}",
           () async {
-        final header = FitHeader(
-          protocolVersion: testData.protocolVersion,
-          profileVersion: testData.profileVersion,
-          dataSize: testData.dataSize,
-        );
+        final header = FitHeader(dataSize: testData.dataSize)
+          ..protocolVersion = testData.protocolVersion
+          ..profileVersion = testData.profileVersion;
 
         final output = header.binarySerialize();
 
         List<int> expected = [header.headerSize, header.profileVersion];
-        var temp = FitHeader();
+        var temp = FitData();
         temp.addShort(header.profileVersion);
         expected.addAll(temp.output);
         temp.output = [];

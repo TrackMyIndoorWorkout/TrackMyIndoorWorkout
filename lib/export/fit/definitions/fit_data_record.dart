@@ -2,9 +2,9 @@ import '../../../persistence/preferences.dart';
 import '../../../utils/constants.dart';
 import '../../export_record.dart';
 import '../fit_base_type.dart';
+import '../fit_data.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
-import '../fit_header.dart';
 import '../fit_message.dart';
 import '../fit_serializable.dart';
 
@@ -37,11 +37,11 @@ class FitDataRecord extends FitDefinitionMessage {
   List<int> serializeData(dynamic parameter) {
     ExportRecord model = parameter;
 
-    var dummy = FitHeader();
-    dummy.output = [localMessageType];
-    dummy.addLong(FitSerializable.fitDateTime(model.date));
-    dummy.addLong((model.latitude * DEG_TO_FIT_GPS).round());
-    dummy.addLong((model.longitude * DEG_TO_FIT_GPS).round());
+    var data = FitData();
+    data.output = [localMessageType];
+    data.addLong(FitSerializable.fitDateTime(model.date));
+    data.addLong((model.latitude * DEG_TO_FIT_GPS).round());
+    data.addLong((model.longitude * DEG_TO_FIT_GPS).round());
 
     if (model.heartRate != null) {
       if (model.heartRate == 0 &&
@@ -54,14 +54,14 @@ class FitDataRecord extends FitDefinitionMessage {
       model.heartRate = FitBaseTypes.uint8Type.invalidValue;
     }
 
-    dummy.addByte(model.heartRate);
-    dummy.addByte(model.cadence);
-    dummy.addLong((model.distance * 100).round());
-    dummy.addShort((model.speed * 1000).round());
-    dummy.addShort(model.power.round());
+    data.addByte(model.heartRate);
+    data.addByte(model.cadence);
+    data.addLong((model.distance * 100).round());
+    data.addShort((model.speed * 1000).round());
+    data.addShort(model.power.round());
 
-    dummy.output.addAll([1, 0, 0x1A, 1]);
+    data.output.addAll([1, 0, 0x1A, 1]);
 
-    return dummy.output;
+    return data.output;
   }
 }
