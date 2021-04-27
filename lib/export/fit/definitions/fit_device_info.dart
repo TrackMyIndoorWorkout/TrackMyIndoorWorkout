@@ -33,7 +33,8 @@ class FitDeviceInfo extends FitDefinitionMessage {
     dummy.addByte(FitDeviceType.FitnessEquipment);
     dummy.addShort(getFitManufacturer(model.descriptor.manufacturer));
     // dummy.addShort(1);
-    dummy.addByte(FitSourceType.BluetoothLowEnergy);
+    dummy.addByte(
+        model.descriptor.antPlus ? FitSourceType.Antplus : FitSourceType.BluetoothLowEnergy);
     dummy.addString(model.descriptor.fullName);
 
     return dummy.output;

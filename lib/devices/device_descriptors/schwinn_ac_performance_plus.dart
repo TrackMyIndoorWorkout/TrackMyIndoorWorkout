@@ -15,6 +15,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           manufacturerFitId: FitBaseTypes.uint16Type.invalidValue,
           dataServiceId: null,
           dataCharacteristicId: null,
+          antPlus: true,
           calorieFactor: 3.9,
         );
 

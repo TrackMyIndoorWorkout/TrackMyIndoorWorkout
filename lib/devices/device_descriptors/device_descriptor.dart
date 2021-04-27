@@ -25,6 +25,7 @@ abstract class DeviceDescriptor {
   final String model;
   final String dataServiceId;
   final String dataCharacteristicId;
+  final bool antPlus;
 
   int featuresFlag;
   int byteCounter;
@@ -62,6 +63,7 @@ abstract class DeviceDescriptor {
     this.model,
     this.dataServiceId,
     this.dataCharacteristicId,
+    this.antPlus = false,
     this.canMeasureHeartRate = true,
     this.heartRateByteIndex,
     this.timeMetric,
