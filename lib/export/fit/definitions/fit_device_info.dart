@@ -5,7 +5,6 @@ import '../fit_base_type.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
 import '../fit_header.dart';
-import '../fit_manufacturer.dart';
 import '../fit_message.dart';
 
 class FitDeviceInfo extends FitDefinitionMessage {
@@ -31,7 +30,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
     dummy.output = [localMessageType, 0];
     dummy.setDateTime(DateTime.now());
     dummy.addByte(FitDeviceType.FitnessEquipment);
-    dummy.addShort(getFitManufacturer(model.descriptor.manufacturer));
+    dummy.addShort(model.descriptor.manufacturerFitId);
     // dummy.addShort(1);
     dummy.addByte(
         model.descriptor.antPlus ? FitSourceType.Antplus : FitSourceType.BluetoothLowEnergy);

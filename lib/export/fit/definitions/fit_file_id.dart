@@ -4,7 +4,6 @@ import '../fit_base_type.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
 import '../fit_header.dart';
-import '../fit_manufacturer.dart';
 import '../fit_message.dart';
 
 class FitFileId extends FitDefinitionMessage {
@@ -28,7 +27,7 @@ class FitFileId extends FitDefinitionMessage {
     var dummy = FitHeader();
     dummy.output = [localMessageType, 0];
     dummy.addByte(FitFileType.Activity);
-    dummy.addShort(getFitManufacturer(model.descriptor.manufacturer));
+    dummy.addShort(model.descriptor.manufacturerFitId);
     // dummy.addShort(1);
     dummy.setDateTime(DateTime.now());
     dummy.addString(model.descriptor.fullName);
