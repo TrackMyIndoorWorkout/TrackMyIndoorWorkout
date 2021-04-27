@@ -6,7 +6,7 @@ abstract class FitRecord extends FitSerializable {
 
   int header;
   final int reserved = 0;
-  final int architecture = LITTLE_ENDIAN;
+  int architecture = LITTLE_ENDIAN;
   int localMessageType = 0; // 3 bits
   final int globalMessageNumber; // 2 bytes
 

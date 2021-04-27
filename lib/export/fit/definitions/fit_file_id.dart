@@ -30,6 +30,7 @@ class FitFileId extends FitDefinitionMessage {
     data.addShort(model.descriptor.manufacturerFitId);
     // data.addShort(1);
     data.setDateTime(DateTime.now());
+    setStringFieldSize(8, model.descriptor.fullName.length + 1);
     data.addString(model.descriptor.fullName);
     return data.output;
   }

@@ -34,6 +34,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
     // data.addShort(1);
     data.addByte(
         model.descriptor.antPlus ? FitSourceType.Antplus : FitSourceType.BluetoothLowEnergy);
+    setStringFieldSize(27, model.descriptor.fullName.length + 1);
     data.addString(model.descriptor.fullName);
 
     return data.output;
