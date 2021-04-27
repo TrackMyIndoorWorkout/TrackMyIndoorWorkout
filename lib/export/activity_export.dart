@@ -15,12 +15,12 @@ import 'export_model.dart';
 import 'export_record.dart';
 
 abstract class ActivityExport {
-  static const MAJOR = '1';
-  static const MINOR = '0';
-  static String nonCompressedFileExtension = '';
-  static String compressedFileExtension = nonCompressedFileExtension + '.gz';
-  static String nonCompressedMimeType;
-  static String compressedMimeType;
+  final int major = 1;
+  final int minor = 0;
+  final String nonCompressedFileExtension;
+  String compressedFileExtension;
+  final String nonCompressedMimeType;
+  final String compressedMimeType = 'application/x-gzip';
 
   int _lastPositiveCadence; // #101
   bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
@@ -29,7 +29,8 @@ abstract class ActivityExport {
   int heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT_INT;
   String heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
 
-  ActivityExport() {
+  ActivityExport({this.nonCompressedFileExtension, this.nonCompressedMimeType}) {
+    compressedFileExtension = nonCompressedFileExtension + '.gz';
     _lastPositiveCadence = 0;
     _cadenceGapWorkaround =
         PrefService.getBool(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
@@ -88,18 +89,18 @@ abstract class ActivityExport {
       ..deviceName = descriptor.fullName
       ..unitID = activity.deviceId
       ..productID = descriptor.modelName
-      ..versionMajor = MAJOR
-      ..versionMinor = MINOR
-      ..buildMajor = MAJOR
-      ..buildMinor = MINOR
+      ..versionMajor = major
+      ..versionMinor = minor
+      ..buildMajor = major
+      ..buildMinor = minor
 
       // Related to software used to generate the TCX file
       ..author = 'Csaba Consulting'
       ..name = 'Track My Indoor Exercise'
-      ..swVersionMajor = MAJOR
-      ..swVersionMinor = MINOR
-      ..buildVersionMajor = MAJOR
-      ..buildVersionMinor = MINOR
+      ..swVersionMajor = major
+      ..swVersionMinor = minor
+      ..buildVersionMajor = major
+      ..buildVersionMinor = minor
       ..langID = 'en-US'
       ..partNumber = '0'
       ..records = records.map((r) {

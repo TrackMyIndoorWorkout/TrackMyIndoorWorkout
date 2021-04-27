@@ -7,16 +7,9 @@ import '../export_model.dart';
 import '../export_record.dart';
 
 class TCXExport extends ActivityExport {
-  static String nonCompressedFileExtension = 'tcx';
-  static String compressedFileExtension = nonCompressedFileExtension + '.gz';
-  static String nonCompressedMimeType = 'text/xml';
-  static String compressedMimeType = 'application/x-gzip';
-
   StringBuffer _sb;
 
-  // StringBuffer get sb => _sb;
-
-  TCXExport() : super() {
+  TCXExport() : super(nonCompressedFileExtension: 'tcx', nonCompressedMimeType: 'text/xml') {
     _sb = StringBuffer();
   }
 

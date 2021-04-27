@@ -12,10 +12,8 @@ import 'fit_header.dart';
 import 'fit_serializable.dart';
 
 class FitExport extends ActivityExport {
-  static String nonCompressedFileExtension = 'fit';
-  static String compressedFileExtension = nonCompressedFileExtension + '.gz';
-  static String nonCompressedMimeType = 'application/octet-stream';
-  static String compressedMimeType = 'application/x-gzip';
+  FitExport()
+      : super(nonCompressedFileExtension: 'fit', nonCompressedMimeType: 'application/octet-stream');
 
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     var body = FitHeader();

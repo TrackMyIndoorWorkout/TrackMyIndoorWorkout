@@ -24,18 +24,18 @@ class ExportModel {
   String deviceName;
   String unitID;
   String productID;
-  String versionMajor;
-  String versionMinor;
-  String buildMajor;
-  String buildMinor;
+  int versionMajor;
+  int versionMinor;
+  int buildMajor;
+  int buildMinor;
 
   // Related to software used to generate the TCX file
   String author;
   String name;
-  String swVersionMajor;
-  String swVersionMinor;
-  String buildVersionMajor;
-  String buildVersionMinor;
+  int swVersionMajor;
+  int swVersionMinor;
+  int buildVersionMajor;
+  int buildVersionMinor;
   String langID;
   String partNumber;
 
