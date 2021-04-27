@@ -60,7 +60,7 @@ String paceString(double pace) {
 }
 
 String tcxSport(String sport) {
-  return sport == ActivityType.Ride && sport == ActivityType.Run ? sport : "Other";
+  return sport == ActivityType.Ride || sport == ActivityType.Run ? sport : "Other";
 }
 
 String getSpeedUnit(bool si, String sport) {
