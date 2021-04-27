@@ -18,8 +18,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
       FitField(1, FitBaseTypes.uint8Type), // DeviceType
       FitField(2, FitBaseTypes.uint16Type), // manufacturer
-      FitField(3, FitBaseTypes.uint32zType), // SerialNumber
-      FitField(4, FitBaseTypes.uint16Type), // Product
+      // FitField(4, FitBaseTypes.uint16Type), // Product
       FitField(25, FitBaseTypes.enumType), // source_type
       FitField(27, FitBaseTypes.stringType), // ProductName
     ];
@@ -33,8 +32,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
     dummy.setDateTime(DateTime.now());
     dummy.addByte(FitDeviceType.FitnessEquipment);
     dummy.addShort(getFitManufacturer(model.deviceName));
-    dummy.addLong(1);
-    // TODO: product
+    // dummy.addShort(1);
     dummy.addByte(FitSourceType.BluetoothLowEnergy);
     dummy.addString(model.deviceName);
 
