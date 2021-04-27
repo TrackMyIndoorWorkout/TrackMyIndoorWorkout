@@ -31,7 +31,7 @@ void main() {
   group('addByte negative numbers (2 complement) test', () {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, MAX_UINT8 ~/ 2, rnd).forEach((byte) {
-      final expected = [MAX_UINT8 - byte];
+      final expected = byte != 0 ? [MAX_UINT8 - byte] : [0];
       test('-$byte -> $expected', () async {
         final subject = TestSubject();
 
@@ -60,7 +60,7 @@ void main() {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, MAX_UINT16 ~/ 2, rnd).forEach((short) {
       final complemented = MAX_UINT16 - short;
-      final expected = [complemented % 256, complemented ~/ 256];
+      final expected = short != 0 ? [complemented % 256, complemented ~/ 256] : [0, 0];
       test('-$short -> $expected', () async {
         final subject = TestSubject();
 
@@ -89,7 +89,7 @@ void main() {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, MAX_UINT32 ~/ 2, rnd).forEach((long) {
       final comp = MAX_UINT32 - long;
-      final expected = [comp % 256, comp ~/ 256 % 256, comp ~/ 65536 % 256, comp ~/ 16777216];
+      final expected = long != 0 ? [comp % 256, comp ~/ 256 % 256, comp ~/ 65536 % 256, comp ~/ 16777216] : [0, 0, 0, 0];
       test('-$long -> $expected', () async {
         final subject = TestSubject();
 
