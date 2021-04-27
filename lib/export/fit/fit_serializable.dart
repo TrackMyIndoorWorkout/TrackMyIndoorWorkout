@@ -58,7 +58,7 @@ abstract class FitSerializable {
   }
 
   static int fitTimeStamp(int unixMilliseconds) {
-    return unixMilliseconds ~/ 1000 - fitEpoch;
+    return (unixMilliseconds - fitEpoch) ~/ 1000;
   }
 
   static int fitDateTime(DateTime dateTime) {
