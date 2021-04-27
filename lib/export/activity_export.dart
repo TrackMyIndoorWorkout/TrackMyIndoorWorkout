@@ -85,10 +85,8 @@ abstract class ActivityExport {
       ..dateActivity = startStamp
 
       // Related to device that generated the data
-      ..creator = descriptor.vendorName
-      ..deviceName = descriptor.fullName
-      ..unitID = activity.deviceId
-      ..productID = descriptor.modelName
+      ..descriptor = descriptor
+      ..deviceId = activity.deviceId
       ..versionMajor = major
       ..versionMinor = minor
       ..buildMajor = major

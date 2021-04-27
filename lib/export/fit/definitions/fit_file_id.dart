@@ -28,10 +28,10 @@ class FitFileId extends FitDefinitionMessage {
     var dummy = FitHeader();
     dummy.output = [localMessageType, 0];
     dummy.addByte(FitFileType.Activity);
-    dummy.addShort(getFitManufacturer(model.deviceName));
+    dummy.addShort(getFitManufacturer(model.descriptor.manufacturer));
     // dummy.addShort(1);
     dummy.setDateTime(DateTime.now());
-    dummy.addString(model.deviceName);
+    dummy.addString(model.descriptor.fullName);
     return dummy.output;
   }
 }

@@ -1,3 +1,4 @@
+import '../devices/device_descriptors/device_descriptor.dart';
 import '../utils/constants.dart';
 import '../utils/statistics_accumulator.dart';
 import 'export_record.dart';
@@ -20,10 +21,8 @@ class ExportModel {
   List<ExportRecord> records;
 
   // Related to device that generated the data
-  String creator;
-  String deviceName;
-  String unitID;
-  String productID;
+  DeviceDescriptor descriptor;
+  String deviceId;
   int versionMajor;
   int versionMinor;
   int buildMajor;

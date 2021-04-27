@@ -123,9 +123,9 @@ class TCXExport extends ActivityExport {
 
   void addCreator(ExportModel exportModel) {
     _sb.write("""    <Creator xsi:type="Device_t">
-      <Name>${exportModel.deviceName}</Name>
-      <UnitId>${exportModel.unitID}</UnitId>
-      <ProductID>${exportModel.productID}</ProductID>
+      <Name>${exportModel.descriptor.fullName}</Name>
+      <UnitId>${exportModel.deviceId}</UnitId>
+      <ProductID>${exportModel.descriptor.modelName}</ProductID>
       <Version>
         <VersionMajor>${exportModel.versionMajor}</VersionMajor>
         <VersionMinor>${exportModel.versionMinor}</VersionMinor>
