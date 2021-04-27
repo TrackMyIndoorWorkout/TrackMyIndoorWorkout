@@ -10,19 +10,19 @@ void main() {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1024, rnd).forEach((divider) {
       final len = rnd.nextInt(99) + 6;
-      final data = getRandomInts(len, 256, rnd);
+      final data = getRandomInts(len, MAX_UINT8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 2 ? (lsbLocation < len - 3 ? rnd.nextBool() : false) : true;
       final msbLocation = larger ? lsbLocation + 3 : lsbLocation - 3;
-      data[lsbLocation] = 255;
+      data[lsbLocation] = MAX_BYTE;
       if (larger) {
-        data[lsbLocation + 1] = 255;
-        data[lsbLocation + 2] = 255;
+        data[lsbLocation + 1] = MAX_BYTE;
+        data[lsbLocation + 2] = MAX_BYTE;
       } else {
-        data[msbLocation + 1] = 255;
-        data[msbLocation + 2] = 255;
+        data[msbLocation + 1] = MAX_BYTE;
+        data[msbLocation + 2] = MAX_BYTE;
       }
-      data[msbLocation] = 255;
+      data[msbLocation] = MAX_BYTE;
       final divider = rnd.nextDouble() * 4;
       final expected = 0.0;
 
@@ -39,7 +39,7 @@ void main() {
     final rnd = Random();
     1.to(REPETITION).forEach((input) {
       final len = rnd.nextInt(99) + 6;
-      final data = getRandomInts(len, 256, rnd);
+      final data = getRandomInts(len, MAX_UINT8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 2 ? (lsbLocation < len - 3 ? rnd.nextBool() : false) : true;
       final midLocation1 = larger ? lsbLocation + 1 : lsbLocation - 1;
@@ -48,14 +48,15 @@ void main() {
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
       final expected = (optional &&
-              data[lsbLocation] == 255 &&
-              data[midLocation1] == 255 &&
-              data[midLocation2] == 255 &&
-              data[msbLocation] == 255)
+              data[lsbLocation] == MAX_BYTE &&
+              data[midLocation1] == MAX_BYTE &&
+              data[midLocation2] == MAX_BYTE &&
+              data[msbLocation] == MAX_BYTE)
           ? 0
           : (data[lsbLocation] +
-                  256 *
-                      (data[midLocation1] + 256 * (data[midLocation2] + 256 * data[msbLocation]))) /
+                  MAX_UINT8 *
+                      (data[midLocation1] +
+                          MAX_UINT8 * (data[midLocation2] + MAX_UINT8 * data[msbLocation]))) /
               divider;
 
       test(

@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+import '../../utils/constants.dart';
 import 'metric_descriptor.dart';
 
 class ThreeByteMetricDescriptor extends MetricDescriptor {
@@ -8,8 +8,8 @@ class ThreeByteMetricDescriptor extends MetricDescriptor {
 
   double getMeasurementValue(List<int> data) {
     final dir = lsb < msb ? 1 : -1;
-    final value = data[lsb] + 256 * (data[lsb + dir] + 256 * data[msb]);
-    if (optional && value == 255 + 256 * (255 + 256 * 255)) {
+    final value = data[lsb] + MAX_UINT8 * (data[lsb + dir] + MAX_UINT8 * data[msb]);
+    if (optional && value == MAX_UINT24 - 1) {
       return null;
     }
     return value / divider;

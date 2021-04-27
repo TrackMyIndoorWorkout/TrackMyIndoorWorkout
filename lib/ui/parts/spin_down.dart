@@ -77,11 +77,11 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   Tuple2<int, int> getWeightBytes(int weight) {
     final weightTransport = (weight * (_si ? 1.0 : LB_TO_KG) * 200).round();
-    return Tuple2<int, int>(weightTransport % 256, weightTransport ~/ 256);
+    return Tuple2<int, int>(weightTransport % MAX_UINT8, weightTransport ~/ MAX_UINT8);
   }
 
   int getWeightFromBytes(int weightLsb, int weightMsb) {
-    return (weightLsb + weightMsb * 256) / (_si ? 1.0 : LB_TO_KG) ~/ 200;
+    return (weightLsb + weightMsb * MAX_UINT8) / (_si ? 1.0 : LB_TO_KG) ~/ 200;
   }
 
   @override
@@ -225,10 +225,10 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         }
         setState(() {
           _calibrationState = CalibrationState.CalibrationInProgress;
-          _targetSpeedHigh = (data[3] * 256 + data[4]) / 100;
+          _targetSpeedHigh = (data[3] * MAX_UINT8 + data[4]) / 100;
           _targetSpeedHighString =
               speedOrPaceString(_targetSpeedHigh, _si, _fitnessEquipment.descriptor.defaultSport);
-          _targetSpeedLow = (data[5] * 256 + data[6]) / 100;
+          _targetSpeedLow = (data[5] * MAX_UINT8 + data[6]) / 100;
           _targetSpeedLowString =
               speedOrPaceString(_targetSpeedLow, _si, _fitnessEquipment.descriptor.defaultSport);
         });

@@ -29,8 +29,8 @@ abstract class FitSerializable {
     }
 
     for (int i = 0; i < length; i++) {
-      output.add(number % 256);
-      number ~/= 256;
+      output.add(number % MAX_UINT8);
+      number ~/= MAX_UINT8;
     }
     assert(number == 0);
   }

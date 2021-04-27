@@ -45,7 +45,7 @@ void main() {
   group('addShort test', () {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, MAX_UINT16, rnd).forEach((short) {
-      final expected = [short % 256, short ~/ 256];
+      final expected = [short % MAX_UINT8, short ~/ MAX_UINT8];
       test('$short -> $expected', () async {
         final subject = TestSubject();
 
@@ -60,7 +60,7 @@ void main() {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, MAX_UINT16 ~/ 2, rnd).forEach((short) {
       final complemented = MAX_UINT16 - short;
-      final expected = short != 0 ? [complemented % 256, complemented ~/ 256] : [0, 0];
+      final expected = short != 0 ? [complemented % MAX_UINT8, complemented ~/ MAX_UINT8] : [0, 0];
       test('-$short -> $expected', () async {
         final subject = TestSubject();
 
@@ -74,7 +74,12 @@ void main() {
   group('addLong test', () {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, MAX_UINT32, rnd).forEach((long) {
-      final expected = [long % 256, long ~/ 256 % 256, long ~/ 65536 % 256, long ~/ 16777216];
+      final expected = [
+        long % MAX_UINT8,
+        long ~/ MAX_UINT8 % MAX_UINT8,
+        long ~/ MAX_UINT16 % MAX_UINT8,
+        long ~/ MAX_UINT24
+      ];
       test('$long -> $expected', () async {
         final subject = TestSubject();
 
@@ -89,7 +94,14 @@ void main() {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, MAX_UINT32 ~/ 2, rnd).forEach((long) {
       final comp = MAX_UINT32 - long;
-      final expected = long != 0 ? [comp % 256, comp ~/ 256 % 256, comp ~/ 65536 % 256, comp ~/ 16777216] : [0, 0, 0, 0];
+      final expected = long != 0
+          ? [
+              comp % MAX_UINT8,
+              comp ~/ MAX_UINT8 % MAX_UINT8,
+              comp ~/ MAX_UINT16 % MAX_UINT8,
+              comp ~/ MAX_UINT24
+            ]
+          : [0, 0, 0, 0];
       test('-$long -> $expected', () async {
         final subject = TestSubject();
 

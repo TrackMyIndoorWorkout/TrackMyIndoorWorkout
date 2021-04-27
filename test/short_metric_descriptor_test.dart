@@ -10,12 +10,12 @@ void main() {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1024, rnd).forEach((divider) {
       final len = rnd.nextInt(99) + 2;
-      final data = getRandomInts(len, 256, rnd);
+      final data = getRandomInts(len, MAX_UINT8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 0 ? (lsbLocation < len - 1 ? rnd.nextBool() : false) : true;
       final msbLocation = larger ? lsbLocation + 1 : lsbLocation - 1;
-      data[lsbLocation] = 255;
-      data[msbLocation] = 255;
+      data[lsbLocation] = MAX_BYTE;
+      data[msbLocation] = MAX_BYTE;
       final divider = rnd.nextDouble() * 4;
       final expected = 0.0;
 
@@ -32,15 +32,15 @@ void main() {
     final rnd = Random();
     1.to(REPETITION).forEach((input) {
       final len = rnd.nextInt(99) + 2;
-      final data = getRandomInts(len, 256, rnd);
+      final data = getRandomInts(len, MAX_UINT8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 0 ? (lsbLocation < len - 1 ? rnd.nextBool() : false) : true;
       final msbLocation = larger ? lsbLocation + 1 : lsbLocation - 1;
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
-      final expected = (optional && data[lsbLocation] == 255 && data[msbLocation] == 255)
+      final expected = (optional && data[lsbLocation] == MAX_BYTE && data[msbLocation] == MAX_BYTE)
           ? 0
-          : (data[lsbLocation] + data[msbLocation] * 256) / divider;
+          : (data[lsbLocation] + data[msbLocation] * MAX_UINT8) / divider;
 
       test("(${data[lsbLocation]} + ${data[msbLocation]}) / $divider -> $expected", () {
         final desc = ShortMetricDescriptor(

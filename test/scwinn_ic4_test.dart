@@ -24,7 +24,7 @@ void main() {
     final bike = deviceMap["SIC4"] as IndoorBikeDeviceDescriptor;
     final lsb = 68;
     final msb = 2;
-    final flag = 256 * msb + lsb;
+    final flag = MAX_UINT8 * msb + lsb;
     bike.stopWorkout();
 
     bike.processFlag(flag);
