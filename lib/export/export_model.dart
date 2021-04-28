@@ -38,6 +38,10 @@ class ExportModel {
   String langID;
   String partNumber;
 
+  ExportModel() {
+    records = [];
+  }
+
   process() {
     // Assuming that points are ordered by time stamp ascending
     ExportRecord lastRecord = records.last;

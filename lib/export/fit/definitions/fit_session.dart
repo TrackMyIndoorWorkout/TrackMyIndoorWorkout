@@ -14,7 +14,7 @@ import '../fit_sport.dart';
 class FitSession extends FitDefinitionMessage {
   FitSession(localMessageType) : super(localMessageType, FitMessage.Session) {
     fields = [
-      FitField(254, FitBaseTypes.uint32Type), // MessageIndex: 0
+      FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
       FitField(253, FitBaseTypes.uint32Type), // Session end time
       FitField(0, FitBaseTypes.enumType), // Event
       FitField(1, FitBaseTypes.enumType), // EventType
@@ -46,6 +46,7 @@ class FitSession extends FitDefinitionMessage {
     final last = model.records.last;
     var data = FitData();
     data.output = [localMessageType];
+    data.addShort(0);
     data.addLong(FitSerializable.fitTimeStamp(last.timeStampInteger));
     data.addByte(FitEvent.Lap);
     data.addByte(FitEventType.Stop);

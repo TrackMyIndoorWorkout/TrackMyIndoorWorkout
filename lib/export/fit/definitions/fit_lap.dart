@@ -14,7 +14,7 @@ import '../fit_sport.dart';
 class FitLap extends FitDefinitionMessage {
   FitLap(localMessageType) : super(localMessageType, FitMessage.Lap) {
     fields = [
-      FitField(254, FitBaseTypes.uint32Type), // MessageIndex
+      FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
       FitField(253, FitBaseTypes.uint32Type), // Timestamp (Lap end time)
       FitField(0, FitBaseTypes.enumType), // Event
       FitField(1, FitBaseTypes.enumType), // EventType
@@ -47,6 +47,7 @@ class FitLap extends FitDefinitionMessage {
     final last = model.records.last;
     var data = FitData();
     data.output = [localMessageType];
+    data.addShort(0);
     data.addLong(FitSerializable.fitTimeStamp(last.timeStampInteger));
     data.addByte(FitEvent.Lap);
     data.addByte(FitEventType.Stop);
