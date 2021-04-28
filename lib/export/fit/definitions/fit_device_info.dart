@@ -11,7 +11,8 @@ import '../fit_string_field.dart';
 class FitDeviceInfo extends FitDefinitionMessage {
   final int productTextLength;
 
-  FitDeviceInfo(localMessageType, this.productTextLength) : super(localMessageType, FitMessage.DeviceInfo) {
+  FitDeviceInfo(localMessageType, this.productTextLength)
+      : super(localMessageType, FitMessage.DeviceInfo) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
       FitField(1, FitBaseTypes.uint8Type), // DeviceType
