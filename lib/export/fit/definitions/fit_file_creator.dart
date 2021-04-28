@@ -1,4 +1,5 @@
 import '../fit_base_type.dart';
+import '../fit_data.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
 import '../fit_message.dart';
@@ -11,6 +12,9 @@ class FitFileCreator extends FitDefinitionMessage {
   }
 
   List<int> serializeData(dynamic parameter) {
-    return [localMessageType, 33];
+    var data = FitData();
+    data.output = [localMessageType];
+    data.addShort(33);
+    return data.output;
   }
 }
