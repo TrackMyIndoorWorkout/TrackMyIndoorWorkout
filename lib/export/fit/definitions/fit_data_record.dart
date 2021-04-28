@@ -57,8 +57,6 @@ class FitDataRecord extends FitDefinitionMessage {
     data.addShort((model.speed * 1000).round());
     data.addShort(model.power.round());
 
-    data.output.addAll([1, 0, 0x1A, 1]);
-
     return data.output;
   }
 }
