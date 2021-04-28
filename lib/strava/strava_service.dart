@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../export/tcx/tcx_export.dart';
+import '../export/fit/fit_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/secret.dart';
@@ -26,7 +26,7 @@ class StravaService {
       return statusJsonIsEmpty;
     }
 
-    final exporter = TCXExport();
+    final exporter = FitExport();
     final fileGzip = await exporter.getExport(activity, records, true);
     Fault fault = await _strava.uploadActivity(activity, fileGzip, exporter);
 
