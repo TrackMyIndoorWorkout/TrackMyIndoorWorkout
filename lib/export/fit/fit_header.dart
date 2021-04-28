@@ -15,7 +15,7 @@ class FitHeader extends FitSerializable {
   FitHeader({this.dataSize}) : super();
 
   List<int> binarySerialize() {
-    output = [headerSize, profileVersion];
+    output = [headerSize, protocolVersion];
     addShort(profileVersion);
     addLong(dataSize);
     output.addAll(utf8.encode(dataType));
