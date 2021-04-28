@@ -61,9 +61,9 @@ Tuple2 activityType2FitSport(String sport) {
   if (sport == ActivityType.Swim) {
     sport = "OpenWaterSwim";
   } else if (sport == ActivityType.Canoeing) {
-    sport = "Paddling";
+    sport = "Rowing";
   } else if (sport == ActivityType.Kayaking) {
-    sport = "Paddling";
+    sport = "Rowing";
   } else if (sport == ActivityType.Run) {
     sport = "TrackRun";
   } else if (sport == ActivityType.Ride) {
