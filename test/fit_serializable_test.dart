@@ -112,34 +112,6 @@ void main() {
     });
   });
 
-  group('setTimeStamp test', () {
-    1.to(SMALL_REPETITION).forEach((index) {
-      final testDateTime = mockDate(fitEpochDateTime);
-      final expected = (testDateTime.millisecondsSinceEpoch - FitSerializable.fitEpoch) ~/ 1000;
-      test('$testDateTime -> $expected', () async {
-        final subject = TestSubject();
-
-        subject.setTimeStamp(testDateTime.millisecondsSinceEpoch);
-
-        expect(subject.timeStamp, expected);
-      });
-    });
-  });
-
-  group('setDateTime test', () {
-    1.to(SMALL_REPETITION).forEach((index) {
-      final testDateTime = mockDate(fitEpochDateTime);
-      final expected = (testDateTime.millisecondsSinceEpoch - FitSerializable.fitEpoch) ~/ 1000;
-      test('$testDateTime -> $expected', () async {
-        final subject = TestSubject();
-
-        subject.setDateTime(testDateTime);
-
-        expect(subject.timeStamp, expected);
-      });
-    });
-  });
-
   group('addString test', () {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, MAX_UINT8 ~/ 4, rnd).forEach((length) {
@@ -151,6 +123,30 @@ void main() {
         subject.addString(string);
 
         expect(listEquals(subject.output, expected), true);
+      });
+    });
+  });
+
+  group('fitTimeStamp test', () {
+    1.to(SMALL_REPETITION).forEach((index) {
+      final testDateTime = mockDate(fitEpochDateTime);
+      final expected = (testDateTime.millisecondsSinceEpoch - fitEpochDateTime.millisecondsSinceEpoch) ~/ 1000;
+      test('$testDateTime -> $expected', () async {
+        final timeStamp = FitSerializable.fitTimeStamp(testDateTime.millisecondsSinceEpoch);
+
+        expect(timeStamp, expected);
+      });
+    });
+  });
+
+  group('fitDateTime test', () {
+    1.to(SMALL_REPETITION).forEach((index) {
+      final testDateTime = mockDate(fitEpochDateTime);
+      final expected = (testDateTime.millisecondsSinceEpoch - fitEpochDateTime.millisecondsSinceEpoch) ~/ 1000;
+      test('$testDateTime -> $expected', () async {
+        final timeStamp = FitSerializable.fitDateTime(testDateTime);
+
+        expect(timeStamp, expected);
       });
     });
   });

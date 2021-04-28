@@ -6,6 +6,7 @@ import '../fit_data.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
 import '../fit_message.dart';
+import '../fit_serializable.dart';
 import '../fit_string_field.dart';
 
 class FitDeviceInfo extends FitDefinitionMessage {
@@ -28,7 +29,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
 
     var data = FitData();
     data.output = [localMessageType];
-    data.setDateTime(DateTime.now());
+    data.addLong(FitSerializable.fitDateTime(DateTime.now()));
     data.addByte(FitDeviceType.FitnessEquipment);
     data.addShort(model.descriptor.manufacturerFitId);
     // data.addShort(1);

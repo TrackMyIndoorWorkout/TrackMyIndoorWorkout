@@ -5,6 +5,7 @@ import '../fit_data.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
 import '../fit_message.dart';
+import '../fit_serializable.dart';
 import '../fit_string_field.dart';
 
 class FitFileId extends FitDefinitionMessage {
@@ -28,7 +29,7 @@ class FitFileId extends FitDefinitionMessage {
     data.addByte(FitFileType.Activity);
     data.addShort(model.descriptor.manufacturerFitId);
     // data.addShort(1);
-    data.setDateTime(DateTime.now());
+    data.addLong(FitSerializable.fitDateTime(DateTime.now()));
     assert(productTextLength == model.descriptor.fullName.length);
     data.addString(model.descriptor.fullName);
     return data.output;
