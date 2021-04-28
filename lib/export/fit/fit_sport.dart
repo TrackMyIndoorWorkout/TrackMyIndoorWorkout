@@ -27,6 +27,7 @@ Map<String, Tuple2<int, int>> fitSport = {
   "Kitesurf": Tuple2(44, 0),
   "NordicSki": Tuple2(GENERIC_SPORT_ID, 0),
   "OpenWaterSwim": Tuple2(SWIMMING_SPORT_ID, 18),
+  "Paddling": Tuple2(PADDLING_SPORT_ID, 0),
   "Ride": Tuple2(CYCLING_SPORT_ID, 0), // Cycling
   "RockClimbing": Tuple2(48, 0), // Floor climbing
   "RollerSki": Tuple2(GENERIC_SPORT_ID, 0),
@@ -60,7 +61,9 @@ Tuple2 activityType2FitSport(String sport) {
   if (sport == ActivityType.Swim) {
     sport = "OpenWaterSwim";
   } else if (sport == ActivityType.Canoeing) {
-    sport = ActivityType.Kayaking;
+    sport = "Paddling";
+  } else if (sport == ActivityType.Kayaking) {
+    sport = "Paddling";
   } else if (sport == ActivityType.Run) {
     sport = "TrackRun";
   } else if (sport == ActivityType.Ride) {
