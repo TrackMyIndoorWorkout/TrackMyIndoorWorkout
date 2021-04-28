@@ -8,18 +8,18 @@ import '../fit_field.dart';
 import '../fit_message.dart';
 
 class FitDeviceInfo extends FitDefinitionMessage {
-  FitDeviceInfo({localMessageType})
+  FitDeviceInfo({localMessageType, textLength})
       : super(
           localMessageType: localMessageType,
           globalMessageNumber: FitMessage.DeviceInfo,
         ) {
     fields = [
-      FitField(253, FitBaseTypes.uint32Type), // Timestamp
-      FitField(1, FitBaseTypes.uint8Type), // DeviceType
-      FitField(2, FitBaseTypes.uint16Type), // manufacturer
-      // FitField(4, FitBaseTypes.uint16Type), // Product
-      FitField(25, FitBaseTypes.enumType), // source_type
-      FitField(27, FitBaseTypes.stringType), // ProductName
+      FitField(253, FitBaseTypes.uint32Type, null), // Timestamp
+      FitField(1, FitBaseTypes.uint8Type, null), // DeviceType
+      FitField(2, FitBaseTypes.uint16Type, null), // manufacturer
+      // FitField(4, FitBaseTypes.uint16Type, null), // Product
+      FitField(25, FitBaseTypes.enumType, null), // source_type
+      FitField(27, FitBaseTypes.stringType, textLength), // ProductName
     ];
   }
 

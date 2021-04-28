@@ -11,8 +11,8 @@ class FitSport extends FitDefinitionMessage {
           globalMessageNumber: FitMessage.Sport,
         ) {
     fields = [
-      FitField(0, FitBaseTypes.enumType), // Sport
-      FitField(1, FitBaseTypes.enumType), // Sub-Sport
+      FitField(0, FitBaseTypes.enumType, null), // Sport
+      FitField(1, FitBaseTypes.enumType, null), // Sub-Sport
     ];
   }
 

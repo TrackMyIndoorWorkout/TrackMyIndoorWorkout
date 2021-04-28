@@ -7,17 +7,17 @@ import '../fit_field.dart';
 import '../fit_message.dart';
 
 class FitFileId extends FitDefinitionMessage {
-  FitFileId({localMessageType})
+  FitFileId({localMessageType, textLength})
       : super(
           localMessageType: localMessageType,
           globalMessageNumber: FitMessage.FileId,
         ) {
     fields = [
-      FitField(0, FitBaseTypes.enumType), // type (Activity)
-      FitField(1, FitBaseTypes.uint16Type), // manufacturer
-      // FitField(2, FitBaseTypes.uint16Type), // product
-      FitField(4, FitBaseTypes.uint32Type), // time created
-      FitField(8, FitBaseTypes.stringType), // product name
+      FitField(0, FitBaseTypes.enumType, null), // type (Activity)
+      FitField(1, FitBaseTypes.uint16Type, null), // manufacturer
+      // FitField(2, FitBaseTypes.uint16Type, null), // product
+      FitField(4, FitBaseTypes.uint32Type, null), // time created
+      FitField(8, FitBaseTypes.stringType, textLength), // product name
     ];
   }
 

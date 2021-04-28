@@ -6,8 +6,13 @@ class FitField extends FitSerializable {
   int size;
   int baseType;
 
-  FitField(this.definitionNumber, FitBaseType fitBaseType) {
-    size = fitBaseType.size;
+  FitField(this.definitionNumber, FitBaseType fitBaseType, int textLength) {
+    if (textLength == null) {
+      size = fitBaseType.size;
+    } else {
+      assert(fitBaseType.id == FitBaseTypes.stringType.id);
+      size = textLength + 1;
+    }
     baseType = fitBaseType.id;
   }
 

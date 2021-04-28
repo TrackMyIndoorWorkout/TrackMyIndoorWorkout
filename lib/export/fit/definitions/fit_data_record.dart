@@ -23,14 +23,14 @@ class FitDataRecord extends FitDefinitionMessage {
           globalMessageNumber: FitMessage.Record,
         ) {
     fields = [
-      FitField(253, FitBaseTypes.uint32Type), // Timestamp
-      FitField(0, FitBaseTypes.sint32Type), // PositionLat
-      FitField(1, FitBaseTypes.sint32Type), // PositionLong
-      FitField(3, FitBaseTypes.uint8Type), // HeartRate (bpm)
-      FitField(4, FitBaseTypes.uint8Type), // Cadence (rpm or spm?)
-      FitField(5, FitBaseTypes.uint32Type), // Distance (1/100 m)
-      FitField(6, FitBaseTypes.uint16Type), // Speed (1/1000 m/s)
-      FitField(7, FitBaseTypes.uint16Type), // Power (Watts)
+      FitField(253, FitBaseTypes.uint32Type, null), // Timestamp
+      FitField(0, FitBaseTypes.sint32Type, null), // PositionLat
+      FitField(1, FitBaseTypes.sint32Type, null), // PositionLong
+      FitField(3, FitBaseTypes.uint8Type, null), // HeartRate (bpm)
+      FitField(4, FitBaseTypes.uint8Type, null), // Cadence (rpm or spm?)
+      FitField(5, FitBaseTypes.uint32Type, null), // Distance (1/100 m)
+      FitField(6, FitBaseTypes.uint16Type, null), // Speed (1/1000 m/s)
+      FitField(7, FitBaseTypes.uint16Type, null), // Power (Watts)
     ];
   }
 

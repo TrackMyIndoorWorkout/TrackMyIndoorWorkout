@@ -10,7 +10,7 @@ class FitFileCreator extends FitDefinitionMessage {
           globalMessageNumber: FitMessage.FileCreator,
         ) {
     fields = [
-      FitField(1, FitBaseTypes.uint16Type), // SoftwareRevision
+      FitField(1, FitBaseTypes.uint16Type, null), // SoftwareRevision
     ];
   }
 

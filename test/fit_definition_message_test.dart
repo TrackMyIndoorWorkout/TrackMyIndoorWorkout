@@ -42,9 +42,9 @@ class FitStringFieldTest extends FitDefinitionMessage {
           globalMessageNumber: globalMessageNumber,
         ) {
     fields = [
-      FitField(definitionNumber, FitBaseTypes.uint8Type),
-      FitField(definitionNumber + 1, FitBaseTypes.stringType),
-      FitField(definitionNumber + 2, FitBaseTypes.uint8Type),
+      FitField(definitionNumber, FitBaseTypes.uint8Type, null),
+      FitField(definitionNumber + 1, FitBaseTypes.stringType, text.length),
+      FitField(definitionNumber + 2, FitBaseTypes.uint8Type, null),
     ];
   }
 
