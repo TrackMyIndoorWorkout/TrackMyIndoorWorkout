@@ -38,7 +38,7 @@ void main() {
 
         final output = header.binarySerialize();
 
-        List<int> expected = [header.headerSize, header.profileVersion];
+        List<int> expected = [header.headerSize, header.protocolVersion];
         var temp = FitData();
         temp.addShort(header.profileVersion);
         expected.addAll(temp.output);
