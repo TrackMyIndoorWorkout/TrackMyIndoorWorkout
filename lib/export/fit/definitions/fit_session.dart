@@ -45,7 +45,7 @@ class FitSession extends FitDefinitionMessage {
     final first = model.records.first;
     final last = model.records.last;
     var data = FitData();
-    data.output = [localMessageType, 0];
+    data.output = [localMessageType];
     data.addLong(FitSerializable.fitTimeStamp(last.timeStampInteger));
     data.addByte(FitEvent.Lap);
     data.addByte(FitEventType.Stop);

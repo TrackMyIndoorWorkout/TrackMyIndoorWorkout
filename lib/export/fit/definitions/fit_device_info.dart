@@ -27,7 +27,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
     ExportModel model = parameter;
 
     var data = FitData();
-    data.output = [localMessageType, 0];
+    data.output = [localMessageType];
     data.setDateTime(DateTime.now());
     data.addByte(FitDeviceType.FitnessEquipment);
     data.addShort(model.descriptor.manufacturerFitId);

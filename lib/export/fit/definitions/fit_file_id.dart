@@ -24,7 +24,7 @@ class FitFileId extends FitDefinitionMessage {
     ExportModel model = parameter;
 
     var data = FitData();
-    data.output = [localMessageType, 0];
+    data.output = [localMessageType];
     data.addByte(FitFileType.Activity);
     data.addShort(model.descriptor.manufacturerFitId);
     // data.addShort(1);
