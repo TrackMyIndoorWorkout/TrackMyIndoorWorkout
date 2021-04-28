@@ -1,5 +1,4 @@
 import '../../../persistence/preferences.dart';
-import '../../../utils/constants.dart';
 import '../../export_record.dart';
 import '../fit_base_type.dart';
 import '../fit_data.dart';
@@ -37,8 +36,8 @@ class FitDataRecord extends FitDefinitionMessage {
     var data = FitData();
     data.output = [localMessageType];
     data.addLong(FitSerializable.fitDateTime(model.date));
-    data.addLong((model.latitude * DEG_TO_FIT_GPS).round());
-    data.addLong((model.longitude * DEG_TO_FIT_GPS).round());
+    data.addGpsCoordinate(model.latitude);
+    data.addGpsCoordinate(model.longitude);
 
     if (model.heartRate != null) {
       if (model.heartRate == 0 &&

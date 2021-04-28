@@ -1,4 +1,3 @@
-import '../../../utils/constants.dart';
 import '../../export_model.dart';
 import '../enums/fit_event.dart';
 import '../enums/fit_event_type.dart';
@@ -51,8 +50,8 @@ class FitSession extends FitDefinitionMessage {
     data.addByte(FitEvent.Lap);
     data.addByte(FitEventType.Stop);
     data.addLong(FitSerializable.fitTimeStamp(first.timeStampInteger));
-    data.addLong((first.latitude * DEG_TO_FIT_GPS).round());
-    data.addLong((first.longitude * DEG_TO_FIT_GPS).round());
+    data.addGpsCoordinate(first.latitude);
+    data.addGpsCoordinate(first.longitude);
     final fitSport = activityType2FitSport(model.activityType);
     data.addByte(fitSport.item1);
     data.addByte(fitSport.item2);

@@ -127,6 +127,25 @@ void main() {
     });
   });
 
+  group('addGpsCoordinate test', () {
+    final rnd = Random();
+    getRandomDoubles(SMALL_REPETITION, 360.0, rnd).forEach((degree) {
+      final coordinate = degree - 180.0;
+      final coordinateInt = (coordinate * DEG_TO_FIT_GPS).round();
+      final subject1 = TestSubject();
+
+      subject1.addLong(coordinateInt);
+
+      test('$coordinate -> ${subject1.output}', () async {
+        final subject2 = TestSubject();
+
+        subject2.addGpsCoordinate(coordinate);
+
+        expect(subject2.output, subject1.output);
+      });
+    });
+  });
+
   group('fitTimeStamp test', () {
     1.to(SMALL_REPETITION).forEach((index) {
       final testDateTime = mockDate(fitEpochDateTime);

@@ -50,6 +50,10 @@ abstract class FitSerializable {
     output.add(0);
   }
 
+  void addGpsCoordinate(double coordinate) {
+    addLong((coordinate * DEG_TO_FIT_GPS).round());
+  }
+
   List<int> binarySerialize() {
     addShort(crcData(output));
     return output;

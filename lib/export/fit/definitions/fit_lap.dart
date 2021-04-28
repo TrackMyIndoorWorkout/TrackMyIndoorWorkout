@@ -1,4 +1,3 @@
-import '../../../utils/constants.dart';
 import '../../export_model.dart';
 import '../enums/fit_event.dart';
 import '../enums/fit_event_type.dart';
@@ -52,10 +51,10 @@ class FitLap extends FitDefinitionMessage {
     data.addByte(FitEvent.Lap);
     data.addByte(FitEventType.Stop);
     data.addLong(FitSerializable.fitTimeStamp(first.timeStampInteger));
-    data.addLong((first.latitude * DEG_TO_FIT_GPS).round());
-    data.addLong((first.longitude * DEG_TO_FIT_GPS).round());
-    data.addLong((last.latitude * DEG_TO_FIT_GPS).round());
-    data.addLong((last.longitude * DEG_TO_FIT_GPS).round());
+    data.addGpsCoordinate(first.latitude);
+    data.addGpsCoordinate(first.longitude);
+    data.addGpsCoordinate(last.latitude);
+    data.addGpsCoordinate(last.longitude);
     data.addLong((model.totalTime * 1000).ceil());
     data.addLong((model.totalDistance * 100).ceil());
     data.addShort((model.calories * 100).ceil());
