@@ -12,34 +12,30 @@ import '../fit_serializable.dart';
 import '../fit_sport.dart';
 
 class FitSession extends FitDefinitionMessage {
-  FitSession({localMessageType})
-      : super(
-          localMessageType: localMessageType,
-          globalMessageNumber: FitMessage.Session,
-        ) {
+  FitSession(localMessageType) : super(localMessageType, FitMessage.Session) {
     fields = [
-      FitField(254, FitBaseTypes.uint32Type, null), // MessageIndex: 0
-      FitField(253, FitBaseTypes.uint32Type, null), // Session end time
-      FitField(0, FitBaseTypes.enumType, null), // Event
-      FitField(1, FitBaseTypes.enumType, null), // EventType
-      FitField(2, FitBaseTypes.uint32Type, null), // StartTime
-      FitField(3, FitBaseTypes.sint32Type, null), // StartPositionLat
-      FitField(4, FitBaseTypes.sint32Type, null), // StartPositionLong
-      FitField(5, FitBaseTypes.enumType, null), // Sport
-      FitField(6, FitBaseTypes.enumType, null), // Sub-Sport
-      FitField(7, FitBaseTypes.uint32Type, null), // TotalElapsedTime (1/1000s)
-      FitField(9, FitBaseTypes.uint32Type, null), // TotalDistance (1/100 m)
-      FitField(11, FitBaseTypes.uint16Type, null), // TotalCalories (1/100 m)
-      FitField(14, FitBaseTypes.uint16Type, null), // AvgSpeed (1/1000 m/s)
-      FitField(15, FitBaseTypes.uint16Type, null), // MaxSpeed (1/1000 m/s)
-      FitField(16, FitBaseTypes.uint8Type, null), // AvgHeartRate (bpm)
-      FitField(17, FitBaseTypes.uint8Type, null), // MaxHeartRate (bpm)
-      FitField(18, FitBaseTypes.uint8Type, null), // AvgCadence (rpm or spm)
-      FitField(19, FitBaseTypes.uint8Type, null), // MaxCadence (rpm or spm)
-      FitField(20, FitBaseTypes.uint16Type, null), // AvgPower (Watts)
-      FitField(21, FitBaseTypes.uint16Type, null), // MaxPower (Watts)
-      FitField(26, FitBaseTypes.uint16Type, null), // NumLaps: 1
-      FitField(28, FitBaseTypes.enumType, null), // Trigger (Activity End)
+      FitField(254, FitBaseTypes.uint32Type), // MessageIndex: 0
+      FitField(253, FitBaseTypes.uint32Type), // Session end time
+      FitField(0, FitBaseTypes.enumType), // Event
+      FitField(1, FitBaseTypes.enumType), // EventType
+      FitField(2, FitBaseTypes.uint32Type), // StartTime
+      FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
+      FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
+      FitField(5, FitBaseTypes.enumType), // Sport
+      FitField(6, FitBaseTypes.enumType), // Sub-Sport
+      FitField(7, FitBaseTypes.uint32Type), // TotalElapsedTime (1/1000s)
+      FitField(9, FitBaseTypes.uint32Type), // TotalDistance (1/100 m)
+      FitField(11, FitBaseTypes.uint16Type), // TotalCalories (1/100 m)
+      FitField(14, FitBaseTypes.uint16Type), // AvgSpeed (1/1000 m/s)
+      FitField(15, FitBaseTypes.uint16Type), // MaxSpeed (1/1000 m/s)
+      FitField(16, FitBaseTypes.uint8Type), // AvgHeartRate (bpm)
+      FitField(17, FitBaseTypes.uint8Type), // MaxHeartRate (bpm)
+      FitField(18, FitBaseTypes.uint8Type), // AvgCadence (rpm or spm)
+      FitField(19, FitBaseTypes.uint8Type), // MaxCadence (rpm or spm)
+      FitField(20, FitBaseTypes.uint16Type), // AvgPower (Watts)
+      FitField(21, FitBaseTypes.uint16Type), // MaxPower (Watts)
+      FitField(26, FitBaseTypes.uint16Type), // NumLaps: 1
+      FitField(28, FitBaseTypes.enumType), // Trigger (Activity End)
     ];
   }
 

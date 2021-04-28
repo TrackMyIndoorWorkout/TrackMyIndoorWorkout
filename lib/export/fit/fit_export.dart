@@ -18,29 +18,30 @@ class FitExport extends ActivityExport {
 
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     var body = FitData();
+    final productNameLength = exportModel.descriptor.fullName.length;
     // 0. File ID
     var localMessageType = 0;
-    final fileId = FitFileId(localMessageType: localMessageType);
+    final fileId = FitFileId(localMessageType, productNameLength);
     body.output.addAll(fileId.binarySerialize());
     body.output.addAll(fileId.serializeData(exportModel));
     localMessageType++;
     // 1. File Creator
-    final fileCreator = FitFileCreator(localMessageType: localMessageType);
+    final fileCreator = FitFileCreator(localMessageType);
     body.output.addAll(fileCreator.binarySerialize());
     body.output.addAll(fileCreator.serializeData(exportModel));
     localMessageType++;
     // 2. Device Info
-    final deviceInfo = FitDeviceInfo(localMessageType: localMessageType);
+    final deviceInfo = FitDeviceInfo(localMessageType, productNameLength);
     body.output.addAll(deviceInfo.binarySerialize());
     body.output.addAll(deviceInfo.serializeData(exportModel));
     localMessageType++;
 
     // 3. Data Records
     final dataRecord = FitDataRecord(
-      localMessageType: localMessageType,
-      heartRateGapWorkaround: heartRateGapWorkaround,
-      heartRateUpperLimit: heartRateUpperLimit,
-      heartRateLimitingMethod: heartRateLimitingMethod,
+      localMessageType,
+      heartRateGapWorkaround,
+      heartRateUpperLimit,
+      heartRateLimitingMethod,
     );
     body.output.addAll(dataRecord.binarySerialize());
     exportModel.records.forEach((record) {
@@ -49,22 +50,22 @@ class FitExport extends ActivityExport {
     localMessageType++;
 
     // 4. Sport
-    final fitSport = FitSport(localMessageType: localMessageType);
+    final fitSport = FitSport(localMessageType);
     body.output.addAll(fitSport.binarySerialize());
     body.output.addAll(fitSport.serializeData(exportModel.activityType));
     localMessageType++;
     // 5. Lap
-    final lap = FitLap(localMessageType: localMessageType);
+    final lap = FitLap(localMessageType);
     body.output.addAll(lap.binarySerialize());
     body.output.addAll(lap.serializeData(exportModel));
     localMessageType++;
     // 6. Session
-    final session = FitSession(localMessageType: localMessageType);
+    final session = FitSession(localMessageType);
     body.output.addAll(session.binarySerialize());
     body.output.addAll(session.serializeData(exportModel));
     localMessageType++;
     // 7. Activity
-    final activity = FitActivity(localMessageType: localMessageType);
+    final activity = FitActivity(localMessageType);
     body.output.addAll(activity.binarySerialize());
     body.output.addAll(activity.serializeData(exportModel));
     localMessageType++;

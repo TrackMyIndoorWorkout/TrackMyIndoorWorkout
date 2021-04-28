@@ -6,20 +6,19 @@ import '../fit_data.dart';
 import '../fit_definition_message.dart';
 import '../fit_field.dart';
 import '../fit_message.dart';
+import '../fit_string_field.dart';
 
 class FitDeviceInfo extends FitDefinitionMessage {
-  FitDeviceInfo({localMessageType, textLength})
-      : super(
-          localMessageType: localMessageType,
-          globalMessageNumber: FitMessage.DeviceInfo,
-        ) {
+  final int productTextLength;
+
+  FitDeviceInfo(localMessageType, this.productTextLength) : super(localMessageType, FitMessage.DeviceInfo) {
     fields = [
-      FitField(253, FitBaseTypes.uint32Type, null), // Timestamp
-      FitField(1, FitBaseTypes.uint8Type, null), // DeviceType
-      FitField(2, FitBaseTypes.uint16Type, null), // manufacturer
-      // FitField(4, FitBaseTypes.uint16Type, null), // Product
-      FitField(25, FitBaseTypes.enumType, null), // source_type
-      FitField(27, FitBaseTypes.stringType, textLength), // ProductName
+      FitField(253, FitBaseTypes.uint32Type), // Timestamp
+      FitField(1, FitBaseTypes.uint8Type), // DeviceType
+      FitField(2, FitBaseTypes.uint16Type), // manufacturer
+      // FitField(4, FitBaseTypes.uint16Type), // Product
+      FitField(25, FitBaseTypes.enumType), // source_type
+      FitStringField(27, productTextLength), // ProductName
     ];
   }
 
@@ -34,7 +33,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
     // data.addShort(1);
     data.addByte(
         model.descriptor.antPlus ? FitSourceType.Antplus : FitSourceType.BluetoothLowEnergy);
-    setStringFieldSize(27, model.descriptor.fullName.length + 1);
+    assert(productTextLength == model.descriptor.fullName.length);
     data.addString(model.descriptor.fullName);
 
     return data.output;

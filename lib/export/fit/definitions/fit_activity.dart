@@ -10,17 +10,13 @@ import '../fit_message.dart';
 import '../fit_serializable.dart';
 
 class FitActivity extends FitDefinitionMessage {
-  FitActivity({localMessageType})
-      : super(
-          localMessageType: localMessageType,
-          globalMessageNumber: FitMessage.Activity,
-        ) {
+  FitActivity(localMessageType) : super(localMessageType, FitMessage.Activity) {
     fields = [
-      FitField(253, FitBaseTypes.uint32Type, null), // Timestamp
-      FitField(1, FitBaseTypes.uint16Type, null), // NumSessions: 1
-      FitField(2, FitBaseTypes.enumType, null), // Activity (Manual)
-      FitField(3, FitBaseTypes.enumType, null), // Event (Activity)
-      FitField(4, FitBaseTypes.enumType, null), // EventType (Stop)
+      FitField(253, FitBaseTypes.uint32Type), // Timestamp
+      FitField(1, FitBaseTypes.uint16Type), // NumSessions: 1
+      FitField(2, FitBaseTypes.enumType), // Activity (Manual)
+      FitField(3, FitBaseTypes.enumType), // Event (Activity)
+      FitField(4, FitBaseTypes.enumType), // EventType (Stop)
     ];
   }
 

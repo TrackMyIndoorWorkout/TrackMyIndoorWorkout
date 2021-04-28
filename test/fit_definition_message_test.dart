@@ -8,16 +8,14 @@ import 'package:track_my_indoor_exercise/export/fit/fit_base_type.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_data.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_definition_message.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_field.dart';
+import 'package:track_my_indoor_exercise/export/fit/fit_string_field.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 import 'utils.dart';
 
 class FitDefinitionMessageTest extends FitDefinitionMessage {
   FitDefinitionMessageTest({localMessageType, globalMessageNumber})
-      : super(
-          localMessageType: localMessageType,
-          globalMessageNumber: globalMessageNumber,
-        );
+      : super(localMessageType, globalMessageNumber);
 
   List<int> serializeData(dynamic parameter) {
     return super.binarySerialize();
@@ -37,14 +35,11 @@ class FitStringFieldTest extends FitDefinitionMessage {
     this.byte1,
     this.text,
     this.byte2,
-  }) : super(
-          localMessageType: localMessageType,
-          globalMessageNumber: globalMessageNumber,
-        ) {
+  }) : super(localMessageType, globalMessageNumber) {
     fields = [
-      FitField(definitionNumber, FitBaseTypes.uint8Type, null),
-      FitField(definitionNumber + 1, FitBaseTypes.stringType, text.length),
-      FitField(definitionNumber + 2, FitBaseTypes.uint8Type, null),
+      FitField(definitionNumber, FitBaseTypes.uint8Type),
+      FitStringField(definitionNumber + 1, this.text.length),
+      FitField(definitionNumber + 2, FitBaseTypes.uint8Type),
     ];
   }
 
@@ -52,7 +47,6 @@ class FitStringFieldTest extends FitDefinitionMessage {
     var data = FitData();
     data.output = [localMessageType, 0];
     data.addByte(byte1);
-    setStringFieldSize(definitionNumber + 1, text.length + 1);
     data.addString(text);
     data.addByte(byte2);
     return data.output;
@@ -151,7 +145,6 @@ void main() {
             text: text,
             byte2: byte2,
           );
-          subject.setStringFieldSize(definitionNumber + 1, text.length + 1);
 
           final output = subject.binarySerialize();
 

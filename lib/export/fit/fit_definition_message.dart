@@ -1,4 +1,3 @@
-import 'fit_base_type.dart';
 import 'fit_field.dart';
 import 'fit_record.dart';
 
@@ -7,7 +6,7 @@ abstract class FitDefinitionMessage extends FitRecord {
 
   List<FitField> fields;
 
-  FitDefinitionMessage({localMessageType, globalMessageNumber})
+  FitDefinitionMessage(localMessageType, globalMessageNumber)
       : super(
           localMessageType: localMessageType,
           globalMessageNumber: globalMessageNumber,
@@ -27,21 +26,6 @@ abstract class FitDefinitionMessage extends FitRecord {
     });
 
     return output;
-  }
-
-  setStringFieldSize(int definitionNumber, int size) {
-    int i = 0;
-    int index = 0;
-    fields.forEach((field) {
-      if (field.definitionNumber == definitionNumber) {
-        assert(field.baseType == FitBaseTypes.stringType.id);
-        index = i;
-      }
-
-      i++;
-    });
-
-    fields[index].size = size;
   }
 
   List<int> serializeData(dynamic parameter);
