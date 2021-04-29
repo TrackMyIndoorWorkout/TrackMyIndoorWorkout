@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../utils/constants.dart';
+import 'fit_base_type.dart';
 import 'fit_crc.dart';
 
 abstract class FitSerializable {
@@ -11,7 +12,19 @@ abstract class FitSerializable {
     output = [];
   }
 
-  void addNonFloatingNumber(int number, int length) {
+  void addNonFloatingNumber(int number, int length, {bool signed = false}) {
+    if (number == null) {
+      if (length == 1) {
+        number = signed ? FitBaseTypes.sint8Type.invalidValue : FitBaseTypes.uint8Type.invalidValue;
+      } else if (length == 2) {
+        number =
+            signed ? FitBaseTypes.sint16Type.invalidValue : FitBaseTypes.uint16Type.invalidValue;
+      } else if (length == 4) {
+        number =
+            signed ? FitBaseTypes.sint32Type.invalidValue : FitBaseTypes.uint32Type.invalidValue;
+      }
+    }
+
     if (number < 0) {
       // Two compliments flipping
       int threshold = MAX_UINT8;
@@ -33,16 +46,16 @@ abstract class FitSerializable {
     assert(number == 0);
   }
 
-  void addByte(int byte) {
-    addNonFloatingNumber(byte, 1);
+  void addByte(int byte, {bool signed = false}) {
+    addNonFloatingNumber(byte, 1, signed: signed);
   }
 
-  void addShort(int integer) {
-    addNonFloatingNumber(integer, 2);
+  void addShort(int integer, {bool signed = false}) {
+    addNonFloatingNumber(integer, 2, signed: signed);
   }
 
-  void addLong(int long) {
-    addNonFloatingNumber(long, 4);
+  void addLong(int long, {bool signed = false}) {
+    addNonFloatingNumber(long, 4, signed: signed);
   }
 
   void addString(String text) {
@@ -51,7 +64,7 @@ abstract class FitSerializable {
   }
 
   void addGpsCoordinate(double coordinate) {
-    addLong((coordinate * DEG_TO_FIT_GPS).round());
+    addLong((coordinate * DEG_TO_FIT_GPS).round(), signed: true);
   }
 
   List<int> binarySerialize() {

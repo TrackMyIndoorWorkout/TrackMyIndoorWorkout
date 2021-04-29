@@ -35,11 +35,27 @@ void main() {
       test('-$byte -> $expected', () async {
         final subject = TestSubject();
 
-        subject.addByte(-byte);
+        subject.addByte(-byte, signed: true);
 
         expect(listEquals(subject.output, expected), true);
       });
     });
+  });
+
+  test('addByte of unsigned null serializes invalid value', () async {
+    final subject = TestSubject();
+
+    subject.addByte(null);
+
+    expect(listEquals(subject.output, [0xFF]), true);
+  });
+
+  test('addByte of signed null serializes invalid value', () async {
+    final subject = TestSubject();
+
+    subject.addByte(null, signed: true);
+
+    expect(listEquals(subject.output, [0x7F]), true);
   });
 
   group('addShort test', () {
@@ -64,11 +80,27 @@ void main() {
       test('-$short -> $expected', () async {
         final subject = TestSubject();
 
-        subject.addShort(-short);
+        subject.addShort(-short, signed: true);
 
         expect(listEquals(subject.output, expected), true);
       });
     });
+  });
+
+  test('addShort of unsigned null serializes invalid value', () async {
+    final subject = TestSubject();
+
+    subject.addShort(null);
+
+    expect(listEquals(subject.output, [0xFF, 0xFF]), true);
+  });
+
+  test('addShort of signed null serializes invalid value', () async {
+    final subject = TestSubject();
+
+    subject.addShort(null, signed: true);
+
+    expect(listEquals(subject.output, [0xFF, 0x7F]), true);
   });
 
   group('addLong test', () {
@@ -105,11 +137,27 @@ void main() {
       test('-$long -> $expected', () async {
         final subject = TestSubject();
 
-        subject.addLong(-long);
+        subject.addLong(-long, signed: true);
 
         expect(listEquals(subject.output, expected), true);
       });
     });
+  });
+
+  test('addLong of unsigned null serializes invalid value', () async {
+    final subject = TestSubject();
+
+    subject.addLong(null);
+
+    expect(listEquals(subject.output, [0xFF, 0xFF, 0xFF, 0xFF]), true);
+  });
+
+  test('addLong of signed null serializes invalid value', () async {
+    final subject = TestSubject();
+
+    subject.addLong(null, signed: true);
+
+    expect(listEquals(subject.output, [0xFF, 0xFF, 0xFF, 0x7F]), true);
   });
 
   group('addString test', () {
