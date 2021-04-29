@@ -13,7 +13,7 @@ class FitSport extends FitDefinitionMessage {
   }
 
   List<int> serializeData(dynamic parameter) {
-    final fitSport = activityType2FitSport(parameter);
+    final fitSport = toFitSport(parameter);
     return [localMessageType, fitSport.item1, fitSport.item2];
   }
 }

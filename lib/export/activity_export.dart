@@ -10,7 +10,6 @@ import '../persistence/preferences.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
-import '../utils/display.dart';
 import 'export_model.dart';
 import 'export_record.dart';
 
@@ -78,7 +77,7 @@ abstract class ActivityExport {
     final track = getDefaultTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     ExportModel exportModel = ExportModel()
-      ..activityType = tcxSport(activity.sport)
+      ..sport = activity.sport
       ..totalDistance = activity.distance
       ..totalTime = activity.elapsed.toDouble()
       ..calories = activity.calories

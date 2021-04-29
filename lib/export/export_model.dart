@@ -4,7 +4,7 @@ import '../utils/statistics_accumulator.dart';
 import 'export_record.dart';
 
 class ExportModel {
-  String activityType;
+  String sport;
   double totalDistance; // Total distance in meters
   double totalTime; // in seconds
   double averageSpeed; // in m/s

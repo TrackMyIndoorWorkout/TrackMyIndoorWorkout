@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import '../../persistence/preferences.dart';
+import '../../utils/display.dart';
 import '../activity_export.dart';
 import '../export_model.dart';
 import '../export_record.dart';
@@ -33,10 +34,11 @@ class TCXExport extends ActivityExport {
   }
 
   void addActivity(ExportModel exportModel) {
+    final activityType = tcxSport(exportModel.sport);
     // Add Activity
     //-------------
     _sb.write("""  <Activities>
-    <Activity Sport="${exportModel.activityType}">\n""");
+    <Activity Sport="$activityType">\n""");
 
     // Add ID
     addElement('Id', timeStampString(exportModel.dateActivity));

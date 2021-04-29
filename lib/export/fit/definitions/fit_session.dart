@@ -52,7 +52,7 @@ class FitSession extends FitDefinitionMessage {
     data.addLong(FitSerializable.fitTimeStamp(first.timeStampInteger));
     data.addGpsCoordinate(first.latitude);
     data.addGpsCoordinate(first.longitude);
-    final fitSport = activityType2FitSport(model.activityType);
+    final fitSport = toFitSport(model.sport);
     data.addByte(fitSport.item1);
     data.addByte(fitSport.item2);
     data.addLong((model.totalTime * 1000).ceil());

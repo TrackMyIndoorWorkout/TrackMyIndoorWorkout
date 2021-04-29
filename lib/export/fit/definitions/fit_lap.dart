@@ -67,7 +67,7 @@ class FitLap extends FitDefinitionMessage {
     data.addShort(model.averagePower.round());
     data.addShort(model.maximumPower.round());
     data.addByte(FitLapTrigger.SessionEnd);
-    final fitSport = activityType2FitSport(model.activityType);
+    final fitSport = toFitSport(model.sport);
     data.addByte(fitSport.item1);
     data.addByte(fitSport.item2);
 
