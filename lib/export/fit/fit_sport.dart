@@ -57,13 +57,11 @@ Map<String, Tuple2<int, int>> fitSport = {
   "Yoga": Tuple2(TRAINING_SPORT_ID, 43),
 };
 
-Tuple2 activityType2FitSport(String sport) {
+Tuple2 toFitSport(String sport) {
   if (sport == ActivityType.Swim) {
     sport = "OpenWaterSwim";
   } else if (sport == ActivityType.Canoeing) {
-    sport = "Rowing";
-  } else if (sport == ActivityType.Kayaking) {
-    sport = "Rowing";
+    sport = ActivityType.Kayaking;
   } else if (sport == ActivityType.Run) {
     sport = "TrackRun";
   } else if (sport == ActivityType.Ride) {
