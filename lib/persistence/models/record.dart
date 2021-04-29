@@ -2,7 +2,6 @@ import 'package:floor/floor.dart';
 import 'package:meta/meta.dart';
 import '../../ui/models/display_record.dart';
 import '../../persistence/preferences.dart';
-import '../../tcx/activity_type.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import 'activity.dart';
@@ -128,7 +127,7 @@ class Record {
   }
 
   String distanceStringByUnit(bool si) {
-    final dist = distanceByUnit(si);
+    final dist = distanceByUnit(si) ?? 0.0;
     return dist.toStringAsFixed(si ? 0 : 2);
   }
 

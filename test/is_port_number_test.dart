@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/preferences.dart';
 
 import 'utils.dart';
@@ -37,7 +38,7 @@ void main() {
   group('isPortNumber random test', () {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 131072, rnd).forEach((number) {
-      final expected = number <= 65535;
+      final expected = number < MAX_UINT16;
       test('$number -> $expected', () async {
         expect(isPortNumber("$number"), expected);
       });

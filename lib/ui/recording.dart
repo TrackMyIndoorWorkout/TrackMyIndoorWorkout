@@ -9,6 +9,7 @@ import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,6 @@ import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
-import '../tcx/activity_type.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
@@ -178,6 +178,7 @@ class RecordingState extends State<RecordingScreen> {
           await _database?.recordDao?.insertRecord(record);
         }
         _fitnessEquipment.lastRecord = record;
+
         setState(() {
           if (!_simplerUi) {
             _graphData.add(record.display());
@@ -397,9 +398,21 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _preDispose() async {
-    await _heartRateMonitor?.cancelSubscription();
+    try {
+      await _heartRateMonitor?.cancelSubscription();
+    } on PlatformException catch (e, stack) {
+      debugPrint("HRM device got turned off?");
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
     _connectionWatchdog?.cancel();
-    await _fitnessEquipment?.detach();
+    try {
+      await _fitnessEquipment?.detach();
+    } on PlatformException catch (e, stack) {
+      debugPrint("Equipment got turned off?");
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
   }
 
   @override
@@ -414,11 +427,17 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
     _fitnessEquipment.measuring = false;
-    await _fitnessEquipment?.detach();
-    await _fitnessEquipment?.disconnect();
-    final success = await _fitnessEquipment?.connect();
-    await _connectOnDemand(
-        success ? BluetoothDeviceState.connected : BluetoothDeviceState.disconnected);
+    try {
+      await _fitnessEquipment?.detach();
+      await _fitnessEquipment?.disconnect();
+      final success = await _fitnessEquipment?.connect();
+      await _connectOnDemand(
+          success ? BluetoothDeviceState.connected : BluetoothDeviceState.disconnected);
+    } on PlatformException catch (e, stack) {
+      debugPrint("Equipment got turned off?");
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
   }
 
   _stravaUpload(bool onlyWhenAuthenticated) async {
@@ -454,13 +473,13 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _stopMeasurement(bool quick) async {
+    _fitnessEquipment.measuring = false;
     if (!_measuring) return;
 
     setState(() {
       _measuring = false;
     });
     _connectionWatchdog?.cancel();
-    _fitnessEquipment.measuring = false;
     _fitnessEquipment.detach();
 
     _activity.finish(

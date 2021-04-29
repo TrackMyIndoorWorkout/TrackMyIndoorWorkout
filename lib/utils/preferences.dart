@@ -9,11 +9,11 @@ bool isBoundedInteger(String integerString, int minValue, int maxValue) {
 }
 
 bool isPortNumber(String portString) {
-  return isBoundedInteger(portString, 1, 65535);
+  return isBoundedInteger(portString, 1, MAX_UINT16 - 1);
 }
 
 bool isIpPart(String ipAddressPart, bool allowZero) {
-  return isBoundedInteger(ipAddressPart, allowZero ? 0 : 1, 255);
+  return isBoundedInteger(ipAddressPart, allowZero ? 0 : 1, MAX_BYTE);
 }
 
 bool isIpAddress(String ipAddress) {

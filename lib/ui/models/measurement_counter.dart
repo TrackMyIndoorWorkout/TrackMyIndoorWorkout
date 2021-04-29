@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:meta/meta.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
-import '../../tcx/activity_type.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 

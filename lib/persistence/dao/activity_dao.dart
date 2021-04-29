@@ -9,8 +9,8 @@ abstract class ActivityDao {
   @Query('SELECT * FROM $ACTIVITIES_TABLE_NAME WHERE id = :id')
   Stream<Activity> findActivityById(int id);
 
-  @Query('SELECT * FROM $ACTIVITIES_TABLE_NAME ORDER BY start DESC LIMIT :offset, :limit')
-  Future<List<Activity>> findActivities(int offset, int limit);
+  @Query('SELECT * FROM $ACTIVITIES_TABLE_NAME ORDER BY start DESC LIMIT :limit OFFSET :offset')
+  Future<List<Activity>> findActivities(int limit, int offset);
 
   @insert
   Future<int> insertActivity(Activity activity);

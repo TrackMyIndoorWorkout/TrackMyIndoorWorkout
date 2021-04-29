@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
 import '../persistence/preferences.dart';
-import '../tcx/activity_type.dart';
+import '../utils/constants.dart';
 import '../utils/preferences.dart';
 
 RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
@@ -139,12 +139,6 @@ class PreferencesScreen extends StatelessWidget {
           }
           return null;
         },
-      ),
-      SwitchPreference(
-        CALORIE_CARRYOVER_WORKAROUND,
-        CALORIE_CARRYOVER_WORKAROUND_TAG,
-        defaultVal: CALORIE_CARRYOVER_WORKAROUND_DEFAULT,
-        desc: CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION,
       ),
       SwitchPreference(
         CADENCE_GAP_WORKAROUND,

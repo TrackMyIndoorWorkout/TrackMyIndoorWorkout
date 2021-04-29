@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/indoor_bike_device_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
-import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
   final List<int> data;
@@ -24,7 +24,7 @@ void main() {
     final bike = deviceMap["SIC4"] as IndoorBikeDeviceDescriptor;
     final lsb = 68;
     final msb = 2;
-    final flag = 256 * msb + lsb;
+    final flag = MAX_UINT8 * msb + lsb;
     bike.stopWorkout();
 
     bike.processFlag(flag);

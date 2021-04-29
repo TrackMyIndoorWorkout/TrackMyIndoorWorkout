@@ -13,6 +13,7 @@ dependencies:
   data_connection_checker: any
   datetime_picker_formfield: any
   device_info: any
+  edit_distance: ^0.4.1
   expandable: any
   fab_circular_menu: any
   file_picker: ^2.1.6

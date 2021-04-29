@@ -1,9 +1,7 @@
 import 'package:floor/floor.dart';
-import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import '../../persistence/preferences.dart';
-import '../../tcx/activity_type.dart';
-import '../../tcx/tcx_output.dart';
+import '../../utils/constants.dart';
 
 const String ACTIVITIES_TABLE_NAME = 'activities';
 
@@ -58,7 +56,11 @@ class Activity {
   })  : assert(deviceName != null),
         assert(deviceId != null),
         assert(fourCC != null),
-        assert(sport != null);
+        assert(sport != null) {
+    if (distance == null) {
+      distance = 0;
+    }
+  }
 
   bool flipForPace(String item) {
     return item == "speed" && sport != ActivityType.Ride;
@@ -66,29 +68,14 @@ class Activity {
 
   void finish(double distance, int elapsed, int calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;
-    this.distance = distance;
-    this.elapsed = elapsed;
-    this.calories = calories;
+    this.distance = distance ?? 0.0;
+    this.elapsed = elapsed ?? 0;
+    this.calories = calories ?? 0;
   }
 
   void markUploaded(int stravaId) {
     this.uploaded = true;
     this.stravaId = stravaId;
-  }
-
-  Map<String, dynamic> getPersistenceValues(bool compressed) {
-    final startStamp = DateTime.fromMillisecondsSinceEpoch(start);
-    final dateString = DateFormat.yMd().format(startStamp);
-    final timeString = DateFormat.Hms().format(startStamp);
-    final fileName = 'Activity_${dateString}_$timeString.${TCXOutput.fileExtension(compressed)}'
-        .replaceAll('/', '-')
-        .replaceAll(':', '-');
-    return {
-      'startStamp': startStamp,
-      'name': '$sport at $dateString $timeString',
-      'description': '$sport by $deviceName',
-      'fileName': fileName,
-    };
   }
 
   String distanceString(bool si) {

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../persistence/preferences.dart';
-import '../../tcx/activity_type.dart';
+import '../../utils/constants.dart';
 import '../../utils/display.dart';
 
 class SportPickerBottomSheet extends StatefulWidget {

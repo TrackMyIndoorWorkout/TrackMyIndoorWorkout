@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/precor_spinner_chrono_power.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
-import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
   final List<int> data;

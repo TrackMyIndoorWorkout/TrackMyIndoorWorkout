@@ -26,7 +26,6 @@ class FitnessEquipment extends DeviceBase {
   bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
   double _lastPositiveCalories; // #111
   bool hasTotalCalorieCounting;
-  bool _calorieCarryoverWorkaround = CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
   Timer _timer;
   Record lastRecord;
   HeartRateMonitor heartRateMonitor;
@@ -53,8 +52,6 @@ class FitnessEquipment extends DeviceBase {
         PrefService.getBool(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
     _lastPositiveCalories = 0.0;
     hasTotalCalorieCounting = false;
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
-        CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
     measuring = false;
     calibrating = false;
     _random = Random();
@@ -201,9 +198,12 @@ class FitnessEquipment extends DeviceBase {
     }
 
     final dT = (elapsedMillis - lastRecord.elapsedMillis) / 1000.0;
-    if ((stub.distance ?? 0.0) < EPS && (stub.speed ?? 0.0) > 0 && dT > EPS) {
-      double dD = stub.speed * DeviceDescriptor.KMH2MS * descriptor.distanceFactor * dT;
-      stub.distance = (lastRecord.distance ?? 0) + dD;
+    if ((stub.distance ?? 0.0) < EPS) {
+      stub.distance = (lastRecord.distance ?? 0);
+      if ((stub.speed ?? 0.0) > 0 && dT > EPS) {
+        double dD = stub.speed * DeviceDescriptor.KMH2MS * descriptor.distanceFactor * dT;
+        stub.distance += dD;
+      }
     }
 
     var calories = 0.0;
@@ -211,7 +211,7 @@ class FitnessEquipment extends DeviceBase {
       calories = stub.calories.toDouble();
       hasTotalCalorieCounting = true;
     } else {
-      double deltaCalories = 0;
+      var deltaCalories = 0.0;
       if (stub.caloriesPerHour != null && stub.caloriesPerHour > EPS) {
         deltaCalories = stub.caloriesPerHour / (60 * 60) * dT;
       }
@@ -224,12 +224,11 @@ class FitnessEquipment extends DeviceBase {
         deltaCalories = stub.power * dT * DeviceDescriptor.J2KCAL * descriptor.calorieFactor;
       }
 
-      if (deltaCalories > 0) {
-        _residueCalories += deltaCalories;
-        calories = (lastRecord.calories ?? 0) + _residueCalories;
-        if (calories.floor() > lastRecord.calories) {
-          _residueCalories = calories - calories.floor();
-        }
+      _residueCalories += deltaCalories;
+      final lastCalories = lastRecord.calories ?? 0.0;
+      calories = lastCalories + _residueCalories;
+      if (calories.floor() > lastCalories) {
+        _residueCalories = calories - calories.floor();
       }
     }
 
@@ -243,20 +242,13 @@ class FitnessEquipment extends DeviceBase {
       } else if (stub.cadence != null && stub.cadence > 0) {
         _lastPositiveCadence = stub.cadence;
       }
-
-      // #111
-      if ((calories == null || calories < EPS) && _lastPositiveCalories > 0) {
-        calories = _lastPositiveCalories;
-      } else if (calories != null && calories > EPS) {
-        _lastPositiveCalories = calories;
-      }
     }
 
-    if (_calorieCarryoverWorkaround &&
-        lastRecord.calories != null &&
-        lastRecord.calories > 0 &&
-        (calories == null || lastRecord.calories > calories)) {
-      calories = lastRecord.calories.toDouble();
+    // #111
+    if ((calories == null || calories < EPS) && _lastPositiveCalories > 0) {
+      calories = _lastPositiveCalories;
+    } else if (calories != null && calories > EPS) {
+      _lastPositiveCalories = calories;
     }
 
     stub.calories = calories?.floor() ?? 0;
@@ -288,8 +280,6 @@ class FitnessEquipment extends DeviceBase {
   }
 
   void stopWorkout() {
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
-        CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;

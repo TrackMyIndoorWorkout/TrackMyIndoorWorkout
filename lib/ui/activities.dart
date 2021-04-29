@@ -10,13 +10,16 @@ import 'package:listview_utils/listview_utils.dart';
 import 'package:preferences/preferences.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../export/activity_export.dart';
+import '../export/fit/fit_export.dart';
+import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
-import '../tcx/tcx_output.dart';
 import '../ui/device_usages.dart';
+import '../ui/parts/data_format_picker.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import 'find_devices.dart';
@@ -98,11 +101,22 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         IconButton(
           icon: Icon(Icons.file_download, color: Colors.black, size: size),
           onPressed: () async {
+            final formatPick = await Get.bottomSheet(
+              DataFormatPickerBottomSheet(),
+              isDismissible: false,
+              enableDrag: false,
+            );
+
+            if (formatPick == null) {
+              return false;
+            }
+
             final records = await _database.recordDao.findAllActivityRecords(activity.id);
-            final tcxStream = await TCXOutput().getTcxOfActivity(activity, records, _compress);
-            final persistenceValues = activity.getPersistenceValues(_compress);
+            ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport();
+            final fileStream = await exporter.getExport(activity, records, _compress);
+            final persistenceValues = exporter.getPersistenceValues(activity, _compress);
             ShareFilesAndScreenshotWidgets().shareFile(persistenceValues['name'],
-                persistenceValues['fileName'], tcxStream, TCXOutput.mimeType(_compress),
+                persistenceValues['fileName'], fileStream, exporter.mimeType(_compress),
                 text: 'Share a ride on ${activity.deviceName}');
           },
         ),
@@ -175,8 +189,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         initialOffset: 0,
         loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
-          fetchItems: (int offset, int limit) async {
-            final data = await _database.activityDao.findActivities(offset, limit);
+          fetchItems: (int page, int limit) async {
+            final offset = page * limit;
+            final data = await _database.activityDao.findActivities(limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
