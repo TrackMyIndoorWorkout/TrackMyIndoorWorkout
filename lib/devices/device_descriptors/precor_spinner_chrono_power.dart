@@ -1,4 +1,5 @@
-import '../../tcx/activity_type.dart';
+import '../../export/fit/fit_manufacturer.dart';
+import '../../utils/constants.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import '../gatt_constants.dart';
@@ -14,6 +15,7 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
           modelName: "Spinner Chrono Power",
           namePrefix: "CHRONO",
           manufacturer: "Precor",
+          manufacturerFitId: PRECOR_FIT_ID,
           model: "1",
           dataServiceId: PRECOR_SERVICE_ID,
           dataCharacteristicId: PRECOR_MEASUREMENT_ID,

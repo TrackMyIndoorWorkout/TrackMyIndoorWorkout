@@ -8,7 +8,7 @@ import 'package:preferences/preferences.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'devices/company_registry.dart';
 import 'persistence/preferences.dart';
-import 'tcx/activity_type.dart';
+import 'utils/constants.dart';
 import 'utils/preferences.dart';
 import 'track_my_indoor_exercise_app.dart';
 
@@ -37,7 +37,6 @@ void main() async {
     COMPRESS_DOWNLOAD_TAG: COMPRESS_DOWNLOAD_DEFAULT,
     STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT,
     EQUIPMENT_DISCONNECTION_WATCHDOG_TAG: EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
-    CALORIE_CARRYOVER_WORKAROUND_TAG: CALORIE_CARRYOVER_WORKAROUND_DEFAULT,
     CADENCE_GAP_WORKAROUND_TAG: CADENCE_GAP_WORKAROUND_DEFAULT,
     HEART_RATE_GAP_WORKAROUND_TAG: HEART_RATE_GAP_WORKAROUND_DEFAULT,
     HEART_RATE_UPPER_LIMIT_TAG: HEART_RATE_UPPER_LIMIT_DEFAULT,

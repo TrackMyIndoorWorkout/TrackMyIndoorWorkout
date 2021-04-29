@@ -43,6 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.0"
+  bluetooth_enable:
+    dependency: "direct main"
+    description:
+      name: bluetooth_enable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -232,6 +239,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  edit_distance:
+    dependency: "direct main"
+    description:
+      name: edit_distance
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.1"
   expandable:
     dependency: "direct main"
     description:

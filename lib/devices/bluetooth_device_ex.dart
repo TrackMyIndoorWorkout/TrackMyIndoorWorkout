@@ -11,8 +11,7 @@ extension BluetoothDeviceEx on BluetoothDevice {
       }
     }
 
-    // TODO: branch here based on FTMS data
-    // TODO: Needs adding generic FTMS types #80
+    // TODO: branch here based on FTMS data, Needs adding generic FTMS types #80
     // Default to FTMS Indoor Bike (Schwinn IC4/IC8)
     return deviceMap['SIC4'];
   }

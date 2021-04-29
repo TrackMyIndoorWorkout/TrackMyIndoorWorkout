@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
+import '../export/fit/fit_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/secret.dart';
 import '../strava/error_codes.dart';
-import '../tcx/tcx_output.dart';
 import 'fault.dart';
 import 'strava.dart';
 
@@ -26,11 +26,9 @@ class StravaService {
       return statusJsonIsEmpty;
     }
 
-    final tcxGzip = await TCXOutput().getTcxOfActivity(activity, records, true);
-    Fault fault = await _strava.uploadActivity(
-      activity,
-      tcxGzip,
-    );
+    final exporter = FitExport();
+    final fileGzip = await exporter.getExport(activity, records, true);
+    Fault fault = await _strava.uploadActivity(activity, fileGzip, exporter);
 
     return fault.statusCode;
   }

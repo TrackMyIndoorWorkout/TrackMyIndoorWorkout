@@ -2,17 +2,19 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a running track.
 publish_to: "none"
 
-version: 1.1.24+33
+version: 1.1.25+34
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   assorted_layout_widgets: ^4.0.0-nullsafety.1
+  bluetooth_enable: 0.1.1
   charts_flutter: any
   data_connection_checker: any
   datetime_picker_formfield: any
   device_info: any
+  edit_distance: ^0.4.1
   expandable: any
   fab_circular_menu: any
   file_picker: ^2.1.6

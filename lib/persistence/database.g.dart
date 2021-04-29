@@ -239,10 +239,10 @@ class _$ActivityDao extends ActivityDao {
   }
 
   @override
-  Future<List<Activity>> findActivities(int offset, int limit) async {
+  Future<List<Activity>> findActivities(int limit, int offset) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM activities ORDER BY start DESC LIMIT ?, ?',
-        arguments: <dynamic>[offset, limit],
+        'SELECT * FROM activities ORDER BY start DESC LIMIT ? OFFSET ?',
+        arguments: <dynamic>[limit, offset],
         mapper: (Map<String, dynamic> row) => Activity(
             id: row['id'] as int,
             deviceName: row['device_name'] as String,
@@ -510,10 +510,10 @@ class _$DeviceUsageDao extends DeviceUsageDao {
   }
 
   @override
-  Future<List<DeviceUsage>> findDeviceUsages(int offset, int limit) async {
+  Future<List<DeviceUsage>> findDeviceUsages(int limit, int offset) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM device_usage ORDER BY time DESC LIMIT ?, ?',
-        arguments: <dynamic>[offset, limit],
+        'SELECT * FROM device_usage ORDER BY time DESC LIMIT ? OFFSET ?',
+        arguments: <dynamic>[limit, offset],
         mapper: (Map<String, dynamic> row) => DeviceUsage(
             id: row['id'] as int,
             sport: row['sport'] as String,

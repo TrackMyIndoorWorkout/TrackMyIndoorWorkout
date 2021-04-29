@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
 import '../../track/tracks.dart';
+import '../../utils/constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
@@ -21,9 +22,11 @@ abstract class DeviceDescriptor {
   final String modelName;
   final String namePrefix;
   final String manufacturer;
+  final int manufacturerFitId;
   final String model;
   final String dataServiceId;
   final String dataCharacteristicId;
+  final bool antPlus;
 
   int featuresFlag;
   int byteCounter;
@@ -57,9 +60,11 @@ abstract class DeviceDescriptor {
     @required this.modelName,
     @required this.namePrefix,
     this.manufacturer,
+    this.manufacturerFitId,
     this.model,
     this.dataServiceId,
     this.dataCharacteristicId,
+    this.antPlus = false,
     this.canMeasureHeartRate = true,
     this.heartRateByteIndex,
     this.timeMetric,
@@ -97,7 +102,7 @@ abstract class DeviceDescriptor {
 
   RecordWithSport stubRecord(List<int> data) {
     if ((data?.length ?? 0) > 2) {
-      var flag = data[0] + 256 * data[1];
+      var flag = data[0] + MAX_UINT8 * data[1];
       if (flag != featuresFlag) {
         featuresFlag = flag;
         processFlag(flag);

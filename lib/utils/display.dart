@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../utils/constants.dart';
 import '../persistence/preferences.dart';
-import '../tcx/activity_type.dart';
+import 'constants.dart';
 
 double speedOrPace(double speed, bool si, String sport) {
   if (sport == ActivityType.Ride) {
@@ -61,7 +60,7 @@ String paceString(double pace) {
 }
 
 String tcxSport(String sport) {
-  return sport == ActivityType.Ride && sport == ActivityType.Run ? sport : "Other";
+  return sport == ActivityType.Ride || sport == ActivityType.Run ? sport : "Other";
 }
 
 String getSpeedUnit(bool si, String sport) {

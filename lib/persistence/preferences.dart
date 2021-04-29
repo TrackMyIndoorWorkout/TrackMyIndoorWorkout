@@ -6,7 +6,7 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preferences.dart';
-import '../tcx/activity_type.dart';
+import '../utils/constants.dart';
 import '../utils/display.dart';
 
 Color getTranslucent(Color c) {
@@ -485,14 +485,6 @@ const EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION = "How many seconds of data g
     "if your fitness equipment stops sending data when the workout is paused to avoid unwanted " +
     "restarts.";
 
-const CALORIE_CARRYOVER_WORKAROUND = "Calorie Carryover Workaround";
-const CALORIE_CARRYOVER_WORKAROUND_TAG = "calorie_carryover_workaround";
-const CALORIE_CARRYOVER_WORKAROUND_DEFAULT = false;
-const CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION = "On: Calorie count could be preserved if the " +
-    "workout is restarted accidentally or automatically. " +
-    "(Note that data points will be still missing.) " +
-    "Off: Calorie count will start from zero after workout restart.";
-
 const CADENCE_GAP_WORKAROUND = "Cadence Data Gap Workaround";
 const CADENCE_GAP_WORKAROUND_TAG = "cadence_data_gap_workaround";
 const CADENCE_GAP_WORKAROUND_DEFAULT = true;
@@ -519,7 +511,7 @@ const HEART_RATE_UPPER_LIMIT_TAG = "heart_rate_upper_limit";
 const HEART_RATE_UPPER_LIMIT_DEFAULT = "0";
 const HEART_RATE_UPPER_LIMIT_DEFAULT_INT = 0;
 const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is the heart rate upper bound where the methods" +
-    "bellow would be applied. 0 means no limiting is performed.";
+    "bellow would be applied. 0 means no upper limiting is performed.";
 
 const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection";
 const HEART_RATE_LIMITING_METHOD_TAG = "heart_rate_limiting_method";

@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../../persistence/models/record.dart';
-import '../../tcx/activity_type.dart';
+import '../../utils/constants.dart';
 import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 
@@ -12,6 +12,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     @required modelName,
     @required namePrefix,
     manufacturer,
+    manufacturerFitId,
     model,
     dataServiceId = FITNESS_MACHINE_ID,
     dataCharacteristicId = INDOOR_BIKE_ID,
@@ -27,6 +28,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
           modelName: modelName,
           namePrefix: namePrefix,
           manufacturer: manufacturer,
+          manufacturerFitId: manufacturerFitId,
           model: model,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
