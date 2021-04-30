@@ -57,7 +57,7 @@ class FitSession extends FitDefinitionMessage {
     data.addByte(fitSport.item2);
     data.addLong((model.totalTime * 1000).ceil());
     data.addLong((model.totalDistance * 100).ceil());
-    data.addShort((model.calories * 100).ceil());
+    data.addShort(model.calories);
     data.addShort((model.averageSpeed * 1000).round());
     data.addShort((model.maximumSpeed * 1000).round());
     data.addByte(model.averageHeartRate);
