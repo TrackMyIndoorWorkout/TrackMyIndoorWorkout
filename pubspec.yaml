@@ -31,6 +31,7 @@ dependencies:
   listview_utils: any
   loading_overlay: any
   meta: ^1.2.4
+  permission_handler: ^5.1.0+2
   preferences: any
   progress_indicators: any
   rxdart: ^0.24.0
