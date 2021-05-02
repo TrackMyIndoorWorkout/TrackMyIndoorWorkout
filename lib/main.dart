@@ -4,6 +4,7 @@ import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:preferences/preferences.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'devices/company_registry.dart';
@@ -103,6 +104,8 @@ void main() async {
   Get.put<CompanyRegistry>(companyRegistry);
 
   Get.put<AdvertisementCache>(AdvertisementCache());
+
+  await Permission.locationWhenInUse.request().isGranted;
 
   runApp(TrackMyIndoorExerciseApp());
 }

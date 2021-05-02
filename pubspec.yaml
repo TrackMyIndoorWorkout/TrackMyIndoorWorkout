@@ -2,7 +2,7 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a running track.
 publish_to: "none"
 
-version: 1.1.26+35
+version: 1.1.27+36
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -31,6 +31,7 @@ dependencies:
   listview_utils: any
   loading_overlay: any
   meta: ^1.2.4
+  permission_handler: ^5.1.0+2
   preferences: any
   progress_indicators: any
   rxdart: ^0.24.0

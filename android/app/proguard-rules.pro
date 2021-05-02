@@ -24,18 +24,20 @@
 # This is from iterating over GeneratedPLuginRegistrant.java [
 -keep class com.hui.bluetooth_enable.** { *; }
 -keepclassmembernames class com.hui.bluetooth_enable.* { *; }
--keep class com.pauldemarco.flutter_blue.** { *; }
--keepclassmembernames class com.pauldemarco.flutter_blue.* { *; }
 -keep class io.flutter.plugins.deviceinfo.** { *; }
 -keepclassmembernames class io.flutter.plugins.deviceinfo.** { *; }
 -keep class com.mr.flutter.plugin.filepicker.** { *; }
 -keepclassmembernames class com.mr.flutter.plugin.filepicker.** { *; }
+-keep class com.pauldemarco.flutter_blue.** { *; }
+-keepclassmembernames class com.pauldemarco.flutter_blue.* { *; }
 -keep class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keepclassmembernames class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keep class dev.flutter.plugins.integration_test.** { *; }
 -keepclassmembernames class dev.flutter.plugins.integration_test.** { *; }
 -keep class io.flutter.plugins.pathprovider.** { *; }
 -keepclassmembernames class io.flutter.plugins.pathprovider.** { *; }
+-keep class com.baseflow.permissionhandler.** { *; }
+-keepclassmembernames class com.baseflow.permissionhandler.* { *; }
 -keep class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keepclassmembernames class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keep class io.flutter.plugins.sharedpreferences.** { *; }

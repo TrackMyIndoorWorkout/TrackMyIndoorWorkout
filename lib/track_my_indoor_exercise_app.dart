@@ -2,7 +2,8 @@ import 'package:bluetooth_enable/bluetooth_enable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
-import 'ui/bluetooth_off.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'ui/bluetooth_issue.dart';
 import 'ui/find_devices.dart';
 
 class TrackMyIndoorExerciseApp extends StatefulWidget {
@@ -15,14 +16,12 @@ class TrackMyIndoorExerciseApp extends StatefulWidget {
 }
 
 class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
+  Future<bool> locationGrantedFuture;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      BluetoothEnable.enableBluetooth.then((result) {
-        debugPrint(result);
-      });
-    });
+    locationGrantedFuture = Permission.locationWhenInUse.request().isGranted;
   }
 
   @override
@@ -32,12 +31,20 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
       home: StreamBuilder<BluetoothState>(
           stream: FlutterBlue.instance.state,
           initialData: BluetoothState.unknown,
-          builder: (c, snapshot) {
-            final state = snapshot.data;
-            if (state == BluetoothState.on) {
+          builder: (streamContext, streamSnapshot) {
+            final blueToothState = streamSnapshot.data;
+            if (blueToothState == BluetoothState.on) {
               return FindDevicesScreen();
             }
-            return BluetoothOffScreen(state: state);
+            return FutureBuilder(
+                future: locationGrantedFuture,
+                builder: (futureContext, futureSnapshot) {
+                  final locationGranted = futureSnapshot.data;
+                  return BluetoothIssueScreen(
+                    blueToothState: blueToothState,
+                    locationGranted: locationGranted,
+                  );
+                });
           }),
     );
   }
