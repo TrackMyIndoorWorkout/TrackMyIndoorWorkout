@@ -265,6 +265,10 @@ class RecordingState extends State<RecordingScreen> {
   @override
   void initState() {
     super.initState();
+
+    Wakelock.enable();
+    SystemChrome.setEnabledSystemUIOverlays([]);
+
     _pointCount = min(60, size.width ~/ 2);
     _unitStyle = TextStyle(
       fontFamily: FONT_FAMILY,
@@ -393,8 +397,6 @@ class RecordingState extends State<RecordingScreen> {
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
     _database = Get.find<AppDatabase>();
-
-    Wakelock.enable();
   }
 
   _preDispose() async {
@@ -418,6 +420,7 @@ class RecordingState extends State<RecordingScreen> {
   @override
   void dispose() {
     Wakelock.disable();
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     super.dispose();
   }
 
