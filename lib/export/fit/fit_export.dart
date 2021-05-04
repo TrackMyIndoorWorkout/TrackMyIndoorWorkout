@@ -14,7 +14,10 @@ import 'fit_serializable.dart';
 
 class FitExport extends ActivityExport {
   FitExport()
-      : super(nonCompressedFileExtension: 'fit', nonCompressedMimeType: 'application/octet-stream');
+      : super(
+          nonCompressedFileExtension: 'fit',
+          nonCompressedMimeType: 'application/octet-stream',
+        );
 
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     var body = FitData();

@@ -39,7 +39,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database;
   int _editCount;
   bool _si;
-  bool _compress;
   double _mediaWidth;
   double _sizeDefault;
   double _sizeDefault2;
@@ -53,7 +52,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     super.initState();
     _editCount = 0;
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
-    _compress = PrefService.getBool(COMPRESS_DOWNLOAD_TAG);
     _database = Get.find<AppDatabase>();
   }
 
@@ -113,10 +111,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
             final records = await _database.recordDao.findAllActivityRecords(activity.id);
             ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport();
-            final fileStream = await exporter.getExport(activity, records, _compress);
-            final persistenceValues = exporter.getPersistenceValues(activity, _compress);
+            final fileStream = await exporter.getExport(activity, records, false);
+            final persistenceValues = exporter.getPersistenceValues(activity, false);
             ShareFilesAndScreenshotWidgets().shareFile(persistenceValues['name'],
-                persistenceValues['fileName'], fileStream, exporter.mimeType(_compress),
+                persistenceValues['fileName'], fileStream, exporter.mimeType(false),
                 text: 'Share a ride on ${activity.deviceName}');
           },
         ),

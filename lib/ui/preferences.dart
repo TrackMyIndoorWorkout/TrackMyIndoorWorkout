@@ -91,12 +91,6 @@ class PreferencesScreen extends StatelessWidget {
         desc: SIMPLER_UI_DESCRIPTION,
       ),
       PreferenceTitle(TUNING_PREFERENCES),
-      SwitchPreference(
-        COMPRESS_DOWNLOAD,
-        COMPRESS_DOWNLOAD_TAG,
-        defaultVal: COMPRESS_DOWNLOAD_DEFAULT,
-        desc: COMPRESS_DOWNLOAD_DESCRIPTION,
-      ),
       PreferenceTitle(THROTTLE_POWER_DESCRIPTION, style: descriptionStyle),
       TextFieldPreference(
         THROTTLE_POWER,
