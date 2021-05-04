@@ -29,7 +29,7 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
   BluetoothIssueScreenState({
     @required this.bluetoothState,
     @required this.locationGranted,
-  })  : assert(bluetoothState != null);
+  }) : assert(bluetoothState != null);
 
   void initLocationGranted() async {
     if (locationGranted == null) {
