@@ -6,23 +6,45 @@ import 'ui/bluetooth_issue.dart';
 import 'ui/find_devices.dart';
 
 class TrackMyIndoorExerciseApp extends StatefulWidget {
-  TrackMyIndoorExerciseApp({key}) : super(key: key);
+  final bool blueOn;
+  final String bluetoothStateString;
+  final PermissionStatus permissionState;
+
+  const TrackMyIndoorExerciseApp({
+    key,
+    @required this.blueOn,
+    @required this.bluetoothStateString,
+    @required this.permissionState,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return TrackMyIndoorExerciseAppState();
+    return TrackMyIndoorExerciseAppState(
+      blueOn: blueOn,
+      bluetoothStateString: bluetoothStateString,
+      permissionState: permissionState,
+    );
   }
 }
 
 class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
-  Future<bool> locationGrantedFuture;
+  final bool blueOn;
+  final String bluetoothStateString;
+  PermissionStatus permissionState;
+  Future<PermissionStatus> permissionFuture;
+
+  TrackMyIndoorExerciseAppState({
+    @required this.blueOn,
+    @required this.bluetoothStateString,
+    @required this.permissionState,
+  })  : assert(blueOn != null),
+        assert(bluetoothStateString != null),
+        assert(permissionState != null);
 
   @override
   void initState() {
     super.initState();
-    if (locationGrantedFuture == null) {
-      locationGrantedFuture = Permission.locationWhenInUse.request().isGranted;
-    }
+    permissionFuture = Permission.locationWhenInUse.request();
   }
 
   @override
@@ -30,24 +52,27 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
     return GetMaterialApp(
       color: Colors.lightBlue,
       home: StreamBuilder<BluetoothState>(
-          stream: FlutterBlue.instance.state,
-          initialData: BluetoothState.unknown,
-          builder: (streamContext, streamSnapshot) {
-            final bluetoothState = streamSnapshot.data;
-            return FutureBuilder(
-                future: locationGrantedFuture,
-                builder: (futureContext, futureSnapshot) {
-                  final locationGranted = futureSnapshot.data;
-                  if (bluetoothState == BluetoothState.on && locationGranted) {
-                    return FindDevicesScreen();
-                  } else {
-                    return BluetoothIssueScreen(
-                      bluetoothState: bluetoothState,
-                      locationGranted: locationGranted,
-                    );
-                  }
-                });
-          }),
+        stream: FlutterBlue.instance.state,
+        initialData: blueOn ? BluetoothState.on : BluetoothState.unknown,
+        builder: (streamContext, streamSnapshot) {
+          return FutureBuilder(
+            future: permissionFuture,
+            builder: (BuildContext futureContext, futureSnapshot) {
+              final bluetoothState = streamSnapshot.data;
+              final locationState = futureSnapshot.data ?? permissionState;
+              if (bluetoothState == BluetoothState.on &&
+                  locationState == PermissionStatus.granted) {
+                return FindDevicesScreen();
+              } else {
+                return BluetoothIssueScreen(
+                  bluetoothState: bluetoothState,
+                  locationState: locationState,
+                );
+              }
+            },
+          );
+        },
+      ),
     );
   }
 }

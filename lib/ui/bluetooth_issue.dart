@@ -1,4 +1,3 @@
-import 'package:bluetooth_enable/bluetooth_enable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
@@ -6,54 +5,50 @@ import 'package:permission_handler/permission_handler.dart';
 
 class BluetoothIssueScreen extends StatefulWidget {
   final BluetoothState bluetoothState;
-  final bool locationGranted;
+  final PermissionStatus locationState;
 
   const BluetoothIssueScreen({
     key,
     @required this.bluetoothState,
-    @required this.locationGranted,
+    @required this.locationState,
   }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
     return BluetoothIssueScreenState(
-        bluetoothState: bluetoothState, locationGranted: locationGranted);
+      bluetoothState: bluetoothState,
+      locationState: locationState,
+    );
   }
 }
 
 class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
   final BluetoothState bluetoothState;
-  bool locationGranted;
-  String bluetoothStateString;
+  PermissionStatus locationState;
 
   BluetoothIssueScreenState({
     @required this.bluetoothState,
-    @required this.locationGranted,
-  }) : assert(bluetoothState != null);
-
-  void initLocationGranted() async {
-    if (locationGranted == null) {
-      final locationTake2 = await Permission.locationWhenInUse.request().isGranted;
-      setState(() {
-        locationGranted = locationTake2;
-      });
-    }
-  }
+    @required this.locationState,
+  })  : assert(bluetoothState != null),
+        assert(locationState != null);
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      BluetoothEnable.enableBluetooth.then((result) {
-        bluetoothStateString = result;
-      });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (locationState == null) {
+        final locationTake2 = await Permission.locationWhenInUse.request();
+        setState(() {
+          locationState = locationTake2;
+        });
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final bluetoothDisplay = bluetoothState?.toString()?.substring(15) ?? 'N/A';
-    final locationDisplay = (locationGranted ?? false) ? "Granted" : "Denied";
+    final locationDisplay = (locationState.isGranted ?? false) ? "Granted" : "Denied";
     return Scaffold(
       backgroundColor: Colors.lightBlue,
       body: GestureDetector(
