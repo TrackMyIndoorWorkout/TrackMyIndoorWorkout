@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blue/flutter_blue.dart';
+import 'package:get/get.dart';
 import 'package:meta/meta.dart';
+import '../../persistence/database.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
 import '../../track/tracks.dart';
@@ -47,9 +50,8 @@ abstract class DeviceDescriptor {
   // Adjusting skewed calories
   double calorieFactor;
   // Adjusting skewed distance
-  double distanceFactor;
   double throttlePower;
-  bool throttleOther;
+  bool extendTuning;
   double slowPace;
 
   DeviceDescriptor({
@@ -74,7 +76,6 @@ abstract class DeviceDescriptor {
     this.cadenceMetric,
     this.distanceMetric,
     this.calorieFactor = 1.0,
-    this.distanceFactor = 1.0,
   })  : assert(defaultSport != null),
         assert(isMultiSport != null),
         assert(fourCC != null),
@@ -84,7 +85,7 @@ abstract class DeviceDescriptor {
     featuresFlag = 0;
     byteCounter = 0;
     throttlePower = 1.0;
-    throttleOther = THROTTLE_OTHER_DEFAULT;
+    extendTuning = EXTEND_TUNING_DEFAULT;
   }
 
   String get fullName => '$vendorName $modelName';
@@ -111,7 +112,10 @@ abstract class DeviceDescriptor {
     return null;
   }
 
-  void setPowerThrottle(String throttlePercentString, bool throttleOther) {
+  void refreshTuning(BluetoothDevice device) {
+    final database = Get.find<AppDatabase>();
+
+    // String throttlePercentString, bool throttleOther
     int throttlePercent = int.tryParse(throttlePercentString);
     throttlePower = (100 - throttlePercent) / 100;
     this.throttleOther = throttleOther;

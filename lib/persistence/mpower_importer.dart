@@ -77,12 +77,9 @@ class MPowerEchelon2Importer {
   Map<int, double> _velocityForPowerDict;
   double _throttleRatio;
 
-  MPowerEchelon2Importer({
-    @required this.start,
-    @required String throttlePercentString,
-  })  : assert(start != null),
-        assert(throttlePercentString != null) {
+  MPowerEchelon2Importer({@required this.start}) : assert(start != null) {
     _velocityForPowerDict = Map<int, double>();
+    // TODO: factors
     final throttlePercent = int.tryParse(throttlePercentString);
     _throttleRatio = (100 - throttlePercent) / 100;
   }
@@ -203,6 +200,7 @@ class MPowerEchelon2Importer {
     }
 
     DeviceDescriptor device = deviceMap["SAP+"];
+    // TODO: factors
     var activity = Activity(
       deviceName: device.namePrefix,
       deviceId: "",

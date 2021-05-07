@@ -1,4 +1,6 @@
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:get/get.dart';
+import '../persistence/database.dart';
 import '../utils/guid_ex.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_map.dart';
@@ -25,5 +27,19 @@ extension BluetoothDeviceEx on BluetoothDevice {
       List<BluetoothCharacteristic> characteristics, identifier) {
     return characteristics?.firstWhere((ch) => ch.uuid.uuidString() == identifier,
         orElse: () => null);
+  }
+
+  Future<double> powerFactor(DeviceDescriptor descriptor) async {
+    final database = Get.find<AppDatabase>();
+    final powerTune = await database?.powerTuneDao?.findPowerTuneByMac(id.id)?.first;
+
+    return powerTune?.powerFactor ?? 1.0;
+  }
+
+  Future<double> calorieFactor(DeviceDescriptor descriptor) async {
+    final database = Get.find<AppDatabase>();
+    final calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(id.id)?.first;
+
+    return calorieTune?.calorieFactor ?? descriptor.calorieFactor;
   }
 }

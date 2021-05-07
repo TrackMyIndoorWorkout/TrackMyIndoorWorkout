@@ -19,7 +19,9 @@ import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
 import '../ui/device_usages.dart';
+import '../ui/parts/calorie_tune.dart';
 import '../ui/parts/data_format_picker.dart';
+import '../ui/parts/power_tune.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import 'find_devices.dart';
@@ -116,6 +118,24 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             ShareFilesAndScreenshotWidgets().shareFile(persistenceValues['name'],
                 persistenceValues['fileName'], fileStream, exporter.mimeType(false),
                 text: 'Share a ride on ${activity.deviceName}');
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.bolt, color: Colors.black, size: size),
+          onPressed: () async {
+            await Get.bottomSheet(
+              PowerTuneBottomSheet(activity: activity),
+              enableDrag: false,
+            );
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.whatshot, color: Colors.black, size: size),
+          onPressed: () async {
+            await Get.bottomSheet(
+              CalorieTuneBottomSheet(activity: activity),
+              enableDrag: false,
+            );
           },
         ),
         Spacer(),

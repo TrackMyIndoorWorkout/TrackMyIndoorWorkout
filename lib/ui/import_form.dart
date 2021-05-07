@@ -146,9 +146,7 @@ class _ImportFormState extends State<ImportForm> {
                           try {
                             File file = File(_filePath);
                             String contents = await file.readAsString();
-                            final importer = MPowerEchelon2Importer(
-                                start: _activityDateTime,
-                                throttlePercentString: PrefService.getString(THROTTLE_POWER_TAG));
+                            final importer = MPowerEchelon2Importer(start: _activityDateTime);
                             var activity = await importer.import(contents, setProgress);
                             setState(() {
                               _isLoading = false;

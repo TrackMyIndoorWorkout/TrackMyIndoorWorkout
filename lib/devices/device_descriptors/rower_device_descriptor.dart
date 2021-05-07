@@ -48,7 +48,6 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
           calorieFactor: calorieFactor,
-          distanceFactor: distanceFactor,
         ) {
     _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
     _strokeRates = ListQueue<int>();

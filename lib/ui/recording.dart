@@ -145,6 +145,7 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> _startMeasurement() async {
     final now = DateTime.now();
+    // TODO: factors
     _activity = Activity(
       fourCC: _descriptor.fourCC,
       deviceName: device.name,
@@ -275,11 +276,8 @@ class RecordingState extends State<RecordingScreen> {
       color: Colors.indigo,
     );
     PrefService.setString(
-        LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport), device.id.id);
-    _descriptor.setPowerThrottle(
-      PrefService.getString(THROTTLE_POWER_TAG),
-      PrefService.getBool(THROTTLE_OTHER_TAG),
-    );
+        LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport), device.id.id,);
+    _descriptor.refreshTuning(device);
     if (Get.isRegistered<FitnessEquipment>()) {
       _fitnessEquipment = Get.find<FitnessEquipment>();
     } else {

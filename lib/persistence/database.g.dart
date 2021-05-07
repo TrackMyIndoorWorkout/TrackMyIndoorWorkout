@@ -66,6 +66,10 @@ class _$AppDatabase extends AppDatabase {
 
   DeviceUsageDao _deviceUsageDaoInstance;
 
+  CalorieTuneDao _calorieTuneDaoInstance;
+
+  PowerTuneDao _powerTuneDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -90,6 +94,10 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `device_usage` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT, `mac` TEXT, `name` TEXT, `manufacturer` TEXT, `manufacturer_name` TEXT, `time` INTEGER)');
         await database.execute(
+            'CREATE TABLE IF NOT EXISTS `calorie_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `original_calories` INTEGER, `override_calories` INTEGER, `time` INTEGER)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `power_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `original_calories` INTEGER, `override_calories` INTEGER, `time` INTEGER)');
+        await database.execute(
             'CREATE INDEX `index_activities_start` ON `activities` (`start`)');
         await database.execute(
             'CREATE INDEX `index_records_time_stamp` ON `records` (`time_stamp`)');
@@ -97,6 +105,10 @@ class _$AppDatabase extends AppDatabase {
             'CREATE INDEX `index_device_usage_time` ON `device_usage` (`time`)');
         await database.execute(
             'CREATE INDEX `index_device_usage_mac` ON `device_usage` (`mac`)');
+        await database.execute(
+            'CREATE INDEX `index_calorie_tune_mac` ON `calorie_tune` (`mac`)');
+        await database.execute(
+            'CREATE INDEX `index_power_tune_mac` ON `power_tune` (`mac`)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -118,6 +130,17 @@ class _$AppDatabase extends AppDatabase {
   DeviceUsageDao get deviceUsageDao {
     return _deviceUsageDaoInstance ??=
         _$DeviceUsageDao(database, changeListener);
+  }
+
+  @override
+  CalorieTuneDao get calorieTuneDao {
+    return _calorieTuneDaoInstance ??=
+        _$CalorieTuneDao(database, changeListener);
+  }
+
+  @override
+  PowerTuneDao get powerTuneDao {
+    return _powerTuneDaoInstance ??= _$PowerTuneDao(database, changeListener);
   }
 }
 
@@ -463,7 +486,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
   final DeletionAdapter<DeviceUsage> _deviceUsageDeletionAdapter;
 
   @override
-  Future<List<DeviceUsage>> findAllDeviceUsage() async {
+  Future<List<DeviceUsage>> findAllDeviceUsages() async {
     return _queryAdapter.queryList(
         'SELECT * FROM device_usage ORDER BY time DESC',
         mapper: (Map<String, dynamic> row) => DeviceUsage(
@@ -539,5 +562,251 @@ class _$DeviceUsageDao extends DeviceUsageDao {
   @override
   Future<int> deleteDeviceUsage(DeviceUsage deviceUsage) {
     return _deviceUsageDeletionAdapter.deleteAndReturnChangedRows(deviceUsage);
+  }
+}
+
+class _$CalorieTuneDao extends CalorieTuneDao {
+  _$CalorieTuneDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _calorieTuneInsertionAdapter = InsertionAdapter(
+            database,
+            'calorie_tune',
+            (CalorieTune item) => <String, dynamic>{
+                  'id': item.id,
+                  'mac': item.mac,
+                  'original_calories': item.originalCalories,
+                  'override_calories': item.overrideCalories,
+                  'time': item.time
+                },
+            changeListener),
+        _calorieTuneUpdateAdapter = UpdateAdapter(
+            database,
+            'calorie_tune',
+            ['id'],
+            (CalorieTune item) => <String, dynamic>{
+                  'id': item.id,
+                  'mac': item.mac,
+                  'original_calories': item.originalCalories,
+                  'override_calories': item.overrideCalories,
+                  'time': item.time
+                },
+            changeListener),
+        _calorieTuneDeletionAdapter = DeletionAdapter(
+            database,
+            'calorie_tune',
+            ['id'],
+            (CalorieTune item) => <String, dynamic>{
+                  'id': item.id,
+                  'mac': item.mac,
+                  'original_calories': item.originalCalories,
+                  'override_calories': item.overrideCalories,
+                  'time': item.time
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<CalorieTune> _calorieTuneInsertionAdapter;
+
+  final UpdateAdapter<CalorieTune> _calorieTuneUpdateAdapter;
+
+  final DeletionAdapter<CalorieTune> _calorieTuneDeletionAdapter;
+
+  @override
+  Future<List<CalorieTune>> findAllCalorieTunes() async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM calorie_tune ORDER BY time DESC',
+        mapper: (Map<String, dynamic> row) => CalorieTune(
+            id: row['id'] as int,
+            mac: row['mac'] as String,
+            originalCalories: row['original_calories'] as int,
+            overrideCalories: row['override_calories'] as int,
+            time: row['time'] as int));
+  }
+
+  @override
+  Stream<CalorieTune> findCalorieTuneById(int id) {
+    return _queryAdapter.queryStream('SELECT * FROM calorie_tune WHERE id = ?',
+        arguments: <dynamic>[id],
+        queryableName: 'calorie_tune',
+        isView: false,
+        mapper: (Map<String, dynamic> row) => CalorieTune(
+            id: row['id'] as int,
+            mac: row['mac'] as String,
+            originalCalories: row['original_calories'] as int,
+            overrideCalories: row['override_calories'] as int,
+            time: row['time'] as int));
+  }
+
+  @override
+  Stream<CalorieTune> findCalorieTuneByMac(String mac) {
+    return _queryAdapter.queryStream(
+        'SELECT * FROM calorie_tune WHERE mac = ? ORDER BY time DESC LIMIT 1',
+        arguments: <dynamic>[mac],
+        queryableName: 'calorie_tune',
+        isView: false,
+        mapper: (Map<String, dynamic> row) => CalorieTune(
+            id: row['id'] as int,
+            mac: row['mac'] as String,
+            originalCalories: row['original_calories'] as int,
+            overrideCalories: row['override_calories'] as int,
+            time: row['time'] as int));
+  }
+
+  @override
+  Future<List<CalorieTune>> findCalorieTunes(int limit, int offset) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM calorie_tune ORDER BY time DESC LIMIT ? OFFSET ?',
+        arguments: <dynamic>[limit, offset],
+        mapper: (Map<String, dynamic> row) => CalorieTune(
+            id: row['id'] as int,
+            mac: row['mac'] as String,
+            originalCalories: row['original_calories'] as int,
+            overrideCalories: row['override_calories'] as int,
+            time: row['time'] as int));
+  }
+
+  @override
+  Future<int> insertCalorieTune(CalorieTune calorieTune) {
+    return _calorieTuneInsertionAdapter.insertAndReturnId(
+        calorieTune, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> updateCalorieTune(CalorieTune calorieTune) {
+    return _calorieTuneUpdateAdapter.updateAndReturnChangedRows(
+        calorieTune, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> deleteCalorieTune(CalorieTune calorieTune) {
+    return _calorieTuneDeletionAdapter.deleteAndReturnChangedRows(calorieTune);
+  }
+}
+
+class _$PowerTuneDao extends PowerTuneDao {
+  _$PowerTuneDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _powerTuneInsertionAdapter = InsertionAdapter(
+            database,
+            'power_tune',
+            (PowerTune item) => <String, dynamic>{
+                  'id': item.id,
+                  'mac': item.mac,
+                  'original_calories': item.originalCalories,
+                  'override_calories': item.overrideCalories,
+                  'time': item.time
+                },
+            changeListener),
+        _powerTuneUpdateAdapter = UpdateAdapter(
+            database,
+            'power_tune',
+            ['id'],
+            (PowerTune item) => <String, dynamic>{
+                  'id': item.id,
+                  'mac': item.mac,
+                  'original_calories': item.originalCalories,
+                  'override_calories': item.overrideCalories,
+                  'time': item.time
+                },
+            changeListener),
+        _powerTuneDeletionAdapter = DeletionAdapter(
+            database,
+            'power_tune',
+            ['id'],
+            (PowerTune item) => <String, dynamic>{
+                  'id': item.id,
+                  'mac': item.mac,
+                  'original_calories': item.originalCalories,
+                  'override_calories': item.overrideCalories,
+                  'time': item.time
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<PowerTune> _powerTuneInsertionAdapter;
+
+  final UpdateAdapter<PowerTune> _powerTuneUpdateAdapter;
+
+  final DeletionAdapter<PowerTune> _powerTuneDeletionAdapter;
+
+  @override
+  Future<List<PowerTune>> findAllPowerTunes() async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM power_tune ORDER BY time DESC',
+        mapper: (Map<String, dynamic> row) => PowerTune(
+            id: row['id'] as int,
+            mac: row['mac'] as String,
+            originalCalories: row['original_calories'] as int,
+            overrideCalories: row['override_calories'] as int,
+            time: row['time'] as int));
+  }
+
+  @override
+  Stream<PowerTune> findPowerTuneById(int id) {
+    return _queryAdapter.queryStream('SELECT * FROM power_tune WHERE id = ?',
+        arguments: <dynamic>[id],
+        queryableName: 'power_tune',
+        isView: false,
+        mapper: (Map<String, dynamic> row) => PowerTune(
+            id: row['id'] as int,
+            mac: row['mac'] as String,
+            originalCalories: row['original_calories'] as int,
+            overrideCalories: row['override_calories'] as int,
+            time: row['time'] as int));
+  }
+
+  @override
+  Stream<PowerTune> findPowerTuneByMac(String mac) {
+    return _queryAdapter.queryStream(
+        'SELECT * FROM power_tune WHERE mac = ? ORDER BY time DESC LIMIT 1',
+        arguments: <dynamic>[mac],
+        queryableName: 'power_tune',
+        isView: false,
+        mapper: (Map<String, dynamic> row) => PowerTune(
+            id: row['id'] as int,
+            mac: row['mac'] as String,
+            originalCalories: row['original_calories'] as int,
+            overrideCalories: row['override_calories'] as int,
+            time: row['time'] as int));
+  }
+
+  @override
+  Future<List<PowerTune>> findPowerTunes(int limit, int offset) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM power_tune ORDER BY time DESC LIMIT ? OFFSET ?',
+        arguments: <dynamic>[limit, offset],
+        mapper: (Map<String, dynamic> row) => PowerTune(
+            id: row['id'] as int,
+            mac: row['mac'] as String,
+            originalCalories: row['original_calories'] as int,
+            overrideCalories: row['override_calories'] as int,
+            time: row['time'] as int));
+  }
+
+  @override
+  Future<int> insertPowerTune(PowerTune powerTune) {
+    return _powerTuneInsertionAdapter.insertAndReturnId(
+        powerTune, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> updatePowerTune(PowerTune powerTune) {
+    return _powerTuneUpdateAdapter.updateAndReturnChangedRows(
+        powerTune, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> deletePowerTune(PowerTune powerTune) {
+    return _powerTuneDeletionAdapter.deleteAndReturnChangedRows(powerTune);
   }
 }
