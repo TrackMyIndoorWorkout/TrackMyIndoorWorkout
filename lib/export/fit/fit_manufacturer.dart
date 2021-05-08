@@ -4,6 +4,7 @@ import 'fit_base_type.dart';
 const NAUTILUS_FIT_ID = 14;
 const NORTH_POLE_ENGINEERING_FIT_ID = 66;
 const PRECOR_FIT_ID = 266;
+const STRAVA_FIT_ID = 265;
 
 Map<int, String> fitManufacturer = {
   1: 'garmin',
@@ -136,7 +137,7 @@ Map<int, String> fitManufacturer = {
   262: 'recon',
   263: 'favero electronics',
   264: 'dynovelo',
-  265: 'strava',
+  STRAVA_FIT_ID: 'strava',
   PRECOR_FIT_ID: 'precor', // Amer Sports
   267: 'bryton',
   268: 'sram',

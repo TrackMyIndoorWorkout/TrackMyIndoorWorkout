@@ -19,7 +19,7 @@ import 'heart_rate_monitor.dart';
 typedef RecordHandlerFunction = Function(Record data);
 
 class FitnessEquipment extends DeviceBase {
-  final DeviceDescriptor descriptor;
+  DeviceDescriptor descriptor;
   String manufacturerName;
   double _residueCalories;
   int _lastPositiveCadence; // #101
@@ -79,6 +79,8 @@ class FitnessEquipment extends DeviceBase {
   }
 
   String get sport => _activity?.sport ?? descriptor.defaultSport;
+  double get powerFactor => _activity?.powerFactor ?? descriptor.powerFactor;
+  double get calorieFactor => _activity?.calorieFactor ?? descriptor.calorieFactor;
 
   Stream<Record> get _listenToData async* {
     if (!attached) return;
@@ -201,7 +203,8 @@ class FitnessEquipment extends DeviceBase {
     if ((stub.distance ?? 0.0) < EPS) {
       stub.distance = (lastRecord.distance ?? 0);
       if ((stub.speed ?? 0.0) > 0 && dT > EPS) {
-        double dD = stub.speed * DeviceDescriptor.KMH2MS * descriptor.distanceFactor * dT;
+        // Speed possibly already has powerFactor effect
+        double dD = stub.speed * DeviceDescriptor.KMH2MS * dT;
         stub.distance += dD;
       }
     }
@@ -221,7 +224,7 @@ class FitnessEquipment extends DeviceBase {
       }
 
       if (deltaCalories < EPS && stub.power != null && stub.power > EPS) {
-        deltaCalories = stub.power * dT * DeviceDescriptor.J2KCAL * descriptor.calorieFactor;
+        deltaCalories = stub.power * dT * DeviceDescriptor.J2KCAL * calorieFactor;
       }
 
       _residueCalories += deltaCalories;

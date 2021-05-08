@@ -18,8 +18,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     dataCharacteristicId = INDOOR_BIKE_ID,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactor = 1.0,
-    distanceFactor = 1.0,
+    calorieFactorDefault = 1.0,
   }) : super(
           defaultSport: ActivityType.Ride,
           isMultiSport: false,
@@ -34,8 +33,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactor: calorieFactor,
-          distanceFactor: distanceFactor,
+          calorieFactorDefault: calorieFactorDefault,
         );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.indoor_bike_data.xml

@@ -448,18 +448,14 @@ const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
 const MEASUREMENT_DETAIL_SIZE_TAG = "measurement_detail_size";
 const MEASUREMENT_DETAIL_SIZE_DEFAULT = "00000";
 
-const THROTTLE_POWER = "Throttle Power";
-const THROTTLE_POWER_TAG = "throttle_power";
-const THROTTLE_POWER_DEFAULT = "0";
-const THROTTLE_POWER_DESCRIPTION = "Throttle in percent. Example: 11 means that the app " +
-    "will take only 89% of the reported power reading. " +
-    "Possibly could throttle calories with certain bikes.";
-
-const THROTTLE_OTHER = "Throttle Other";
-const THROTTLE_OTHER_TAG = "throttle_other";
-const THROTTLE_OTHER_DEFAULT = false;
-const THROTTLE_OTHER_DESCRIPTION =
-    "Apply the power throttle to other measurements as well (speed, distance, calories)";
+const EXTEND_TUNING = "Extend Power Tuning If Applicable";
+const EXTEND_TUNING_TAG = "extend_tuning";
+const EXTEND_TUNING_DEFAULT = false;
+const EXTEND_TUNING_DESCRIPTION =
+    "Apply power tuning to other attributes (speed, distance) as well when applicable. " +
+        "Note that depending on the equipment the tuning might already affect multiple attributes " +
+        "if they depend on each other like when calories or speed is calculated from power. " +
+        "Also note when both calorie and power tuning applied then their effect may combine.";
 
 const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
 const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
