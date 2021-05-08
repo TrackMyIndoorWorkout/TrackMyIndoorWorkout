@@ -18,10 +18,12 @@ import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
+import '../ui/calorie_tunes.dart';
 import '../ui/device_usages.dart';
 import '../ui/parts/calorie_tune.dart';
 import '../ui/parts/data_format_picker.dart';
 import '../ui/parts/power_tune.dart';
+import '../ui/power_tunes.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import 'find_devices.dart';
@@ -336,22 +338,43 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             heroTag: null,
             foregroundColor: Colors.white,
             backgroundColor: Colors.indigo,
-            child: Icon(Icons.collections_bookmark),
+            child: Icon(Icons.file_upload),
             onPressed: () async {
-              await Get.to(DeviceUsagesScreen());
+              await Get.to(ImportForm()).whenComplete(() => setState(() {
+                _editCount++;
+              }));
             },
           ),
           FloatingActionButton(
             heroTag: null,
             foregroundColor: Colors.white,
-            backgroundColor: Colors.indigo,
-            child: Icon(Icons.file_upload),
+            backgroundColor: Colors.black,
+            child: Icon(Icons.collections_bookmark),
             onPressed: () async {
-              await Get.to(ImportForm()).whenComplete(() => setState(() {
-                    _editCount++;
-                  }));
+              await Get.to(DeviceUsagesScreen());
             },
           ),
+
+          FloatingActionButton(
+            heroTag: null,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.black,
+            child: Icon(Icons.bolt),
+            onPressed: () async {
+              await Get.to(PowerTunesScreen());
+            },
+          ),
+
+          FloatingActionButton(
+            heroTag: null,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.black,
+            child: Icon(Icons.whatshot),
+            onPressed: () async {
+              await Get.to(CalorieTunesScreen());
+            },
+          ),
+
           FloatingActionButton(
             heroTag: null,
             foregroundColor: Colors.white,
