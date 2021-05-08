@@ -2,26 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
-import '../../persistence/models/activity.dart';
 import '../../persistence/models/calorie_tune.dart';
 import '../../persistence/preferences.dart';
 
 class CalorieTuneBottomSheet extends StatefulWidget {
-  final Activity activity;
+  final String deviceId;
+  final int calories;
 
-  CalorieTuneBottomSheet({Key key, @required this.activity})
-      : assert(activity != null), super(key: key);
+  CalorieTuneBottomSheet({Key key, @required this.deviceId, @required this.calories})
+      : assert(deviceId != null),
+        assert(calories != null),
+        super(key: key);
 
   @override
-  CalorieTuneBottomSheetState createState() => CalorieTuneBottomSheetState(
-    activity: activity);
+  CalorieTuneBottomSheetState createState() =>
+      CalorieTuneBottomSheetState(deviceId: deviceId, oldCalories: calories.toDouble());
 }
 
 class CalorieTuneBottomSheetState extends State<CalorieTuneBottomSheet> {
-  CalorieTuneBottomSheetState({@required this.activity}) : assert(activity != null);
+  CalorieTuneBottomSheetState({@required this.deviceId, @required this.oldCalories})
+      : assert(deviceId != null),
+        assert(oldCalories != null);
 
-  final Activity activity;
-  double _calorie;
+  final String deviceId;
+  final double oldCalories;
+  double _newCalorie;
   double _sizeDefault;
   TextStyle _selectedTextStyle;
   TextStyle _largerTextStyle;
@@ -34,7 +39,7 @@ class CalorieTuneBottomSheetState extends State<CalorieTuneBottomSheet> {
     _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
     _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
 
-    _calorie = activity.calories.toDouble();
+    _newCalorie = oldCalories;
   }
 
   @override
@@ -48,8 +53,8 @@ class CalorieTuneBottomSheetState extends State<CalorieTuneBottomSheet> {
           SpinBox(
             min: 1,
             max: 800,
-            value: _calorie,
-            onChanged: (value) => _calorie = value,
+            value: _newCalorie,
+            onChanged: (value) => _newCalorie = value,
             textStyle: _largerTextStyle,
           ),
         ],
@@ -61,10 +66,10 @@ class CalorieTuneBottomSheetState extends State<CalorieTuneBottomSheet> {
         child: Icon(Icons.check),
         onPressed: () async {
           final database = Get.find<AppDatabase>();
-          var calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(activity.deviceId)?.first;
-          final calorieFactor = _calorie / activity.calories;
+          var calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
+          final calorieFactor = _newCalorie / oldCalories;
           if (calorieTune == null) {
-            calorieTune = CalorieTune(mac: activity.deviceId, calorieFactor: calorieFactor);
+            calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor);
             await database?.calorieTuneDao?.insertCalorieTune(calorieTune);
           } else {
             calorieTune.calorieFactor = calorieFactor;

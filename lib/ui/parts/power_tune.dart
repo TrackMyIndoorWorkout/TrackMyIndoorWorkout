@@ -7,20 +7,26 @@ import '../../persistence/models/power_tune.dart';
 import '../../persistence/preferences.dart';
 
 class PowerTuneBottomSheet extends StatefulWidget {
-  final Activity activity;
+  final String deviceId;
+  final double powerFactor;
 
-  PowerTuneBottomSheet({Key key, @required this.activity})
-      : assert(activity != null), super(key: key);
+  PowerTuneBottomSheet({Key key, @required this.deviceId, @required this.powerFactor})
+      : assert(deviceId != null),
+        assert(powerFactor != null),
+        super(key: key);
 
   @override
-  PowerTuneBottomSheetState createState() => PowerTuneBottomSheetState(
-    activity: activity);
+  PowerTuneBottomSheetState createState() =>
+      PowerTuneBottomSheetState(deviceId: deviceId, oldPowerFactor: powerFactor);
 }
 
 class PowerTuneBottomSheetState extends State<PowerTuneBottomSheet> {
-  PowerTuneBottomSheetState({@required this.activity}) : assert(activity != null);
+  PowerTuneBottomSheetState({@required this.deviceId, @required this.oldPowerFactor})
+      : assert(deviceId != null),
+        assert(oldPowerFactor != null);
 
-  final Activity activity;
+  final String deviceId;
+  final double oldPowerFactor;
   double _powerFactorPercent;
   double _sizeDefault;
   TextStyle _selectedTextStyle;
@@ -34,7 +40,7 @@ class PowerTuneBottomSheetState extends State<PowerTuneBottomSheet> {
     _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
     _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
 
-    _powerFactorPercent = activity.powerFactor * 100;
+    _powerFactorPercent = oldPowerFactor * 100;
   }
 
   @override
@@ -61,10 +67,10 @@ class PowerTuneBottomSheetState extends State<PowerTuneBottomSheet> {
         child: Icon(Icons.check),
         onPressed: () async {
           final database = Get.find<AppDatabase>();
-          var powerTune = await database?.powerTuneDao?.findPowerTuneByMac(activity.deviceId)?.first;
+          var powerTune = await database?.powerTuneDao?.findPowerTuneByMac(deviceId)?.first;
           final powerFactor = _powerFactorPercent / 100;
           if (powerTune == null) {
-            powerTune = PowerTune(mac: activity.deviceId, powerFactor: powerFactor);
+            powerTune = PowerTune(mac: deviceId, powerFactor: powerFactor);
             await database?.powerTuneDao?.insertPowerTune(powerTune);
           } else {
             powerTune.powerFactor = powerFactor;

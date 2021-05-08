@@ -123,8 +123,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         IconButton(
           icon: Icon(Icons.bolt, color: Colors.black, size: size),
           onPressed: () async {
+            if (activity.powerFactor == null || activity.powerFactor < EPS) {
+              Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
+              return;
+            }
             await Get.bottomSheet(
-              PowerTuneBottomSheet(activity: activity),
+              PowerTuneBottomSheet(deviceId: activity.deviceId, powerFactor: activity.powerFactor),
               enableDrag: false,
             );
           },
@@ -132,8 +136,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         IconButton(
           icon: Icon(Icons.whatshot, color: Colors.black, size: size),
           onPressed: () async {
+            if (activity.calories == null || activity.calories == 0) {
+              Get.snackbar("Error", "Cannot tune calories of activity with 0 calories");
+              return;
+            }
             await Get.bottomSheet(
-              CalorieTuneBottomSheet(activity: activity),
+              CalorieTuneBottomSheet(deviceId: activity.deviceId, calories: activity.calories),
               enableDrag: false,
             );
           },
