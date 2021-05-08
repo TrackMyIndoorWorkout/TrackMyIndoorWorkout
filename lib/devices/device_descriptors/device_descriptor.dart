@@ -91,7 +91,7 @@ abstract class DeviceDescriptor {
   }
 
   String get fullName => '$vendorName $modelName';
-  double get lengthFactor => getDefaultTrack(defaultSport).lengthFactor; // TODO?
+  double get lengthFactor => getDefaultTrack(defaultSport).lengthFactor;
   bool get isFitnessMachine => dataServiceId == FITNESS_MACHINE_ID;
 
   void stopWorkout();
