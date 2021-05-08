@@ -16,7 +16,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           dataServiceId: null,
           dataCharacteristicId: null,
           antPlus: true,
-          calorieFactor: 3.9,
+          calorieFactorDefault: 3.9,
         );
 
   @override

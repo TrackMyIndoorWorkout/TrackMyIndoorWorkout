@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
+import 'package:preferences/preference_service.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
@@ -48,9 +48,10 @@ abstract class DeviceDescriptor {
   ByteMetricDescriptor caloriesPerMinuteMetric;
 
   // Adjusting skewed calories
+  double calorieFactorDefault;
   double calorieFactor;
   // Adjusting skewed distance
-  double throttlePower;
+  double powerFactor;
   bool extendTuning;
   double slowPace;
 
@@ -75,7 +76,7 @@ abstract class DeviceDescriptor {
     this.powerMetric,
     this.cadenceMetric,
     this.distanceMetric,
-    this.calorieFactor = 1.0,
+    this.calorieFactorDefault = 1.0,
   })  : assert(defaultSport != null),
         assert(isMultiSport != null),
         assert(fourCC != null),
@@ -84,7 +85,8 @@ abstract class DeviceDescriptor {
         assert(namePrefix != null) {
     featuresFlag = 0;
     byteCounter = 0;
-    throttlePower = 1.0;
+    calorieFactor = calorieFactorDefault;
+    powerFactor = 1.0;
     extendTuning = EXTEND_TUNING_DEFAULT;
   }
 
@@ -112,21 +114,19 @@ abstract class DeviceDescriptor {
     return null;
   }
 
-  void refreshTuning(BluetoothDevice device) {
+  refreshTuning(String deviceId) async {
     final database = Get.find<AppDatabase>();
-
-    // String throttlePercentString, bool throttleOther
-    int throttlePercent = int.tryParse(throttlePercentString);
-    throttlePower = (100 - throttlePercent) / 100;
-    this.throttleOther = throttleOther;
+    calorieFactor = await database?.calorieFactor(deviceId, this) ?? 1.0;
+    powerFactor = await database?.powerFactor(deviceId) ?? 1.0;
+    extendTuning = PrefService.getBool(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
   }
 
   double getSpeed(List<int> data) {
     var speed = speedMetric?.getMeasurementValue(data);
-    if (speed == null || !throttleOther) {
+    if (speed == null || !extendTuning) {
       return speed;
     }
-    return speed * throttlePower;
+    return speed * powerFactor;
   }
 
   double getCadence(List<int> data) {
@@ -135,10 +135,10 @@ abstract class DeviceDescriptor {
 
   double getDistance(List<int> data) {
     var distance = distanceMetric?.getMeasurementValue(data);
-    if (distance == null || !throttleOther) {
+    if (distance == null || !extendTuning) {
       return distance;
     }
-    return distance * throttlePower;
+    return distance * powerFactor;
   }
 
   double getPower(List<int> data) {
@@ -146,31 +146,31 @@ abstract class DeviceDescriptor {
     if (power == null) {
       return power;
     }
-    return power * throttlePower;
+    return power * powerFactor;
   }
 
   double getCalories(List<int> data) {
     var calories = caloriesMetric?.getMeasurementValue(data);
-    if (calories == null || !throttleOther) {
+    if (calories == null || !extendTuning) {
       return calories;
     }
-    return calories * throttlePower;
+    return calories * calorieFactor;
   }
 
   double getCaloriesPerHour(List<int> data) {
     var caloriesPerHour = caloriesPerHourMetric?.getMeasurementValue(data);
-    if (caloriesPerHour == null || !throttleOther) {
+    if (caloriesPerHour == null || !extendTuning) {
       return caloriesPerHour;
     }
-    return caloriesPerHour * throttlePower;
+    return caloriesPerHour * calorieFactor;
   }
 
   double getCaloriesPerMinute(List<int> data) {
     var caloriesPerMinute = caloriesPerMinuteMetric?.getMeasurementValue(data);
-    if (caloriesPerMinute == null || !throttleOther) {
+    if (caloriesPerMinute == null || !extendTuning) {
       return caloriesPerMinute;
     }
-    return caloriesPerMinute * throttlePower;
+    return caloriesPerMinute * calorieFactor;
   }
 
   double getTime(List<int> data) {

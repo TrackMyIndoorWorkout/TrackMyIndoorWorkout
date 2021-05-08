@@ -276,10 +276,13 @@ class RecordingState extends State<RecordingScreen> {
       color: Colors.indigo,
     );
     PrefService.setString(
-        LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport), device.id.id,);
-    _descriptor.refreshTuning(device);
+      LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport),
+      device.id.id,
+    );
+    _descriptor.refreshTuning(device.id.id);
     if (Get.isRegistered<FitnessEquipment>()) {
       _fitnessEquipment = Get.find<FitnessEquipment>();
+      _fitnessEquipment.descriptor = _descriptor;
     } else {
       _fitnessEquipment =
           Get.put<FitnessEquipment>(FitnessEquipment(descriptor: _descriptor, device: device));

@@ -6,6 +6,8 @@ import 'device_descriptors/precor_spinner_chrono_power.dart';
 import 'device_descriptors/rower_device_descriptor.dart';
 import 'device_descriptors/schwinn_ac_performance_plus.dart';
 
+const MPOWER_IMPORT_DEVICE_ID = 'MPowerImport';
+
 Map<String, DeviceDescriptor> deviceMap = {
   "PSCP": PrecorSpinnerChronoPower(),
   "SIC4": IndoorBikeDeviceDescriptor(
@@ -16,7 +18,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturer: "Nautilus, Inc",
     manufacturerFitId: NAUTILUS_FIT_ID,
     model: "IC BIKE",
-    calorieFactor: 1.40,
+    calorieFactorDefault: 1.40,
   ),
   "SAP+": SchwinnACPerformancePlus(),
   "KPro": RowerDeviceDescriptor(

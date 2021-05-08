@@ -31,8 +31,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     dataCharacteristicId = ROWER_DEVICE_ID,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactor = 1.0,
-    distanceFactor = 1.0,
+    calorieFactorDefault = 1.0,
   }) : super(
           defaultSport: defaultSport,
           isMultiSport: true,
@@ -47,7 +46,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactor: calorieFactor,
+          calorieFactorDefault: calorieFactorDefault,
         ) {
     _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
     _strokeRates = ListQueue<int>();

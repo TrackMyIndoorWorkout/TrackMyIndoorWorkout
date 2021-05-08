@@ -69,25 +69,31 @@ void main() {
     final rnd = Random();
     getRandomDoubles(SMALL_REPETITION, 3, rnd).forEach((value) {
       final calPerHour = (1.0 + value) * (60 * 60);
-      test('$calPerHour', () async {
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final seconds = 60;
+      test('$calPerHour $powerFactor $calorieFactor', () async {
         await PrefService.init(prefix: 'pref_');
-        final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
+        final oneSecondAgo = DateTime.now().subtract(Duration(seconds: seconds));
         final descriptor = deviceMap["SIC4"];
         final activity = Activity(
-          deviceId: "",
+          deviceId: MPOWER_IMPORT_DEVICE_ID,
           deviceName: descriptor.modelName,
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.lastRecord =
             Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, calories: 0);
 
+        // Here we assume that calorieFactor got already applied at getCaloriesPerHour
         final record = equipment.processRecord(Record(caloriesPerHour: calPerHour));
 
-        final expected = (calPerHour / (60 * 60)).floor();
+        final expected = (calPerHour / (60 * 60) * seconds).floor();
         expect(record.calories, expected);
       });
     });
@@ -97,25 +103,30 @@ void main() {
     final rnd = Random();
     getRandomDoubles(SMALL_REPETITION, 150, rnd).forEach((pow) {
       final descriptor = deviceMap["SIC4"];
-      final power = ((150 + pow) / DeviceDescriptor.J2KCAL / descriptor.calorieFactor).floor();
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final power = ((150 + pow) / DeviceDescriptor.J2KCAL).floor();
       test('$power', () async {
         await PrefService.init(prefix: 'pref_');
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
         final activity = Activity(
-          deviceId: "",
+          deviceId: MPOWER_IMPORT_DEVICE_ID,
           deviceName: descriptor.modelName,
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.lastRecord =
             Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, calories: 0);
 
+        // Here we assume that powerFactor got already applied at getPower
         final record = equipment.processRecord(Record(power: power));
 
-        expect(record.calories, (150 + pow).floor());
+        expect(record.calories, ((150 + pow) * calorieFactor).floor());
       });
     });
   });
@@ -123,22 +134,27 @@ void main() {
   group('processRecord does not override calories when explicitly reported available', () {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 300, rnd).forEach((calories) {
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       test('$calories', () async {
         await PrefService.init(prefix: 'pref_');
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
         final descriptor = deviceMap["SIC4"];
         final activity = Activity(
-          deviceId: "",
+          deviceId: MPOWER_IMPORT_DEVICE_ID,
           deviceName: descriptor.modelName,
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.lastRecord =
             Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, calories: 0);
 
+        // Here we assume that the calorieFactor got already applied at getCalories
         final record = equipment.processRecord(Record(calories: calories));
 
         expect(record.calories, calories);
@@ -149,16 +165,20 @@ void main() {
   group('processRecord calculates distance from speed', () {
     final rnd = Random();
     getRandomDoubles(SMALL_REPETITION, 10, rnd).forEach((speed) {
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       test('$speed', () async {
         await PrefService.init(prefix: 'pref_');
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
         final descriptor = deviceMap["SIC4"];
         final activity = Activity(
-          deviceId: "",
+          deviceId: MPOWER_IMPORT_DEVICE_ID,
           deviceName: descriptor.modelName,
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
@@ -175,16 +195,20 @@ void main() {
   group('processRecord does not override distance when explicitly reported available', () {
     final rnd = Random();
     getRandomDoubles(SMALL_REPETITION, 1000, rnd).forEach((distance) {
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       test('$distance', () async {
         await PrefService.init(prefix: 'pref_');
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
         final descriptor = deviceMap["SIC4"];
         final activity = Activity(
-          deviceId: "",
+          deviceId: MPOWER_IMPORT_DEVICE_ID,
           deviceName: descriptor.modelName,
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);

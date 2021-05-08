@@ -19,7 +19,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     dataCharacteristicId,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactor = 1.0,
+    calorieFactorDefault = 1.0,
   }) : super(
           defaultSport: defaultSport,
           isMultiSport: isMultiSport,
@@ -34,7 +34,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactor: calorieFactor,
+          calorieFactorDefault: calorieFactorDefault,
         );
 
   @override
