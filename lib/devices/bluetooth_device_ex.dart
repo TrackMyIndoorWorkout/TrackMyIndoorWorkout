@@ -1,6 +1,4 @@
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:get/get.dart';
-import '../persistence/database.dart';
 import '../utils/guid_ex.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_map.dart';
