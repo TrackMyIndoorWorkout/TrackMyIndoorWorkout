@@ -9,14 +9,12 @@ part of 'database.dart';
 class $FloorAppDatabase {
   /// Creates a database builder for a persistent database.
   /// Once a database is built, you should keep a reference to it and re-use it.
-  static _$AppDatabaseBuilder databaseBuilder(String name) =>
-      _$AppDatabaseBuilder(name);
+  static _$AppDatabaseBuilder databaseBuilder(String name) => _$AppDatabaseBuilder(name);
 
   /// Creates a database builder for an in memory database.
   /// Information stored in an in memory database disappears when the process is killed.
   /// Once a database is built, you should keep a reference to it and re-use it.
-  static _$AppDatabaseBuilder inMemoryDatabaseBuilder() =>
-      _$AppDatabaseBuilder(null);
+  static _$AppDatabaseBuilder inMemoryDatabaseBuilder() => _$AppDatabaseBuilder(null);
 }
 
 class _$AppDatabaseBuilder {
@@ -42,9 +40,7 @@ class _$AppDatabaseBuilder {
 
   /// Creates the database and initializes it.
   Future<AppDatabase> build() async {
-    final path = name != null
-        ? await sqfliteDatabaseFactory.getDatabasePath(name)
-        : ':memory:';
+    final path = name != null ? await sqfliteDatabaseFactory.getDatabasePath(name) : ':memory:';
     final database = _$AppDatabase();
     database.database = await database.open(
       path,
@@ -73,7 +69,7 @@ class _$AppDatabase extends AppDatabase {
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 5,
+      version: 6,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
       },
@@ -81,34 +77,28 @@ class _$AppDatabase extends AppDatabase {
         await callback?.onOpen?.call(database);
       },
       onUpgrade: (database, startVersion, endVersion) async {
-        await MigrationAdapter.runMigrations(
-            database, startVersion, endVersion, migrations);
+        await MigrationAdapter.runMigrations(database, startVersion, endVersion, migrations);
 
         await callback?.onUpgrade?.call(database, startVersion, endVersion);
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, `start` INTEGER, `end` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `uploaded` INTEGER, `strava_id` INTEGER, `four_cc` TEXT, `sport` TEXT)');
+            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, `start` INTEGER, `end` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `uploaded` INTEGER, `strava_id` INTEGER, `four_cc` TEXT, `sport` TEXT, `power_factor` REAL, `calorie_factor` REAL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `activity_id` INTEGER, `time_stamp` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `power` INTEGER, `speed` REAL, `cadence` INTEGER, `heart_rate` INTEGER, FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `device_usage` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT, `mac` TEXT, `name` TEXT, `manufacturer` TEXT, `manufacturer_name` TEXT, `time` INTEGER)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `calorie_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `original_calories` INTEGER, `override_calories` INTEGER, `time` INTEGER)');
+            'CREATE TABLE IF NOT EXISTS `calorie_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `calorie_factor` REAL, `time` INTEGER)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `power_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `original_calories` INTEGER, `override_calories` INTEGER, `time` INTEGER)');
-        await database.execute(
-            'CREATE INDEX `index_activities_start` ON `activities` (`start`)');
-        await database.execute(
-            'CREATE INDEX `index_records_time_stamp` ON `records` (`time_stamp`)');
-        await database.execute(
-            'CREATE INDEX `index_device_usage_time` ON `device_usage` (`time`)');
-        await database.execute(
-            'CREATE INDEX `index_device_usage_mac` ON `device_usage` (`mac`)');
-        await database.execute(
-            'CREATE INDEX `index_calorie_tune_mac` ON `calorie_tune` (`mac`)');
-        await database.execute(
-            'CREATE INDEX `index_power_tune_mac` ON `power_tune` (`mac`)');
+            'CREATE TABLE IF NOT EXISTS `power_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `power_factor` REAL, `time` INTEGER)');
+        await database.execute('CREATE INDEX `index_activities_start` ON `activities` (`start`)');
+        await database
+            .execute('CREATE INDEX `index_records_time_stamp` ON `records` (`time_stamp`)');
+        await database.execute('CREATE INDEX `index_device_usage_time` ON `device_usage` (`time`)');
+        await database.execute('CREATE INDEX `index_device_usage_mac` ON `device_usage` (`mac`)');
+        await database.execute('CREATE INDEX `index_calorie_tune_mac` ON `calorie_tune` (`mac`)');
+        await database.execute('CREATE INDEX `index_power_tune_mac` ON `power_tune` (`mac`)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -128,14 +118,12 @@ class _$AppDatabase extends AppDatabase {
 
   @override
   DeviceUsageDao get deviceUsageDao {
-    return _deviceUsageDaoInstance ??=
-        _$DeviceUsageDao(database, changeListener);
+    return _deviceUsageDaoInstance ??= _$DeviceUsageDao(database, changeListener);
   }
 
   @override
   CalorieTuneDao get calorieTuneDao {
-    return _calorieTuneDaoInstance ??=
-        _$CalorieTuneDao(database, changeListener);
+    return _calorieTuneDaoInstance ??= _$CalorieTuneDao(database, changeListener);
   }
 
   @override
@@ -159,11 +147,12 @@ class _$ActivityDao extends ActivityDao {
                   'distance': item.distance,
                   'elapsed': item.elapsed,
                   'calories': item.calories,
-                  'uploaded':
-                      item.uploaded == null ? null : (item.uploaded ? 1 : 0),
+                  'uploaded': item.uploaded == null ? null : (item.uploaded ? 1 : 0),
                   'strava_id': item.stravaId,
                   'four_cc': item.fourCC,
-                  'sport': item.sport
+                  'sport': item.sport,
+                  'power_factor': item.powerFactor,
+                  'calorie_factor': item.calorieFactor
                 },
             changeListener),
         _activityUpdateAdapter = UpdateAdapter(
@@ -179,11 +168,12 @@ class _$ActivityDao extends ActivityDao {
                   'distance': item.distance,
                   'elapsed': item.elapsed,
                   'calories': item.calories,
-                  'uploaded':
-                      item.uploaded == null ? null : (item.uploaded ? 1 : 0),
+                  'uploaded': item.uploaded == null ? null : (item.uploaded ? 1 : 0),
                   'strava_id': item.stravaId,
                   'four_cc': item.fourCC,
-                  'sport': item.sport
+                  'sport': item.sport,
+                  'power_factor': item.powerFactor,
+                  'calorie_factor': item.calorieFactor
                 },
             changeListener),
         _activityDeletionAdapter = DeletionAdapter(
@@ -199,11 +189,12 @@ class _$ActivityDao extends ActivityDao {
                   'distance': item.distance,
                   'elapsed': item.elapsed,
                   'calories': item.calories,
-                  'uploaded':
-                      item.uploaded == null ? null : (item.uploaded ? 1 : 0),
+                  'uploaded': item.uploaded == null ? null : (item.uploaded ? 1 : 0),
                   'strava_id': item.stravaId,
                   'four_cc': item.fourCC,
-                  'sport': item.sport
+                  'sport': item.sport,
+                  'power_factor': item.powerFactor,
+                  'calorie_factor': item.calorieFactor
                 },
             changeListener);
 
@@ -221,8 +212,7 @@ class _$ActivityDao extends ActivityDao {
 
   @override
   Future<List<Activity>> findAllActivities() async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM activities ORDER BY start DESC',
+    return _queryAdapter.queryList('SELECT * FROM activities ORDER BY start DESC',
         mapper: (Map<String, dynamic> row) => Activity(
             id: row['id'] as int,
             deviceName: row['device_name'] as String,
@@ -232,11 +222,12 @@ class _$ActivityDao extends ActivityDao {
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
             calories: row['calories'] as int,
-            uploaded:
-                row['uploaded'] == null ? null : (row['uploaded'] as int) != 0,
+            uploaded: row['uploaded'] == null ? null : (row['uploaded'] as int) != 0,
             stravaId: row['strava_id'] as int,
             fourCC: row['four_cc'] as String,
-            sport: row['sport'] as String));
+            sport: row['sport'] as String,
+            powerFactor: row['power_factor'] as double,
+            calorieFactor: row['calorie_factor'] as double));
   }
 
   @override
@@ -254,17 +245,17 @@ class _$ActivityDao extends ActivityDao {
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
             calories: row['calories'] as int,
-            uploaded:
-                row['uploaded'] == null ? null : (row['uploaded'] as int) != 0,
+            uploaded: row['uploaded'] == null ? null : (row['uploaded'] as int) != 0,
             stravaId: row['strava_id'] as int,
             fourCC: row['four_cc'] as String,
-            sport: row['sport'] as String));
+            sport: row['sport'] as String,
+            powerFactor: row['power_factor'] as double,
+            calorieFactor: row['calorie_factor'] as double));
   }
 
   @override
   Future<List<Activity>> findActivities(int limit, int offset) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM activities ORDER BY start DESC LIMIT ? OFFSET ?',
+    return _queryAdapter.queryList('SELECT * FROM activities ORDER BY start DESC LIMIT ? OFFSET ?',
         arguments: <dynamic>[limit, offset],
         mapper: (Map<String, dynamic> row) => Activity(
             id: row['id'] as int,
@@ -275,23 +266,22 @@ class _$ActivityDao extends ActivityDao {
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
             calories: row['calories'] as int,
-            uploaded:
-                row['uploaded'] == null ? null : (row['uploaded'] as int) != 0,
+            uploaded: row['uploaded'] == null ? null : (row['uploaded'] as int) != 0,
             stravaId: row['strava_id'] as int,
             fourCC: row['four_cc'] as String,
-            sport: row['sport'] as String));
+            sport: row['sport'] as String,
+            powerFactor: row['power_factor'] as double,
+            calorieFactor: row['calorie_factor'] as double));
   }
 
   @override
   Future<int> insertActivity(Activity activity) {
-    return _activityInsertionAdapter.insertAndReturnId(
-        activity, OnConflictStrategy.abort);
+    return _activityInsertionAdapter.insertAndReturnId(activity, OnConflictStrategy.abort);
   }
 
   @override
   Future<int> updateActivity(Activity activity) {
-    return _activityUpdateAdapter.updateAndReturnChangedRows(
-        activity, OnConflictStrategy.abort);
+    return _activityUpdateAdapter.updateAndReturnChangedRows(activity, OnConflictStrategy.abort);
   }
 
   @override
@@ -487,8 +477,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
 
   @override
   Future<List<DeviceUsage>> findAllDeviceUsages() async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM device_usage ORDER BY time DESC',
+    return _queryAdapter.queryList('SELECT * FROM device_usage ORDER BY time DESC',
         mapper: (Map<String, dynamic> row) => DeviceUsage(
             id: row['id'] as int,
             sport: row['sport'] as String,
@@ -534,8 +523,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
 
   @override
   Future<List<DeviceUsage>> findDeviceUsages(int limit, int offset) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM device_usage ORDER BY time DESC LIMIT ? OFFSET ?',
+    return _queryAdapter.queryList('SELECT * FROM device_usage ORDER BY time DESC LIMIT ? OFFSET ?',
         arguments: <dynamic>[limit, offset],
         mapper: (Map<String, dynamic> row) => DeviceUsage(
             id: row['id'] as int,
@@ -549,8 +537,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
 
   @override
   Future<int> insertDeviceUsage(DeviceUsage deviceUsage) {
-    return _deviceUsageInsertionAdapter.insertAndReturnId(
-        deviceUsage, OnConflictStrategy.abort);
+    return _deviceUsageInsertionAdapter.insertAndReturnId(deviceUsage, OnConflictStrategy.abort);
   }
 
   @override
@@ -574,8 +561,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
             (CalorieTune item) => <String, dynamic>{
                   'id': item.id,
                   'mac': item.mac,
-                  'original_calories': item.originalCalories,
-                  'override_calories': item.overrideCalories,
+                  'calorie_factor': item.calorieFactor,
                   'time': item.time
                 },
             changeListener),
@@ -586,8 +572,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
             (CalorieTune item) => <String, dynamic>{
                   'id': item.id,
                   'mac': item.mac,
-                  'original_calories': item.originalCalories,
-                  'override_calories': item.overrideCalories,
+                  'calorie_factor': item.calorieFactor,
                   'time': item.time
                 },
             changeListener),
@@ -598,8 +583,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
             (CalorieTune item) => <String, dynamic>{
                   'id': item.id,
                   'mac': item.mac,
-                  'original_calories': item.originalCalories,
-                  'override_calories': item.overrideCalories,
+                  'calorie_factor': item.calorieFactor,
                   'time': item.time
                 },
             changeListener);
@@ -618,13 +602,11 @@ class _$CalorieTuneDao extends CalorieTuneDao {
 
   @override
   Future<List<CalorieTune>> findAllCalorieTunes() async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM calorie_tune ORDER BY time DESC',
+    return _queryAdapter.queryList('SELECT * FROM calorie_tune ORDER BY time DESC',
         mapper: (Map<String, dynamic> row) => CalorieTune(
             id: row['id'] as int,
             mac: row['mac'] as String,
-            originalCalories: row['original_calories'] as int,
-            overrideCalories: row['override_calories'] as int,
+            calorieFactor: row['calorie_factor'] as double,
             time: row['time'] as int));
   }
 
@@ -637,8 +619,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
         mapper: (Map<String, dynamic> row) => CalorieTune(
             id: row['id'] as int,
             mac: row['mac'] as String,
-            originalCalories: row['original_calories'] as int,
-            overrideCalories: row['override_calories'] as int,
+            calorieFactor: row['calorie_factor'] as double,
             time: row['time'] as int));
   }
 
@@ -652,28 +633,24 @@ class _$CalorieTuneDao extends CalorieTuneDao {
         mapper: (Map<String, dynamic> row) => CalorieTune(
             id: row['id'] as int,
             mac: row['mac'] as String,
-            originalCalories: row['original_calories'] as int,
-            overrideCalories: row['override_calories'] as int,
+            calorieFactor: row['calorie_factor'] as double,
             time: row['time'] as int));
   }
 
   @override
   Future<List<CalorieTune>> findCalorieTunes(int limit, int offset) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM calorie_tune ORDER BY time DESC LIMIT ? OFFSET ?',
+    return _queryAdapter.queryList('SELECT * FROM calorie_tune ORDER BY time DESC LIMIT ? OFFSET ?',
         arguments: <dynamic>[limit, offset],
         mapper: (Map<String, dynamic> row) => CalorieTune(
             id: row['id'] as int,
             mac: row['mac'] as String,
-            originalCalories: row['original_calories'] as int,
-            overrideCalories: row['override_calories'] as int,
+            calorieFactor: row['calorie_factor'] as double,
             time: row['time'] as int));
   }
 
   @override
   Future<int> insertCalorieTune(CalorieTune calorieTune) {
-    return _calorieTuneInsertionAdapter.insertAndReturnId(
-        calorieTune, OnConflictStrategy.abort);
+    return _calorieTuneInsertionAdapter.insertAndReturnId(calorieTune, OnConflictStrategy.abort);
   }
 
   @override
@@ -697,8 +674,7 @@ class _$PowerTuneDao extends PowerTuneDao {
             (PowerTune item) => <String, dynamic>{
                   'id': item.id,
                   'mac': item.mac,
-                  'original_calories': item.originalCalories,
-                  'override_calories': item.overrideCalories,
+                  'power_factor': item.powerFactor,
                   'time': item.time
                 },
             changeListener),
@@ -709,8 +685,7 @@ class _$PowerTuneDao extends PowerTuneDao {
             (PowerTune item) => <String, dynamic>{
                   'id': item.id,
                   'mac': item.mac,
-                  'original_calories': item.originalCalories,
-                  'override_calories': item.overrideCalories,
+                  'power_factor': item.powerFactor,
                   'time': item.time
                 },
             changeListener),
@@ -721,8 +696,7 @@ class _$PowerTuneDao extends PowerTuneDao {
             (PowerTune item) => <String, dynamic>{
                   'id': item.id,
                   'mac': item.mac,
-                  'original_calories': item.originalCalories,
-                  'override_calories': item.overrideCalories,
+                  'power_factor': item.powerFactor,
                   'time': item.time
                 },
             changeListener);
@@ -741,13 +715,11 @@ class _$PowerTuneDao extends PowerTuneDao {
 
   @override
   Future<List<PowerTune>> findAllPowerTunes() async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM power_tune ORDER BY time DESC',
+    return _queryAdapter.queryList('SELECT * FROM power_tune ORDER BY time DESC',
         mapper: (Map<String, dynamic> row) => PowerTune(
             id: row['id'] as int,
             mac: row['mac'] as String,
-            originalCalories: row['original_calories'] as int,
-            overrideCalories: row['override_calories'] as int,
+            powerFactor: row['power_factor'] as double,
             time: row['time'] as int));
   }
 
@@ -760,8 +732,7 @@ class _$PowerTuneDao extends PowerTuneDao {
         mapper: (Map<String, dynamic> row) => PowerTune(
             id: row['id'] as int,
             mac: row['mac'] as String,
-            originalCalories: row['original_calories'] as int,
-            overrideCalories: row['override_calories'] as int,
+            powerFactor: row['power_factor'] as double,
             time: row['time'] as int));
   }
 
@@ -775,34 +746,29 @@ class _$PowerTuneDao extends PowerTuneDao {
         mapper: (Map<String, dynamic> row) => PowerTune(
             id: row['id'] as int,
             mac: row['mac'] as String,
-            originalCalories: row['original_calories'] as int,
-            overrideCalories: row['override_calories'] as int,
+            powerFactor: row['power_factor'] as double,
             time: row['time'] as int));
   }
 
   @override
   Future<List<PowerTune>> findPowerTunes(int limit, int offset) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM power_tune ORDER BY time DESC LIMIT ? OFFSET ?',
+    return _queryAdapter.queryList('SELECT * FROM power_tune ORDER BY time DESC LIMIT ? OFFSET ?',
         arguments: <dynamic>[limit, offset],
         mapper: (Map<String, dynamic> row) => PowerTune(
             id: row['id'] as int,
             mac: row['mac'] as String,
-            originalCalories: row['original_calories'] as int,
-            overrideCalories: row['override_calories'] as int,
+            powerFactor: row['power_factor'] as double,
             time: row['time'] as int));
   }
 
   @override
   Future<int> insertPowerTune(PowerTune powerTune) {
-    return _powerTuneInsertionAdapter.insertAndReturnId(
-        powerTune, OnConflictStrategy.abort);
+    return _powerTuneInsertionAdapter.insertAndReturnId(powerTune, OnConflictStrategy.abort);
   }
 
   @override
   Future<int> updatePowerTune(PowerTune powerTune) {
-    return _powerTuneUpdateAdapter.updateAndReturnChangedRows(
-        powerTune, OnConflictStrategy.abort);
+    return _powerTuneUpdateAdapter.updateAndReturnChangedRows(powerTune, OnConflictStrategy.abort);
   }
 
   @override
