@@ -145,7 +145,6 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> _startMeasurement() async {
     final now = DateTime.now();
-    // TODO: factors
     _activity = Activity(
       fourCC: _descriptor.fourCC,
       deviceName: device.name,
@@ -153,6 +152,8 @@ class RecordingState extends State<RecordingScreen> {
       start: now.millisecondsSinceEpoch,
       startDateTime: now,
       sport: _descriptor.defaultSport,
+      powerFactor: await _database.powerFactor(device.id.id),
+      calorieFactor: await _database.calorieFactor(device.id.id, _descriptor),
     );
     if (!_uxDebug) {
       final id = await _database?.activityDao?.insertActivity(_activity);
