@@ -459,16 +459,16 @@ const EXTEND_TUNING_DESCRIPTION =
 
 const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
 const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
-const STROKE_RATE_SMOOTHING_DEFAULT = "10";
 const STROKE_RATE_SMOOTHING_DEFAULT_INT = 10;
+const STROKE_RATE_SMOOTHING_DEFAULT = "$STROKE_RATE_SMOOTHING_DEFAULT_INT";
 const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery data. Averaging " +
     "these over time soothes the data. This setting tells the window size by how many samples " +
     "could be in the smoothing queue. 1 means no smoothing.";
 
 const EQUIPMENT_DISCONNECTION_WATCHDOG = "Equipment Disconnection Watchdog Timer";
 const EQUIPMENT_DISCONNECTION_WATCHDOG_TAG = "equipment_disconnection_watchdog_timer";
-const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT = "5";
 const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT = 5;
+const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT = "$EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT";
 const EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered " +
     "as a disconnection. A watchdog would finish the workout, reconnect to the equipment, and " +
     "start a new workout. 0 means the watchdog will be turned off. Disabling the watchdog " +
@@ -498,8 +498,8 @@ const HEART_RATE_GAP_WORKAROUND_DEFAULT = DATA_GAP_WORKAROUND_LAST_POSITIVE_VALU
 
 const HEART_RATE_UPPER_LIMIT = "Heart Rate Upper Limit";
 const HEART_RATE_UPPER_LIMIT_TAG = "heart_rate_upper_limit";
-const HEART_RATE_UPPER_LIMIT_DEFAULT = "0";
 const HEART_RATE_UPPER_LIMIT_DEFAULT_INT = 0;
+const HEART_RATE_UPPER_LIMIT_DEFAULT = "$HEART_RATE_UPPER_LIMIT_DEFAULT_INT";
 const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is the heart rate upper bound where the methods" +
     "bellow would be applied. 0 means no upper limiting is performed.";
 
@@ -517,6 +517,43 @@ const HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION =
 const HEART_RATE_LIMITING_NO_LIMIT = "no_limit";
 const HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION = "Don't apply any limiting.";
 const HEART_RATE_LIMITING_METHOD_DEFAULT = HEART_RATE_LIMITING_NO_LIMIT;
+
+const TARGET_HEART_RATE_MODE = "Target Heart Rate Mode";
+const TARGET_HEART_RATE_MODE_TAG = "target_heart_rate_mode";
+const TARGET_HEART_RATE_MODE_NONE = "none";
+const TARGET_HEART_RATE_MODE_NONE_DESCRIPTION =
+    "Target heart rate alert is turned off.";
+const TARGET_HEART_RATE_MODE_BPM = "bpm";
+const TARGET_HEART_RATE_MODE_BPM_DESCRIPTION =
+    "Bounds are specified by explicit beat per minute numbers.";
+const TARGET_HEART_RATE_MODE_ZONES = "zones";
+const TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION =
+    "Bounds are specified by lower and upper HR zone numbers.";
+const TARGET_HEART_RATE_MODE_DEFAULT = TARGET_HEART_RATE_MODE_NONE;
+
+const TARGET_HEART_RATE_LOWER_BPM = "Target Heart Rate Lower BPM";
+const TARGET_HEART_RATE_LOWER_BPM_TAG = "target_heart_rate_bpm_lower";
+const TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT = 120;
+const TARGET_HEART_RATE_LOWER_BPM_DEFAULT = "$TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT";
+const TARGET_HEART_RATE_LOWER_BPM_DESCRIPTION = "Lower bpm of the target heart rate.";
+
+const TARGET_HEART_RATE_UPPER_BPM = "Target Heart Rate Upper BPM";
+const TARGET_HEART_RATE_UPPER_BPM_TAG = "target_heart_rate_bpm_upper";
+const TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT = 140;
+const TARGET_HEART_RATE_UPPER_BPM_DEFAULT = "$TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT";
+const TARGET_HEART_RATE_UPPER_BPM_DESCRIPTION = "Upper bpm of the target heart rate.";
+
+const TARGET_HEART_RATE_LOWER_ZONE = "Target Heart Rate Lower Zone";
+const TARGET_HEART_RATE_LOWER_ZONE_TAG = "target_heart_rate_zone_lower";
+const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT = 3;
+const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT = "$TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT";
+const TARGET_HEART_RATE_LOWER_ZONE_DESCRIPTION = "Lower zone of the target heart rate.";
+
+const TARGET_HEART_RATE_UPPER_ZONE = "Target Heart Rate Upper Zone";
+const TARGET_HEART_RATE_UPPER_ZONE_TAG = "target_heart_rate_zone_upper";
+const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT = 3;
+const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT = "$TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT";
+const TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION = "Upper zone of the target heart rate.";
 
 const EXPERT_PREFERENCES = "Expert Preferences";
 
