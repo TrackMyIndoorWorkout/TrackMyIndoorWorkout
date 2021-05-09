@@ -1,4 +1,5 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +8,7 @@ import '../persistence/models/power_tune.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../utils/constants.dart';
+import 'parts/power_factor_tune.dart';
 
 class PowerTunesScreen extends StatefulWidget {
   PowerTunesScreen({key}) : super(key: key);
@@ -29,6 +31,52 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
     super.initState();
     _editCount = 0;
     _database = Get.find<AppDatabase>();
+  }
+
+  Widget _actionButtonRow(PowerTune powerTune, double size) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: Icon(Icons.edit, color: Colors.black, size: size),
+          onPressed: () async {
+            final result = await Get.bottomSheet(
+              PowerFactorTuneBottomSheet(deviceId: powerTune.mac, powerFactor: powerTune.powerFactor),
+              enableDrag: false,
+            );
+            if (result != null) {
+              setState(() {
+                _editCount++;
+              });
+            }
+          },
+        ),
+        Spacer(),
+        IconButton(
+          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          onPressed: () async {
+            Get.defaultDialog(
+              title: 'Warning!!!',
+              middleText: 'Are you sure to delete this Tune?',
+              confirm: TextButton(
+                child: Text("Yes"),
+                onPressed: () async {
+                  await _database.powerTuneDao.deletePowerTune(powerTune);
+                  setState(() {
+                    _editCount++;
+                  });
+                  Get.close(1);
+                },
+              ),
+              cancel: TextButton(
+                child: Text("No"),
+                onPressed: () => Get.close(1),
+              ),
+            );
+          },
+        ),
+      ],
+    );
   }
 
   @override
@@ -79,52 +127,61 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
           final powerPercent = (powerTune.powerFactor * 100).round();
           return Card(
             elevation: 6,
-            child: Column(
+            child: ExpandablePanel(
               key: Key("${powerTune.id}"),
-              children: [
-                TextOneLine(
-                  powerTune.mac,
-                  style: _textStyle,
-                  textAlign: TextAlign.left,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                TextOneLine(
-                  "$powerPercent %",
-                  style: _textStyle.apply(fontSizeFactor: 2.0),
-                  textAlign: TextAlign.left,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+              header: Column(
+                children: [
+                  TextOneLine(
+                    powerTune.mac,
+                    style: _textStyle,
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  TextOneLine(
+                    "$powerPercent %",
+                    style: _textStyle.apply(fontSizeFactor: 2.0),
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              expanded: ListTile(
+                title: Column(
                   children: [
-                    Icon(
-                      Icons.calendar_today,
-                      color: Colors.indigo,
-                      size: _sizeDefault,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.calendar_today,
+                          color: Colors.indigo,
+                          size: _sizeDefault,
+                        ),
+                        Text(
+                          dateString,
+                          style: _textStyle,
+                        ),
+                      ],
                     ),
-                    Text(
-                      dateString,
-                      style: _textStyle,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.watch,
+                          color: Colors.indigo,
+                          size: _sizeDefault,
+                        ),
+                        Text(
+                          timeString,
+                          style: _textStyle,
+                        ),
+                      ],
                     ),
+                    _actionButtonRow(powerTune, _sizeDefault),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.watch,
-                      color: Colors.indigo,
-                      size: _sizeDefault,
-                    ),
-                    Text(
-                      timeString,
-                      style: _textStyle,
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           );
         },

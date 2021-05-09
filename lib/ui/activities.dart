@@ -22,7 +22,7 @@ import '../ui/calorie_tunes.dart';
 import '../ui/device_usages.dart';
 import '../ui/parts/calorie_override.dart';
 import '../ui/parts/data_format_picker.dart';
-import '../ui/parts/power_tune.dart';
+import '../ui/parts/power_factor_tune.dart';
 import '../ui/power_tunes.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -130,7 +130,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               return;
             }
             await Get.bottomSheet(
-              PowerTuneBottomSheet(deviceId: activity.deviceId, powerFactor: activity.powerFactor),
+              PowerFactorTuneBottomSheet(deviceId: activity.deviceId, powerFactor: activity.powerFactor),
               enableDrag: false,
             );
           },

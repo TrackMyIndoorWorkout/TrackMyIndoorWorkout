@@ -5,22 +5,22 @@ import '../../persistence/database.dart';
 import '../../persistence/models/power_tune.dart';
 import '../../persistence/preferences.dart';
 
-class PowerTuneBottomSheet extends StatefulWidget {
+class PowerFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
   final double powerFactor;
 
-  PowerTuneBottomSheet({Key key, @required this.deviceId, @required this.powerFactor})
+  PowerFactorTuneBottomSheet({Key key, @required this.deviceId, @required this.powerFactor})
       : assert(deviceId != null),
         assert(powerFactor != null),
         super(key: key);
 
   @override
-  PowerTuneBottomSheetState createState() =>
-      PowerTuneBottomSheetState(deviceId: deviceId, oldPowerFactor: powerFactor);
+  PowerFactorTuneBottomSheetState createState() =>
+      PowerFactorTuneBottomSheetState(deviceId: deviceId, oldPowerFactor: powerFactor);
 }
 
-class PowerTuneBottomSheetState extends State<PowerTuneBottomSheet> {
-  PowerTuneBottomSheetState({@required this.deviceId, @required this.oldPowerFactor})
+class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> {
+  PowerFactorTuneBottomSheetState({@required this.deviceId, @required this.oldPowerFactor})
       : assert(deviceId != null),
         assert(oldPowerFactor != null);
 
@@ -39,7 +39,7 @@ class PowerTuneBottomSheetState extends State<PowerTuneBottomSheet> {
     _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
     _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
 
-    _powerFactorPercent = oldPowerFactor * 100;
+    _powerFactorPercent = oldPowerFactor * 100.0;
   }
 
   @override
@@ -66,7 +66,7 @@ class PowerTuneBottomSheetState extends State<PowerTuneBottomSheet> {
         child: Icon(Icons.check),
         onPressed: () async {
           final database = Get.find<AppDatabase>();
-          final powerFactor = _powerFactorPercent / 100;
+          final powerFactor = _powerFactorPercent / 100.0;
           if (await database?.hasPowerTune(deviceId) ?? false) {
             var powerTune = await database?.powerTuneDao?.findPowerTuneByMac(deviceId)?.first;
             powerTune.powerFactor = powerFactor;
@@ -75,7 +75,7 @@ class PowerTuneBottomSheetState extends State<PowerTuneBottomSheet> {
             final powerTune = PowerTune(mac: deviceId, powerFactor: powerFactor);
             await database?.powerTuneDao?.insertPowerTune(powerTune);
           }
-          Get.close(1);
+          Get.back(result: powerFactor);
         },
       ),
     );
