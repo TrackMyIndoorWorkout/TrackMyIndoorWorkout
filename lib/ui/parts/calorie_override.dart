@@ -52,7 +52,7 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
           Text("Expected Calories", style: _largerTextStyle),
           SpinBox(
             min: 1,
-            max: 800,
+            max: 100000,
             value: _newCalorie,
             onChanged: (value) => _newCalorie = value,
             textStyle: _largerTextStyle,

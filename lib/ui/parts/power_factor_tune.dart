@@ -52,7 +52,7 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
           Text("Power Factor %", style: _largerTextStyle),
           SpinBox(
             min: 1,
-            max: 800,
+            max: 1000,
             value: _powerFactorPercent,
             onChanged: (value) => _powerFactorPercent = value,
             textStyle: _largerTextStyle,

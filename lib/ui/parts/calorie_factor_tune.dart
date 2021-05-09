@@ -52,7 +52,7 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
           Text("Calorie Factor %", style: _largerTextStyle),
           SpinBox(
             min: 1,
-            max: 800,
+            max: 1000,
             value: _calorieFactorPercent,
             onChanged: (value) => _calorieFactorPercent = value,
             textStyle: _largerTextStyle,
