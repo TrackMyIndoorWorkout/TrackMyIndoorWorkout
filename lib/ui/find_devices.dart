@@ -58,9 +58,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
   }
 
   Future<void> _openDatabase() async {
-    final database = await $FloorAppDatabase
-        .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2, migration2to3, migration3to4, migration4to5]).build();
+    final database = await $FloorAppDatabase.databaseBuilder('app_database.db').addMigrations([
+      migration1to2,
+      migration2to3,
+      migration3to4,
+      migration4to5,
+      migration5to6,
+    ]).build();
     Get.put<AppDatabase>(database);
   }
 
