@@ -20,7 +20,7 @@ import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
 import '../ui/calorie_tunes.dart';
 import '../ui/device_usages.dart';
-import '../ui/parts/calorie_tune.dart';
+import '../ui/parts/calorie_override.dart';
 import '../ui/parts/data_format_picker.dart';
 import '../ui/parts/power_tune.dart';
 import '../ui/power_tunes.dart';
@@ -143,7 +143,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               return;
             }
             await Get.bottomSheet(
-              CalorieTuneBottomSheet(deviceId: activity.deviceId, calories: activity.calories),
+              CalorieOverrideBottomSheet(deviceId: activity.deviceId, calories: activity.calories),
               enableDrag: false,
             );
           },

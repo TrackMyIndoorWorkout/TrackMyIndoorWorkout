@@ -5,28 +5,28 @@ import '../../persistence/database.dart';
 import '../../persistence/models/calorie_tune.dart';
 import '../../persistence/preferences.dart';
 
-class CalorieTuneBottomSheet extends StatefulWidget {
+class CalorieFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
-  final int calories;
+  final double calorieFactor;
 
-  CalorieTuneBottomSheet({Key key, @required this.deviceId, @required this.calories})
+  CalorieFactorTuneBottomSheet({Key key, @required this.deviceId, @required this.calorieFactor})
       : assert(deviceId != null),
-        assert(calories != null),
+        assert(calorieFactor != null),
         super(key: key);
 
   @override
-  CalorieTuneBottomSheetState createState() =>
-      CalorieTuneBottomSheetState(deviceId: deviceId, oldCalories: calories.toDouble());
+  CalorieFactorTuneBottomSheetState createState() =>
+      CalorieFactorTuneBottomSheetState(deviceId: deviceId, oldCalorieFactor: calorieFactor);
 }
 
-class CalorieTuneBottomSheetState extends State<CalorieTuneBottomSheet> {
-  CalorieTuneBottomSheetState({@required this.deviceId, @required this.oldCalories})
+class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomSheet> {
+  CalorieFactorTuneBottomSheetState({@required this.deviceId, @required this.oldCalorieFactor})
       : assert(deviceId != null),
-        assert(oldCalories != null);
+        assert(oldCalorieFactor != null);
 
   final String deviceId;
-  final double oldCalories;
-  double _newCalorie;
+  final double oldCalorieFactor;
+  double _calorieFactorPercent;
   double _sizeDefault;
   TextStyle _selectedTextStyle;
   TextStyle _largerTextStyle;
@@ -39,7 +39,7 @@ class CalorieTuneBottomSheetState extends State<CalorieTuneBottomSheet> {
     _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
     _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
 
-    _newCalorie = oldCalories;
+    _calorieFactorPercent = oldCalorieFactor * 100.0;
   }
 
   @override
@@ -49,12 +49,12 @@ class CalorieTuneBottomSheetState extends State<CalorieTuneBottomSheet> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text("Desired Calories", style: _largerTextStyle),
+          Text("Calorie Factor %", style: _largerTextStyle),
           SpinBox(
             min: 1,
             max: 800,
-            value: _newCalorie,
-            onChanged: (value) => _newCalorie = value,
+            value: _calorieFactorPercent,
+            onChanged: (value) => _calorieFactorPercent = value,
             textStyle: _largerTextStyle,
           ),
         ],
@@ -66,7 +66,7 @@ class CalorieTuneBottomSheetState extends State<CalorieTuneBottomSheet> {
         child: Icon(Icons.check),
         onPressed: () async {
           final database = Get.find<AppDatabase>();
-          final calorieFactor = _newCalorie / oldCalories;
+          final calorieFactor = _calorieFactorPercent / 100.0;
           if (await database?.hasCalorieTune(deviceId) ?? false) {
             var calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
             calorieTune.calorieFactor = calorieFactor;
@@ -75,7 +75,7 @@ class CalorieTuneBottomSheetState extends State<CalorieTuneBottomSheet> {
             final calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor);
             await database?.calorieTuneDao?.insertCalorieTune(calorieTune);
           }
-          Get.close(1);
+          Get.back(result: calorieFactor);
         },
       ),
     );
