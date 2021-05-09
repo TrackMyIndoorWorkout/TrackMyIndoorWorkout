@@ -65,8 +65,8 @@ final migration5to6 = Migration(5, 6, (database) async {
       "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `power_factor` REAL, " +
       "`time` INTEGER)");
 
-  await database.execute("ALTER TABLE $ACTIVITIES_TABLE_NAME " +
-      "ADD COLUMN power_factor FLOAT, ADD COLUMN calorie_factor FLOAT");
+  await database.execute("ALTER TABLE $ACTIVITIES_TABLE_NAME ADD COLUMN power_factor FLOAT");
+  await database.execute("ALTER TABLE $ACTIVITIES_TABLE_NAME ADD COLUMN calorie_factor FLOAT");
 
   await database.execute("UPDATE $ACTIVITIES_TABLE_NAME " +
       "SET device_id='$MPOWER_IMPORT_DEVICE_ID' WHERE device_id=''");
