@@ -341,8 +341,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             child: Icon(Icons.file_upload),
             onPressed: () async {
               await Get.to(ImportForm()).whenComplete(() => setState(() {
-                _editCount++;
-              }));
+                    _editCount++;
+                  }));
             },
           ),
           FloatingActionButton(
@@ -354,7 +354,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               await Get.to(DeviceUsagesScreen());
             },
           ),
-
           FloatingActionButton(
             heroTag: null,
             foregroundColor: Colors.white,
@@ -364,7 +363,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               await Get.to(PowerTunesScreen());
             },
           ),
-
           FloatingActionButton(
             heroTag: null,
             foregroundColor: Colors.white,
@@ -374,7 +372,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               await Get.to(CalorieTunesScreen());
             },
           ),
-
           FloatingActionButton(
             heroTag: null,
             foregroundColor: Colors.white,
