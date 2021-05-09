@@ -22,7 +22,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
   int _editCount;
   double _mediaWidth;
   double _sizeDefault;
-  TextStyle _headerStyle;
+  TextStyle _textStyle;
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
       _sizeDefault = _mediaWidth / 12;
-      _headerStyle = TextStyle(
+      _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,
       );
@@ -78,54 +78,52 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
           final timeString = DateFormat.Hms().format(timeStamp);
           return Card(
             elevation: 6,
-            child: ListTile(
+            child: Column(
               key: Key("${powerTune.id}"),
-              title: TextOneLine(
-                powerTune.mac,
-                style: _headerStyle,
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: TextOneLine(
-                powerTune.powerFactor.toPrecision(3).toString(),
-                style: _headerStyle,
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-              ),
-              trailing: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        color: Colors.indigo,
-                        size: _sizeDefault,
-                      ),
-                      Text(
-                        dateString,
-                        style: _headerStyle,
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.watch,
-                        color: Colors.indigo,
-                        size: _sizeDefault,
-                      ),
-                      Text(
-                        timeString,
-                        style: _headerStyle,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              children: [
+                TextOneLine(
+                  powerTune.mac,
+                  style: _textStyle,
+                  textAlign: TextAlign.left,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                TextOneLine(
+                  powerTune.powerFactor.toPrecision(3).toString(),
+                  style: _textStyle.apply(fontSizeFactor: 2.0),
+                  textAlign: TextAlign.left,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      color: Colors.indigo,
+                      size: _sizeDefault,
+                    ),
+                    Text(
+                      dateString,
+                      style: _textStyle,
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.watch,
+                      color: Colors.indigo,
+                      size: _sizeDefault,
+                    ),
+                    Text(
+                      timeString,
+                      style: _textStyle,
+                    ),
+                  ],
+                ),
+              ],
             ),
           );
         },
