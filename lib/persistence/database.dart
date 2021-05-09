@@ -35,12 +35,20 @@ abstract class AppDatabase extends FloorDatabase {
   }
 
   Future<double> powerFactor(String deviceId) async {
+    if (await rowCount(POWER_TUNE_TABLE_NAME, deviceId) <= 0) {
+      return 1.0;
+    }
+
     final powerTune = await powerTuneDao?.findPowerTuneByMac(deviceId)?.first;
 
     return powerTune?.powerFactor ?? 1.0;
   }
 
   Future<double> calorieFactor(String deviceId, DeviceDescriptor descriptor) async {
+    if (await rowCount(CALORIE_TUNE_TABLE_NAME, deviceId) <= 0) {
+      return 1.0;
+    }
+
     final calorieTune = await calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
 
     return calorieTune?.calorieFactor ?? descriptor.calorieFactorDefault;
