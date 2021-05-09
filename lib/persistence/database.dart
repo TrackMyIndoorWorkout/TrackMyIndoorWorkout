@@ -89,8 +89,9 @@ final migration5to6 = Migration(5, 6, (database) async {
   await database.execute("UPDATE $ACTIVITIES_TABLE_NAME " +
       "SET device_id='$MPOWER_IMPORT_DEVICE_ID' WHERE device_id=''");
   await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET power_factor=1.0");
+  await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=1.0");
   await database
-      .execute("UPDATE $ACTIVITIES_TABLE_NAME " + "SET calorie_factor=1.4 WHERE four_cc='SIC4'");
+      .execute("UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=1.4 WHERE four_cc='SIC4'");
   await database
-      .execute("UPDATE $ACTIVITIES_TABLE_NAME " + "SET calorie_factor=3.9 WHERE four_cc='SAP+'");
+      .execute("UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=3.9 WHERE four_cc='SAP+'");
 });
