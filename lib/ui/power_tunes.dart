@@ -76,6 +76,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
           final timeStamp = DateTime.fromMillisecondsSinceEpoch(powerTune.time);
           final dateString = DateFormat.yMd().format(timeStamp);
           final timeString = DateFormat.Hms().format(timeStamp);
+          final powerPercent = (powerTune.powerFactor * 100).round();
           return Card(
             elevation: 6,
             child: Column(
@@ -88,7 +89,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 TextOneLine(
-                  powerTune.powerFactor.toPrecision(3).toString(),
+                  "$powerPercent %",
                   style: _textStyle.apply(fontSizeFactor: 2.0),
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.ellipsis,
