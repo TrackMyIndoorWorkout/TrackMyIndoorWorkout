@@ -530,7 +530,7 @@ const APP_DEBUG_MODE_DESCRIPTION =
 const DATA_CONNECTION_ADDRESSES = "Data Connection Addresses";
 const DATA_CONNECTION_ADDRESSES_TAG = "data_connection_addresses";
 const DATA_CONNECTION_ADDRESSES_DEFAULT =
-    "52.44.84.95,54.160.234.139,52.87.57.116,3.93.102.29," + "54.157.131.119,3.226.9.14";
+    "52.44.84.95,54.160.234.139,52.87.57.116,3.93.102.29,54.157.131.119,3.226.9.14";
 
 const DATA_CONNECTION_ADDRESSES_DESCRIPTION =
     "Following is a comma separated list of IP addresses with optional comma separated port " +
