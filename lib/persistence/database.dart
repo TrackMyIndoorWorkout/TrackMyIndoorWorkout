@@ -25,8 +25,8 @@ abstract class AppDatabase extends FloorDatabase {
   PowerTuneDao get powerTuneDao;
 
   Future<int> rowCount(String tableName, String deviceId) async {
-    final result = await database
-        .rawQuery("SELECT COUNT(id) FROM $tableName WHERE mac = ?", [deviceId]);
+    final result =
+        await database.rawQuery("SELECT COUNT(id) FROM $tableName WHERE mac = ?", [deviceId]);
     return result[0]['COUNT(id)'];
   }
 
