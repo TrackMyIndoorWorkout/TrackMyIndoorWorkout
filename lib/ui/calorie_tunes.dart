@@ -124,6 +124,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
           final timeStamp = DateTime.fromMillisecondsSinceEpoch(calorieTune.time);
           final dateString = DateFormat.yMd().format(timeStamp);
           final timeString = DateFormat.Hms().format(timeStamp);
+          final caloriePercent = (calorieTune.calorieFactor * 100).round();
           return Card(
             elevation: 6,
             child: ExpandablePanel(
@@ -137,7 +138,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextOneLine(
-                    calorieTune.calorieFactor.toPrecision(3).toString(),
+                    "$caloriePercent %",
                     style: _textStyle.apply(fontSizeFactor: 2.0),
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
