@@ -46,7 +46,7 @@ abstract class AppDatabase extends FloorDatabase {
 
   Future<double> calorieFactor(String deviceId, DeviceDescriptor descriptor) async {
     if (await rowCount(CALORIE_TUNE_TABLE_NAME, deviceId) <= 0) {
-      return 1.0;
+      return descriptor.calorieFactorDefault;
     }
 
     final calorieTune = await calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
