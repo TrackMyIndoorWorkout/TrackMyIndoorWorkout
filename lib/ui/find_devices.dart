@@ -135,9 +135,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     AppDatabase database;
     if (descriptor.isMultiSport) {
       database = Get.find<AppDatabase>();
-      final result = await database.database
-          .rawQuery("SELECT COUNT(id) FROM $DEVICE_USAGE_TABLE_NAME WHERE mac = ?", [device.id.id]);
-      if (result[0]['COUNT(id)'] > 0) {
+      if (await database.hasDeviceUsage(device.id.id)) {
         deviceUsage = await database?.deviceUsageDao?.findDeviceUsageByMac(device.id.id)?.first;
       }
       final multiSportSupport = PrefService.getBool(MULTI_SPORT_DEVICE_SUPPORT_TAG);

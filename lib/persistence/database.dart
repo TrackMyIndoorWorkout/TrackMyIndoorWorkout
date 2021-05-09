@@ -24,6 +24,16 @@ abstract class AppDatabase extends FloorDatabase {
   CalorieTuneDao get calorieTuneDao;
   PowerTuneDao get powerTuneDao;
 
+  Future<int> rowCount(String tableName, String deviceId) async {
+    final result = await database
+        .rawQuery("SELECT COUNT(id) FROM $tableName WHERE mac = ?", [deviceId]);
+    return result[0]['COUNT(id)'];
+  }
+
+  Future<bool> hasDeviceUsage(String deviceId) async {
+    return await rowCount(DEVICE_USAGE_TABLE_NAME, deviceId) > 0;
+  }
+
   Future<double> powerFactor(String deviceId) async {
     final powerTune = await powerTuneDao?.findPowerTuneByMac(deviceId)?.first;
 
