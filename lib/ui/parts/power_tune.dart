@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
-import '../../persistence/models/activity.dart';
 import '../../persistence/models/power_tune.dart';
 import '../../persistence/preferences.dart';
 
@@ -67,14 +66,14 @@ class PowerTuneBottomSheetState extends State<PowerTuneBottomSheet> {
         child: Icon(Icons.check),
         onPressed: () async {
           final database = Get.find<AppDatabase>();
-          var powerTune = await database?.powerTuneDao?.findPowerTuneByMac(deviceId)?.first;
           final powerFactor = _powerFactorPercent / 100;
-          if (powerTune == null) {
-            powerTune = PowerTune(mac: deviceId, powerFactor: powerFactor);
-            await database?.powerTuneDao?.insertPowerTune(powerTune);
-          } else {
+          if (await database?.hasPowerTune(deviceId) ?? false) {
+            var powerTune = await database?.powerTuneDao?.findPowerTuneByMac(deviceId)?.first;
             powerTune.powerFactor = powerFactor;
             await database?.powerTuneDao?.updatePowerTune(powerTune);
+          } else {
+            final powerTune = PowerTune(mac: deviceId, powerFactor: powerFactor);
+            await database?.powerTuneDao?.insertPowerTune(powerTune);
           }
           Get.close(1);
         },

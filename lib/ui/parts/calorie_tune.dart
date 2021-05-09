@@ -66,14 +66,14 @@ class CalorieTuneBottomSheetState extends State<CalorieTuneBottomSheet> {
         child: Icon(Icons.check),
         onPressed: () async {
           final database = Get.find<AppDatabase>();
-          var calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
           final calorieFactor = _newCalorie / oldCalories;
-          if (calorieTune == null) {
-            calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor);
-            await database?.calorieTuneDao?.insertCalorieTune(calorieTune);
-          } else {
+          if (await database?.hasCalorieTune(deviceId) ?? false) {
+            var calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
             calorieTune.calorieFactor = calorieFactor;
             await database?.calorieTuneDao?.updateCalorieTune(calorieTune);
+          } else {
+            final calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor);
+            await database?.calorieTuneDao?.insertCalorieTune(calorieTune);
           }
           Get.close(1);
         },

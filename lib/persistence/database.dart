@@ -34,8 +34,12 @@ abstract class AppDatabase extends FloorDatabase {
     return await rowCount(DEVICE_USAGE_TABLE_NAME, deviceId) > 0;
   }
 
+  Future<bool> hasPowerTune(String deviceId) async {
+    return await rowCount(POWER_TUNE_TABLE_NAME, deviceId) > 0;
+  }
+
   Future<double> powerFactor(String deviceId) async {
-    if (await rowCount(POWER_TUNE_TABLE_NAME, deviceId) <= 0) {
+    if (!await hasPowerTune(deviceId)) {
       return 1.0;
     }
 
@@ -44,8 +48,12 @@ abstract class AppDatabase extends FloorDatabase {
     return powerTune?.powerFactor ?? 1.0;
   }
 
+  Future<bool> hasCalorieTune(String deviceId) async {
+    return await rowCount(CALORIE_TUNE_TABLE_NAME, deviceId) > 0;
+  }
+
   Future<double> calorieFactor(String deviceId, DeviceDescriptor descriptor) async {
-    if (await rowCount(CALORIE_TUNE_TABLE_NAME, deviceId) <= 0) {
+    if (!await hasCalorieTune(deviceId)) {
       return descriptor.calorieFactorDefault;
     }
 
