@@ -41,7 +41,10 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
           icon: Icon(Icons.edit, color: Colors.black, size: size),
           onPressed: () async {
             final result = await Get.bottomSheet(
-              PowerFactorTuneBottomSheet(deviceId: powerTune.mac, powerFactor: powerTune.powerFactor),
+              PowerFactorTuneBottomSheet(
+                deviceId: powerTune.mac,
+                powerFactor: powerTune.powerFactor,
+              ),
               enableDrag: false,
             );
             if (result != null) {
