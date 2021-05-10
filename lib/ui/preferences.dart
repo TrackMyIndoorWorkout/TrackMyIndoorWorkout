@@ -223,8 +223,11 @@ class PreferencesScreen extends StatelessWidget {
         TARGET_HEART_RATE_LOWER_BPM_TAG,
         defaultVal: TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
         validator: (str) {
-          final upperLimitString = PrefService.getString(TARGET_HEART_RATE_UPPER_BPM_TAG) ?? TARGET_HEART_RATE_UPPER_BPM_DEFAULT;
-          final upperLimit = int.tryParse(upperLimitString);
+          final upperLimit = getStringIntegerPreference(
+            TARGET_HEART_RATE_UPPER_BPM_TAG,
+            TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
+            TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT,
+          );
           if (!isInteger(str, 0, upperLimit)) {
             return "Invalid lower target HR (should be 0 <= size <= $upperLimit)";
           }
@@ -236,8 +239,11 @@ class PreferencesScreen extends StatelessWidget {
         TARGET_HEART_RATE_UPPER_BPM_TAG,
         defaultVal: TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
         validator: (str) {
-          final lowerLimitString = PrefService.getString(TARGET_HEART_RATE_LOWER_BPM_TAG) ?? TARGET_HEART_RATE_LOWER_BPM_DEFAULT;
-          final lowerLimit = int.tryParse(lowerLimitString);
+          final lowerLimit = getStringIntegerPreference(
+            TARGET_HEART_RATE_LOWER_BPM_TAG,
+            TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
+            TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT,
+          );
           if (!isInteger(str, lowerLimit, 300)) {
             return "Invalid heart rate limit (should be $lowerLimit <= size <= 300)";
           }
@@ -249,8 +255,11 @@ class PreferencesScreen extends StatelessWidget {
         TARGET_HEART_RATE_LOWER_ZONE_TAG,
         defaultVal: TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
         validator: (str) {
-          final upperLimitString = PrefService.getString(TARGET_HEART_RATE_UPPER_ZONE_TAG) ?? TARGET_HEART_RATE_UPPER_ZONE_DEFAULT;
-          final upperLimit = int.tryParse(upperLimitString);
+          final upperLimit = getStringIntegerPreference(
+            TARGET_HEART_RATE_UPPER_ZONE_TAG,
+            TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
+            TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT,
+          );
           if (!isInteger(str, 0, upperLimit)) {
             return "Invalid lower zone (should be 0 <= size <= $upperLimit)";
           }
@@ -262,8 +271,11 @@ class PreferencesScreen extends StatelessWidget {
         TARGET_HEART_RATE_UPPER_ZONE_TAG,
         defaultVal: TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
         validator: (str) {
-          final lowerLimitString = PrefService.getString(TARGET_HEART_RATE_LOWER_ZONE_TAG) ?? TARGET_HEART_RATE_LOWER_ZONE_DEFAULT;
-          final lowerLimit = int.tryParse(lowerLimitString);
+          final lowerLimit = getStringIntegerPreference(
+            TARGET_HEART_RATE_LOWER_ZONE_TAG,
+            TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
+            TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT,
+          );
           if (!isInteger(str, lowerLimit, 7)) {
             return "Invalid upper zone (should be $lowerLimit <= size <= 300)";
           }

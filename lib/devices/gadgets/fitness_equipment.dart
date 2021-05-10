@@ -10,6 +10,7 @@ import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/preferences.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../bluetooth_device_ex.dart';
 import '../gatt_constants.dart';
@@ -70,9 +71,11 @@ class FitnessEquipment extends DeviceBase {
     );
     _heartRateGapWorkaround =
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
-    final heartRateUpperLimitString =
-        PrefService.getString(HEART_RATE_UPPER_LIMIT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
-    _heartRateUpperLimit = int.tryParse(heartRateUpperLimitString);
+    _heartRateUpperLimit = getStringIntegerPreference(
+      HEART_RATE_UPPER_LIMIT_TAG,
+      HEART_RATE_UPPER_LIMIT_DEFAULT,
+      HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
+    );
     _heartRateLimitingMethod =
         PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
     equipmentDiscovery = false;

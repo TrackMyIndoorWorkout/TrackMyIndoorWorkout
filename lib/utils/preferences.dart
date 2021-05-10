@@ -1,3 +1,4 @@
+import 'package:preferences/preference_service.dart';
 import 'package:tuple/tuple.dart';
 import 'constants.dart';
 
@@ -60,4 +61,9 @@ List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
     addresses.removeWhere((value) => value == null);
   }
   return addresses;
+}
+
+int getStringIntegerPreference(String tag, String defaultString, int defaultInt) {
+  final valueString = PrefService.getString(tag) ?? defaultString;
+  return int.tryParse(valueString) ?? defaultInt;
 }

@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
-
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
 import '../ui/import_form.dart';
 import '../utils/constants.dart';
+import '../utils/preferences.dart';
 import 'models/activity.dart';
 import 'models/record.dart';
 import 'database.dart';
@@ -239,9 +239,11 @@ class MPowerEchelon2Importer {
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     bool heartRateGapWorkaround =
         heartRateGapWorkaroundSetting == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
-    String heartRateUpperLimitString =
-        PrefService.getString(HEART_RATE_UPPER_LIMIT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
-    int heartRateUpperLimit = int.tryParse(heartRateUpperLimitString);
+    int heartRateUpperLimit = getStringIntegerPreference(
+      HEART_RATE_UPPER_LIMIT_TAG,
+      HEART_RATE_UPPER_LIMIT_DEFAULT,
+      HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
+    );
     String heartRateLimitingMethod =
         PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
 

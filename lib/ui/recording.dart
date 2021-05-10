@@ -29,6 +29,7 @@ import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
+import '../utils/preferences.dart';
 import 'models/advertisement_digest.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
@@ -310,9 +311,11 @@ class RecordingState extends State<RecordingScreen> {
       _fitnessEquipment.slowPace = slowPace;
     }
 
-    final connectionWatchdogTimeString =
-        PrefService.getString(EQUIPMENT_DISCONNECTION_WATCHDOG_TAG);
-    _connectionWatchdogTime = int.tryParse(connectionWatchdogTimeString);
+    _connectionWatchdogTime = getStringIntegerPreference(
+      EQUIPMENT_DISCONNECTION_WATCHDOG_TAG,
+      EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
+      EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT,
+    );
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor.defaultSport);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
