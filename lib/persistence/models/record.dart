@@ -86,15 +86,19 @@ class Record {
       if (pace.abs() < DISPLAY_EPS) {
         speed = 0.0;
       } else {
-        if (sport == ActivityType.Kayaking ||
+        if (sport == ActivityType.Run) {
+          // minutes / km pace
+          speed = 60.0 / pace;
+        } else if (sport == ActivityType.Kayaking ||
             sport == ActivityType.Canoeing ||
             sport == ActivityType.Rowing) {
+          // seconds / 500m pace
           speed = 30.0 / (pace / 60.0);
         } else if (sport == ActivityType.Swim) {
-          // 100m pace
+          // seconds / 100m pace
           speed = 6.0 / (pace / 60.0);
         } else {
-          // sport == ActivityType.Run
+          // minutes / km pace
           speed = 60.0 / pace;
         }
       }
