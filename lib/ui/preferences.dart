@@ -189,9 +189,86 @@ class PreferencesScreen extends StatelessWidget {
               HEART_RATE_LIMITING_METHOD_TAG,
             ),
           ],
-          title: 'Select HR limiting method',
+          title: 'Select HR Limiting Method',
           cancelText: 'Close',
         ),
+      ),
+      PreferenceTitle(TARGET_HEART_RATE_MODE_DESCRIPTION, style: descriptionStyle),
+      PreferenceDialogLink(
+        TARGET_HEART_RATE_MODE,
+        dialog: PreferenceDialog(
+          [
+            RadioPreference(
+              TARGET_HEART_RATE_MODE_NONE_DESCRIPTION,
+              TARGET_HEART_RATE_MODE_NONE,
+              TARGET_HEART_RATE_MODE_TAG,
+            ),
+            RadioPreference(
+              TARGET_HEART_RATE_MODE_BPM_DESCRIPTION,
+              TARGET_HEART_RATE_MODE_BPM,
+              TARGET_HEART_RATE_MODE_TAG,
+            ),
+            RadioPreference(
+              TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION,
+              TARGET_HEART_RATE_MODE_ZONES,
+              TARGET_HEART_RATE_MODE_TAG,
+            ),
+          ],
+          title: 'Select Target HR Method',
+          cancelText: 'Close',
+        ),
+      ),
+      TextFieldPreference(
+        TARGET_HEART_RATE_LOWER_BPM,
+        TARGET_HEART_RATE_LOWER_BPM_TAG,
+        defaultVal: TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
+        validator: (str) {
+          final upperLimitString = PrefService.getString(TARGET_HEART_RATE_UPPER_BPM_TAG) ?? TARGET_HEART_RATE_UPPER_BPM_DEFAULT;
+          final upperLimit = int.tryParse(upperLimitString);
+          if (!isInteger(str, 0, upperLimit)) {
+            return "Invalid lower target HR (should be 0 <= size <= $upperLimit)";
+          }
+          return null;
+        },
+      ),
+      TextFieldPreference(
+        TARGET_HEART_RATE_UPPER_BPM,
+        TARGET_HEART_RATE_UPPER_BPM_TAG,
+        defaultVal: TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
+        validator: (str) {
+          final lowerLimitString = PrefService.getString(TARGET_HEART_RATE_LOWER_BPM_TAG) ?? TARGET_HEART_RATE_LOWER_BPM_DEFAULT;
+          final lowerLimit = int.tryParse(lowerLimitString);
+          if (!isInteger(str, lowerLimit, 300)) {
+            return "Invalid heart rate limit (should be $lowerLimit <= size <= 300)";
+          }
+          return null;
+        },
+      ),
+      TextFieldPreference(
+        TARGET_HEART_RATE_LOWER_ZONE,
+        TARGET_HEART_RATE_LOWER_ZONE_TAG,
+        defaultVal: TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
+        validator: (str) {
+          final upperLimitString = PrefService.getString(TARGET_HEART_RATE_UPPER_ZONE_TAG) ?? TARGET_HEART_RATE_UPPER_ZONE_DEFAULT;
+          final upperLimit = int.tryParse(upperLimitString);
+          if (!isInteger(str, 0, upperLimit)) {
+            return "Invalid lower zone (should be 0 <= size <= $upperLimit)";
+          }
+          return null;
+        },
+      ),
+      TextFieldPreference(
+        TARGET_HEART_RATE_UPPER_ZONE,
+        TARGET_HEART_RATE_UPPER_ZONE_TAG,
+        defaultVal: TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
+        validator: (str) {
+          final lowerLimitString = PrefService.getString(TARGET_HEART_RATE_LOWER_ZONE_TAG) ?? TARGET_HEART_RATE_LOWER_ZONE_DEFAULT;
+          final lowerLimit = int.tryParse(lowerLimitString);
+          if (!isInteger(str, lowerLimit, 7)) {
+            return "Invalid upper zone (should be $lowerLimit <= size <= 300)";
+          }
+          return null;
+        },
       ),
     ];
 
