@@ -410,10 +410,10 @@ void main() {
           expect(accu.maxSpeed, maxSpeed);
           expect(accu.heartRateSum, hrSum);
           expect(accu.heartRateCount, hrCount);
-          expect(accu.maxHeartRate, maxHr);
+          expect(accu.maxHeartRate, hrCount > 0 ? maxHr : MAX_INIT);
           expect(accu.cadenceSum, cadenceSum);
           expect(accu.cadenceCount, cadenceCount);
-          expect(accu.maxCadence, maxCadence);
+          expect(accu.maxCadence, cadenceCount > 0 ? maxCadence : MAX_INIT);
           expect(accu.avgPower, powerSum / count);
           expect(accu.avgSpeed, speedSum / count);
           expect(accu.avgHeartRate, hrSum ~/ hrCount);

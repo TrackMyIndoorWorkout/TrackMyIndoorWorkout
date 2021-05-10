@@ -58,9 +58,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
   }
 
   Future<void> _openDatabase() async {
-    final database = await $FloorAppDatabase
-        .databaseBuilder('app_database.db')
-        .addMigrations([migration1to2, migration2to3, migration3to4, migration4to5]).build();
+    final database = await $FloorAppDatabase.databaseBuilder('app_database.db').addMigrations([
+      migration1to2,
+      migration2to3,
+      migration3to4,
+      migration4to5,
+      migration5to6,
+    ]).build();
     Get.put<AppDatabase>(database);
   }
 
@@ -131,9 +135,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     AppDatabase database;
     if (descriptor.isMultiSport) {
       database = Get.find<AppDatabase>();
-      final result = await database.database
-          .rawQuery("SELECT COUNT(id) FROM $DEVICE_USAGE_TABLE_NAME WHERE mac = ?", [device.id.id]);
-      if (result[0]['COUNT(id)'] > 0) {
+      if (await database.hasDeviceUsage(device.id.id)) {
         deviceUsage = await database?.deviceUsageDao?.findDeviceUsageByMac(device.id.id)?.first;
       }
       final multiSportSupport = PrefService.getBool(MULTI_SPORT_DEVICE_SUPPORT_TAG);

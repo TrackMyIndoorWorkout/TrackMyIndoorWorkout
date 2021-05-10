@@ -145,6 +145,8 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> _startMeasurement() async {
     final now = DateTime.now();
+    final powerFactor = await _database.powerFactor(device.id.id) ?? 1.0;
+    final calorieFactor = await _database.calorieFactor(device.id.id, _descriptor) ?? 1.0;
     _activity = Activity(
       fourCC: _descriptor.fourCC,
       deviceName: device.name,
@@ -152,6 +154,8 @@ class RecordingState extends State<RecordingScreen> {
       start: now.millisecondsSinceEpoch,
       startDateTime: now,
       sport: _descriptor.defaultSport,
+      powerFactor: powerFactor,
+      calorieFactor: calorieFactor,
     );
     if (!_uxDebug) {
       final id = await _database?.activityDao?.insertActivity(_activity);
@@ -275,13 +279,13 @@ class RecordingState extends State<RecordingScreen> {
       color: Colors.indigo,
     );
     PrefService.setString(
-        LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport), device.id.id);
-    _descriptor.setPowerThrottle(
-      PrefService.getString(THROTTLE_POWER_TAG),
-      PrefService.getBool(THROTTLE_OTHER_TAG),
+      LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport),
+      device.id.id,
     );
+    _descriptor.refreshTuning(device.id.id);
     if (Get.isRegistered<FitnessEquipment>()) {
       _fitnessEquipment = Get.find<FitnessEquipment>();
+      _fitnessEquipment.descriptor = _descriptor;
     } else {
       _fitnessEquipment =
           Get.put<FitnessEquipment>(FitnessEquipment(descriptor: _descriptor, device: device));

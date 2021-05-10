@@ -91,23 +91,11 @@ class PreferencesScreen extends StatelessWidget {
         desc: SIMPLER_UI_DESCRIPTION,
       ),
       PreferenceTitle(TUNING_PREFERENCES),
-      PreferenceTitle(THROTTLE_POWER_DESCRIPTION, style: descriptionStyle),
-      TextFieldPreference(
-        THROTTLE_POWER,
-        THROTTLE_POWER_TAG,
-        defaultVal: THROTTLE_POWER_DEFAULT,
-        validator: (str) {
-          if (!isNumber(str, 0.0, 100.0)) {
-            return "Invalid throttle (should be 0.0 <= percent <= 100.0)";
-          }
-          return null;
-        },
-      ),
       SwitchPreference(
-        THROTTLE_OTHER,
-        THROTTLE_OTHER_TAG,
-        defaultVal: THROTTLE_OTHER_DEFAULT,
-        desc: THROTTLE_OTHER_DESCRIPTION,
+        EXTEND_TUNING,
+        EXTEND_TUNING_TAG,
+        defaultVal: EXTEND_TUNING_DEFAULT,
+        desc: EXTEND_TUNING_DESCRIPTION,
       ),
       PreferenceTitle(STROKE_RATE_SMOOTHING_DESCRIPTION, style: descriptionStyle),
       TextFieldPreference(

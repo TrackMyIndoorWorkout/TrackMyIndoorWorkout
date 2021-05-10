@@ -33,6 +33,12 @@ class Activity {
   final String fourCC;
   @required
   final String sport;
+  @ColumnInfo(name: 'power_factor')
+  @required
+  final double powerFactor;
+  @ColumnInfo(name: 'calorie_factor')
+  @required
+  final double calorieFactor;
 
   @ignore
   DateTime startDateTime;
@@ -53,12 +59,16 @@ class Activity {
     this.startDateTime,
     this.fourCC,
     this.sport,
+    this.powerFactor,
+    this.calorieFactor,
   })  : assert(deviceName != null),
         assert(deviceId != null),
         assert(fourCC != null),
-        assert(sport != null) {
+        assert(sport != null),
+        assert(powerFactor != null),
+        assert(calorieFactor != null) {
     if (distance == null) {
-      distance = 0;
+      distance = 0.0;
     }
   }
 

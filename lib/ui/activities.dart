@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
@@ -18,8 +20,12 @@ import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
+import '../ui/calorie_tunes.dart';
 import '../ui/device_usages.dart';
+import '../ui/parts/calorie_override.dart';
 import '../ui/parts/data_format_picker.dart';
+import '../ui/parts/power_factor_tune.dart';
+import '../ui/power_tunes.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import 'find_devices.dart';
@@ -113,9 +119,40 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport();
             final fileStream = await exporter.getExport(activity, records, false);
             final persistenceValues = exporter.getPersistenceValues(activity, false);
-            ShareFilesAndScreenshotWidgets().shareFile(persistenceValues['name'],
-                persistenceValues['fileName'], fileStream, exporter.mimeType(false),
-                text: 'Share a ride on ${activity.deviceName}');
+            ShareFilesAndScreenshotWidgets().shareFile(
+              persistenceValues['name'],
+              persistenceValues['fileName'],
+              Uint8List.fromList(fileStream),
+              exporter.mimeType(false),
+              text: 'Share a ride on ${activity.deviceName}',
+            );
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.bolt, color: Colors.black, size: size),
+          onPressed: () async {
+            if (activity.powerFactor == null || activity.powerFactor < EPS) {
+              Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
+              return;
+            }
+            await Get.bottomSheet(
+              PowerFactorTuneBottomSheet(
+                  deviceId: activity.deviceId, powerFactor: activity.powerFactor),
+              enableDrag: false,
+            );
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.whatshot, color: Colors.black, size: size),
+          onPressed: () async {
+            if (activity.calories == null || activity.calories == 0) {
+              Get.snackbar("Error", "Cannot tune calories of activity with 0 calories");
+              return;
+            }
+            await Get.bottomSheet(
+              CalorieOverrideBottomSheet(deviceId: activity.deviceId, calories: activity.calories),
+              enableDrag: false,
+            );
           },
         ),
         Spacer(),
@@ -308,6 +345,17 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             heroTag: null,
             foregroundColor: Colors.white,
             backgroundColor: Colors.indigo,
+            child: Icon(Icons.file_upload),
+            onPressed: () async {
+              await Get.to(ImportForm()).whenComplete(() => setState(() {
+                    _editCount++;
+                  }));
+            },
+          ),
+          FloatingActionButton(
+            heroTag: null,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.black,
             child: Icon(Icons.collections_bookmark),
             onPressed: () async {
               await Get.to(DeviceUsagesScreen());
@@ -316,12 +364,19 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           FloatingActionButton(
             heroTag: null,
             foregroundColor: Colors.white,
-            backgroundColor: Colors.indigo,
-            child: Icon(Icons.file_upload),
+            backgroundColor: Colors.black,
+            child: Icon(Icons.bolt),
             onPressed: () async {
-              await Get.to(ImportForm()).whenComplete(() => setState(() {
-                    _editCount++;
-                  }));
+              await Get.to(PowerTunesScreen());
+            },
+          ),
+          FloatingActionButton(
+            heroTag: null,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.black,
+            child: Icon(Icons.whatshot),
+            onPressed: () async {
+              await Get.to(CalorieTunesScreen());
             },
           ),
           FloatingActionButton(

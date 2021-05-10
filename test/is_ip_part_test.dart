@@ -60,7 +60,7 @@ void main() {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 512, rnd).forEach((number) {
       bool allowZero = rnd.nextBool();
-      final expected = number <= MAX_UINT8 && (allowZero || number > 0);
+      final expected = number < MAX_UINT8 && (allowZero || number > 0);
       test('$number, $allowZero -> $expected', () async {
         expect(isIpPart("$number", allowZero), expected);
       });
