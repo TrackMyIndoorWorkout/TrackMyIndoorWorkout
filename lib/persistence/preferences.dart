@@ -500,7 +500,7 @@ const HEART_RATE_UPPER_LIMIT = "Heart Rate Upper Limit";
 const HEART_RATE_UPPER_LIMIT_TAG = "heart_rate_upper_limit";
 const HEART_RATE_UPPER_LIMIT_DEFAULT_INT = 0;
 const HEART_RATE_UPPER_LIMIT_DEFAULT = "$HEART_RATE_UPPER_LIMIT_DEFAULT_INT";
-const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is the heart rate upper bound where the methods" +
+const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is the heart rate upper bound where the methods " +
     "bellow would be applied. 0 means no upper limiting is performed.";
 
 const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection";

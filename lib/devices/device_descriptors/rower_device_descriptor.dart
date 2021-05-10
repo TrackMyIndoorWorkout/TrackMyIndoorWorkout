@@ -165,7 +165,11 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   double getPace(List<int> data) {
-    return paceMetric?.getMeasurementValue(data);
+    var pace = paceMetric?.getMeasurementValue(data);
+    if (pace == null || !extendTuning) {
+      return pace;
+    }
+    return pace / powerFactor;
   }
 
   @override
