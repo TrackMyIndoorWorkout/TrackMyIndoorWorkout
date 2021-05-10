@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
@@ -117,9 +119,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport();
             final fileStream = await exporter.getExport(activity, records, false);
             final persistenceValues = exporter.getPersistenceValues(activity, false);
-            ShareFilesAndScreenshotWidgets().shareFile(persistenceValues['name'],
-                persistenceValues['fileName'], fileStream, exporter.mimeType(false),
-                text: 'Share a ride on ${activity.deviceName}');
+            ShareFilesAndScreenshotWidgets().shareFile(
+              persistenceValues['name'],
+              persistenceValues['fileName'],
+              Uint8List.fromList(fileStream),
+              exporter.mimeType(false),
+              text: 'Share a ride on ${activity.deviceName}',
+            );
           },
         ),
         IconButton(
@@ -130,7 +136,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               return;
             }
             await Get.bottomSheet(
-              PowerFactorTuneBottomSheet(deviceId: activity.deviceId, powerFactor: activity.powerFactor),
+              PowerFactorTuneBottomSheet(
+                  deviceId: activity.deviceId, powerFactor: activity.powerFactor),
               enableDrag: false,
             );
           },
