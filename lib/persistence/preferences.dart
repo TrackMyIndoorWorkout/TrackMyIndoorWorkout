@@ -520,43 +520,46 @@ const HEART_RATE_LIMITING_METHOD_DEFAULT = HEART_RATE_LIMITING_NO_LIMIT;
 
 const TARGET_HEART_RATE_MODE = "Target Heart Rate Mode";
 const TARGET_HEART_RATE_MODE_TAG = "target_heart_rate_mode";
-const TARGET_HEART_RATE_MODE_DESCRIPTION = "You can configure target heart rate BPM range or zone range " +
-    "the app will alert visually (and optionally audio as well) when you are outside of the range. " +
-    "The lower and upper zone can be the same if you want to target just one zone.";
+const TARGET_HEART_RATE_MODE_DESCRIPTION =
+    "You can configure target heart rate BPM range or zone range. " +
+        "The app will alert visually (and optionally audio as well) when you are outside of the range. " +
+        "The lower and upper zone can be the same if you want to target just one zone.";
 const TARGET_HEART_RATE_MODE_NONE = "none";
-const TARGET_HEART_RATE_MODE_NONE_DESCRIPTION =
-    "Target heart rate alert is turned off.";
+const TARGET_HEART_RATE_MODE_NONE_DESCRIPTION = "Target heart rate alert is turned off.";
 const TARGET_HEART_RATE_MODE_BPM = "bpm";
 const TARGET_HEART_RATE_MODE_BPM_DESCRIPTION =
     "Bounds are specified by explicit beat per minute numbers.";
 const TARGET_HEART_RATE_MODE_ZONES = "zones";
-const TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION =
-    "Bounds are specified by HR zone numbers.";
+const TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION = "Bounds are specified by HR zone numbers.";
 const TARGET_HEART_RATE_MODE_DEFAULT = TARGET_HEART_RATE_MODE_NONE;
 
 const TARGET_HEART_RATE_LOWER_BPM = "Target Heart Rate Lower BPM";
 const TARGET_HEART_RATE_LOWER_BPM_TAG = "target_heart_rate_bpm_lower";
 const TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT = 120;
 const TARGET_HEART_RATE_LOWER_BPM_DEFAULT = "$TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT";
-const TARGET_HEART_RATE_LOWER_BPM_DESCRIPTION = "Lower bpm of the target heart rate (for bpm target mode).";
+const TARGET_HEART_RATE_LOWER_BPM_DESCRIPTION =
+    "Lower bpm of the target heart rate (for bpm target mode).";
 
 const TARGET_HEART_RATE_UPPER_BPM = "Target Heart Rate Upper BPM";
 const TARGET_HEART_RATE_UPPER_BPM_TAG = "target_heart_rate_bpm_upper";
 const TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT = 140;
 const TARGET_HEART_RATE_UPPER_BPM_DEFAULT = "$TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT";
-const TARGET_HEART_RATE_UPPER_BPM_DESCRIPTION = "Upper bpm of the target heart rate (for bpm target mode).";
+const TARGET_HEART_RATE_UPPER_BPM_DESCRIPTION =
+    "Upper bpm of the target heart rate (for bpm target mode).";
 
 const TARGET_HEART_RATE_LOWER_ZONE = "Target Heart Rate Lower Zone";
 const TARGET_HEART_RATE_LOWER_ZONE_TAG = "target_heart_rate_zone_lower";
 const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT = 3;
 const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT = "$TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT";
-const TARGET_HEART_RATE_LOWER_ZONE_DESCRIPTION = "Lower zone of the target heart rate (for zone target mode).";
+const TARGET_HEART_RATE_LOWER_ZONE_DESCRIPTION =
+    "Lower zone of the target heart rate (for zone target mode).";
 
 const TARGET_HEART_RATE_UPPER_ZONE = "Target Heart Rate Upper Zone";
 const TARGET_HEART_RATE_UPPER_ZONE_TAG = "target_heart_rate_zone_upper";
 const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT = 3;
 const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT = "$TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT";
-const TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION = "Upper zone of the target heart rate (for zone target mode).";
+const TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION =
+    "Upper zone of the target heart rate (for zone target mode).";
 
 const EXPERT_PREFERENCES = "Expert Preferences";
 
