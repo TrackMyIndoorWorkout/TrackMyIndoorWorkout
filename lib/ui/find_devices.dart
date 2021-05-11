@@ -21,7 +21,7 @@ import 'parts/common.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
 import 'activities.dart';
-import 'preferences.dart';
+import 'preferences/preferences.dart';
 import 'recording.dart';
 
 const HELP_URL = "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
