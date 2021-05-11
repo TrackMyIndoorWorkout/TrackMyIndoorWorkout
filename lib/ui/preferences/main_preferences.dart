@@ -7,7 +7,7 @@ import '../../utils/preferences.dart';
 
 RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
 
-class PreferencesScreen extends StatelessWidget {
+class MainPreferencesScreen extends StatelessWidget {
   bool isNumber(String str, double lowerLimit, double upperLimit) {
     double number = double.tryParse(str);
     return number != null &&

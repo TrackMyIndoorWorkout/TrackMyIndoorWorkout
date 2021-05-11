@@ -480,7 +480,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             child: Icon(Icons.settings),
             foregroundColor: Colors.white,
             backgroundColor: Colors.indigo,
-            onPressed: () async => Get.to(PreferencesScreen()),
+            onPressed: () async => Get.to(MainPreferencesScreen()),
           ),
           FloatingActionButton(
             heroTag: null,
