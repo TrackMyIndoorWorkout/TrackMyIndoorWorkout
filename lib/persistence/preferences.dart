@@ -591,6 +591,12 @@ const TARGET_HEART_RATE_SOUND_EFFECT_BLEEP = "media_bleep";
 const TARGET_HEART_RATE_SOUND_EFFECT_BLEEP_DESCRIPTION = "A Media Call type bleep.";
 const TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT = TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE;
 
+const AUDIO_VOLUME = "Audio Volume (%)";
+const AUDIO_VOLUME_TAG = "audio_volume";
+const AUDIO_VOLUME_DEFAULT_INT = 50;
+const AUDIO_VOLUME_DEFAULT = "$AUDIO_VOLUME_DEFAULT_INT";
+const AUDIO_VOLUME_DESCRIPTION = "Volume base of the audio effects.";
+
 const EXPERT_PREFERENCES = "Expert Preferences";
 
 const APP_DEBUG_MODE = "Application Debug Mode";

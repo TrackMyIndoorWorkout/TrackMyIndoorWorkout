@@ -155,6 +155,17 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
           cancelText: 'Close',
         ),
       ),
+      TextFieldPreference(
+        AUDIO_VOLUME,
+        AUDIO_VOLUME_TAG,
+        defaultVal: AUDIO_VOLUME_DEFAULT,
+        validator: (str) {
+          if (!isInteger(str, 0, 100)) {
+            return "Invalid, has to be: 0% <= volume <= 100%)";
+          }
+          return null;
+        },
+      ),
     ];
 
     return Scaffold(
