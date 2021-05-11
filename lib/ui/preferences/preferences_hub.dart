@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/sound.dart';
 import 'data_preferences.dart';
 import 'expert.dart';
 import 'measurement_zones.dart';
@@ -22,6 +23,9 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   @override
   void initState() {
     super.initState();
+    if (!Get.isRegistered<SoundService>()) {
+      Get.put<SoundService>(SoundService());
+    }
   }
 
   @override

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/preferences.dart';
+import '../../utils/sound.dart';
 import 'preferences_base.dart';
 
 class TargetHrPreferencesScreen extends PreferencesScreenBase {
@@ -134,21 +136,29 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
               TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE_DESCRIPTION,
               TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE,
               TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+              onSelect: () => Get.find<SoundService>()
+                  .playSpecificHrSoundEffect(TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE),
             ),
             RadioPreference(
               TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE_DESCRIPTION,
               TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE,
               TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+              onSelect: () => Get.find<SoundService>()
+                  .playSpecificHrSoundEffect(TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE),
             ),
             RadioPreference(
               TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE_DESCRIPTION,
               TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE,
               TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+              onSelect: () => Get.find<SoundService>()
+                  .playSpecificHrSoundEffect(TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE),
             ),
             RadioPreference(
               TARGET_HEART_RATE_SOUND_EFFECT_BLEEP_DESCRIPTION,
               TARGET_HEART_RATE_SOUND_EFFECT_BLEEP,
               TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+              onSelect: () => Get.find<SoundService>()
+                  .playSpecificHrSoundEffect(TARGET_HEART_RATE_SOUND_EFFECT_BLEEP),
             ),
           ],
           title: 'Select Target HR Sound Effect',

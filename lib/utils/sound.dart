@@ -1,64 +1,81 @@
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:preferences/preference_service.dart';
 import 'package:soundpool/soundpool.dart';
+import '../persistence/preferences.dart';
+import 'preferences.dart';
 
-enum SoundEffect { ShortCardShuffle, LongCardShuffle, PokerChips }
+enum SoundEffect { Bleep, FlatBeep, TwoTone, ThreeTone }
 final Map<SoundEffect, String> _soundAssetPaths = {
-  SoundEffect.ShortCardShuffle: "assets/short_card_shuffle.mp3",
-  SoundEffect.LongCardShuffle: "assets/long_card_shuffle.mp3",
-  SoundEffect.PokerChips: "assets/poker_chips.mp3",
+  SoundEffect.Bleep: "assets/bleep.mp3",
+  SoundEffect.FlatBeep: "assets/flat_beep.mp3",
+  SoundEffect.TwoTone: "assets/two_tone.mp3",
+  SoundEffect.ThreeTone: "assets/three_tone.mp3",
 };
 
 class SoundService {
   Soundpool _soundPool;
 
   Map<SoundEffect, int> _soundIds = {
-    SoundEffect.ShortCardShuffle: 0,
-    SoundEffect.LongCardShuffle: 0,
-    SoundEffect.PokerChips: 0
+    SoundEffect.Bleep: 0,
+    SoundEffect.FlatBeep: 0,
+    SoundEffect.TwoTone: 0,
+    SoundEffect.ThreeTone: 0,
   };
   Map<SoundEffect, int> _streamIds = {
-    SoundEffect.ShortCardShuffle: 0,
-    SoundEffect.LongCardShuffle: 0,
-    SoundEffect.PokerChips: 0
+    SoundEffect.Bleep: 0,
+    SoundEffect.FlatBeep: 0,
+    SoundEffect.TwoTone: 0,
+    SoundEffect.ThreeTone: 0,
+  };
+  Map<String, SoundEffect> _soundPreferences = {
+    TARGET_HEART_RATE_SOUND_EFFECT_BLEEP: SoundEffect.Bleep,
+    TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE: SoundEffect.FlatBeep,
+    TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE: SoundEffect.TwoTone,
+    TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE: SoundEffect.ThreeTone,
   };
 
   SoundService() {
     Get.putAsync<Soundpool>(() async {
       _soundPool = Soundpool(streamType: StreamType.notification, maxStreams: 2);
-      // if (pref.getBool(SOUND_EFFECTS)) {
-      //   await loadSoundEffects();
-      // }
+      _soundAssetPaths.forEach((k, v) async {
+        if (_soundIds[k] <= 0) {
+          var asset = await rootBundle.load(v);
+          final soundId = await _soundPool.load(asset);
+          _soundIds.addAll({k: soundId});
+        }
+      });
       return _soundPool;
     });
   }
 
-  loadSoundEffects() async {
-    _soundAssetPaths.forEach((k, v) async {
-      if (_soundIds[k] <= 0) {
-        var asset = await rootBundle.load(v);
-        final soundId = await _soundPool.load(asset);
-        _soundIds.addAll({k: soundId});
-      }
-    });
+  Future<int> playSoundEffect(SoundEffect soundEffect) async {
+    final soundId = _soundIds[soundEffect];
+    if (soundId > 0) {
+      final volumePercent = getStringIntegerPreference(
+        AUDIO_VOLUME_TAG,
+        AUDIO_VOLUME_DEFAULT,
+        AUDIO_VOLUME_DEFAULT_INT,
+      );
+      final volume = volumePercent / 100.0;
+      _soundPool.setVolume(soundId: soundId, volume: volume);
+      final streamId = await _soundPool.play(soundId);
+      _streamIds.addAll({soundEffect: streamId});
+      _soundPool.setVolume(streamId: streamId, volume: volume);
+      return streamId;
+    } else {
+      return 0;
+    }
   }
 
-  Future<int> playSoundEffect(SoundEffect soundEffect) async {
-    // if (pref.getBool(SOUND_EFFECTS)) {
-    //   final soundId = _soundIds[soundEffect];
-    //   if (soundId > 0) {
-    //     final volume = pref.getDouble(VOLUME) / 100.0;
-    //     _soundPool.setVolume(soundId: soundId, volume: volume);
-    //     final streamId = await _soundPool.play(soundId);
-    //     _streamIds.addAll({soundEffect: streamId});
-    //     _soundPool.setVolume(streamId: streamId, volume: volume);
-    //     return streamId;
-    //   } else {
-    //     return 0;
-    //   }
-    // } else {
-    //   return 0;
-    // }
+  Future<int> playSpecificHrSoundEffect(String soundEffectString) async {
+    return await playSoundEffect(_soundPreferences[soundEffectString]);
+  }
+
+  Future<int> playTargetHrSoundEffect() async {
+    final soundEffectString = PrefService.getString(TARGET_HEART_RATE_SOUND_EFFECT_TAG) ??
+        TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT;
+    return await playSpecificHrSoundEffect(soundEffectString);
   }
 
   stopSoundEffect(SoundEffect soundEffect) async {
