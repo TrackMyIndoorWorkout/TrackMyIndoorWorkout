@@ -5,6 +5,7 @@ import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart' as painting;
 import 'package:preferences/preferences.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -598,6 +599,10 @@ Future<bool> getSimplerUiDefault() async {
     }
   }
   return simplerUiDefault;
+}
+
+painting.Color paletteToPaintColor(common.Color paletteColor) {
+  return painting.Color.fromARGB(paletteColor.a, paletteColor.r, paletteColor.g, paletteColor.b);
 }
 
 const KM2MI = 0.621371;

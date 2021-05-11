@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
+import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
@@ -30,6 +32,7 @@ import '../track/track_painter.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
 import '../utils/preferences.dart';
+import '../utils/target_heart_rate.dart';
 import 'models/advertisement_digest.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
@@ -127,6 +130,10 @@ class RecordingState extends State<RecordingScreen> {
   double _distance;
   int _elapsed;
 
+  String _targetHrMode;
+  Tuple2<double, double> _targetHrBounds;
+  int _heartRate;
+
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
     if (success) {
@@ -182,6 +189,7 @@ class RecordingState extends State<RecordingScreen> {
         if (!_uxDebug) {
           await _database?.recordDao?.insertRecord(record);
         }
+
         _fitnessEquipment.lastRecord = record;
 
         setState(() {
@@ -191,8 +199,14 @@ class RecordingState extends State<RecordingScreen> {
               _graphData.removeFirst();
             }
           }
+
           _distance = record.distance;
           _elapsed = record.elapsed;
+          if (record.heartRate != null &&
+              (record.heartRate > 0 || _heartRate == null || _heartRate == 0)) {
+            _heartRate = record.heartRate;
+          }
+
           _values = [
             record.calories.toString(),
             record.power.toString(),
@@ -260,6 +274,9 @@ class RecordingState extends State<RecordingScreen> {
         }
         _heartRateMonitor.pumpMetric((heartRate) async {
           setState(() {
+            if (heartRate != null && (heartRate > 0 || _heartRate == null || _heartRate == 0)) {
+              _heartRate = heartRate;
+            }
             _values[4] = heartRate?.toString() ?? "--";
           });
         });
@@ -321,6 +338,10 @@ class RecordingState extends State<RecordingScreen> {
           0,
           decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
         ));
+
+    _targetHrMode =
+        PrefService.getString(TARGET_HEART_RATE_MODE_TAG) ?? TARGET_HEART_RATE_MODE_DEFAULT;
+    _targetHrBounds = getTargetHeartRateBounds(_targetHrMode, _preferencesSpecs[3]);
 
     _metricToDataFn = {
       "power": _powerChartData,
@@ -664,22 +685,59 @@ class RecordingState extends State<RecordingScreen> {
             height = size.height / 2;
             break;
         }
-        extras.add(
-          GestureDetector(
-            onLongPress: () => _onLongPress(entry.key),
-            child: SizedBox(
-              width: size.width,
-              height: height,
-              child: charts.TimeSeriesChart(
-                _metricToDataFn[entry.value.metric](),
-                animate: false,
-                flipVerticalAxis: entry.value.flipZones,
-                primaryMeasureAxis: charts.NumericAxisSpec(renderSpec: charts.NoneRenderSpec()),
-                behaviors: [charts.RangeAnnotation(entry.value.annotationSegments)],
-              ),
+        Widget extra = GestureDetector(
+          onLongPress: () => _onLongPress(entry.key),
+          child: SizedBox(
+            width: size.width,
+            height: height,
+            child: charts.TimeSeriesChart(
+              _metricToDataFn[entry.value.metric](),
+              animate: false,
+              flipVerticalAxis: entry.value.flipZones,
+              primaryMeasureAxis: charts.NumericAxisSpec(renderSpec: charts.NoneRenderSpec()),
+              behaviors: [charts.RangeAnnotation(entry.value.annotationSegments)],
             ),
           ),
         );
+        if (entry.value.metric == "hr" && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
+          String targetText;
+          int zoneIndex = 0;
+          var textStyle = _measurementStyle;
+          if (_heartRate != null && _heartRate > 0) {
+            zoneIndex = entry.value.binIndex(_heartRate);
+            if (_heartRate < _targetHrBounds.item1) {
+              targetText = "UNDER!";
+              textStyle.apply(
+                color: paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker),
+                backgroundColor:
+                    paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter),
+              );
+            } else if (_heartRate > _targetHrBounds.item2) {
+              targetText = "OVER!";
+              textStyle.apply(
+                color: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker),
+                backgroundColor:
+                    paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter),
+              );
+            } else {
+              targetText = "IN RANGE";
+              textStyle.apply(
+                color: paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker),
+                backgroundColor:
+                    paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter),
+              );
+            }
+          } else {
+            targetText = "N/A";
+          }
+          targetText = "Z$zoneIndex, $targetText";
+          extra = Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [Text(targetText, style: textStyle), extra],
+          );
+        }
+        extras.add(extra);
       });
 
       final trackMarker = _trackCalculator.trackMarker(_distance);
