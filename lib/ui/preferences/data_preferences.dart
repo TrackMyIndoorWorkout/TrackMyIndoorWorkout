@@ -4,6 +4,9 @@ import '../../persistence/preferences.dart';
 import 'preferences_base.dart';
 
 class DataPreferencesScreen extends PreferencesScreenBase {
+  static String shortTitle = "Data";
+  static String title = "$shortTitle Prefs";
+
   @override
   Widget build(BuildContext context) {
     List<Widget> dataPreferences = [
@@ -113,7 +116,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text('Data Prefs')),
+      appBar: AppBar(title: Text(title)),
       body: PreferencePage(dataPreferences),
     );
   }

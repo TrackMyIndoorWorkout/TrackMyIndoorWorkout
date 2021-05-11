@@ -4,7 +4,10 @@ import '../../persistence/preferences.dart';
 import '../../utils/preferences.dart';
 import 'preferences_base.dart';
 
-class MainPreferencesScreen extends PreferencesScreenBase {
+class TargetHrPreferencesScreen extends PreferencesScreenBase {
+  static String shortTitle = "Target HR";
+  static String title = "$shortTitle Prefs";
+
   @override
   Widget build(BuildContext context) {
     List<Widget> targetHrPreferences = [
@@ -155,7 +158,7 @@ class MainPreferencesScreen extends PreferencesScreenBase {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text('Target HR Prefs')),
+      appBar: AppBar(title: Text(title)),
       body: PreferencePage(targetHrPreferences),
     );
   }

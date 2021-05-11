@@ -7,6 +7,9 @@ import 'preferences_base.dart';
 RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
 
 class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
+  static String shortTitle = "Zones";
+  static String title = "$shortTitle Prefs";
+
   bool isMonotoneIncreasingList(String zonesSpecStr) {
     if (!intListRule.hasMatch(zonesSpecStr)) return false;
 
@@ -77,7 +80,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
     });
 
     return Scaffold(
-      appBar: AppBar(title: Text('Zones Prefs')),
+      appBar: AppBar(title: Text(title)),
       body: PreferencePage(zonePreferences),
     );
   }

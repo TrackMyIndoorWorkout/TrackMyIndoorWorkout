@@ -4,10 +4,12 @@ import '../../persistence/preferences.dart';
 import 'preferences_base.dart';
 
 class UXPreferencesScreen extends PreferencesScreenBase {
+  static String shortTitle = "UX";
+  static String title = "$shortTitle Preferences";
+
   @override
   Widget build(BuildContext context) {
     List<Widget> uxPreferences = [
-      PreferenceTitle(UX_PREFERENCES),
       SwitchPreference(
         UNIT_SYSTEM,
         UNIT_SYSTEM_TAG,
@@ -59,7 +61,7 @@ class UXPreferencesScreen extends PreferencesScreenBase {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text('UX Preferences')),
+      appBar: AppBar(title: Text(title)),
       body: PreferencePage(uxPreferences),
     );
   }

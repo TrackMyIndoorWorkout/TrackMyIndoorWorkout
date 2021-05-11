@@ -6,10 +6,12 @@ import '../../utils/preferences.dart';
 import 'preferences_base.dart';
 
 class ExpertPreferencesScreen extends PreferencesScreenBase {
+  static String shortTitle = "Expert";
+  static String title = "$shortTitle Prefs";
+
   @override
   Widget build(BuildContext context) {
     List<Widget> expertPreferences = [
-      PreferenceTitle(EXPERT_PREFERENCES),
       PreferenceTitle(DATA_CONNECTION_ADDRESSES_DESCRIPTION, style: descriptionStyle),
       TextFieldPreference(
         DATA_CONNECTION_ADDRESSES,
@@ -39,7 +41,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Expert Prefs')),
+      appBar: AppBar(title: Text(title)),
       body: PreferencePage(expertPreferences),
     );
   }
