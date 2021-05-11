@@ -66,4 +66,4 @@ flutter:
       fonts:
         - asset: fonts/RobotoMono-Bold.ttf
   assets:
-    - assets/CompanyNames.txt.gz
+    - assets/
