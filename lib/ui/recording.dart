@@ -611,6 +611,29 @@ class RecordingState extends State<RecordingScreen> {
         false;
   }
 
+  TextStyle getTargetHrTextStyle() {
+    if (_heartRate == null || _heartRate == 0) {
+      return _measurementStyle;
+    }
+
+    if (_heartRate < _targetHrBounds.item1) {
+      return _measurementStyle.apply(
+        color: paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker),
+        backgroundColor: paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter),
+      );
+    } else if (_heartRate > _targetHrBounds.item2) {
+      return _measurementStyle.apply(
+        color: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker),
+        backgroundColor: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter),
+      );
+    } else {
+      return _measurementStyle.apply(
+        color: paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker),
+        backgroundColor: paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final separatorHeight = 1.0;
@@ -645,6 +668,11 @@ class RecordingState extends State<RecordingScreen> {
     ];
 
     _rowConfig.asMap().entries.forEach((entry) {
+      var measurementStyle = _measurementStyle;
+      if (entry.key == 4 && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
+        measurementStyle = getTargetHrTextStyle();
+      }
+
       rows.add(Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -655,7 +683,7 @@ class RecordingState extends State<RecordingScreen> {
             color: Colors.indigo,
           ),
           Spacer(),
-          Text(_values[entry.key], style: _measurementStyle),
+          Text(_values[entry.key], style: measurementStyle),
           SizedBox(
             width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
             child: Center(
@@ -702,39 +730,23 @@ class RecordingState extends State<RecordingScreen> {
         if (entry.value.metric == "hr" && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
           String targetText;
           int zoneIndex = 0;
-          var textStyle = _measurementStyle;
           if (_heartRate != null && _heartRate > 0) {
             zoneIndex = entry.value.binIndex(_heartRate);
             if (_heartRate < _targetHrBounds.item1) {
               targetText = "UNDER!";
-              textStyle.apply(
-                color: paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker),
-                backgroundColor:
-                    paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter),
-              );
             } else if (_heartRate > _targetHrBounds.item2) {
               targetText = "OVER!";
-              textStyle.apply(
-                color: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker),
-                backgroundColor:
-                    paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter),
-              );
             } else {
               targetText = "IN RANGE";
-              textStyle.apply(
-                color: paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker),
-                backgroundColor:
-                    paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter),
-              );
             }
           } else {
-            targetText = "N/A";
+            targetText = "--";
           }
-          targetText = "Z$zoneIndex, $targetText";
+          targetText = "Z$zoneIndex $targetText";
           extra = Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [Text(targetText, style: textStyle), extra],
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [Text(targetText, style: getTargetHrTextStyle()), extra],
           );
         }
         extras.add(extra);
