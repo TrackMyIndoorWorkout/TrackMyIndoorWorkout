@@ -562,6 +562,35 @@ const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT = "$TARGET_HEART_RATE_UPPER_ZONE_DEFA
 const TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION =
     "Upper zone of the target heart rate (for zone target mode).";
 
+const TARGET_HEART_RATE_AUDIO_MODE = "Target Heart Rate Audio Mode";
+const TARGET_HEART_RATE_AUDIO_MODE_TAG = "target_heart_rate_audio_mode";
+const TARGET_HEART_RATE_AUDIO_MODE_DESCRIPTION =
+    "Should a warning beep sound only when the heart rate gets out of range, " +
+        "or should the beep periodically repeat until the HR gets back into range.";
+const TARGET_HEART_RATE_AUDIO_MODE_NONE = "none";
+const TARGET_HEART_RATE_AUDIO_MODE_NONE_DESCRIPTION = "Target heart rate beep is turned off.";
+const TARGET_HEART_RATE_AUDIO_MODE_SINGLE = "single";
+const TARGET_HEART_RATE_AUDIO_MODE_SINGLE_DESCRIPTION =
+    "Warning beep plays once when the heart rate gets out of range.";
+const TARGET_HEART_RATE_AUDIO_MODE_PERIODIC = "periodic";
+const TARGET_HEART_RATE_AUDIO_MODE_PERIODIC_DESCRIPTION =
+    "Warning beep keeps repeating until the heart rate is back in range";
+const TARGET_HEART_RATE_AUDIO_MODE_DEFAULT = TARGET_HEART_RATE_AUDIO_MODE_NONE;
+
+const TARGET_HEART_RATE_SOUND_EFFECT = "Target Heart Rate Out of Range Sound Effect";
+const TARGET_HEART_RATE_SOUND_EFFECT_TAG = "target_heart_rate_sound_effect";
+const TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION =
+    "Select the type of sound effect played when the HR gets out of range.";
+const TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE = "one_tone_beep";
+const TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE_DESCRIPTION = "A single tone 1200Hz beep.";
+const TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE = "two_tone_beep";
+const TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE_DESCRIPTION = "Two beep tones repeated twice";
+const TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE = "three_tone_beep";
+const TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE_DESCRIPTION = "Three beep tones after one another";
+const TARGET_HEART_RATE_SOUND_EFFECT_BLEEP = "media_bleep";
+const TARGET_HEART_RATE_SOUND_EFFECT_BLEEP_DESCRIPTION = "A Media Call type bleep.";
+const TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT = TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE;
+
 const EXPERT_PREFERENCES = "Expert Preferences";
 
 const APP_DEBUG_MODE = "Application Debug Mode";

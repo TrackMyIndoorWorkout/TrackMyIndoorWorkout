@@ -282,6 +282,61 @@ class PreferencesScreen extends StatelessWidget {
           return null;
         },
       ),
+      PreferenceTitle(TARGET_HEART_RATE_AUDIO_MODE_DESCRIPTION, style: descriptionStyle),
+      PreferenceDialogLink(
+        TARGET_HEART_RATE_AUDIO_MODE,
+        dialog: PreferenceDialog(
+          [
+            RadioPreference(
+              TARGET_HEART_RATE_AUDIO_MODE_NONE_DESCRIPTION,
+              TARGET_HEART_RATE_AUDIO_MODE_NONE,
+              TARGET_HEART_RATE_AUDIO_MODE_TAG,
+            ),
+            RadioPreference(
+              TARGET_HEART_RATE_AUDIO_MODE_SINGLE_DESCRIPTION,
+              TARGET_HEART_RATE_AUDIO_MODE_SINGLE,
+              TARGET_HEART_RATE_AUDIO_MODE_TAG,
+            ),
+            RadioPreference(
+              TARGET_HEART_RATE_AUDIO_MODE_PERIODIC_DESCRIPTION,
+              TARGET_HEART_RATE_AUDIO_MODE_PERIODIC,
+              TARGET_HEART_RATE_AUDIO_MODE_TAG,
+            ),
+          ],
+          title: 'Select Target HR Audio Mode',
+          cancelText: 'Close',
+        ),
+      ),
+      PreferenceTitle(TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION, style: descriptionStyle),
+      PreferenceDialogLink(
+        TARGET_HEART_RATE_SOUND_EFFECT,
+        dialog: PreferenceDialog(
+          [
+            RadioPreference(
+              TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE_DESCRIPTION,
+              TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE,
+              TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+            ),
+            RadioPreference(
+              TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE_DESCRIPTION,
+              TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE,
+              TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+            ),
+            RadioPreference(
+              TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE_DESCRIPTION,
+              TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE,
+              TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+            ),
+            RadioPreference(
+              TARGET_HEART_RATE_SOUND_EFFECT_BLEEP_DESCRIPTION,
+              TARGET_HEART_RATE_SOUND_EFFECT_BLEEP,
+              TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+            ),
+          ],
+          title: 'Select Target HR Sound Effect',
+          cancelText: 'Close',
+        ),
+      ),
     ];
 
     PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
