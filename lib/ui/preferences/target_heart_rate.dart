@@ -102,30 +102,22 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
           return null;
         },
       ),
-      PreferenceTitle(TARGET_HEART_RATE_AUDIO_MODE_DESCRIPTION, style: descriptionStyle),
-      PreferenceDialogLink(
-        TARGET_HEART_RATE_AUDIO_MODE,
-        dialog: PreferenceDialog(
-          [
-            RadioPreference(
-              TARGET_HEART_RATE_AUDIO_MODE_NONE_DESCRIPTION,
-              TARGET_HEART_RATE_AUDIO_MODE_NONE,
-              TARGET_HEART_RATE_AUDIO_MODE_TAG,
-            ),
-            RadioPreference(
-              TARGET_HEART_RATE_AUDIO_MODE_SINGLE_DESCRIPTION,
-              TARGET_HEART_RATE_AUDIO_MODE_SINGLE,
-              TARGET_HEART_RATE_AUDIO_MODE_TAG,
-            ),
-            RadioPreference(
-              TARGET_HEART_RATE_AUDIO_MODE_PERIODIC_DESCRIPTION,
-              TARGET_HEART_RATE_AUDIO_MODE_PERIODIC,
-              TARGET_HEART_RATE_AUDIO_MODE_TAG,
-            ),
-          ],
-          title: 'Select Target HR Audio Mode',
-          cancelText: 'Close',
-        ),
+      SwitchPreference(
+        TARGET_HEART_RATE_AUDIO,
+        TARGET_HEART_RATE_AUDIO_TAG,
+        defaultVal: TARGET_HEART_RATE_AUDIO_DEFAULT,
+        desc: TARGET_HEART_RATE_AUDIO_DESCRIPTION,
+      ),
+      TextFieldPreference(
+        TARGET_HEART_RATE_AUDIO_PERIOD,
+        TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
+        defaultVal: TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
+        validator: (str) {
+          if (!isInteger(str, 0, 10)) {
+            return "Invalid periodicity: should be 0 <= period <= 10)";
+          }
+          return null;
+        },
       ),
       PreferenceTitle(TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION, style: descriptionStyle),
       PreferenceDialogLink(

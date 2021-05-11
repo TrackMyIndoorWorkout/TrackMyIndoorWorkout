@@ -562,20 +562,17 @@ const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT = "$TARGET_HEART_RATE_UPPER_ZONE_DEFA
 const TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION =
     "Upper zone of the target heart rate (for zone target mode).";
 
-const TARGET_HEART_RATE_AUDIO_MODE = "Target Heart Rate Audio Mode";
-const TARGET_HEART_RATE_AUDIO_MODE_TAG = "target_heart_rate_audio_mode";
-const TARGET_HEART_RATE_AUDIO_MODE_DESCRIPTION =
-    "Should a warning beep sound only when the heart rate gets out of range, " +
-        "or should the beep periodically repeat until the HR gets back into range.";
-const TARGET_HEART_RATE_AUDIO_MODE_NONE = "none";
-const TARGET_HEART_RATE_AUDIO_MODE_NONE_DESCRIPTION = "Target heart rate beep is turned off.";
-const TARGET_HEART_RATE_AUDIO_MODE_SINGLE = "single";
-const TARGET_HEART_RATE_AUDIO_MODE_SINGLE_DESCRIPTION =
-    "Warning beep plays once when the heart rate gets out of range.";
-const TARGET_HEART_RATE_AUDIO_MODE_PERIODIC = "periodic";
-const TARGET_HEART_RATE_AUDIO_MODE_PERIODIC_DESCRIPTION =
-    "Warning beep keeps repeating until the heart rate is back in range";
-const TARGET_HEART_RATE_AUDIO_MODE_DEFAULT = TARGET_HEART_RATE_AUDIO_MODE_NONE;
+const TARGET_HEART_RATE_AUDIO = "Target Heart Rate Audio";
+const TARGET_HEART_RATE_AUDIO_TAG = "target_heart_rate_audio";
+const TARGET_HEART_RATE_AUDIO_DEFAULT = false;
+const TARGET_HEART_RATE_AUDIO_DESCRIPTION = "Should a sound effect play when HR is out of range.";
+
+const TARGET_HEART_RATE_AUDIO_PERIOD = "Target HR Audio Period (seconds)";
+const TARGET_HEART_RATE_AUDIO_PERIOD_TAG = "target_heart_rate_audio_period";
+const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT = 0;
+const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT = "$TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT";
+const TARGET_HEART_RATE_AUDIO_PERIOD_DESCRIPTION = "0 or 1: no periodicity. Larger than 1 seconds: " +
+    "the selected sound effect will play with the periodicity until the HR is back in range.";
 
 const TARGET_HEART_RATE_SOUND_EFFECT = "Target Heart Rate Out of Range Sound Effect";
 const TARGET_HEART_RATE_SOUND_EFFECT_TAG = "target_heart_rate_sound_effect";
