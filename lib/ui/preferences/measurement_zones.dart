@@ -27,7 +27,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> zonePreferences;
+    List<Widget> zonePreferences = [];
     PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
       zonePreferences.add(PreferenceTitle(sport + ZONE_PREFERENCES));
       PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
