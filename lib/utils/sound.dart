@@ -37,7 +37,7 @@ class SoundService {
 
   SoundService() {
     Get.putAsync<Soundpool>(() async {
-      _soundPool = Soundpool(streamType: StreamType.notification, maxStreams: 2);
+      _soundPool = Soundpool(streamType: StreamType.music, maxStreams: 2);
       _soundAssetPaths.forEach((k, v) async {
         if (_soundIds[k] <= 0) {
           var asset = await rootBundle.load(v);
