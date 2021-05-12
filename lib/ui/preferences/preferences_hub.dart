@@ -18,7 +18,7 @@ class PreferencesHubScreen extends StatefulWidget {
 class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   double _mediaWidth;
   double _sizeDefault;
-  TextStyle _measurementStyle;
+  TextStyle _textStyle;
 
   @override
   void initState() {
@@ -33,13 +33,13 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
     final mediaWidth = Get.mediaQuery.size.width;
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
-      _sizeDefault = Get.mediaQuery.size.width / 4;
-      _measurementStyle = TextStyle(
+      _sizeDefault = Get.mediaQuery.size.width / 5;
+      _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault / 2.5,
-      );
+        fontSize: _sizeDefault / 2,
+      ).merge(TextStyle(color: Colors.black));
     }
-    final separatorHeight = 1.0;
+    final buttonStyle = ElevatedButton.styleFrom(primary: Colors.grey.shade200);
 
     return Scaffold(
       appBar: AppBar(title: Text('Preferences')),
@@ -48,88 +48,109 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            GestureDetector(
-              onTap: () => Get.to(UXPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    " " + UXPreferencesScreen.shortTitle,
-                    style: _measurementStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
-                ],
+            Container(
+              padding: const EdgeInsets.all(5.0),
+              margin: const EdgeInsets.all(5.0),
+              child: ElevatedButton(
+                onPressed: () => Get.to(UXPreferencesScreen()),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextOneLine(
+                      UXPreferencesScreen.shortTitle,
+                      style: _textStyle,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                  ],
+                ),
+                style: buttonStyle,
               ),
             ),
-            Divider(height: separatorHeight),
-            GestureDetector(
-              onTap: () => Get.to(DataPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    " " + DataPreferencesScreen.shortTitle,
-                    style: _measurementStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
-                ],
+            Container(
+              padding: const EdgeInsets.all(5.0),
+              margin: const EdgeInsets.all(5.0),
+              child: ElevatedButton(
+                onPressed: () => Get.to(DataPreferencesScreen()),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextOneLine(
+                      DataPreferencesScreen.shortTitle,
+                      style: _textStyle,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                  ],
+                ),
+                style: buttonStyle,
               ),
             ),
-            Divider(height: separatorHeight),
-            GestureDetector(
-              onTap: () => Get.to(TargetHrPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    " " + TargetHrPreferencesScreen.shortTitle,
-                    style: _measurementStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
-                ],
+            Container(
+              padding: const EdgeInsets.all(5.0),
+              margin: const EdgeInsets.all(5.0),
+              child: ElevatedButton(
+                onPressed: () => Get.to(TargetHrPreferencesScreen()),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextOneLine(
+                      TargetHrPreferencesScreen.shortTitle,
+                      style: _textStyle,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                  ],
+                ),
+                style: buttonStyle,
               ),
             ),
-            Divider(height: separatorHeight),
-            GestureDetector(
-              onTap: () => Get.to(MeasurementZonesPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    " " + MeasurementZonesPreferencesScreen.shortTitle,
-                    style: _measurementStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
-                ],
+            Container(
+              padding: const EdgeInsets.all(5.0),
+              margin: const EdgeInsets.all(5.0),
+              child: ElevatedButton(
+                onPressed: () => Get.to(MeasurementZonesPreferencesScreen()),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextOneLine(
+                      MeasurementZonesPreferencesScreen.shortTitle,
+                      style: _textStyle,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                  ],
+                ),
+                style: buttonStyle,
               ),
             ),
-            Divider(height: separatorHeight),
-            GestureDetector(
-              onTap: () => Get.to(ExpertPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    " " + ExpertPreferencesScreen.shortTitle,
-                    style: _measurementStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
-                ],
+            Container(
+              padding: const EdgeInsets.all(5.0),
+              margin: const EdgeInsets.all(5.0),
+              child: ElevatedButton(
+                onPressed: () => Get.to(ExpertPreferencesScreen()),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextOneLine(
+                      ExpertPreferencesScreen.shortTitle,
+                      style: _textStyle,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                  ],
+                ),
+                style: buttonStyle,
               ),
             ),
           ],
