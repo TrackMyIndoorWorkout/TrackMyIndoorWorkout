@@ -9,6 +9,7 @@ import 'expert.dart';
 import 'measurement_zones.dart';
 import 'target_heart_rate.dart';
 import 'ux_preferences.dart';
+import 'wave_light.dart';
 
 class PreferencesHubScreen extends StatefulWidget {
   @override
@@ -101,6 +102,27 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                   children: [
                     TextOneLine(
                       TargetHrPreferencesScreen.shortTitle,
+                      style: _textStyle,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                  ],
+                ),
+                style: buttonStyle,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(5.0),
+              margin: const EdgeInsets.all(5.0),
+              child: ElevatedButton(
+                onPressed: () => Get.to(WaveLightPreferencesScreen()),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextOneLine(
+                      WaveLightPreferencesScreen.shortTitle,
                       style: _textStyle,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
