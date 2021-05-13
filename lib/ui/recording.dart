@@ -619,18 +619,32 @@ class RecordingState extends State<RecordingScreen> {
     if (_heartRate < _targetHrBounds.item1) {
       return _measurementStyle.apply(
         color: paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker),
-        backgroundColor: paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter),
+        // backgroundColor: paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter),
       );
     } else if (_heartRate > _targetHrBounds.item2) {
       return _measurementStyle.apply(
         color: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker),
-        backgroundColor: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter),
+        // backgroundColor: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter),
       );
     } else {
       return _measurementStyle.apply(
         color: paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker),
-        backgroundColor: paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter),
+        // backgroundColor: paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter),
       );
+    }
+  }
+
+  Color getTargetHrTextBackground() {
+    if (_heartRate == null || _heartRate == 0) {
+      return Colors.transparent;
+    }
+
+    if (_heartRate < _targetHrBounds.item1) {
+      return paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter);
+    } else if (_heartRate > _targetHrBounds.item2) {
+      return paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter);
+    } else {
+      return paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter);
     }
   }
 
@@ -746,7 +760,19 @@ class RecordingState extends State<RecordingScreen> {
           extra = Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [Text(targetText, style: getTargetHrTextStyle()), extra],
+            children: [
+              ColoredBox(
+                color: getTargetHrTextBackground(),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(targetText, style: getTargetHrTextStyle(), textAlign: TextAlign.center,),
+                    ),
+                  ],
+                ),
+              ),
+              extra,
+            ],
           );
         }
         extras.add(extra);
