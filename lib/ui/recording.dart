@@ -612,30 +612,27 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   TextStyle getTargetHrTextStyle() {
-    if (_heartRate == null || _heartRate == 0) {
+    if (_heartRate == null || _heartRate == 0 || _targetHrMode == TARGET_HEART_RATE_MODE_NONE) {
       return _measurementStyle;
     }
 
     if (_heartRate < _targetHrBounds.item1) {
       return _measurementStyle.apply(
         color: paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker),
-        // backgroundColor: paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter),
       );
     } else if (_heartRate > _targetHrBounds.item2) {
       return _measurementStyle.apply(
         color: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker),
-        // backgroundColor: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter),
       );
     } else {
       return _measurementStyle.apply(
         color: paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker),
-        // backgroundColor: paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter),
       );
     }
   }
 
   Color getTargetHrTextBackground() {
-    if (_heartRate == null || _heartRate == 0) {
+    if (_heartRate == null || _heartRate == 0 || _targetHrMode == TARGET_HEART_RATE_MODE_NONE) {
       return Colors.transparent;
     }
 
@@ -760,19 +757,7 @@ class RecordingState extends State<RecordingScreen> {
           extra = Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ColoredBox(
-                color: getTargetHrTextBackground(),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(targetText, style: getTargetHrTextStyle(), textAlign: TextAlign.center,),
-                    ),
-                  ],
-                ),
-              ),
-              extra,
-            ],
+            children: [Text(targetText, style: getTargetHrTextStyle()), extra],
           );
         }
         extras.add(extra);
@@ -888,11 +873,14 @@ class RecordingState extends State<RecordingScreen> {
                 controller: _rowControllers[2],
               ),
               Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[5],
-                expanded: _simplerUi ? null : extras[3],
-                controller: _rowControllers[3],
+              ColoredBox(
+                color: getTargetHrTextBackground(),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[5],
+                  expanded: _simplerUi ? null : extras[3],
+                  controller: _rowControllers[3],
+                ),
               ),
               Divider(height: separatorHeight),
               ExpandablePanel(
