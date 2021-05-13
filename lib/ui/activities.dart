@@ -9,6 +9,7 @@ import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:preferences/preferences.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -105,6 +106,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         IconButton(
           icon: Icon(Icons.file_download, color: Colors.black, size: size),
           onPressed: () async {
+            if (!await Permission.storage.request().isGranted) {
+              return false;
+            }
+
             final formatPick = await Get.bottomSheet(
               DataFormatPickerBottomSheet(),
               isDismissible: false,
