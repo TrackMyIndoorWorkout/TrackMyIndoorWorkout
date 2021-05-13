@@ -10,6 +10,7 @@ import '../persistence/preferences.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
+import '../utils/preferences.dart';
 import 'export_model.dart';
 import 'export_record.dart';
 
@@ -36,9 +37,11 @@ abstract class ActivityExport {
     _lastPositiveHeartRate = 0;
     heartRateGapWorkaround =
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
-    final heartRateUpperLimitString =
-        PrefService.getString(HEART_RATE_UPPER_LIMIT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
-    heartRateUpperLimit = int.tryParse(heartRateUpperLimitString);
+    heartRateUpperLimit = getStringIntegerPreference(
+      HEART_RATE_UPPER_LIMIT_TAG,
+      HEART_RATE_UPPER_LIMIT_DEFAULT,
+      HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
+    );
     heartRateLimitingMethod =
         PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
   }

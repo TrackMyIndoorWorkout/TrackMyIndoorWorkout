@@ -20,8 +20,8 @@ import 'models/advertisement_cache.dart';
 import 'parts/common.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
+import 'preferences/preferences_hub.dart';
 import 'activities.dart';
-import 'preferences.dart';
 import 'recording.dart';
 
 const HELP_URL = "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
@@ -480,7 +480,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             child: Icon(Icons.settings),
             foregroundColor: Colors.white,
             backgroundColor: Colors.indigo,
-            onPressed: () async => Get.to(PreferencesScreen()),
+            onPressed: () async => Get.to(PreferencesHubScreen()),
           ),
           FloatingActionButton(
             heroTag: null,

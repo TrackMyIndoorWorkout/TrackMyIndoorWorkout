@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
+import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
@@ -29,6 +31,9 @@ import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
+import '../utils/preferences.dart';
+import '../utils/sound.dart';
+import '../utils/target_heart_rate.dart';
 import 'models/advertisement_digest.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
@@ -126,6 +131,14 @@ class RecordingState extends State<RecordingScreen> {
   double _distance;
   int _elapsed;
 
+  String _targetHrMode;
+  Tuple2<double, double> _targetHrBounds;
+  int _heartRate;
+  Timer _beepPeriodTimer;
+  int _beepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT;
+  bool _targetHrAudio;
+  bool _targetHrAlerting;
+
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
     if (success) {
@@ -173,14 +186,17 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment.pumpData((record) async {
       _connectionWatchdog?.cancel();
       if (_connectionWatchdogTime > 0) {
-        _connectionWatchdog =
-            Timer(Duration(seconds: _connectionWatchdogTime), _reconnectionWorkaround);
+        _connectionWatchdog = Timer(
+          Duration(seconds: _connectionWatchdogTime),
+          _reconnectionWorkaround,
+        );
       }
 
       if (_measuring) {
         if (!_uxDebug) {
           await _database?.recordDao?.insertRecord(record);
         }
+
         _fitnessEquipment.lastRecord = record;
 
         setState(() {
@@ -190,8 +206,14 @@ class RecordingState extends State<RecordingScreen> {
               _graphData.removeFirst();
             }
           }
+
           _distance = record.distance;
           _elapsed = record.elapsed;
+          if (record.heartRate != null &&
+              (record.heartRate > 0 || _heartRate == null || _heartRate == 0)) {
+            _heartRate = record.heartRate;
+          }
+
           _values = [
             record.calories.toString(),
             record.power.toString(),
@@ -259,6 +281,9 @@ class RecordingState extends State<RecordingScreen> {
         }
         _heartRateMonitor.pumpMetric((heartRate) async {
           setState(() {
+            if (heartRate != null && (heartRate > 0 || _heartRate == null || _heartRate == 0)) {
+              _heartRate = heartRate;
+            }
             _values[4] = heartRate?.toString() ?? "--";
           });
         });
@@ -310,14 +335,20 @@ class RecordingState extends State<RecordingScreen> {
       _fitnessEquipment.slowPace = slowPace;
     }
 
-    final connectionWatchdogTimeString =
-        PrefService.getString(EQUIPMENT_DISCONNECTION_WATCHDOG_TAG);
-    _connectionWatchdogTime = int.tryParse(connectionWatchdogTimeString);
+    _connectionWatchdogTime = getStringIntegerPreference(
+      EQUIPMENT_DISCONNECTION_WATCHDOG_TAG,
+      EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
+      EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT,
+    );
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor.defaultSport);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
           decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
         ));
+
+    _targetHrMode =
+        PrefService.getString(TARGET_HEART_RATE_MODE_TAG) ?? TARGET_HEART_RATE_MODE_DEFAULT;
+    _targetHrBounds = getTargetHeartRateBounds(_targetHrMode, _preferencesSpecs[3]);
 
     _metricToDataFn = {
       "power": _powerChartData,
@@ -398,12 +429,28 @@ class RecordingState extends State<RecordingScreen> {
     _distance = 0.0;
     _elapsed = 0;
 
+    _targetHrAlerting = false;
+    _targetHrAudio =
+        PrefService.getBool(TARGET_HEART_RATE_AUDIO_TAG) ?? TARGET_HEART_RATE_AUDIO_DEFAULT;
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+      _beepPeriod = getStringIntegerPreference(
+        TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
+        TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
+        TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT,
+      );
+      if (!Get.isRegistered<SoundService>()) {
+        Get.put<SoundService>(SoundService());
+      }
+    }
+
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
     _database = Get.find<AppDatabase>();
   }
 
   _preDispose() async {
+    _beepPeriodTimer?.cancel();
+    await Get.find<SoundService>().stopAllSoundEffects();
     try {
       await _heartRateMonitor?.cancelSubscription();
     } on PlatformException catch (e, stack) {
@@ -444,6 +491,13 @@ class RecordingState extends State<RecordingScreen> {
       debugPrint("Equipment got turned off?");
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+  }
+
+  Future<void> _beeper() async {
+    Get.find<SoundService>().playTargetHrSoundEffect();
+    if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
+      _beepPeriodTimer = Timer(Duration(seconds: _beepPeriod), _beeper);
     }
   }
 
@@ -587,6 +641,40 @@ class RecordingState extends State<RecordingScreen> {
         false;
   }
 
+  TextStyle getTargetHrTextStyle() {
+    if (_heartRate == null || _heartRate == 0 || _targetHrMode == TARGET_HEART_RATE_MODE_NONE) {
+      return _measurementStyle;
+    }
+
+    if (_heartRate < _targetHrBounds.item1) {
+      return _measurementStyle.apply(
+        color: paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker),
+      );
+    } else if (_heartRate > _targetHrBounds.item2) {
+      return _measurementStyle.apply(
+        color: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker),
+      );
+    } else {
+      return _measurementStyle.apply(
+        color: paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker),
+      );
+    }
+  }
+
+  Color getTargetHrTextBackground() {
+    if (_heartRate == null || _heartRate == 0 || _targetHrMode == TARGET_HEART_RATE_MODE_NONE) {
+      return Colors.transparent;
+    }
+
+    if (_heartRate < _targetHrBounds.item1) {
+      return paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter);
+    } else if (_heartRate > _targetHrBounds.item2) {
+      return paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter);
+    } else {
+      return paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final separatorHeight = 1.0;
@@ -606,6 +694,24 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+      if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
+        if (!_targetHrAlerting) {
+          Get.find<SoundService>().playTargetHrSoundEffect();
+          if (_beepPeriod >= 2) {
+            _beepPeriodTimer = Timer(Duration(seconds: _beepPeriod), _beeper);
+          }
+        }
+        _targetHrAlerting = true;
+      } else {
+        if (_targetHrAlerting) {
+          _beepPeriodTimer?.cancel();
+          Get.find<SoundService>().stopAllSoundEffects();
+        }
+        _targetHrAlerting = false;
+      }
+    }
+
     final _timeDisplay = Duration(seconds: _elapsed).toDisplay();
 
     List<Widget> rows = [
@@ -621,6 +727,11 @@ class RecordingState extends State<RecordingScreen> {
     ];
 
     _rowConfig.asMap().entries.forEach((entry) {
+      var measurementStyle = _measurementStyle;
+      if (entry.key == 4 && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
+        measurementStyle = getTargetHrTextStyle();
+      }
+
       rows.add(Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -631,7 +742,7 @@ class RecordingState extends State<RecordingScreen> {
             color: Colors.indigo,
           ),
           Spacer(),
-          Text(_values[entry.key], style: _measurementStyle),
+          Text(_values[entry.key], style: measurementStyle),
           SizedBox(
             width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
             child: Center(
@@ -661,22 +772,43 @@ class RecordingState extends State<RecordingScreen> {
             height = size.height / 2;
             break;
         }
-        extras.add(
-          GestureDetector(
-            onLongPress: () => _onLongPress(entry.key),
-            child: SizedBox(
-              width: size.width,
-              height: height,
-              child: charts.TimeSeriesChart(
-                _metricToDataFn[entry.value.metric](),
-                animate: false,
-                flipVerticalAxis: entry.value.flipZones,
-                primaryMeasureAxis: charts.NumericAxisSpec(renderSpec: charts.NoneRenderSpec()),
-                behaviors: [charts.RangeAnnotation(entry.value.annotationSegments)],
-              ),
+        Widget extra = GestureDetector(
+          onLongPress: () => _onLongPress(entry.key),
+          child: SizedBox(
+            width: size.width,
+            height: height,
+            child: charts.TimeSeriesChart(
+              _metricToDataFn[entry.value.metric](),
+              animate: false,
+              flipVerticalAxis: entry.value.flipZones,
+              primaryMeasureAxis: charts.NumericAxisSpec(renderSpec: charts.NoneRenderSpec()),
+              behaviors: [charts.RangeAnnotation(entry.value.annotationSegments)],
             ),
           ),
         );
+        if (entry.value.metric == "hr" && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
+          String targetText;
+          int zoneIndex = 0;
+          if (_heartRate != null && _heartRate > 0) {
+            zoneIndex = entry.value.binIndex(_heartRate);
+            if (_heartRate < _targetHrBounds.item1) {
+              targetText = "UNDER!";
+            } else if (_heartRate > _targetHrBounds.item2) {
+              targetText = "OVER!";
+            } else {
+              targetText = "IN RANGE";
+            }
+          } else {
+            targetText = "--";
+          }
+          targetText = "Z$zoneIndex $targetText";
+          extra = Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [Text(targetText, style: getTargetHrTextStyle()), extra],
+          );
+        }
+        extras.add(extra);
       });
 
       final trackMarker = _trackCalculator.trackMarker(_distance);
@@ -789,11 +921,14 @@ class RecordingState extends State<RecordingScreen> {
                 controller: _rowControllers[2],
               ),
               Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[5],
-                expanded: _simplerUi ? null : extras[3],
-                controller: _rowControllers[3],
+              ColoredBox(
+                color: getTargetHrTextBackground(),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[5],
+                  expanded: _simplerUi ? null : extras[3],
+                  controller: _rowControllers[3],
+                ),
               ),
               Divider(height: separatorHeight),
               ExpandablePanel(
