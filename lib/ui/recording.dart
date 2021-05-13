@@ -32,6 +32,7 @@ import '../track/track_painter.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
 import '../utils/preferences.dart';
+import '../utils/sound.dart';
 import '../utils/target_heart_rate.dart';
 import 'models/advertisement_digest.dart';
 import 'models/display_record.dart';
@@ -133,6 +134,10 @@ class RecordingState extends State<RecordingScreen> {
   String _targetHrMode;
   Tuple2<double, double> _targetHrBounds;
   int _heartRate;
+  Timer _beepPeriodTimer;
+  int _beepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT;
+  bool _targetHrAudio;
+  bool _targetHrAlerting;
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
@@ -181,8 +186,10 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment.pumpData((record) async {
       _connectionWatchdog?.cancel();
       if (_connectionWatchdogTime > 0) {
-        _connectionWatchdog =
-            Timer(Duration(seconds: _connectionWatchdogTime), _reconnectionWorkaround);
+        _connectionWatchdog = Timer(
+          Duration(seconds: _connectionWatchdogTime),
+          _reconnectionWorkaround,
+        );
       }
 
       if (_measuring) {
@@ -422,12 +429,28 @@ class RecordingState extends State<RecordingScreen> {
     _distance = 0.0;
     _elapsed = 0;
 
+    _targetHrAlerting = false;
+    _targetHrAudio =
+        PrefService.getBool(TARGET_HEART_RATE_AUDIO_TAG) ?? TARGET_HEART_RATE_AUDIO_DEFAULT;
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+      _beepPeriod = getStringIntegerPreference(
+        TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
+        TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
+        TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT,
+      );
+      if (!Get.isRegistered<SoundService>()) {
+        Get.put<SoundService>(SoundService());
+      }
+    }
+
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
     _database = Get.find<AppDatabase>();
   }
 
   _preDispose() async {
+    _beepPeriodTimer?.cancel();
+    await Get.find<SoundService>().stopAllSoundEffects();
     try {
       await _heartRateMonitor?.cancelSubscription();
     } on PlatformException catch (e, stack) {
@@ -468,6 +491,13 @@ class RecordingState extends State<RecordingScreen> {
       debugPrint("Equipment got turned off?");
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+  }
+
+  Future<void> _beeper() async {
+    Get.find<SoundService>().playTargetHrSoundEffect();
+    if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
+      _beepPeriodTimer = Timer(Duration(seconds: _beepPeriod), _beeper);
     }
   }
 
@@ -662,6 +692,24 @@ class RecordingState extends State<RecordingScreen> {
         fontSize: _sizeDefault / 2,
         color: Colors.indigo,
       );
+    }
+
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+      if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
+        if (!_targetHrAlerting) {
+          Get.find<SoundService>().playTargetHrSoundEffect();
+          if (_beepPeriod >= 2) {
+            _beepPeriodTimer = Timer(Duration(seconds: _beepPeriod), _beeper);
+          }
+        }
+        _targetHrAlerting = true;
+      } else {
+        if (_targetHrAlerting) {
+          _beepPeriodTimer?.cancel();
+          Get.find<SoundService>().stopAllSoundEffects();
+        }
+        _targetHrAlerting = false;
+      }
     }
 
     final _timeDisplay = Duration(seconds: _elapsed).toDisplay();
