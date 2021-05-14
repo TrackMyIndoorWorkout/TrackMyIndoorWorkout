@@ -2,6 +2,7 @@ import 'package:floor/floor.dart';
 import 'package:meta/meta.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/display.dart' as disp;
 import 'workout_summary.dart';
 
 const String ACTIVITIES_TABLE_NAME = 'activities';
@@ -90,13 +91,11 @@ class Activity {
   }
 
   String distanceString(bool si) {
-    if (si) return '${distance.toStringAsFixed(0)}';
-    return '${(distance * M2MILE).toStringAsFixed(2)}';
+    return disp.distanceString(distance, si);
   }
 
   String distanceByUnit(bool si) {
-    final distanceStr = distanceString(si);
-    return '$distanceStr ${si ? "m" : "mi"}';
+    return disp.distanceByUnit(distance, si);
   }
 
   Activity hydrate() {

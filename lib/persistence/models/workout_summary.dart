@@ -2,6 +2,7 @@ import 'package:floor/floor.dart';
 import 'package:meta/meta.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/display.dart';
 
 const String WORKOUT_SUMMARIES_TABLE_NAME = 'workout_summary';
 
@@ -68,13 +69,13 @@ class WorkoutSummary {
     speed = distance / elapsed * DeviceDescriptor.MS2KMH;
   }
 
-  String distanceString(bool si) {
-    if (si) return '${distance.toStringAsFixed(0)}';
-    return '${(distance * M2MILE).toStringAsFixed(2)}';
+  String speedString(bool si) {
+    final speedString = speedOrPaceString(speed, si, sport);
+    final speedUnit = getSpeedUnit(si, sport);
+    return '$speedString $speedUnit';
   }
 
-  String distanceByUnit(bool si) {
-    final distanceStr = distanceString(si);
-    return '$distanceStr ${si ? "m" : "mi"}';
+  String distanceStringWithUnit(bool si) {
+    return distanceByUnit(distance, si);
   }
 }
