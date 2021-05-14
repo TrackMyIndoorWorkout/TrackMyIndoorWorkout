@@ -36,8 +36,8 @@ abstract class AppDatabase extends FloorDatabase {
   WorkoutSummaryDao get workoutSummaryDao;
 
   Future<int> rowCount(String tableName, String deviceId) async {
-    final result =
-        await database.rawQuery("SELECT COUNT(id) AS cnt FROM $tableName WHERE mac = ?", [deviceId]);
+    final result = await database
+        .rawQuery("SELECT COUNT(id) AS cnt FROM $tableName WHERE mac = ?", [deviceId]);
     return result[0]['cnt'];
   }
 
@@ -75,19 +75,19 @@ abstract class AppDatabase extends FloorDatabase {
 
   Future<bool> hasLeaderboardData() async {
     final result =
-      await database.rawQuery("SELECT COUNT(id) AS cnt FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+        await database.rawQuery("SELECT COUNT(id) AS cnt FROM $WORKOUT_SUMMARIES_TABLE_NAME");
     return result[0]['cnt'] > 0;
   }
 
   Future<List<String>> findDistinctWorkoutSummarySports() async {
-    final result =
-        await database.rawQuery("SELECT DISTINCT sport AS selection FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+    final result = await database
+        .rawQuery("SELECT DISTINCT sport AS selection FROM $WORKOUT_SUMMARIES_TABLE_NAME");
     return result[0]['selection'];
   }
 
   Future<List<Tuple2<String, String>>> findDistinctWorkoutSummaryDevices() async {
-    final result = await database
-        .rawQuery("SELECT DISTINCT device_id, device_name as selection FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+    final result = await database.rawQuery(
+        "SELECT DISTINCT device_id, device_name as selection FROM $WORKOUT_SUMMARIES_TABLE_NAME");
     return result[0]['selection'];
   }
 }
