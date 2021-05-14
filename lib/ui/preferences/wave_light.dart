@@ -18,7 +18,7 @@ class WaveLightPreferencesScreen extends PreferencesScreenBase {
         onDisable: () {
           PrefService.setBool(WAVE_LIGHT_FOR_DEVICE_TAG, false);
           PrefService.setBool(WAVE_LIGHT_FOR_SPORT_TAG, false);
-        }
+        },
       ),
       SwitchPreference(
         WAVE_LIGHT_FOR_DEVICE,
@@ -27,16 +27,16 @@ class WaveLightPreferencesScreen extends PreferencesScreenBase {
         desc: WAVE_LIGHT_FOR_DEVICE_DESCRIPTION,
         onEnable: () {
           PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
-        }
+        },
       ),
       SwitchPreference(
         WAVE_LIGHT_FOR_SPORT,
         WAVE_LIGHT_FOR_SPORT_TAG,
         defaultVal: WAVE_LIGHT_FOR_SPORT_DEFAULT,
         desc: WAVE_LIGHT_FOR_SPORT_DESCRIPTION,
-          onEnable: () {
-            PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
-          }
+        onEnable: () {
+          PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
+        },
       ),
     ];
 
