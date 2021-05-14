@@ -38,6 +38,11 @@ abstract class AppDatabase extends FloorDatabase {
   Future<int> rowCount(String tableName, String deviceId) async {
     final result = await database
         .rawQuery("SELECT COUNT(id) AS cnt FROM $tableName WHERE mac = ?", [deviceId]);
+
+    if (result == null || result.length < 1) {
+      return 0;
+    }
+
     return result[0]['cnt'];
   }
 
@@ -76,18 +81,33 @@ abstract class AppDatabase extends FloorDatabase {
   Future<bool> hasLeaderboardData() async {
     final result =
         await database.rawQuery("SELECT COUNT(id) AS cnt FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+
+    if (result == null || result.length < 1) {
+      return false;
+    }
+
     return result[0]['cnt'] > 0;
   }
 
   Future<List<String>> findDistinctWorkoutSummarySports() async {
     final result = await database
         .rawQuery("SELECT DISTINCT sport AS selection FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+
+    if (result == null || result.length < 1) {
+      return [];
+    }
+
     return result[0]['selection'];
   }
 
   Future<List<Tuple2<String, String>>> findDistinctWorkoutSummaryDevices() async {
     final result = await database.rawQuery(
         "SELECT DISTINCT device_id, device_name as selection FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+
+    if (result == null || result.length < 1) {
+      return [];
+    }
+
     return result[0]['selection'];
   }
 }
