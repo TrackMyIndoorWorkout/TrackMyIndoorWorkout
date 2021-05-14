@@ -2,6 +2,7 @@ import 'package:floor/floor.dart';
 import 'package:meta/meta.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import 'workout_summary.dart';
 
 const String ACTIVITIES_TABLE_NAME = 'activities';
 
@@ -101,5 +102,19 @@ class Activity {
   Activity hydrate() {
     startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
     return this;
+  }
+
+  WorkoutSummary getWorkoutSummary(String manufacturer) {
+    return WorkoutSummary(
+      deviceName: deviceName,
+      deviceId: deviceId,
+      manufacturer: manufacturer,
+      start: start,
+      distance: distance,
+      elapsed: elapsed,
+      sport: sport,
+      powerFactor: powerFactor,
+      calorieFactor: calorieFactor,
+    );
   }
 }

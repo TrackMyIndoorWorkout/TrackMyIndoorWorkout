@@ -138,6 +138,7 @@ class RecordingState extends State<RecordingScreen> {
   int _beepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT;
   bool _targetHrAudio;
   bool _targetHrAlerting;
+  bool _leaderboardFeature;
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
@@ -442,6 +443,7 @@ class RecordingState extends State<RecordingScreen> {
         Get.put<SoundService>(SoundService());
       }
     }
+    _leaderboardFeature = PrefService.getBool(LEADERBOARD_FEATURE) ?? LEADERBOARD_FEATURE_DEFAULT;
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
@@ -549,6 +551,11 @@ class RecordingState extends State<RecordingScreen> {
       _fitnessEquipment.lastRecord?.calories,
     );
     if (!_uxDebug) {
+      if (_leaderboardFeature) {
+        await _database?.workoutSummaryDao
+            ?.insertWorkoutSummary(_activity.getWorkoutSummary(_fitnessEquipment.manufacturerName));
+      }
+
       final retVal = await _database?.activityDao?.updateActivity(_activity);
       if (retVal <= 0 && !quick) {
         Get.snackbar("Warning", "Could not save activity");
