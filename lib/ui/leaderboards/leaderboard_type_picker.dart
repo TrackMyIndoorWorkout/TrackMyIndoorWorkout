@@ -36,8 +36,9 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Text("Leaderboards:", style: _textStyle),
           Container(
             padding: const EdgeInsets.all(5.0),
             margin: const EdgeInsets.all(5.0),
@@ -55,7 +56,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   TextOneLine(
-                    "Sport Leaderboard",
+                    "Sport",
                     style: _textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
@@ -83,7 +84,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   TextOneLine(
-                    "Device Leaderboard",
+                    "Device",
                     style: _textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
