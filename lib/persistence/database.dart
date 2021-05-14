@@ -8,21 +8,31 @@ import 'dao/calorie_tune_dao.dart';
 import 'dao/device_usage_dao.dart';
 import 'dao/power_tune_dao.dart';
 import 'dao/record_dao.dart';
+import 'dao/workout_summary_dao.dart';
 import 'models/activity.dart';
 import 'models/calorie_tune.dart';
 import 'models/device_usage.dart';
 import 'models/power_tune.dart';
 import 'models/record.dart';
+import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 6, entities: [Activity, Record, DeviceUsage, CalorieTune, PowerTune])
+@Database(version: 6, entities: [
+  Activity,
+  Record,
+  DeviceUsage,
+  CalorieTune,
+  PowerTune,
+  WorkoutSummary,
+])
 abstract class AppDatabase extends FloorDatabase {
   ActivityDao get activityDao;
   RecordDao get recordDao;
   DeviceUsageDao get deviceUsageDao;
   CalorieTuneDao get calorieTuneDao;
   PowerTuneDao get powerTuneDao;
+  WorkoutSummaryDao get workoutSummaryDao;
 
   Future<int> rowCount(String tableName, String deviceId) async {
     final result =

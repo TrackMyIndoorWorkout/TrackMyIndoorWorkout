@@ -66,6 +66,8 @@ class _$AppDatabase extends AppDatabase {
 
   PowerTuneDao _powerTuneDaoInstance;
 
+  WorkoutSummaryDao _workoutSummaryDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -92,6 +94,8 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `calorie_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `calorie_factor` REAL, `time` INTEGER)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `power_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `power_factor` REAL, `time` INTEGER)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `workout_summary` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, `manufacturer` TEXT, `start` INTEGER, `distance` REAL, `elapsed` INTEGER, `speed` REAL, `sport` TEXT, `power_factor` REAL, `calorie_factor` REAL)');
         await database.execute('CREATE INDEX `index_activities_start` ON `activities` (`start`)');
         await database
             .execute('CREATE INDEX `index_records_time_stamp` ON `records` (`time_stamp`)');
@@ -99,6 +103,10 @@ class _$AppDatabase extends AppDatabase {
         await database.execute('CREATE INDEX `index_device_usage_mac` ON `device_usage` (`mac`)');
         await database.execute('CREATE INDEX `index_calorie_tune_mac` ON `calorie_tune` (`mac`)');
         await database.execute('CREATE INDEX `index_power_tune_mac` ON `power_tune` (`mac`)');
+        await database
+            .execute('CREATE INDEX `index_workout_summary_sport` ON `workout_summary` (`sport`)');
+        await database.execute(
+            'CREATE INDEX `index_workout_summary_device_id` ON `workout_summary` (`device_id`)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -129,6 +137,11 @@ class _$AppDatabase extends AppDatabase {
   @override
   PowerTuneDao get powerTuneDao {
     return _powerTuneDaoInstance ??= _$PowerTuneDao(database, changeListener);
+  }
+
+  @override
+  WorkoutSummaryDao get workoutSummaryDao {
+    return _workoutSummaryDaoInstance ??= _$WorkoutSummaryDao(database, changeListener);
   }
 }
 
@@ -774,5 +787,165 @@ class _$PowerTuneDao extends PowerTuneDao {
   @override
   Future<int> deletePowerTune(PowerTune powerTune) {
     return _powerTuneDeletionAdapter.deleteAndReturnChangedRows(powerTune);
+  }
+}
+
+class _$WorkoutSummaryDao extends WorkoutSummaryDao {
+  _$WorkoutSummaryDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _workoutSummaryInsertionAdapter = InsertionAdapter(
+            database,
+            'workout_summary',
+            (WorkoutSummary item) => <String, dynamic>{
+                  'id': item.id,
+                  'device_name': item.deviceName,
+                  'device_id': item.deviceId,
+                  'manufacturer': item.manufacturer,
+                  'start': item.start,
+                  'distance': item.distance,
+                  'elapsed': item.elapsed,
+                  'speed': item.speed,
+                  'sport': item.sport,
+                  'power_factor': item.powerFactor,
+                  'calorie_factor': item.calorieFactor
+                },
+            changeListener),
+        _workoutSummaryUpdateAdapter = UpdateAdapter(
+            database,
+            'workout_summary',
+            ['id'],
+            (WorkoutSummary item) => <String, dynamic>{
+                  'id': item.id,
+                  'device_name': item.deviceName,
+                  'device_id': item.deviceId,
+                  'manufacturer': item.manufacturer,
+                  'start': item.start,
+                  'distance': item.distance,
+                  'elapsed': item.elapsed,
+                  'speed': item.speed,
+                  'sport': item.sport,
+                  'power_factor': item.powerFactor,
+                  'calorie_factor': item.calorieFactor
+                },
+            changeListener),
+        _workoutSummaryDeletionAdapter = DeletionAdapter(
+            database,
+            'workout_summary',
+            ['id'],
+            (WorkoutSummary item) => <String, dynamic>{
+                  'id': item.id,
+                  'device_name': item.deviceName,
+                  'device_id': item.deviceId,
+                  'manufacturer': item.manufacturer,
+                  'start': item.start,
+                  'distance': item.distance,
+                  'elapsed': item.elapsed,
+                  'speed': item.speed,
+                  'sport': item.sport,
+                  'power_factor': item.powerFactor,
+                  'calorie_factor': item.calorieFactor
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<WorkoutSummary> _workoutSummaryInsertionAdapter;
+
+  final UpdateAdapter<WorkoutSummary> _workoutSummaryUpdateAdapter;
+
+  final DeletionAdapter<WorkoutSummary> _workoutSummaryDeletionAdapter;
+
+  @override
+  Future<List<WorkoutSummary>> findAllWorkoutSummaries() async {
+    return _queryAdapter.queryList('SELECT * FROM workout_summary ORDER BY speed DESC',
+        mapper: (Map<String, dynamic> row) => WorkoutSummary(
+            id: row['id'] as int,
+            deviceName: row['device_name'] as String,
+            deviceId: row['device_id'] as String,
+            manufacturer: row['manufacturer'] as String,
+            start: row['start'] as int,
+            distance: row['distance'] as double,
+            elapsed: row['elapsed'] as int,
+            sport: row['sport'] as String,
+            powerFactor: row['power_factor'] as double,
+            calorieFactor: row['calorie_factor'] as double));
+  }
+
+  @override
+  Stream<WorkoutSummary> findWorkoutSummaryById(int id) {
+    return _queryAdapter.queryStream('SELECT * FROM workout_summary WHERE id = ?',
+        arguments: <dynamic>[id],
+        queryableName: 'workout_summary',
+        isView: false,
+        mapper: (Map<String, dynamic> row) => WorkoutSummary(
+            id: row['id'] as int,
+            deviceName: row['device_name'] as String,
+            deviceId: row['device_id'] as String,
+            manufacturer: row['manufacturer'] as String,
+            start: row['start'] as int,
+            distance: row['distance'] as double,
+            elapsed: row['elapsed'] as int,
+            sport: row['sport'] as String,
+            powerFactor: row['power_factor'] as double,
+            calorieFactor: row['calorie_factor'] as double));
+  }
+
+  @override
+  Future<List<WorkoutSummary>> findWorkoutSummaryByDevice(
+      String deviceId, int limit, int offset) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM workout_summary WHERE device_id = ? ORDER BY speed DESC LIMIT ? OFFSET ?',
+        arguments: <dynamic>[deviceId, limit, offset],
+        mapper: (Map<String, dynamic> row) => WorkoutSummary(
+            id: row['id'] as int,
+            deviceName: row['device_name'] as String,
+            deviceId: row['device_id'] as String,
+            manufacturer: row['manufacturer'] as String,
+            start: row['start'] as int,
+            distance: row['distance'] as double,
+            elapsed: row['elapsed'] as int,
+            sport: row['sport'] as String,
+            powerFactor: row['power_factor'] as double,
+            calorieFactor: row['calorie_factor'] as double));
+  }
+
+  @override
+  Future<List<WorkoutSummary>> findWorkoutSummaryBySport(
+      String sport, int limit, int offset) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM workout_summary WHERE sport = ? ORDER BY speed DESC LIMIT ? OFFSET ?',
+        arguments: <dynamic>[sport, limit, offset],
+        mapper: (Map<String, dynamic> row) => WorkoutSummary(
+            id: row['id'] as int,
+            deviceName: row['device_name'] as String,
+            deviceId: row['device_id'] as String,
+            manufacturer: row['manufacturer'] as String,
+            start: row['start'] as int,
+            distance: row['distance'] as double,
+            elapsed: row['elapsed'] as int,
+            sport: row['sport'] as String,
+            powerFactor: row['power_factor'] as double,
+            calorieFactor: row['calorie_factor'] as double));
+  }
+
+  @override
+  Future<int> insertWorkoutSummary(WorkoutSummary workoutSummary) {
+    return _workoutSummaryInsertionAdapter.insertAndReturnId(
+        workoutSummary, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> updateWorkoutSummary(WorkoutSummary workoutSummary) {
+    return _workoutSummaryUpdateAdapter.updateAndReturnChangedRows(
+        workoutSummary, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> deleteWorkoutSummary(WorkoutSummary workoutSummary) {
+    return _workoutSummaryDeletionAdapter.deleteAndReturnChangedRows(workoutSummary);
   }
 }
