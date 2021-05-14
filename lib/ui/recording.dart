@@ -139,6 +139,8 @@ class RecordingState extends State<RecordingScreen> {
   bool _targetHrAudio;
   bool _targetHrAlerting;
   bool _leaderboardFeature;
+  bool _waveLightForDevice;
+  bool _waveLightForSport;
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
@@ -443,7 +445,12 @@ class RecordingState extends State<RecordingScreen> {
         Get.put<SoundService>(SoundService());
       }
     }
-    _leaderboardFeature = PrefService.getBool(LEADERBOARD_FEATURE) ?? LEADERBOARD_FEATURE_DEFAULT;
+    _leaderboardFeature =
+        PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
+    _waveLightForDevice =
+        PrefService.getBool(WAVE_LIGHT_FOR_DEVICE_TAG) ?? WAVE_LIGHT_FOR_DEVICE_DEFAULT;
+    _waveLightForSport =
+        PrefService.getBool(WAVE_LIGHT_FOR_SPORT_TAG) ?? WAVE_LIGHT_FOR_SPORT_DEFAULT;
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
@@ -988,7 +995,8 @@ class RecordingState extends State<RecordingScreen> {
                 if (_measuring) {
                   Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
                 } else {
-                  await Get.to(ActivitiesScreen());
+                  final hasLeaderboardData = await _database.hasLeaderboardData();
+                  await Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
                 }
               },
             ),

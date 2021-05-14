@@ -21,24 +21,27 @@ import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
-import '../ui/calorie_tunes.dart';
-import '../ui/device_usages.dart';
-import '../ui/parts/calorie_override.dart';
-import '../ui/parts/data_format_picker.dart';
-import '../ui/parts/power_factor_tune.dart';
-import '../ui/power_tunes.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import 'calorie_tunes.dart';
+import 'device_usages.dart';
 import 'find_devices.dart';
 import 'import_form.dart';
+import 'leaderboards/leaderboard_type_picker.dart';
+import 'parts/calorie_override.dart';
+import 'parts/data_format_picker.dart';
+import 'parts/power_factor_tune.dart';
+import 'power_tunes.dart';
 import 'records.dart';
 
 class ActivitiesScreen extends StatefulWidget {
-  ActivitiesScreen({key}) : super(key: key);
+  final bool hasLeaderboardData;
+
+  ActivitiesScreen({key, this.hasLeaderboardData}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return ActivitiesScreenState();
+    return ActivitiesScreenState(hasLeaderboardData: hasLeaderboardData);
   }
 }
 
@@ -46,6 +49,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database;
   int _editCount;
   bool _si;
+  bool _leaderboardFeature;
+  bool hasLeaderboardData;
   double _mediaWidth;
   double _sizeDefault;
   double _sizeDefault2;
@@ -54,11 +59,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   TextStyle _headerStyle;
   TextStyle _unitStyle;
 
+  ActivitiesScreenState({@required this.hasLeaderboardData}) : assert(hasLeaderboardData != null);
+
   @override
   void initState() {
     super.initState();
     _editCount = 0;
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    _leaderboardFeature =
+        PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _database = Get.find<AppDatabase>();
   }
 
@@ -221,6 +230,73 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       );
     }
 
+    List<FloatingActionButton> floatingActionButtons = [
+      FloatingActionButton(
+        heroTag: null,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.indigo,
+        child: Icon(Icons.file_upload),
+        onPressed: () async {
+          await Get.to(ImportForm()).whenComplete(() => setState(() {
+                _editCount++;
+              }));
+        },
+      ),
+      FloatingActionButton(
+        heroTag: null,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        child: Icon(Icons.collections_bookmark),
+        onPressed: () async {
+          await Get.to(DeviceUsagesScreen());
+        },
+      ),
+      FloatingActionButton(
+        heroTag: null,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        child: Icon(Icons.bolt),
+        onPressed: () async {
+          await Get.to(PowerTunesScreen());
+        },
+      ),
+      FloatingActionButton(
+        heroTag: null,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        child: Icon(Icons.whatshot),
+        onPressed: () async {
+          await Get.to(CalorieTunesScreen());
+        },
+      ),
+    ];
+
+    if (_leaderboardFeature && hasLeaderboardData) {
+      floatingActionButtons.add(FloatingActionButton(
+        heroTag: null,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        child: Icon(Icons.leaderboard),
+        onPressed: () async {
+          await Get.bottomSheet(LeaderBoardTypeBottomSheet(), enableDrag: false);
+        },
+      ));
+    }
+
+    floatingActionButtons.add(FloatingActionButton(
+      heroTag: null,
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.indigo,
+      child: Icon(Icons.help),
+      onPressed: () async {
+        if (await canLaunch(HELP_URL)) {
+          launch(HELP_URL);
+        } else {
+          Get.snackbar("Attention", "Cannot open URL");
+        }
+      },
+    ));
+
     return Scaffold(
       appBar: AppBar(title: Text('Activities')),
       body: CustomListView(
@@ -345,59 +421,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       floatingActionButton: FabCircularMenu(
         fabOpenIcon: const Icon(Icons.menu, color: Colors.white),
         fabCloseIcon: const Icon(Icons.close, color: Colors.white),
-        children: [
-          FloatingActionButton(
-            heroTag: null,
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.indigo,
-            child: Icon(Icons.file_upload),
-            onPressed: () async {
-              await Get.to(ImportForm()).whenComplete(() => setState(() {
-                    _editCount++;
-                  }));
-            },
-          ),
-          FloatingActionButton(
-            heroTag: null,
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.black,
-            child: Icon(Icons.collections_bookmark),
-            onPressed: () async {
-              await Get.to(DeviceUsagesScreen());
-            },
-          ),
-          FloatingActionButton(
-            heroTag: null,
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.black,
-            child: Icon(Icons.bolt),
-            onPressed: () async {
-              await Get.to(PowerTunesScreen());
-            },
-          ),
-          FloatingActionButton(
-            heroTag: null,
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.black,
-            child: Icon(Icons.whatshot),
-            onPressed: () async {
-              await Get.to(CalorieTunesScreen());
-            },
-          ),
-          FloatingActionButton(
-            heroTag: null,
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.indigo,
-            child: Icon(Icons.help),
-            onPressed: () async {
-              if (await canLaunch(HELP_URL)) {
-                launch(HELP_URL);
-              } else {
-                Get.snackbar("Attention", "Cannot open URL");
-              }
-            },
-          ),
-        ],
+        children: floatingActionButtons,
       ),
     );
   }

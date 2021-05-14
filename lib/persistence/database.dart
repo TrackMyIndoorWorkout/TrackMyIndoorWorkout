@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:floor/floor.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
+import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
 import 'dao/activity_dao.dart';
@@ -36,8 +37,8 @@ abstract class AppDatabase extends FloorDatabase {
 
   Future<int> rowCount(String tableName, String deviceId) async {
     final result =
-        await database.rawQuery("SELECT COUNT(id) FROM $tableName WHERE mac = ?", [deviceId]);
-    return result[0]['COUNT(id)'];
+        await database.rawQuery("SELECT COUNT(id) AS cnt FROM $tableName WHERE mac = ?", [deviceId]);
+    return result[0]['cnt'];
   }
 
   Future<bool> hasDeviceUsage(String deviceId) async {
@@ -70,6 +71,24 @@ abstract class AppDatabase extends FloorDatabase {
     final calorieTune = await calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
 
     return calorieTune?.calorieFactor ?? descriptor.calorieFactorDefault;
+  }
+
+  Future<bool> hasLeaderboardData() async {
+    final result =
+      await database.rawQuery("SELECT COUNT(id) AS cnt FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+    return result[0]['cnt'] > 0;
+  }
+
+  Future<List<String>> findDistinctWorkoutSummarySports() async {
+    final result =
+        await database.rawQuery("SELECT DISTINCT sport AS selection FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+    return result[0]['selection'];
+  }
+
+  Future<List<Tuple2<String, String>>> findDistinctWorkoutSummaryDevices() async {
+    final result = await database
+        .rawQuery("SELECT DISTINCT device_id, device_name as selection FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+    return result[0]['selection'];
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:floor/floor.dart';
 import 'package:meta/meta.dart';
+import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../persistence/preferences.dart';
 
 const String WORKOUT_SUMMARIES_TABLE_NAME = 'workout_summary';
@@ -28,7 +29,7 @@ class WorkoutSummary {
   final double distance; // m
   @required
   final int elapsed; // s
-  double speed; // m/s
+  double speed; // km/h
   @required
   final String sport;
   @ColumnInfo(name: 'power_factor')
@@ -64,7 +65,7 @@ class WorkoutSummary {
         assert(powerFactor != null),
         assert(calorieFactor != null) {
     startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
-    speed = distance / elapsed;
+    speed = distance / elapsed * DeviceDescriptor.MS2KMH;
   }
 
   String distanceString(bool si) {
