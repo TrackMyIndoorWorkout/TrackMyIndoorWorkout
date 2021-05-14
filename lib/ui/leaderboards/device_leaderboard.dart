@@ -10,12 +10,13 @@ import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
-import '../../utils/display.dart';
 
 class DeviceLeaderboardScreen extends StatefulWidget {
   final Tuple2<String, String> device;
 
-  DeviceLeaderboardScreen({key, @required this.device}) : assert(device != null), super(key: key);
+  DeviceLeaderboardScreen({key, @required this.device})
+      : assert(device != null),
+        super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -95,7 +96,8 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
-            final data = await _database.workoutSummaryDao.findWorkoutSummaryByDevice(device.item1, limit, offset);
+            final data = await _database.workoutSummaryDao
+                .findWorkoutSummaryByDevice(device.item1, limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -111,14 +113,16 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
           );
         },
         empty: Center(
-          child: Text('No tunes found'),
+          child: Text('No entries found'),
         ),
         itemBuilder: (context, index, item) {
           final workoutSummary = item as WorkoutSummary;
           final timeStamp = DateTime.fromMillisecondsSinceEpoch(workoutSummary.start);
           final dateString = DateFormat.yMd().format(timeStamp);
           final timeString = DateFormat.Hms().format(timeStamp);
-          final speedString = speedOrPaceString(workoutSummary.speed, _si, sport);
+          final speedString = workoutSummary.speedString(_si);
+          final distanceString = workoutSummary.distanceStringWithUnit(_si);
+          final timeDisplay = Duration(seconds: workoutSummary.elapsed).toDisplay();
           return Card(
             elevation: 6,
             child: ExpandablePanel(
@@ -132,7 +136,13 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextOneLine(
-                    '$index. $speedString',
+                    '($distanceString',
+                    style: _textStyle,
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  TextOneLine(
+                    ' / $timeDisplay)',
                     style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,

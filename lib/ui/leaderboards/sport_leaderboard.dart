@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
+import 'package:preferences/preferences.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../persistence/preferences.dart';
@@ -12,7 +13,9 @@ import '../../utils/constants.dart';
 class SportLeaderboardScreen extends StatefulWidget {
   final String sport;
 
-  SportLeaderboardScreen({key, @required this.sport}) : assert(sport != null), super(key: key);
+  SportLeaderboardScreen({key, @required this.sport})
+      : assert(sport != null),
+        super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -23,6 +26,7 @@ class SportLeaderboardScreen extends StatefulWidget {
 class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   final String sport;
   AppDatabase _database;
+  bool _si;
   int _editCount;
   double _mediaWidth;
   double _sizeDefault;
@@ -35,6 +39,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
     super.initState();
     _editCount = 0;
     _database = Get.find<AppDatabase>();
+    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
@@ -90,7 +95,8 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
-            final data = await _database.workoutSummaryDao.findWorkoutSummaryBySport(sport, limit, offset);
+            final data =
+                await _database.workoutSummaryDao.findWorkoutSummaryBySport(sport, limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -106,29 +112,43 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
           );
         },
         empty: Center(
-          child: Text('No tunes found'),
+          child: Text('No entries found'),
         ),
-        itemBuilder: (context, _, item) {
-          final calorieTune = item as CalorieTune;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(calorieTune.time);
+        itemBuilder: (context, index, item) {
+          final workoutSummary = item as WorkoutSummary;
+          final timeStamp = DateTime.fromMillisecondsSinceEpoch(workoutSummary.start);
           final dateString = DateFormat.yMd().format(timeStamp);
           final timeString = DateFormat.Hms().format(timeStamp);
-          final caloriePercent = (calorieTune.calorieFactor * 100).round();
+          final speedString = workoutSummary.speedString(_si);
+          final distanceString = workoutSummary.distanceStringWithUnit(_si);
+          final timeDisplay = Duration(seconds: workoutSummary.elapsed).toDisplay();
           return Card(
             elevation: 6,
             child: ExpandablePanel(
-              key: Key("${calorieTune.id}"),
+              key: Key("${workoutSummary.id}"),
               header: Column(
                 children: [
                   TextOneLine(
-                    calorieTune.mac,
+                    '$index. $speedString',
                     style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextOneLine(
-                    "$caloriePercent %",
-                    style: _textStyle.apply(fontSizeFactor: 2.0),
+                    '($distanceString',
+                    style: _textStyle,
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  TextOneLine(
+                    ' / $timeDisplay)',
+                    style: _textStyle,
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  TextOneLine(
+                    workoutSummary.deviceName,
+                    style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -167,7 +187,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
                         ),
                       ],
                     ),
-                    _actionButtonRow(calorieTune, _sizeDefault),
+                    _actionButtonRow(workoutSummary, _sizeDefault),
                   ],
                 ),
               ),
