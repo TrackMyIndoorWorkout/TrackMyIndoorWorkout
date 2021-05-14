@@ -45,7 +45,9 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
             child: ElevatedButton(
               onPressed: () async {
                 final sports = await database.findDistinctWorkoutSummarySports();
-                if (sports.length > 1) {
+                if (sports == null || sports.length <= 0) {
+                  Get.snackbar("Warning", "No sports found");
+                } else if (sports.length > 1) {
                   Get.to(LeaderboardSportHubScreen(sports: sports));
                 } else {
                   Get.to(SportLeaderboardScreen(sport: sports.first));
@@ -73,7 +75,9 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
             child: ElevatedButton(
               onPressed: () async {
                 final devices = await database.findDistinctWorkoutSummaryDevices();
-                if (devices.length > 1) {
+                if (devices == null || devices.length <= 0) {
+                  Get.snackbar("Warning", "No devices found");
+                } else if (devices.length > 1) {
                   Get.to(LeaderboardDeviceHubScreen(devices: devices));
                 } else {
                   Get.to(DeviceLeaderboardScreen(device: devices.first));
