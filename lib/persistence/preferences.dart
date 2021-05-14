@@ -595,10 +595,10 @@ const AUDIO_VOLUME_DEFAULT_INT = 50;
 const AUDIO_VOLUME_DEFAULT = "$AUDIO_VOLUME_DEFAULT_INT";
 const AUDIO_VOLUME_DESCRIPTION = "Volume base of the audio effects.";
 
-const LEADERBOARD_REGISTRY = "Leaderboard Feature";
-const LEADERBOARD_REGISTRY_TAG = "leaderboard_feature";
-const LEADERBOARD_REGISTRY_DEFAULT = false;
-const LEADERBOARD_REGISTRY_DESCRIPTION = "Leaderboard registry: should the app record workout entries " +
+const LEADERBOARD_FEATURE = "Leaderboard Feature";
+const LEADERBOARD_FEATURE_TAG = "leaderboard_feature";
+const LEADERBOARD_FEATURE_DEFAULT = false;
+const LEADERBOARD_FEATURE_DESCRIPTION = "Leaderboard registry: should the app record workout entries " +
     "for leaderboard purposes.";
 
 const WAVE_LIGHT_FOR_DEVICE = "Wavelight Specific for the Actual Device";

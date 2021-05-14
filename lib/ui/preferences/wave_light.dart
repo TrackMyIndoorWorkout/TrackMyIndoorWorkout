@@ -11,10 +11,10 @@ class WaveLightPreferencesScreen extends PreferencesScreenBase {
   Widget build(BuildContext context) {
     List<Widget> waveLightPreferences = [
       SwitchPreference(
-        LEADERBOARD_REGISTRY,
-        LEADERBOARD_REGISTRY_TAG,
-        defaultVal: LEADERBOARD_REGISTRY_DEFAULT,
-        desc: LEADERBOARD_REGISTRY_DESCRIPTION,
+        LEADERBOARD_FEATURE,
+        LEADERBOARD_FEATURE_TAG,
+        defaultVal: LEADERBOARD_FEATURE_DEFAULT,
+        desc: LEADERBOARD_FEATURE_DESCRIPTION,
         onDisable: () {
           PrefService.setBool(WAVE_LIGHT_FOR_DEVICE_TAG, false);
           PrefService.setBool(WAVE_LIGHT_FOR_SPORT_TAG, false);
@@ -26,7 +26,7 @@ class WaveLightPreferencesScreen extends PreferencesScreenBase {
         defaultVal: WAVE_LIGHT_FOR_DEVICE_DEFAULT,
         desc: WAVE_LIGHT_FOR_DEVICE_DESCRIPTION,
         onEnable: () {
-          PrefService.setBool(LEADERBOARD_REGISTRY_TAG, true);
+          PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
         }
       ),
       SwitchPreference(
@@ -35,7 +35,7 @@ class WaveLightPreferencesScreen extends PreferencesScreenBase {
         defaultVal: WAVE_LIGHT_FOR_SPORT_DEFAULT,
         desc: WAVE_LIGHT_FOR_SPORT_DESCRIPTION,
           onEnable: () {
-            PrefService.setBool(LEADERBOARD_REGISTRY_TAG, true);
+            PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
           }
       ),
     ];
