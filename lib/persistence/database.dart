@@ -90,25 +90,27 @@ abstract class AppDatabase extends FloorDatabase {
   }
 
   Future<List<String>> findDistinctWorkoutSummarySports() async {
-    final result = await database
-        .rawQuery("SELECT DISTINCT sport AS selection FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+    final result =
+        await database.rawQuery("SELECT DISTINCT sport FROM $WORKOUT_SUMMARIES_TABLE_NAME");
 
     if (result == null || result.length < 1) {
       return [];
     }
 
-    return result[0]['selection'];
+    return result.map((row) => row['sport'].toString()).toList(growable: false);
   }
 
   Future<List<Tuple2<String, String>>> findDistinctWorkoutSummaryDevices() async {
-    final result = await database.rawQuery(
-        "SELECT DISTINCT device_id, device_name as selection FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+    final result = await database
+        .rawQuery("SELECT DISTINCT device_id, device_name FROM $WORKOUT_SUMMARIES_TABLE_NAME");
 
     if (result == null || result.length < 1) {
       return [];
     }
 
-    return result[0]['selection'];
+    return result
+        .map((row) => Tuple2<String, String>(row['device_id'], row['device_name']))
+        .toList(growable: false);
   }
 }
 
