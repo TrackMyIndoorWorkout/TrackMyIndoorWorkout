@@ -9,10 +9,9 @@ import 'device_leaderboard.dart';
 class LeaderboardDeviceHubScreen extends StatefulWidget {
   final List<Tuple2<String, String>> devices;
 
-  LeaderboardDeviceHubScreen({Key key, @required this.devices}) :
-        assert(devices != null),
+  LeaderboardDeviceHubScreen({Key key, @required this.devices})
+      : assert(devices != null),
         super(key: key);
-
 
   @override
   State<StatefulWidget> createState() => LeaderboardDeviceHubScreenState(devices: devices);
@@ -45,7 +44,8 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: devices.map(
+          children: devices
+              .map(
                 (device) => Container(
                   padding: const EdgeInsets.all(5.0),
                   margin: const EdgeInsets.all(5.0),
@@ -67,7 +67,7 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
                     style: buttonStyle,
                   ),
                 ),
-          )
+              )
               .toList(growable: false),
         ),
       ),

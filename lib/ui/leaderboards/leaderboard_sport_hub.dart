@@ -8,10 +8,9 @@ import 'sport_leaderboard.dart';
 class LeaderboardSportHubScreen extends StatefulWidget {
   final List<String> sports;
 
-  LeaderboardSportHubScreen({Key key, @required this.sports}) :
-        assert(sports != null),
+  LeaderboardSportHubScreen({Key key, @required this.sports})
+      : assert(sports != null),
         super(key: key);
-
 
   @override
   State<StatefulWidget> createState() => LeaderboardSportHubScreenState(sports: sports);
@@ -44,7 +43,8 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: sports.map(
+          children: sports
+              .map(
                 (sport) => Container(
                   padding: const EdgeInsets.all(5.0),
                   margin: const EdgeInsets.all(5.0),
@@ -66,7 +66,7 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
                     style: buttonStyle,
                   ),
                 ),
-          )
+              )
               .toList(growable: false),
         ),
       ),
