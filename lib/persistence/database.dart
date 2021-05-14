@@ -19,7 +19,7 @@ import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 6, entities: [
+@Database(version: 7, entities: [
   Activity,
   Record,
   DeviceUsage,
@@ -131,4 +131,11 @@ final migration5to6 = Migration(5, 6, (database) async {
       .execute("UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=1.4 WHERE four_cc='SIC4'");
   await database
       .execute("UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=3.9 WHERE four_cc='SAP+'");
+});
+
+final migration6to7 = Migration(6, 7, (database) async {
+  await database.execute('CREATE TABLE IF NOT EXISTS `$WORKOUT_SUMMARIES_TABLE_NAME` ' +
+      '(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, ' +
+      '`manufacturer` TEXT, `start` INTEGER, `distance` REAL, `elapsed` INTEGER, ' +
+      '`speed` REAL, `sport` TEXT, `power_factor` REAL, `calorie_factor` REAL)');
 });
