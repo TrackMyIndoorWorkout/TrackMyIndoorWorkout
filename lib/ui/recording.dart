@@ -453,6 +453,7 @@ class RecordingState extends State<RecordingScreen> {
   _preDispose() async {
     _beepPeriodTimer?.cancel();
     await Get.find<SoundService>().stopAllSoundEffects();
+
     try {
       await _heartRateMonitor?.cancelSubscription();
     } on PlatformException catch (e, stack) {
@@ -460,7 +461,9 @@ class RecordingState extends State<RecordingScreen> {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
+
     _connectionWatchdog?.cancel();
+
     try {
       await _fitnessEquipment?.detach();
     } on PlatformException catch (e, stack) {
@@ -479,6 +482,10 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> _reconnectionWorkaround() async {
     Get.snackbar("Warning", "Equipment might be disconnected. Auto-starting new workout:");
+
+    _beepPeriodTimer?.cancel();
+    Get.find<SoundService>().stopAllSoundEffects();
+
     setState(() {
       _measuring = false;
     });
@@ -498,8 +505,10 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> _beeper() async {
     Get.find<SoundService>().playTargetHrSoundEffect();
-    if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
-      _beepPeriodTimer = Timer(Duration(seconds: _beepPeriod), _beeper);
+    if (_measuring && _targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+      if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
+        _beepPeriodTimer = Timer(Duration(seconds: _beepPeriod), _beeper);
+      }
     }
   }
 
@@ -539,9 +548,13 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment.measuring = false;
     if (!_measuring) return;
 
+    _beepPeriodTimer?.cancel();
+    Get.find<SoundService>().stopAllSoundEffects();
+
     setState(() {
       _measuring = false;
     });
+
     _connectionWatchdog?.cancel();
     _fitnessEquipment.detach();
 
@@ -701,7 +714,7 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+    if (_measuring && _targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
       if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
         if (!_targetHrAlerting) {
           Get.find<SoundService>().playTargetHrSoundEffect();
