@@ -22,6 +22,7 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
   double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
+  TextStyle _subTextStyle;
 
   LeaderboardDeviceHubScreenState({@required this.devices}) : assert(devices != null);
 
@@ -30,11 +31,17 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
     final mediaWidth = Get.mediaQuery.size.width;
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
-      _sizeDefault = Get.mediaQuery.size.width / 5;
+      _sizeDefault = _mediaWidth / 5;
       _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault / 2,
-      ).merge(TextStyle(color: Colors.black));
+        fontSize: _mediaWidth / 16,
+        color: Colors.black,
+      );
+      _subTextStyle = TextStyle(
+        fontFamily: FONT_FAMILY,
+        fontSize: _mediaWidth / 20,
+        color: Colors.black54,
+      );
     }
     final buttonStyle = ElevatedButton.styleFrom(primary: Colors.grey.shade200);
 
@@ -55,11 +62,23 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        TextOneLine(
-                          "${device.item2} (${device.item1})",
-                          style: _textStyle,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextOneLine(
+                              device.item2,
+                              style: _textStyle,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            TextOneLine(
+                              "(${device.item1})",
+                              style: _subTextStyle,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
                         Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
                       ],

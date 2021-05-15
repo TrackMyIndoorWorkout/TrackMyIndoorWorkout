@@ -29,11 +29,12 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
     final mediaWidth = Get.mediaQuery.size.width;
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
-      _sizeDefault = Get.mediaQuery.size.width / 5;
+      _sizeDefault = _mediaWidth / 5;
       _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault / 2,
-      ).merge(TextStyle(color: Colors.black));
+        fontSize: _mediaWidth / 10,
+        color: Colors.black,
+      );
     }
     final buttonStyle = ElevatedButton.styleFrom(primary: Colors.grey.shade200);
 

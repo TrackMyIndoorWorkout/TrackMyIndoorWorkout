@@ -38,7 +38,8 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
       _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault / 2,
-      ).merge(TextStyle(color: Colors.black));
+        color: Colors.black,
+      );
     }
     final buttonStyle = ElevatedButton.styleFrom(primary: Colors.grey.shade200);
 
