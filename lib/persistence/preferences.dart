@@ -595,6 +595,28 @@ const AUDIO_VOLUME_DEFAULT_INT = 50;
 const AUDIO_VOLUME_DEFAULT = "$AUDIO_VOLUME_DEFAULT_INT";
 const AUDIO_VOLUME_DESCRIPTION = "Volume base of the audio effects.";
 
+const LEADERBOARD_FEATURE = "Leaderboard Feature";
+const LEADERBOARD_FEATURE_TAG = "leaderboard_feature";
+const LEADERBOARD_FEATURE_DEFAULT = false;
+const LEADERBOARD_FEATURE_DESCRIPTION =
+    "Leaderboard registry: should the app record workout entries " + "for leaderboard purposes.";
+
+const WAVE_LIGHT_FOR_DEVICE = "Wavelight Specific for the Actual Device";
+const WAVE_LIGHT_FOR_DEVICE_TAG = "wave_light_for_device";
+const WAVE_LIGHT_FOR_DEVICE_DEFAULT = false;
+const WAVE_LIGHT_FOR_DEVICE_DESCRIPTION =
+    "Should the app display ranking for the particular device. " +
+        "Blue color means behind the top leaderboard, green marks record pace.";
+
+const WAVE_LIGHT_FOR_SPORT = "Wavelight Specific for the Whole Sport";
+const WAVE_LIGHT_FOR_SPORT_TAG = "wave_light_for_sport";
+const WAVE_LIGHT_FOR_SPORT_DEFAULT = false;
+const WAVE_LIGHT_FOR_SPORT_DESCRIPTION =
+    "Should the app display ranking for all devices for the sport. " +
+        "Blue color means behind the top leaderboard, green marks record pace.";
+
+const LEADERBOARD_LIMIT = 10;
+
 const EXPERT_PREFERENCES = "Expert Preferences";
 
 const APP_DEBUG_MODE = "Application Debug Mode";

@@ -106,3 +106,16 @@ String getCadenceUnit(String sport) {
   }
   return "rpm";
 }
+
+String distanceString(double distance, bool si) {
+  if (distance == null) distance = 0.0;
+
+  if (si) return distance.toStringAsFixed(0);
+
+  return '${(distance * M2MILE).toStringAsFixed(2)}';
+}
+
+String distanceByUnit(double distance, bool si) {
+  final distanceStr = distanceString(distance, si);
+  return '$distanceStr ${si ? "m" : "mi"}';
+}

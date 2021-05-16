@@ -137,8 +137,8 @@ class RecordsScreenState extends State<RecordsScreen> {
           dataFn: _getSpeedData,
           dataStringFn: _getSpeedString,
           selectionListener: _speedSelectionListener,
-          maxString: paceString(accu.maxSpeed),
-          avgString: paceString(accu.avgSpeed),
+          maxString: speedOrPaceString(accu.maxSpeed, _si, activity.sport),
+          avgString: speedOrPaceString(accu.avgSpeed, _si, activity.sport),
         );
         prefSpec.calculateBounds(measurementCounter.minSpeed, measurementCounter.maxSpeed);
         tileConfig.histogram = prefSpec.zoneUpper
