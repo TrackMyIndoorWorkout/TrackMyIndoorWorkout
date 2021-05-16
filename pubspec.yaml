@@ -1,8 +1,8 @@
 name: track_my_indoor_exercise
-description: Recording indoor exercises as if circling on a running track.
+description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.29+38
+version: 1.1.30+39
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -38,6 +38,7 @@ dependencies:
   rxdart: ^0.24.0
   share_files_and_screenshot_widgets: any
   shared_preferences: any
+  soundpool: ^1.1.3
   spinner_input: ^0.1.2
   sqflite: ^1.3.2+3
   tuple: ^1.0.3
@@ -65,4 +66,4 @@ flutter:
       fonts:
         - asset: fonts/RobotoMono-Bold.ttf
   assets:
-    - assets/CompanyNames.txt.gz
+    - assets/

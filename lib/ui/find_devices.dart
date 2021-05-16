@@ -20,8 +20,8 @@ import 'models/advertisement_cache.dart';
 import 'parts/common.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
+import 'preferences/preferences_hub.dart';
 import 'activities.dart';
-import 'preferences.dart';
 import 'recording.dart';
 
 const HELP_URL = "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
@@ -64,6 +64,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       migration3to4,
       migration4to5,
       migration5to6,
+      migration6to7,
     ]).build();
     Get.put<AppDatabase>(database);
   }
@@ -446,7 +447,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
             child: Icon(Icons.list_alt),
             foregroundColor: Colors.white,
             backgroundColor: Colors.indigo,
-            onPressed: () async => Get.to(ActivitiesScreen()),
+            onPressed: () async {
+              final database = Get.find<AppDatabase>();
+              final hasLeaderboardData = await database.hasLeaderboardData();
+              Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+            },
           ),
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
@@ -480,7 +485,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             child: Icon(Icons.settings),
             foregroundColor: Colors.white,
             backgroundColor: Colors.indigo,
-            onPressed: () async => Get.to(PreferencesScreen()),
+            onPressed: () async => Get.to(PreferencesHubScreen()),
           ),
           FloatingActionButton(
             heroTag: null,
