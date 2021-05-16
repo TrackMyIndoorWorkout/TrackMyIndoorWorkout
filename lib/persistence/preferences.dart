@@ -615,7 +615,7 @@ const WAVE_LIGHT_FOR_SPORT_DESCRIPTION =
     "Should the app display ranking for all devices for the sport. " +
         "Blue color means behind the top leaderboard, green marks record pace.";
 
-const LEADERBOARD_LIMIT = 10;
+const LEADERBOARD_LIMIT = 25;
 
 const EXPERT_PREFERENCES = "Expert Preferences";
 
