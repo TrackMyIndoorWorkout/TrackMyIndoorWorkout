@@ -493,7 +493,9 @@ class RecordingState extends State<RecordingScreen> {
 
   _preDispose() async {
     _beepPeriodTimer?.cancel();
-    await Get.find<SoundService>().stopAllSoundEffects();
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+      await Get.find<SoundService>().stopAllSoundEffects();
+    }
 
     try {
       await _heartRateMonitor?.cancelSubscription();
@@ -525,7 +527,9 @@ class RecordingState extends State<RecordingScreen> {
     Get.snackbar("Warning", "Equipment might be disconnected. Auto-starting new workout:");
 
     _beepPeriodTimer?.cancel();
-    Get.find<SoundService>().stopAllSoundEffects();
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+      Get.find<SoundService>().stopAllSoundEffects();
+    }
 
     setState(() {
       _measuring = false;
@@ -590,7 +594,9 @@ class RecordingState extends State<RecordingScreen> {
     if (!_measuring) return;
 
     _beepPeriodTimer?.cancel();
-    Get.find<SoundService>().stopAllSoundEffects();
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+      Get.find<SoundService>().stopAllSoundEffects();
+    }
 
     setState(() {
       _measuring = false;
