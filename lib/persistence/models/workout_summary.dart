@@ -66,7 +66,7 @@ class WorkoutSummary {
         assert(powerFactor != null),
         assert(calorieFactor != null) {
     startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
-    speed = distance / elapsed * DeviceDescriptor.MS2KMH;
+    speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.MS2KMH : 0.0;
   }
 
   String speedString(bool si) {
