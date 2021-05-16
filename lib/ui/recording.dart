@@ -22,6 +22,7 @@ import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/bluetooth_device_ex.dart';
 import '../persistence/models/activity.dart';
+import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
@@ -43,6 +44,13 @@ import 'parts/spin_down.dart';
 import 'activities.dart';
 
 typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
+
+enum TargetHrState {
+  Off,
+  Under,
+  InRange,
+  Over,
+}
 
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
@@ -140,7 +148,15 @@ class RecordingState extends State<RecordingScreen> {
   bool _targetHrAlerting;
   bool _leaderboardFeature;
   bool _waveLightForDevice;
+  List<WorkoutSummary> _deviceLeaderboard;
   bool _waveLightForSport;
+  List<WorkoutSummary> _sportLeaderboard;
+  Color _darkRed;
+  Color _darkGreen;
+  Color _darkBlue;
+  Color _lightRed;
+  Color _lightGreen;
+  Color _lightBlue;
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
@@ -177,6 +193,22 @@ class RecordingState extends State<RecordingScreen> {
       final id = await _database?.activityDao?.insertActivity(_activity);
       _activity.id = id;
     }
+
+    if (_waveLightForDevice) {
+      _deviceLeaderboard = await _database.workoutSummaryDao
+          .findWorkoutSummaryByDevice(device.id.id, LEADERBOARD_LIMIT, 0);
+    }
+    if (_waveLightForSport) {
+      _sportLeaderboard = await _database.workoutSummaryDao
+          .findWorkoutSummaryBySport(_descriptor.defaultSport, LEADERBOARD_LIMIT, 0);
+    }
+
+    _darkRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker);
+    _darkGreen = paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker);
+    _darkBlue = paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker);
+    _lightRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter);
+    _lightGreen = paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter);
+    _lightBlue = paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter);
 
     _fitnessEquipment.setActivity(_activity);
 
@@ -449,8 +481,10 @@ class RecordingState extends State<RecordingScreen> {
         PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _waveLightForDevice =
         PrefService.getBool(WAVE_LIGHT_FOR_DEVICE_TAG) ?? WAVE_LIGHT_FOR_DEVICE_DEFAULT;
+    _deviceLeaderboard = [];
     _waveLightForSport =
         PrefService.getBool(WAVE_LIGHT_FOR_SPORT_TAG) ?? WAVE_LIGHT_FOR_SPORT_DEFAULT;
+    _sportLeaderboard = [];
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
@@ -668,37 +702,124 @@ class RecordingState extends State<RecordingScreen> {
         false;
   }
 
-  TextStyle getTargetHrTextStyle() {
-    if (_heartRate == null || _heartRate == 0 || _targetHrMode == TARGET_HEART_RATE_MODE_NONE) {
+  int _getRank(List<WorkoutSummary> leaderboard) {
+    if (leaderboard.length <= 0) {
+      return 1;
+    }
+
+    if (_elapsed == null || _elapsed == 0) {
+      return MAX_UINT16;
+    }
+
+    final averageSpeed = _elapsed > 0 ? _distance / _elapsed : 0.0;
+    var rank = 1;
+    for (final entry in leaderboard) {
+      if (averageSpeed > entry.speed) {
+        return rank;
+      }
+
+      rank += 1;
+    }
+
+    return rank;
+  }
+
+  String _getRankString(List<WorkoutSummary> leaderboard) {
+    final rank = _getRank(leaderboard);
+    if (rank == null) {
+      return "#$LEADERBOARD_LIMIT+";
+    }
+
+    return "#$rank";
+  }
+
+  int _getDeviceRank() {
+    if (!_waveLightForDevice) return MAX_UINT16;
+
+    return _getRank(_deviceLeaderboard);
+  }
+
+  String _getDeviceRankString() {
+    return _getRankString(_deviceLeaderboard);
+  }
+
+  int _getSportRank() {
+    if (!_waveLightForSport) return MAX_UINT16;
+
+    return _getRank(_sportLeaderboard);
+  }
+
+  String _getSportRankString() {
+    return _getRankString(_sportLeaderboard);
+  }
+
+  Color getWaveLightColor(int deviceRank, int sportRank, {@required bool background}) {
+    if (!_waveLightForDevice && !_waveLightForSport) {
+      return background ? Colors.transparent : Colors.indigo;
+    }
+
+    if (deviceRank != null && deviceRank <= 1 || sportRank != null && sportRank <= 1) {
+      return background ? _lightGreen : _darkGreen;
+    }
+    return background ? _lightBlue : _darkBlue;
+  }
+
+  TextStyle getWaveLightTextStyle(int deviceRank, int sportRank) {
+    if (!_waveLightForDevice && !_waveLightForSport) {
       return _measurementStyle;
     }
 
+    return _measurementStyle.apply(
+        color: getWaveLightColor(deviceRank, sportRank, background: false));
+  }
+
+  TargetHrState getTargetHrState() {
+    if (_heartRate == null || _heartRate == 0 || _targetHrMode == TARGET_HEART_RATE_MODE_NONE) {
+      return TargetHrState.Off;
+    }
+
     if (_heartRate < _targetHrBounds.item1) {
-      return _measurementStyle.apply(
-        color: paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker),
-      );
+      return TargetHrState.Under;
     } else if (_heartRate > _targetHrBounds.item2) {
-      return _measurementStyle.apply(
-        color: paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker),
-      );
+      return TargetHrState.Over;
     } else {
-      return _measurementStyle.apply(
-        color: paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker),
-      );
+      return TargetHrState.InRange;
     }
   }
 
-  Color getTargetHrTextBackground() {
-    if (_heartRate == null || _heartRate == 0 || _targetHrMode == TARGET_HEART_RATE_MODE_NONE) {
+  Color getTargetHrColor(TargetHrState hrState, {bool background}) {
+    if (hrState == TargetHrState.Off) {
       return Colors.transparent;
     }
 
     if (_heartRate < _targetHrBounds.item1) {
-      return paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter);
+      return background ? _lightBlue : _darkBlue;
     } else if (_heartRate > _targetHrBounds.item2) {
-      return paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter);
+      return background ? _lightRed : _darkRed;
     } else {
-      return paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter);
+      return background ? _lightGreen : _darkGreen;
+    }
+  }
+
+  TextStyle getTargetHrTextStyle(TargetHrState hrState) {
+    if (hrState == TargetHrState.Off) {
+      return _measurementStyle;
+    }
+
+    return _measurementStyle.apply(color: getTargetHrColor(hrState, background: false));
+  }
+
+  String getTargetHrText(TargetHrState hrState) {
+    if (hrState == TargetHrState.Off) {
+      return "--";
+    }
+
+    if (hrState == TargetHrState.Under) {
+      return "UNDER!";
+    } else if (hrState == TargetHrState.Over) {
+      return "OVER!";
+    } else {
+      return "IN RANGE";
     }
   }
 
@@ -753,10 +874,20 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
+    final targetHrState = getTargetHrState();
+    final targetHrTextStyle = getTargetHrTextStyle(targetHrState);
+    final deviceRank = _getDeviceRank();
+    final sportRank = _getSportRank();
+
     _rowConfig.asMap().entries.forEach((entry) {
       var measurementStyle = _measurementStyle;
+
+      if (entry.key == 2 && (_waveLightForDevice || _waveLightForSport)) {
+        measurementStyle = getWaveLightTextStyle(deviceRank, sportRank);
+      }
+
       if (entry.key == 4 && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
-        measurementStyle = getTargetHrTextStyle();
+        measurementStyle = targetHrTextStyle;
       }
 
       rows.add(Row(
@@ -814,25 +945,29 @@ class RecordingState extends State<RecordingScreen> {
           ),
         );
         if (entry.value.metric == "hr" && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
-          String targetText;
-          int zoneIndex = 0;
-          if (_heartRate != null && _heartRate > 0) {
-            zoneIndex = entry.value.binIndex(_heartRate);
-            if (_heartRate < _targetHrBounds.item1) {
-              targetText = "UNDER!";
-            } else if (_heartRate > _targetHrBounds.item2) {
-              targetText = "OVER!";
-            } else {
-              targetText = "IN RANGE";
-            }
-          } else {
-            targetText = "--";
-          }
+          int zoneIndex = targetHrState == TargetHrState.Off ? 0 : entry.value.binIndex(_heartRate);
+          String targetText = getTargetHrText(targetHrState);
           targetText = "Z$zoneIndex $targetText";
           extra = Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [Text(targetText, style: getTargetHrTextStyle()), extra],
+            children: [Text(targetText, style: targetHrTextStyle), extra],
+          );
+        } else if (entry.value.metric == "speed" && (_waveLightForDevice || _waveLightForSport)) {
+          List<Widget> extraExtras = [];
+          if (_waveLightForDevice) {
+            final deviceWaveLightColor = getWaveLightTextStyle(deviceRank, null);
+            extraExtras.add(Text(_getDeviceRankString(), style: deviceWaveLightColor));
+          }
+          if (_waveLightForSport) {
+            final deviceWaveLightColor = getWaveLightTextStyle(null, sportRank);
+            extraExtras.add(Text(_getSportRankString(), style: deviceWaveLightColor));
+          }
+          extraExtras.add(extra);
+          extra = Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: extraExtras,
           );
         }
         extras.add(extra);
@@ -934,11 +1069,14 @@ class RecordingState extends State<RecordingScreen> {
                 controller: _rowControllers[0],
               ),
               Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[3],
-                expanded: _simplerUi ? null : extras[1],
-                controller: _rowControllers[1],
+              ColoredBox(
+                color: getWaveLightColor(deviceRank, sportRank, background: true),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[3],
+                  expanded: _simplerUi ? null : extras[1],
+                  controller: _rowControllers[1],
+                ),
               ),
               Divider(height: separatorHeight),
               ExpandablePanel(
@@ -949,7 +1087,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               Divider(height: separatorHeight),
               ColoredBox(
-                color: getTargetHrTextBackground(),
+                color: getTargetHrColor(targetHrState, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[5],
