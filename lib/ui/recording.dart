@@ -203,13 +203,6 @@ class RecordingState extends State<RecordingScreen> {
           .findWorkoutSummaryBySport(_descriptor.defaultSport, LEADERBOARD_LIMIT, 0);
     }
 
-    _darkRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker);
-    _darkGreen = paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker);
-    _darkBlue = paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker);
-    _lightRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter);
-    _lightGreen = paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter);
-    _lightBlue = paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter);
-
     _fitnessEquipment.setActivity(_activity);
 
     await _fitnessEquipment.attach();
@@ -485,6 +478,13 @@ class RecordingState extends State<RecordingScreen> {
     _waveLightForSport =
         PrefService.getBool(WAVE_LIGHT_FOR_SPORT_TAG) ?? WAVE_LIGHT_FOR_SPORT_DEFAULT;
     _sportLeaderboard = [];
+
+    _darkRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker);
+    _darkGreen = paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker);
+    _darkBlue = paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker);
+    _lightRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter);
+    _lightGreen = paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter);
+    _lightBlue = paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter);
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
