@@ -550,7 +550,11 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> _beeper() async {
     Get.find<SoundService>().playTargetHrSoundEffect();
-    if (_measuring && _targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+    if (_measuring &&
+        _targetHrMode != TARGET_HEART_RATE_MODE_NONE &&
+        _targetHrAudio &&
+        _heartRate != null &&
+        _heartRate > 0) {
       if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
         _beepPeriodTimer = Timer(Duration(seconds: _beepPeriod), _beeper);
       }
@@ -798,9 +802,9 @@ class RecordingState extends State<RecordingScreen> {
       return Colors.transparent;
     }
 
-    if (_heartRate < _targetHrBounds.item1) {
+    if (hrState == TargetHrState.Under) {
       return background ? _lightBlue : _darkBlue;
-    } else if (_heartRate > _targetHrBounds.item2) {
+    } else if (hrState == TargetHrState.Over) {
       return background ? _lightRed : _darkRed;
     } else {
       return background ? _lightGreen : _darkGreen;
@@ -848,7 +852,11 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
-    if (_measuring && _targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+    if (_measuring &&
+        _targetHrMode != TARGET_HEART_RATE_MODE_NONE &&
+        _targetHrAudio &&
+        _heartRate != null &&
+        _heartRate > 0) {
       if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
         if (!_targetHrAlerting) {
           Get.find<SoundService>().playTargetHrSoundEffect();
