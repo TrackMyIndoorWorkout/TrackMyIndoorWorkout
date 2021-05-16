@@ -32,6 +32,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
   double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
+  TextStyle _textStyle2;
 
   DeviceLeaderboardScreenState({@required this.device}) : assert(device != null);
 
@@ -84,6 +85,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,
       );
+      _textStyle2 = _textStyle.apply(color: Colors.indigo);
     }
 
     return Scaffold(
@@ -127,25 +129,40 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${workoutSummary.id}"),
-              header: Column(
+              header: Row(
                 children: [
-                  TextOneLine(
-                    '$index. $speedString',
-                    style: _textStyle,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
+                  SizedBox(
+                    width: _sizeDefault * 2,
+                    height: _sizeDefault * 2,
+                    child: FloatingActionButton(
+                      heroTag: null,
+                      child: Text('$index', style: _textStyle2),
+                      foregroundColor: Colors.black87,
+                      backgroundColor: Colors.yellow,
+                      onPressed: () {},
+                    ),
                   ),
-                  TextOneLine(
-                    '($distanceString',
-                    style: _textStyle,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  TextOneLine(
-                    ' / $timeDisplay)',
-                    style: _textStyle,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
+                  Column(
+                    children: [
+                      TextOneLine(
+                        speedString,
+                        style: _textStyle2,
+                        textAlign: TextAlign.left,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      TextOneLine(
+                        '($distanceString',
+                        style: _textStyle,
+                        textAlign: TextAlign.left,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      TextOneLine(
+                        ' / $timeDisplay)',
+                        style: _textStyle,
+                        textAlign: TextAlign.left,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ],
               ),

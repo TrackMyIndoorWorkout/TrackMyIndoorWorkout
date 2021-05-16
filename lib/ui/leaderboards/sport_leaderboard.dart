@@ -31,6 +31,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
+  TextStyle _textStyle2;
 
   SportLeaderboardScreenState({@required this.sport}) : assert(sport != null);
 
@@ -83,6 +84,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,
       );
+      _textStyle2 = _textStyle.apply(color: Colors.indigo);
     }
 
     return Scaffold(
@@ -128,23 +130,42 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
               key: Key("${workoutSummary.id}"),
               header: Column(
                 children: [
-                  TextOneLine(
-                    '$index. $speedString',
-                    style: _textStyle,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  TextOneLine(
-                    '($distanceString',
-                    style: _textStyle,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  TextOneLine(
-                    ' / $timeDisplay)',
-                    style: _textStyle,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: _sizeDefault * 2,
+                        height: _sizeDefault * 2,
+                        child: FloatingActionButton(
+                          heroTag: null,
+                          child: Text('$index', style: _textStyle2),
+                          foregroundColor: Colors.black87,
+                          backgroundColor: Colors.yellow,
+                          onPressed: () {},
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          TextOneLine(
+                            speedString,
+                            style: _textStyle2,
+                            textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          TextOneLine(
+                            '($distanceString /',
+                            style: _textStyle,
+                            textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          TextOneLine(
+                            '$timeDisplay)',
+                            style: _textStyle,
+                            textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                   TextOneLine(
                     workoutSummary.deviceName,
