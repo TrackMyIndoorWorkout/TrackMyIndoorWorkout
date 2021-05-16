@@ -737,10 +737,10 @@ class RecordingState extends State<RecordingScreen> {
   String _getRankString(List<WorkoutSummary> leaderboard) {
     final rank = _getRank(leaderboard);
     if (rank == null) {
-      return "#$LEADERBOARD_LIMIT+";
+      return "$LEADERBOARD_LIMIT+";
     }
 
-    return "#$rank";
+    return "$rank";
   }
 
   int _getDeviceRank() {
@@ -750,7 +750,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getDeviceRankString() {
-    return _getRankString(_deviceLeaderboard);
+    return "#${_getRankString(_deviceLeaderboard)} (Device)";
   }
 
   int _getSportRank() {
@@ -760,7 +760,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getSportRankString() {
-    return _getRankString(_sportLeaderboard);
+    return "#${_getRankString(_sportLeaderboard)} (${_descriptor.defaultSport})";
   }
 
   Color getWaveLightColor(int deviceRank, int sportRank, {@required bool background}) {
