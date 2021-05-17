@@ -736,7 +736,7 @@ class RecordingState extends State<RecordingScreen> {
 
   String _getRankString(List<WorkoutSummary> leaderboard) {
     final rank = _getRank(leaderboard);
-    if (rank == null) {
+    if (rank == null || rank > leaderboard.length) {
       return "$LEADERBOARD_LIMIT+";
     }
 
@@ -830,6 +830,42 @@ class RecordingState extends State<RecordingScreen> {
       return "OVER!";
     } else {
       return "IN RANGE";
+    }
+  }
+
+  Widget getTrackMarker(Offset markerPosition, int markerColor, String text) {
+    return Positioned(
+      left: markerPosition.dx - THICK,
+      top: markerPosition.dy - THICK,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color(markerColor),
+          borderRadius: BorderRadius.circular(THICK),
+        ),
+        width: THICK * 2,
+        height: THICK * 2,
+        child: Text(text),
+      ),
+    );
+  }
+
+  List<Widget> markersForLeaderboard(List<WorkoutSummary> leaderboard, int rank) {
+    List<Widget> markers = [];
+    if (leaderboard == null || leaderboard.length <= 0 || rank == null) {
+      return markers;
+    }
+
+    final length = leaderboard.length;
+    if (rank > 1 && rank - 2 < length) {
+      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
+      final position = _trackCalculator.trackMarker(distance);
+      markers.add(getTrackMarker(position, 0x8800FF00, "${rank - 1}"));
+    }
+
+    if (rank - 1 < length) {
+      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
+      final position = _trackCalculator.trackMarker(distance);
+      markers.add(getTrackMarker(position, 0x880000FF, "${rank + 1}"));
     }
   }
 
@@ -987,31 +1023,24 @@ class RecordingState extends State<RecordingScreen> {
         extras.add(extra);
       });
 
-      final trackMarker = _trackCalculator.trackMarker(_distance);
+      List<Widget> markers = [];
+      final markerPosition = _trackCalculator.trackMarker(_distance);
+      if (markerPosition != null) {
+        markers.add(getTrackMarker(markerPosition, 0x88FF0000, ""));
+        if (_waveLightForDevice) {
+          markers.addAll(markersForLeaderboard(_deviceLeaderboard, deviceRank));
+        }
+        if (_waveLightForSport) {
+          markers.addAll(markersForLeaderboard(_sportLeaderboard, sportRank));
+        }
+      }
       extras.add(
         CustomPaint(
           painter: TrackPainter(calculator: _trackCalculator),
           child: SizedBox(
             width: size.width,
             height: size.width / 1.9,
-            child: trackMarker == null
-                ? null
-                : Stack(
-                    children: [
-                      Positioned(
-                        left: trackMarker.dx - THICK,
-                        top: trackMarker.dy - THICK,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0x88FF0000),
-                            borderRadius: BorderRadius.circular(THICK),
-                          ),
-                          width: THICK * 2,
-                          height: THICK * 2,
-                        ),
-                      ),
-                    ],
-                  ),
+            child: Stack(children: markers),
           ),
         ),
       );
