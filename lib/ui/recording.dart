@@ -149,8 +149,10 @@ class RecordingState extends State<RecordingScreen> {
   bool _leaderboardFeature;
   bool _waveLightForDevice;
   List<WorkoutSummary> _deviceLeaderboard;
+  int _deviceRank;
   bool _waveLightForSport;
   List<WorkoutSummary> _sportLeaderboard;
+  int _sportRank;
   Color _darkRed;
   Color _darkGreen;
   Color _darkBlue;
@@ -241,6 +243,10 @@ class RecordingState extends State<RecordingScreen> {
               (record.heartRate > 0 || _heartRate == null || _heartRate == 0)) {
             _heartRate = record.heartRate;
           }
+
+          _deviceRank = _getDeviceRank();
+          _sportRank = _getSportRank();
+          debugPrint("ranks: d $_deviceRank s $_sportRank");
 
           _values = [
             record.calories.toString(),
@@ -721,7 +727,8 @@ class RecordingState extends State<RecordingScreen> {
       return MAX_UINT16;
     }
 
-    final averageSpeed = _elapsed > 0 ? _distance / _elapsed : 0.0;
+    final averageSpeed = _elapsed > 0 ? _distance / _elapsed * DeviceDescriptor.MS2KMH : 0.0;
+    debugPrint('as $averageSpeed');
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
@@ -734,10 +741,9 @@ class RecordingState extends State<RecordingScreen> {
     return rank;
   }
 
-  String _getRankString(List<WorkoutSummary> leaderboard) {
-    final rank = _getRank(leaderboard);
+  String _getRankString(int rank, List<WorkoutSummary> leaderboard) {
     if (rank == null || rank > leaderboard.length) {
-      return "$LEADERBOARD_LIMIT+";
+      return "${leaderboard.length}+";
     }
 
     return "$rank";
@@ -750,7 +756,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getDeviceRankString() {
-    return "#${_getRankString(_deviceLeaderboard)} (Device)";
+    return "#${_getRankString(_deviceRank, _deviceLeaderboard)} (Device)";
   }
 
   int _getSportRank() {
@@ -760,7 +766,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getSportRankString() {
-    return "#${_getRankString(_sportLeaderboard)} (${_descriptor.defaultSport})";
+    return "#${_getRankString(_sportRank, _sportLeaderboard)} (${_descriptor.defaultSport})";
   }
 
   Color getWaveLightColor(int deviceRank, int sportRank, {@required bool background}) {
@@ -928,14 +934,12 @@ class RecordingState extends State<RecordingScreen> {
 
     final targetHrState = getTargetHrState();
     final targetHrTextStyle = getTargetHrTextStyle(targetHrState);
-    final deviceRank = _getDeviceRank();
-    final sportRank = _getSportRank();
 
     _rowConfig.asMap().entries.forEach((entry) {
       var measurementStyle = _measurementStyle;
 
       if (entry.key == 2 && (_waveLightForDevice || _waveLightForSport)) {
-        measurementStyle = getWaveLightTextStyle(deviceRank, sportRank);
+        measurementStyle = getWaveLightTextStyle(_deviceRank, _sportRank);
       }
 
       if (entry.key == 4 && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
@@ -1008,11 +1012,11 @@ class RecordingState extends State<RecordingScreen> {
         } else if (entry.value.metric == "speed" && (_waveLightForDevice || _waveLightForSport)) {
           List<Widget> extraExtras = [];
           if (_waveLightForDevice) {
-            final deviceWaveLightColor = getWaveLightTextStyle(deviceRank, null);
+            final deviceWaveLightColor = getWaveLightTextStyle(_deviceRank, null);
             extraExtras.add(Text(_getDeviceRankString(), style: deviceWaveLightColor));
           }
           if (_waveLightForSport) {
-            final deviceWaveLightColor = getWaveLightTextStyle(null, sportRank);
+            final deviceWaveLightColor = getWaveLightTextStyle(null, _sportRank);
             extraExtras.add(Text(_getSportRankString(), style: deviceWaveLightColor));
           }
           extraExtras.add(extra);
@@ -1030,10 +1034,10 @@ class RecordingState extends State<RecordingScreen> {
       if (markerPosition != null) {
         markers.add(getTrackMarker(markerPosition, 0x88FF0000, ""));
         if (_waveLightForDevice) {
-          markers.addAll(markersForLeaderboard(_deviceLeaderboard, deviceRank));
+          markers.addAll(markersForLeaderboard(_deviceLeaderboard, _deviceRank));
         }
         if (_waveLightForSport) {
-          markers.addAll(markersForLeaderboard(_sportLeaderboard, sportRank));
+          markers.addAll(markersForLeaderboard(_sportLeaderboard, _sportRank));
         }
       }
       extras.add(
@@ -1115,7 +1119,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               Divider(height: separatorHeight),
               ColoredBox(
-                color: getWaveLightColor(deviceRank, sportRank, background: true),
+                color: getWaveLightColor(_deviceRank, _sportRank, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[3],
