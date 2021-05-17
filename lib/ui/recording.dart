@@ -246,7 +246,6 @@ class RecordingState extends State<RecordingScreen> {
 
           _deviceRank = _getDeviceRank();
           _sportRank = _getSportRank();
-          debugPrint("ranks: d $_deviceRank s $_sportRank");
 
           _values = [
             record.calories.toString(),
@@ -303,7 +302,6 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _initializeHeartRateMonitor() async {
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     final discovered = (await _heartRateMonitor?.discover()) ?? false;
-    debugPrint("Discovered $discovered");
     if (discovered) {
       if (_heartRateMonitor.device.id.id !=
           (_fitnessEquipment.heartRateMonitor?.device?.id?.id ?? NOT_AVAILABLE)) {
@@ -480,10 +478,12 @@ class RecordingState extends State<RecordingScreen> {
         PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _waveLightForDevice =
         PrefService.getBool(WAVE_LIGHT_FOR_DEVICE_TAG) ?? WAVE_LIGHT_FOR_DEVICE_DEFAULT;
+    _deviceRank = MAX_UINT8;
     _deviceLeaderboard = [];
     _waveLightForSport =
         PrefService.getBool(WAVE_LIGHT_FOR_SPORT_TAG) ?? WAVE_LIGHT_FOR_SPORT_DEFAULT;
     _sportLeaderboard = [];
+    _sportRank = MAX_UINT8;
 
     _darkRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker);
     _darkGreen = paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker);
@@ -724,11 +724,10 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (_elapsed == null || _elapsed == 0) {
-      return MAX_UINT16;
+      return MAX_UINT8;
     }
 
     final averageSpeed = _elapsed > 0 ? _distance / _elapsed * DeviceDescriptor.MS2KMH : 0.0;
-    debugPrint('as $averageSpeed');
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
@@ -750,7 +749,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   int _getDeviceRank() {
-    if (!_waveLightForDevice) return MAX_UINT16;
+    if (!_waveLightForDevice) return MAX_UINT8;
 
     return _getRank(_deviceLeaderboard);
   }
@@ -760,7 +759,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   int _getSportRank() {
-    if (!_waveLightForSport) return MAX_UINT16;
+    if (!_waveLightForSport) return MAX_UINT8;
 
     return _getRank(_sportLeaderboard);
   }
