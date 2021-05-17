@@ -867,6 +867,8 @@ class RecordingState extends State<RecordingScreen> {
       final position = _trackCalculator.trackMarker(distance);
       markers.add(getTrackMarker(position, 0x880000FF, "${rank + 1}"));
     }
+
+    return markers;
   }
 
   @override
