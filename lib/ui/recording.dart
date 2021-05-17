@@ -209,6 +209,8 @@ class RecordingState extends State<RecordingScreen> {
 
     await _fitnessEquipment.attach();
     setState(() {
+      _elapsed = 0;
+      _distance = 0.0;
       _measuring = true;
     });
     _fitnessEquipment.measuring = true;
