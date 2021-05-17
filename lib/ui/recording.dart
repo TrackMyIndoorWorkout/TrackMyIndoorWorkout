@@ -849,7 +849,7 @@ class RecordingState extends State<RecordingScreen> {
         ),
         width: THICK * 2,
         height: THICK * 2,
-        child: Text(text),
+        child: Center(child: Text(text)),
       ),
     );
   }
