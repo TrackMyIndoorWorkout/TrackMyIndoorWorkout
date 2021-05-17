@@ -137,7 +137,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
                         height: _sizeDefault * 2,
                         child: FloatingActionButton(
                           heroTag: null,
-                          child: Text('$index', style: _textStyle2),
+                          child: Text('${index + 1}', style: _textStyle2),
                           foregroundColor: Colors.black87,
                           backgroundColor: Colors.yellow,
                           onPressed: () {},
