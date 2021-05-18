@@ -218,6 +218,9 @@ class PreferencesSpec {
   String get fullTitle => '$title ($unit)';
   String get kmhTitle => '$title (kmh)';
   String get histogramTitle => '$title zones (%)';
+
+  String get zoneIndexText => '$title $ZONE_INDEX_DISPLAY_TEXT';
+  String get zoneIndexTag => metric + '_$ZONE_INDEX_DISPLAY_TAG_POSTFIX';
   String get zoneIndexDescription =>
       '$ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 $title $ZONE_INDEX_DISPLAY_DESCRIPTION_PART2';
 
@@ -275,6 +278,7 @@ class PreferencesSpec {
     if (flipZones) {
       zoneBounds = zoneBounds.reversed.toList(growable: false);
     }
+    indexDisplay = PrefService.getBool(zoneIndexTag) ?? indexDisplayDefault;
   }
 
   void calculateBounds(double minVal, double maxVal) {

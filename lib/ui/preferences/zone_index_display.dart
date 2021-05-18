@@ -12,8 +12,8 @@ class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
     List<Widget> indexDisplayPreferences =
         PreferencesSpec.preferencesSpecs.where((spec) => spec.metric != "speed").map((prefSpec) {
       return SwitchPreference(
-        "${prefSpec.title} ${PreferencesSpec.ZONE_INDEX_DISPLAY_TEXT}",
-        "${prefSpec.metric}_${PreferencesSpec.ZONE_INDEX_DISPLAY_TAG_POSTFIX}",
+        prefSpec.zoneIndexText,
+        prefSpec.zoneIndexTag,
         defaultVal: prefSpec.indexDisplayDefault,
         desc: prefSpec.zoneIndexDescription,
       );
