@@ -6,10 +6,10 @@ import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import 'data_preferences.dart';
 import 'expert.dart';
-import 'measurement_zones.dart';
+import 'leaderboard.dart';
 import 'target_heart_rate.dart';
 import 'ux_preferences.dart';
-import 'leaderboard.dart';
+import 'zones_hub.dart';
 
 class PreferencesHubScreen extends StatefulWidget {
   @override
@@ -138,13 +138,13 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(MeasurementZonesPreferencesScreen()),
+                onPressed: () => Get.to(ZonesHubScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextOneLine(
-                      MeasurementZonesPreferencesScreen.shortTitle,
+                      ZonesHubScreen.shortTitle,
                       style: _textStyle,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
