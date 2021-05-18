@@ -5,7 +5,7 @@ import 'preferences_base.dart';
 
 class DataPreferencesScreen extends PreferencesScreenBase {
   static String shortTitle = "Data";
-  static String title = "$shortTitle Prefs";
+  static String title = "$shortTitle Preferences";
 
   @override
   Widget build(BuildContext context) {

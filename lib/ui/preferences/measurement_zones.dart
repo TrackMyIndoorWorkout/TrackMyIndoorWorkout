@@ -8,7 +8,7 @@ RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
 
 class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
   static String shortTitle = "Zones";
-  static String title = "$shortTitle Prefs";
+  static String title = "$shortTitle Preferences";
 
   bool isMonotoneIncreasingList(String zonesSpecStr) {
     if (!intListRule.hasMatch(zonesSpecStr)) return false;

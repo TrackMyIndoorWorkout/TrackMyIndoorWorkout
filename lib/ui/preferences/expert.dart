@@ -7,7 +7,7 @@ import 'preferences_base.dart';
 
 class ExpertPreferencesScreen extends PreferencesScreenBase {
   static String shortTitle = "Expert";
-  static String title = "$shortTitle Prefs";
+  static String title = "$shortTitle Preferences";
 
   @override
   Widget build(BuildContext context) {
