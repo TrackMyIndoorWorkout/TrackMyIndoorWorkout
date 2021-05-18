@@ -599,21 +599,36 @@ const LEADERBOARD_FEATURE = "Leaderboard Feature";
 const LEADERBOARD_FEATURE_TAG = "leaderboard_feature";
 const LEADERBOARD_FEATURE_DEFAULT = false;
 const LEADERBOARD_FEATURE_DESCRIPTION =
-    "Leaderboard registry: should the app record workout entries " + "for leaderboard purposes.";
+    "Leaderboard registry: should the app record workout entries for leaderboard purposes.";
 
-const WAVE_LIGHT_FOR_DEVICE = "Wavelight Specific for the Actual Device";
-const WAVE_LIGHT_FOR_DEVICE_TAG = "wave_light_for_device";
-const WAVE_LIGHT_FOR_DEVICE_DEFAULT = false;
-const WAVE_LIGHT_FOR_DEVICE_DESCRIPTION =
+const RANK_RIBBON_VISUALIZATION = "Display Rank Ribbons Above the Speed Graph";
+const RANK_RIBBON_VISUALIZATION_TAG = "rank_ribbon_visualization";
+const RANK_RIBBON_VISUALIZATION_DEFAULT = true;
+const RANK_RIBBON_VISUALIZATION_DESCRIPTION =
+    "Should the app provide UI feedback by ribbons above the speed graph. " +
+        "Blue color means behind the top leaderboard, green marks record pace.";
+
+const RANKING_FOR_DEVICE = "Ranking Based on the Actual Device";
+const RANKING_FOR_DEVICE_TAG = "ranking_for_device";
+const RANKING_FOR_DEVICE_DEFAULT = true;
+const RANKING_FOR_DEVICE_DESCRIPTION =
     "Should the app display ranking for the particular device. " +
-        "Blue color means behind the top leaderboard, green marks record pace.";
+        "This affects both the ribbon type and the track visualization.";
 
-const WAVE_LIGHT_FOR_SPORT = "Wavelight Specific for the Whole Sport";
-const WAVE_LIGHT_FOR_SPORT_TAG = "wave_light_for_sport";
-const WAVE_LIGHT_FOR_SPORT_DEFAULT = false;
-const WAVE_LIGHT_FOR_SPORT_DESCRIPTION =
+const RANKING_FOR_SPORT = "Ranking Based on the Whole Sport";
+const RANKING_FOR_SPORT_TAG = "ranking_for_sport";
+const RANKING_FOR_SPORT_DEFAULT = false;
+const RANKING_FOR_SPORT_DESCRIPTION =
     "Should the app display ranking for all devices for the sport. " +
-        "Blue color means behind the top leaderboard, green marks record pace.";
+        "This affects both the ribbon type and the track visualization.";
+
+const RANK_TRACK_VISUALIZATION = "Visualize Rank Positions on the Track";
+const RANK_TRACK_VISUALIZATION_TAG = "rank_track_visualization";
+const RANK_TRACK_VISUALIZATION_DEFAULT = false;
+const RANK_TRACK_VISUALIZATION_DESCRIPTION =
+    "For performance reasons only the position right ahead (green color) and right behind " +
+        "(blue color) of the current effort is displayed. Both positions have a the rank " +
+        "number inside their dot.";
 
 const LEADERBOARD_LIMIT = 25;
 

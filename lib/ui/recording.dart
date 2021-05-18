@@ -147,12 +147,14 @@ class RecordingState extends State<RecordingScreen> {
   bool _targetHrAudio;
   bool _targetHrAlerting;
   bool _leaderboardFeature;
-  bool _waveLightForDevice;
+  bool _rankingForDevice;
   List<WorkoutSummary> _deviceLeaderboard;
   int _deviceRank;
-  bool _waveLightForSport;
+  bool _rankingForSport;
   List<WorkoutSummary> _sportLeaderboard;
   int _sportRank;
+  bool _rankRibbonVisualization;
+  bool _rankTrackVisualization;
   Color _darkRed;
   Color _darkGreen;
   Color _darkBlue;
@@ -196,11 +198,11 @@ class RecordingState extends State<RecordingScreen> {
       _activity.id = id;
     }
 
-    if (_waveLightForDevice) {
+    if (_rankingForDevice) {
       _deviceLeaderboard = await _database.workoutSummaryDao
           .findWorkoutSummaryByDevice(device.id.id, LEADERBOARD_LIMIT, 0);
     }
-    if (_waveLightForSport) {
+    if (_rankingForSport) {
       _sportLeaderboard = await _database.workoutSummaryDao
           .findWorkoutSummaryBySport(_descriptor.defaultSport, LEADERBOARD_LIMIT, 0);
     }
@@ -479,14 +481,16 @@ class RecordingState extends State<RecordingScreen> {
     }
     _leaderboardFeature =
         PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
-    _waveLightForDevice =
-        PrefService.getBool(WAVE_LIGHT_FOR_DEVICE_TAG) ?? WAVE_LIGHT_FOR_DEVICE_DEFAULT;
+    _rankRibbonVisualization = PrefService.getBool(RANK_RIBBON_VISUALIZATION_TAG) ?? RANK_RIBBON_VISUALIZATION_DEFAULT;
+    _rankingForDevice =
+        PrefService.getBool(RANKING_FOR_DEVICE_TAG) ?? RANKING_FOR_DEVICE_DEFAULT;
     _deviceRank = MAX_UINT8;
     _deviceLeaderboard = [];
-    _waveLightForSport =
-        PrefService.getBool(WAVE_LIGHT_FOR_SPORT_TAG) ?? WAVE_LIGHT_FOR_SPORT_DEFAULT;
+    _rankingForSport =
+        PrefService.getBool(RANKING_FOR_SPORT_TAG) ?? RANKING_FOR_SPORT_DEFAULT;
     _sportLeaderboard = [];
     _sportRank = MAX_UINT8;
+    _rankTrackVisualization = PrefService.getBool(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
 
     _darkRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker);
     _darkGreen = paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker);
@@ -754,7 +758,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   int _getDeviceRank() {
-    if (!_waveLightForDevice) return MAX_UINT8;
+    if (!_rankingForDevice) return MAX_UINT8;
 
     return _getRank(_deviceLeaderboard);
   }
@@ -764,7 +768,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   int _getSportRank() {
-    if (!_waveLightForSport) return MAX_UINT8;
+    if (!_rankingForSport) return MAX_UINT8;
 
     return _getRank(_sportLeaderboard);
   }
@@ -774,7 +778,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Color getWaveLightColor(int deviceRank, int sportRank, {@required bool background}) {
-    if (!_waveLightForDevice && !_waveLightForSport) {
+    if (!_rankingForDevice && !_rankingForSport) {
       return background ? Colors.transparent : Colors.indigo;
     }
 
@@ -785,7 +789,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   TextStyle getWaveLightTextStyle(int deviceRank, int sportRank) {
-    if (!_waveLightForDevice && !_waveLightForSport) {
+    if (!_rankingForDevice && !_rankingForSport) {
       return _measurementStyle;
     }
 
@@ -942,7 +946,7 @@ class RecordingState extends State<RecordingScreen> {
     _rowConfig.asMap().entries.forEach((entry) {
       var measurementStyle = _measurementStyle;
 
-      if (entry.key == 2 && (_waveLightForDevice || _waveLightForSport)) {
+      if (entry.key == 2 && (_rankingForDevice || _rankingForSport)) {
         measurementStyle = getWaveLightTextStyle(_deviceRank, _sportRank);
       }
 
@@ -1013,13 +1017,13 @@ class RecordingState extends State<RecordingScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [Text(targetText, style: targetHrTextStyle), extra],
           );
-        } else if (entry.value.metric == "speed" && (_waveLightForDevice || _waveLightForSport)) {
+        } else if (entry.value.metric == "speed" && _rankRibbonVisualization && (_rankingForDevice || _rankingForSport)) {
           List<Widget> extraExtras = [];
-          if (_waveLightForDevice) {
+          if (_rankingForDevice) {
             final deviceWaveLightColor = getWaveLightTextStyle(_deviceRank, null);
             extraExtras.add(Text(_getDeviceRankString(), style: deviceWaveLightColor));
           }
-          if (_waveLightForSport) {
+          if (_rankingForSport) {
             final deviceWaveLightColor = getWaveLightTextStyle(null, _sportRank);
             extraExtras.add(Text(_getSportRankString(), style: deviceWaveLightColor));
           }
@@ -1037,11 +1041,15 @@ class RecordingState extends State<RecordingScreen> {
       final markerPosition = _trackCalculator.trackMarker(_distance);
       if (markerPosition != null) {
         markers.add(getTrackMarker(markerPosition, 0x88FF0000, ""));
-        if (_waveLightForDevice) {
-          markers.addAll(markersForLeaderboard(_deviceLeaderboard, _deviceRank));
-        }
-        if (_waveLightForSport) {
-          markers.addAll(markersForLeaderboard(_sportLeaderboard, _sportRank));
+        if (_rankTrackVisualization) {
+          if (_rankingForDevice) {
+            markers.addAll(
+                markersForLeaderboard(_deviceLeaderboard, _deviceRank));
+          }
+          if (_rankingForSport) {
+            markers.addAll(
+                markersForLeaderboard(_sportLeaderboard, _sportRank));
+          }
         }
       }
       extras.add(

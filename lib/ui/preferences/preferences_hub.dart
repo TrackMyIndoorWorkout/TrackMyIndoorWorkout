@@ -9,7 +9,7 @@ import 'expert.dart';
 import 'measurement_zones.dart';
 import 'target_heart_rate.dart';
 import 'ux_preferences.dart';
-import 'wave_light.dart';
+import 'leaderboard.dart';
 
 class PreferencesHubScreen extends StatefulWidget {
   @override
@@ -117,13 +117,13 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(WaveLightPreferencesScreen()),
+                onPressed: () => Get.to(LeaderboardPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextOneLine(
-                      WaveLightPreferencesScreen.shortTitle,
+                      LeaderboardPreferencesScreen.shortTitle,
                       style: _textStyle,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
