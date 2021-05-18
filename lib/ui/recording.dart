@@ -481,16 +481,16 @@ class RecordingState extends State<RecordingScreen> {
     }
     _leaderboardFeature =
         PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
-    _rankRibbonVisualization = PrefService.getBool(RANK_RIBBON_VISUALIZATION_TAG) ?? RANK_RIBBON_VISUALIZATION_DEFAULT;
-    _rankingForDevice =
-        PrefService.getBool(RANKING_FOR_DEVICE_TAG) ?? RANKING_FOR_DEVICE_DEFAULT;
+    _rankRibbonVisualization =
+        PrefService.getBool(RANK_RIBBON_VISUALIZATION_TAG) ?? RANK_RIBBON_VISUALIZATION_DEFAULT;
+    _rankingForDevice = PrefService.getBool(RANKING_FOR_DEVICE_TAG) ?? RANKING_FOR_DEVICE_DEFAULT;
     _deviceRank = MAX_UINT8;
     _deviceLeaderboard = [];
-    _rankingForSport =
-        PrefService.getBool(RANKING_FOR_SPORT_TAG) ?? RANKING_FOR_SPORT_DEFAULT;
+    _rankingForSport = PrefService.getBool(RANKING_FOR_SPORT_TAG) ?? RANKING_FOR_SPORT_DEFAULT;
     _sportLeaderboard = [];
     _sportRank = MAX_UINT8;
-    _rankTrackVisualization = PrefService.getBool(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
+    _rankTrackVisualization =
+        PrefService.getBool(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
 
     _darkRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker);
     _darkGreen = paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker);
@@ -1017,7 +1017,9 @@ class RecordingState extends State<RecordingScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [Text(targetText, style: targetHrTextStyle), extra],
           );
-        } else if (entry.value.metric == "speed" && _rankRibbonVisualization && (_rankingForDevice || _rankingForSport)) {
+        } else if (entry.value.metric == "speed" &&
+            _rankRibbonVisualization &&
+            (_rankingForDevice || _rankingForSport)) {
           List<Widget> extraExtras = [];
           if (_rankingForDevice) {
             final deviceWaveLightColor = getWaveLightTextStyle(_deviceRank, null);
@@ -1043,12 +1045,10 @@ class RecordingState extends State<RecordingScreen> {
         markers.add(getTrackMarker(markerPosition, 0x88FF0000, ""));
         if (_rankTrackVisualization) {
           if (_rankingForDevice) {
-            markers.addAll(
-                markersForLeaderboard(_deviceLeaderboard, _deviceRank));
+            markers.addAll(markersForLeaderboard(_deviceLeaderboard, _deviceRank));
           }
           if (_rankingForSport) {
-            markers.addAll(
-                markersForLeaderboard(_sportLeaderboard, _sportRank));
+            markers.addAll(markersForLeaderboard(_sportLeaderboard, _sportRank));
           }
         }
       }
