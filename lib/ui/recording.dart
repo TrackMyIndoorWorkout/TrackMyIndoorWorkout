@@ -214,6 +214,7 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = true;
     });
     _fitnessEquipment.measuring = true;
+    _fitnessEquipment.startWorkout();
 
     _fitnessEquipment.pumpData((record) async {
       _connectionWatchdog?.cancel();
@@ -622,6 +623,8 @@ class RecordingState extends State<RecordingScreen> {
       _fitnessEquipment.lastRecord?.elapsed,
       _fitnessEquipment.lastRecord?.calories,
     );
+    _fitnessEquipment.stopWorkout();
+
     if (!_uxDebug) {
       if (_leaderboardFeature) {
         await _database?.workoutSummaryDao
