@@ -260,6 +260,18 @@ class RecordingState extends State<RecordingScreen> {
             record.heartRate.toString(),
             record.distanceStringByUnit(_si),
           ];
+          if (_preferencesSpecs[0].indexDisplay) {
+            int zoneIndex = _preferencesSpecs[0].binIndex(record.power);
+            _values[1] += " Z$zoneIndex";
+          }
+          if (_preferencesSpecs[2].indexDisplay) {
+            int zoneIndex = _preferencesSpecs[2].binIndex(record.cadence);
+            _values[3] += " Z$zoneIndex";
+          }
+          if (_preferencesSpecs[3].indexDisplay) {
+            int zoneIndex = _preferencesSpecs[3].binIndex(record.heartRate);
+            _values[4] += " Z$zoneIndex";
+          }
         });
       }
     });
