@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:floor/floor.dart';
 import 'package:meta/meta.dart';
 import '../../ui/models/display_record.dart';
@@ -170,4 +172,31 @@ class RecordWithSport extends Record {
           caloriesPerHour: caloriesPerHour,
           caloriesPerMinute: caloriesPerMinute,
         );
+
+  static getBlank(String sport, bool uxDebug, Random random) {
+    return RecordWithSport(
+      timeStamp: 0,
+      distance: uxDebug ? random.nextInt(5000).toDouble() : 0.0,
+      elapsed: 0,
+      calories: 0,
+      power: 0,
+      speed: 0.0,
+      cadence: 0,
+      heartRate: 0,
+      elapsedMillis: 0,
+      sport: sport,
+    );
+  }
+
+  static getRandom(String sport, Random random) {
+    return RecordWithSport(
+      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      calories: random.nextInt(1500),
+      power: 50 + random.nextInt(500),
+      speed: 15.0 + random.nextDouble() * 15.0,
+      cadence: 30 + random.nextInt(100),
+      heartRate: 60 + random.nextInt(120),
+      sport: sport,
+    );
+  }
 }

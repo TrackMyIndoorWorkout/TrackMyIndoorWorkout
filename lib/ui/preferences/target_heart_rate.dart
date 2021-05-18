@@ -8,7 +8,7 @@ import 'preferences_base.dart';
 
 class TargetHrPreferencesScreen extends PreferencesScreenBase {
   static String shortTitle = "Target HR";
-  static String title = "$shortTitle Prefs";
+  static String title = "$shortTitle Preferences";
 
   @override
   Widget build(BuildContext context) {

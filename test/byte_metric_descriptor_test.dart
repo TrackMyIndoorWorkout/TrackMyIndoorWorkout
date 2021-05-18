@@ -16,7 +16,7 @@ void main() {
       final divider = rnd.nextDouble() * 4;
       final expected = 0.0;
 
-      test("$divider -> $expected", () {
+      test("$divider -> $expected", () async {
         final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider, optional: true);
 
         expect(desc.getMeasurementValue(data), null);
@@ -35,7 +35,7 @@ void main() {
       final expected =
           optional && data[lsbLocation] == MAX_UINT8 - 1 ? null : data[lsbLocation] / divider;
 
-      test("($lsbLocation) ${data[lsbLocation]} / $divider -> $expected", () {
+      test("($lsbLocation) ${data[lsbLocation]} / $divider -> $expected", () async {
         final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider, optional: optional);
 
         expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, EPS));

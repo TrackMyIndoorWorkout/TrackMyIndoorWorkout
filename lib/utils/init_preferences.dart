@@ -39,8 +39,10 @@ Future<void> initPreferences() async {
     TARGET_HEART_RATE_SOUND_EFFECT_TAG: TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT,
     AUDIO_VOLUME_TAG: AUDIO_VOLUME_DEFAULT,
     LEADERBOARD_FEATURE_TAG: LEADERBOARD_FEATURE_DEFAULT,
-    WAVE_LIGHT_FOR_DEVICE_TAG: WAVE_LIGHT_FOR_DEVICE_DEFAULT,
-    WAVE_LIGHT_FOR_SPORT_TAG: WAVE_LIGHT_FOR_SPORT_DEFAULT,
+    RANK_RIBBON_VISUALIZATION_TAG: RANK_RIBBON_VISUALIZATION_DEFAULT,
+    RANKING_FOR_DEVICE_TAG: RANKING_FOR_DEVICE_DEFAULT,
+    RANKING_FOR_SPORT_TAG: RANKING_FOR_SPORT_DEFAULT,
+    RANK_TRACK_VISUALIZATION_TAG: RANK_TRACK_VISUALIZATION_DEFAULT,
   };
   PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
     PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
@@ -55,6 +57,13 @@ Future<void> initPreferences() async {
           {PreferencesSpec.slowSpeedTag(sport): PreferencesSpec.slowSpeeds[sport].toString()});
     }
   });
+  PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+    prefDefaults.addAll({
+      "${prefSpec.metric}_${PreferencesSpec.ZONE_INDEX_DISPLAY_TAG_POSTFIX}":
+          prefSpec.indexDisplayDefault
+    });
+  });
+
   PrefService.setDefaultValues(prefDefaults);
 
   if (PrefService.getInt(PREFERENCES_VERSION_TAG) < PREFERENCES_VERSION_SPORT_THRESHOLDS) {

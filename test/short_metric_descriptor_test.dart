@@ -19,7 +19,7 @@ void main() {
       final divider = rnd.nextDouble() * 4;
       final expected = 0.0;
 
-      test("$divider -> $expected", () {
+      test("$divider -> $expected", () async {
         final desc = ShortMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: true);
 
@@ -42,7 +42,7 @@ void main() {
           ? 0
           : (data[lsbLocation] + data[msbLocation] * MAX_UINT8) / divider;
 
-      test("(${data[lsbLocation]} + ${data[msbLocation]}) / $divider -> $expected", () {
+      test("(${data[lsbLocation]} + ${data[msbLocation]}) / $divider -> $expected", () async {
         final desc = ShortMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);
 

@@ -68,6 +68,11 @@ class PreferencesSpec {
   static const THRESHOLD_PREFIX = 'threshold_';
   static const ZONES_POSTFIX = '_zones';
   static const METRICS = ['power', 'speed', 'cadence', 'hr'];
+  static const ZONE_INDEX_DISPLAY_TAG_POSTFIX = "zone_index_display";
+  static const ZONE_INDEX_DISPLAY_TEXT = "Zone Index Display";
+  static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 = "Display the Zone Index Next to the ";
+  static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART2 = " Measurement Value";
+  static const ZONE_INDEX_DISPLAY_DEFAULT = false;
 
   static final slowSpeeds = {
     ActivityType.Ride: 5.0,
@@ -96,6 +101,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.bolt,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[1],
@@ -116,6 +122,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.speed,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[2],
@@ -136,6 +143,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [25, 37, 50, 75, 100, 120],
       },
       icon: Icons.directions_bike,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[3],
@@ -156,6 +164,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [50, 60, 70, 80, 90, 100],
       },
       icon: Icons.favorite,
+      indexDisplayDefault: false,
     ),
   ].toList(growable: false);
 
@@ -167,6 +176,8 @@ class PreferencesSpec {
   final Map<String, int> thresholdDefaultInts;
   final String zonesTagPostfix;
   final Map<String, List<int>> zonesDefaultInts;
+  final bool indexDisplayDefault;
+  bool indexDisplay;
   double threshold;
   List<int> zonePercents;
   List<double> zoneBounds;
@@ -187,6 +198,7 @@ class PreferencesSpec {
     @required this.thresholdDefaultInts,
     @required this.zonesTagPostfix,
     @required this.zonesDefaultInts,
+    @required this.indexDisplayDefault,
     @required this.icon,
   })  : assert(metric != null),
         assert(title != null),
@@ -195,15 +207,22 @@ class PreferencesSpec {
         assert(thresholdDefaultInts != null),
         assert(zonesTagPostfix != null),
         assert(zonesDefaultInts != null),
+        assert(indexDisplayDefault != null),
         assert(icon != null) {
     flipZones = false;
     updateMultiLineUnit();
     annotationSegments = [];
+    indexDisplay = indexDisplayDefault;
   }
 
   String get fullTitle => '$title ($unit)';
   String get kmhTitle => '$title (kmh)';
   String get histogramTitle => '$title zones (%)';
+
+  String get zoneIndexText => '$title $ZONE_INDEX_DISPLAY_TEXT';
+  String get zoneIndexTag => metric + '_$ZONE_INDEX_DISPLAY_TAG_POSTFIX';
+  String get zoneIndexDescription =>
+      '$ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 $title $ZONE_INDEX_DISPLAY_DESCRIPTION_PART2';
 
   static String sport2Sport(String sport) {
     return sport == ActivityType.Kayaking ||
@@ -259,6 +278,7 @@ class PreferencesSpec {
     if (flipZones) {
       zoneBounds = zoneBounds.reversed.toList(growable: false);
     }
+    indexDisplay = PrefService.getBool(zoneIndexTag) ?? indexDisplayDefault;
   }
 
   void calculateBounds(double minVal, double maxVal) {
@@ -599,23 +619,38 @@ const LEADERBOARD_FEATURE = "Leaderboard Feature";
 const LEADERBOARD_FEATURE_TAG = "leaderboard_feature";
 const LEADERBOARD_FEATURE_DEFAULT = false;
 const LEADERBOARD_FEATURE_DESCRIPTION =
-    "Leaderboard registry: should the app record workout entries " + "for leaderboard purposes.";
+    "Leaderboard registry: should the app record workout entries for leaderboard purposes.";
 
-const WAVE_LIGHT_FOR_DEVICE = "Wavelight Specific for the Actual Device";
-const WAVE_LIGHT_FOR_DEVICE_TAG = "wave_light_for_device";
-const WAVE_LIGHT_FOR_DEVICE_DEFAULT = false;
-const WAVE_LIGHT_FOR_DEVICE_DESCRIPTION =
+const RANK_RIBBON_VISUALIZATION = "Display Rank Ribbons Above the Speed Graph";
+const RANK_RIBBON_VISUALIZATION_TAG = "rank_ribbon_visualization";
+const RANK_RIBBON_VISUALIZATION_DEFAULT = true;
+const RANK_RIBBON_VISUALIZATION_DESCRIPTION =
+    "Should the app provide UI feedback by ribbons above the speed graph. " +
+        "Blue color means behind the top leaderboard, green marks record pace.";
+
+const RANKING_FOR_DEVICE = "Ranking Based on the Actual Device";
+const RANKING_FOR_DEVICE_TAG = "ranking_for_device";
+const RANKING_FOR_DEVICE_DEFAULT = true;
+const RANKING_FOR_DEVICE_DESCRIPTION =
     "Should the app display ranking for the particular device. " +
-        "Blue color means behind the top leaderboard, green marks record pace.";
+        "This affects both the ribbon type and the track visualization.";
 
-const WAVE_LIGHT_FOR_SPORT = "Wavelight Specific for the Whole Sport";
-const WAVE_LIGHT_FOR_SPORT_TAG = "wave_light_for_sport";
-const WAVE_LIGHT_FOR_SPORT_DEFAULT = false;
-const WAVE_LIGHT_FOR_SPORT_DESCRIPTION =
+const RANKING_FOR_SPORT = "Ranking Based on the Whole Sport";
+const RANKING_FOR_SPORT_TAG = "ranking_for_sport";
+const RANKING_FOR_SPORT_DEFAULT = false;
+const RANKING_FOR_SPORT_DESCRIPTION =
     "Should the app display ranking for all devices for the sport. " +
-        "Blue color means behind the top leaderboard, green marks record pace.";
+        "This affects both the ribbon type and the track visualization.";
 
-const LEADERBOARD_LIMIT = 10;
+const RANK_TRACK_VISUALIZATION = "Visualize Rank Positions on the Track";
+const RANK_TRACK_VISUALIZATION_TAG = "rank_track_visualization";
+const RANK_TRACK_VISUALIZATION_DEFAULT = false;
+const RANK_TRACK_VISUALIZATION_DESCRIPTION =
+    "For performance reasons only the position right ahead (green color) and right behind " +
+        "(blue color) of the current effort is displayed. Both positions have a the rank " +
+        "number inside their dot.";
+
+const LEADERBOARD_LIMIT = 25;
 
 const EXPERT_PREFERENCES = "Expert Preferences";
 

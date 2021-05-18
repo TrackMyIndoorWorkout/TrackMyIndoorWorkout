@@ -78,4 +78,12 @@ class WorkoutSummary {
   String distanceStringWithUnit(bool si) {
     return distanceByUnit(distance, si);
   }
+
+  double distanceAtTime(int elapsed) {
+    if (speed == null || elapsed == null) {
+      return 0.0;
+    }
+
+    return speed * DeviceDescriptor.KMH2MS * elapsed;
+  }
 }
