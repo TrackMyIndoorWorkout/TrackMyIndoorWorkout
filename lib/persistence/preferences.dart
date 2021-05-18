@@ -68,6 +68,11 @@ class PreferencesSpec {
   static const THRESHOLD_PREFIX = 'threshold_';
   static const ZONES_POSTFIX = '_zones';
   static const METRICS = ['power', 'speed', 'cadence', 'hr'];
+  static const ZONE_INDEX_DISPLAY_TAG_POSTFIX = "zone_index_display";
+  static const ZONE_INDEX_DISPLAY_TEXT = "Zone Index Display";
+  static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 = "Display the Zone Index Next to the ";
+  static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART2 = " Measurement Value";
+  static const ZONE_INDEX_DISPLAY_DEFAULT = false;
 
   static final slowSpeeds = {
     ActivityType.Ride: 5.0,
@@ -96,6 +101,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.bolt,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[1],
@@ -116,6 +122,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.speed,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[2],
@@ -136,6 +143,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [25, 37, 50, 75, 100, 120],
       },
       icon: Icons.directions_bike,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[3],
@@ -156,6 +164,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [50, 60, 70, 80, 90, 100],
       },
       icon: Icons.favorite,
+      indexDisplayDefault: false,
     ),
   ].toList(growable: false);
 
@@ -167,6 +176,8 @@ class PreferencesSpec {
   final Map<String, int> thresholdDefaultInts;
   final String zonesTagPostfix;
   final Map<String, List<int>> zonesDefaultInts;
+  final bool indexDisplayDefault;
+  bool indexDisplay;
   double threshold;
   List<int> zonePercents;
   List<double> zoneBounds;
@@ -187,6 +198,7 @@ class PreferencesSpec {
     @required this.thresholdDefaultInts,
     @required this.zonesTagPostfix,
     @required this.zonesDefaultInts,
+    @required this.indexDisplayDefault,
     @required this.icon,
   })  : assert(metric != null),
         assert(title != null),
@@ -195,15 +207,19 @@ class PreferencesSpec {
         assert(thresholdDefaultInts != null),
         assert(zonesTagPostfix != null),
         assert(zonesDefaultInts != null),
+        assert(indexDisplayDefault != null),
         assert(icon != null) {
     flipZones = false;
     updateMultiLineUnit();
     annotationSegments = [];
+    indexDisplay = indexDisplayDefault;
   }
 
   String get fullTitle => '$title ($unit)';
   String get kmhTitle => '$title (kmh)';
   String get histogramTitle => '$title zones (%)';
+  String get zoneIndexDescription =>
+      '$ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 $title $ZONE_INDEX_DISPLAY_DESCRIPTION_PART2';
 
   static String sport2Sport(String sport) {
     return sport == ActivityType.Kayaking ||

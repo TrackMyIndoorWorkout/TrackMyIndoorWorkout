@@ -57,6 +57,13 @@ Future<void> initPreferences() async {
           {PreferencesSpec.slowSpeedTag(sport): PreferencesSpec.slowSpeeds[sport].toString()});
     }
   });
+  PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+    prefDefaults.addAll({
+      "${prefSpec.metric}_${PreferencesSpec.ZONE_INDEX_DISPLAY_TAG_POSTFIX}":
+          prefSpec.indexDisplayDefault
+    });
+  });
+
   PrefService.setDefaultValues(prefDefaults);
 
   if (PrefService.getInt(PREFERENCES_VERSION_TAG) < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
