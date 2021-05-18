@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import '../utils/constants.dart';
 
+// Bluetooth SIG registered companies
 class CompanyRegistry {
   static const BLANK_KEY = 1930;
   Map<int, String> registry;

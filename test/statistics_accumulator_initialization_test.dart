@@ -111,7 +111,7 @@ void main() {
   group('StatisticsAccumulator initializes max speed when max requested', () {
     SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(sport: sport, calculateMaxSpeed: true);
-      test("$sport -> ${accu.maxSpeed}", () {
+      test("$sport -> ${accu.maxSpeed}", () async {
         expect(accu.si, null);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, false);
@@ -256,7 +256,7 @@ void main() {
         calculateAvgHeartRate: true,
         calculateMaxHeartRate: true,
       );
-      test("$sport -> ${accu.maxSpeed}", () {
+      test("$sport -> ${accu.maxSpeed}", () async {
         expect(accu.si, null);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, true);

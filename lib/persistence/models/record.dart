@@ -1,7 +1,8 @@
+import 'dart:math';
+
 import 'package:floor/floor.dart';
 import 'package:meta/meta.dart';
 import '../../ui/models/display_record.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import 'activity.dart';
@@ -86,15 +87,19 @@ class Record {
       if (pace.abs() < DISPLAY_EPS) {
         speed = 0.0;
       } else {
-        if (sport == ActivityType.Kayaking ||
+        if (sport == ActivityType.Run) {
+          // minutes / km pace
+          speed = 60.0 / pace;
+        } else if (sport == ActivityType.Kayaking ||
             sport == ActivityType.Canoeing ||
             sport == ActivityType.Rowing) {
+          // seconds / 500m pace
           speed = 30.0 / (pace / 60.0);
         } else if (sport == ActivityType.Swim) {
-          // 100m pace
+          // seconds / 100m pace
           speed = 6.0 / (pace / 60.0);
         } else {
-          // sport == ActivityType.Run
+          // minutes / km pace
           speed = 60.0 / pace;
         }
       }
@@ -121,14 +126,8 @@ class Record {
     return speedOrPaceString(speed, si, sport);
   }
 
-  double distanceByUnit(bool si) {
-    if (si) return distance;
-    return distance * M2MILE;
-  }
-
   String distanceStringByUnit(bool si) {
-    final dist = distanceByUnit(si) ?? 0.0;
-    return dist.toStringAsFixed(si ? 0 : 2);
+    return distanceString(distance, si);
   }
 
   DisplayRecord display() {
@@ -173,4 +172,31 @@ class RecordWithSport extends Record {
           caloriesPerHour: caloriesPerHour,
           caloriesPerMinute: caloriesPerMinute,
         );
+
+  static getBlank(String sport, bool uxDebug, Random random) {
+    return RecordWithSport(
+      timeStamp: 0,
+      distance: uxDebug ? random.nextInt(5000).toDouble() : 0.0,
+      elapsed: 0,
+      calories: 0,
+      power: 0,
+      speed: 0.0,
+      cadence: 0,
+      heartRate: 0,
+      elapsedMillis: 0,
+      sport: sport,
+    );
+  }
+
+  static getRandom(String sport, Random random) {
+    return RecordWithSport(
+      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      calories: random.nextInt(1500),
+      power: 50 + random.nextInt(500),
+      speed: 15.0 + random.nextDouble() * 15.0,
+      cadence: 30 + random.nextInt(100),
+      heartRate: 60 + random.nextInt(120),
+      sport: sport,
+    );
+  }
 }

@@ -10,6 +10,7 @@ import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/preferences.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../bluetooth_device_ex.dart';
 import '../gatt_constants.dart';
@@ -56,23 +57,14 @@ class FitnessEquipment extends DeviceBase {
     calibrating = false;
     _random = Random();
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
-    lastRecord = RecordWithSport(
-      timeStamp: 0,
-      distance: uxDebug ? _random.nextInt(5000).toDouble() : 0.0,
-      elapsed: 0,
-      calories: 0,
-      power: 0,
-      speed: 0.0,
-      cadence: 0,
-      heartRate: 0,
-      elapsedMillis: 0,
-      sport: sport,
-    );
+    lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
     _heartRateGapWorkaround =
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
-    final heartRateUpperLimitString =
-        PrefService.getString(HEART_RATE_UPPER_LIMIT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
-    _heartRateUpperLimit = int.tryParse(heartRateUpperLimitString);
+    _heartRateUpperLimit = getStringIntegerPreference(
+      HEART_RATE_UPPER_LIMIT_TAG,
+      HEART_RATE_UPPER_LIMIT_DEFAULT,
+      HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
+    );
     _heartRateLimitingMethod =
         PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
     equipmentDiscovery = false;
@@ -81,6 +73,8 @@ class FitnessEquipment extends DeviceBase {
   String get sport => _activity?.sport ?? descriptor.defaultSport;
   double get powerFactor => _activity?.powerFactor ?? descriptor.powerFactor;
   double get calorieFactor => _activity?.calorieFactor ?? descriptor.calorieFactor;
+  double get residueCalories => _residueCalories;
+  double get lastPositiveCalories => _lastPositiveCalories;
 
   Stream<Record> get _listenToData async* {
     if (!attached) return;
@@ -99,15 +93,7 @@ class FitnessEquipment extends DeviceBase {
       _timer = Timer(
         Duration(seconds: 1),
         () {
-          final record = processRecord(Record(
-            timeStamp: DateTime.now().millisecondsSinceEpoch,
-            calories: _random.nextInt(1500),
-            power: 50 + _random.nextInt(500),
-            speed: 15.0 + _random.nextDouble() * 15.0,
-            cadence: 30 + _random.nextInt(100),
-            heartRate: 60 + _random.nextInt(120),
-            sport: sport,
-          ));
+          final record = processRecord(RecordWithSport.getRandom(sport, _random));
           recordHandlerFunction(record);
           pumpData(recordHandlerFunction);
         },
@@ -282,10 +268,17 @@ class FitnessEquipment extends DeviceBase {
     return stub;
   }
 
+  void startWorkout() {
+    _residueCalories = 0.0;
+    _lastPositiveCalories = 0.0;
+    lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
+  }
+
   void stopWorkout() {
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();
+    descriptor.stopWorkout();
   }
 }

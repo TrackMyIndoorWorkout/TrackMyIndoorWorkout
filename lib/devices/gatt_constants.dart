@@ -2,6 +2,7 @@ const DEVICE_INFORMATION_ID = '180a';
 const CADENCE_SERVICE_ID = '1816';
 const CADENCE_MEASUREMENT_ID = '2a5b';
 const FITNESS_MACHINE_ID = '1826';
+const TREADMILL_ID = '2acd';
 const INDOOR_BIKE_ID = '2ad2';
 const ROWER_DEVICE_ID = '2ad1';
 const DEVICE_NAME_ID = '2a00';

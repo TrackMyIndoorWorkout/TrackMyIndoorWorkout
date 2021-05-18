@@ -5,6 +5,7 @@ import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart' as painting;
 import 'package:preferences/preferences.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -67,6 +68,11 @@ class PreferencesSpec {
   static const THRESHOLD_PREFIX = 'threshold_';
   static const ZONES_POSTFIX = '_zones';
   static const METRICS = ['power', 'speed', 'cadence', 'hr'];
+  static const ZONE_INDEX_DISPLAY_TAG_POSTFIX = "zone_index_display";
+  static const ZONE_INDEX_DISPLAY_TEXT = "Zone Index Display";
+  static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 = "Display the Zone Index Next to the ";
+  static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART2 = " Measurement Value";
+  static const ZONE_INDEX_DISPLAY_DEFAULT = false;
 
   static final slowSpeeds = {
     ActivityType.Ride: 5.0,
@@ -95,6 +101,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.bolt,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[1],
@@ -115,6 +122,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.speed,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[2],
@@ -135,6 +143,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [25, 37, 50, 75, 100, 120],
       },
       icon: Icons.directions_bike,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[3],
@@ -155,6 +164,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [50, 60, 70, 80, 90, 100],
       },
       icon: Icons.favorite,
+      indexDisplayDefault: false,
     ),
   ].toList(growable: false);
 
@@ -166,6 +176,8 @@ class PreferencesSpec {
   final Map<String, int> thresholdDefaultInts;
   final String zonesTagPostfix;
   final Map<String, List<int>> zonesDefaultInts;
+  final bool indexDisplayDefault;
+  bool indexDisplay;
   double threshold;
   List<int> zonePercents;
   List<double> zoneBounds;
@@ -186,6 +198,7 @@ class PreferencesSpec {
     @required this.thresholdDefaultInts,
     @required this.zonesTagPostfix,
     @required this.zonesDefaultInts,
+    @required this.indexDisplayDefault,
     @required this.icon,
   })  : assert(metric != null),
         assert(title != null),
@@ -194,15 +207,22 @@ class PreferencesSpec {
         assert(thresholdDefaultInts != null),
         assert(zonesTagPostfix != null),
         assert(zonesDefaultInts != null),
+        assert(indexDisplayDefault != null),
         assert(icon != null) {
     flipZones = false;
     updateMultiLineUnit();
     annotationSegments = [];
+    indexDisplay = indexDisplayDefault;
   }
 
   String get fullTitle => '$title ($unit)';
   String get kmhTitle => '$title (kmh)';
   String get histogramTitle => '$title zones (%)';
+
+  String get zoneIndexText => '$title $ZONE_INDEX_DISPLAY_TEXT';
+  String get zoneIndexTag => metric + '_$ZONE_INDEX_DISPLAY_TAG_POSTFIX';
+  String get zoneIndexDescription =>
+      '$ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 $title $ZONE_INDEX_DISPLAY_DESCRIPTION_PART2';
 
   static String sport2Sport(String sport) {
     return sport == ActivityType.Kayaking ||
@@ -258,6 +278,7 @@ class PreferencesSpec {
     if (flipZones) {
       zoneBounds = zoneBounds.reversed.toList(growable: false);
     }
+    indexDisplay = PrefService.getBool(zoneIndexTag) ?? indexDisplayDefault;
   }
 
   void calculateBounds(double minVal, double maxVal) {
@@ -459,16 +480,16 @@ const EXTEND_TUNING_DESCRIPTION =
 
 const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
 const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
-const STROKE_RATE_SMOOTHING_DEFAULT = "10";
 const STROKE_RATE_SMOOTHING_DEFAULT_INT = 10;
+const STROKE_RATE_SMOOTHING_DEFAULT = "$STROKE_RATE_SMOOTHING_DEFAULT_INT";
 const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery data. Averaging " +
     "these over time soothes the data. This setting tells the window size by how many samples " +
     "could be in the smoothing queue. 1 means no smoothing.";
 
 const EQUIPMENT_DISCONNECTION_WATCHDOG = "Equipment Disconnection Watchdog Timer";
 const EQUIPMENT_DISCONNECTION_WATCHDOG_TAG = "equipment_disconnection_watchdog_timer";
-const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT = "5";
 const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT = 5;
+const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT = "$EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT";
 const EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered " +
     "as a disconnection. A watchdog would finish the workout, reconnect to the equipment, and " +
     "start a new workout. 0 means the watchdog will be turned off. Disabling the watchdog " +
@@ -498,9 +519,9 @@ const HEART_RATE_GAP_WORKAROUND_DEFAULT = DATA_GAP_WORKAROUND_LAST_POSITIVE_VALU
 
 const HEART_RATE_UPPER_LIMIT = "Heart Rate Upper Limit";
 const HEART_RATE_UPPER_LIMIT_TAG = "heart_rate_upper_limit";
-const HEART_RATE_UPPER_LIMIT_DEFAULT = "0";
 const HEART_RATE_UPPER_LIMIT_DEFAULT_INT = 0;
-const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is the heart rate upper bound where the methods" +
+const HEART_RATE_UPPER_LIMIT_DEFAULT = "$HEART_RATE_UPPER_LIMIT_DEFAULT_INT";
+const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is a heart rate upper bound where the methods " +
     "bellow would be applied. 0 means no upper limiting is performed.";
 
 const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection";
@@ -517,6 +538,119 @@ const HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION =
 const HEART_RATE_LIMITING_NO_LIMIT = "no_limit";
 const HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION = "Don't apply any limiting.";
 const HEART_RATE_LIMITING_METHOD_DEFAULT = HEART_RATE_LIMITING_NO_LIMIT;
+
+const TARGET_HEART_RATE_MODE = "Target Heart Rate Mode";
+const TARGET_HEART_RATE_MODE_TAG = "target_heart_rate_mode";
+const TARGET_HEART_RATE_MODE_DESCRIPTION =
+    "You can configure target heart rate BPM range or zone range. " +
+        "The app will alert visually (and optionally audio as well) when you are outside of the range. " +
+        "The lower and upper zone can be the same if you want to target just one zone.";
+const TARGET_HEART_RATE_MODE_NONE = "none";
+const TARGET_HEART_RATE_MODE_NONE_DESCRIPTION = "Target heart rate alert is turned off.";
+const TARGET_HEART_RATE_MODE_BPM = "bpm";
+const TARGET_HEART_RATE_MODE_BPM_DESCRIPTION =
+    "Bounds are specified by explicit beat per minute numbers.";
+const TARGET_HEART_RATE_MODE_ZONES = "zones";
+const TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION = "Bounds are specified by HR zone numbers.";
+const TARGET_HEART_RATE_MODE_DEFAULT = TARGET_HEART_RATE_MODE_NONE;
+
+const TARGET_HEART_RATE_LOWER_BPM = "Target Heart Rate Lower BPM";
+const TARGET_HEART_RATE_LOWER_BPM_TAG = "target_heart_rate_bpm_lower";
+const TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT = 120;
+const TARGET_HEART_RATE_LOWER_BPM_DEFAULT = "$TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT";
+const TARGET_HEART_RATE_LOWER_BPM_DESCRIPTION =
+    "Lower bpm of the target heart rate (for bpm target mode).";
+
+const TARGET_HEART_RATE_UPPER_BPM = "Target Heart Rate Upper BPM";
+const TARGET_HEART_RATE_UPPER_BPM_TAG = "target_heart_rate_bpm_upper";
+const TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT = 140;
+const TARGET_HEART_RATE_UPPER_BPM_DEFAULT = "$TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT";
+const TARGET_HEART_RATE_UPPER_BPM_DESCRIPTION =
+    "Upper bpm of the target heart rate (for bpm target mode).";
+
+const TARGET_HEART_RATE_LOWER_ZONE = "Target Heart Rate Lower Zone";
+const TARGET_HEART_RATE_LOWER_ZONE_TAG = "target_heart_rate_zone_lower";
+const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT = 3;
+const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT = "$TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT";
+const TARGET_HEART_RATE_LOWER_ZONE_DESCRIPTION =
+    "Lower zone of the target heart rate (for zone target mode).";
+
+const TARGET_HEART_RATE_UPPER_ZONE = "Target Heart Rate Upper Zone";
+const TARGET_HEART_RATE_UPPER_ZONE_TAG = "target_heart_rate_zone_upper";
+const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT = 3;
+const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT = "$TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT";
+const TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION =
+    "Upper zone of the target heart rate (for zone target mode).";
+
+const TARGET_HEART_RATE_AUDIO = "Target Heart Rate Audio";
+const TARGET_HEART_RATE_AUDIO_TAG = "target_heart_rate_audio";
+const TARGET_HEART_RATE_AUDIO_DEFAULT = false;
+const TARGET_HEART_RATE_AUDIO_DESCRIPTION = "Should a sound effect play when HR is out of range.";
+
+const TARGET_HEART_RATE_AUDIO_PERIOD = "Target HR Audio Period (seconds)";
+const TARGET_HEART_RATE_AUDIO_PERIOD_TAG = "target_heart_rate_audio_period";
+const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT = 0;
+const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT = "$TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT";
+const TARGET_HEART_RATE_AUDIO_PERIOD_DESCRIPTION =
+    "0 or 1: no periodicity. Larger than 1 seconds: " +
+        "the selected sound effect will play with the periodicity until the HR is back in range.";
+
+const TARGET_HEART_RATE_SOUND_EFFECT = "Target Heart Rate Out of Range Sound Effect";
+const TARGET_HEART_RATE_SOUND_EFFECT_TAG = "target_heart_rate_sound_effect";
+const TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION =
+    "Select the type of sound effect played when the HR gets out of range.";
+const TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE = "one_tone_beep";
+const TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE_DESCRIPTION = "A single tone 1200Hz beep.";
+const TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE = "two_tone_beep";
+const TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE_DESCRIPTION = "Two beep tones repeated twice";
+const TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE = "three_tone_beep";
+const TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE_DESCRIPTION = "Three beep tones after one another";
+const TARGET_HEART_RATE_SOUND_EFFECT_BLEEP = "media_bleep";
+const TARGET_HEART_RATE_SOUND_EFFECT_BLEEP_DESCRIPTION = "A Media Call type bleep.";
+const TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT = TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE;
+
+const AUDIO_VOLUME = "Audio Volume (%)";
+const AUDIO_VOLUME_TAG = "audio_volume";
+const AUDIO_VOLUME_DEFAULT_INT = 50;
+const AUDIO_VOLUME_DEFAULT = "$AUDIO_VOLUME_DEFAULT_INT";
+const AUDIO_VOLUME_DESCRIPTION = "Volume base of the audio effects.";
+
+const LEADERBOARD_FEATURE = "Leaderboard Feature";
+const LEADERBOARD_FEATURE_TAG = "leaderboard_feature";
+const LEADERBOARD_FEATURE_DEFAULT = false;
+const LEADERBOARD_FEATURE_DESCRIPTION =
+    "Leaderboard registry: should the app record workout entries for leaderboard purposes.";
+
+const RANK_RIBBON_VISUALIZATION = "Display Rank Ribbons Above the Speed Graph";
+const RANK_RIBBON_VISUALIZATION_TAG = "rank_ribbon_visualization";
+const RANK_RIBBON_VISUALIZATION_DEFAULT = true;
+const RANK_RIBBON_VISUALIZATION_DESCRIPTION =
+    "Should the app provide UI feedback by ribbons above the speed graph. " +
+        "Blue color means behind the top leaderboard, green marks record pace.";
+
+const RANKING_FOR_DEVICE = "Ranking Based on the Actual Device";
+const RANKING_FOR_DEVICE_TAG = "ranking_for_device";
+const RANKING_FOR_DEVICE_DEFAULT = true;
+const RANKING_FOR_DEVICE_DESCRIPTION =
+    "Should the app display ranking for the particular device. " +
+        "This affects both the ribbon type and the track visualization.";
+
+const RANKING_FOR_SPORT = "Ranking Based on the Whole Sport";
+const RANKING_FOR_SPORT_TAG = "ranking_for_sport";
+const RANKING_FOR_SPORT_DEFAULT = false;
+const RANKING_FOR_SPORT_DESCRIPTION =
+    "Should the app display ranking for all devices for the sport. " +
+        "This affects both the ribbon type and the track visualization.";
+
+const RANK_TRACK_VISUALIZATION = "Visualize Rank Positions on the Track";
+const RANK_TRACK_VISUALIZATION_TAG = "rank_track_visualization";
+const RANK_TRACK_VISUALIZATION_DEFAULT = false;
+const RANK_TRACK_VISUALIZATION_DESCRIPTION =
+    "For performance reasons only the position right ahead (green color) and right behind " +
+        "(blue color) of the current effort is displayed. Both positions have a the rank " +
+        "number inside their dot.";
+
+const LEADERBOARD_LIMIT = 25;
 
 const EXPERT_PREFERENCES = "Expert Preferences";
 
@@ -555,6 +689,10 @@ Future<bool> getSimplerUiDefault() async {
     }
   }
   return simplerUiDefault;
+}
+
+painting.Color paletteToPaintColor(common.Color paletteColor) {
+  return painting.Color.fromARGB(paletteColor.a, paletteColor.r, paletteColor.g, paletteColor.b);
 }
 
 const KM2MI = 0.621371;

@@ -29,5 +29,6 @@ public final class GeneratedPluginRegistrant {
     flutterEngine.getPlugins().add(new creativemaybeno.wakelock.WakelockPlugin());
       com.hui.bluetooth_enable.BluetoothEnablePlugin.registerWith(shimPluginRegistry.registrarFor("com.hui.bluetooth_enable.BluetoothEnablePlugin"));
       com.twwm.share_files_and_screenshot_widgets.ShareFilesAndScreenshotWidgetsPlugin.registerWith(shimPluginRegistry.registrarFor("com.twwm.share_files_and_screenshot_widgets.ShareFilesAndScreenshotWidgetsPlugin"));
+      pl.ukaszapps.soundpool.SoundpoolPlugin.registerWith(shimPluginRegistry.registrarFor("pl.ukaszapps.soundpool.SoundpoolPlugin"));
   }
 }

@@ -46,7 +46,7 @@ void main() {
 
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
-          () {
+          () async {
         final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, EPS));
@@ -75,7 +75,7 @@ void main() {
 
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
-          () {
+          () async {
         final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx, closeTo(track.center.dx - track.gpsRadius, EPS));
@@ -105,7 +105,7 @@ void main() {
 
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
-          () {
+          () async {
         final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx,
@@ -140,7 +140,7 @@ void main() {
 
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
-          () {
+          () async {
         final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx, closeTo(track.center.dx + track.gpsRadius, EPS));
@@ -171,7 +171,7 @@ void main() {
 
       test(
           "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
-          () {
+          () async {
         final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx,

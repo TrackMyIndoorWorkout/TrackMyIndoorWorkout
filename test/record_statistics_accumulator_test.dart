@@ -22,7 +22,7 @@ void main() {
           count--;
         }
       });
-      test("$count ($sport) -> $sum", () {
+      test("$count ($sport) -> $sum", () async {
         expect(accu.si, null);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, true);
@@ -60,7 +60,7 @@ void main() {
         accu.processRecord(RecordWithSport(power: number, sport: sport));
         maximum = max(number, maximum);
       });
-      test("$count ($sport) -> $maximum", () {
+      test("$count ($sport) -> $maximum", () async {
         expect(accu.si, null);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, false);
@@ -102,7 +102,7 @@ void main() {
           count--;
         }
       });
-      test("$count ($sport) -> $sum", () {
+      test("$count ($sport) -> $sum", () async {
         expect(accu.si, si);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, false);
@@ -146,7 +146,7 @@ void main() {
           maximum = min(speed, maximum);
         }
       });
-      test("$count ($sport) -> $maximum", () {
+      test("$count ($sport) -> $maximum", () async {
         expect(accu.si, si);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, false);
@@ -192,7 +192,7 @@ void main() {
           count--;
         }
       });
-      test("$count ($sport) -> $sum", () {
+      test("$count ($sport) -> $sum", () async {
         expect(accu.si, si);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, false);
@@ -231,7 +231,7 @@ void main() {
         accu.processRecord(RecordWithSport(heartRate: number, sport: sport));
         maximum = max(number, maximum);
       });
-      test("$count ($sport) -> $maximum", () {
+      test("$count ($sport) -> $maximum", () async {
         expect(accu.si, si);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, false);
@@ -273,7 +273,7 @@ void main() {
           count--;
         }
       });
-      test("$count ($sport) -> $sum", () {
+      test("$count ($sport) -> $sum", () async {
         expect(accu.si, si);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, false);
@@ -312,7 +312,7 @@ void main() {
         accu.processRecord(RecordWithSport(cadence: number, sport: sport));
         maximum = max(number, maximum);
       });
-      test("$count ($sport) -> $maximum", () {
+      test("$count ($sport) -> $maximum", () async {
         expect(accu.si, si);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, false);
@@ -407,7 +407,7 @@ void main() {
         maxHr = max(hrs[index], maxHr);
         return index;
       });
-      test("$count ($sport) -> $powerSum, $maxPower, $speedSum, $maxSpeed", () {
+      test("$count ($sport) -> $powerSum, $maxPower, $speedSum, $maxSpeed", () async {
         expect(accu.si, si);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, true);

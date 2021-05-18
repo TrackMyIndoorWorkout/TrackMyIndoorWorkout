@@ -20,7 +20,7 @@ void main() {
       final divider = rnd.nextDouble() * 4;
       final expected = 0.0;
 
-      test("$divider -> $expected", () {
+      test("$divider -> $expected", () async {
         final desc = ThreeByteMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: true);
 
@@ -50,7 +50,7 @@ void main() {
 
       test(
           "(${data[lsbLocation]} + ${data[midLocation]} + ${data[msbLocation]}) / $divider -> $expected",
-          () {
+          () async {
         final desc = ThreeByteMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);
 
