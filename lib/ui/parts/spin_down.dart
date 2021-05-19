@@ -522,11 +522,16 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(_calibrationState == CalibrationState.CalibrationSuccess ? "SUCCESS" : "ERROR",
+                  Text(
+                      _calibrationState == CalibrationState.CalibrationSuccess
+                          ? "SUCCESS"
+                          : "ERROR",
                       style: _largerTextStyle),
                   ElevatedButton(
                     child: Text(
-                        _calibrationState == CalibrationState.CalibrationSuccess ? 'Close' : 'Retry',
+                        _calibrationState == CalibrationState.CalibrationSuccess
+                            ? 'Close'
+                            : 'Retry',
                         style: _smallerTextStyle),
                     style: _buttonBackgroundStyle(),
                     onPressed: () {
