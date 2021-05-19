@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/constants.dart';
 
 class DataFormatPickerBottomSheet extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class DataFormatPickerBottomSheet extends StatefulWidget {
 class DataFormatPickerBottomSheetState extends State<DataFormatPickerBottomSheet> {
   int _formatIndex;
   List<String> _formatChoices;
+  double _mediaWidth;
   double _sizeDefault;
   TextStyle _selectedTextStyle;
   TextStyle _largerTextStyle;
@@ -20,16 +22,20 @@ class DataFormatPickerBottomSheetState extends State<DataFormatPickerBottomSheet
   void initState() {
     super.initState();
 
-    _sizeDefault = Get.mediaQuery.size.width / 10;
-    _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
-    _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
-
     _formatChoices = ["FIT", "TCX"];
     _formatIndex = max(0, _formatChoices.indexOf("FIT"));
   }
 
   @override
   Widget build(BuildContext context) {
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
+      _mediaWidth = mediaWidth;
+      _sizeDefault = mediaWidth / 10;
+      _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
+      _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
+    }
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

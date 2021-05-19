@@ -901,10 +901,10 @@ class RecordingState extends State<RecordingScreen> {
   Widget build(BuildContext context) {
     final separatorHeight = 1.0;
 
-    final mediaWidth = Get.mediaQuery.size.width;
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
-      _sizeDefault = Get.mediaQuery.size.width / 8;
+      _sizeDefault = mediaWidth / 8;
       _measurementStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,

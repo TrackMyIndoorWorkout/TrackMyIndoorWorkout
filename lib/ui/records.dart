@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:expandable/expandable.dart';
@@ -10,6 +12,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/statistics_accumulator.dart';
 import 'models/display_record.dart';
@@ -55,6 +58,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   bool _si;
   List<PreferencesSpec> _preferencesSpecs;
 
+  double _mediaWidth;
   double _sizeDefault;
   double _sizeDefault2;
   TextStyle _measurementStyle;
@@ -280,28 +284,6 @@ class RecordsScreenState extends State<RecordsScreen> {
     activity.hydrate();
 
     extraInit();
-
-    _sizeDefault = Get.mediaQuery.size.width / 7;
-    _sizeDefault2 = _sizeDefault / 1.5;
-    _measurementStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
-      fontSize: _sizeDefault,
-    );
-    _textStyle = TextStyle(
-      fontSize: _sizeDefault2,
-    );
-    _unitStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
-      fontSize: _sizeDefault2 / 2,
-      color: Colors.indigo,
-    );
-    _selectionStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
-      fontSize: _sizeDefault2 / 2,
-    );
-    _selectionTextStyle = TextStyle(
-      fontSize: _sizeDefault2 / 2,
-    );
   }
 
   List<charts.Series<DisplayRecord, DateTime>> _getPowerData() {
@@ -459,6 +441,32 @@ class RecordsScreenState extends State<RecordsScreen> {
   }
 
   Widget build(BuildContext context) {
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
+      _mediaWidth = mediaWidth;
+      _sizeDefault = mediaWidth / 7;
+      _sizeDefault2 = _sizeDefault / 1.5;
+      _measurementStyle = TextStyle(
+        fontFamily: FONT_FAMILY,
+        fontSize: _sizeDefault,
+      );
+      _textStyle = TextStyle(
+        fontSize: _sizeDefault2,
+      );
+      _unitStyle = TextStyle(
+        fontFamily: FONT_FAMILY,
+        fontSize: _sizeDefault2 / 2,
+        color: Colors.indigo,
+      );
+      _selectionStyle = TextStyle(
+        fontFamily: FONT_FAMILY,
+        fontSize: _sizeDefault2 / 2,
+      );
+      _selectionTextStyle = TextStyle(
+        fontSize: _sizeDefault2 / 2,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Activities'),
