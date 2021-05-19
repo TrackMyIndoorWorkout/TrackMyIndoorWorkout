@@ -36,6 +36,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
   final bool allSports;
   int _sportIndex;
   List<String> _sportChoices;
+  double _mediaWidth;
   double _sizeDefault;
   TextStyle _selectedTextStyle;
   TextStyle _largerTextStyle;
@@ -43,10 +44,6 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
   @override
   void initState() {
     super.initState();
-
-    _sizeDefault = Get.mediaQuery.size.width / 10;
-    _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
-    _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
 
     _sportChoices = allSports
         ? [
@@ -68,6 +65,14 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
+      _mediaWidth = mediaWidth;
+      _sizeDefault = mediaWidth / 10;
+      _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
+      _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
+    }
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

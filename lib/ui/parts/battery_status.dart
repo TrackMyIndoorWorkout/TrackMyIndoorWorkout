@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -37,6 +38,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   HeartRateMonitor _heartRateMonitor;
   String _hrmBatteryLevel;
   String _batteryLevel;
+  double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
 
@@ -92,17 +94,22 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _hrmBatteryLevel = NOT_AVAILABLE;
     _batteryLevel = NOT_AVAILABLE;
-    _sizeDefault = Get.mediaQuery.size.width / 5;
-    _textStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
-      fontSize: _sizeDefault,
-      color: Get.textTheme.bodyText1.color,
-    );
     _readBatteryLevels();
   }
 
   @override
   Widget build(BuildContext context) {
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
+      _mediaWidth = mediaWidth;
+      _sizeDefault = mediaWidth / 5;
+      _textStyle = TextStyle(
+        fontFamily: FONT_FAMILY,
+        fontSize: _sizeDefault,
+        color: Get.textTheme.bodyText1.color,
+      );
+    }
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

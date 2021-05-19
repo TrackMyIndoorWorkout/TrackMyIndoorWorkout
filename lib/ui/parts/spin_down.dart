@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,6 +44,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   static const STEP_NOT_SUPPORTED = 3;
 
   FitnessEquipment _fitnessEquipment;
+  double _mediaWidth;
   double _sizeDefault;
   TextStyle _smallerTextStyle;
   TextStyle _largerTextStyle;
@@ -95,10 +97,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _targetSpeedHigh = 0.0;
     _targetSpeedLow = 0.0;
     _currentSpeed = 0.0;
-    _sizeDefault = Get.mediaQuery.size.width / 10;
-    _smallerTextStyle = TextStyle(
-        fontFamily: FONT_FAMILY, fontSize: _sizeDefault, color: Get.textTheme.bodyText1.color);
-    _largerTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault * 2);
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _weight = _si ? 60 : 130;
     final weightBytes = getWeightBytes(_weight);
@@ -439,6 +437,15 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
+      _mediaWidth = mediaWidth;
+      _sizeDefault = mediaWidth / 10;
+      _smallerTextStyle = TextStyle(
+          fontFamily: FONT_FAMILY, fontSize: _sizeDefault, color: Get.textTheme.bodyText1.color);
+      _largerTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault * 2);
+    }
+
     return Scaffold(
       body: IndexedStack(
         index: _step,

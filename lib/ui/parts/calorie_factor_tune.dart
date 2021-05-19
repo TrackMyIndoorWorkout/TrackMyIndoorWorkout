@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/calorie_tune.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/constants.dart';
 
 class CalorieFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
@@ -27,6 +30,7 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
   final String deviceId;
   final double oldCalorieFactor;
   double _calorieFactorPercent;
+  double _mediaWidth;
   double _sizeDefault;
   TextStyle _selectedTextStyle;
   TextStyle _largerTextStyle;
@@ -35,15 +39,19 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
   void initState() {
     super.initState();
 
-    _sizeDefault = Get.mediaQuery.size.width / 10;
-    _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
-    _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
-
     _calorieFactorPercent = oldCalorieFactor * 100.0;
   }
 
   @override
   Widget build(BuildContext context) {
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
+      _mediaWidth = mediaWidth;
+      _sizeDefault = mediaWidth / 10;
+      _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
+      _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
+    }
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
