@@ -53,19 +53,21 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
     }
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text("Power Factor %", style: _largerTextStyle),
-          SpinBox(
-            min: 1,
-            max: 1000,
-            value: _powerFactorPercent,
-            onChanged: (value) => _powerFactorPercent = value,
-            textStyle: _largerTextStyle,
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text("Power Factor %", style: _largerTextStyle),
+            SpinBox(
+              min: 1,
+              max: 1000,
+              value: _powerFactorPercent,
+              onChanged: (value) => _powerFactorPercent = value,
+              textStyle: _largerTextStyle,
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(

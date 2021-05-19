@@ -447,114 +447,116 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     return Scaffold(
-      body: IndexedStack(
-        index: _step,
-        children: [
-          // 0 - STEP_WEIGHT_INPUT
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text("Weight (${_si ? "kg" : "lbs"}):", style: _smallerTextStyle),
-                SpinnerInput(
-                  spinnerValue: _weight.toDouble(),
-                  minValue: 1,
-                  maxValue: 800,
-                  middleNumberStyle: _largerTextStyle,
-                  plusButton: SpinnerButtonStyle(
-                    height: _sizeDefault * 2,
-                    width: _sizeDefault * 2,
-                    child: Icon(Icons.add, size: _sizeDefault * 2 - 10),
-                  ),
-                  minusButton: SpinnerButtonStyle(
-                    height: _sizeDefault * 2,
-                    width: _sizeDefault * 2,
-                    child: Icon(Icons.remove, size: _sizeDefault * 2 - 10),
-                  ),
-                  onChange: (newValue) {
-                    setState(() {
-                      _weight = newValue.toInt();
-                    });
-                  },
-                ),
-                ElevatedButton(
-                  child: Text(
-                    _weightInputButtonText(),
-                    style: _weightInputButtonTextStyle(),
-                  ),
-                  style: _weightInputButtonStyle(),
-                  onPressed: () async => await _onWeightInputButtonPressed(),
-                ),
-              ],
-            ),
-          ),
-          // 1 - STEP_CALIBRATING
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_targetSpeedLowString, style: _smallerTextStyle),
-                    Icon(Icons.compare_arrows, size: _sizeDefault),
-                    Text(_targetSpeedHighString, style: _smallerTextStyle),
-                  ],
-                ),
-                Text(_currentSpeedString,
-                    style: _largerTextStyle.merge(TextStyle(color: Colors.indigo))),
-                Text(_calibrationInstruction(), style: _calibrationInstructionStyle()),
-                ElevatedButton(
-                  child: Text(_calibrationButtonText(), style: _smallerTextStyle),
-                  style: _buttonBackgroundStyle(),
-                  onPressed: () async => await onCalibrationButtonPressed(),
-                ),
-              ],
-            ),
-          ),
-          // 2 - STEP_END
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(_calibrationState == CalibrationState.CalibrationSuccess ? "SUCCESS" : "ERROR",
-                    style: _largerTextStyle),
-                ElevatedButton(
-                  child: Text(
-                      _calibrationState == CalibrationState.CalibrationSuccess ? 'Close' : 'Retry',
-                      style: _smallerTextStyle),
-                  style: _buttonBackgroundStyle(),
-                  onPressed: () {
-                    if (_calibrationState == CalibrationState.CalibrationSuccess) {
-                      Get.close(1);
-                    } else {
-                      _fitnessEquipment.detach();
+      body: SingleChildScrollView(
+        child: IndexedStack(
+          index: _step,
+          children: [
+            // 0 - STEP_WEIGHT_INPUT
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Weight (${_si ? "kg" : "lbs"}):", style: _smallerTextStyle),
+                  SpinnerInput(
+                    spinnerValue: _weight.toDouble(),
+                    minValue: 1,
+                    maxValue: 800,
+                    middleNumberStyle: _largerTextStyle,
+                    plusButton: SpinnerButtonStyle(
+                      height: _sizeDefault * 2,
+                      width: _sizeDefault * 2,
+                      child: Icon(Icons.add, size: _sizeDefault * 2 - 10),
+                    ),
+                    minusButton: SpinnerButtonStyle(
+                      height: _sizeDefault * 2,
+                      width: _sizeDefault * 2,
+                      child: Icon(Icons.remove, size: _sizeDefault * 2 - 10),
+                    ),
+                    onChange: (newValue) {
                       setState(() {
-                        _calibrationState = CalibrationState.ReadyToWeighIn;
-                        _step = STEP_WEIGHT_INPUT;
+                        _weight = newValue.toInt();
                       });
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-          // 3 - STEP_NOT_SUPPORTED
-          Center(
-            child: RichText(
-              textAlign: TextAlign.center,
-              softWrap: true,
-              text: TextSpan(
-                text: "${_fitnessEquipment.device.name} doesn't seem to support calibration",
-                style: _smallerTextStyle,
+                    },
+                  ),
+                  ElevatedButton(
+                    child: Text(
+                      _weightInputButtonText(),
+                      style: _weightInputButtonTextStyle(),
+                    ),
+                    style: _weightInputButtonStyle(),
+                    onPressed: () async => await _onWeightInputButtonPressed(),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            // 1 - STEP_CALIBRATING
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(_targetSpeedLowString, style: _smallerTextStyle),
+                      Icon(Icons.compare_arrows, size: _sizeDefault),
+                      Text(_targetSpeedHighString, style: _smallerTextStyle),
+                    ],
+                  ),
+                  Text(_currentSpeedString,
+                      style: _largerTextStyle.merge(TextStyle(color: Colors.indigo))),
+                  Text(_calibrationInstruction(), style: _calibrationInstructionStyle()),
+                  ElevatedButton(
+                    child: Text(_calibrationButtonText(), style: _smallerTextStyle),
+                    style: _buttonBackgroundStyle(),
+                    onPressed: () async => await onCalibrationButtonPressed(),
+                  ),
+                ],
+              ),
+            ),
+            // 2 - STEP_END
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(_calibrationState == CalibrationState.CalibrationSuccess ? "SUCCESS" : "ERROR",
+                      style: _largerTextStyle),
+                  ElevatedButton(
+                    child: Text(
+                        _calibrationState == CalibrationState.CalibrationSuccess ? 'Close' : 'Retry',
+                        style: _smallerTextStyle),
+                    style: _buttonBackgroundStyle(),
+                    onPressed: () {
+                      if (_calibrationState == CalibrationState.CalibrationSuccess) {
+                        Get.close(1);
+                      } else {
+                        _fitnessEquipment.detach();
+                        setState(() {
+                          _calibrationState = CalibrationState.ReadyToWeighIn;
+                          _step = STEP_WEIGHT_INPUT;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            // 3 - STEP_NOT_SUPPORTED
+            Center(
+              child: RichText(
+                textAlign: TextAlign.center,
+                softWrap: true,
+                text: TextSpan(
+                  text: "${_fitnessEquipment.device.name} doesn't seem to support calibration",
+                  style: _smallerTextStyle,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(

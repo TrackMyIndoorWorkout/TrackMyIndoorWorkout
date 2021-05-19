@@ -37,42 +37,44 @@ class DataFormatPickerBottomSheetState extends State<DataFormatPickerBottomSheet
     }
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: _formatChoices
-            .asMap()
-            .entries
-            .map(
-              (e) => Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Transform.scale(
-                    scale: 2,
-                    child: Radio(
-                      value: e.key,
-                      groupValue: _formatIndex,
-                      onChanged: (value) {
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: _formatChoices
+              .asMap()
+              .entries
+              .map(
+                (e) => Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Transform.scale(
+                      scale: 2,
+                      child: Radio(
+                        value: e.key,
+                        groupValue: _formatIndex,
+                        onChanged: (value) {
+                          setState(() {
+                            _formatIndex = value;
+                          });
+                        },
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
                         setState(() {
-                          _formatIndex = value;
+                          _formatIndex = e.key;
                         });
                       },
+                      child: Text(e.value,
+                          style: _formatIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _formatIndex = e.key;
-                      });
-                    },
-                    child: Text(e.value,
-                        style: _formatIndex == e.key ? _selectedTextStyle : _largerTextStyle),
-                  ),
-                ],
-              ),
-            )
-            .toList(growable: false),
+                  ],
+                ),
+              )
+              .toList(growable: false),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
