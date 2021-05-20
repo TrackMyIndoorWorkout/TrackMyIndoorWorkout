@@ -61,7 +61,7 @@ abstract class DeviceBase {
     return connected;
   }
 
-  Future<bool> discover({bool identify = false, bool retry = false}) async {
+  Future<bool> discover({bool retry = false}) async {
     if (uxDebug || discovered) {
       discovered = true;
       return true;

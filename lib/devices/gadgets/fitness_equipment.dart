@@ -130,7 +130,7 @@ class FitnessEquipment extends DeviceBase {
   Future<bool> discover({bool identify = false, bool retry = false}) async {
     if (uxDebug) return true;
 
-    final success = await super.discover(identify: identify, retry: retry);
+    final success = await super.discover(retry: retry);
     if (identify || !success) return success;
 
     if (equipmentDiscovery) return false;
