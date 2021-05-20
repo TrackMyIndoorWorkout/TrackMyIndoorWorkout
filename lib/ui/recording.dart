@@ -20,7 +20,6 @@ import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
-import '../devices/bluetooth_device_ex.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
@@ -35,7 +34,6 @@ import '../utils/constants.dart';
 import '../utils/preferences.dart';
 import '../utils/sound.dart';
 import '../utils/target_heart_rate.dart';
-import 'models/advertisement_digest.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
 import 'parts/battery_status.dart';
@@ -54,7 +52,7 @@ enum TargetHrState {
 
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
-  final AdvertisementDigest advertisementDigest;
+  final DeviceDescriptor descriptor;
   final BluetoothDeviceState initialState;
   final Size size;
   final String sport;
@@ -62,12 +60,12 @@ class RecordingScreen extends StatefulWidget {
   RecordingScreen({
     Key key,
     @required this.device,
-    @required this.advertisementDigest,
+    @required this.descriptor,
     @required this.initialState,
     @required this.size,
     @required this.sport,
   })  : assert(device != null),
-        assert(advertisementDigest != null),
+        assert(descriptor != null),
         assert(initialState != null),
         assert(size != null),
         assert(sport != null),
@@ -77,7 +75,7 @@ class RecordingScreen extends StatefulWidget {
   State<StatefulWidget> createState() {
     return RecordingState(
       device: device,
-      advertisementDigest: advertisementDigest,
+      descriptor: descriptor,
       initialState: initialState,
       size: size,
       sport: sport,
@@ -88,26 +86,23 @@ class RecordingScreen extends StatefulWidget {
 class RecordingState extends State<RecordingScreen> {
   RecordingState({
     @required this.device,
-    @required this.advertisementDigest,
+    @required this.descriptor,
     @required this.initialState,
     @required this.size,
     @required this.sport,
   })  : assert(device != null),
-        assert(advertisementDigest != null),
+        assert(descriptor != null),
         assert(initialState != null),
         assert(size != null),
-        assert(sport != null) {
-    this._descriptor = device.getDescriptor(advertisementDigest.serviceUuids);
-  }
+        assert(sport != null);
 
   Size size;
   final BluetoothDevice device;
-  final AdvertisementDigest advertisementDigest;
+  final DeviceDescriptor descriptor;
   final BluetoothDeviceState initialState;
   final String sport;
   FitnessEquipment _fitnessEquipment;
   HeartRateMonitor _heartRateMonitor;
-  DeviceDescriptor _descriptor;
   TrackCalculator _trackCalculator;
   bool _measuring;
   int _pointCount;
@@ -170,7 +165,7 @@ class RecordingState extends State<RecordingScreen> {
       }
     } else {
       Get.defaultDialog(
-        middleText: 'Problem co-operating with ${_descriptor.fullName}. Aborting...',
+        middleText: 'Problem co-operating with ${descriptor.fullName}. Aborting...',
         confirm: TextButton(
           child: Text("Ok"),
           onPressed: () => Get.close(1),
@@ -182,14 +177,14 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _startMeasurement() async {
     final now = DateTime.now();
     final powerFactor = await _database.powerFactor(device.id.id) ?? 1.0;
-    final calorieFactor = await _database.calorieFactor(device.id.id, _descriptor) ?? 1.0;
+    final calorieFactor = await _database.calorieFactor(device.id.id, descriptor) ?? 1.0;
     _activity = Activity(
-      fourCC: _descriptor.fourCC,
+      fourCC: descriptor.fourCC,
       deviceName: device.name,
       deviceId: device.id.id,
       start: now.millisecondsSinceEpoch,
       startDateTime: now,
-      sport: _descriptor.defaultSport,
+      sport: descriptor.defaultSport,
       powerFactor: powerFactor,
       calorieFactor: calorieFactor,
     );
@@ -204,7 +199,7 @@ class RecordingState extends State<RecordingScreen> {
     }
     if (_rankingForSport) {
       _sportLeaderboard = await _database.workoutSummaryDao
-          .findWorkoutSummaryBySport(_descriptor.defaultSport, LEADERBOARD_LIMIT, 0);
+          .findWorkoutSummaryBySport(descriptor.defaultSport, LEADERBOARD_LIMIT, 0);
     }
 
     _fitnessEquipment.setActivity(_activity);
@@ -255,7 +250,7 @@ class RecordingState extends State<RecordingScreen> {
           _values = [
             record.calories.toString(),
             record.power.toString(),
-            record.speedStringByUnit(_si, _descriptor.defaultSport),
+            record.speedStringByUnit(_si, descriptor.defaultSport),
             record.cadence.toString(),
             record.heartRate.toString(),
             record.distanceStringByUnit(_si),
@@ -356,19 +351,19 @@ class RecordingState extends State<RecordingScreen> {
       LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport),
       device.id.id,
     );
-    _descriptor.refreshTuning(device.id.id);
+    descriptor.refreshTuning(device.id.id);
     if (Get.isRegistered<FitnessEquipment>()) {
       _fitnessEquipment = Get.find<FitnessEquipment>();
-      _fitnessEquipment.descriptor = _descriptor;
+      _fitnessEquipment.descriptor = descriptor;
     } else {
       _fitnessEquipment =
-          Get.put<FitnessEquipment>(FitnessEquipment(descriptor: _descriptor, device: device));
+          Get.put<FitnessEquipment>(FitnessEquipment(descriptor: descriptor, device: device));
     }
 
     _trackCalculator = TrackCalculator(
       track: TrackDescriptor(
         radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
-        lengthFactor: _descriptor.lengthFactor,
+        lengthFactor: descriptor.lengthFactor,
       ),
     );
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
@@ -380,7 +375,7 @@ class RecordingState extends State<RecordingScreen> {
 
     if (sport != ActivityType.Ride) {
       final slowPace = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)];
-      _descriptor.slowPace = slowPace;
+      descriptor.slowPace = slowPace;
       _fitnessEquipment.slowPace = slowPace;
     }
 
@@ -389,7 +384,7 @@ class RecordingState extends State<RecordingScreen> {
       EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
       EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT,
     );
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor.defaultSport);
+    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, descriptor.defaultSport);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
           decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
@@ -676,9 +671,9 @@ class RecordingState extends State<RecordingScreen> {
       charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
         colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.defaultSport)),
+            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, descriptor.defaultSport)),
         domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, _descriptor.defaultSport),
+        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, descriptor.defaultSport),
         data: graphData,
       ),
     ];
@@ -786,7 +781,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getSportRankString() {
-    return "#${_getRankString(_sportRank, _sportLeaderboard)} (${_descriptor.defaultSport})";
+    return "#${_getRankString(_sportRank, _sportLeaderboard)} (${descriptor.defaultSport})";
   }
 
   Color getWaveLightColor(int deviceRank, int sportRank, {@required bool background}) {
