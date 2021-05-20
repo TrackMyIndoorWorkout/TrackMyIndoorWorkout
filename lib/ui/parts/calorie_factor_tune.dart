@@ -53,19 +53,21 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
     }
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text("Calorie Factor %", style: _largerTextStyle),
-          SpinBox(
-            min: 1,
-            max: 1000,
-            value: _calorieFactorPercent,
-            onChanged: (value) => _calorieFactorPercent = value,
-            textStyle: _largerTextStyle,
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text("Calorie Factor %", style: _largerTextStyle),
+            SpinBox(
+              min: 1,
+              max: 1000,
+              value: _calorieFactorPercent,
+              onChanged: (value) => _calorieFactorPercent = value,
+              textStyle: _largerTextStyle,
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(

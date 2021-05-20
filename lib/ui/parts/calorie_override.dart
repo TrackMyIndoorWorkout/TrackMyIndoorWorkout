@@ -53,19 +53,21 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
     }
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text("Expected Calories", style: _largerTextStyle),
-          SpinBox(
-            min: 1,
-            max: 100000,
-            value: _newCalorie,
-            onChanged: (value) => _newCalorie = value,
-            textStyle: _largerTextStyle,
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text("Expected Calories", style: _largerTextStyle),
+            SpinBox(
+              min: 1,
+              max: 100000,
+              value: _newCalorie,
+              onChanged: (value) => _newCalorie = value,
+              textStyle: _largerTextStyle,
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(

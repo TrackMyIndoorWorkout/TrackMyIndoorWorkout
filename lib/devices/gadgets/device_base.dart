@@ -5,11 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:preferences/preferences.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
+import '../gatt_constants.dart';
 
 abstract class DeviceBase {
   final String serviceId;
-  final String characteristicsId;
+  String characteristicsId;
   BluetoothDevice device;
   BluetoothService _service;
   List<BluetoothService> services;
@@ -28,7 +30,6 @@ abstract class DeviceBase {
     this.characteristicsId,
     this.device,
   })  : assert(serviceId != null),
-        assert(characteristicsId != null),
         assert(device != null) {
     connecting = false;
     connected = false;
@@ -85,10 +86,31 @@ abstract class DeviceBase {
         orElse: () => null);
 
     if (_service != null) {
-      characteristic = _service.characteristics
-          .firstWhere((ch) => ch.uuid.uuidString() == characteristicsId, orElse: () => null);
+      if (characteristicsId == null) {
+        characteristic = _service.characteristics
+            .firstWhere((ch) => ch.uuid.uuidString() == characteristicsId, orElse: () => null);
+      } else {
+        characteristic = _service.characteristics.firstWhere(
+            (ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()),
+            orElse: () => null);
+        characteristicsId = characteristic.uuid.uuidString();
+      }
+    } else {
+      return false;
     }
-    return discovered;
+    return characteristic != null;
+  }
+
+  String inferSportFromCharacteristicsId() {
+    if (characteristicsId == TREADMILL_ID) {
+      return ActivityType.Run;
+    } else if (characteristicsId == PRECOR_MEASUREMENT_ID || characteristicsId == INDOOR_BIKE_ID) {
+      return ActivityType.Ride;
+    } else if (characteristicsId == ROWER_DEVICE_ID) {
+      return ActivityType.Rowing;
+    }
+
+    return null;
   }
 
   Future<void> attach() async {

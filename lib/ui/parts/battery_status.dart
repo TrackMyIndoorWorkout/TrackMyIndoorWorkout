@@ -111,29 +111,31 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     }
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(getIcon(_fitnessEquipment.sport), color: Colors.indigo, size: _sizeDefault),
-              Icon(Icons.battery_full, color: Colors.indigo, size: _sizeDefault),
-              Text(_batteryLevel, style: _textStyle),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.favorite, color: Colors.indigo, size: _sizeDefault),
-              Icon(Icons.battery_full, color: Colors.indigo, size: _sizeDefault),
-              Text(_hrmBatteryLevel, style: _textStyle),
-            ],
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(getIcon(_fitnessEquipment.sport), color: Colors.indigo, size: _sizeDefault),
+                Icon(Icons.battery_full, color: Colors.indigo, size: _sizeDefault),
+                Text(_batteryLevel, style: _textStyle),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.favorite, color: Colors.indigo, size: _sizeDefault),
+                Icon(Icons.battery_full, color: Colors.indigo, size: _sizeDefault),
+                Text(_hrmBatteryLevel, style: _textStyle),
+              ],
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(

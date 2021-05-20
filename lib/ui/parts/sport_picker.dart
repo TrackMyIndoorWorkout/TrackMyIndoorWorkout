@@ -74,47 +74,49 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
     }
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: _sportChoices
-            .asMap()
-            .entries
-            .map(
-              (e) => Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Transform.scale(
-                    scale: 2,
-                    child: Radio(
-                      value: e.key,
-                      groupValue: _sportIndex,
-                      onChanged: (value) {
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: _sportChoices
+              .asMap()
+              .entries
+              .map(
+                (e) => Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Transform.scale(
+                      scale: 2,
+                      child: Radio(
+                        value: e.key,
+                        groupValue: _sportIndex,
+                        onChanged: (value) {
+                          setState(() {
+                            _sportIndex = value;
+                          });
+                        },
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {
                         setState(() {
-                          _sportIndex = value;
+                          _sportIndex = e.key;
                         });
                       },
+                      icon: Icon(
+                        getIcon(e.value),
+                        color: Colors.indigo,
+                        size: _largerTextStyle.fontSize,
+                      ),
+                      label: Text(e.value,
+                          style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _sportIndex = e.key;
-                      });
-                    },
-                    icon: Icon(
-                      getIcon(e.value),
-                      color: Colors.indigo,
-                      size: _largerTextStyle.fontSize,
-                    ),
-                    label: Text(e.value,
-                        style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
-                  ),
-                ],
-              ),
-            )
-            .toList(growable: false),
+                  ],
+                ),
+              )
+              .toList(growable: false),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
