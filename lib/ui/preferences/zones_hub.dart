@@ -3,11 +3,11 @@ import 'dart:math';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:track_my_indoor_exercise/ui/preferences/zone_index_display.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import 'measurement_zones.dart';
+import 'zone_index_display.dart';
 
 class ZonesHubScreen extends StatefulWidget {
   static String shortTitle = "Zones";
