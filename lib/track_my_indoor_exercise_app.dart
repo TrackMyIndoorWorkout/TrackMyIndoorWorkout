@@ -50,6 +50,7 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       color: Colors.lightBlue,
       home: StreamBuilder<BluetoothState>(
         stream: FlutterBlue.instance.state,
