@@ -1,5 +1,6 @@
 import '../../export/fit/fit_base_type.dart';
 import '../../utils/constants.dart';
+import '../device_map.dart';
 import 'device_descriptor.dart';
 
 class SchwinnACPerformancePlus extends DeviceDescriptor {
@@ -7,7 +8,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
       : super(
           defaultSport: ActivityType.Ride,
           isMultiSport: false,
-          fourCC: "SAP+",
+          fourCC: SCHWINN_AC_PERF_PLUS_FOURCC,
           vendorName: "Schwinn",
           modelName: "AC Performance Plus",
           namePrefix: "Schwinn AC Perf+",

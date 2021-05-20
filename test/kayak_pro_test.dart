@@ -15,15 +15,15 @@ class TestPair {
 
 void main() {
   test('KayakPro Rower Device constructor tests', () async {
-    final rower = deviceMap["KPro"];
+    final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC];
 
     expect(rower.canMeasureHeartRate, false);
     expect(rower.defaultSport, ActivityType.Kayaking);
-    expect(rower.fourCC, "KPro");
+    expect(rower.fourCC, KAYAK_PRO_GENESIS_PORT_FOURCC);
   });
 
   test('Rower Device interprets KayakPro flags properly', () async {
-    final rower = deviceMap["KPro"] as RowerDeviceDescriptor;
+    final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC] as RowerDeviceDescriptor;
     final lsb = 44;
     final msb = 9;
     final flag = MAX_UINT8 * msb + lsb;
@@ -213,7 +213,7 @@ void main() {
       test("$sum", () async {
         PrefService.init(prefix: 'pref_');
         PrefService.setDefaultValues({STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT});
-        final rower = deviceMap["KPro"];
+        final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC];
         rower.stopWorkout();
 
         final record = rower.stubRecord(testPair.data);

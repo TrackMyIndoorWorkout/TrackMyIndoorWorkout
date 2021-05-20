@@ -196,7 +196,7 @@ class MPowerEchelon2Importer {
       return null;
     }
 
-    DeviceDescriptor device = deviceMap["SAP+"];
+    DeviceDescriptor device = deviceMap[SCHWINN_AC_PERF_PLUS_FOURCC];
     device.refreshTuning(MPOWER_IMPORT_DEVICE_ID);
     var activity = Activity(
       deviceName: device.namePrefix,

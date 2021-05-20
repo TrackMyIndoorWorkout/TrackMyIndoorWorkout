@@ -119,12 +119,14 @@ final migration1to2 = Migration(1, 2, (database) async {
 });
 
 final migration2to3 = Migration(2, 3, (database) async {
-  await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET four_cc='PSCP' WHERE 1=1");
+  await database.execute(
+      "UPDATE $ACTIVITIES_TABLE_NAME SET four_cc='$PRECOR_SPINNER_CHRONO_POWER_FOURCC' WHERE 1=1");
 });
 
 final migration3to4 = Migration(3, 4, (database) async {
   await database.execute("ALTER TABLE $ACTIVITIES_TABLE_NAME ADD COLUMN sport TEXT");
-  await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET sport='Kayaking' WHERE four_cc='KPro'");
+  await database.execute(
+      "UPDATE $ACTIVITIES_TABLE_NAME SET sport='Kayaking' WHERE four_cc='$KAYAK_PRO_GENESIS_PORT_FOURCC'");
   await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET sport='Ride' WHERE sport IS NULL");
 });
 
@@ -149,10 +151,10 @@ final migration5to6 = Migration(5, 6, (database) async {
       "SET device_id='$MPOWER_IMPORT_DEVICE_ID' WHERE device_id=''");
   await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET power_factor=1.0");
   await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=1.0");
-  await database
-      .execute("UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=1.4 WHERE four_cc='SIC4'");
-  await database
-      .execute("UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=3.9 WHERE four_cc='SAP+'");
+  await database.execute(
+      "UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=1.4 WHERE four_cc='$SCHWINN_IC_BIKE_FOURCC'");
+  await database.execute(
+      "UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=3.9 WHERE four_cc='$SCHWINN_AC_PERF_PLUS_FOURCC'");
 });
 
 final migration6to7 = Migration(6, 7, (database) async {
