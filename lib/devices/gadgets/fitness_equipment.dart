@@ -40,11 +40,10 @@ class FitnessEquipment extends DeviceBase {
   double slowPace;
   bool equipmentDiscovery;
 
-  FitnessEquipment({this.descriptor, device})
-      : assert(descriptor != null),
-        super(
-          serviceId: descriptor.dataServiceId,
-          characteristicsId: descriptor.dataCharacteristicId,
+  FitnessEquipment({descriptor, device})
+      : super(
+          serviceId: descriptor?.dataServiceId ?? FITNESS_MACHINE_ID,
+          characteristicsId: descriptor?.dataCharacteristicId,
           device: device,
         ) {
     _residueCalories = 0.0;
@@ -115,24 +114,24 @@ class FitnessEquipment extends DeviceBase {
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }
 
-  Future<bool> connectOnDemand(BluetoothDeviceState deviceState) async {
+  Future<bool> connectOnDemand(BluetoothDeviceState deviceState, {identify = false}) async {
     if (deviceState == BluetoothDeviceState.disconnected ||
         deviceState == BluetoothDeviceState.disconnecting) {
       await connect();
     }
 
     if (deviceState == BluetoothDeviceState.connected && !discovering || connected) {
-      return await discover();
+      return await discover(identify: identify);
     }
 
     return false;
   }
 
-  Future<bool> discover({bool retry = false}) async {
+  Future<bool> discover({bool identify = false, bool retry = false}) async {
     if (uxDebug) return true;
 
-    final success = await super.discover(retry: retry);
-    if (!success) return false;
+    final success = await super.discover(identify: identify, retry: retry);
+    if (identify || !success) return success;
 
     if (equipmentDiscovery) return false;
 

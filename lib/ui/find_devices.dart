@@ -8,13 +8,16 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
+import '../devices/gatt_constants.dart';
 import '../persistence/models/device_usage.dart';
-import '../devices/bluetooth_device_ex.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
+import '../utils/constants.dart';
 import '../utils/scan_result_ex.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/common.dart';
@@ -130,15 +133,79 @@ class FindDevicesState extends State<FindDevicesScreen> {
       return false;
     }
 
-    final advertisementDigest = _advertisementCache.getEntry(device.id.id);
-    final descriptor = device.getDescriptor(advertisementDigest.serviceUuids);
-    DeviceUsage deviceUsage;
-    AppDatabase database;
-    if (descriptor.isMultiSport) {
-      database = Get.find<AppDatabase>();
-      if (await database.hasDeviceUsage(device.id.id)) {
-        deviceUsage = await database?.deviceUsageDao?.findDeviceUsageByMac(device.id.id)?.first;
+    // Device determination logics
+    // Step 1. Try to infer from the Bluetooth advertised name
+    DeviceDescriptor descriptor;
+    for (var dev in deviceMap.values) {
+      if (device.name.startsWith(dev.namePrefix)) {
+        descriptor = dev;
+        break;
       }
+    }
+
+    final advertisementDigest = _advertisementCache.getEntry(device.id.id);
+
+    // Step 2. Try to infer from if it has proprietary Precor service
+    if (descriptor == null && advertisementDigest.serviceUuids.contains(PRECOR_SERVICE_ID)) {
+      descriptor = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC];
+    }
+
+    final database = Get.find<AppDatabase>();
+    DeviceUsage deviceUsage;
+    if (await database.hasDeviceUsage(device.id.id)) {
+      deviceUsage = await database?.deviceUsageDao?.findDeviceUsageByMac(device.id.id)?.first;
+    }
+
+    FitnessEquipment fitnessEquipment;
+    bool success;
+
+    // Step 3. Try to infer if it's an FTMS
+    if (descriptor == null && advertisementDigest.serviceUuids.contains(FITNESS_MACHINE_ID)) {
+      var sport = ActivityType.Ride;
+      if (deviceUsage == null) {
+        // Determine FTMS sport by analyzing 0x1826 service's characteristics
+        fitnessEquipment = Get.put<FitnessEquipment>(FitnessEquipment(device: device));
+        success = await fitnessEquipment.connectOnDemand(initialState, identify: true);
+        if (success && fitnessEquipment.characteristicsId != null) {
+          sport = fitnessEquipment.inferSportFromCharacteristicsId();
+        } else {
+          Get.snackbar("Error", "Device identification failed");
+          return false;
+        }
+      } else {
+        sport = deviceUsage.sport;
+      }
+
+      if (sport == ActivityType.Ride) {
+        descriptor = deviceMap[GENERIC_FTMS_BIKE_FOURCC];
+      } else if (sport == ActivityType.Run) {
+        descriptor = deviceMap[GENERIC_FTMS_TREADMILL_FOURCC];
+      } else if (sport == ActivityType.Kayaking) {
+        descriptor = deviceMap[GENERIC_FTMS_KAYAK_FOURCC];
+      } else if (sport == ActivityType.Canoeing) {
+        descriptor = deviceMap[GENERIC_FTMS_CANOE_FOURCC];
+      } else if (sport == ActivityType.Rowing) {
+        descriptor = deviceMap[GENERIC_FTMS_ROWER_FOURCC];
+      } else if (sport == ActivityType.Swim) {
+        descriptor = deviceMap[GENERIC_FTMS_SWIM_FOURCC];
+      }
+
+      deviceUsage = DeviceUsage(
+        sport: sport,
+        mac: device.id.id,
+        name: device.name,
+        manufacturer: advertisementDigest.manufacturer,
+      );
+      await database?.deviceUsageDao?.insertDeviceUsage(deviceUsage);
+    }
+
+    if (descriptor == null) {
+      Get.snackbar("Error", "Device identification failed");
+    } else if (fitnessEquipment != null) {
+      fitnessEquipment.descriptor = descriptor;
+    }
+
+    if (descriptor.isMultiSport) {
       final multiSportSupport = PrefService.getBool(MULTI_SPORT_DEVICE_SUPPORT_TAG);
       if (deviceUsage == null || multiSportSupport) {
         final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
@@ -171,9 +238,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
     }
 
-    final fitnessEquipment =
-        Get.put<FitnessEquipment>(FitnessEquipment(descriptor: descriptor, device: device));
-    bool success = await fitnessEquipment.connectOnDemand(initialState);
+    if (fitnessEquipment == null) {
+      fitnessEquipment = Get.put<FitnessEquipment>(FitnessEquipment(
+        descriptor: descriptor,
+        device: device,
+      ));
+    }
+    success = await fitnessEquipment.connectOnDemand(initialState);
     if (!success) {
       Get.defaultDialog(
         middleText: 'Problem co-operating with ${descriptor.fullName}.',
@@ -190,7 +261,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
       Get.to(RecordingScreen(
         device: device,
-        advertisementDigest: advertisementDigest,
+        descriptor: descriptor,
         initialState: initialState,
         size: Get.mediaQuery.size,
         sport: descriptor.defaultSport,
