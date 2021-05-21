@@ -36,12 +36,10 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
       _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _mediaWidth / 16,
-        color: Get.textTheme.button.color,
       );
       _subTextStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _mediaWidth / 20,
-        color: Get.textTheme.button.color,
       );
     }
 

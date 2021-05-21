@@ -39,7 +39,6 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
       _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault / 2,
-        color: Get.textTheme.button.color,
       );
     }
 

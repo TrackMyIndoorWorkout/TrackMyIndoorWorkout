@@ -34,7 +34,6 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
       _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _mediaWidth / 10,
-        color: Get.textTheme.button.color,
       );
     }
 
