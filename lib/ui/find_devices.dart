@@ -19,6 +19,7 @@ import '../persistence/preferences.dart';
 import '../strava/strava_service.dart';
 import '../utils/constants.dart';
 import '../utils/scan_result_ex.dart';
+import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/common.dart';
 import 'parts/scan_result.dart';
@@ -50,6 +51,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   TextStyle _subtitleStyle;
   int _heartRate;
   AdvertisementCache _advertisementCache;
+  ThemeManager _themeManager;
 
   @override
   void dispose() {
@@ -118,6 +120,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _openDatabase();
 
     _advertisementCache = Get.find<AdvertisementCache>();
+    _themeManager = Get.find<ThemeManager>();
 
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
@@ -477,8 +480,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FabCircularMenu(
-        fabOpenIcon: const Icon(Icons.menu, color: Colors.white),
-        fabCloseIcon: const Icon(Icons.close, color: Colors.white),
+        fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+        fabOpenColor: _themeManager.getBlueColor(),
+        fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+        fabCloseColor: _themeManager.getBlueColor(),
         children: [
           FloatingActionButton(
             heroTag: null,
@@ -513,84 +518,56 @@ class FindDevicesState extends State<FindDevicesScreen> {
               }
             },
           ),
-          FloatingActionButton(
-            heroTag: null,
-            child: Icon(Icons.list_alt),
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.indigo,
-            onPressed: () async {
-              final database = Get.find<AppDatabase>();
-              final hasLeaderboardData = await database.hasLeaderboardData();
-              Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
-            },
-          ),
+          _themeManager.getBlueFab(Icons.list_alt, () async {
+            final database = Get.find<AppDatabase>();
+            final hasLeaderboardData = await database.hasLeaderboardData();
+            Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+          }),
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
             initialData: _instantScan,
             builder: (c, snapshot) {
               if (snapshot.data) {
-                return FloatingActionButton(
-                  heroTag: null,
-                  child: Icon(Icons.stop),
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.indigo,
-                  onPressed: () async {
-                    await FlutterBlue.instance.stopScan();
-                    await Future.delayed(Duration(milliseconds: 100));
-                  },
-                );
+                return _themeManager.getBlueFab(Icons.stop, () async {
+                  await FlutterBlue.instance.stopScan();
+                  await Future.delayed(Duration(milliseconds: 100));
+                });
               } else {
-                return FloatingActionButton(
-                  heroTag: null,
-                  child: Icon(Icons.search),
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.green,
-                  onPressed: () =>
-                      FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration)),
+                return _themeManager.getGreenFab(
+                  Icons.search,
+                  () => FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration)),
                 );
               }
             },
           ),
-          FloatingActionButton(
-            heroTag: null,
-            child: Icon(Icons.settings),
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.indigo,
-            onPressed: () async => Get.to(PreferencesHubScreen()),
-          ),
-          FloatingActionButton(
-            heroTag: null,
-            child: Icon(Icons.filter_alt),
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.indigo,
-            onPressed: () async {
-              Get.defaultDialog(
-                title: 'Device filtering',
-                middleText: 'Should the app try to filter supported devices? ' +
-                    'Yes: filter. No: show all nearby Bluetooth devices',
-                confirm: TextButton(
-                  child: Text("Yes"),
-                  onPressed: () {
-                    PrefService.setBool(DEVICE_FILTERING_TAG, true);
-                    setState(() {
-                      _filterDevices = true;
-                    });
-                    Get.close(1);
-                  },
-                ),
-                cancel: TextButton(
-                  child: Text("No"),
-                  onPressed: () {
-                    PrefService.setBool(DEVICE_FILTERING_TAG, false);
-                    setState(() {
-                      _filterDevices = false;
-                    });
-                    Get.close(1);
-                  },
-                ),
-              );
-            },
-          ),
+          _themeManager.getBlueFab(Icons.settings, () async => Get.to(PreferencesHubScreen())),
+          _themeManager.getBlueFab(Icons.filter_alt, () async {
+            Get.defaultDialog(
+              title: 'Device filtering',
+              middleText: 'Should the app try to filter supported devices? ' +
+                  'Yes: filter. No: show all nearby Bluetooth devices',
+              confirm: TextButton(
+                child: Text("Yes"),
+                onPressed: () {
+                  PrefService.setBool(DEVICE_FILTERING_TAG, true);
+                  setState(() {
+                    _filterDevices = true;
+                  });
+                  Get.close(1);
+                },
+              ),
+              cancel: TextButton(
+                child: Text("No"),
+                onPressed: () {
+                  PrefService.setBool(DEVICE_FILTERING_TAG, false);
+                  setState(() {
+                    _filterDevices = false;
+                  });
+                  Get.close(1);
+                },
+              ),
+            );
+          }),
         ],
       ),
     );

@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
+import '../../utils/theme_manager.dart';
 
 class SportPickerBottomSheet extends StatefulWidget {
   final String initialSport;
@@ -40,6 +40,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
   double _sizeDefault;
   TextStyle _selectedTextStyle;
   TextStyle _largerTextStyle;
+  ThemeManager _themeManager;
 
   @override
   void initState() {
@@ -61,6 +62,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
             ActivityType.Swim,
           ];
     _sportIndex = max(0, _sportChoices.indexOf(initialSport));
+    _themeManager = Get.find<ThemeManager>();
   }
 
   @override
@@ -104,11 +106,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
                           _sportIndex = e.key;
                         });
                       },
-                      icon: Icon(
-                        getIcon(e.value),
-                        color: Colors.indigo,
-                        size: _largerTextStyle.fontSize,
-                      ),
+                      icon: _themeManager.getBlueIcon(getIcon(e.value), _largerTextStyle.fontSize),
                       label: Text(e.value,
                           style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),
@@ -119,12 +117,8 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.green,
-        child: Icon(Icons.check),
-        onPressed: () => Get.back(result: _sportChoices[_sportIndex]),
-      ),
+      floatingActionButton: _themeManager.getGreenFab(
+          Icons.check, () => Get.back(result: _sportChoices[_sportIndex])),
     );
   }
 }

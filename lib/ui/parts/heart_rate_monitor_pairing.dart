@@ -6,6 +6,7 @@ import 'package:preferences/preference_service.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_manager.dart';
 import 'common.dart';
 import 'heart_rate_monitor_scan_result.dart';
 
@@ -20,6 +21,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   TextStyle _adjustedCaptionStyle;
   TextStyle _subtitleStyle;
   List<String> _scanResults;
+  ThemeManager _themeManager;
 
   @override
   void dispose() {
@@ -39,6 +41,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     super.initState();
     _scanResults = [];
     _scanDuration = PrefService.getInt(SCAN_DURATION_TAG);
+    _themeManager = Get.find<ThemeManager>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       startScan();
     });
@@ -87,15 +90,9 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                         initialData: BluetoothDeviceState.disconnected,
                         builder: (c, snapshot) {
                           if (snapshot.data == BluetoothDeviceState.connected) {
-                            return FloatingActionButton(
-                              heroTag: null,
-                              child: Icon(Icons.favorite),
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.green,
-                              onPressed: () {
-                                Get.snackbar("Info", "Already connected");
-                              },
-                            );
+                            return _themeManager.getGreenFab(Icons.favorite, () {
+                              Get.snackbar("Info", "Already connected");
+                            });
                           } else {
                             return Text(snapshot.data.toString());
                           }
@@ -119,12 +116,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.indigo,
-        child: Icon(Icons.clear),
-        onPressed: () => Get.back(result: true),
-      ),
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.back(result: true)),
     );
   }
 }

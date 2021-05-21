@@ -5,8 +5,8 @@ import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/calorie_tune.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_manager.dart';
 
 class CalorieOverrideBottomSheet extends StatefulWidget {
   final String deviceId;
@@ -34,12 +34,13 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
   double _sizeDefault;
   TextStyle _selectedTextStyle;
   TextStyle _largerTextStyle;
+  ThemeManager _themeManager;
 
   @override
   void initState() {
     super.initState();
-
     _newCalorie = oldCalories;
+    _themeManager = Get.find<ThemeManager>();
   }
 
   @override
@@ -70,24 +71,19 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.green,
-        child: Icon(Icons.check),
-        onPressed: () async {
-          final database = Get.find<AppDatabase>();
-          final calorieFactor = _newCalorie / oldCalories;
-          if (await database?.hasCalorieTune(deviceId) ?? false) {
-            var calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
-            calorieTune.calorieFactor = calorieFactor;
-            await database?.calorieTuneDao?.updateCalorieTune(calorieTune);
-          } else {
-            final calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor);
-            await database?.calorieTuneDao?.insertCalorieTune(calorieTune);
-          }
-          Get.back(result: calorieFactor);
-        },
-      ),
+      floatingActionButton: _themeManager.getGreenFab(Icons.check, () async {
+        final database = Get.find<AppDatabase>();
+        final calorieFactor = _newCalorie / oldCalories;
+        if (await database?.hasCalorieTune(deviceId) ?? false) {
+          var calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
+          calorieTune.calorieFactor = calorieFactor;
+          await database?.calorieTuneDao?.updateCalorieTune(calorieTune);
+        } else {
+          final calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor);
+          await database?.calorieTuneDao?.insertCalorieTune(calorieTune);
+        }
+        Get.back(result: calorieFactor);
+      }),
     );
   }
 }

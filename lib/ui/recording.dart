@@ -34,6 +34,7 @@ import '../utils/constants.dart';
 import '../utils/preferences.dart';
 import '../utils/sound.dart';
 import '../utils/target_heart_rate.dart';
+import '../utils/theme_manager.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
 import 'parts/battery_status.dart';
@@ -156,6 +157,7 @@ class RecordingState extends State<RecordingScreen> {
   Color _lightRed;
   Color _lightGreen;
   Color _lightBlue;
+  ThemeManager _themeManager;
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
@@ -345,7 +347,7 @@ class RecordingState extends State<RecordingScreen> {
     _pointCount = min(60, size.width ~/ 2);
     _unitStyle = TextStyle(
       fontFamily: FONT_FAMILY,
-      color: Colors.indigo,
+      color: _themeManager.getBlueColor(),
     );
     PrefService.setString(
       LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport),
@@ -505,6 +507,7 @@ class RecordingState extends State<RecordingScreen> {
     _lightRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter);
     _lightGreen = paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter);
     _lightBlue = paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter);
+    _themeManager = Get.find<ThemeManager>();
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
@@ -904,11 +907,7 @@ class RecordingState extends State<RecordingScreen> {
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,
       );
-      _unitStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault / 2,
-        color: Colors.indigo,
-      );
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 2);
     }
 
     if (_measuring &&
@@ -940,7 +939,7 @@ class RecordingState extends State<RecordingScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(Icons.timer, size: _sizeDefault, color: Colors.indigo),
+          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
           Text(_timeDisplay, style: _measurementStyle),
           SizedBox(width: _sizeDefault / 4),
         ],
@@ -965,11 +964,7 @@ class RecordingState extends State<RecordingScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            _rowConfig[entry.key].icon,
-            size: _sizeDefault,
-            color: Colors.indigo,
-          ),
+          _themeManager.getBlueIcon(_rowConfig[entry.key].icon, _sizeDefault),
           Spacer(),
           Text(_values[entry.key], style: measurementStyle),
           SizedBox(
@@ -1175,8 +1170,10 @@ class RecordingState extends State<RecordingScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FabCircularMenu(
-          fabOpenIcon: const Icon(Icons.menu, color: Colors.white),
-          fabCloseIcon: const Icon(Icons.close, color: Colors.white),
+          fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+          fabOpenColor: _themeManager.getBlueColor(),
+          fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+          fabCloseColor: _themeManager.getBlueColor(),
           children: [
             FloatingActionButton(
               heroTag: null,
@@ -1192,66 +1189,42 @@ class RecordingState extends State<RecordingScreen> {
                 await _stravaUpload(false);
               },
             ),
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.indigo,
-              child: Icon(Icons.list_alt),
-              onPressed: () async {
-                if (_measuring) {
-                  Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
-                } else {
-                  final hasLeaderboardData = await _database.hasLeaderboardData();
-                  await Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
-                }
-              },
-            ),
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.indigo,
-              child: Icon(Icons.battery_unknown),
-              onPressed: () async {
+            _themeManager.getBlueFab(Icons.list_alt, () async {
+              if (_measuring) {
+                Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
+              } else {
+                final hasLeaderboardData = await _database.hasLeaderboardData();
+                await Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+              }
+            }),
+            _themeManager.getBlueFab(Icons.battery_unknown, () async {
+              await Get.bottomSheet(
+                BatteryStatusBottomSheet(),
+                isDismissible: false,
+                enableDrag: false,
+              );
+            }),
+            _themeManager.getBlueFab(Icons.build, () async {
+              if (_measuring) {
+                Get.snackbar("Warning", "Cannot calibrate while measurement is under progress");
+              } else if (!_fitnessEquipment.descriptor.isFitnessMachine) {
+                Get.snackbar("Error", "Not compatible with the calibration method");
+              } else {
                 await Get.bottomSheet(
-                  BatteryStatusBottomSheet(),
+                  SpinDownBottomSheet(),
                   isDismissible: false,
                   enableDrag: false,
                 );
-              },
-            ),
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.indigo,
-              child: Icon(Icons.build),
-              onPressed: () async {
-                if (_measuring) {
-                  Get.snackbar("Warning", "Cannot calibrate while measurement is under progress");
-                } else if (!_fitnessEquipment.descriptor.isFitnessMachine) {
-                  Get.snackbar("Error", "Not compatible with the calibration method");
-                } else {
-                  await Get.bottomSheet(
-                    SpinDownBottomSheet(),
-                    isDismissible: false,
-                    enableDrag: false,
-                  );
-                }
-              },
-            ),
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.indigo,
-              child: Icon(Icons.favorite),
-              onPressed: () async {
-                await Get.bottomSheet(
-                  HeartRateMonitorPairingBottomSheet(),
-                  isDismissible: false,
-                  enableDrag: false,
-                );
-                await _initializeHeartRateMonitor();
-              },
-            ),
+              }
+            }),
+            _themeManager.getBlueFab(Icons.favorite, () async {
+              await Get.bottomSheet(
+                HeartRateMonitorPairingBottomSheet(),
+                isDismissible: false,
+                enableDrag: false,
+              );
+              await _initializeHeartRateMonitor();
+            }),
           ],
         ),
       ),

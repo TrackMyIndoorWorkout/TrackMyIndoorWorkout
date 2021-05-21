@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_manager.dart';
 
 class DataFormatPickerBottomSheet extends StatefulWidget {
   @override
@@ -17,11 +17,12 @@ class DataFormatPickerBottomSheetState extends State<DataFormatPickerBottomSheet
   double _sizeDefault;
   TextStyle _selectedTextStyle;
   TextStyle _largerTextStyle;
+  ThemeManager _themeManager;
 
   @override
   void initState() {
     super.initState();
-
+    _themeManager = Get.find<ThemeManager>();
     _formatChoices = ["FIT", "TCX"];
     _formatIndex = max(0, _formatChoices.indexOf("FIT"));
   }
@@ -77,12 +78,8 @@ class DataFormatPickerBottomSheetState extends State<DataFormatPickerBottomSheet
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.green,
-        child: Icon(Icons.check),
-        onPressed: () => Get.back(result: _formatChoices[_formatIndex]),
-      ),
+      floatingActionButton: _themeManager.getGreenFab(
+          Icons.check, () => Get.back(result: _formatChoices[_formatIndex])),
     );
   }
 }

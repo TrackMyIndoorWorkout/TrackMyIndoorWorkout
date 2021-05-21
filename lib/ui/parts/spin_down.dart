@@ -15,6 +15,7 @@ import '../../devices/gatt_constants.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
+import '../../utils/theme_manager.dart';
 
 class SpinDownBottomSheet extends StatefulWidget {
   @override
@@ -68,6 +69,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   String _targetSpeedHighString;
   String _targetSpeedLowString;
   String _currentSpeedString;
+  ThemeManager _themeManager;
 
   bool get _spinDownPossible =>
       _weightData != null &&
@@ -104,6 +106,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _oldWeightMsb = weightBytes.item2;
     _newWeightLsb = weightBytes.item1;
     _newWeightMsb = weightBytes.item2;
+    _themeManager = Get.find<ThemeManager>();
     _prepareSpinDown();
     super.initState();
   }
@@ -564,12 +567,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.indigo,
-        child: Icon(Icons.clear),
-        onPressed: () => Get.close(1),
-      ),
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.close(1)),
     );
   }
 }

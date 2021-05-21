@@ -28,12 +28,14 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
   double _mediaWidth;
   double _sizeDefault;
   TextStyle _headerStyle;
+  ThemeManager _themeManager;
 
   @override
   void initState() {
     super.initState();
     _editCount = 0;
     _database = Get.find<AppDatabase>();
+    _themeManager = Get.find<ThemeManager>();
   }
 
   Widget _actionButtonRow(DeviceUsage deviceUsage, double size) {
@@ -60,7 +62,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Get.find<ThemeManager>().getDeleteIcon(size),
+          icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
@@ -153,15 +155,8 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        getIcon(deviceUsage.sport),
-                        color: Colors.indigo,
-                        size: _sizeDefault,
-                      ),
-                      Text(
-                        deviceUsage.sport,
-                        style: _headerStyle,
-                      ),
+                      _themeManager.getBlueIcon(getIcon(deviceUsage.sport), _sizeDefault),
+                      Text(deviceUsage.sport, style: _headerStyle),
                     ],
                   ),
                 ],
@@ -173,30 +168,16 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.calendar_today,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          dateString,
-                          style: _headerStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        Text(dateString, style: _headerStyle),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.watch,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          timeString,
-                          style: _headerStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        Text(timeString, style: _headerStyle),
                       ],
                     ),
                     _actionButtonRow(deviceUsage, _sizeDefault),

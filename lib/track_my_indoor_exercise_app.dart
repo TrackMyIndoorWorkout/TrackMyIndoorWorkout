@@ -54,7 +54,7 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      color: Colors.lightBlue,
+      color: _themeManager.getHeaderColor(),
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: _themeManager.getThemeMode(),

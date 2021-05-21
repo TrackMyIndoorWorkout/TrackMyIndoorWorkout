@@ -36,6 +36,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
   double _sizeDefault;
   TextStyle _textStyle;
   TextStyle _textStyle2;
+  ThemeManager _themeManager;
 
   DeviceLeaderboardScreenState({@required this.device}) : assert(device != null);
 
@@ -45,6 +46,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
     _editCount = 0;
     _database = Get.find<AppDatabase>();
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    _themeManager = Get.find<ThemeManager>();
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
@@ -52,7 +54,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Get.find<ThemeManager>().getDeleteIcon(size),
+          icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
@@ -88,7 +90,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,
       );
-      _textStyle2 = _textStyle.apply(color: Colors.indigo);
+      _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     }
 
     return Scaffold(
@@ -137,13 +139,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
                   SizedBox(
                     width: _sizeDefault * 2,
                     height: _sizeDefault * 2,
-                    child: FloatingActionButton(
-                      heroTag: null,
-                      child: Text('${index + 1}', style: _textStyle2),
-                      foregroundColor: Colors.black87,
-                      backgroundColor: Colors.yellow,
-                      onPressed: () {},
-                    ),
+                    child: _themeManager.getRankIcon(Text('${index + 1}', style: _textStyle)),
                   ),
                   Column(
                     children: [
@@ -176,30 +172,16 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.calendar_today,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          dateString,
-                          style: _textStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        Text(dateString, style: _textStyle),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.watch,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          timeString,
-                          style: _textStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        Text(timeString, style: _textStyle),
                       ],
                     ),
                     _actionButtonRow(workoutSummary, _sizeDefault),

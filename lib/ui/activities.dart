@@ -60,6 +60,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   TextStyle _textStyle;
   TextStyle _headerStyle;
   TextStyle _unitStyle;
+  ThemeManager _themeManager;
 
   ActivitiesScreenState({@required this.hasLeaderboardData}) : assert(hasLeaderboardData != null);
 
@@ -71,6 +72,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _leaderboardFeature =
         PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _database = Get.find<AppDatabase>();
+    _themeManager = Get.find<ThemeManager>();
   }
 
   Widget _actionButtonRow(Activity activity, double size) {
@@ -173,7 +175,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Get.find<ThemeManager>().getDeleteIcon(size),
+          icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
@@ -225,79 +227,43 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault2,
       );
-      _unitStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault / 3,
-        color: Colors.indigo,
-      );
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
     List<FloatingActionButton> floatingActionButtons = [
-      FloatingActionButton(
-        heroTag: null,
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.indigo,
-        child: Icon(Icons.file_upload),
-        onPressed: () async {
-          await Get.to(ImportForm()).whenComplete(() => setState(() {
-                _editCount++;
-              }));
-        },
-      ),
-      FloatingActionButton(
-        heroTag: null,
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.black,
-        child: Icon(Icons.collections_bookmark),
-        onPressed: () async {
-          await Get.to(DeviceUsagesScreen());
-        },
-      ),
-      FloatingActionButton(
-        heroTag: null,
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.black,
-        child: Icon(Icons.bolt),
-        onPressed: () async {
-          await Get.to(PowerTunesScreen());
-        },
-      ),
-      FloatingActionButton(
-        heroTag: null,
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.black,
-        child: Icon(Icons.whatshot),
-        onPressed: () async {
-          await Get.to(CalorieTunesScreen());
-        },
-      ),
+      _themeManager.getBlueFab(Icons.file_upload, () async {
+        await Get.to(ImportForm()).whenComplete(() => setState(() {
+              _editCount++;
+            }));
+      }),
+      _themeManager.getBlueFab(Icons.collections_bookmark, () async {
+        await Get.to(DeviceUsagesScreen());
+      }),
+      _themeManager.getBlueFab(Icons.bolt, () async {
+        await Get.to(PowerTunesScreen());
+      }),
+      _themeManager.getBlueFab(Icons.whatshot, () async {
+        await Get.to(CalorieTunesScreen());
+      }),
     ];
 
     if (_leaderboardFeature && hasLeaderboardData) {
-      floatingActionButtons.add(FloatingActionButton(
-        heroTag: null,
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.black,
-        child: Icon(Icons.leaderboard),
-        onPressed: () async {
+      floatingActionButtons.add(
+        _themeManager.getBlueFab(Icons.leaderboard, () async {
           await Get.bottomSheet(LeaderBoardTypeBottomSheet(), enableDrag: false);
-        },
-      ));
+        }),
+      );
     }
 
-    floatingActionButtons.add(FloatingActionButton(
-      heroTag: null,
-      foregroundColor: Colors.white,
-      backgroundColor: Colors.indigo,
-      child: Icon(Icons.help),
-      onPressed: () async {
+    floatingActionButtons.add(
+      _themeManager.getBlueFab(Icons.help, () async {
         if (await canLaunch(HELP_URL)) {
           launch(HELP_URL);
         } else {
           Get.snackbar("Attention", "Cannot open URL");
         }
-      },
-    ));
+      }),
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text('Activities')),
@@ -342,7 +308,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(Icons.calendar_today, color: Colors.indigo, size: _sizeDefault2),
+                      _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault2),
                       Text(dateString, style: _headerStyle),
                     ],
                   ),
@@ -350,7 +316,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(Icons.watch, color: Colors.indigo, size: _sizeDefault2),
+                      _themeManager.getBlueIcon(Icons.watch, _sizeDefault2),
                       Text(timeString, style: _headerStyle),
                     ],
                   ),
@@ -365,7 +331,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(getIcon(activity.sport), color: Colors.indigo, size: _sizeDefault),
+                        _themeManager.getBlueIcon(getIcon(activity.sport), _sizeDefault),
                         Expanded(
                           child: TextOneLine(
                             activity.deviceName,
@@ -380,7 +346,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.timer, color: Colors.indigo, size: _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
                         Spacer(),
                         Text(activity.elapsedString, style: _measurementStyle),
                       ],
@@ -389,7 +355,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_road, color: Colors.indigo, size: _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
                         Spacer(),
                         Text(activity.distanceString(_si), style: _measurementStyle),
                         SizedBox(
@@ -402,7 +368,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.whatshot, color: Colors.indigo, size: _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
                         Spacer(),
                         Text('${activity.calories}', style: _measurementStyle),
                         SizedBox(
@@ -421,8 +387,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FabCircularMenu(
-        fabOpenIcon: const Icon(Icons.menu, color: Colors.white),
-        fabCloseIcon: const Icon(Icons.close, color: Colors.white),
+        fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+        fabOpenColor: _themeManager.getBlueColor(),
+        fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+        fabCloseColor: _themeManager.getBlueColor(),
         children: floatingActionButtons,
       ),
     );

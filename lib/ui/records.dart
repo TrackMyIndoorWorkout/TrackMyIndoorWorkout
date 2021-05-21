@@ -15,6 +15,7 @@ import '../persistence/preferences.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/statistics_accumulator.dart';
+import '../utils/theme_manager.dart';
 import 'models/display_record.dart';
 import 'models/histogram_data.dart';
 import 'models/measurement_counter.dart';
@@ -66,6 +67,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _unitStyle;
   TextStyle _selectionStyle;
   TextStyle _selectionTextStyle;
+  ThemeManager _themeManager;
 
   Future<void> extraInit() async {
     final database = Get.find<AppDatabase>();
@@ -282,6 +284,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, activity.sport);
     activity.hydrate();
+    _themeManager = Get.find<ThemeManager>();
 
     extraInit();
   }
@@ -453,11 +456,7 @@ class RecordsScreenState extends State<RecordsScreen> {
       _textStyle = TextStyle(
         fontSize: _sizeDefault2,
       );
-      _unitStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault2 / 2,
-        color: Colors.indigo,
-      );
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 2);
       _selectionStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault2 / 2,
@@ -497,11 +496,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          getIcon(activity.sport),
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
+                        _themeManager.getBlueIcon(getIcon(activity.sport), _sizeDefault),
                         Expanded(
                           child: TextOneLine(
                             activity.deviceName,
@@ -516,11 +511,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.timer,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
+                        _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
                         Spacer(),
                         Text(
                           activity.elapsedString,
@@ -532,11 +523,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.add_road,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
+                        _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
                         Spacer(),
                         Text(
                           activity.distanceString(_si),
@@ -555,11 +542,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.whatshot,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
+                        _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
                         Spacer(),
                         Text(
                           '${activity.calories}',
@@ -598,11 +581,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(
-                              _preferencesSpecs[index].icon,
-                              color: Colors.indigo,
-                              size: _sizeDefault2,
-                            ),
+                            _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
                             Text("MAX", style: _unitStyle),
                             Spacer(),
                             Text(
@@ -622,11 +601,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(
-                              _preferencesSpecs[index].icon,
-                              color: Colors.indigo,
-                              size: _sizeDefault2,
-                            ),
+                            _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
                             Text("AVG", style: _unitStyle),
                             Spacer(),
                             Text(

@@ -27,12 +27,14 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
   double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
+  ThemeManager _themeManager;
 
   @override
   void initState() {
     super.initState();
     _editCount = 0;
     _database = Get.find<AppDatabase>();
+    _themeManager = Get.find<ThemeManager>();
   }
 
   Widget _actionButtonRow(CalorieTune calorieTune, double size) {
@@ -58,7 +60,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Get.find<ThemeManager>().getDeleteIcon(size),
+          icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
@@ -157,30 +159,16 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.calendar_today,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          dateString,
-                          style: _textStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        Text(dateString, style: _textStyle),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.watch,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          timeString,
-                          style: _textStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        Text(timeString, style: _textStyle),
                       ],
                     ),
                     _actionButtonRow(calorieTune, _sizeDefault),

@@ -9,9 +9,9 @@ import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
+import '../../utils/theme_manager.dart';
 
 class BatteryStatusBottomSheet extends StatefulWidget {
   @override
@@ -41,6 +41,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
+  ThemeManager _themeManager;
 
   Future<String> _readBatteryLevelCore(List<BluetoothService> services) async {
     final batteryService = BluetoothDeviceEx.filterService(services, BATTERY_SERVICE_ID);
@@ -90,6 +91,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   @override
   void initState() {
     super.initState();
+    _themeManager = Get.find<ThemeManager>();
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _hrmBatteryLevel = NOT_AVAILABLE;
@@ -120,8 +122,8 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(getIcon(_fitnessEquipment.sport), color: Colors.indigo, size: _sizeDefault),
-                Icon(Icons.battery_full, color: Colors.indigo, size: _sizeDefault),
+                _themeManager.getBlueIcon(getIcon(_fitnessEquipment.sport), _sizeDefault),
+                _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
                 Text(_batteryLevel, style: _textStyle),
               ],
             ),
@@ -129,8 +131,8 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(Icons.favorite, color: Colors.indigo, size: _sizeDefault),
-                Icon(Icons.battery_full, color: Colors.indigo, size: _sizeDefault),
+                _themeManager.getBlueIcon(Icons.favorite, _sizeDefault),
+                _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
                 Text(_hrmBatteryLevel, style: _textStyle),
               ],
             ),
@@ -138,12 +140,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.indigo,
-        child: Icon(Icons.clear),
-        onPressed: () => Get.close(1),
-      ),
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.close(1)),
     );
   }
 }

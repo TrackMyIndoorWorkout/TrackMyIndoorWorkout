@@ -27,12 +27,14 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
   double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
+  ThemeManager _themeManager;
 
   @override
   void initState() {
     super.initState();
     _editCount = 0;
     _database = Get.find<AppDatabase>();
+    _themeManager = Get.find<ThemeManager>();
   }
 
   Widget _actionButtonRow(PowerTune powerTune, double size) {
@@ -58,7 +60,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Get.find<ThemeManager>().getDeleteIcon(size),
+          icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
@@ -157,11 +159,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.calendar_today,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
                         Text(
                           dateString,
                           style: _textStyle,
@@ -172,11 +170,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.watch,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
                         Text(
                           timeString,
                           style: _textStyle,
