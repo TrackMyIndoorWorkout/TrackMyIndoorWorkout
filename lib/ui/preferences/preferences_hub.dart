@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import 'data_preferences.dart';
@@ -40,10 +39,9 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
       _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault / 2,
-        color: Colors.black,
+        color: Get.textTheme.button.color,
       );
     }
-    final buttonStyle = ElevatedButton.styleFrom(primary: Colors.grey.shade200);
 
     return Scaffold(
       appBar: AppBar(title: Text('Preferences')),
@@ -67,10 +65,9 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
                   ],
                 ),
-                style: buttonStyle,
               ),
             ),
             Container(
@@ -88,10 +85,9 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
                   ],
                 ),
-                style: buttonStyle,
               ),
             ),
             Container(
@@ -109,10 +105,9 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
                   ],
                 ),
-                style: buttonStyle,
               ),
             ),
             Container(
@@ -130,10 +125,9 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
                   ],
                 ),
-                style: buttonStyle,
               ),
             ),
             Container(
@@ -151,10 +145,9 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
                   ],
                 ),
-                style: buttonStyle,
               ),
             ),
             Container(
@@ -172,10 +165,9 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
                   ],
                 ),
-                style: buttonStyle,
               ),
             ),
           ],

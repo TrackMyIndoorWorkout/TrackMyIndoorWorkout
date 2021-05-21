@@ -38,10 +38,9 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
       _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault / 2,
-        color: Colors.black,
+        color: Get.textTheme.button.color,
       );
     }
-    final buttonStyle = ElevatedButton.styleFrom(primary: Colors.grey.shade200);
 
     List<Widget> items = PreferencesSpec.SPORT_PREFIXES.map((sport) {
       return Container(
@@ -59,10 +58,9 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
               ),
-              Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+              Icon(Icons.chevron_right, size: _sizeDefault),
             ],
           ),
-          style: buttonStyle,
         ),
       );
     }).toList();
@@ -82,10 +80,9 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
             ),
-            Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+            Icon(Icons.chevron_right, size: _sizeDefault),
           ],
         ),
-        style: buttonStyle,
       ),
     ));
 

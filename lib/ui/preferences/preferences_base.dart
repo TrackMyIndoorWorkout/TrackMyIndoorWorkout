@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../../utils/theme_manager.dart';
 
 abstract class PreferencesScreenBase extends StatelessWidget {
   static String shortTitle = "";
   static String title = shortTitle;
-  TextStyle descriptionStyle;
-
-  PreferencesScreenBase() {
-    descriptionStyle = Get.find<ThemeManager>().getSettingsDescriptionStyle();
-  }
 
   bool isNumber(String str, double lowerLimit, double upperLimit) {
     double number = double.tryParse(str);

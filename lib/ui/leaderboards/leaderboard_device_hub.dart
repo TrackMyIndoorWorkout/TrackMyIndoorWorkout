@@ -4,7 +4,6 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import 'device_leaderboard.dart';
 
@@ -37,15 +36,14 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
       _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _mediaWidth / 16,
-        color: Colors.black,
+        color: Get.textTheme.button.color,
       );
       _subTextStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _mediaWidth / 20,
-        color: Colors.black54,
+        color: Get.textTheme.button.color,
       );
     }
-    final buttonStyle = ElevatedButton.styleFrom(primary: Colors.grey.shade200);
 
     return Scaffold(
       appBar: AppBar(title: Text('Leaderboard Devices')),
@@ -82,10 +80,9 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
                             ),
                           ],
                         ),
-                        Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                        Icon(Icons.chevron_right, size: _sizeDefault),
                       ],
                     ),
-                    style: buttonStyle,
                   ),
                 ),
               )

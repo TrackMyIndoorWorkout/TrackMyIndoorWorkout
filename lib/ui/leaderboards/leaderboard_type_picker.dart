@@ -4,7 +4,6 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import 'device_leaderboard.dart';
 import 'leaderboard_device_hub.dart';
@@ -30,9 +29,8 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
       _textStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _mediaWidth / 10,
-      ).merge(TextStyle(color: Colors.black));
+      );
     }
-    final buttonStyle = ElevatedButton.styleFrom(primary: Colors.grey.shade200);
     final database = Get.find<AppDatabase>();
 
     return Scaffold(
@@ -66,10 +64,9 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
                   ],
                 ),
-                style: buttonStyle,
               ),
             ),
             Container(
@@ -96,10 +93,9 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
                   ],
                 ),
-                style: buttonStyle,
               ),
             ),
           ],
