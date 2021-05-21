@@ -677,6 +677,18 @@ const ZONE_PREFERENCES = " Zone Preferences";
 const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
 const SLOW_SPEED_TAG_PREFIX = "slow_speed_";
 
+const THEME_SELECTION = "Theme Selection (System / Light / Dark)";
+const THEME_SELECTION_TAG = "theme_selection";
+const THEME_SELECTION_DESCRIPTION =
+    "Should the theme match the system default, be light, or be dark.";
+const THEME_SELECTION_SYSTEM = "system";
+const THEME_SELECTION_SYSTEM_DESCRIPTION = "Matching the system default theme.";
+const THEME_SELECTION_LIGHT = "light";
+const THEME_SELECTION_LIGHT_DESCRIPTION = "Light theme.";
+const THEME_SELECTION_DARK = "dark";
+const THEME_SELECTION_DARK_DESCRIPTION = "Dark theme.";
+const THEME_SELECTION_DEFAULT = THEME_SELECTION_SYSTEM;
+
 const FONT_FAMILY = "RobotoMono";
 
 Future<bool> getSimplerUiDefault() async {
