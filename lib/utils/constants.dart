@@ -12,6 +12,7 @@ const MAX_UINT16 = 65536;
 const MAX_UINT24 = MAX_UINT8 * MAX_UINT16;
 const MAX_UINT32 = MAX_UINT16 * MAX_UINT16;
 const DEG_TO_FIT_GPS = 11930464.711111111; // 2 ^ 32 / 360
+const FONT_FAMILY = "RobotoMono";
 
 class ActivityType {
   static const String AlpineSki = "AlpineSki";

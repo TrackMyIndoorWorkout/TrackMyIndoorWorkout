@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:preferences/preference_service.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/constants.dart';
 import 'common.dart';
 import 'heart_rate_monitor_scan_result.dart';
 

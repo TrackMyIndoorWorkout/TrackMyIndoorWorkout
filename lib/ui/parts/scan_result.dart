@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import '../../devices/company_registry.dart';
-import '../../persistence/preferences.dart';
+import '../../utils/constants.dart';
 import '../../utils/scan_result_ex.dart';
 import '../../utils/string_ex.dart';
 import 'common.dart';

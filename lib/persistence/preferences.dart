@@ -689,8 +689,6 @@ const THEME_SELECTION_DARK = "dark";
 const THEME_SELECTION_DARK_DESCRIPTION = "Dark theme.";
 const THEME_SELECTION_DEFAULT = THEME_SELECTION_SYSTEM;
 
-const FONT_FAMILY = "RobotoMono";
-
 Future<bool> getSimplerUiDefault() async {
   var simplerUiDefault = SIMPLER_UI_FAST_DEFAULT;
   if (Platform.isAndroid) {
