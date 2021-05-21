@@ -11,6 +11,7 @@ import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_manager.dart';
 
 class SportLeaderboardScreen extends StatefulWidget {
   final String sport;
@@ -50,7 +51,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          icon: Get.find<ThemeManager>().getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',

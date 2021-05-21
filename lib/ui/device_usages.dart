@@ -8,9 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import '../utils/theme_manager.dart';
 import 'parts/sport_picker.dart';
 
 class DeviceUsagesScreen extends StatefulWidget {
@@ -60,7 +60,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          icon: Get.find<ThemeManager>().getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',

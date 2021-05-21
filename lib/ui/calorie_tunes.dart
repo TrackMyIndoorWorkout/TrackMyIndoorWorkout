@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import '../persistence/models/calorie_tune.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
 import '../utils/constants.dart';
+import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
 
 class CalorieTunesScreen extends StatefulWidget {
@@ -58,7 +58,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          icon: Get.find<ThemeManager>().getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',

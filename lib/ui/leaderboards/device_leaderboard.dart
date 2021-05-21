@@ -12,6 +12,7 @@ import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_manager.dart';
 
 class DeviceLeaderboardScreen extends StatefulWidget {
   final Tuple2<String, String> device;
@@ -51,7 +52,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          icon: Get.find<ThemeManager>().getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',

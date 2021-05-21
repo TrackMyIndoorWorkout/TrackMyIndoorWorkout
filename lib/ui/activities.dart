@@ -24,6 +24,7 @@ import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import '../utils/theme_manager.dart';
 import 'calorie_tunes.dart';
 import 'device_usages.dart';
 import 'find_devices.dart';
@@ -172,7 +173,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          icon: Get.find<ThemeManager>().getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',

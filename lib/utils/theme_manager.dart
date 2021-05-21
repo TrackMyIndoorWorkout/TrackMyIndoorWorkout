@@ -30,7 +30,11 @@ class ThemeManager {
   //   return Get.isPlatformDarkMode ? false : true;
   // }
 
-  TextStyle getSettingsDescriptionStyle() {
-    return Get.textTheme.bodyText1;
+  Icon getDeleteIcon(double size) {
+    return Icon(
+      Icons.delete,
+      color: Get.isPlatformDarkMode ? Colors.redAccent : Colors.amberAccent,
+      size: size,
+    );
   }
 }
