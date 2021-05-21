@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'ui/bluetooth_issue.dart';
 import 'ui/find_devices.dart';
-import 'utils/constants.dart';
 import 'utils/theme_manager.dart';
 
 class TrackMyIndoorExerciseApp extends StatefulWidget {
@@ -56,8 +55,8 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       color: Colors.lightBlue,
-      theme: ThemeData(brightness: Brightness.light, fontFamily: FONT_FAMILY),
-      darkTheme: ThemeData(brightness: Brightness.dark, fontFamily: FONT_FAMILY),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
       themeMode: _themeManager.getThemeMode(),
       home: StreamBuilder<BluetoothState>(
         stream: FlutterBlue.instance.state,
