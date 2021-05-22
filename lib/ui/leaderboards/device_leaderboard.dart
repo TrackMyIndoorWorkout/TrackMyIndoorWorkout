@@ -132,7 +132,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
                   SizedBox(
                     width: _sizeDefault * 2,
                     height: _sizeDefault * 2,
-                    child: _themeManager.getRankIcon(Text('${index + 1}', style: _textStyle)),
+                    child: _themeManager.getRankIcon(index),
                   ),
                   Column(
                     children: [

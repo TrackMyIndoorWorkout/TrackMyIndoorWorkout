@@ -125,8 +125,11 @@ class ThemeManager {
     return _getFabCore(Colors.white, getOrangeColor(), Icon(BrandIcons.strava), onPressed);
   }
 
-  FloatingActionButton getRankIcon(Text rankText) {
-    return _getFabCore(Colors.black87, getYellowColor(), rankText, () {});
+  FloatingActionButton getRankIcon(int rank) {
+    final textStyle =
+        Get.textTheme.headline4.apply(fontFamily: FONT_FAMILY, color: getAntagonistColor());
+    return _getFabCore(
+        Colors.black87, getYellowColor(), Text(rank.toString(), style: textStyle), () {});
   }
 
   FloatingActionButton getHelpFab() {
