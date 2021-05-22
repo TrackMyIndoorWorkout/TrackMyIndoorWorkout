@@ -1,13 +1,11 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:preferences/preferences.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
@@ -21,14 +19,11 @@ import '../utils/constants.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
-import 'parts/common.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
 import 'preferences/preferences_hub.dart';
 import 'activities.dart';
 import 'recording.dart';
-
-const HELP_URL = "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
 
 class FindDevicesScreen extends StatefulWidget {
   FindDevicesScreen({Key key}) : super(key: key);
@@ -47,7 +42,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _filterDevices;
   BluetoothDevice _openedDevice;
   List<BluetoothDevice> _scannedDevices;
-  TextStyle _adjustedCaptionStyle;
+  TextStyle _captionStyle;
   TextStyle _subtitleStyle;
   int _heartRate;
   AdvertisementCache _advertisementCache;
@@ -121,6 +116,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     _advertisementCache = Get.find<AdvertisementCache>();
     _themeManager = Get.find<ThemeManager>();
+    _captionStyle = Get.textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
+    _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
 
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
@@ -276,12 +273,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_adjustedCaptionStyle == null) {
-      _adjustedCaptionStyle =
-          Theme.of(context).textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
-      _subtitleStyle = _adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(_filterDevices ? 'Supported Exercise Equipment:' : 'Bluetooth Devices'),
@@ -365,7 +356,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       title: TextOneLine(
                         d.name,
                         overflow: TextOverflow.ellipsis,
-                        style: standOutStyle(_adjustedCaptionStyle, FONT_SIZE_FACTOR),
+                        style: _themeManager.boldStyle(_captionStyle, fontSizeFactor: FONT_SIZE_FACTOR),
                       ),
                       subtitle: Text(d.id.id, style: _subtitleStyle),
                       trailing: StreamBuilder<BluetoothDeviceState>(
@@ -373,18 +364,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         initialData: BluetoothDeviceState.disconnected,
                         builder: (c, snapshot) {
                           if (snapshot.data == BluetoothDeviceState.connected) {
-                            return FloatingActionButton(
-                              heroTag: null,
-                              child: (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
-                                      false)
+                            return _themeManager.getGreenGenericFab(
+                              (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ?? false)
                                   ? ((Get.isRegistered<HeartRateMonitor>() &&
                                           Get.find<HeartRateMonitor>()?.device?.id?.id == d.id.id)
                                       ? Text(_heartRate?.toString() ?? "--")
                                       : Icon(Icons.favorite))
                                   : Icon(Icons.open_in_new),
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.green,
-                              onPressed: () async {
+                              () async {
                                 if (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
                                     false) {
                                   return;
@@ -486,39 +473,21 @@ class FindDevicesState extends State<FindDevicesScreen> {
         fabCloseColor: _themeManager.getBlueColor(),
         ringColor: _themeManager.getBlueColorInverse(),
         children: [
-          FloatingActionButton(
-            heroTag: null,
-            child: Icon(Icons.help),
-            foregroundColor: Colors.lightBlue,
-            backgroundColor: Colors.white,
-            onPressed: () async {
-              if (await canLaunch(HELP_URL)) {
-                launch(HELP_URL);
-              } else {
-                Get.snackbar("Attention", "Cannot open URL");
-              }
-            },
-          ),
-          FloatingActionButton(
-            heroTag: null,
-            child: Icon(BrandIcons.strava),
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.deepOrangeAccent,
-            onPressed: () async {
-              StravaService stravaService;
-              if (!Get.isRegistered<StravaService>()) {
-                stravaService = Get.put<StravaService>(StravaService());
-              } else {
-                stravaService = Get.find<StravaService>();
-              }
-              final success = await stravaService.login();
-              if (success) {
-                Get.snackbar("Success", "Successful Strava login");
-              } else {
-                Get.snackbar("Warning", "Strava login unsuccessful");
-              }
-            },
-          ),
+          _themeManager.getHelpFab(),
+          _themeManager.getStravaFab(() async {
+            StravaService stravaService;
+            if (!Get.isRegistered<StravaService>()) {
+              stravaService = Get.put<StravaService>(StravaService());
+            } else {
+              stravaService = Get.find<StravaService>();
+            }
+            final success = await stravaService.login();
+            if (success) {
+              Get.snackbar("Success", "Successful Strava login");
+            } else {
+              Get.snackbar("Warning", "Strava login unsuccessful");
+            }
+          }),
           _themeManager.getBlueFab(Icons.list_alt, () async {
             final database = Get.find<AppDatabase>();
             final hasLeaderboardData = await database.hasLeaderboardData();

@@ -13,6 +13,8 @@ const MAX_UINT24 = MAX_UINT8 * MAX_UINT16;
 const MAX_UINT32 = MAX_UINT16 * MAX_UINT16;
 const DEG_TO_FIT_GPS = 11930464.711111111; // 2 ^ 32 / 360
 const FONT_FAMILY = "RobotoMono";
+const FONT_SIZE_FACTOR = 1.5;
+const HELP_URL = "https://trackmyindoorworkout.github.io/2020/09/25/quick-start.html";
 
 class ActivityType {
   static const String AlpineSki = "AlpineSki";

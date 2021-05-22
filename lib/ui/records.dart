@@ -20,7 +20,6 @@ import 'models/display_record.dart';
 import 'models/histogram_data.dart';
 import 'models/measurement_counter.dart';
 import 'models/tile_configuration.dart';
-import 'find_devices.dart';
 
 class RecordsScreen extends StatefulWidget {
   final Activity activity;

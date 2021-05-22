@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:preferences/preference_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../persistence/preferences.dart';
 import '../utils/constants.dart';
 
@@ -52,12 +54,20 @@ class ThemeManager {
     return isDark() ? Colors.lightGreenAccent : Colors.green;
   }
 
-  Color getAntagonistColor() {
-    return isDark() ? Colors.black : Colors.white;
-  }
-
   Color getYellowColor() {
     return isDark() ? Colors.yellowAccent : Colors.yellow;
+  }
+
+  Color getOrangeColor() {
+    return isDark() ? Colors.orange : Colors.deepOrangeAccent;
+  }
+
+  Color getGreyColor() {
+    return isDark() ? Colors.grey.shade100 : Colors.grey.shade700;
+  }
+
+  Color getAntagonistColor() {
+    return isDark() ? Colors.black : Colors.white;
   }
 
   Icon getBlueIcon(IconData icon, double size) {
@@ -69,29 +79,54 @@ class ThemeManager {
   }
 
   FloatingActionButton _getFabCore(
-      Color bgColor, Color fgColor, Widget widget, Function onPressed) {
+      Color foregroundColor, Color backgroundColor, Widget widget, Function onPressed,) {
     return FloatingActionButton(
       heroTag: null,
       child: widget,
-      foregroundColor: fgColor,
-      backgroundColor: bgColor,
+      foregroundColor: foregroundColor,
+      backgroundColor: backgroundColor,
       onPressed: onPressed,
     );
   }
 
-  FloatingActionButton _getIconFab(Color color, IconData icon, Function onPressed) {
+  FloatingActionButton getIconFab(Color color, IconData icon, Function onPressed) {
     return _getFabCore(getAntagonistColor(), color, Icon(icon), onPressed);
   }
 
   FloatingActionButton getBlueFab(IconData icon, Function onPressed) {
-    return _getIconFab(getBlueColor(), icon, onPressed);
+    return getIconFab(getBlueColor(), icon, onPressed);
   }
 
   FloatingActionButton getGreenFab(IconData icon, Function onPressed) {
-    return _getIconFab(getGreenColor(), icon, onPressed);
+    return getIconFab(getGreenColor(), icon, onPressed);
+  }
+
+  FloatingActionButton getGreenGenericFab(Widget widget, Function onPressed) {
+    return _getFabCore(getAntagonistColor(), getGreenColor(), widget, onPressed);
+  }
+
+  FloatingActionButton getStravaFab(Function onPressed) {
+    return _getFabCore(Colors.white, getOrangeColor(), Icon(BrandIcons.strava), onPressed);
   }
 
   FloatingActionButton getRankIcon(Text rankText) {
-    return _getFabCore(getYellowColor(), Colors.black87, rankText, () {});
+    return _getFabCore(Colors.black87, getYellowColor(), rankText, () {});
+  }
+
+  FloatingActionButton getHelpFab() {
+    return _getFabCore(Colors.white, Colors.lightBlue, Icon(Icons.help), () async {
+      if (await canLaunch(HELP_URL)) {
+        launch(HELP_URL);
+      } else {
+        Get.snackbar("Attention", "Cannot open URL");
+      }
+    });
+  }
+
+  TextStyle boldStyle(TextStyle style, {double fontSizeFactor = 1.0}) {
+    return style.apply(
+      fontSizeFactor: fontSizeFactor,
+      fontWeightDelta: 3,
+    );
   }
 }

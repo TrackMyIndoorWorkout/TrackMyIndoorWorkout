@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
@@ -30,9 +28,6 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
   final String deviceId;
   final double oldPowerFactor;
   double _powerFactorPercent;
-  double _mediaWidth;
-  double _sizeDefault;
-  TextStyle _selectedTextStyle;
   TextStyle _largerTextStyle;
   ThemeManager _themeManager;
 
@@ -41,18 +36,11 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
     super.initState();
     _powerFactorPercent = oldPowerFactor * 100.0;
     _themeManager = Get.find<ThemeManager>();
+    _largerTextStyle = Get.textTheme.headline3.apply(fontFamily: FONT_FAMILY);
   }
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = mediaWidth / 10;
-      _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
-      _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
-    }
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(

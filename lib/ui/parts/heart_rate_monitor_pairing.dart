@@ -7,7 +7,6 @@ import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
-import 'common.dart';
 import 'heart_rate_monitor_scan_result.dart';
 
 class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
@@ -18,7 +17,7 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
 
 class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
   int _scanDuration;
-  TextStyle _adjustedCaptionStyle;
+  TextStyle _captionStyle;
   TextStyle _subtitleStyle;
   List<String> _scanResults;
   ThemeManager _themeManager;
@@ -42,6 +41,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     _scanResults = [];
     _scanDuration = PrefService.getInt(SCAN_DURATION_TAG);
     _themeManager = Get.find<ThemeManager>();
+    _captionStyle = Get.textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
+    _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       startScan();
     });
@@ -49,12 +50,6 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
 
   @override
   Widget build(BuildContext context) {
-    if (_adjustedCaptionStyle == null) {
-      _adjustedCaptionStyle =
-          Theme.of(context).textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
-      _subtitleStyle = _adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
-    }
-
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () {
@@ -79,10 +74,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                       title: TextOneLine(
                         d.name,
                         overflow: TextOverflow.ellipsis,
-                        style: standOutStyle(
-                          _adjustedCaptionStyle,
-                          FONT_SIZE_FACTOR,
-                        ),
+                        style: _themeManager.boldStyle(_captionStyle, fontSizeFactor: FONT_SIZE_FACTOR),
                       ),
                       subtitle: Text(d.id.id, style: _subtitleStyle),
                       trailing: StreamBuilder<BluetoothDeviceState>(

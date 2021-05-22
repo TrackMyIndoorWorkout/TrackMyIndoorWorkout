@@ -12,7 +12,6 @@ import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
 import 'package:tuple/tuple.dart';
@@ -1176,20 +1175,14 @@ class RecordingState extends State<RecordingScreen> {
           fabCloseColor: _themeManager.getBlueColor(),
           ringColor: _themeManager.getBlueColorInverse(),
           children: [
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.deepOrangeAccent,
-              child: Icon(BrandIcons.strava),
-              onPressed: () async {
-                if (_measuring) {
-                  Get.snackbar("Warning", "Cannot upload while measurement is under progress");
-                  return;
-                }
+            _themeManager.getStravaFab(() async {
+              if (_measuring) {
+                Get.snackbar("Warning", "Cannot upload while measurement is under progress");
+                return;
+              }
 
-                await _stravaUpload(false);
-              },
-            ),
+              await _stravaUpload(false);
+            }),
             _themeManager.getBlueFab(Icons.list_alt, () async {
               if (_measuring) {
                 Get.snackbar("Warning", "Cannot navigate while measurement is under progress");

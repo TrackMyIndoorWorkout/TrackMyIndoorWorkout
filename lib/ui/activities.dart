@@ -13,7 +13,6 @@ import 'package:listview_utils/listview_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:preferences/preferences.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../export/activity_export.dart';
 import '../export/fit/fit_export.dart';
 import '../export/tcx/tcx_export.dart';
@@ -27,7 +26,6 @@ import '../utils/display.dart';
 import '../utils/theme_manager.dart';
 import 'calorie_tunes.dart';
 import 'device_usages.dart';
-import 'find_devices.dart';
 import 'import_form.dart';
 import 'leaderboards/leaderboard_type_picker.dart';
 import 'parts/calorie_override.dart';
@@ -255,15 +253,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       );
     }
 
-    floatingActionButtons.add(
-      _themeManager.getBlueFab(Icons.help, () async {
-        if (await canLaunch(HELP_URL)) {
-          launch(HELP_URL);
-        } else {
-          Get.snackbar("Attention", "Cannot open URL");
-        }
-      }),
-    );
+    floatingActionButtons.add(_themeManager.getHelpFab());
 
     return Scaffold(
       appBar: AppBar(title: Text('Activities')),
