@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
-import '../../utils/theme_manager.dart';
 import 'data_preferences.dart';
 import 'expert.dart';
 import 'leaderboard.dart';
@@ -23,10 +22,9 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   @override
   void initState() {
     super.initState();
-    final themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline4.apply(
       fontFamily: FONT_FAMILY,
-      color: themeManager.getProtagonistColor(),
+      color: Colors.white,
     );
     _sizeDefault = _textStyle.fontSize * 2;
     if (!Get.isRegistered<SoundService>()) {

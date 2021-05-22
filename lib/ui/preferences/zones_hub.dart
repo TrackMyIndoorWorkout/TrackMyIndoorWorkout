@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
-import '../../utils/theme_manager.dart';
 import 'measurement_zones.dart';
 import 'zone_index_display.dart';
 
@@ -22,10 +21,9 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
   @override
   void initState() {
     super.initState();
-    final themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline4.apply(
       fontFamily: FONT_FAMILY,
-      color: themeManager.getProtagonistColor(),
+      color: Colors.white,
     );
     _sizeDefault = _textStyle.fontSize * 2;
     if (!Get.isRegistered<SoundService>()) {

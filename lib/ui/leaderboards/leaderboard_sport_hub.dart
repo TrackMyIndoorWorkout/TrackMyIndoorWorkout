@@ -2,7 +2,6 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/constants.dart';
-import '../../utils/theme_manager.dart';
 import 'sport_leaderboard.dart';
 
 class LeaderboardSportHubScreen extends StatefulWidget {
@@ -26,10 +25,9 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
   @override
   void initState() {
     super.initState();
-    final themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline3.apply(
       fontFamily: FONT_FAMILY,
-      color: themeManager.getProtagonistColor(),
+      color: Colors.white,
     );
     _sizeDefault = _textStyle.fontSize * 2;
   }

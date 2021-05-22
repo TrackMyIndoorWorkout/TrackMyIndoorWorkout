@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 import '../../utils/constants.dart';
-import '../../utils/theme_manager.dart';
 import 'device_leaderboard.dart';
 
 class LeaderboardDeviceHubScreen extends StatefulWidget {
@@ -28,15 +27,14 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
   @override
   void initState() {
     super.initState();
-    final themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline5.apply(
       fontFamily: FONT_FAMILY,
-      color: themeManager.getProtagonistColor(),
+      color: Colors.white,
     );
     _sizeDefault = _textStyle.fontSize * 3;
     _subTextStyle = Get.textTheme.headline6.apply(
       fontFamily: FONT_FAMILY,
-      color: themeManager.getProtagonistColor(),
+      color: Colors.white,
     );
   }
 

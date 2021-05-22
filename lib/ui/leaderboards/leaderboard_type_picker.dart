@@ -17,6 +17,7 @@ class LeaderBoardTypeBottomSheet extends StatefulWidget {
 class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> {
   double _sizeDefault;
   TextStyle _textStyle;
+  TextStyle _inverseTextStyle;
   AppDatabase _database;
 
   @override
@@ -25,6 +26,10 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
     _database = Get.find<AppDatabase>();
     final themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline3.apply(
+      fontFamily: FONT_FAMILY,
+      color: Colors.white,
+    );
+    _inverseTextStyle = Get.textTheme.headline3.apply(
       fontFamily: FONT_FAMILY,
       color: themeManager.getProtagonistColor(),
     );
@@ -39,7 +44,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("Leaderboards:", style: _textStyle),
+            Text("Leaderboards:", style: _inverseTextStyle),
             Container(
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
