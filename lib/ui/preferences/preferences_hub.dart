@@ -36,10 +36,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
       _sizeDefault = mediaWidth / 5;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault / 2,
-      );
+      _textStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault / 2);
     }
 
     return Scaffold(

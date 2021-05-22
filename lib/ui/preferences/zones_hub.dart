@@ -35,11 +35,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
       _sizeDefault = mediaWidth / 5;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault / 2,
-        color: Get.textTheme.button.color,
-      );
+      _textStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault / 2);
     }
 
     List<Widget> items = PreferencesSpec.SPORT_PREFIXES.map((sport) {
