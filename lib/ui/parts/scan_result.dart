@@ -103,13 +103,14 @@ class ScanResultTile extends StatelessWidget {
         style: captionStyle.apply(fontFamily: FONT_FAMILY),
       ),
       trailing: themeManager.getIconFab(
-          result.advertisementData.connectable
-              ? themeManager.getBlueColor()
-              : themeManager.getGreyColor(),
-          result.isHeartRateMonitor ? Icons.favorite : Icons.play_arrow,
-          result.advertisementData.connectable
-              ? (result.isHeartRateMonitor ? onHrmTap : onEquipmentTap)
-              : null,),
+        result.advertisementData.connectable
+            ? themeManager.getBlueColor()
+            : themeManager.getGreyColor(),
+        result.isHeartRateMonitor ? Icons.favorite : Icons.play_arrow,
+        result.advertisementData.connectable
+            ? (result.isHeartRateMonitor ? onHrmTap : onEquipmentTap)
+            : null,
+      ),
       children: [
         _buildAdvRow(
           'Complete Local Name',

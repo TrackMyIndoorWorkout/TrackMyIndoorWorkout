@@ -356,7 +356,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       title: TextOneLine(
                         d.name,
                         overflow: TextOverflow.ellipsis,
-                        style: _themeManager.boldStyle(_captionStyle, fontSizeFactor: FONT_SIZE_FACTOR),
+                        style: _themeManager.boldStyle(_captionStyle,
+                            fontSizeFactor: FONT_SIZE_FACTOR),
                       ),
                       subtitle: Text(d.id.id, style: _subtitleStyle),
                       trailing: StreamBuilder<BluetoothDeviceState>(

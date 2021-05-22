@@ -79,7 +79,11 @@ class ThemeManager {
   }
 
   FloatingActionButton _getFabCore(
-      Color foregroundColor, Color backgroundColor, Widget widget, Function onPressed,) {
+    Color foregroundColor,
+    Color backgroundColor,
+    Widget widget,
+    Function onPressed,
+  ) {
     return FloatingActionButton(
       heroTag: null,
       child: widget,
