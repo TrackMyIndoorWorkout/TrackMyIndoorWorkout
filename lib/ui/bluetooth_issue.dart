@@ -27,6 +27,7 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
   final BluetoothState bluetoothState;
   PermissionStatus locationState;
   ThemeManager _themeManager;
+  TextStyle _textStyle;
 
   BluetoothIssueScreenState({
     @required this.bluetoothState,
@@ -38,6 +39,7 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
   void initState() {
     super.initState();
     _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline6.apply(color: Colors.white);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       if (locationState == null) {
         final locationTake2 = await Permission.locationWhenInUse.request();
@@ -66,13 +68,13 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
               Icon(
                 Icons.bluetooth_disabled,
                 size: 200.0,
-                color: Colors.white54,
+                color: Colors.white,
               ),
               Flexible(
                 child: Text(
                   'Bluetooth Adapter is $bluetoothDisplay.\n' +
                       'Location permission is $locationDisplay',
-                  style: Theme.of(context).primaryTextTheme.subtitle1.copyWith(color: Colors.white),
+                  style: _textStyle,
                   maxLines: 10,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
