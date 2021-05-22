@@ -200,7 +200,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     if (descriptor == null) {
-      Get.snackbar("Error", "Device identification failed");
+      if (PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT) {
+        descriptor = deviceMap[GENERIC_FTMS_BIKE_FOURCC];
+      } else {
+        Get.snackbar("Error", "Device identification failed");
+        return false;
+      }
     } else if (fitnessEquipment != null) {
       fitnessEquipment.descriptor = descriptor;
     }
