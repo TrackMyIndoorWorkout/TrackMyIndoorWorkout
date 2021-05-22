@@ -40,7 +40,7 @@ class FitnessEquipment extends DeviceBase {
   double slowPace;
   bool equipmentDiscovery;
 
-  FitnessEquipment({descriptor, device})
+  FitnessEquipment({this.descriptor, device})
       : super(
           serviceId: descriptor?.dataServiceId ?? FITNESS_MACHINE_ID,
           characteristicsId: descriptor?.dataCharacteristicId,
