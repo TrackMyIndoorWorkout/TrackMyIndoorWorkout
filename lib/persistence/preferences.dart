@@ -14,7 +14,7 @@ Color getTranslucent(Color c) {
   return Color(r: c.r, g: c.g, b: c.b, a: 120, darker: c.darker, lighter: c.lighter);
 }
 
-final sevenBgPalette = [
+final sevenLightBgPalette = [
   getTranslucent(MaterialPalette.blue.shadeDefault.lighter),
   getTranslucent(MaterialPalette.teal.shadeDefault.lighter),
   getTranslucent(MaterialPalette.cyan.shadeDefault.lighter),
@@ -24,7 +24,17 @@ final sevenBgPalette = [
   getTranslucent(MaterialPalette.pink.shadeDefault.lighter),
 ];
 
-final sevenFgPalette = [
+final sevenDarkBgPalette = [
+  getTranslucent(MaterialPalette.indigo.shadeDefault.darker),
+  getTranslucent(MaterialPalette.teal.shadeDefault.darker),
+  getTranslucent(MaterialPalette.cyan.shadeDefault.darker),
+  getTranslucent(MaterialPalette.green.shadeDefault.darker),
+  getTranslucent(MaterialPalette.deepOrange.shadeDefault.darker),
+  getTranslucent(MaterialPalette.red.shadeDefault.darker),
+  getTranslucent(MaterialPalette.purple.shadeDefault.darker),
+];
+
+final sevenLightFgPalette = [
   MaterialPalette.indigo.shadeDefault.darker,
   MaterialPalette.teal.shadeDefault.darker,
   MaterialPalette.cyan.shadeDefault.darker,
@@ -34,7 +44,17 @@ final sevenFgPalette = [
   MaterialPalette.purple.shadeDefault.darker,
 ];
 
-final fiveBgPalette = [
+final sevenDarkFgPalette = [
+  MaterialPalette.blue.shadeDefault.lighter,
+  MaterialPalette.teal.shadeDefault.lighter,
+  MaterialPalette.cyan.shadeDefault.lighter,
+  MaterialPalette.lime.shadeDefault.lighter,
+  MaterialPalette.yellow.shadeDefault.lighter,
+  MaterialPalette.red.shadeDefault.lighter,
+  MaterialPalette.pink.shadeDefault.lighter,
+];
+
+final fiveLightBgPalette = [
   getTranslucent(MaterialPalette.blue.shadeDefault.lighter),
   getTranslucent(MaterialPalette.cyan.shadeDefault.lighter),
   getTranslucent(MaterialPalette.lime.shadeDefault.lighter),
@@ -42,12 +62,28 @@ final fiveBgPalette = [
   getTranslucent(MaterialPalette.red.shadeDefault.lighter),
 ];
 
-final fiveFgPalette = [
+final fiveDarkBgPalette = [
+  getTranslucent(MaterialPalette.indigo.shadeDefault.darker),
+  getTranslucent(MaterialPalette.teal.shadeDefault.darker),
+  getTranslucent(MaterialPalette.green.shadeDefault.darker),
+  getTranslucent(MaterialPalette.deepOrange.shadeDefault.darker),
+  getTranslucent(MaterialPalette.red.shadeDefault.darker),
+];
+
+final fiveLightFgPalette = [
   MaterialPalette.indigo.shadeDefault.darker,
   MaterialPalette.teal.shadeDefault.darker,
   MaterialPalette.green.shadeDefault.darker,
   MaterialPalette.deepOrange.shadeDefault.darker,
   MaterialPalette.red.shadeDefault.darker,
+];
+
+final fiveDarkFgPalette = [
+  MaterialPalette.blue.shadeDefault.lighter,
+  MaterialPalette.cyan.shadeDefault.lighter,
+  MaterialPalette.lime.shadeDefault.lighter,
+  MaterialPalette.yellow.shadeDefault.lighter,
+  MaterialPalette.red.shadeDefault.lighter,
 ];
 
 // https://stackoverflow.com/questions/57481767/dart-rounding-errors
@@ -281,7 +317,7 @@ class PreferencesSpec {
     indexDisplay = PrefService.getBool(zoneIndexTag) ?? indexDisplayDefault;
   }
 
-  void calculateBounds(double minVal, double maxVal) {
+  void calculateBounds(double minVal, double maxVal, bool isLight) {
     zoneLower = [...zoneBounds];
     zoneUpper = [...zoneBounds];
 
@@ -303,6 +339,8 @@ class PreferencesSpec {
       zoneUpper.add(decimalRound(maxVal));
     }
 
+    final textColor = isLight ? MaterialPalette.black : MaterialPalette.white;
+    final chartTextStyle = TextStyleSpec(color: textColor);
     List<common.AnnotationSegment> segments = [];
     segments.addAll(List.generate(
       binCount,
@@ -310,9 +348,10 @@ class PreferencesSpec {
         zoneLower[i],
         zoneUpper[i],
         RangeAnnotationAxisType.measure,
-        color: bgColorByBin(i),
+        color: bgColorByBin(i, isLight),
         startLabel: zoneLower[i].toString(),
         labelAnchor: AnnotationLabelAnchor.start,
+        labelStyleSpec: chartTextStyle,
       ),
     ));
     segments.addAll(List.generate(
@@ -323,7 +362,8 @@ class PreferencesSpec {
         startLabel: zoneUpper[i].toString(),
         labelAnchor: AnnotationLabelAnchor.end,
         strokeWidthPx: 1.0,
-        color: MaterialPalette.black,
+        color: textColor,
+        labelStyleSpec: chartTextStyle,
       ),
     ));
     annotationSegments = segments.toList(growable: false);
@@ -347,29 +387,31 @@ class PreferencesSpec {
     return i;
   }
 
-  Color bgColorByBin(int bin) {
-    if (bin > 6) {
-      return getTranslucent(MaterialPalette.blue.shadeDefault.lighter);
-    }
+  Color bgColorByBin(int bin, bool isLight) {
     if (zonePercents.length <= 5) {
-      return fiveBgPalette[bin];
+      bin = min(bin, 4);
+      return isLight ? fiveLightBgPalette[bin] : fiveDarkBgPalette[bin];
     }
-    return sevenBgPalette[bin];
+
+    bin = min(bin, 6);
+    return isLight ? sevenLightBgPalette[bin] : sevenDarkBgPalette[bin];
   }
 
-  Color fgColorByBin(int bin) {
-    if (bin > 6) {
-      return MaterialPalette.blue.shadeDefault.darker;
-    }
+  Color fgColorByBin(int bin, bool isLight) {
     if (zonePercents.length <= 5) {
-      return fiveFgPalette[transformedBinIndex(bin)];
+      bin = min(bin, 4);
+      final trIndex = transformedBinIndex(bin);
+      return isLight ? fiveLightFgPalette[trIndex] : fiveDarkFgPalette[trIndex];
     }
-    return sevenFgPalette[transformedBinIndex(bin)];
+
+    bin = min(bin, 6);
+    final trIndex = transformedBinIndex(bin);
+    return isLight ? sevenLightFgPalette[trIndex] : sevenDarkFgPalette[trIndex];
   }
 
-  Color fgColorByValue(num value) {
+  Color fgColorByValue(num value, bool isLight) {
     final bin = binIndex(value);
-    return fgColorByBin(bin);
+    return fgColorByBin(bin, isLight);
   }
 
   static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
@@ -677,7 +719,17 @@ const ZONE_PREFERENCES = " Zone Preferences";
 const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
 const SLOW_SPEED_TAG_PREFIX = "slow_speed_";
 
-const FONT_FAMILY = "RobotoMono";
+const THEME_SELECTION = "Theme Selection (System / Light / Dark)";
+const THEME_SELECTION_TAG = "theme_selection";
+const THEME_SELECTION_DESCRIPTION =
+    "Should the theme match the system default, be light, or be dark.";
+const THEME_SELECTION_SYSTEM = "system";
+const THEME_SELECTION_SYSTEM_DESCRIPTION = "Matching the system default theme.";
+const THEME_SELECTION_LIGHT = "light";
+const THEME_SELECTION_LIGHT_DESCRIPTION = "Light theme.";
+const THEME_SELECTION_DARK = "dark";
+const THEME_SELECTION_DARK_DESCRIPTION = "Dark theme.";
+const THEME_SELECTION_DEFAULT = THEME_SELECTION_SYSTEM;
 
 Future<bool> getSimplerUiDefault() async {
   var simplerUiDefault = SIMPLER_UI_FAST_DEFAULT;

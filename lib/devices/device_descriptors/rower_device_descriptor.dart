@@ -32,9 +32,10 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     canMeasureHeartRate = true,
     heartRateByteIndex,
     calorieFactorDefault = 1.0,
+    isMultiSport = true,
   }) : super(
           defaultSport: defaultSport,
-          isMultiSport: true,
+          isMultiSport: isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,

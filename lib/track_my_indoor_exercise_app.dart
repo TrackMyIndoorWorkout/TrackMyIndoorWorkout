@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'ui/bluetooth_issue.dart';
 import 'ui/find_devices.dart';
+import 'utils/theme_manager.dart';
 
 class TrackMyIndoorExerciseApp extends StatefulWidget {
   final bool blueOn;
@@ -32,6 +33,7 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
   final String bluetoothStateString;
   PermissionStatus permissionState;
   Future<PermissionStatus> permissionFuture;
+  ThemeManager _themeManager;
 
   TrackMyIndoorExerciseAppState({
     @required this.blueOn,
@@ -44,13 +46,18 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
   @override
   void initState() {
     super.initState();
+    _themeManager = Get.put<ThemeManager>(ThemeManager());
     permissionFuture = Permission.locationWhenInUse.request();
   }
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      color: Colors.lightBlue,
+      debugShowCheckedModeBanner: false,
+      color: _themeManager.getHeaderColor(),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: _themeManager.getThemeMode(),
       home: StreamBuilder<BluetoothState>(
         stream: FlutterBlue.instance.state,
         initialData: blueOn ? BluetoothState.on : BluetoothState.unknown,

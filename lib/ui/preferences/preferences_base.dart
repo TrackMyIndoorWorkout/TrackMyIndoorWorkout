@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 abstract class PreferencesScreenBase extends StatelessWidget {
   static String shortTitle = "";
   static String title = shortTitle;
-  final descriptionStyle = TextStyle(color: Colors.black54);
 
   bool isNumber(String str, double lowerLimit, double upperLimit) {
     double number = double.tryParse(str);

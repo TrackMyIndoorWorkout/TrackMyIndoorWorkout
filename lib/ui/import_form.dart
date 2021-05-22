@@ -6,10 +6,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:preferences/preference_service.dart';
 import '../persistence/mpower_importer.dart';
-import '../persistence/preferences.dart';
-import '../utils/constants.dart';
 
 typedef void SetProgress(double progress);
 
@@ -25,7 +22,7 @@ class _ImportFormState extends State<ImportForm> {
   DateTime _activityDateTime;
   bool _isLoading;
   double _progressValue;
-  double _mediaWidth;
+  double _sizeDefault;
   TextEditingController _textController;
 
   @override
@@ -34,6 +31,7 @@ class _ImportFormState extends State<ImportForm> {
     _isLoading = false;
     _formKey = GlobalKey<FormState>();
     _progressValue = 0;
+    _sizeDefault = Get.textTheme.headline1.fontSize;
     _textController = TextEditingController();
   }
 
@@ -45,11 +43,6 @@ class _ImportFormState extends State<ImportForm> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = Get.mediaQuery.size.width;
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('MPower Workout Import'),
@@ -58,11 +51,11 @@ class _ImportFormState extends State<ImportForm> {
         isLoading: _isLoading,
         progressIndicator: SizedBox(
           child: CircularProgressIndicator(
-            strokeWidth: _mediaWidth / 4,
+            strokeWidth: _sizeDefault,
             value: _progressValue,
           ),
-          height: _mediaWidth / 2,
-          width: _mediaWidth / 2,
+          height: _sizeDefault * 2,
+          width: _sizeDefault * 2,
         ),
         child: Form(
           key: _formKey,

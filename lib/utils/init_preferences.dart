@@ -43,6 +43,7 @@ Future<void> initPreferences() async {
     RANKING_FOR_DEVICE_TAG: RANKING_FOR_DEVICE_DEFAULT,
     RANKING_FOR_SPORT_TAG: RANKING_FOR_SPORT_DEFAULT,
     RANK_TRACK_VISUALIZATION_TAG: RANK_TRACK_VISUALIZATION_DEFAULT,
+    THEME_SELECTION_TAG: THEME_SELECTION_DEFAULT,
   };
   PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
     PreferencesSpec.preferencesSpecs.forEach((prefSpec) {

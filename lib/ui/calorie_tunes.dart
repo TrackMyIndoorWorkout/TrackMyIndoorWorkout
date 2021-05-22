@@ -6,8 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import '../persistence/models/calorie_tune.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
-import '../utils/constants.dart';
+import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
 
 class CalorieTunesScreen extends StatefulWidget {
@@ -22,15 +21,20 @@ class CalorieTunesScreen extends StatefulWidget {
 class CalorieTunesScreenState extends State<CalorieTunesScreen> {
   AppDatabase _database;
   int _editCount;
-  double _mediaWidth;
-  double _sizeDefault;
+  ThemeManager _themeManager;
   TextStyle _textStyle;
+  double _sizeDefault;
+  ExpandableThemeData _expandableThemeData;
 
   @override
   void initState() {
     super.initState();
     _editCount = 0;
     _database = Get.find<AppDatabase>();
+    _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline3;
+    _sizeDefault = _textStyle.fontSize;
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(CalorieTune calorieTune, double size) {
@@ -38,7 +42,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(Icons.edit, color: Colors.black, size: size),
+          icon: _themeManager.getActionIcon(Icons.edit, size),
           onPressed: () async {
             final result = await Get.bottomSheet(
               CalorieFactorTuneBottomSheet(
@@ -56,7 +60,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
@@ -84,16 +88,6 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = Get.mediaQuery.size.width;
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 12;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault,
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text('Calorie Tunes')),
       body: CustomListView(
@@ -132,6 +126,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${calorieTune.id}"),
+              theme: _expandableThemeData,
               header: Column(
                 children: [
                   TextOneLine(
@@ -155,30 +150,16 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.calendar_today,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          dateString,
-                          style: _textStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        Text(dateString, style: _textStyle),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.watch,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          timeString,
-                          style: _textStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        Text(timeString, style: _textStyle),
                       ],
                     ),
                     _actionButtonRow(calorieTune, _sizeDefault),

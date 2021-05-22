@@ -2,7 +2,6 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import 'device_leaderboard.dart';
 
@@ -19,7 +18,6 @@ class LeaderboardDeviceHubScreen extends StatefulWidget {
 
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {
   final List<Tuple2<String, String>> devices;
-  double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
   TextStyle _subTextStyle;
@@ -27,24 +25,21 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
   LeaderboardDeviceHubScreenState({@required this.devices}) : assert(devices != null);
 
   @override
-  Widget build(BuildContext context) {
-    final mediaWidth = Get.mediaQuery.size.width;
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 5;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _mediaWidth / 16,
-        color: Colors.black,
-      );
-      _subTextStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _mediaWidth / 20,
-        color: Colors.black54,
-      );
-    }
-    final buttonStyle = ElevatedButton.styleFrom(primary: Colors.grey.shade200);
+  void initState() {
+    super.initState();
+    _textStyle = Get.textTheme.headline5.apply(
+      fontFamily: FONT_FAMILY,
+      color: Colors.white,
+    );
+    _sizeDefault = _textStyle.fontSize * 3;
+    _subTextStyle = Get.textTheme.headline6.apply(
+      fontFamily: FONT_FAMILY,
+      color: Colors.white,
+    );
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Leaderboard Devices')),
       body: SingleChildScrollView(
@@ -80,10 +75,9 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
                             ),
                           ],
                         ),
-                        Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                        Icon(Icons.chevron_right, size: _sizeDefault),
                       ],
                     ),
-                    style: buttonStyle,
                   ),
                 ),
               )

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../utils/theme_manager.dart';
 
 class BluetoothIssueScreen extends StatefulWidget {
   final BluetoothState bluetoothState;
@@ -25,6 +26,8 @@ class BluetoothIssueScreen extends StatefulWidget {
 class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
   final BluetoothState bluetoothState;
   PermissionStatus locationState;
+  ThemeManager _themeManager;
+  TextStyle _textStyle;
 
   BluetoothIssueScreenState({
     @required this.bluetoothState,
@@ -35,6 +38,8 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
   @override
   void initState() {
     super.initState();
+    _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline6.apply(color: Colors.white);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       if (locationState == null) {
         final locationTake2 = await Permission.locationWhenInUse.request();
@@ -50,7 +55,7 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
     final bluetoothDisplay = bluetoothState?.toString()?.substring(15) ?? 'N/A';
     final locationDisplay = (locationState.isGranted ?? false) ? "Granted" : "Denied";
     return Scaffold(
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: _themeManager.getHeaderColor(),
       body: GestureDetector(
         onLongPress: () => Get.snackbar(
             "Warning",
@@ -63,13 +68,13 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
               Icon(
                 Icons.bluetooth_disabled,
                 size: 200.0,
-                color: Colors.white54,
+                color: Colors.white,
               ),
               Flexible(
                 child: Text(
                   'Bluetooth Adapter is $bluetoothDisplay.\n' +
                       'Location permission is $locationDisplay',
-                  style: Theme.of(context).primaryTextTheme.subtitle1.copyWith(color: Colors.white),
+                  style: _textStyle,
                   maxLines: 10,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,

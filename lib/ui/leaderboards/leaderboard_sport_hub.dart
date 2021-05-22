@@ -1,7 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import 'sport_leaderboard.dart';
 
@@ -18,26 +17,23 @@ class LeaderboardSportHubScreen extends StatefulWidget {
 
 class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
   final List<String> sports;
-  double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
 
   LeaderboardSportHubScreenState({@required this.sports}) : assert(sports != null);
 
   @override
-  Widget build(BuildContext context) {
-    final mediaWidth = Get.mediaQuery.size.width;
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 5;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _mediaWidth / 10,
-        color: Colors.black,
-      );
-    }
-    final buttonStyle = ElevatedButton.styleFrom(primary: Colors.grey.shade200);
+  void initState() {
+    super.initState();
+    _textStyle = Get.textTheme.headline3.apply(
+      fontFamily: FONT_FAMILY,
+      color: Colors.white,
+    );
+    _sizeDefault = _textStyle.fontSize * 2;
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Leaderboard Sports')),
       body: SingleChildScrollView(
@@ -61,10 +57,9 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        Icon(Icons.chevron_right, size: _sizeDefault, color: Colors.indigo),
+                        Icon(Icons.chevron_right, size: _sizeDefault),
                       ],
                     ),
-                    style: buttonStyle,
                   ),
                 ),
               )

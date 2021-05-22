@@ -12,7 +12,6 @@ import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
 import 'package:tuple/tuple.dart';
@@ -20,7 +19,6 @@ import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
-import '../devices/bluetooth_device_ex.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
@@ -35,7 +33,7 @@ import '../utils/constants.dart';
 import '../utils/preferences.dart';
 import '../utils/sound.dart';
 import '../utils/target_heart_rate.dart';
-import 'models/advertisement_digest.dart';
+import '../utils/theme_manager.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
 import 'parts/battery_status.dart';
@@ -54,7 +52,7 @@ enum TargetHrState {
 
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
-  final AdvertisementDigest advertisementDigest;
+  final DeviceDescriptor descriptor;
   final BluetoothDeviceState initialState;
   final Size size;
   final String sport;
@@ -62,12 +60,12 @@ class RecordingScreen extends StatefulWidget {
   RecordingScreen({
     Key key,
     @required this.device,
-    @required this.advertisementDigest,
+    @required this.descriptor,
     @required this.initialState,
     @required this.size,
     @required this.sport,
   })  : assert(device != null),
-        assert(advertisementDigest != null),
+        assert(descriptor != null),
         assert(initialState != null),
         assert(size != null),
         assert(sport != null),
@@ -77,7 +75,7 @@ class RecordingScreen extends StatefulWidget {
   State<StatefulWidget> createState() {
     return RecordingState(
       device: device,
-      advertisementDigest: advertisementDigest,
+      descriptor: descriptor,
       initialState: initialState,
       size: size,
       sport: sport,
@@ -88,26 +86,23 @@ class RecordingScreen extends StatefulWidget {
 class RecordingState extends State<RecordingScreen> {
   RecordingState({
     @required this.device,
-    @required this.advertisementDigest,
+    @required this.descriptor,
     @required this.initialState,
     @required this.size,
     @required this.sport,
   })  : assert(device != null),
-        assert(advertisementDigest != null),
+        assert(descriptor != null),
         assert(initialState != null),
         assert(size != null),
-        assert(sport != null) {
-    this._descriptor = device.getDescriptor(advertisementDigest.serviceUuids);
-  }
+        assert(sport != null);
 
   Size size;
   final BluetoothDevice device;
-  final AdvertisementDigest advertisementDigest;
+  final DeviceDescriptor descriptor;
   final BluetoothDeviceState initialState;
   final String sport;
   FitnessEquipment _fitnessEquipment;
   HeartRateMonitor _heartRateMonitor;
-  DeviceDescriptor _descriptor;
   TrackCalculator _trackCalculator;
   bool _measuring;
   int _pointCount;
@@ -161,6 +156,8 @@ class RecordingState extends State<RecordingScreen> {
   Color _lightRed;
   Color _lightGreen;
   Color _lightBlue;
+  ThemeManager _themeManager;
+  bool _isLight;
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
@@ -170,7 +167,7 @@ class RecordingState extends State<RecordingScreen> {
       }
     } else {
       Get.defaultDialog(
-        middleText: 'Problem co-operating with ${_descriptor.fullName}. Aborting...',
+        middleText: 'Problem co-operating with ${descriptor.fullName}. Aborting...',
         confirm: TextButton(
           child: Text("Ok"),
           onPressed: () => Get.close(1),
@@ -182,14 +179,14 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _startMeasurement() async {
     final now = DateTime.now();
     final powerFactor = await _database.powerFactor(device.id.id) ?? 1.0;
-    final calorieFactor = await _database.calorieFactor(device.id.id, _descriptor) ?? 1.0;
+    final calorieFactor = await _database.calorieFactor(device.id.id, descriptor) ?? 1.0;
     _activity = Activity(
-      fourCC: _descriptor.fourCC,
+      fourCC: descriptor.fourCC,
       deviceName: device.name,
       deviceId: device.id.id,
       start: now.millisecondsSinceEpoch,
       startDateTime: now,
-      sport: _descriptor.defaultSport,
+      sport: descriptor.defaultSport,
       powerFactor: powerFactor,
       calorieFactor: calorieFactor,
     );
@@ -204,7 +201,7 @@ class RecordingState extends State<RecordingScreen> {
     }
     if (_rankingForSport) {
       _sportLeaderboard = await _database.workoutSummaryDao
-          .findWorkoutSummaryBySport(_descriptor.defaultSport, LEADERBOARD_LIMIT, 0);
+          .findWorkoutSummaryBySport(descriptor.defaultSport, LEADERBOARD_LIMIT, 0);
     }
 
     _fitnessEquipment.setActivity(_activity);
@@ -255,7 +252,7 @@ class RecordingState extends State<RecordingScreen> {
           _values = [
             record.calories.toString(),
             record.power.toString(),
-            record.speedStringByUnit(_si, _descriptor.defaultSport),
+            record.speedStringByUnit(_si, descriptor.defaultSport),
             record.cadence.toString(),
             record.heartRate.toString(),
             record.distanceStringByUnit(_si),
@@ -347,28 +344,30 @@ class RecordingState extends State<RecordingScreen> {
     Wakelock.enable();
     SystemChrome.setEnabledSystemUIOverlays([]);
 
+    _themeManager = Get.find<ThemeManager>();
+    _isLight = !_themeManager.isDark();
     _pointCount = min(60, size.width ~/ 2);
     _unitStyle = TextStyle(
       fontFamily: FONT_FAMILY,
-      color: Colors.indigo,
+      color: _themeManager.getBlueColor(),
     );
     PrefService.setString(
       LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport),
       device.id.id,
     );
-    _descriptor.refreshTuning(device.id.id);
+    descriptor.refreshTuning(device.id.id);
     if (Get.isRegistered<FitnessEquipment>()) {
       _fitnessEquipment = Get.find<FitnessEquipment>();
-      _fitnessEquipment.descriptor = _descriptor;
+      _fitnessEquipment.descriptor = descriptor;
     } else {
       _fitnessEquipment =
-          Get.put<FitnessEquipment>(FitnessEquipment(descriptor: _descriptor, device: device));
+          Get.put<FitnessEquipment>(FitnessEquipment(descriptor: descriptor, device: device));
     }
 
     _trackCalculator = TrackCalculator(
       track: TrackDescriptor(
         radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
-        lengthFactor: _descriptor.lengthFactor,
+        lengthFactor: descriptor.lengthFactor,
       ),
     );
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
@@ -380,7 +379,7 @@ class RecordingState extends State<RecordingScreen> {
 
     if (sport != ActivityType.Ride) {
       final slowPace = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)];
-      _descriptor.slowPace = slowPace;
+      descriptor.slowPace = slowPace;
       _fitnessEquipment.slowPace = slowPace;
     }
 
@@ -389,10 +388,11 @@ class RecordingState extends State<RecordingScreen> {
       EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
       EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT,
     );
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, _descriptor.defaultSport);
+    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, descriptor.defaultSport);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
           decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
+          _isLight,
         ));
 
     _targetHrMode =
@@ -406,7 +406,10 @@ class RecordingState extends State<RecordingScreen> {
       "hr": _hRChartData,
     };
 
-    _expandableThemeData = ExpandableThemeData(hasIcon: !_simplerUi);
+    _expandableThemeData = ExpandableThemeData(
+      hasIcon: !_simplerUi,
+      iconColor: _themeManager.getProtagonistColor(),
+    );
     _rowConfig = [
       RowConfiguration(
         icon: Icons.whatshot,
@@ -504,12 +507,25 @@ class RecordingState extends State<RecordingScreen> {
     _rankTrackVisualization =
         PrefService.getBool(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
 
-    _darkRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker);
-    _darkGreen = paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker);
-    _darkBlue = paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker);
-    _lightRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter);
-    _lightGreen = paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter);
-    _lightBlue = paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter);
+    final isLight = !_themeManager.isDark();
+    _darkRed = paletteToPaintColor(isLight
+        ? common.MaterialPalette.red.shadeDefault.darker
+        : common.MaterialPalette.red.shadeDefault.lighter);
+    _darkGreen = paletteToPaintColor(isLight
+        ? common.MaterialPalette.green.shadeDefault.darker
+        : common.MaterialPalette.lime.shadeDefault.lighter);
+    _darkBlue = paletteToPaintColor(isLight
+        ? common.MaterialPalette.indigo.shadeDefault.darker
+        : common.MaterialPalette.blue.shadeDefault.lighter);
+    _lightRed = paletteToPaintColor(isLight
+        ? common.MaterialPalette.red.shadeDefault.lighter
+        : common.MaterialPalette.red.shadeDefault.darker);
+    _lightGreen = paletteToPaintColor(isLight
+        ? common.MaterialPalette.lime.shadeDefault.lighter
+        : common.MaterialPalette.green.shadeDefault.darker);
+    _lightBlue = paletteToPaintColor(isLight
+        ? common.MaterialPalette.blue.shadeDefault.lighter
+        : common.MaterialPalette.indigo.shadeDefault.darker);
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
@@ -663,7 +679,10 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'power',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(record.power),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(
+          record.power,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.power,
         data: graphData,
@@ -675,10 +694,12 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
-        colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, _descriptor.defaultSport)),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[1].fgColorByValue(
+          record.speedByUnit(_si, descriptor.defaultSport),
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, _descriptor.defaultSport),
+        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, descriptor.defaultSport),
         data: graphData,
       ),
     ];
@@ -688,7 +709,10 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'cadence',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(record.cadence),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(
+          record.cadence,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.cadence,
         data: graphData,
@@ -700,8 +724,10 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'hr',
-        colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[3].fgColorByValue(record.heartRate),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[3].fgColorByValue(
+          record.heartRate,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.heartRate,
         data: graphData,
@@ -786,12 +812,12 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getSportRankString() {
-    return "#${_getRankString(_sportRank, _sportLeaderboard)} (${_descriptor.defaultSport})";
+    return "#${_getRankString(_sportRank, _sportLeaderboard)} (${descriptor.defaultSport})";
   }
 
   Color getWaveLightColor(int deviceRank, int sportRank, {@required bool background}) {
     if (!_rankingForDevice && !_rankingForSport) {
-      return background ? Colors.transparent : Colors.indigo;
+      return background ? Colors.transparent : _themeManager.getBlueColor();
     }
 
     if (deviceRank != null && deviceRank <= 1 || sportRank != null && sportRank <= 1) {
@@ -901,19 +927,15 @@ class RecordingState extends State<RecordingScreen> {
   Widget build(BuildContext context) {
     final separatorHeight = 1.0;
 
-    final mediaWidth = Get.mediaQuery.size.width;
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
-      _sizeDefault = Get.mediaQuery.size.width / 8;
+      _sizeDefault = mediaWidth / 8;
       _measurementStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,
       );
-      _unitStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault / 2,
-        color: Colors.indigo,
-      );
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 2);
     }
 
     if (_measuring &&
@@ -945,7 +967,7 @@ class RecordingState extends State<RecordingScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(Icons.timer, size: _sizeDefault, color: Colors.indigo),
+          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
           Text(_timeDisplay, style: _measurementStyle),
           SizedBox(width: _sizeDefault / 4),
         ],
@@ -970,11 +992,7 @@ class RecordingState extends State<RecordingScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            _rowConfig[entry.key].icon,
-            size: _sizeDefault,
-            color: Colors.indigo,
-          ),
+          _themeManager.getBlueIcon(_rowConfig[entry.key].icon, _sizeDefault),
           Spacer(),
           Text(_values[entry.key], style: measurementStyle),
           SizedBox(
@@ -1180,83 +1198,55 @@ class RecordingState extends State<RecordingScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FabCircularMenu(
-          fabOpenIcon: const Icon(Icons.menu, color: Colors.white),
-          fabCloseIcon: const Icon(Icons.close, color: Colors.white),
+          fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+          fabOpenColor: _themeManager.getBlueColor(),
+          fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+          fabCloseColor: _themeManager.getBlueColor(),
+          ringColor: _themeManager.getBlueColorInverse(),
           children: [
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.deepOrangeAccent,
-              child: Icon(BrandIcons.strava),
-              onPressed: () async {
-                if (_measuring) {
-                  Get.snackbar("Warning", "Cannot upload while measurement is under progress");
-                  return;
-                }
+            _themeManager.getStravaFab(() async {
+              if (_measuring) {
+                Get.snackbar("Warning", "Cannot upload while measurement is under progress");
+                return;
+              }
 
-                await _stravaUpload(false);
-              },
-            ),
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.indigo,
-              child: Icon(Icons.list_alt),
-              onPressed: () async {
-                if (_measuring) {
-                  Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
-                } else {
-                  final hasLeaderboardData = await _database.hasLeaderboardData();
-                  await Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
-                }
-              },
-            ),
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.indigo,
-              child: Icon(Icons.battery_unknown),
-              onPressed: () async {
+              await _stravaUpload(false);
+            }),
+            _themeManager.getBlueFab(Icons.list_alt, () async {
+              if (_measuring) {
+                Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
+              } else {
+                final hasLeaderboardData = await _database.hasLeaderboardData();
+                await Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+              }
+            }),
+            _themeManager.getBlueFab(Icons.battery_unknown, () async {
+              await Get.bottomSheet(
+                BatteryStatusBottomSheet(),
+                enableDrag: false,
+              );
+            }),
+            _themeManager.getBlueFab(Icons.build, () async {
+              if (_measuring) {
+                Get.snackbar("Warning", "Cannot calibrate while measurement is under progress");
+              } else if (!_fitnessEquipment.descriptor.isFitnessMachine) {
+                Get.snackbar("Error", "Not compatible with the calibration method");
+              } else {
                 await Get.bottomSheet(
-                  BatteryStatusBottomSheet(),
+                  SpinDownBottomSheet(),
                   isDismissible: false,
                   enableDrag: false,
                 );
-              },
-            ),
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.indigo,
-              child: Icon(Icons.build),
-              onPressed: () async {
-                if (_measuring) {
-                  Get.snackbar("Warning", "Cannot calibrate while measurement is under progress");
-                } else if (!_fitnessEquipment.descriptor.isFitnessMachine) {
-                  Get.snackbar("Error", "Not compatible with the calibration method");
-                } else {
-                  await Get.bottomSheet(
-                    SpinDownBottomSheet(),
-                    isDismissible: false,
-                    enableDrag: false,
-                  );
-                }
-              },
-            ),
-            FloatingActionButton(
-              heroTag: null,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.indigo,
-              child: Icon(Icons.favorite),
-              onPressed: () async {
-                await Get.bottomSheet(
-                  HeartRateMonitorPairingBottomSheet(),
-                  isDismissible: false,
-                  enableDrag: false,
-                );
-                await _initializeHeartRateMonitor();
-              },
-            ),
+              }
+            }),
+            _themeManager.getBlueFab(Icons.favorite, () async {
+              await Get.bottomSheet(
+                HeartRateMonitorPairingBottomSheet(),
+                isDismissible: false,
+                enableDrag: false,
+              );
+              await _initializeHeartRateMonitor();
+            }),
           ],
         ),
       ),

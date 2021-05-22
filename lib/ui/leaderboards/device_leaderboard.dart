@@ -10,6 +10,7 @@ import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_manager.dart';
 
 class DeviceLeaderboardScreen extends StatefulWidget {
   final Tuple2<String, String> device;
@@ -29,10 +30,11 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
   AppDatabase _database;
   bool _si;
   int _editCount;
-  double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
   TextStyle _textStyle2;
+  ThemeManager _themeManager;
+  ExpandableThemeData _expandableThemeData;
 
   DeviceLeaderboardScreenState({@required this.device}) : assert(device != null);
 
@@ -42,6 +44,12 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
     _editCount = 0;
     _database = Get.find<AppDatabase>();
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline4
+        .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
+    _sizeDefault = _textStyle.fontSize;
+    _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
@@ -49,7 +57,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
@@ -77,17 +85,6 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = Get.mediaQuery.size.width;
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 12;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault,
-      );
-      _textStyle2 = _textStyle.apply(color: Colors.indigo);
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text('${device.item2} Leaderboard')),
       body: CustomListView(
@@ -129,18 +126,13 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${workoutSummary.id}"),
+              theme: _expandableThemeData,
               header: Row(
                 children: [
                   SizedBox(
                     width: _sizeDefault * 2,
                     height: _sizeDefault * 2,
-                    child: FloatingActionButton(
-                      heroTag: null,
-                      child: Text('${index + 1}', style: _textStyle2),
-                      foregroundColor: Colors.black87,
-                      backgroundColor: Colors.yellow,
-                      onPressed: () {},
-                    ),
+                    child: _themeManager.getRankIcon(index),
                   ),
                   Column(
                     children: [
@@ -173,30 +165,16 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.calendar_today,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          dateString,
-                          style: _textStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        Text(dateString, style: _textStyle),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.watch,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          timeString,
-                          style: _textStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        Text(timeString, style: _textStyle),
                       ],
                     ),
                     _actionButtonRow(workoutSummary, _sizeDefault),

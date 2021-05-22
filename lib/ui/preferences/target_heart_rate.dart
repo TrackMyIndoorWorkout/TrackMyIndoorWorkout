@@ -13,7 +13,7 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> targetHrPreferences = [
-      PreferenceTitle(TARGET_HEART_RATE_MODE_DESCRIPTION, style: descriptionStyle),
+      PreferenceTitle(TARGET_HEART_RATE_MODE_DESCRIPTION),
       PreferenceDialogLink(
         TARGET_HEART_RATE_MODE,
         dialog: PreferenceDialog(
@@ -119,7 +119,7 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
           return null;
         },
       ),
-      PreferenceTitle(TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION, style: descriptionStyle),
+      PreferenceTitle(TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION),
       PreferenceDialogLink(
         TARGET_HEART_RATE_SOUND_EFFECT,
         dialog: PreferenceDialog(

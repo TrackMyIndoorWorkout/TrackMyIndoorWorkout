@@ -17,7 +17,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         defaultVal: EXTEND_TUNING_DEFAULT,
         desc: EXTEND_TUNING_DESCRIPTION,
       ),
-      PreferenceTitle(STROKE_RATE_SMOOTHING_DESCRIPTION, style: descriptionStyle),
+      PreferenceTitle(STROKE_RATE_SMOOTHING_DESCRIPTION),
       TextFieldPreference(
         STROKE_RATE_SMOOTHING,
         STROKE_RATE_SMOOTHING_TAG,
@@ -30,7 +30,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         },
       ),
       PreferenceTitle(WORKAROUND_PREFERENCES),
-      PreferenceTitle(EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION, style: descriptionStyle),
+      PreferenceTitle(EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION),
       TextFieldPreference(
         EQUIPMENT_DISCONNECTION_WATCHDOG,
         EQUIPMENT_DISCONNECTION_WATCHDOG_TAG,
@@ -72,7 +72,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
           cancelText: 'Close',
         ),
       ),
-      PreferenceTitle(HEART_RATE_UPPER_LIMIT_DESCRIPTION, style: descriptionStyle),
+      PreferenceTitle(HEART_RATE_UPPER_LIMIT_DESCRIPTION),
       TextFieldPreference(
         HEART_RATE_UPPER_LIMIT,
         HEART_RATE_UPPER_LIMIT_TAG,

@@ -8,9 +8,9 @@ import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
+import '../../utils/theme_manager.dart';
 
 class BatteryStatusBottomSheet extends StatefulWidget {
   @override
@@ -37,6 +37,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   HeartRateMonitor _heartRateMonitor;
   String _hrmBatteryLevel;
   String _batteryLevel;
+  ThemeManager _themeManager;
   double _sizeDefault;
   TextStyle _textStyle;
 
@@ -88,53 +89,50 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   @override
   void initState() {
     super.initState();
+    _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline2.apply(
+      fontFamily: FONT_FAMILY,
+      color: _themeManager.getProtagonistColor(),
+    );
+    _sizeDefault = _textStyle.fontSize;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _hrmBatteryLevel = NOT_AVAILABLE;
     _batteryLevel = NOT_AVAILABLE;
-    _sizeDefault = Get.mediaQuery.size.width / 5;
-    _textStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
-      fontSize: _sizeDefault,
-      color: Get.textTheme.bodyText1.color,
-    );
     _readBatteryLevels();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(getIcon(_fitnessEquipment.sport), color: Colors.indigo, size: _sizeDefault),
-              Icon(Icons.battery_full, color: Colors.indigo, size: _sizeDefault),
-              Text(_batteryLevel, style: _textStyle),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.favorite, color: Colors.indigo, size: _sizeDefault),
-              Icon(Icons.battery_full, color: Colors.indigo, size: _sizeDefault),
-              Text(_hrmBatteryLevel, style: _textStyle),
-            ],
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _themeManager.getBlueIcon(getIcon(_fitnessEquipment.sport), _sizeDefault),
+                _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
+                Text(_batteryLevel, style: _textStyle),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _themeManager.getBlueIcon(Icons.favorite, _sizeDefault),
+                _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
+                Text(_hrmBatteryLevel, style: _textStyle),
+              ],
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.indigo,
-        child: Icon(Icons.clear),
-        onPressed: () => Get.close(1),
-      ),
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.close(1)),
     );
   }
 }

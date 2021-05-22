@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
 import '../../persistence/preferences.dart';
 import 'preferences_base.dart';
@@ -10,6 +11,34 @@ class UXPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> uxPreferences = [
+      PreferenceTitle(THEME_SELECTION_DESCRIPTION),
+      PreferenceDialogLink(
+        THEME_SELECTION,
+        dialog: PreferenceDialog(
+          [
+            RadioPreference(
+              THEME_SELECTION_SYSTEM_DESCRIPTION,
+              THEME_SELECTION_SYSTEM,
+              THEME_SELECTION_TAG,
+              onSelect: () => Get.changeThemeMode(ThemeMode.system),
+            ),
+            RadioPreference(
+              THEME_SELECTION_LIGHT_DESCRIPTION,
+              THEME_SELECTION_LIGHT,
+              THEME_SELECTION_TAG,
+              onSelect: () => Get.changeThemeMode(ThemeMode.light),
+            ),
+            RadioPreference(
+              THEME_SELECTION_DARK_DESCRIPTION,
+              THEME_SELECTION_DARK,
+              THEME_SELECTION_TAG,
+              onSelect: () => Get.changeThemeMode(ThemeMode.dark),
+            ),
+          ],
+          title: 'Select Theme',
+          cancelText: 'Close',
+        ),
+      ),
       SwitchPreference(
         UNIT_SYSTEM,
         UNIT_SYSTEM_TAG,
