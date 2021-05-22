@@ -343,6 +343,7 @@ class RecordingState extends State<RecordingScreen> {
     Wakelock.enable();
     SystemChrome.setEnabledSystemUIOverlays([]);
 
+    _themeManager = Get.find<ThemeManager>();
     _pointCount = min(60, size.width ~/ 2);
     _unitStyle = TextStyle(
       fontFamily: FONT_FAMILY,
@@ -402,7 +403,6 @@ class RecordingState extends State<RecordingScreen> {
       "hr": _hRChartData,
     };
 
-    _themeManager = Get.find<ThemeManager>();
     _expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
       iconColor: _themeManager.getProtagonistColor(),
@@ -504,12 +504,25 @@ class RecordingState extends State<RecordingScreen> {
     _rankTrackVisualization =
         PrefService.getBool(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
 
-    _darkRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.darker);
-    _darkGreen = paletteToPaintColor(common.MaterialPalette.green.shadeDefault.darker);
-    _darkBlue = paletteToPaintColor(common.MaterialPalette.indigo.shadeDefault.darker);
-    _lightRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter);
-    _lightGreen = paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter);
-    _lightBlue = paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter);
+    final isLight = !_themeManager.isDark();
+    _darkRed = paletteToPaintColor(isLight
+        ? common.MaterialPalette.red.shadeDefault.darker
+        : common.MaterialPalette.red.shadeDefault.lighter);
+    _darkGreen = paletteToPaintColor(isLight
+        ? common.MaterialPalette.green.shadeDefault.darker
+        : common.MaterialPalette.lime.shadeDefault.lighter);
+    _darkBlue = paletteToPaintColor(isLight
+        ? common.MaterialPalette.indigo.shadeDefault.darker
+        : common.MaterialPalette.blue.shadeDefault.lighter);
+    _lightRed = paletteToPaintColor(isLight
+        ? common.MaterialPalette.red.shadeDefault.lighter
+        : common.MaterialPalette.red.shadeDefault.darker);
+    _lightGreen = paletteToPaintColor(isLight
+        ? common.MaterialPalette.lime.shadeDefault.lighter
+        : common.MaterialPalette.green.shadeDefault.darker);
+    _lightBlue = paletteToPaintColor(isLight
+        ? common.MaterialPalette.blue.shadeDefault.lighter
+        : common.MaterialPalette.indigo.shadeDefault.darker);
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
@@ -791,7 +804,7 @@ class RecordingState extends State<RecordingScreen> {
 
   Color getWaveLightColor(int deviceRank, int sportRank, {@required bool background}) {
     if (!_rankingForDevice && !_rankingForSport) {
-      return background ? Colors.transparent : Colors.indigo;
+      return background ? Colors.transparent : _themeManager.getBlueColor();
     }
 
     if (deviceRank != null && deviceRank <= 1 || sportRank != null && sportRank <= 1) {

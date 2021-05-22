@@ -261,16 +261,16 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   ButtonStyle _buttonBackgroundStyle() {
-    var backColor = Colors.black12;
+    var backColor = _isLight ? Colors.black12 : Colors.black87;
     if (_calibrationState == CalibrationState.WeighInProblem ||
         _calibrationState == CalibrationState.CalibrationFail ||
         _calibrationState == CalibrationState.NotSupported) {
-      backColor = Colors.red.shade50;
+      backColor = _isLight ? Colors.red.shade50 : Colors.red.shade900;
     } else if (_calibrationState == CalibrationState.ReadyToWeighIn ||
         _calibrationState == CalibrationState.WeighInSuccess ||
         _calibrationState == CalibrationState.ReadyToCalibrate ||
         _calibrationState == CalibrationState.CalibrationSuccess) {
-      backColor = Colors.lightGreen.shade100;
+      backColor = _isLight ? Colors.lightGreen.shade100 : Colors.green.shade900;
     }
 
     return ElevatedButton.styleFrom(primary: backColor);
@@ -287,15 +287,15 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   TextStyle _weightInputButtonTextStyle() {
     return _smallerTextStyle.merge(TextStyle(
         color: _calibrationState == CalibrationState.WeighInSuccess || _canSubmitWeight
-            ? Colors.black
-            : Colors.black87));
+            ? (_isLight ? Colors.black : Colors.white)
+            : (_isLight ? Colors.black87 : Colors.white70)));
   }
 
   ButtonStyle _weightInputButtonStyle() {
     return ElevatedButton.styleFrom(
       primary: _calibrationState == CalibrationState.WeighInSuccess || _canSubmitWeight
-          ? Colors.lightGreen.shade100
-          : Colors.black12,
+          ? (_isLight ? Colors.lightGreen.shade100 : Colors.green.shade900)
+          : (_isLight ? Colors.black12 : Colors.black87),
     );
   }
 
@@ -353,14 +353,15 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   TextStyle _calibrationInstructionStyle() {
-    var color = Colors.red;
+    var color = _themeManager.getRedColor();
 
     if (_calibrationState == CalibrationState.ReadyToCalibrate ||
         _calibrationState == CalibrationState.CalibrationStarting) {
-      color = Colors.green;
+      color = _themeManager.getGreenColor();
     }
 
-    if (_calibrationState == CalibrationState.CalibrationInProgress) color = Colors.indigo;
+    if (_calibrationState == CalibrationState.CalibrationInProgress)
+      color = _themeManager.getBlueColor();
 
     return _largerTextStyle.merge(TextStyle(color: color));
   }
