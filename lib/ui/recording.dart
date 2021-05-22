@@ -111,6 +111,7 @@ class RecordingState extends State<RecordingScreen> {
   double _sizeDefault;
   TextStyle _measurementStyle;
   TextStyle _unitStyle;
+  charts.TextStyleSpec _chartTextStyle;
   ExpandableThemeData _expandableThemeData;
   List<bool> _expandedState;
   List<ExpandableController> _rowControllers;
@@ -406,6 +407,9 @@ class RecordingState extends State<RecordingScreen> {
       "hr": _hRChartData,
     };
 
+    _chartTextStyle = charts.TextStyleSpec(
+      color: _isLight ? charts.MaterialPalette.black : charts.MaterialPalette.white,
+    );
     _expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
       iconColor: _themeManager.getProtagonistColor(),
@@ -494,6 +498,7 @@ class RecordingState extends State<RecordingScreen> {
         Get.put<SoundService>(SoundService());
       }
     }
+
     _leaderboardFeature =
         PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _rankRibbonVisualization =
@@ -686,6 +691,8 @@ class RecordingState extends State<RecordingScreen> {
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.power,
         data: graphData,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -701,6 +708,8 @@ class RecordingState extends State<RecordingScreen> {
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, descriptor.defaultSport),
         data: graphData,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -716,6 +725,8 @@ class RecordingState extends State<RecordingScreen> {
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.cadence,
         data: graphData,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -731,6 +742,8 @@ class RecordingState extends State<RecordingScreen> {
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.heartRate,
         data: graphData,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -1034,7 +1047,12 @@ class RecordingState extends State<RecordingScreen> {
               animate: false,
               flipVerticalAxis: entry.value.flipZones,
               primaryMeasureAxis: charts.NumericAxisSpec(renderSpec: charts.NoneRenderSpec()),
-              behaviors: [charts.RangeAnnotation(entry.value.annotationSegments)],
+              behaviors: [
+                charts.RangeAnnotation(
+                  entry.value.annotationSegments,
+                  defaultLabelStyleSpec: _chartTextStyle,
+                ),
+              ],
             ),
           ),
         );
