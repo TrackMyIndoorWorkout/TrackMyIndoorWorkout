@@ -157,6 +157,7 @@ class RecordingState extends State<RecordingScreen> {
   Color _lightGreen;
   Color _lightBlue;
   ThemeManager _themeManager;
+  bool _isLight;
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
@@ -344,6 +345,7 @@ class RecordingState extends State<RecordingScreen> {
     SystemChrome.setEnabledSystemUIOverlays([]);
 
     _themeManager = Get.find<ThemeManager>();
+    _isLight = !_themeManager.isDark();
     _pointCount = min(60, size.width ~/ 2);
     _unitStyle = TextStyle(
       fontFamily: FONT_FAMILY,
@@ -390,6 +392,7 @@ class RecordingState extends State<RecordingScreen> {
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
           decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
+          _isLight,
         ));
 
     _targetHrMode =
@@ -676,7 +679,10 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'power',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(record.power),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(
+          record.power,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.power,
         data: graphData,
@@ -688,8 +694,10 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
-        colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, descriptor.defaultSport)),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[1].fgColorByValue(
+          record.speedByUnit(_si, descriptor.defaultSport),
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, descriptor.defaultSport),
         data: graphData,
@@ -701,7 +709,10 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'cadence',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(record.cadence),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(
+          record.cadence,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.cadence,
         data: graphData,
@@ -713,8 +724,10 @@ class RecordingState extends State<RecordingScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'hr',
-        colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[3].fgColorByValue(record.heartRate),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[3].fgColorByValue(
+          record.heartRate,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.heartRate,
         data: graphData,

@@ -67,6 +67,8 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _selectionStyle;
   TextStyle _selectionTextStyle;
   ThemeManager _themeManager;
+  bool _isLight;
+  charts.TextStyleSpec _chartTextStyle;
   ExpandableThemeData _expandableThemeData;
 
   Future<void> extraInit() async {
@@ -122,7 +124,10 @@ class RecordsScreenState extends State<RecordsScreen> {
           avgString: accu.avgPower.toStringAsFixed(2),
         );
         prefSpec.calculateBounds(
-            measurementCounter.minPower.toDouble(), measurementCounter.maxPower.toDouble());
+          measurementCounter.minPower.toDouble(),
+          measurementCounter.maxPower.toDouble(),
+          _isLight,
+        );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
@@ -146,7 +151,11 @@ class RecordsScreenState extends State<RecordsScreen> {
           maxString: speedOrPaceString(accu.maxSpeed, _si, activity.sport),
           avgString: speedOrPaceString(accu.avgSpeed, _si, activity.sport),
         );
-        prefSpec.calculateBounds(measurementCounter.minSpeed, measurementCounter.maxSpeed);
+        prefSpec.calculateBounds(
+          measurementCounter.minSpeed,
+          measurementCounter.maxSpeed,
+          _isLight,
+        );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
@@ -171,7 +180,10 @@ class RecordsScreenState extends State<RecordsScreen> {
           avgString: "${accu.avgCadence}",
         );
         prefSpec.calculateBounds(
-            measurementCounter.minCadence.toDouble(), measurementCounter.maxCadence.toDouble());
+          measurementCounter.minCadence.toDouble(),
+          measurementCounter.maxCadence.toDouble(),
+          _isLight,
+        );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
@@ -196,7 +208,10 @@ class RecordsScreenState extends State<RecordsScreen> {
           avgString: "${accu.avgHeartRate}",
         );
         prefSpec.calculateBounds(
-            measurementCounter.minHr.toDouble(), measurementCounter.maxHr.toDouble());
+          measurementCounter.minHr.toDouble(),
+          measurementCounter.maxHr.toDouble(),
+          _isLight,
+        );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
@@ -285,6 +300,9 @@ class RecordsScreenState extends State<RecordsScreen> {
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, activity.sport);
     activity.hydrate();
     _themeManager = Get.find<ThemeManager>();
+    _isLight = !_themeManager.isDark();
+    _chartTextStyle = charts.TextStyleSpec(
+        color: _isLight ? charts.MaterialPalette.black : charts.MaterialPalette.white);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
     extraInit();
@@ -294,10 +312,15 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'power',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(record.power),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(
+          record.power,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.power,
         data: _sampledRecords,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -319,11 +342,16 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'powerHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[0].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[0].fgColorByBin(
+          data.index,
+          _isLight,
+        ),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["power"].histogram,
         labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
       ),
     ];
   }
@@ -332,11 +360,15 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
-        colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, activity.sport)),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[1].fgColorByValue(
+          record.speedByUnit(_si, activity.sport),
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, activity.sport),
         data: _sampledRecords,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -358,11 +390,16 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'speedHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[1].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[1].fgColorByBin(
+          data.index,
+          _isLight,
+        ),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["speed"].histogram,
         labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
       ),
     ];
   }
@@ -371,10 +408,15 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'cadence',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(record.cadence),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(
+          record.cadence,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.cadence,
         data: _sampledRecords,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -396,11 +438,16 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'cadenceHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[2].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[2].fgColorByBin(
+          data.index,
+          _isLight,
+        ),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["cadence"].histogram,
         labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
       ),
     ];
   }
@@ -409,11 +456,15 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'hr',
-        colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[3].fgColorByValue(record.heartRate),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[3].fgColorByValue(
+          record.heartRate,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.heartRate,
         data: _sampledRecords,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -435,11 +486,16 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'hrHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[3].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[3].fgColorByBin(
+          data.index,
+          _isLight,
+        ),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["hr"].histogram,
         labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
       ),
     ];
   }
@@ -640,7 +696,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                                   charts.LinePointHighlighterFollowLineType.nearest,
                             ),
                             charts.SelectNearest(eventTrigger: charts.SelectionTrigger.tapAndDrag),
-                            charts.RangeAnnotation(_preferencesSpecs[index].annotationSegments),
+                            charts.RangeAnnotation(_preferencesSpecs[index].annotationSegments,
+                                defaultLabelStyleSpec: _chartTextStyle),
                           ],
                           selectionModels: [
                             charts.SelectionModelConfig(
@@ -681,6 +738,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                               cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
                               showMeasures: true,
                               legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
+                              entryTextStyle: _chartTextStyle,
                               measureFormatter: (num value) {
                                 return value == null ? '-' : '$value %';
                               },
