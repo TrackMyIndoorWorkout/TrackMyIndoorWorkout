@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +5,10 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:preferences/preferences.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../persistence/preferences.dart';
-import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class SportLeaderboardScreen extends StatefulWidget {
@@ -31,7 +29,6 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   AppDatabase _database;
   bool _si;
   int _editCount;
-  double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
   TextStyle _textStyle2;
@@ -47,6 +44,10 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
     _database = Get.find<AppDatabase>();
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline4
+        .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
+    _sizeDefault = _textStyle.fontSize;
+    _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
@@ -83,17 +84,6 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 12;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault,
-      );
-      _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text('$sport Leaderboard')),
       body: CustomListView(

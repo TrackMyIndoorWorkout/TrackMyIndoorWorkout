@@ -1,10 +1,9 @@
-import 'dart:math';
-
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_manager.dart';
 import 'device_leaderboard.dart';
 
 class LeaderboardDeviceHubScreen extends StatefulWidget {
@@ -20,7 +19,6 @@ class LeaderboardDeviceHubScreen extends StatefulWidget {
 
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {
   final List<Tuple2<String, String>> devices;
-  double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
   TextStyle _subTextStyle;
@@ -28,21 +26,22 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
   LeaderboardDeviceHubScreenState({@required this.devices}) : assert(devices != null);
 
   @override
-  Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 5;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _mediaWidth / 16,
-      );
-      _subTextStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _mediaWidth / 20,
-      );
-    }
+  void initState() {
+    super.initState();
+    final themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline5.apply(
+      fontFamily: FONT_FAMILY,
+      color: themeManager.getProtagonistColor(),
+    );
+    _sizeDefault = _textStyle.fontSize * 3;
+    _subTextStyle = Get.textTheme.headline6.apply(
+      fontFamily: FONT_FAMILY,
+      color: themeManager.getProtagonistColor(),
+    );
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Leaderboard Devices')),
       body: SingleChildScrollView(

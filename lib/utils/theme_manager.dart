@@ -46,6 +46,10 @@ class ThemeManager {
     return isDark() ? Colors.cyanAccent : Colors.indigo;
   }
 
+  Color getRedColor() {
+    return isDark() ? Colors.orangeAccent : Colors.red.shade700;
+  }
+
   Color getBlueColorInverse() {
     return isDark() ? Colors.indigo : Colors.cyanAccent;
   }

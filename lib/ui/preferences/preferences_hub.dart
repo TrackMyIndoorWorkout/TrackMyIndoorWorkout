@@ -1,10 +1,9 @@
-import 'dart:math';
-
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
+import '../../utils/theme_manager.dart';
 import 'data_preferences.dart';
 import 'expert.dart';
 import 'leaderboard.dart';
@@ -18,13 +17,18 @@ class PreferencesHubScreen extends StatefulWidget {
 }
 
 class PreferencesHubScreenState extends State<PreferencesHubScreen> {
-  double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
 
   @override
   void initState() {
     super.initState();
+    final themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline4.apply(
+      fontFamily: FONT_FAMILY,
+      color: themeManager.getProtagonistColor(),
+    );
+    _sizeDefault = _textStyle.fontSize * 2;
     if (!Get.isRegistered<SoundService>()) {
       Get.put<SoundService>(SoundService());
     }
@@ -32,13 +36,6 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = mediaWidth / 5;
-      _textStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault / 2);
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text('Preferences')),
       body: SingleChildScrollView(

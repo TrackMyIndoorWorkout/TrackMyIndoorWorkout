@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -38,10 +37,9 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   HeartRateMonitor _heartRateMonitor;
   String _hrmBatteryLevel;
   String _batteryLevel;
-  double _mediaWidth;
+  ThemeManager _themeManager;
   double _sizeDefault;
   TextStyle _textStyle;
-  ThemeManager _themeManager;
 
   Future<String> _readBatteryLevelCore(List<BluetoothService> services) async {
     final batteryService = BluetoothDeviceEx.filterService(services, BATTERY_SERVICE_ID);
@@ -92,6 +90,11 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   void initState() {
     super.initState();
     _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline2.apply(
+      fontFamily: FONT_FAMILY,
+      color: _themeManager.getProtagonistColor(),
+    );
+    _sizeDefault = _textStyle.fontSize;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _hrmBatteryLevel = NOT_AVAILABLE;
@@ -101,17 +104,6 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = mediaWidth / 5;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault,
-        color: Get.textTheme.bodyText1.color,
-      );
-    }
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(

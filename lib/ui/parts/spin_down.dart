@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,7 +44,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   static const STEP_NOT_SUPPORTED = 3;
 
   FitnessEquipment _fitnessEquipment;
-  double _mediaWidth;
   double _sizeDefault;
   TextStyle _smallerTextStyle;
   TextStyle _largerTextStyle;
@@ -70,6 +68,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   String _targetSpeedLowString;
   String _currentSpeedString;
   ThemeManager _themeManager;
+  bool _isLight;
 
   bool get _spinDownPossible =>
       _weightData != null &&
@@ -107,6 +106,16 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _newWeightLsb = weightBytes.item1;
     _newWeightMsb = weightBytes.item2;
     _themeManager = Get.find<ThemeManager>();
+    _isLight = !_themeManager.isDark();
+    _smallerTextStyle = Get.textTheme.headline4.apply(
+      fontFamily: FONT_FAMILY,
+      color: _themeManager.getProtagonistColor(),
+    );
+    _sizeDefault = _smallerTextStyle.fontSize;
+    _largerTextStyle = Get.textTheme.headline1.apply(
+      fontFamily: FONT_FAMILY,
+      color: _themeManager.getProtagonistColor(),
+    );
     _prepareSpinDown();
     super.initState();
   }
@@ -440,15 +449,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = mediaWidth / 10;
-      _smallerTextStyle = TextStyle(
-          fontFamily: FONT_FAMILY, fontSize: _sizeDefault, color: Get.textTheme.bodyText1.color);
-      _largerTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault * 2);
-    }
-
     return Scaffold(
       body: SingleChildScrollView(
         child: IndexedStack(
@@ -509,7 +509,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                     ],
                   ),
                   Text(_currentSpeedString,
-                      style: _largerTextStyle.merge(TextStyle(color: Colors.indigo))),
+                      style:
+                          _largerTextStyle.merge(TextStyle(color: _themeManager.getBlueColor()))),
                   Text(_calibrationInstruction(), style: _calibrationInstructionStyle()),
                   ElevatedButton(
                     child: Text(_calibrationButtonText(), style: _smallerTextStyle),

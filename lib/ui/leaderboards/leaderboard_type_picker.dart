@@ -1,10 +1,9 @@
-import 'dart:math';
-
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_manager.dart';
 import 'device_leaderboard.dart';
 import 'leaderboard_device_hub.dart';
 import 'leaderboard_sport_hub.dart';
@@ -16,23 +15,24 @@ class LeaderBoardTypeBottomSheet extends StatefulWidget {
 }
 
 class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> {
-  double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
+  AppDatabase _database;
+
+  @override
+  void initState() {
+    super.initState();
+    _database = Get.find<AppDatabase>();
+    final themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline3.apply(
+      fontFamily: FONT_FAMILY,
+      color: themeManager.getProtagonistColor(),
+    );
+    _sizeDefault = _textStyle.fontSize * 2;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 5;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _mediaWidth / 10,
-      );
-    }
-    final database = Get.find<AppDatabase>();
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -45,7 +45,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
                 onPressed: () async {
-                  final sports = await database.findDistinctWorkoutSummarySports();
+                  final sports = await _database.findDistinctWorkoutSummarySports();
                   if (sports == null || sports.length <= 0) {
                     Get.snackbar("Warning", "No sports found");
                   } else if (sports.length > 1) {
@@ -74,7 +74,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
                 onPressed: () async {
-                  final devices = await database.findDistinctWorkoutSummaryDevices();
+                  final devices = await _database.findDistinctWorkoutSummaryDevices();
                   if (devices == null || devices.length <= 0) {
                     Get.snackbar("Warning", "No devices found");
                   } else if (devices.length > 1) {

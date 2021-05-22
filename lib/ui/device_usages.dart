@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +23,9 @@ class DeviceUsagesScreen extends StatefulWidget {
 class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
   AppDatabase _database;
   int _editCount;
-  double _mediaWidth;
-  double _sizeDefault;
-  TextStyle _headerStyle;
   ThemeManager _themeManager;
+  double _sizeDefault;
+  TextStyle _textStyle;
   ExpandableThemeData _expandableThemeData;
 
   @override
@@ -37,6 +34,9 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
     _editCount = 0;
     _database = Get.find<AppDatabase>();
     _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline4
+        .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
+    _sizeDefault = _textStyle.fontSize;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
@@ -91,16 +91,6 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 12;
-      _headerStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault,
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text('Device Usages')),
       body: CustomListView(
@@ -143,13 +133,13 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                 children: [
                   TextOneLine(
                     deviceUsage.name,
-                    style: _headerStyle,
+                    style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextOneLine(
                     deviceUsage.mac,
-                    style: _headerStyle,
+                    style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -158,7 +148,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       _themeManager.getBlueIcon(getIcon(deviceUsage.sport), _sizeDefault),
-                      Text(deviceUsage.sport, style: _headerStyle),
+                      Text(deviceUsage.sport, style: _textStyle),
                     ],
                   ),
                 ],
@@ -171,7 +161,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
-                        Text(dateString, style: _headerStyle),
+                        Text(dateString, style: _textStyle),
                       ],
                     ),
                     Row(
@@ -179,7 +169,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
-                        Text(timeString, style: _headerStyle),
+                        Text(timeString, style: _textStyle),
                       ],
                     ),
                     _actionButtonRow(deviceUsage, _sizeDefault),

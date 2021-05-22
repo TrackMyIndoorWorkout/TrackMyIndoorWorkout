@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +30,6 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
   AppDatabase _database;
   bool _si;
   int _editCount;
-  double _mediaWidth;
   double _sizeDefault;
   TextStyle _textStyle;
   TextStyle _textStyle2;
@@ -48,6 +45,10 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
     _database = Get.find<AppDatabase>();
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline4
+        .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
+    _sizeDefault = _textStyle.fontSize;
+    _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
@@ -84,17 +85,6 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 12;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault,
-      );
-      _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text('${device.item2} Leaderboard')),
       body: CustomListView(
