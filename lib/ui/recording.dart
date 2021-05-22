@@ -1174,6 +1174,7 @@ class RecordingState extends State<RecordingScreen> {
           fabOpenColor: _themeManager.getBlueColor(),
           fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
           fabCloseColor: _themeManager.getBlueColor(),
+          ringColor: _themeManager.getBlueColorInverse(),
           children: [
             FloatingActionButton(
               heroTag: null,
