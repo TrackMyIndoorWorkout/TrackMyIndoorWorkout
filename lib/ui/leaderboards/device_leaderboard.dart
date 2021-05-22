@@ -37,6 +37,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
   TextStyle _textStyle;
   TextStyle _textStyle2;
   ThemeManager _themeManager;
+  ExpandableThemeData _expandableThemeData;
 
   DeviceLeaderboardScreenState({@required this.device}) : assert(device != null);
 
@@ -47,6 +48,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
     _database = Get.find<AppDatabase>();
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _themeManager = Get.find<ThemeManager>();
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
@@ -134,6 +136,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${workoutSummary.id}"),
+              theme: _expandableThemeData,
               header: Row(
                 children: [
                   SizedBox(

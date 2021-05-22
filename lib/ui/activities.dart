@@ -59,6 +59,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   TextStyle _headerStyle;
   TextStyle _unitStyle;
   ThemeManager _themeManager;
+  ExpandableThemeData _expandableThemeData;
 
   ActivitiesScreenState({@required this.hasLeaderboardData}) : assert(hasLeaderboardData != null);
 
@@ -71,6 +72,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _database = Get.find<AppDatabase>();
     _themeManager = Get.find<ThemeManager>();
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(Activity activity, double size) {
@@ -80,7 +82,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         IconButton(
           icon: Icon(
             BrandIcons.strava,
-            color: activity.uploaded ? Colors.grey : Colors.deepOrangeAccent,
+            color:
+                activity.uploaded ? _themeManager.getGreyColor() : _themeManager.getOrangeColor(),
             size: size,
           ),
           onPressed: () async {
@@ -115,7 +118,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           },
         ),
         IconButton(
-          icon: Icon(Icons.file_download, color: Colors.black, size: size),
+          icon: _themeManager.getActionIcon(Icons.file_download, size),
           onPressed: () async {
             if (!await Permission.storage.request().isGranted) {
               return false;
@@ -145,7 +148,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           },
         ),
         IconButton(
-          icon: Icon(Icons.bolt, color: Colors.black, size: size),
+          icon: _themeManager.getActionIcon(Icons.bolt, size),
           onPressed: () async {
             if (activity.powerFactor == null || activity.powerFactor < EPS) {
               Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
@@ -159,7 +162,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           },
         ),
         IconButton(
-          icon: Icon(Icons.whatshot, color: Colors.black, size: size),
+          icon: _themeManager.getActionIcon(Icons.whatshot, size),
           onPressed: () async {
             if (activity.calories == null || activity.calories == 0) {
               Get.snackbar("Error", "Cannot tune calories of activity with 0 calories");
@@ -198,7 +201,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Icon(Icons.chevron_right, color: Colors.black, size: size),
+          icon: _themeManager.getActionIcon(Icons.chevron_right, size),
           onPressed: () async =>
               await Get.to(RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
         ),
@@ -292,6 +295,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${activity.id} ${activity.stravaId}"),
+              theme: _expandableThemeData,
               header: Column(
                 children: [
                   Row(

@@ -67,6 +67,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _selectionStyle;
   TextStyle _selectionTextStyle;
   ThemeManager _themeManager;
+  ExpandableThemeData _expandableThemeData;
 
   Future<void> extraInit() async {
     final database = Get.find<AppDatabase>();
@@ -284,6 +285,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, activity.sport);
     activity.hydrate();
     _themeManager = Get.find<ThemeManager>();
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
     extraInit();
   }
@@ -564,6 +566,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                 return Card(
                   elevation: 6,
                   child: ExpandablePanel(
+                    theme: _expandableThemeData,
                     header: Column(
                       children: [
                         Row(

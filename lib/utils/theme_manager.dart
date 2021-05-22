@@ -63,15 +63,23 @@ class ThemeManager {
   }
 
   Color getGreyColor() {
-    return isDark() ? Colors.grey.shade100 : Colors.grey.shade700;
+    return isDark() ? Colors.grey.shade200 : Colors.grey.shade700;
   }
 
   Color getAntagonistColor() {
     return isDark() ? Colors.black : Colors.white;
   }
 
+  Color getProtagonistColor() {
+    return isDark() ? Colors.white : Colors.black;
+  }
+
   Icon getBlueIcon(IconData icon, double size) {
     return Icon(icon, color: getBlueColor(), size: size);
+  }
+
+  Icon getActionIcon(IconData icon, double size) {
+    return Icon(icon, color: getProtagonistColor(), size: size);
   }
 
   TextStyle getBlueTextStyle(double fontSize) {

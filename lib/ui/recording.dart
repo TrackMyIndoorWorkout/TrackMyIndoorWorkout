@@ -402,7 +402,11 @@ class RecordingState extends State<RecordingScreen> {
       "hr": _hRChartData,
     };
 
-    _expandableThemeData = ExpandableThemeData(hasIcon: !_simplerUi);
+    _themeManager = Get.find<ThemeManager>();
+    _expandableThemeData = ExpandableThemeData(
+      hasIcon: !_simplerUi,
+      iconColor: _themeManager.getProtagonistColor(),
+    );
     _rowConfig = [
       RowConfiguration(
         icon: Icons.whatshot,
@@ -506,7 +510,6 @@ class RecordingState extends State<RecordingScreen> {
     _lightRed = paletteToPaintColor(common.MaterialPalette.red.shadeDefault.lighter);
     _lightGreen = paletteToPaintColor(common.MaterialPalette.lime.shadeDefault.lighter);
     _lightBlue = paletteToPaintColor(common.MaterialPalette.blue.shadeDefault.lighter);
-    _themeManager = Get.find<ThemeManager>();
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);

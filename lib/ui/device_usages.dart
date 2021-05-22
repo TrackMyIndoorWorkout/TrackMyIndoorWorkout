@@ -29,6 +29,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
   double _sizeDefault;
   TextStyle _headerStyle;
   ThemeManager _themeManager;
+  ExpandableThemeData _expandableThemeData;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
     _editCount = 0;
     _database = Get.find<AppDatabase>();
     _themeManager = Get.find<ThemeManager>();
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(DeviceUsage deviceUsage, double size) {
@@ -137,6 +139,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${deviceUsage.id}"),
+              theme: _expandableThemeData,
               header: Column(
                 children: [
                   TextOneLine(

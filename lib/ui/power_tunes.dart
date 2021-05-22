@@ -28,6 +28,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
   double _sizeDefault;
   TextStyle _textStyle;
   ThemeManager _themeManager;
+  ExpandableThemeData _expandableThemeData;
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
     _editCount = 0;
     _database = Get.find<AppDatabase>();
     _themeManager = Get.find<ThemeManager>();
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(PowerTune powerTune, double size) {
@@ -136,6 +138,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${powerTune.id}"),
+              theme: _expandableThemeData,
               header: Column(
                 children: [
                   TextOneLine(

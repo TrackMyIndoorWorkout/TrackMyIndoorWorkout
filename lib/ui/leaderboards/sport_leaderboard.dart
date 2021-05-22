@@ -36,6 +36,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   TextStyle _textStyle;
   TextStyle _textStyle2;
   ThemeManager _themeManager;
+  ExpandableThemeData _expandableThemeData;
 
   SportLeaderboardScreenState({@required this.sport}) : assert(sport != null);
 
@@ -46,6 +47,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
     _database = Get.find<AppDatabase>();
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _themeManager = Get.find<ThemeManager>();
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
@@ -133,6 +135,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${workoutSummary.id}"),
+              theme: _expandableThemeData,
               header: Column(
                 children: [
                   Row(
