@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import '../persistence/models/calorie_tune.dart';
 import '../persistence/database.dart';
-import '../utils/constants.dart';
 import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
 
@@ -24,10 +21,9 @@ class CalorieTunesScreen extends StatefulWidget {
 class CalorieTunesScreenState extends State<CalorieTunesScreen> {
   AppDatabase _database;
   int _editCount;
-  double _mediaWidth;
-  double _sizeDefault;
-  TextStyle _textStyle;
   ThemeManager _themeManager;
+  TextStyle _textStyle;
+  double _sizeDefault;
   ExpandableThemeData _expandableThemeData;
 
   @override
@@ -36,6 +32,8 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
     _editCount = 0;
     _database = Get.find<AppDatabase>();
     _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline3;
+    _sizeDefault = _textStyle.fontSize;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
@@ -90,16 +88,6 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 12;
-      _textStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault,
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text('Calorie Tunes')),
       body: CustomListView(

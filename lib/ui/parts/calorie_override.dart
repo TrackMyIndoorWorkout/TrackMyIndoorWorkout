@@ -36,7 +36,10 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
     super.initState();
     _newCalorie = oldCalories;
     _themeManager = Get.find<ThemeManager>();
-    _largerTextStyle = Get.textTheme.headline3.apply(fontFamily: FONT_FAMILY);
+    _largerTextStyle = Get.textTheme.headline3.apply(
+      fontFamily: FONT_FAMILY,
+      color: _themeManager.getProtagonistColor(),
+    );
   }
 
   @override

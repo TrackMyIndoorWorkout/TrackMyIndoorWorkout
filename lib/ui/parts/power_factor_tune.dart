@@ -36,7 +36,10 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
     super.initState();
     _powerFactorPercent = oldPowerFactor * 100.0;
     _themeManager = Get.find<ThemeManager>();
-    _largerTextStyle = Get.textTheme.headline3.apply(fontFamily: FONT_FAMILY);
+    _largerTextStyle = Get.textTheme.headline3.apply(
+      fontFamily: FONT_FAMILY,
+      color: _themeManager.getProtagonistColor(),
+    );
   }
 
   @override
