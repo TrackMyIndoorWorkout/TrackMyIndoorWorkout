@@ -128,7 +128,11 @@ class ThemeManager {
   FloatingActionButton getRankIcon(int rank) {
     final textStyle = Get.textTheme.headline4.apply(fontFamily: FONT_FAMILY, color: Colors.black);
     return _getFabCore(
-        Colors.black, getYellowColor(), Text(rank.toString(), style: textStyle), () {});
+      Colors.black,
+      getYellowColor(),
+      Text(rank.toString(), style: textStyle),
+      () {},
+    );
   }
 
   FloatingActionButton getHelpFab() {
