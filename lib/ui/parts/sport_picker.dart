@@ -36,11 +36,9 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
   final bool allSports;
   int _sportIndex;
   List<String> _sportChoices;
-  double _mediaWidth;
-  double _sizeDefault;
-  TextStyle _selectedTextStyle;
-  TextStyle _largerTextStyle;
   ThemeManager _themeManager;
+  TextStyle _largerTextStyle;
+  TextStyle _selectedTextStyle;
 
   @override
   void initState() {
@@ -63,18 +61,12 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
           ];
     _sportIndex = max(0, _sportChoices.indexOf(initialSport));
     _themeManager = Get.find<ThemeManager>();
+    _largerTextStyle = Get.textTheme.headline3;
+    _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = mediaWidth / 10;
-      _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
-      _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
-    }
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(

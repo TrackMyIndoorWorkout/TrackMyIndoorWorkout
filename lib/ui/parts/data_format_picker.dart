@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class DataFormatPickerBottomSheet extends StatefulWidget {
@@ -13,30 +12,22 @@ class DataFormatPickerBottomSheet extends StatefulWidget {
 class DataFormatPickerBottomSheetState extends State<DataFormatPickerBottomSheet> {
   int _formatIndex;
   List<String> _formatChoices;
-  double _mediaWidth;
-  double _sizeDefault;
-  TextStyle _selectedTextStyle;
-  TextStyle _largerTextStyle;
   ThemeManager _themeManager;
+  TextStyle _largerTextStyle;
+  TextStyle _selectedTextStyle;
 
   @override
   void initState() {
     super.initState();
-    _themeManager = Get.find<ThemeManager>();
     _formatChoices = ["FIT", "TCX"];
     _formatIndex = max(0, _formatChoices.indexOf("FIT"));
+    _themeManager = Get.find<ThemeManager>();
+    _largerTextStyle = Get.textTheme.headline3;
+    _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = mediaWidth / 10;
-      _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
-      _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
-    }
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(

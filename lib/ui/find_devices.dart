@@ -116,7 +116,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     _advertisementCache = Get.find<AdvertisementCache>();
     _themeManager = Get.find<ThemeManager>();
-    _captionStyle = Get.textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
+    _captionStyle = Get.textTheme.headline6.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
 
     var heartRateMonitor =
