@@ -126,7 +126,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
             final formatPick = await Get.bottomSheet(
               DataFormatPickerBottomSheet(),
-              isDismissible: false,
               enableDrag: false,
             );
 

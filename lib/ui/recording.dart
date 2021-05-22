@@ -1197,7 +1197,6 @@ class RecordingState extends State<RecordingScreen> {
             _themeManager.getBlueFab(Icons.battery_unknown, () async {
               await Get.bottomSheet(
                 BatteryStatusBottomSheet(),
-                isDismissible: false,
                 enableDrag: false,
               );
             }),

@@ -49,7 +49,6 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
               SportPickerBottomSheet(initialSport: deviceUsage.sport, allSports: true),
-              isDismissible: false,
               enableDrag: false,
             );
             if (sportPick != null) {
