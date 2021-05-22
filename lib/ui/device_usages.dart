@@ -45,7 +45,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(Icons.edit, color: Colors.black, size: size),
+          icon: _themeManager.getActionIcon(Icons.edit, size),
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
               SportPickerBottomSheet(initialSport: deviceUsage.sport, allSports: true),

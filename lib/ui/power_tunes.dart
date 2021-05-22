@@ -44,7 +44,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(Icons.edit, color: Colors.black, size: size),
+          icon: _themeManager.getActionIcon(Icons.edit, size),
           onPressed: () async {
             final result = await Get.bottomSheet(
               PowerFactorTuneBottomSheet(
