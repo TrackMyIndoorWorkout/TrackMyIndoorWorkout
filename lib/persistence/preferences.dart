@@ -86,6 +86,42 @@ final fiveDarkFgPalette = [
   MaterialPalette.red.shadeDefault.lighter,
 ];
 
+final sevenLightPiePalette = [
+  MaterialPalette.blue.shadeDefault,
+  MaterialPalette.teal.shadeDefault,
+  MaterialPalette.cyan.shadeDefault,
+  MaterialPalette.lime.shadeDefault,
+  MaterialPalette.yellow.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+  MaterialPalette.pink.shadeDefault,
+];
+
+final fiveLightPiePalette = [
+  MaterialPalette.blue.shadeDefault,
+  MaterialPalette.cyan.shadeDefault,
+  MaterialPalette.lime.shadeDefault,
+  MaterialPalette.yellow.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+];
+
+final sevenDarkPiePalette = [
+  MaterialPalette.indigo.shadeDefault,
+  MaterialPalette.teal.shadeDefault,
+  MaterialPalette.cyan.shadeDefault,
+  MaterialPalette.green.shadeDefault,
+  MaterialPalette.deepOrange.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+  MaterialPalette.purple.shadeDefault,
+];
+
+final fiveDarkPiePalette = [
+  MaterialPalette.indigo.shadeDefault,
+  MaterialPalette.teal.shadeDefault,
+  MaterialPalette.green.shadeDefault,
+  MaterialPalette.deepOrange.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+];
+
 // https://stackoverflow.com/questions/57481767/dart-rounding-errors
 double decimalRound(double value, {int precision = 100}) {
   return (value * precision).round() / precision;
@@ -412,6 +448,18 @@ class PreferencesSpec {
   Color fgColorByValue(num value, bool isLight) {
     final bin = binIndex(value);
     return fgColorByBin(bin, isLight);
+  }
+
+  Color pieBgColorByBin(int bin, bool isLight) {
+    if (zonePercents.length <= 5) {
+      bin = min(bin, 4);
+      final trIndex = transformedBinIndex(bin);
+      return isLight ? fiveLightPiePalette[trIndex] : fiveDarkPiePalette[trIndex];
+    }
+
+    bin = min(bin, 6);
+    final trIndex = transformedBinIndex(bin);
+    return isLight ? sevenLightPiePalette[trIndex] : sevenDarkPiePalette[trIndex];
   }
 
   static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;

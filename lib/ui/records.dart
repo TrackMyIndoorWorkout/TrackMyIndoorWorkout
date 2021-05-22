@@ -302,7 +302,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
     _chartTextStyle = charts.TextStyleSpec(
-        color: _isLight ? charts.MaterialPalette.black : charts.MaterialPalette.white);
+      color: _isLight ? charts.MaterialPalette.black : charts.MaterialPalette.white,
+    );
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
     extraInit();
@@ -342,7 +343,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'powerHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[0].fgColorByBin(
+        colorFn: (HistogramData data, __) => _preferencesSpecs[0].pieBgColorByBin(
           data.index,
           _isLight,
         ),
@@ -390,7 +391,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'speedHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[1].fgColorByBin(
+        colorFn: (HistogramData data, __) => _preferencesSpecs[1].pieBgColorByBin(
           data.index,
           _isLight,
         ),
@@ -438,7 +439,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'cadenceHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[2].fgColorByBin(
+        colorFn: (HistogramData data, __) => _preferencesSpecs[2].pieBgColorByBin(
           data.index,
           _isLight,
         ),
@@ -486,7 +487,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'hrHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[3].fgColorByBin(
+        colorFn: (HistogramData data, __) => _preferencesSpecs[3].pieBgColorByBin(
           data.index,
           _isLight,
         ),
@@ -696,8 +697,10 @@ class RecordsScreenState extends State<RecordsScreen> {
                                   charts.LinePointHighlighterFollowLineType.nearest,
                             ),
                             charts.SelectNearest(eventTrigger: charts.SelectionTrigger.tapAndDrag),
-                            charts.RangeAnnotation(_preferencesSpecs[index].annotationSegments,
-                                defaultLabelStyleSpec: _chartTextStyle),
+                            charts.RangeAnnotation(
+                              _preferencesSpecs[index].annotationSegments,
+                              defaultLabelStyleSpec: _chartTextStyle,
+                            ),
                           ],
                           selectionModels: [
                             charts.SelectionModelConfig(
@@ -730,7 +733,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                           _tileConfigurations[item].histogramFn(),
                           animate: false,
                           defaultRenderer: charts.ArcRendererConfig(
-                              arcWidth: 60, arcRendererDecorators: [charts.ArcLabelDecorator()]),
+                            arcWidth: 60,
+                            arcRendererDecorators: [charts.ArcLabelDecorator()],
+                          ),
                           behaviors: [
                             charts.DatumLegend(
                               position: charts.BehaviorPosition.start,
