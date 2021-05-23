@@ -86,7 +86,7 @@ abstract class DeviceBase {
         orElse: () => null);
 
     if (_service != null) {
-      if (characteristicsId == null) {
+      if (characteristicsId != null) {
         characteristic = _service.characteristics
             .firstWhere((ch) => ch.uuid.uuidString() == characteristicsId, orElse: () => null);
       } else {
