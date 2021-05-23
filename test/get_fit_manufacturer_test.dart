@@ -14,8 +14,10 @@ void main() {
     deviceMap.forEach((fourCC, deviceDescriptor) {
       test("$fourCC (${deviceDescriptor.manufacturer}) -> ${deviceDescriptor.manufacturerFitId}",
           () async {
-        expect(
-            getFitManufacturer(deviceDescriptor.manufacturer), deviceDescriptor.manufacturerFitId);
+        final expected = deviceDescriptor.fourCC.startsWith("G")
+            ? STRAVA_FIT_ID
+            : deviceDescriptor.manufacturerFitId;
+        expect(getFitManufacturer(deviceDescriptor.manufacturer), expected);
       });
     });
   });
