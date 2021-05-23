@@ -161,7 +161,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     equipmentDiscovery = false;
-    return manufacturerName == descriptor.manufacturer;
+    return manufacturerName == descriptor.manufacturer || descriptor.manufacturer == "Unknown";
   }
 
   Record processRecord(Record stub) {
