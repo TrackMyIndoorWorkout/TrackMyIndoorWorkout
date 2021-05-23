@@ -137,23 +137,26 @@ class FitnessEquipment extends DeviceBase {
 
     equipmentDiscovery = true;
     // Check manufacturer name
-    // Will need to elaborate when generic GATT Fitness Machine support is added
-    final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
-    final nameCharacteristic =
-        BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
-    try {
-      final nameBytes = await nameCharacteristic.read();
-      manufacturerName = String.fromCharCodes(nameBytes);
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      // 2nd try
+    if (manufacturerName == null) {
+      final deviceInfo = BluetoothDeviceEx.filterService(
+          services, DEVICE_INFORMATION_ID);
+      final nameCharacteristic =
+      BluetoothDeviceEx.filterCharacteristic(
+          deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
       try {
         final nameBytes = await nameCharacteristic.read();
         manufacturerName = String.fromCharCodes(nameBytes);
       } on PlatformException catch (e, stack) {
         debugPrint("$e");
         debugPrintStack(stackTrace: stack, label: "trace:");
+        // 2nd try
+        try {
+          final nameBytes = await nameCharacteristic.read();
+          manufacturerName = String.fromCharCodes(nameBytes);
+        } on PlatformException catch (e, stack) {
+          debugPrint("$e");
+          debugPrintStack(stackTrace: stack, label: "trace:");
+        }
       }
     }
 
