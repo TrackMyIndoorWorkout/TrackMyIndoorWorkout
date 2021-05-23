@@ -400,8 +400,10 @@ class RecordingState extends State<RecordingScreen> {
       DATA_STREAM_GAP_WATCHDOG_DEFAULT,
       DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT,
     );
-    _dataGapAutoStop = PrefService.getBool(DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_TAG) ?? DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DEFAULT;
-    _dataGapSoundEffect = PrefService.getString(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ?? DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
+    _dataGapAutoStop = PrefService.getBool(DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_TAG) ??
+        DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DEFAULT;
+    _dataGapSoundEffect = PrefService.getString(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
+        DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
 
     _targetHrMode =
         PrefService.getString(TARGET_HEART_RATE_MODE_TAG) ?? TARGET_HEART_RATE_MODE_DEFAULT;
@@ -417,7 +419,8 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio || _dataGapSoundEffect != SOUND_EFFECT_NONE) {
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
+        _dataGapSoundEffect != SOUND_EFFECT_NONE) {
       if (!Get.isRegistered<SoundService>()) {
         Get.put<SoundService>(SoundService());
       }
@@ -550,7 +553,8 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
     _dataGapWatchdog?.cancel();
     _dataGapBeeperTimer?.cancel();
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio || _dataGapSoundEffect != SOUND_EFFECT_NONE) {
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
+        _dataGapSoundEffect != SOUND_EFFECT_NONE) {
       await Get.find<SoundService>().stopAllSoundEffects();
     }
 
@@ -668,7 +672,8 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
     _dataGapWatchdog?.cancel();
     _dataGapBeeperTimer?.cancel();
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio || _dataGapSoundEffect != SOUND_EFFECT_NONE) {
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
+        _dataGapSoundEffect != SOUND_EFFECT_NONE) {
       Get.find<SoundService>().stopAllSoundEffects();
     }
 

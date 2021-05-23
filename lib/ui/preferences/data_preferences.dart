@@ -64,29 +64,28 @@ class DataPreferencesScreen extends PreferencesScreenBase {
               SOUND_EFFECT_ONE_TONE_DESCRIPTION,
               SOUND_EFFECT_ONE_TONE,
               DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>()
-                  .playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
+              onSelect: () =>
+                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
             ),
             RadioPreference(
               SOUND_EFFECT_TWO_TONE_DESCRIPTION,
               SOUND_EFFECT_TWO_TONE,
               DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>()
-                  .playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
+              onSelect: () =>
+                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
             ),
             RadioPreference(
               SOUND_EFFECT_THREE_TONE_DESCRIPTION,
               SOUND_EFFECT_THREE_TONE,
               DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>()
-                  .playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
+              onSelect: () =>
+                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
             ),
             RadioPreference(
               SOUND_EFFECT_BLEEP_DESCRIPTION,
               SOUND_EFFECT_BLEEP,
               DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>()
-                  .playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
+              onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
             ),
           ],
           title: 'Select Target HR Sound Effect',
