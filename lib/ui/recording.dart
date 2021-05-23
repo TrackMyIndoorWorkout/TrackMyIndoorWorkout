@@ -975,7 +975,7 @@ class RecordingState extends State<RecordingScreen> {
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,
       );
-      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 2);
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
     if (_measuring &&

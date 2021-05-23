@@ -514,7 +514,7 @@ class RecordsScreenState extends State<RecordsScreen> {
       _textStyle = TextStyle(
         fontSize: _sizeDefault2,
       );
-      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 2);
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
       _selectionStyle = TextStyle(
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault2 / 2,
