@@ -86,10 +86,48 @@ final fiveDarkFgPalette = [
   MaterialPalette.red.shadeDefault.lighter,
 ];
 
+final sevenLightPiePalette = [
+  MaterialPalette.blue.shadeDefault,
+  MaterialPalette.teal.shadeDefault,
+  MaterialPalette.cyan.shadeDefault,
+  MaterialPalette.lime.shadeDefault,
+  MaterialPalette.yellow.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+  MaterialPalette.pink.shadeDefault,
+];
+
+final fiveLightPiePalette = [
+  MaterialPalette.blue.shadeDefault,
+  MaterialPalette.cyan.shadeDefault,
+  MaterialPalette.lime.shadeDefault,
+  MaterialPalette.yellow.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+];
+
+final sevenDarkPiePalette = [
+  MaterialPalette.indigo.shadeDefault,
+  MaterialPalette.teal.shadeDefault,
+  MaterialPalette.cyan.shadeDefault,
+  MaterialPalette.green.shadeDefault,
+  MaterialPalette.deepOrange.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+  MaterialPalette.purple.shadeDefault,
+];
+
+final fiveDarkPiePalette = [
+  MaterialPalette.indigo.shadeDefault,
+  MaterialPalette.teal.shadeDefault,
+  MaterialPalette.green.shadeDefault,
+  MaterialPalette.deepOrange.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+];
+
 // https://stackoverflow.com/questions/57481767/dart-rounding-errors
 double decimalRound(double value, {int precision = 100}) {
   return (value * precision).round() / precision;
 }
+
+const String TARGET_HR_SHORT_TITLE = "Target HR";
 
 class PreferencesSpec {
   static const THRESHOLD_CAPITAL = ' Threshold ';
@@ -108,6 +146,10 @@ class PreferencesSpec {
   static const ZONE_INDEX_DISPLAY_TEXT = "Zone Index Display";
   static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 = "Display the Zone Index Next to the ";
   static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART2 = " Measurement Value";
+  static const ZONE_INDEX_DISPLAY_EXTRA_NOTE =
+      "These Zone settings apply for the fixed panel sections. " +
+          "For extra HR zone display feature check out '$TARGET_HR_SHORT_TITLE' configuration " +
+          "in the upstream settings selection. For extra speed feedback check out leaderboard rank settings.";
   static const ZONE_INDEX_DISPLAY_DEFAULT = false;
 
   static final slowSpeeds = {
@@ -414,6 +456,18 @@ class PreferencesSpec {
     return fgColorByBin(bin, isLight);
   }
 
+  Color pieBgColorByBin(int bin, bool isLight) {
+    if (zonePercents.length <= 5) {
+      bin = min(bin, 4);
+      final trIndex = transformedBinIndex(bin);
+      return isLight ? fiveLightPiePalette[trIndex] : fiveDarkPiePalette[trIndex];
+    }
+
+    bin = min(bin, 6);
+    final trIndex = transformedBinIndex(bin);
+    return isLight ? sevenLightPiePalette[trIndex] : sevenDarkPiePalette[trIndex];
+  }
+
   static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
 
   static List<PreferencesSpec> getPreferencesSpecs(bool si, String sport) {
@@ -528,15 +582,36 @@ const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery da
     "these over time soothes the data. This setting tells the window size by how many samples " +
     "could be in the smoothing queue. 1 means no smoothing.";
 
-const EQUIPMENT_DISCONNECTION_WATCHDOG = "Equipment Disconnection Watchdog Timer";
-const EQUIPMENT_DISCONNECTION_WATCHDOG_TAG = "equipment_disconnection_watchdog_timer";
-const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT = 5;
-const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT = "$EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT";
-const EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered " +
-    "as a disconnection. A watchdog would finish the workout, reconnect to the equipment, and " +
-    "start a new workout. 0 means the watchdog will be turned off. Disabling the watchdog " +
-    "if your fitness equipment stops sending data when the workout is paused to avoid unwanted " +
-    "restarts.";
+const DATA_STREAM_GAP_WATCHDOG = "Data Stream Gap Watchdog Timer";
+const DATA_STREAM_GAP_WATCHDOG_TAG = "data_stream_gap_watchdog_timer";
+const DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT = 5;
+const DATA_STREAM_GAP_WATCHDOG_DEFAULT = "$DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT";
+const DATA_STREAM_GAP_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered " +
+    "as a disconnection. A watchdog would finish the workout and can trigger sound warnings as well. " +
+    "Zero means disabled";
+
+const DATA_STREAM_GAP_ACTIVITY_AUTO_STOP = "Data Stream Gap Activity Auto Stop";
+const DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_TAG = "data_stream_gap_activity_auto_stop";
+const DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DEFAULT = false;
+const DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DESCRIPTION =
+    "The workout is automatically stopped when the data stream gap timeout occurs.";
+
+const SOUND_EFFECT_NONE = "none";
+const SOUND_EFFECT_NONE_DESCRIPTION = "No sound effect.";
+const SOUND_EFFECT_ONE_TONE = "one_tone_beep";
+const SOUND_EFFECT_ONE_TONE_DESCRIPTION = "A single tone 1200Hz beep.";
+const SOUND_EFFECT_TWO_TONE = "two_tone_beep";
+const SOUND_EFFECT_TWO_TONE_DESCRIPTION = "Two beep tones repeated twice";
+const SOUND_EFFECT_THREE_TONE = "three_tone_beep";
+const SOUND_EFFECT_THREE_TONE_DESCRIPTION = "Three beep tones after one another";
+const SOUND_EFFECT_BLEEP = "media_bleep";
+const SOUND_EFFECT_BLEEP_DESCRIPTION = "A Media Call type bleep.";
+
+const DATA_STREAM_GAP_SOUND_EFFECT = "Data Stream Gap Audio Warning";
+const DATA_STREAM_GAP_SOUND_EFFECT_TAG = "data_stream_gap_sound_effect";
+const DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION =
+    "Select the type of sound effect played when data acquisition timeout happens.";
+const DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_THREE_TONE;
 
 const CADENCE_GAP_WORKAROUND = "Cadence Data Gap Workaround";
 const CADENCE_GAP_WORKAROUND_TAG = "cadence_data_gap_workaround";
@@ -641,15 +716,7 @@ const TARGET_HEART_RATE_SOUND_EFFECT = "Target Heart Rate Out of Range Sound Eff
 const TARGET_HEART_RATE_SOUND_EFFECT_TAG = "target_heart_rate_sound_effect";
 const TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION =
     "Select the type of sound effect played when the HR gets out of range.";
-const TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE = "one_tone_beep";
-const TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE_DESCRIPTION = "A single tone 1200Hz beep.";
-const TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE = "two_tone_beep";
-const TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE_DESCRIPTION = "Two beep tones repeated twice";
-const TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE = "three_tone_beep";
-const TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE_DESCRIPTION = "Three beep tones after one another";
-const TARGET_HEART_RATE_SOUND_EFFECT_BLEEP = "media_bleep";
-const TARGET_HEART_RATE_SOUND_EFFECT_BLEEP_DESCRIPTION = "A Media Call type bleep.";
-const TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT = TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE;
+const TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_TWO_TONE;
 
 const AUDIO_VOLUME = "Audio Volume (%)";
 const AUDIO_VOLUME_TAG = "audio_volume";

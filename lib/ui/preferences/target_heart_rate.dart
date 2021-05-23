@@ -7,7 +7,7 @@ import '../../utils/sound.dart';
 import 'preferences_base.dart';
 
 class TargetHrPreferencesScreen extends PreferencesScreenBase {
-  static String shortTitle = "Target HR";
+  static String shortTitle = TARGET_HR_SHORT_TITLE;
   static String title = "$shortTitle Preferences";
 
   @override
@@ -125,32 +125,31 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         dialog: PreferenceDialog(
           [
             RadioPreference(
-              TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE_DESCRIPTION,
-              TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE,
+              SOUND_EFFECT_ONE_TONE_DESCRIPTION,
+              SOUND_EFFECT_ONE_TONE,
               TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>()
-                  .playSpecificHrSoundEffect(TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE),
+              onSelect: () =>
+                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
             ),
             RadioPreference(
-              TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE_DESCRIPTION,
-              TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE,
+              SOUND_EFFECT_TWO_TONE_DESCRIPTION,
+              SOUND_EFFECT_TWO_TONE,
               TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>()
-                  .playSpecificHrSoundEffect(TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE),
+              onSelect: () =>
+                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
             ),
             RadioPreference(
-              TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE_DESCRIPTION,
-              TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE,
+              SOUND_EFFECT_THREE_TONE_DESCRIPTION,
+              SOUND_EFFECT_THREE_TONE,
               TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>()
-                  .playSpecificHrSoundEffect(TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE),
+              onSelect: () =>
+                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
             ),
             RadioPreference(
-              TARGET_HEART_RATE_SOUND_EFFECT_BLEEP_DESCRIPTION,
-              TARGET_HEART_RATE_SOUND_EFFECT_BLEEP,
+              SOUND_EFFECT_BLEEP_DESCRIPTION,
+              SOUND_EFFECT_BLEEP,
               TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>()
-                  .playSpecificHrSoundEffect(TARGET_HEART_RATE_SOUND_EFFECT_BLEEP),
+              onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
             ),
           ],
           title: 'Select Target HR Sound Effect',

@@ -9,7 +9,11 @@ class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> indexDisplayPreferences =
+    List<Widget> indexDisplayPreferences = [
+      PreferenceTitle(PreferencesSpec.ZONE_INDEX_DISPLAY_EXTRA_NOTE),
+    ];
+
+    indexDisplayPreferences.addAll(
         PreferencesSpec.preferencesSpecs.where((spec) => spec.metric != "speed").map((prefSpec) {
       return SwitchPreference(
         prefSpec.zoneIndexText,
@@ -17,7 +21,7 @@ class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
         defaultVal: prefSpec.indexDisplayDefault,
         desc: prefSpec.zoneIndexDescription,
       );
-    }).toList(growable: false);
+    }));
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),

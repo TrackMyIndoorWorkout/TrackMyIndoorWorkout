@@ -190,13 +190,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
         descriptor = deviceMap[GENERIC_FTMS_SWIM_FOURCC];
       }
 
-      deviceUsage = DeviceUsage(
-        sport: sport,
-        mac: device.id.id,
-        name: device.name,
-        manufacturer: advertisementDigest.manufacturer,
-      );
-      await database?.deviceUsageDao?.insertDeviceUsage(deviceUsage);
+      if (deviceUsage == null) {
+        deviceUsage = DeviceUsage(
+          sport: sport,
+          mac: device.id.id,
+          name: device.name,
+          manufacturer: advertisementDigest.manufacturer,
+        );
+        await database?.deviceUsageDao?.insertDeviceUsage(deviceUsage);
+      }
     }
 
     if (descriptor == null) {

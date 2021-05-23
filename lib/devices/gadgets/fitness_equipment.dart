@@ -56,7 +56,6 @@ class FitnessEquipment extends DeviceBase {
     calibrating = false;
     _random = Random();
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
-    lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
     _heartRateGapWorkaround =
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     _heartRateUpperLimit = getStringIntegerPreference(
@@ -110,7 +109,8 @@ class FitnessEquipment extends DeviceBase {
   }
 
   void setActivity(Activity activity) {
-    this._activity = activity;
+    _activity = activity;
+    lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }
 
@@ -137,28 +137,29 @@ class FitnessEquipment extends DeviceBase {
 
     equipmentDiscovery = true;
     // Check manufacturer name
-    // Will need to elaborate when generic GATT Fitness Machine support is added
-    final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
-    final nameCharacteristic =
-        BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
-    try {
-      final nameBytes = await nameCharacteristic.read();
-      manufacturerName = String.fromCharCodes(nameBytes);
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      // 2nd try
+    if (manufacturerName == null) {
+      final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
+      final nameCharacteristic =
+          BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
       try {
         final nameBytes = await nameCharacteristic.read();
         manufacturerName = String.fromCharCodes(nameBytes);
       } on PlatformException catch (e, stack) {
         debugPrint("$e");
         debugPrintStack(stackTrace: stack, label: "trace:");
+        // 2nd try
+        try {
+          final nameBytes = await nameCharacteristic.read();
+          manufacturerName = String.fromCharCodes(nameBytes);
+        } on PlatformException catch (e, stack) {
+          debugPrint("$e");
+          debugPrintStack(stackTrace: stack, label: "trace:");
+        }
       }
     }
 
     equipmentDiscovery = false;
-    return manufacturerName == descriptor.manufacturer;
+    return manufacturerName == descriptor.manufacturer || descriptor.manufacturer == "Unknown";
   }
 
   Record processRecord(Record stub) {

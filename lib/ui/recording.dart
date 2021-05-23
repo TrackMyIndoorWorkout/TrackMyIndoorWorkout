@@ -111,6 +111,7 @@ class RecordingState extends State<RecordingScreen> {
   double _sizeDefault;
   TextStyle _measurementStyle;
   TextStyle _unitStyle;
+  charts.TextStyleSpec _chartTextStyle;
   ExpandableThemeData _expandableThemeData;
   List<bool> _expandedState;
   List<ExpandableController> _rowControllers;
@@ -124,8 +125,11 @@ class RecordingState extends State<RecordingScreen> {
   bool _instantUpload;
   bool _uxDebug;
 
-  Timer _connectionWatchdog;
-  int _connectionWatchdogTime = EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT;
+  Timer _dataGapWatchdog;
+  int _dataGapWatchdogTime = DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT;
+  bool _dataGapAutoStop;
+  String _dataGapSoundEffect;
+  Timer _dataGapBeeperTimer;
 
   List<DisplayRecord> get graphData => _graphData.toList();
   Map<String, DataFn> _metricToDataFn = {};
@@ -137,8 +141,8 @@ class RecordingState extends State<RecordingScreen> {
   String _targetHrMode;
   Tuple2<double, double> _targetHrBounds;
   int _heartRate;
-  Timer _beepPeriodTimer;
-  int _beepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT;
+  Timer _hrBeepPeriodTimer;
+  int _hrBeepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT;
   bool _targetHrAudio;
   bool _targetHrAlerting;
   bool _leaderboardFeature;
@@ -173,6 +177,13 @@ class RecordingState extends State<RecordingScreen> {
           onPressed: () => Get.close(1),
         ),
       );
+    }
+  }
+
+  void amendZoneToValue(int valueIndex, int value) {
+    if (_preferencesSpecs[valueIndex].indexDisplay) {
+      int zoneIndex = _preferencesSpecs[valueIndex].binIndex(value);
+      _values[valueIndex + 1] += " Z$zoneIndex";
     }
   }
 
@@ -216,11 +227,12 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment.startWorkout();
 
     _fitnessEquipment.pumpData((record) async {
-      _connectionWatchdog?.cancel();
-      if (_connectionWatchdogTime > 0) {
-        _connectionWatchdog = Timer(
-          Duration(seconds: _connectionWatchdogTime),
-          _reconnectionWorkaround,
+      _dataGapWatchdog?.cancel();
+      _dataGapBeeperTimer?.cancel();
+      if (_dataGapWatchdogTime > 0) {
+        _dataGapWatchdog = Timer(
+          Duration(seconds: _dataGapWatchdogTime),
+          _dataGapTimeoutHandler,
         );
       }
 
@@ -257,18 +269,9 @@ class RecordingState extends State<RecordingScreen> {
             record.heartRate.toString(),
             record.distanceStringByUnit(_si),
           ];
-          if (_preferencesSpecs[0].indexDisplay) {
-            int zoneIndex = _preferencesSpecs[0].binIndex(record.power);
-            _values[1] += " Z$zoneIndex";
-          }
-          if (_preferencesSpecs[2].indexDisplay) {
-            int zoneIndex = _preferencesSpecs[2].binIndex(record.cadence);
-            _values[3] += " Z$zoneIndex";
-          }
-          if (_preferencesSpecs[3].indexDisplay) {
-            int zoneIndex = _preferencesSpecs[3].binIndex(record.heartRate);
-            _values[4] += " Z$zoneIndex";
-          }
+          amendZoneToValue(0, record.power);
+          amendZoneToValue(2, record.cadence);
+          amendZoneToValue(3, record.heartRate);
         });
       }
     });
@@ -331,6 +334,7 @@ class RecordingState extends State<RecordingScreen> {
               _heartRate = heartRate;
             }
             _values[4] = heartRate?.toString() ?? "--";
+            amendZoneToValue(3, heartRate);
           });
         });
       });
@@ -383,11 +387,6 @@ class RecordingState extends State<RecordingScreen> {
       _fitnessEquipment.slowPace = slowPace;
     }
 
-    _connectionWatchdogTime = getStringIntegerPreference(
-      EQUIPMENT_DISCONNECTION_WATCHDOG_TAG,
-      EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
-      EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT,
-    );
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, descriptor.defaultSport);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
@@ -395,9 +394,36 @@ class RecordingState extends State<RecordingScreen> {
           _isLight,
         ));
 
+    _dataGapWatchdogTime = getStringIntegerPreference(
+      DATA_STREAM_GAP_WATCHDOG_TAG,
+      DATA_STREAM_GAP_WATCHDOG_DEFAULT,
+      DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT,
+    );
+    _dataGapAutoStop = PrefService.getBool(DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_TAG) ??
+        DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DEFAULT;
+    _dataGapSoundEffect = PrefService.getString(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
+        DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
+
     _targetHrMode =
         PrefService.getString(TARGET_HEART_RATE_MODE_TAG) ?? TARGET_HEART_RATE_MODE_DEFAULT;
     _targetHrBounds = getTargetHeartRateBounds(_targetHrMode, _preferencesSpecs[3]);
+    _targetHrAlerting = false;
+    _targetHrAudio =
+        PrefService.getBool(TARGET_HEART_RATE_AUDIO_TAG) ?? TARGET_HEART_RATE_AUDIO_DEFAULT;
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+      _hrBeepPeriod = getStringIntegerPreference(
+        TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
+        TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
+        TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT,
+      );
+    }
+
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
+        _dataGapSoundEffect != SOUND_EFFECT_NONE) {
+      if (!Get.isRegistered<SoundService>()) {
+        Get.put<SoundService>(SoundService());
+      }
+    }
 
     _metricToDataFn = {
       "power": _powerChartData,
@@ -406,6 +432,9 @@ class RecordingState extends State<RecordingScreen> {
       "hr": _hRChartData,
     };
 
+    _chartTextStyle = charts.TextStyleSpec(
+      color: _isLight ? charts.MaterialPalette.black : charts.MaterialPalette.white,
+    );
     _expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
       iconColor: _themeManager.getProtagonistColor(),
@@ -481,19 +510,6 @@ class RecordingState extends State<RecordingScreen> {
     _distance = 0.0;
     _elapsed = 0;
 
-    _targetHrAlerting = false;
-    _targetHrAudio =
-        PrefService.getBool(TARGET_HEART_RATE_AUDIO_TAG) ?? TARGET_HEART_RATE_AUDIO_DEFAULT;
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
-      _beepPeriod = getStringIntegerPreference(
-        TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
-        TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
-        TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT,
-      );
-      if (!Get.isRegistered<SoundService>()) {
-        Get.put<SoundService>(SoundService());
-      }
-    }
     _leaderboardFeature =
         PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _rankRibbonVisualization =
@@ -533,8 +549,11 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _preDispose() async {
-    _beepPeriodTimer?.cancel();
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+    _hrBeepPeriodTimer?.cancel();
+    _dataGapWatchdog?.cancel();
+    _dataGapBeeperTimer?.cancel();
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
+        _dataGapSoundEffect != SOUND_EFFECT_NONE) {
       await Get.find<SoundService>().stopAllSoundEffects();
     }
 
@@ -545,8 +564,6 @@ class RecordingState extends State<RecordingScreen> {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
-
-    _connectionWatchdog?.cancel();
 
     try {
       await _fitnessEquipment?.detach();
@@ -564,32 +581,45 @@ class RecordingState extends State<RecordingScreen> {
     super.dispose();
   }
 
-  Future<void> _reconnectionWorkaround() async {
-    Get.snackbar("Warning", "Equipment might be disconnected. Auto-starting new workout:");
+  Future<void> _dataGapTimeoutHandler() async {
+    Get.snackbar("Warning", "Equipment might be disconnected!");
 
-    _beepPeriodTimer?.cancel();
+    _hrBeepPeriodTimer?.cancel();
     if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
       Get.find<SoundService>().stopAllSoundEffects();
     }
 
-    setState(() {
-      _measuring = false;
-    });
-    _fitnessEquipment.measuring = false;
-    try {
-      await _fitnessEquipment?.detach();
-      await _fitnessEquipment?.disconnect();
-      final success = await _fitnessEquipment?.connect();
-      await _connectOnDemand(
-          success ? BluetoothDeviceState.connected : BluetoothDeviceState.disconnected);
-    } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    if (_dataGapSoundEffect != SOUND_EFFECT_NONE) {
+      Get.find<SoundService>().playDataTimeoutSoundEffect();
+      if (_dataGapWatchdogTime >= 2) {
+        _dataGapBeeperTimer = Timer(Duration(seconds: _dataGapWatchdogTime), _dataTimeoutBeeper);
+      }
+    }
+
+    if (_dataGapAutoStop) {
+      setState(() {
+        _measuring = false;
+      });
+      _fitnessEquipment.measuring = false;
+      try {
+        await _fitnessEquipment?.detach();
+        await _fitnessEquipment?.disconnect();
+      } on PlatformException catch (e, stack) {
+        debugPrint("Equipment got turned off?");
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
     }
   }
 
-  Future<void> _beeper() async {
+  Future<void> _dataTimeoutBeeper() async {
+    Get.find<SoundService>().playDataTimeoutSoundEffect();
+    if (_measuring && _dataGapSoundEffect != SOUND_EFFECT_NONE && _dataGapWatchdogTime >= 2) {
+      _dataGapBeeperTimer = Timer(Duration(seconds: _dataGapWatchdogTime), _dataTimeoutBeeper);
+    }
+  }
+
+  Future<void> _hrBeeper() async {
     Get.find<SoundService>().playTargetHrSoundEffect();
     if (_measuring &&
         _targetHrMode != TARGET_HEART_RATE_MODE_NONE &&
@@ -597,7 +627,7 @@ class RecordingState extends State<RecordingScreen> {
         _heartRate != null &&
         _heartRate > 0) {
       if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
-        _beepPeriodTimer = Timer(Duration(seconds: _beepPeriod), _beeper);
+        _hrBeepPeriodTimer = Timer(Duration(seconds: _hrBeepPeriod), _hrBeeper);
       }
     }
   }
@@ -638,8 +668,11 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment.measuring = false;
     if (!_measuring) return;
 
-    _beepPeriodTimer?.cancel();
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
+    _hrBeepPeriodTimer?.cancel();
+    _dataGapWatchdog?.cancel();
+    _dataGapBeeperTimer?.cancel();
+    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
+        _dataGapSoundEffect != SOUND_EFFECT_NONE) {
       Get.find<SoundService>().stopAllSoundEffects();
     }
 
@@ -647,7 +680,6 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
 
-    _connectionWatchdog?.cancel();
     _fitnessEquipment.detach();
 
     _activity.finish(
@@ -686,6 +718,8 @@ class RecordingState extends State<RecordingScreen> {
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.power,
         data: graphData,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -701,6 +735,8 @@ class RecordingState extends State<RecordingScreen> {
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, descriptor.defaultSport),
         data: graphData,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -716,6 +752,8 @@ class RecordingState extends State<RecordingScreen> {
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.cadence,
         data: graphData,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -731,6 +769,8 @@ class RecordingState extends State<RecordingScreen> {
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.heartRate,
         data: graphData,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -935,7 +975,7 @@ class RecordingState extends State<RecordingScreen> {
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault,
       );
-      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 2);
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
     if (_measuring &&
@@ -946,14 +986,14 @@ class RecordingState extends State<RecordingScreen> {
       if (_heartRate < _targetHrBounds.item1 || _heartRate > _targetHrBounds.item2) {
         if (!_targetHrAlerting) {
           Get.find<SoundService>().playTargetHrSoundEffect();
-          if (_beepPeriod >= 2) {
-            _beepPeriodTimer = Timer(Duration(seconds: _beepPeriod), _beeper);
+          if (_hrBeepPeriod >= 2) {
+            _hrBeepPeriodTimer = Timer(Duration(seconds: _hrBeepPeriod), _hrBeeper);
           }
         }
         _targetHrAlerting = true;
       } else {
         if (_targetHrAlerting) {
-          _beepPeriodTimer?.cancel();
+          _hrBeepPeriodTimer?.cancel();
           Get.find<SoundService>().stopAllSoundEffects();
         }
         _targetHrAlerting = false;
@@ -1034,7 +1074,12 @@ class RecordingState extends State<RecordingScreen> {
               animate: false,
               flipVerticalAxis: entry.value.flipZones,
               primaryMeasureAxis: charts.NumericAxisSpec(renderSpec: charts.NoneRenderSpec()),
-              behaviors: [charts.RangeAnnotation(entry.value.annotationSegments)],
+              behaviors: [
+                charts.RangeAnnotation(
+                  entry.value.annotationSegments,
+                  defaultLabelStyleSpec: _chartTextStyle,
+                ),
+              ],
             ),
           ),
         );
