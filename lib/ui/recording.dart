@@ -180,6 +180,13 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
+  void amendZoneToValue(int valueIndex, int value) {
+    if (_preferencesSpecs[valueIndex].indexDisplay) {
+      int zoneIndex = _preferencesSpecs[valueIndex].binIndex(value);
+      _values[valueIndex + 1] += " Z$zoneIndex";
+    }
+  }
+
   Future<void> _startMeasurement() async {
     final now = DateTime.now();
     final powerFactor = await _database.powerFactor(device.id.id) ?? 1.0;
@@ -262,18 +269,9 @@ class RecordingState extends State<RecordingScreen> {
             record.heartRate.toString(),
             record.distanceStringByUnit(_si),
           ];
-          if (_preferencesSpecs[0].indexDisplay) {
-            int zoneIndex = _preferencesSpecs[0].binIndex(record.power);
-            _values[1] += " Z$zoneIndex";
-          }
-          if (_preferencesSpecs[2].indexDisplay) {
-            int zoneIndex = _preferencesSpecs[2].binIndex(record.cadence);
-            _values[3] += " Z$zoneIndex";
-          }
-          if (_preferencesSpecs[3].indexDisplay) {
-            int zoneIndex = _preferencesSpecs[3].binIndex(record.heartRate);
-            _values[4] += " Z$zoneIndex";
-          }
+          amendZoneToValue(0, record.power);
+          amendZoneToValue(2, record.cadence);
+          amendZoneToValue(3, record.heartRate);
         });
       }
     });
@@ -336,6 +334,7 @@ class RecordingState extends State<RecordingScreen> {
               _heartRate = heartRate;
             }
             _values[4] = heartRate?.toString() ?? "--";
+            amendZoneToValue(3, heartRate);
           });
         });
       });
