@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:preferences/preferences.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/sound.dart';
 import 'preferences_base.dart';
 
 class DataPreferencesScreen extends PreferencesScreenBase {
@@ -23,21 +25,81 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         STROKE_RATE_SMOOTHING_TAG,
         defaultVal: STROKE_RATE_SMOOTHING_DEFAULT,
         validator: (str) {
-          if (!isNumber(str, 1.0, 50.0)) {
-            return "Invalid window size (should be 1.0 <= size <= 50.0)";
+          if (!isInteger(str, 1, 50)) {
+            return "Invalid window size (should be integer: 1 <= size <= 50)";
           }
           return null;
         },
       ),
       PreferenceTitle(WORKAROUND_PREFERENCES),
-      PreferenceTitle(EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION),
+      PreferenceTitle(DATA_STREAM_GAP_WATCHDOG_DESCRIPTION),
       TextFieldPreference(
-        EQUIPMENT_DISCONNECTION_WATCHDOG,
-        EQUIPMENT_DISCONNECTION_WATCHDOG_TAG,
-        defaultVal: EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT,
+        DATA_STREAM_GAP_WATCHDOG,
+        DATA_STREAM_GAP_WATCHDOG_TAG,
+        defaultVal: DATA_STREAM_GAP_WATCHDOG_DEFAULT,
         validator: (str) {
-          if (!isNumber(str, 0.0, 50.0)) {
-            return "Invalid window size (should be 0.0 <= size <= 50.0)";
+          if (!isInteger(str, 0, 50)) {
+            return "Invalid timeout (should be integer 0s <= time <= 50s)";
+          }
+          return null;
+        },
+      ),
+      SwitchPreference(
+        DATA_STREAM_GAP_ACTIVITY_AUTO_STOP,
+        DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_TAG,
+        defaultVal: DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DEFAULT,
+        desc: DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DESCRIPTION,
+      ),
+      PreferenceTitle(DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION),
+      PreferenceDialogLink(
+        DATA_STREAM_GAP_SOUND_EFFECT,
+        dialog: PreferenceDialog(
+          [
+            RadioPreference(
+              SOUND_EFFECT_NONE_DESCRIPTION,
+              SOUND_EFFECT_NONE,
+              DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+            ),
+            RadioPreference(
+              SOUND_EFFECT_ONE_TONE_DESCRIPTION,
+              SOUND_EFFECT_ONE_TONE,
+              DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+              onSelect: () => Get.find<SoundService>()
+                  .playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
+            ),
+            RadioPreference(
+              SOUND_EFFECT_TWO_TONE_DESCRIPTION,
+              SOUND_EFFECT_TWO_TONE,
+              DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+              onSelect: () => Get.find<SoundService>()
+                  .playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
+            ),
+            RadioPreference(
+              SOUND_EFFECT_THREE_TONE_DESCRIPTION,
+              SOUND_EFFECT_THREE_TONE,
+              DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+              onSelect: () => Get.find<SoundService>()
+                  .playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
+            ),
+            RadioPreference(
+              SOUND_EFFECT_BLEEP_DESCRIPTION,
+              SOUND_EFFECT_BLEEP,
+              DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+              onSelect: () => Get.find<SoundService>()
+                  .playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
+            ),
+          ],
+          title: 'Select Target HR Sound Effect',
+          cancelText: 'Close',
+        ),
+      ),
+      TextFieldPreference(
+        AUDIO_VOLUME,
+        AUDIO_VOLUME_TAG,
+        defaultVal: AUDIO_VOLUME_DEFAULT,
+        validator: (str) {
+          if (!isInteger(str, 0, 100)) {
+            return "Invalid, has to be: 0% <= volume <= 100%)";
           }
           return null;
         },

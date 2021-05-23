@@ -29,10 +29,10 @@ class SoundService {
     SoundEffect.ThreeTone: 0,
   };
   Map<String, SoundEffect> _soundPreferences = {
-    TARGET_HEART_RATE_SOUND_EFFECT_BLEEP: SoundEffect.Bleep,
-    TARGET_HEART_RATE_SOUND_EFFECT_ONE_TONE: SoundEffect.FlatBeep,
-    TARGET_HEART_RATE_SOUND_EFFECT_TWO_TONE: SoundEffect.TwoTone,
-    TARGET_HEART_RATE_SOUND_EFFECT_THREE_TONE: SoundEffect.ThreeTone,
+    SOUND_EFFECT_BLEEP: SoundEffect.Bleep,
+    SOUND_EFFECT_ONE_TONE: SoundEffect.FlatBeep,
+    SOUND_EFFECT_TWO_TONE: SoundEffect.TwoTone,
+    SOUND_EFFECT_THREE_TONE: SoundEffect.ThreeTone,
   };
 
   SoundService() {
@@ -68,14 +68,24 @@ class SoundService {
     }
   }
 
-  Future<int> playSpecificHrSoundEffect(String soundEffectString) async {
+  Future<int> playSpecificSoundEffect(String soundEffectString) async {
     return await playSoundEffect(_soundPreferences[soundEffectString]);
   }
 
   Future<int> playTargetHrSoundEffect() async {
     final soundEffectString = PrefService.getString(TARGET_HEART_RATE_SOUND_EFFECT_TAG) ??
         TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT;
-    return await playSpecificHrSoundEffect(soundEffectString);
+    return await playSpecificSoundEffect(soundEffectString);
+  }
+
+  Future<int> playDataTimeoutSoundEffect() async {
+    final soundEffectString = PrefService.getString(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
+        DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
+    if (soundEffectString == SOUND_EFFECT_NONE) {
+      return 0;
+    }
+
+    return await playSpecificSoundEffect(soundEffectString);
   }
 
   stopSoundEffect(SoundEffect soundEffect) async {
