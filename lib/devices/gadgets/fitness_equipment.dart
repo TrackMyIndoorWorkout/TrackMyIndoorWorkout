@@ -138,11 +138,9 @@ class FitnessEquipment extends DeviceBase {
     equipmentDiscovery = true;
     // Check manufacturer name
     if (manufacturerName == null) {
-      final deviceInfo = BluetoothDeviceEx.filterService(
-          services, DEVICE_INFORMATION_ID);
+      final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
       final nameCharacteristic =
-      BluetoothDeviceEx.filterCharacteristic(
-          deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
+          BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
       try {
         final nameBytes = await nameCharacteristic.read();
         manufacturerName = String.fromCharCodes(nameBytes);
