@@ -135,6 +135,7 @@ class RecordingState extends State<RecordingScreen> {
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig;
   List<String> _values;
+  List<int> _zoneIndexes;
   double _distance;
   int _elapsed;
 
@@ -162,6 +163,7 @@ class RecordingState extends State<RecordingScreen> {
   Color _lightBlue;
   ThemeManager _themeManager;
   bool _isLight;
+  bool _zoneIndexColoring;
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
@@ -184,6 +186,9 @@ class RecordingState extends State<RecordingScreen> {
     if (_preferencesSpecs[valueIndex].indexDisplay) {
       int zoneIndex = _preferencesSpecs[valueIndex].binIndex(value);
       _values[valueIndex + 1] += " Z$zoneIndex";
+      if (_zoneIndexColoring) {
+        _zoneIndexes[valueIndex] = zoneIndex;
+      }
     }
   }
 
@@ -222,6 +227,7 @@ class RecordingState extends State<RecordingScreen> {
       _elapsed = 0;
       _distance = 0.0;
       _measuring = true;
+      _zoneIndexes = [null, null, null, null];
     });
     _fitnessEquipment.measuring = true;
     _fitnessEquipment.startWorkout();
@@ -507,6 +513,7 @@ class RecordingState extends State<RecordingScreen> {
     _measuring = false;
     _fitnessEquipment.measuring = false;
     _values = ["--", "--", "--", "--", "--", "--"];
+    _zoneIndexes = [null, null, null, null];
     _distance = 0.0;
     _elapsed = 0;
 
@@ -542,6 +549,9 @@ class RecordingState extends State<RecordingScreen> {
     _lightBlue = paletteToPaintColor(isLight
         ? common.MaterialPalette.blue.shadeDefault.lighter
         : common.MaterialPalette.indigo.shadeDefault.darker);
+
+    _zoneIndexColoring =
+        PrefService.getBool(ZONE_INDEX_DISPLAY_COLORING_TAG) ?? ZONE_INDEX_DISPLAY_COLORING_DEFAULT;
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);
@@ -805,6 +815,16 @@ class RecordingState extends State<RecordingScreen> {
         false;
   }
 
+  Color getZoneColor({@required metricIndex, @required bool background}) {
+    if (_zoneIndexes[metricIndex] == null) {
+      return background ? Colors.transparent : _themeManager.getProtagonistColor();
+    }
+
+    return paletteToPaintColor(background
+        ? _preferencesSpecs[metricIndex].bgColorByBin(_zoneIndexes[metricIndex], _isLight)
+        : _preferencesSpecs[metricIndex].fgColorByBin(_zoneIndexes[metricIndex], _isLight));
+  }
+
   int _getRank(List<WorkoutSummary> leaderboard) {
     if (leaderboard.length <= 0) {
       return 1;
@@ -891,7 +911,7 @@ class RecordingState extends State<RecordingScreen> {
 
   Color getTargetHrColor(TargetHrState hrState, {bool background}) {
     if (hrState == TargetHrState.Off) {
-      return Colors.transparent;
+      return getZoneColor(metricIndex: 3, background: background);
     }
 
     if (hrState == TargetHrState.Under) {
@@ -905,7 +925,11 @@ class RecordingState extends State<RecordingScreen> {
 
   TextStyle getTargetHrTextStyle(TargetHrState hrState) {
     if (hrState == TargetHrState.Off) {
-      return _measurementStyle;
+      if (_zoneIndexes[3] == null) {
+        return _measurementStyle;
+      } else {
+        return _measurementStyle.apply(color: getZoneColor(metricIndex: 3, background: false));
+      }
     }
 
     return _measurementStyle.apply(color: getTargetHrColor(hrState, background: false));
@@ -1024,8 +1048,14 @@ class RecordingState extends State<RecordingScreen> {
         measurementStyle = getWaveLightTextStyle(_deviceRank, _sportRank);
       }
 
-      if (entry.key == 4 && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
+      if (entry.key == 4 && _targetHrMode != TARGET_HEART_RATE_MODE_NONE ||
+          _zoneIndexes[3] != null) {
         measurementStyle = targetHrTextStyle;
+      }
+
+      if ((entry.key == 1 || entry.key == 3) && _zoneIndexes[entry.key - 1] != null) {
+        measurementStyle = _measurementStyle.apply(
+            color: getZoneColor(metricIndex: entry.key - 1, background: false));
       }
 
       rows.add(Row(
@@ -1198,11 +1228,14 @@ class RecordingState extends State<RecordingScreen> {
               Divider(height: separatorHeight),
               rows[1],
               Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[2],
-                expanded: _simplerUi ? null : extras[0],
-                controller: _rowControllers[0],
+              ColoredBox(
+                color: getZoneColor(metricIndex: 0, background: true),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[2],
+                  expanded: _simplerUi ? null : extras[0],
+                  controller: _rowControllers[0],
+                ),
               ),
               Divider(height: separatorHeight),
               ColoredBox(
@@ -1215,11 +1248,14 @@ class RecordingState extends State<RecordingScreen> {
                 ),
               ),
               Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[4],
-                expanded: _simplerUi ? null : extras[2],
-                controller: _rowControllers[2],
+              ColoredBox(
+                color: getZoneColor(metricIndex: 2, background: true),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[4],
+                  expanded: _simplerUi ? null : extras[2],
+                  controller: _rowControllers[2],
+                ),
               ),
               Divider(height: separatorHeight),
               ColoredBox(

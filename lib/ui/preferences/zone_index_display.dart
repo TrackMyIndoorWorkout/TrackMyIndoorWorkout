@@ -11,6 +11,12 @@ class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
   Widget build(BuildContext context) {
     List<Widget> indexDisplayPreferences = [
       PreferenceTitle(PreferencesSpec.ZONE_INDEX_DISPLAY_EXTRA_NOTE),
+      SwitchPreference(
+        ZONE_INDEX_DISPLAY_COLORING,
+        ZONE_INDEX_DISPLAY_COLORING_TAG,
+        defaultVal: ZONE_INDEX_DISPLAY_COLORING_DEFAULT,
+        desc: ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION,
+      ),
     ];
 
     indexDisplayPreferences.addAll(

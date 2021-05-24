@@ -798,6 +798,13 @@ const THEME_SELECTION_DARK = "dark";
 const THEME_SELECTION_DARK_DESCRIPTION = "Dark theme.";
 const THEME_SELECTION_DEFAULT = THEME_SELECTION_SYSTEM;
 
+const ZONE_INDEX_DISPLAY_COLORING = "Color the measurement based on zones";
+const ZONE_INDEX_DISPLAY_COLORING_TAG = "zone_index_display_coloring";
+const ZONE_INDEX_DISPLAY_COLORING_DEFAULT = true;
+const ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION =
+    "On: The measurement font and background is color modified to reflect the zone value. " +
+        "Off: The zone is displayed without any re-coloring, this is less performance intensive.";
+
 Future<bool> getSimplerUiDefault() async {
   var simplerUiDefault = SIMPLER_UI_FAST_DEFAULT;
   if (Platform.isAndroid) {
