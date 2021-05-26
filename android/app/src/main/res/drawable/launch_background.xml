@@ -7,7 +7,6 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:scaleType="fitXY"
-            android:src="@raw/splash_logo" />
+            android:src="@mipmap/splash_logo" />
     </item>
 </layer-list>
