@@ -805,6 +805,22 @@ const ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION =
     "On: The measurement font and background is color modified to reflect the zone value. " +
         "Off: The zone is displayed without any re-coloring, this is less performance intensive.";
 
+const ATHLETE_BODY_WEIGHT = "Body Weight (kg)";
+const ATHLETE_BODY_WEIGHT_TAG = "athlete_body_weight";
+const ATHLETE_BODY_WEIGHT_DEFAULT_INT = 60;
+const ATHLETE_BODY_WEIGHT_DEFAULT = "$ATHLETE_BODY_WEIGHT_DEFAULT_INT";
+const ATHLETE_BODY_WEIGHT_DESCRIPTION =
+    "This settings is optional. It is only used right now for spin-down capable devices to set " +
+        "the initial value displayed in the weight input until the device sends the last inputted weight. " +
+        "As soon as the last inputted weight is received from the device it'll override the value in the input";
+
+const REMEMBER_ATHLETE_BODY_WEIGHT = "Remember last inputted weight at spin-down";
+const REMEMBER_ATHLETE_BODY_WEIGHT_TAG = "zone_index_display_coloring";
+const REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT = true;
+const REMEMBER_ATHLETE_BODY_WEIGHT_DESCRIPTION =
+    "On: The weight inputted at the beginning of a spin-down will override the weight above. " +
+        "Off: The weight input adjusted at spin-down won't be stored back to the setting above.";
+
 Future<bool> getSimplerUiDefault() async {
   var simplerUiDefault = SIMPLER_UI_FAST_DEFAULT;
   if (Platform.isAndroid) {

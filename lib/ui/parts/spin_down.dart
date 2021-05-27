@@ -14,6 +14,7 @@ import '../../devices/gatt_constants.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
+import '../../utils/preferences.dart';
 import '../../utils/theme_manager.dart';
 
 class SpinDownBottomSheet extends StatefulWidget {
@@ -69,6 +70,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   String _currentSpeedString;
   ThemeManager _themeManager;
   bool _isLight;
+  int _preferencesWeight = ATHLETE_BODY_WEIGHT_DEFAULT_INT;
+  bool _rememberLastWeight;
 
   bool get _spinDownPossible =>
       _weightData != null &&
@@ -99,7 +102,13 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _targetSpeedLow = 0.0;
     _currentSpeed = 0.0;
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
-    _weight = _si ? 60 : 130;
+    _preferencesWeight = getStringIntegerPreference(
+      ATHLETE_BODY_WEIGHT_TAG,
+      ATHLETE_BODY_WEIGHT_DEFAULT,
+      ATHLETE_BODY_WEIGHT_DEFAULT_INT,
+    );
+    _rememberLastWeight = PrefService.getBool(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ?? REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
+    _weight = (_preferencesWeight * (_si ? 1.0 : KG_TO_LB)).round();
     final weightBytes = getWeightBytes(_weight);
     _oldWeightLsb = weightBytes.item1;
     _oldWeightMsb = weightBytes.item2;
@@ -321,6 +330,11 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _newWeightLsb = newWeightBytes.item1;
     _newWeightMsb = newWeightBytes.item2;
     try {
+      if (_rememberLastWeight) {
+        final weightKg = _weight * (_si ? 1.0 : LB_TO_KG);
+        PrefService.setString(ATHLETE_BODY_WEIGHT_TAG, weightKg.toString());
+      }
+
       await _weightData.write([_newWeightLsb, _newWeightMsb]);
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
