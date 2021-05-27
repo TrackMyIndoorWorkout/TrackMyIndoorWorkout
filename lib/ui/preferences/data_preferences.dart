@@ -44,12 +44,6 @@ class DataPreferencesScreen extends PreferencesScreenBase {
           return null;
         },
       ),
-      SwitchPreference(
-        DATA_STREAM_GAP_ACTIVITY_AUTO_STOP,
-        DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_TAG,
-        defaultVal: DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DEFAULT,
-        desc: DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DESCRIPTION,
-      ),
       PreferenceTitle(DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION),
       PreferenceDialogLink(
         DATA_STREAM_GAP_SOUND_EFFECT,
