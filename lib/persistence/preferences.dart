@@ -590,12 +590,6 @@ const DATA_STREAM_GAP_WATCHDOG_DESCRIPTION = "How many seconds of data gap consi
     "as a disconnection. A watchdog would finish the workout and can trigger sound warnings as well. " +
     "Zero means disabled";
 
-const DATA_STREAM_GAP_ACTIVITY_AUTO_STOP = "Data Stream Gap Activity Auto Stop";
-const DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_TAG = "data_stream_gap_activity_auto_stop";
-const DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DEFAULT = false;
-const DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DESCRIPTION =
-    "The workout is automatically stopped when the data stream gap timeout occurs.";
-
 const SOUND_EFFECT_NONE = "none";
 const SOUND_EFFECT_NONE_DESCRIPTION = "No sound effect.";
 const SOUND_EFFECT_ONE_TONE = "one_tone_beep";

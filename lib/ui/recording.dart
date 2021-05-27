@@ -127,7 +127,6 @@ class RecordingState extends State<RecordingScreen> {
 
   Timer _dataGapWatchdog;
   int _dataGapWatchdogTime = DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT;
-  bool _dataGapAutoStop;
   String _dataGapSoundEffect;
   Timer _dataGapBeeperTimer;
 
@@ -405,8 +404,6 @@ class RecordingState extends State<RecordingScreen> {
       DATA_STREAM_GAP_WATCHDOG_DEFAULT,
       DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT,
     );
-    _dataGapAutoStop = PrefService.getBool(DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_TAG) ??
-        DATA_STREAM_GAP_ACTIVITY_AUTO_STOP_DEFAULT;
     _dataGapSoundEffect = PrefService.getString(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
         DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
 
@@ -606,19 +603,17 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_dataGapAutoStop) {
-      setState(() {
-        _measuring = false;
-      });
-      _fitnessEquipment.measuring = false;
-      try {
-        await _fitnessEquipment?.detach();
-        await _fitnessEquipment?.disconnect();
-      } on PlatformException catch (e, stack) {
-        debugPrint("Equipment got turned off?");
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-      }
+    setState(() {
+      _measuring = false;
+    });
+    _fitnessEquipment.measuring = false;
+    try {
+      await _fitnessEquipment?.detach();
+      await _fitnessEquipment?.disconnect();
+    } on PlatformException catch (e, stack) {
+      debugPrint("Equipment got turned off?");
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
     }
   }
 
