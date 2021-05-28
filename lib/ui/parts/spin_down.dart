@@ -107,7 +107,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       ATHLETE_BODY_WEIGHT_DEFAULT,
       ATHLETE_BODY_WEIGHT_DEFAULT_INT,
     );
-    _rememberLastWeight = PrefService.getBool(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ?? REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
+    _rememberLastWeight = PrefService.getBool(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ??
+        REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
     _weight = (_preferencesWeight * (_si ? 1.0 : KG_TO_LB)).round();
     final weightBytes = getWeightBytes(_weight);
     _oldWeightLsb = weightBytes.item1;
