@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:preferences/preference_service.dart';
@@ -113,6 +116,10 @@ class ThemeManager {
     return getIconFab(getBlueColor(), icon, onPressed);
   }
 
+  FloatingActionButton getRedFab(IconData icon, Function onPressed) {
+    return getIconFab(getRedColor(), icon, onPressed);
+  }
+
   FloatingActionButton getGreenFab(IconData icon, Function onPressed) {
     return getIconFab(getGreenColor(), icon, onPressed);
   }
@@ -123,6 +130,29 @@ class ThemeManager {
 
   FloatingActionButton getStravaFab(Function onPressed) {
     return _getFabCore(Colors.white, getOrangeColor(), Icon(BrandIcons.strava), onPressed);
+  }
+
+  FloatingActionButton getExitFab() {
+    return getRedFab(Icons.exit_to_app, () async {
+      Get.defaultDialog(
+        title: 'Warning!!!',
+        middleText: 'Are you sure to exit the App?',
+        confirm: TextButton(
+          child: Text("Yes"),
+          onPressed: () async {
+            try {
+              Platform.isAndroid ? SystemNavigator.pop() : exit(0);
+            } catch (e) {
+              Platform.isAndroid ? exit(0) : SystemNavigator.pop();
+            }
+          },
+        ),
+        cancel: TextButton(
+          child: Text("No"),
+          onPressed: () => Get.close(1),
+        ),
+      );
+    });
   }
 
   FloatingActionButton getRankIcon(int rank) {
