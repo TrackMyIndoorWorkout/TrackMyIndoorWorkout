@@ -1,5 +1,6 @@
+import 'dart:math';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,6 +20,7 @@ import '../utils/constants.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
+import 'parts/circular_menu.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
 import 'preferences/preferences_hub.dart';
@@ -47,6 +49,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
   int _heartRate;
   AdvertisementCache _advertisementCache;
   ThemeManager _themeManager;
+  double _ringDiameter;
+  double _ringWidth;
 
   @override
   void dispose() {
@@ -118,6 +122,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _themeManager = Get.find<ThemeManager>();
     _captionStyle = Get.textTheme.headline6.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
+    _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
+    _ringWidth = _ringDiameter * 0.2;
 
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
@@ -474,12 +480,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FabCircularMenu(
+      floatingActionButton: CircularMenu(
         fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
         fabOpenColor: _themeManager.getBlueColor(),
         fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
         fabCloseColor: _themeManager.getBlueColor(),
         ringColor: _themeManager.getBlueColorInverse(),
+        ringDiameter: _ringDiameter,
+        ringWidth: _ringWidth,
         children: [
           _themeManager.getExitFab(),
           _themeManager.getHelpFab(),
