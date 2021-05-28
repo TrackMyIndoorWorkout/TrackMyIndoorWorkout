@@ -255,7 +255,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       );
     }
 
-    floatingActionButtons.add(_themeManager.getHelpFab());
+    floatingActionButtons.addAll([
+      _themeManager.getHelpFab(),
+      _themeManager.getExitFab(),
+    ]);
 
     return Scaffold(
       appBar: AppBar(title: Text('Activities')),

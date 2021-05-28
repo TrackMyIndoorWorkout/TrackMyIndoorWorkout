@@ -481,6 +481,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         fabCloseColor: _themeManager.getBlueColor(),
         ringColor: _themeManager.getBlueColorInverse(),
         children: [
+          _themeManager.getExitFab(),
           _themeManager.getHelpFab(),
           _themeManager.getStravaFab(() async {
             StravaService stravaService;
