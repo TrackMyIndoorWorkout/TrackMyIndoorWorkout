@@ -211,12 +211,12 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (_rankingForDevice) {
-      _deviceLeaderboard = await _database.workoutSummaryDao
-          .findWorkoutSummaryByDevice(device.id.id, LEADERBOARD_LIMIT, 0);
+      _deviceLeaderboard =
+          await _database.workoutSummaryDao.findAllWorkoutSummariesByDevice(device.id.id);
     }
     if (_rankingForSport) {
-      _sportLeaderboard = await _database.workoutSummaryDao
-          .findWorkoutSummaryBySport(descriptor.defaultSport, LEADERBOARD_LIMIT, 0);
+      _sportLeaderboard =
+          await _database.workoutSummaryDao.findAllWorkoutSummariesBySport(descriptor.defaultSport);
     }
 
     _fitnessEquipment.setActivity(_activity);
