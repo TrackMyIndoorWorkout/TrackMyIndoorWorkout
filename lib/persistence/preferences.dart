@@ -753,8 +753,6 @@ const RANK_TRACK_VISUALIZATION_DESCRIPTION =
         "(blue color) of the current effort is displayed. Both positions have a the rank " +
         "number inside their dot.";
 
-const LEADERBOARD_LIMIT = 25;
-
 const EXPERT_PREFERENCES = "Expert Preferences";
 
 const APP_DEBUG_MODE = "Application Debug Mode";

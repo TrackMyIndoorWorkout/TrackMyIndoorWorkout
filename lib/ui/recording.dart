@@ -112,6 +112,7 @@ class RecordingState extends State<RecordingScreen> {
   TextStyle _measurementStyle;
   TextStyle _unitStyle;
   charts.TextStyleSpec _chartTextStyle;
+  TextStyle _markerStyle;
   ExpandableThemeData _expandableThemeData;
   List<bool> _expandedState;
   List<ExpandableController> _rowControllers;
@@ -149,9 +150,11 @@ class RecordingState extends State<RecordingScreen> {
   bool _rankingForDevice;
   List<WorkoutSummary> _deviceLeaderboard;
   int _deviceRank;
+  String _deviceRankString;
   bool _rankingForSport;
   List<WorkoutSummary> _sportLeaderboard;
   int _sportRank;
+  String _sportRankString;
   bool _rankRibbonVisualization;
   bool _rankTrackVisualization;
   Color _darkRed;
@@ -211,10 +214,14 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (_rankingForDevice) {
+      _deviceRank = null;
+      _deviceRankString = "";
       _deviceLeaderboard =
           await _database.workoutSummaryDao.findAllWorkoutSummariesByDevice(device.id.id);
     }
     if (_rankingForSport) {
+      _sportRank = null;
+      _sportRankString = "";
       _sportLeaderboard =
           await _database.workoutSummaryDao.findAllWorkoutSummariesBySport(descriptor.defaultSport);
     }
@@ -263,8 +270,14 @@ class RecordingState extends State<RecordingScreen> {
             _heartRate = record.heartRate;
           }
 
-          _deviceRank = _getDeviceRank();
-          _sportRank = _getSportRank();
+          if (_rankingForDevice) {
+            _deviceRank = _getDeviceRank();
+            _deviceRankString = _getDeviceRankString();
+          }
+          if (_rankingForSport) {
+            _sportRank = _getSportRank();
+            _sportRankString = _getSportRankString();
+          }
 
           _values = [
             record.calories.toString(),
@@ -360,6 +373,7 @@ class RecordingState extends State<RecordingScreen> {
       fontFamily: FONT_FAMILY,
       color: _themeManager.getBlueColor(),
     );
+    _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1, fontSizeFactor: 2.0);
     PrefService.setString(
       LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport),
       device.id.id,
@@ -519,11 +533,11 @@ class RecordingState extends State<RecordingScreen> {
     _rankRibbonVisualization =
         PrefService.getBool(RANK_RIBBON_VISUALIZATION_TAG) ?? RANK_RIBBON_VISUALIZATION_DEFAULT;
     _rankingForDevice = PrefService.getBool(RANKING_FOR_DEVICE_TAG) ?? RANKING_FOR_DEVICE_DEFAULT;
-    _deviceRank = MAX_UINT8;
     _deviceLeaderboard = [];
+    _deviceRankString = "";
     _rankingForSport = PrefService.getBool(RANKING_FOR_SPORT_TAG) ?? RANKING_FOR_SPORT_DEFAULT;
     _sportLeaderboard = [];
-    _sportRank = MAX_UINT8;
+    _sportRankString = "";
     _rankTrackVisualization =
         PrefService.getBool(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
 
@@ -826,7 +840,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (_elapsed == null || _elapsed == 0) {
-      return MAX_UINT8;
+      return null;
     }
 
     final averageSpeed = _elapsed > 0 ? _distance / _elapsed * DeviceDescriptor.MS2KMH : 0.0;
@@ -843,15 +857,11 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getRankString(int rank, List<WorkoutSummary> leaderboard) {
-    if (rank == null || rank > leaderboard.length) {
-      return "${leaderboard.length}+";
-    }
-
-    return "$rank";
+    return rank == null ? "--" : rank.toString();
   }
 
   int _getDeviceRank() {
-    if (!_rankingForDevice) return MAX_UINT8;
+    if (!_rankingForDevice) return null;
 
     return _getRank(_deviceLeaderboard);
   }
@@ -861,7 +871,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   int _getSportRank() {
-    if (!_rankingForSport) return MAX_UINT8;
+    if (!_rankingForSport) return null;
 
     return _getRank(_sportLeaderboard);
   }
@@ -871,7 +881,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Color getWaveLightColor(int deviceRank, int sportRank, {@required bool background}) {
-    if (!_rankingForDevice && !_rankingForSport) {
+    if (!_rankingForDevice && !_rankingForSport || deviceRank == null && sportRank == null) {
       return background ? Colors.transparent : _themeManager.getBlueColor();
     }
 
@@ -944,18 +954,23 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  Widget getTrackMarker(Offset markerPosition, int markerColor, String text) {
+  Widget getTrackMarker(Offset markerPosition, int markerColor, String text, bool self) {
+    double radius = THICK;
+    if (self) {
+      radius -= 1;
+    }
+
     return Positioned(
-      left: markerPosition.dx - THICK,
-      top: markerPosition.dy - THICK,
+      left: markerPosition.dx - radius,
+      top: markerPosition.dy - radius,
       child: Container(
         decoration: BoxDecoration(
           color: Color(markerColor),
-          borderRadius: BorderRadius.circular(THICK),
+          borderRadius: BorderRadius.circular(radius),
         ),
-        width: THICK * 2,
-        height: THICK * 2,
-        child: Center(child: Text(text)),
+        width: radius * 2,
+        height: radius * 2,
+        child: Center(child: Text(text, style: _markerStyle)),
       ),
     );
   }
@@ -967,16 +982,30 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     final length = leaderboard.length;
+    // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
       final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
       final position = _trackCalculator.trackMarker(distance);
-      markers.add(getTrackMarker(position, 0x8800FF00, "${rank - 1}"));
+      markers.add(getTrackMarker(position, 0x8800FF00, "${rank - 1}", false));
+    }
+    // Preceding dot ahead of the preceder (if any)
+    if (rank > 2 && rank - 3 < length) {
+      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
+      final position = _trackCalculator.trackMarker(distance);
+      markers.add(getTrackMarker(position, 0x8800FF00, "${rank - 2}", false));
     }
 
+    // Following dot (following directly) if any
     if (rank - 1 < length) {
       final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
       final position = _trackCalculator.trackMarker(distance);
-      markers.add(getTrackMarker(position, 0x880000FF, "${rank + 1}"));
+      markers.add(getTrackMarker(position, 0x880000FF, "${rank + 1}", false));
+    }
+    // Following dot  after the follower (if any)
+    if (rank < length) {
+      final distance = leaderboard[rank].distanceAtTime(_elapsed);
+      final position = _trackCalculator.trackMarker(distance);
+      markers.add(getTrackMarker(position, 0x880000FF, "$rank", false));
     }
 
     return markers;
@@ -1123,12 +1152,14 @@ class RecordingState extends State<RecordingScreen> {
           List<Widget> extraExtras = [];
           if (_rankingForDevice) {
             final deviceWaveLightColor = getWaveLightTextStyle(_deviceRank, null);
-            extraExtras.add(Text(_getDeviceRankString(), style: deviceWaveLightColor));
+            extraExtras.add(Text(_deviceRankString, style: deviceWaveLightColor));
           }
+
           if (_rankingForSport) {
             final deviceWaveLightColor = getWaveLightTextStyle(null, _sportRank);
-            extraExtras.add(Text(_getSportRankString(), style: deviceWaveLightColor));
+            extraExtras.add(Text(_sportRankString, style: deviceWaveLightColor));
           }
+
           extraExtras.add(extra);
           extra = Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -1142,15 +1173,37 @@ class RecordingState extends State<RecordingScreen> {
       List<Widget> markers = [];
       final markerPosition = _trackCalculator.trackMarker(_distance);
       if (markerPosition != null) {
-        markers.add(getTrackMarker(markerPosition, 0x88FF0000, ""));
+        var selfMarkerText = "";
+        var selfRankText = "";
+        var selfMarkerColor = 0xFFFF0000;
         if (_rankTrackVisualization) {
           if (_rankingForDevice) {
             markers.addAll(markersForLeaderboard(_deviceLeaderboard, _deviceRank));
+            if (_deviceRank != null) {
+              selfMarkerText = _deviceRank.toString();
+            }
+
+            selfRankText += _deviceRankString;
           }
+
           if (_rankingForSport) {
             markers.addAll(markersForLeaderboard(_sportLeaderboard, _sportRank));
+            if (_sportRank != null && _deviceRank == null) {
+              selfMarkerText = _sportRank.toString();
+            }
+
+            if (selfRankText.length > 0) {
+              selfRankText += " ";
+            }
+
+            selfRankText += _sportRankString;
           }
+
+          // Add red circle around the athlete marker to distinguish
+          markers.add(getTrackMarker(markerPosition, selfMarkerColor, "", false));
+          selfMarkerColor = getWaveLightColor(_deviceRank, _sportRank, background: true).value;
         }
+        markers.add(getTrackMarker(markerPosition, selfMarkerColor, selfMarkerText, _rankTrackVisualization));
       }
       extras.add(
         CustomPaint(
