@@ -30,6 +30,7 @@ import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
+import '../utils/display.dart';
 import '../utils/preferences.dart';
 import '../utils/sound.dart';
 import '../utils/target_heart_rate.dart';
@@ -975,40 +976,90 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
-  List<Widget> markersForLeaderboard(List<WorkoutSummary> leaderboard, int rank) {
+  List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int rank) {
     List<Widget> markers = [];
     if (leaderboard == null || leaderboard.length <= 0 || rank == null) {
       return markers;
     }
 
     final length = leaderboard.length;
+    // Preceding dot ahead of the preceding (if any)
+    if (rank > 2 && rank - 3 < length) {
+      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
+      final position = _trackCalculator.trackMarker(distance);
+      markers.add(_getTrackMarker(position, 0x8800FF00, "${rank - 2}", false));
+    }
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
       final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
       final position = _trackCalculator.trackMarker(distance);
-      markers.add(getTrackMarker(position, 0x8800FF00, "${rank - 1}", false));
-    }
-    // Preceding dot ahead of the preceder (if any)
-    if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
-      final position = _trackCalculator.trackMarker(distance);
-      markers.add(getTrackMarker(position, 0x8800FF00, "${rank - 2}", false));
+      markers.add(_getTrackMarker(position, 0x8800FF00, "${rank - 1}", false));
     }
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
       final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
       final position = _trackCalculator.trackMarker(distance);
-      markers.add(getTrackMarker(position, 0x880000FF, "${rank + 1}", false));
+      markers.add(_getTrackMarker(position, 0x880000FF, "${rank + 1}", false));
     }
-    // Following dot  after the follower (if any)
+    // Following dot after the follower (if any)
     if (rank < length) {
       final distance = leaderboard[rank].distanceAtTime(_elapsed);
       final position = _trackCalculator.trackMarker(distance);
-      markers.add(getTrackMarker(position, 0x880000FF, "$rank", false));
+      markers.add(_getTrackMarker(position, 0x880000FF, "${rank + 2}", false));
     }
 
     return markers;
+  }
+
+  Widget _getLeaderboardInfoTextCore(String text, bool lead) {
+    final bgColor = lead ? _lightGreen : _lightBlue;
+    return ColoredBox(
+      color: bgColor,
+      child: Text(text, style: _markerStyle),
+    );
+  }
+
+  Widget _getLeaderboardInfoText(int rank, double distance, bool lead) {
+    return _getLeaderboardInfoTextCore("#$rank ${distanceByUnit(distance - _distance, _si)}", lead);
+  }
+
+  Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int rank, String rankString) {
+    if (leaderboard == null || leaderboard.length <= 0 || rank == null) {
+      return Text(rankString, style: _markerStyle);
+    }
+
+    List<Widget> rows = [];
+    final length = leaderboard.length;
+    // Preceding dot ahead of the preceding (if any)
+    if (rank > 2 && rank - 3 < length) {
+      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
+      rows.add(_getLeaderboardInfoText(rank - 2, distance, true));
+    }
+    // Preceding dot (chasing directly) if any
+    if (rank > 1 && rank - 2 < length) {
+      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
+      rows.add(_getLeaderboardInfoText(rank - 1, distance, true));
+    }
+
+    rows.add(_getLeaderboardInfoTextCore(rankString, rank <= 1));
+
+    // Following dot (following directly) if any
+    if (rank - 1 < length) {
+      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
+      rows.add(_getLeaderboardInfoText(rank + 1, distance, false));
+    }
+    // Following dot after the follower (if any)
+    if (rank < length) {
+      final distance = leaderboard[rank].distanceAtTime(_elapsed);
+      rows.add(_getLeaderboardInfoText(rank + 2, distance, false));
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: rows,
+    );
   }
 
   @override
@@ -1174,36 +1225,53 @@ class RecordingState extends State<RecordingScreen> {
       final markerPosition = _trackCalculator.trackMarker(_distance);
       if (markerPosition != null) {
         var selfMarkerText = "";
-        var selfRankText = "";
         var selfMarkerColor = 0xFFFF0000;
         if (_rankTrackVisualization) {
+          Widget rankInfo;
+          Widget deviceRankInfo;
           if (_rankingForDevice) {
-            markers.addAll(markersForLeaderboard(_deviceLeaderboard, _deviceRank));
+            markers.addAll(_markersForLeaderboard(_deviceLeaderboard, _deviceRank));
             if (_deviceRank != null) {
               selfMarkerText = _deviceRank.toString();
             }
 
-            selfRankText += _deviceRankString;
+            deviceRankInfo =
+                _infoForLeaderboard(_deviceLeaderboard, _deviceRank, _deviceRankString);
+            if (!_rankingForSport) {
+              rankInfo = Center(child: deviceRankInfo);
+            }
           }
 
+          Widget sportRankInfo;
           if (_rankingForSport) {
-            markers.addAll(markersForLeaderboard(_sportLeaderboard, _sportRank));
+            markers.addAll(_markersForLeaderboard(_sportLeaderboard, _sportRank));
             if (_sportRank != null && _deviceRank == null) {
               selfMarkerText = _sportRank.toString();
             }
 
-            if (selfRankText.length > 0) {
-              selfRankText += " ";
+            sportRankInfo = _infoForLeaderboard(_sportLeaderboard, _sportRank, _sportRankString);
+            if (!_rankingForDevice) {
+              rankInfo = Center(child: sportRankInfo);
             }
-
-            selfRankText += _sportRankString;
           }
 
+          if (_rankingForDevice && _rankingForDevice) {
+            rankInfo = Center(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [deviceRankInfo, sportRankInfo],
+            ));
+          }
+
+          markers.add(rankInfo);
+
           // Add red circle around the athlete marker to distinguish
-          markers.add(getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = getPaceLightColor(_deviceRank, _sportRank, background: true).value;
+          markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
+          selfMarkerColor = _getPaceLightColor(_deviceRank, _sportRank, background: true).value;
         }
-        markers.add(getTrackMarker(markerPosition, selfMarkerColor, selfMarkerText, _rankTrackVisualization));
+        markers.add(_getTrackMarker(
+            markerPosition, selfMarkerColor, selfMarkerText, _rankTrackVisualization));
       }
       extras.add(
         CustomPaint(
