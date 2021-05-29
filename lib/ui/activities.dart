@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
-import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
@@ -29,6 +28,7 @@ import 'device_usages.dart';
 import 'import_form.dart';
 import 'leaderboards/leaderboard_type_picker.dart';
 import 'parts/calorie_override.dart';
+import 'parts/circular_menu.dart';
 import 'parts/data_format_picker.dart';
 import 'parts/power_factor_tune.dart';
 import 'power_tunes.dart';
@@ -60,6 +60,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   TextStyle _unitStyle;
   ThemeManager _themeManager;
   ExpandableThemeData _expandableThemeData;
+  double _ringDiameter;
+  double _ringWidth;
 
   ActivitiesScreenState({@required this.hasLeaderboardData}) : assert(hasLeaderboardData != null);
 
@@ -73,6 +75,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _database = Get.find<AppDatabase>();
     _themeManager = Get.find<ThemeManager>();
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
+    _ringWidth = _ringDiameter * 0.2;
   }
 
   Widget _actionButtonRow(Activity activity, double size) {
@@ -231,6 +235,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     }
 
     List<FloatingActionButton> floatingActionButtons = [
+      _themeManager.getExitFab(),
+      _themeManager.getHelpFab(),
       _themeManager.getBlueFab(Icons.file_upload, () async {
         await Get.to(ImportForm()).whenComplete(() => setState(() {
               _editCount++;
@@ -254,11 +260,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         }),
       );
     }
-
-    floatingActionButtons.addAll([
-      _themeManager.getHelpFab(),
-      _themeManager.getExitFab(),
-    ]);
 
     return Scaffold(
       appBar: AppBar(title: Text('Activities')),
@@ -382,12 +383,14 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FabCircularMenu(
+      floatingActionButton: CircularMenu(
         fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
         fabOpenColor: _themeManager.getBlueColor(),
         fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
         fabCloseColor: _themeManager.getBlueColor(),
         ringColor: _themeManager.getBlueColorInverse(),
+        ringDiameter: _ringDiameter,
+        ringWidth: _ringWidth,
         children: floatingActionButtons,
       ),
     );

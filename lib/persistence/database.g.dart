@@ -895,11 +895,47 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
   }
 
   @override
+  Future<List<WorkoutSummary>> findAllWorkoutSummariesByDevice(String deviceId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM workout_summary WHERE device_id = ? ORDER BY speed DESC',
+        arguments: <dynamic>[deviceId],
+        mapper: (Map<String, dynamic> row) => WorkoutSummary(
+            id: row['id'] as int,
+            deviceName: row['device_name'] as String,
+            deviceId: row['device_id'] as String,
+            manufacturer: row['manufacturer'] as String,
+            start: row['start'] as int,
+            distance: row['distance'] as double,
+            elapsed: row['elapsed'] as int,
+            sport: row['sport'] as String,
+            powerFactor: row['power_factor'] as double,
+            calorieFactor: row['calorie_factor'] as double));
+  }
+
+  @override
   Future<List<WorkoutSummary>> findWorkoutSummaryByDevice(
       String deviceId, int limit, int offset) async {
     return _queryAdapter.queryList(
         'SELECT * FROM workout_summary WHERE device_id = ? ORDER BY speed DESC LIMIT ? OFFSET ?',
         arguments: <dynamic>[deviceId, limit, offset],
+        mapper: (Map<String, dynamic> row) => WorkoutSummary(
+            id: row['id'] as int,
+            deviceName: row['device_name'] as String,
+            deviceId: row['device_id'] as String,
+            manufacturer: row['manufacturer'] as String,
+            start: row['start'] as int,
+            distance: row['distance'] as double,
+            elapsed: row['elapsed'] as int,
+            sport: row['sport'] as String,
+            powerFactor: row['power_factor'] as double,
+            calorieFactor: row['calorie_factor'] as double));
+  }
+
+  @override
+  Future<List<WorkoutSummary>> findAllWorkoutSummariesBySport(String sport) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM workout_summary WHERE sport = ? ORDER BY speed DESC',
+        arguments: <dynamic>[sport],
         mapper: (Map<String, dynamic> row) => WorkoutSummary(
             id: row['id'] as int,
             deviceName: row['device_name'] as String,

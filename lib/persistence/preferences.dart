@@ -726,14 +726,14 @@ const LEADERBOARD_FEATURE_DESCRIPTION =
 
 const RANK_RIBBON_VISUALIZATION = "Display Rank Ribbons Above the Speed Graph";
 const RANK_RIBBON_VISUALIZATION_TAG = "rank_ribbon_visualization";
-const RANK_RIBBON_VISUALIZATION_DEFAULT = true;
+const RANK_RIBBON_VISUALIZATION_DEFAULT = false;
 const RANK_RIBBON_VISUALIZATION_DESCRIPTION =
     "Should the app provide UI feedback by ribbons above the speed graph. " +
         "Blue color means behind the top leaderboard, green marks record pace.";
 
 const RANKING_FOR_DEVICE = "Ranking Based on the Actual Device";
 const RANKING_FOR_DEVICE_TAG = "ranking_for_device";
-const RANKING_FOR_DEVICE_DEFAULT = true;
+const RANKING_FOR_DEVICE_DEFAULT = false;
 const RANKING_FOR_DEVICE_DESCRIPTION =
     "Should the app display ranking for the particular device. " +
         "This affects both the ribbon type and the track visualization.";
@@ -753,7 +753,14 @@ const RANK_TRACK_VISUALIZATION_DESCRIPTION =
         "(blue color) of the current effort is displayed. Both positions have a the rank " +
         "number inside their dot.";
 
-const LEADERBOARD_LIMIT = 25;
+const RANK_INFO_ON_TRACK =
+    "Display rank information at the center of the track (on top of positions)";
+const RANK_INFO_ON_TRACK_TAG = "rank_info_on_track";
+const RANK_INFO_ON_TRACK_DEFAULT = true;
+const RANK_INFO_ON_TRACK_DESCRIPTION =
+    "On: when rank position is enabled this switch will display extra information in the middle of the track: " +
+        "it'll list the preceding and following positions along with the distance compared to the athlete's current " +
+        "position";
 
 const EXPERT_PREFERENCES = "Expert Preferences";
 
@@ -809,7 +816,7 @@ const ATHLETE_BODY_WEIGHT_DESCRIPTION =
         "As soon as the last inputted weight is received from the device it'll override the value in the input";
 
 const REMEMBER_ATHLETE_BODY_WEIGHT = "Remember last inputted weight at spin-down";
-const REMEMBER_ATHLETE_BODY_WEIGHT_TAG = "zone_index_display_coloring";
+const REMEMBER_ATHLETE_BODY_WEIGHT_TAG = "remember_athlete_body_weight";
 const REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT = true;
 const REMEMBER_ATHLETE_BODY_WEIGHT_DESCRIPTION =
     "On: The weight inputted at the beginning of a spin-down will override the weight above. " +

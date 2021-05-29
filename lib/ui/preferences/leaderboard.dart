@@ -41,6 +41,16 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         },
       ),
       SwitchPreference(
+        RANK_INFO_ON_TRACK,
+        RANK_INFO_ON_TRACK_TAG,
+        defaultVal: RANK_INFO_ON_TRACK_DEFAULT,
+        desc: RANK_INFO_ON_TRACK_DESCRIPTION,
+        onEnable: () {
+          PrefService.setBool(RANK_TRACK_VISUALIZATION_TAG, true);
+          PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
+        },
+      ),
+      SwitchPreference(
         RANKING_FOR_DEVICE,
         RANKING_FOR_DEVICE_TAG,
         defaultVal: RANKING_FOR_DEVICE_DEFAULT,

@@ -10,8 +10,15 @@ abstract class WorkoutSummaryDao {
   Stream<WorkoutSummary> findWorkoutSummaryById(int id);
 
   @Query(
+      'SELECT * FROM $WORKOUT_SUMMARIES_TABLE_NAME WHERE device_id = :deviceId ORDER BY speed DESC')
+  Future<List<WorkoutSummary>> findAllWorkoutSummariesByDevice(String deviceId);
+
+  @Query(
       'SELECT * FROM $WORKOUT_SUMMARIES_TABLE_NAME WHERE device_id = :deviceId ORDER BY speed DESC LIMIT :limit OFFSET :offset')
   Future<List<WorkoutSummary>> findWorkoutSummaryByDevice(String deviceId, int limit, int offset);
+
+  @Query('SELECT * FROM $WORKOUT_SUMMARIES_TABLE_NAME WHERE sport = :sport ORDER BY speed DESC')
+  Future<List<WorkoutSummary>> findAllWorkoutSummariesBySport(String sport);
 
   @Query(
       'SELECT * FROM $WORKOUT_SUMMARIES_TABLE_NAME WHERE sport = :sport ORDER BY speed DESC LIMIT :limit OFFSET :offset')
