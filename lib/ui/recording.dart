@@ -880,7 +880,7 @@ class RecordingState extends State<RecordingScreen> {
     return "#${_getRankString(_sportRank, _sportLeaderboard)} (${descriptor.defaultSport})";
   }
 
-  Color getWaveLightColor(int deviceRank, int sportRank, {@required bool background}) {
+  Color getPaceLightColor(int deviceRank, int sportRank, {@required bool background}) {
     if (!_rankingForDevice && !_rankingForSport || deviceRank == null && sportRank == null) {
       return background ? Colors.transparent : _themeManager.getBlueColor();
     }
@@ -891,13 +891,13 @@ class RecordingState extends State<RecordingScreen> {
     return background ? _lightBlue : _darkBlue;
   }
 
-  TextStyle getWaveLightTextStyle(int deviceRank, int sportRank) {
+  TextStyle getPaceLightTextStyle(int deviceRank, int sportRank) {
     if (!_rankingForDevice && !_rankingForSport) {
       return _measurementStyle;
     }
 
     return _measurementStyle.apply(
-        color: getWaveLightColor(deviceRank, sportRank, background: false));
+        color: getPaceLightColor(deviceRank, sportRank, background: false));
   }
 
   TargetHrState getTargetHrState() {
@@ -1069,7 +1069,7 @@ class RecordingState extends State<RecordingScreen> {
       var measurementStyle = _measurementStyle;
 
       if (entry.key == 2 && (_rankingForDevice || _rankingForSport)) {
-        measurementStyle = getWaveLightTextStyle(_deviceRank, _sportRank);
+        measurementStyle = getPaceLightTextStyle(_deviceRank, _sportRank);
       }
 
       if (entry.key == 4 && _targetHrMode != TARGET_HEART_RATE_MODE_NONE ||
@@ -1151,13 +1151,13 @@ class RecordingState extends State<RecordingScreen> {
             (_rankingForDevice || _rankingForSport)) {
           List<Widget> extraExtras = [];
           if (_rankingForDevice) {
-            final deviceWaveLightColor = getWaveLightTextStyle(_deviceRank, null);
-            extraExtras.add(Text(_deviceRankString, style: deviceWaveLightColor));
+            final devicePaceLightColor = getPaceLightTextStyle(_deviceRank, null);
+            extraExtras.add(Text(_deviceRankString, style: devicePaceLightColor));
           }
 
           if (_rankingForSport) {
-            final deviceWaveLightColor = getWaveLightTextStyle(null, _sportRank);
-            extraExtras.add(Text(_sportRankString, style: deviceWaveLightColor));
+            final devicePaceLightColor = getPaceLightTextStyle(null, _sportRank);
+            extraExtras.add(Text(_sportRankString, style: devicePaceLightColor));
           }
 
           extraExtras.add(extra);
@@ -1201,7 +1201,7 @@ class RecordingState extends State<RecordingScreen> {
 
           // Add red circle around the athlete marker to distinguish
           markers.add(getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = getWaveLightColor(_deviceRank, _sportRank, background: true).value;
+          selfMarkerColor = getPaceLightColor(_deviceRank, _sportRank, background: true).value;
         }
         markers.add(getTrackMarker(markerPosition, selfMarkerColor, selfMarkerText, _rankTrackVisualization));
       }
@@ -1287,7 +1287,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               Divider(height: separatorHeight),
               ColoredBox(
-                color: getWaveLightColor(_deviceRank, _sportRank, background: true),
+                color: getPaceLightColor(_deviceRank, _sportRank, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[3],
