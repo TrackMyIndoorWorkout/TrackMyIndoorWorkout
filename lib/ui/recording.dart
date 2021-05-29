@@ -158,6 +158,7 @@ class RecordingState extends State<RecordingScreen> {
   String _sportRankString;
   bool _rankRibbonVisualization;
   bool _rankTrackVisualization;
+  bool _rankInfoOnTrack;
   Color _darkRed;
   Color _darkGreen;
   Color _darkBlue;
@@ -541,6 +542,7 @@ class RecordingState extends State<RecordingScreen> {
     _sportRankString = "";
     _rankTrackVisualization =
         PrefService.getBool(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
+    _rankInfoOnTrack = PrefService.getBool(RANK_INFO_ON_TRACK_TAG) ?? RANK_INFO_ON_TRACK_DEFAULT;
 
     final isLight = !_themeManager.isDark();
     _darkRed = paletteToPaintColor(isLight
@@ -1235,10 +1237,12 @@ class RecordingState extends State<RecordingScreen> {
               selfMarkerText = _deviceRank.toString();
             }
 
-            deviceRankInfo =
-                _infoForLeaderboard(_deviceLeaderboard, _deviceRank, _deviceRankString);
-            if (!_rankingForSport) {
-              rankInfo = Center(child: deviceRankInfo);
+            if (_rankInfoOnTrack) {
+              deviceRankInfo =
+                  _infoForLeaderboard(_deviceLeaderboard, _deviceRank, _deviceRankString);
+              if (!_rankingForSport) {
+                rankInfo = Center(child: deviceRankInfo);
+              }
             }
           }
 
@@ -1249,22 +1253,26 @@ class RecordingState extends State<RecordingScreen> {
               selfMarkerText = _sportRank.toString();
             }
 
-            sportRankInfo = _infoForLeaderboard(_sportLeaderboard, _sportRank, _sportRankString);
-            if (!_rankingForDevice) {
-              rankInfo = Center(child: sportRankInfo);
+            if (_rankInfoOnTrack) {
+              sportRankInfo = _infoForLeaderboard(_sportLeaderboard, _sportRank, _sportRankString);
+              if (!_rankingForDevice) {
+                rankInfo = Center(child: sportRankInfo);
+              }
             }
           }
 
-          if (_rankingForDevice && _rankingForDevice) {
-            rankInfo = Center(
-                child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [deviceRankInfo, sportRankInfo],
-            ));
-          }
+          if (_rankInfoOnTrack) {
+            if (_rankingForDevice && _rankingForDevice) {
+              rankInfo = Center(
+                  child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [deviceRankInfo, sportRankInfo],
+              ));
+            }
 
-          markers.add(rankInfo);
+            markers.add(rankInfo);
+          }
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));

@@ -753,6 +753,15 @@ const RANK_TRACK_VISUALIZATION_DESCRIPTION =
         "(blue color) of the current effort is displayed. Both positions have a the rank " +
         "number inside their dot.";
 
+const RANK_INFO_ON_TRACK =
+    "Display rank information at the center of the track (on top of positions)";
+const RANK_INFO_ON_TRACK_TAG = "rank_info_on_track";
+const RANK_INFO_ON_TRACK_DEFAULT = true;
+const RANK_INFO_ON_TRACK_DESCRIPTION =
+    "On: when rank position is enabled this switch will display extra information in the middle of the track: " +
+        "it'll list the preceding and following positions along with the distance compared to the athlete's current " +
+        "position";
+
 const EXPERT_PREFERENCES = "Expert Preferences";
 
 const APP_DEBUG_MODE = "Application Debug Mode";
