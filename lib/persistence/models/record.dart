@@ -193,7 +193,7 @@ class RecordWithSport extends Record {
       timeStamp: DateTime.now().millisecondsSinceEpoch,
       calories: random.nextInt(1500),
       power: 50 + random.nextInt(500),
-      speed: 26.0 + random.nextDouble() * 10.0,
+      speed: 30.0 + random.nextDouble() * 10.0,
       cadence: 30 + random.nextInt(100),
       heartRate: 60 + random.nextInt(120),
       sport: sport,
