@@ -807,7 +807,7 @@ const ATHLETE_BODY_WEIGHT_DESCRIPTION =
         "As soon as the last inputted weight is received from the device it'll override the value in the input";
 
 const REMEMBER_ATHLETE_BODY_WEIGHT = "Remember last inputted weight at spin-down";
-const REMEMBER_ATHLETE_BODY_WEIGHT_TAG = "zone_index_display_coloring";
+const REMEMBER_ATHLETE_BODY_WEIGHT_TAG = "remember_athlete_body_weight";
 const REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT = true;
 const REMEMBER_ATHLETE_BODY_WEIGHT_DESCRIPTION =
     "On: The weight inputted at the beginning of a spin-down will override the weight above. " +
