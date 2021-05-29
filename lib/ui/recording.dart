@@ -374,7 +374,7 @@ class RecordingState extends State<RecordingScreen> {
       fontFamily: FONT_FAMILY,
       color: _themeManager.getBlueColor(),
     );
-    _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1, fontSizeFactor: 2.0);
+    _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1, fontSizeFactor: 1.4);
     PrefService.setString(
       LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport),
       device.id.id,
