@@ -176,7 +176,7 @@ class RecordWithSport extends Record {
   static getBlank(String sport, bool uxDebug, Random random) {
     return RecordWithSport(
       timeStamp: 0,
-      distance: uxDebug ? random.nextInt(5000).toDouble() : 0.0,
+      distance: 0.0,
       elapsed: 0,
       calories: 0,
       power: 0,
@@ -193,7 +193,7 @@ class RecordWithSport extends Record {
       timeStamp: DateTime.now().millisecondsSinceEpoch,
       calories: random.nextInt(1500),
       power: 50 + random.nextInt(500),
-      speed: 15.0 + random.nextDouble() * 15.0,
+      speed: 26.0 + random.nextDouble() * 10.0,
       cadence: 30 + random.nextInt(100),
       heartRate: 60 + random.nextInt(120),
       sport: sport,
