@@ -824,7 +824,7 @@ class RecordingState extends State<RecordingScreen> {
         false;
   }
 
-  Color getZoneColor({@required metricIndex, @required bool background}) {
+  Color _getZoneColor({@required metricIndex, @required bool background}) {
     if (_zoneIndexes[metricIndex] == null) {
       return background ? Colors.transparent : _themeManager.getProtagonistColor();
     }
@@ -880,7 +880,7 @@ class RecordingState extends State<RecordingScreen> {
     return "#${_getRankString(_sportRank, _sportLeaderboard)} (${descriptor.defaultSport})";
   }
 
-  Color getPaceLightColor(int deviceRank, int sportRank, {@required bool background}) {
+  Color _getPaceLightColor(int deviceRank, int sportRank, {@required bool background}) {
     if (!_rankingForDevice && !_rankingForSport || deviceRank == null && sportRank == null) {
       return background ? Colors.transparent : _themeManager.getBlueColor();
     }
@@ -891,16 +891,16 @@ class RecordingState extends State<RecordingScreen> {
     return background ? _lightBlue : _darkBlue;
   }
 
-  TextStyle getPaceLightTextStyle(int deviceRank, int sportRank) {
+  TextStyle _getPaceLightTextStyle(int deviceRank, int sportRank) {
     if (!_rankingForDevice && !_rankingForSport) {
       return _measurementStyle;
     }
 
     return _measurementStyle.apply(
-        color: getPaceLightColor(deviceRank, sportRank, background: false));
+        color: _getPaceLightColor(deviceRank, sportRank, background: false));
   }
 
-  TargetHrState getTargetHrState() {
+  TargetHrState _getTargetHrState() {
     if (_heartRate == null || _heartRate == 0 || _targetHrMode == TARGET_HEART_RATE_MODE_NONE) {
       return TargetHrState.Off;
     }
@@ -914,9 +914,9 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  Color getTargetHrColor(TargetHrState hrState, {bool background}) {
+  Color _getTargetHrColor(TargetHrState hrState, {bool background}) {
     if (hrState == TargetHrState.Off) {
-      return getZoneColor(metricIndex: 3, background: background);
+      return _getZoneColor(metricIndex: 3, background: background);
     }
 
     if (hrState == TargetHrState.Under) {
@@ -928,19 +928,19 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  TextStyle getTargetHrTextStyle(TargetHrState hrState) {
+  TextStyle _getTargetHrTextStyle(TargetHrState hrState) {
     if (hrState == TargetHrState.Off) {
       if (_zoneIndexes[3] == null) {
         return _measurementStyle;
       } else {
-        return _measurementStyle.apply(color: getZoneColor(metricIndex: 3, background: false));
+        return _measurementStyle.apply(color: _getZoneColor(metricIndex: 3, background: false));
       }
     }
 
-    return _measurementStyle.apply(color: getTargetHrColor(hrState, background: false));
+    return _measurementStyle.apply(color: _getTargetHrColor(hrState, background: false));
   }
 
-  String getTargetHrText(TargetHrState hrState) {
+  String _getTargetHrText(TargetHrState hrState) {
     if (hrState == TargetHrState.Off) {
       return "--";
     }
@@ -954,7 +954,7 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  Widget getTrackMarker(Offset markerPosition, int markerColor, String text, bool self) {
+  Widget _getTrackMarker(Offset markerPosition, int markerColor, String text, bool self) {
     double radius = THICK;
     if (self) {
       radius -= 1;
@@ -1062,14 +1062,14 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
-    final targetHrState = getTargetHrState();
-    final targetHrTextStyle = getTargetHrTextStyle(targetHrState);
+    final targetHrState = _getTargetHrState();
+    final targetHrTextStyle = _getTargetHrTextStyle(targetHrState);
 
     _rowConfig.asMap().entries.forEach((entry) {
       var measurementStyle = _measurementStyle;
 
       if (entry.key == 2 && (_rankingForDevice || _rankingForSport)) {
-        measurementStyle = getPaceLightTextStyle(_deviceRank, _sportRank);
+        measurementStyle = _getPaceLightTextStyle(_deviceRank, _sportRank);
       }
 
       if (entry.key == 4 && _targetHrMode != TARGET_HEART_RATE_MODE_NONE ||
@@ -1079,7 +1079,7 @@ class RecordingState extends State<RecordingScreen> {
 
       if ((entry.key == 1 || entry.key == 3) && _zoneIndexes[entry.key - 1] != null) {
         measurementStyle = _measurementStyle.apply(
-            color: getZoneColor(metricIndex: entry.key - 1, background: false));
+            color: _getZoneColor(metricIndex: entry.key - 1, background: false));
       }
 
       rows.add(Row(
@@ -1139,7 +1139,7 @@ class RecordingState extends State<RecordingScreen> {
         );
         if (entry.value.metric == "hr" && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
           int zoneIndex = targetHrState == TargetHrState.Off ? 0 : entry.value.binIndex(_heartRate);
-          String targetText = getTargetHrText(targetHrState);
+          String targetText = _getTargetHrText(targetHrState);
           targetText = "Z$zoneIndex $targetText";
           extra = Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -1151,12 +1151,12 @@ class RecordingState extends State<RecordingScreen> {
             (_rankingForDevice || _rankingForSport)) {
           List<Widget> extraExtras = [];
           if (_rankingForDevice) {
-            final devicePaceLightColor = getPaceLightTextStyle(_deviceRank, null);
+            final devicePaceLightColor = _getPaceLightTextStyle(_deviceRank, null);
             extraExtras.add(Text(_deviceRankString, style: devicePaceLightColor));
           }
 
           if (_rankingForSport) {
-            final devicePaceLightColor = getPaceLightTextStyle(null, _sportRank);
+            final devicePaceLightColor = _getPaceLightTextStyle(null, _sportRank);
             extraExtras.add(Text(_sportRankString, style: devicePaceLightColor));
           }
 
@@ -1277,7 +1277,7 @@ class RecordingState extends State<RecordingScreen> {
               rows[1],
               Divider(height: separatorHeight),
               ColoredBox(
-                color: getZoneColor(metricIndex: 0, background: true),
+                color: _getZoneColor(metricIndex: 0, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[2],
@@ -1287,7 +1287,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               Divider(height: separatorHeight),
               ColoredBox(
-                color: getPaceLightColor(_deviceRank, _sportRank, background: true),
+                color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[3],
@@ -1297,7 +1297,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               Divider(height: separatorHeight),
               ColoredBox(
-                color: getZoneColor(metricIndex: 2, background: true),
+                color: _getZoneColor(metricIndex: 2, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[4],
@@ -1307,7 +1307,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               Divider(height: separatorHeight),
               ColoredBox(
-                color: getTargetHrColor(targetHrState, background: true),
+                color: _getTargetHrColor(targetHrState, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[5],
