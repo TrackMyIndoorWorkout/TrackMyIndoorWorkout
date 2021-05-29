@@ -1228,7 +1228,7 @@ class RecordingState extends State<RecordingScreen> {
       if (markerPosition != null) {
         var selfMarkerText = "";
         var selfMarkerColor = 0xFFFF0000;
-        if (_rankTrackVisualization) {
+        if (_rankTrackVisualization && (_rankingForDevice || _rankingForSport)) {
           Widget rankInfo;
           Widget deviceRankInfo;
           if (_rankingForDevice) {
@@ -1278,9 +1278,11 @@ class RecordingState extends State<RecordingScreen> {
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
           selfMarkerColor = _getPaceLightColor(_deviceRank, _sportRank, background: true).value;
         }
+
         markers.add(_getTrackMarker(
             markerPosition, selfMarkerColor, selfMarkerText, _rankTrackVisualization));
       }
+
       extras.add(
         CustomPaint(
           painter: TrackPainter(calculator: _trackCalculator),
