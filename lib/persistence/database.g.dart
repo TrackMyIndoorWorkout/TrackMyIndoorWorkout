@@ -897,7 +897,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
   @override
   Future<List<WorkoutSummary>> findAllWorkoutSummariesByDevice(String deviceId) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM workout_summary WHERE device_id = ? ORDER BY speed',
+        'SELECT * FROM workout_summary WHERE device_id = ? ORDER BY speed DESC',
         arguments: <dynamic>[deviceId],
         mapper: (Map<String, dynamic> row) => WorkoutSummary(
             id: row['id'] as int,
@@ -933,7 +933,8 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
 
   @override
   Future<List<WorkoutSummary>> findAllWorkoutSummariesBySport(String sport) async {
-    return _queryAdapter.queryList('SELECT * FROM workout_summary WHERE sport = ? ORDER BY speed',
+    return _queryAdapter.queryList(
+        'SELECT * FROM workout_summary WHERE sport = ? ORDER BY speed DESC',
         arguments: <dynamic>[sport],
         mapper: (Map<String, dynamic> row) => WorkoutSummary(
             id: row['id'] as int,
