@@ -726,14 +726,14 @@ const LEADERBOARD_FEATURE_DESCRIPTION =
 
 const RANK_RIBBON_VISUALIZATION = "Display Rank Ribbons Above the Speed Graph";
 const RANK_RIBBON_VISUALIZATION_TAG = "rank_ribbon_visualization";
-const RANK_RIBBON_VISUALIZATION_DEFAULT = true;
+const RANK_RIBBON_VISUALIZATION_DEFAULT = false;
 const RANK_RIBBON_VISUALIZATION_DESCRIPTION =
     "Should the app provide UI feedback by ribbons above the speed graph. " +
         "Blue color means behind the top leaderboard, green marks record pace.";
 
 const RANKING_FOR_DEVICE = "Ranking Based on the Actual Device";
 const RANKING_FOR_DEVICE_TAG = "ranking_for_device";
-const RANKING_FOR_DEVICE_DEFAULT = true;
+const RANKING_FOR_DEVICE_DEFAULT = false;
 const RANKING_FOR_DEVICE_DESCRIPTION =
     "Should the app display ranking for the particular device. " +
         "This affects both the ribbon type and the track visualization.";
