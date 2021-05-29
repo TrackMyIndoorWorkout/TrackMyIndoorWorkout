@@ -991,6 +991,7 @@ class RecordingState extends State<RecordingScreen> {
       final position = _trackCalculator.trackMarker(distance);
       markers.add(_getTrackMarker(position, 0x8800FF00, "${rank - 2}", false));
     }
+
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
       final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
@@ -1004,6 +1005,7 @@ class RecordingState extends State<RecordingScreen> {
       final position = _trackCalculator.trackMarker(distance);
       markers.add(_getTrackMarker(position, 0x880000FF, "${rank + 1}", false));
     }
+
     // Following dot after the follower (if any)
     if (rank < length) {
       final distance = leaderboard[rank].distanceAtTime(_elapsed);
@@ -1018,7 +1020,10 @@ class RecordingState extends State<RecordingScreen> {
     final bgColor = lead ? _lightGreen : _lightBlue;
     return ColoredBox(
       color: bgColor,
-      child: Text(text, style: _markerStyle),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 4.0),
+        child: Text(text, style: _markerStyle),
+      ),
     );
   }
 
@@ -1037,30 +1042,38 @@ class RecordingState extends State<RecordingScreen> {
     if (rank > 2 && rank - 3 < length) {
       final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
       rows.add(_getLeaderboardInfoText(rank - 2, distance, true));
+      rows.add(Divider(height: 1));
     }
+
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
       final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
       rows.add(_getLeaderboardInfoText(rank - 1, distance, true));
+      rows.add(Divider(height: 1));
     }
 
     rows.add(_getLeaderboardInfoTextCore(rankString, rank <= 1));
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
+      rows.add(Divider(height: 1));
       final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
       rows.add(_getLeaderboardInfoText(rank + 1, distance, false));
     }
+
     // Following dot after the follower (if any)
     if (rank < length) {
+      rows.add(Divider(height: 1));
       final distance = leaderboard[rank].distanceAtTime(_elapsed);
       rows.add(_getLeaderboardInfoText(rank + 2, distance, false));
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: rows,
+    return IntrinsicWidth(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: rows,
+      ),
     );
   }
 
@@ -1228,7 +1241,7 @@ class RecordingState extends State<RecordingScreen> {
       if (markerPosition != null) {
         var selfMarkerText = "";
         var selfMarkerColor = 0xFFFF0000;
-        if (_rankTrackVisualization) {
+        if (_rankTrackVisualization && (_rankingForDevice || _rankingForSport)) {
           Widget rankInfo;
           Widget deviceRankInfo;
           if (_rankingForDevice) {
@@ -1264,11 +1277,12 @@ class RecordingState extends State<RecordingScreen> {
           if (_rankInfoOnTrack) {
             if (_rankingForDevice && _rankingForDevice) {
               rankInfo = Center(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [deviceRankInfo, sportRankInfo],
-              ));
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [deviceRankInfo, Container(width: 2), sportRankInfo],
+                ),
+              );
             }
 
             markers.add(rankInfo);
@@ -1278,9 +1292,11 @@ class RecordingState extends State<RecordingScreen> {
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
           selfMarkerColor = _getPaceLightColor(_deviceRank, _sportRank, background: true).value;
         }
+
         markers.add(_getTrackMarker(
             markerPosition, selfMarkerColor, selfMarkerText, _rankTrackVisualization));
       }
+
       extras.add(
         CustomPaint(
           painter: TrackPainter(calculator: _trackCalculator),
