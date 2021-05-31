@@ -362,7 +362,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
                 initialData: [],
                 builder: (c, snapshot) => Column(
-                  children: snapshot.data.map((d) {
+                  children:
+                      snapshot.data.where((d) => _advertisementCache.hasEntry(d.id.id)).map((d) {
                     if (!(_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ?? false)) {
                       _openedDevice = d;
                     }
