@@ -309,7 +309,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         _lastEquipmentIds.length > 0 &&
                         lasts.length > 0 &&
                         !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
-                  startScan();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    startScan();
+                  });
                   return Container();
                 } else if (_autoConnect) {
                   if (_openedDevice != null) {
