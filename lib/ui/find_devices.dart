@@ -288,7 +288,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_filterDevices ? 'Supported Exercise Equipment:' : 'Bluetooth Devices'),
+        title: Text(_filterDevices ? 'Supported Devices:' : 'Devices'),
         actions: [
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
