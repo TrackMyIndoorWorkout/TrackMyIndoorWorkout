@@ -120,7 +120,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     _advertisementCache = Get.find<AdvertisementCache>();
     _themeManager = Get.find<ThemeManager>();
-    _captionStyle = Get.textTheme.headline6.apply(fontSizeFactor: FONT_SIZE_FACTOR);
+    _captionStyle = Get.textTheme.headline6;
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
     _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
     _ringWidth = _ringDiameter * 0.2;
@@ -288,7 +288,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_filterDevices ? 'Supported Exercise Equipment:' : 'Bluetooth Devices'),
+        title: Text(_filterDevices ? 'Supported Devices:' : 'Devices'),
         actions: [
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
@@ -309,7 +309,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         _lastEquipmentIds.length > 0 &&
                         lasts.length > 0 &&
                         !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
-                  startScan();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    startScan();
+                  });
                   return Container();
                 } else if (_autoConnect) {
                   if (_openedDevice != null) {
@@ -360,7 +362,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
                 initialData: [],
                 builder: (c, snapshot) => Column(
-                  children: snapshot.data.map((d) {
+                  children:
+                      snapshot.data.where((d) => _advertisementCache.hasEntry(d.id.id)).map((d) {
                     if (!(_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ?? false)) {
                       _openedDevice = d;
                     }
@@ -426,14 +429,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                             ? Get.find<HeartRateMonitor>()
                             : null;
-                        if (heartRateMonitor != null &&
-                            heartRateMonitor.device.id.id != r.device.id.id) {
+                        bool disconnectOnly = false;
+                        if (heartRateMonitor != null) {
+                          disconnectOnly = heartRateMonitor.device.id.id == r.device.id.id;
+                          final title = disconnectOnly
+                              ? 'You are connected to that HRM right now'
+                              : 'You are connected to a HRM right now';
+                          final content = disconnectOnly
+                              ? 'Disconnect from the selected HRM?'
+                              : 'Disconnect from that HRM to connect to the selected one?';
                           if (!(await showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  title: Text('You are connected to a HRM right now'),
-                                  content:
-                                      Text('Disconnect from that HRM to connect the selected one?'),
+                                  title: Text(title),
+                                  content: Text(content),
                                   actions: [
                                     TextButton(
                                       onPressed: () => Get.close(1),
@@ -452,11 +461,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             return;
                           }
                         }
-                        if (heartRateMonitor != null &&
-                            heartRateMonitor.device.id.id != r.device.id.id) {
+
+                        if (heartRateMonitor != null) {
                           await heartRateMonitor.detach();
                           await heartRateMonitor.disconnect();
+                          if (disconnectOnly) {
+                            return;
+                          }
                         }
+
                         if (heartRateMonitor == null ||
                             heartRateMonitor.device?.id?.id != r.device.id.id) {
                           heartRateMonitor = new HeartRateMonitor(r.device);
@@ -464,6 +477,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           await heartRateMonitor.connect();
                           await heartRateMonitor.discover();
                         }
+
                         await heartRateMonitor.attach();
                         heartRateMonitor.pumpMetric((heartRate) {
                           setState(() {
@@ -528,33 +542,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
             },
           ),
           _themeManager.getBlueFab(Icons.settings, () async => Get.to(PreferencesHubScreen())),
-          _themeManager.getBlueFab(Icons.filter_alt, () async {
-            Get.defaultDialog(
-              title: 'Device filtering',
-              middleText: 'Should the app try to filter supported devices? ' +
-                  'Yes: filter. No: show all nearby Bluetooth devices',
-              confirm: TextButton(
-                child: Text("Yes"),
-                onPressed: () {
-                  PrefService.setBool(DEVICE_FILTERING_TAG, true);
-                  setState(() {
-                    _filterDevices = true;
-                  });
-                  Get.close(1);
-                },
-              ),
-              cancel: TextButton(
-                child: Text("No"),
-                onPressed: () {
-                  PrefService.setBool(DEVICE_FILTERING_TAG, false);
-                  setState(() {
-                    _filterDevices = false;
-                  });
-                  Get.close(1);
-                },
-              ),
-            );
-          }),
         ],
       ),
     );

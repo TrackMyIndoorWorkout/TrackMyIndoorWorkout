@@ -546,7 +546,7 @@ const DEVICE_FILTERING_TAG = "device_filtering";
 const DEVICE_FILTERING_DEFAULT = true;
 const DEVICE_FILTERING_DESCRIPTION =
     "Off: the app won't filter the list of Bluetooth device while scanning. " +
-        "Useful if your equipment has an unexpected Bluetooth name.";
+        "If your device is not listed while filtering is on then most probably it's not compatible.";
 
 const MULTI_SPORT_DEVICE_SUPPORT = "Multi-Sport Device Support";
 const MULTI_SPORT_DEVICE_SUPPORT_TAG = "multi_sport_device_support";

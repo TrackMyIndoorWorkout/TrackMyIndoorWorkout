@@ -29,6 +29,12 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
           return null;
         },
       ),
+      SwitchPreference(
+        DEVICE_FILTERING,
+        DEVICE_FILTERING_TAG,
+        defaultVal: DEVICE_FILTERING_DEFAULT,
+        desc: DEVICE_FILTERING_DESCRIPTION,
+      ),
     ];
 
     if (kDebugMode) {

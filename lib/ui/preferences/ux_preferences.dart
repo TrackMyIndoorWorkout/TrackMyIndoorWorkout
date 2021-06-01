@@ -70,12 +70,6 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         desc: INSTANT_UPLOAD_DESCRIPTION,
       ),
       SwitchPreference(
-        DEVICE_FILTERING,
-        DEVICE_FILTERING_TAG,
-        defaultVal: DEVICE_FILTERING_DEFAULT,
-        desc: DEVICE_FILTERING_DESCRIPTION,
-      ),
-      SwitchPreference(
         MULTI_SPORT_DEVICE_SUPPORT,
         MULTI_SPORT_DEVICE_SUPPORT_TAG,
         defaultVal: MULTI_SPORT_DEVICE_SUPPORT_DEFAULT,
