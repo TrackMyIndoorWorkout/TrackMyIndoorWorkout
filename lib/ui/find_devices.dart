@@ -429,14 +429,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                             ? Get.find<HeartRateMonitor>()
                             : null;
-                        if (heartRateMonitor != null &&
-                            heartRateMonitor.device.id.id != r.device.id.id) {
+                        bool disconnectOnly = false;
+                        if (heartRateMonitor != null) {
+                          disconnectOnly = heartRateMonitor.device.id.id == r.device.id.id;
+                          final title = disconnectOnly
+                              ? 'You are connected to that HRM right now'
+                              : 'You are connected to a HRM right now';
+                          final content = disconnectOnly
+                              ? 'Disconnect from the selected HRM?'
+                              : 'Disconnect from that HRM to connect to the selected one?';
                           if (!(await showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  title: Text('You are connected to a HRM right now'),
-                                  content:
-                                      Text('Disconnect from that HRM to connect the selected one?'),
+                                  title: Text(title),
+                                  content: Text(content),
                                   actions: [
                                     TextButton(
                                       onPressed: () => Get.close(1),
@@ -455,11 +461,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             return;
                           }
                         }
-                        if (heartRateMonitor != null &&
-                            heartRateMonitor.device.id.id != r.device.id.id) {
+
+                        if (heartRateMonitor != null) {
                           await heartRateMonitor.detach();
                           await heartRateMonitor.disconnect();
+                          if (disconnectOnly) {
+                            return;
+                          }
                         }
+
                         if (heartRateMonitor == null ||
                             heartRateMonitor.device?.id?.id != r.device.id.id) {
                           heartRateMonitor = new HeartRateMonitor(r.device);
@@ -467,6 +477,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           await heartRateMonitor.connect();
                           await heartRateMonitor.discover();
                         }
+
                         await heartRateMonitor.attach();
                         heartRateMonitor.pumpMetric((heartRate) {
                           setState(() {
