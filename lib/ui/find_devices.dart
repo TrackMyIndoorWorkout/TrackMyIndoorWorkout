@@ -120,7 +120,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     _advertisementCache = Get.find<AdvertisementCache>();
     _themeManager = Get.find<ThemeManager>();
-    _captionStyle = Get.textTheme.headline6.apply(fontSizeFactor: FONT_SIZE_FACTOR);
+    _captionStyle = Get.textTheme.headline6;
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
     _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
     _ringWidth = _ringDiameter * 0.2;
