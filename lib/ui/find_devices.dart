@@ -531,33 +531,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
             },
           ),
           _themeManager.getBlueFab(Icons.settings, () async => Get.to(PreferencesHubScreen())),
-          _themeManager.getBlueFab(Icons.filter_alt, () async {
-            Get.defaultDialog(
-              title: 'Device filtering',
-              middleText: 'Should the app try to filter supported devices? ' +
-                  'Yes: filter. No: show all nearby Bluetooth devices',
-              confirm: TextButton(
-                child: Text("Yes"),
-                onPressed: () {
-                  PrefService.setBool(DEVICE_FILTERING_TAG, true);
-                  setState(() {
-                    _filterDevices = true;
-                  });
-                  Get.close(1);
-                },
-              ),
-              cancel: TextButton(
-                child: Text("No"),
-                onPressed: () {
-                  PrefService.setBool(DEVICE_FILTERING_TAG, false);
-                  setState(() {
-                    _filterDevices = false;
-                  });
-                  Get.close(1);
-                },
-              ),
-            );
-          }),
         ],
       ),
     );
