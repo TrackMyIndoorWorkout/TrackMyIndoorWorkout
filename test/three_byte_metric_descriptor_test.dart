@@ -10,17 +10,17 @@ void main() {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1024, rnd).forEach((divider) {
       final len = rnd.nextInt(99) + 5;
-      final data = getRandomInts(len, 256, rnd);
+      final data = getRandomInts(len, MAX_UINT8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 1 ? (lsbLocation < len - 2 ? rnd.nextBool() : false) : true;
       final msbLocation = larger ? lsbLocation + 2 : lsbLocation - 2;
-      data[lsbLocation] = 255;
-      data[(lsbLocation + msbLocation) ~/ 2] = 255;
-      data[msbLocation] = 255;
+      data[lsbLocation] = MAX_BYTE;
+      data[(lsbLocation + msbLocation) ~/ 2] = MAX_BYTE;
+      data[msbLocation] = MAX_BYTE;
       final divider = rnd.nextDouble() * 4;
       final expected = 0.0;
 
-      test("$divider -> $expected", () {
+      test("$divider -> $expected", () async {
         final desc = ThreeByteMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: true);
 
@@ -33,7 +33,7 @@ void main() {
     final rnd = Random();
     1.to(REPETITION).forEach((input) {
       final len = rnd.nextInt(99) + 5;
-      final data = getRandomInts(len, 256, rnd);
+      final data = getRandomInts(len, MAX_UINT8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 1 ? (lsbLocation < len - 2 ? rnd.nextBool() : false) : true;
       final msbLocation = larger ? lsbLocation + 2 : lsbLocation - 2;
@@ -41,15 +41,16 @@ void main() {
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
       final expected = (optional &&
-              data[lsbLocation] == 255 &&
-              data[midLocation] == 255 &&
-              data[msbLocation] == 255)
+              data[lsbLocation] == MAX_BYTE &&
+              data[midLocation] == MAX_BYTE &&
+              data[msbLocation] == MAX_BYTE)
           ? 0
-          : (data[lsbLocation] + 256 * (data[midLocation] + 256 * data[msbLocation])) / divider;
+          : (data[lsbLocation] + MAX_UINT8 * (data[midLocation] + MAX_UINT8 * data[msbLocation])) /
+              divider;
 
       test(
           "(${data[lsbLocation]} + ${data[midLocation]} + ${data[msbLocation]}) / $divider -> $expected",
-          () {
+          () async {
         final desc = ThreeByteMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);
 

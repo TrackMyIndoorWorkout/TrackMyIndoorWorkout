@@ -5,15 +5,16 @@ import 'package:charts_common/common.dart' as common;
 import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart' as painting;
 import 'package:preferences/preferences.dart';
-import '../tcx/activity_type.dart';
+import '../utils/constants.dart';
 import '../utils/display.dart';
 
 Color getTranslucent(Color c) {
   return Color(r: c.r, g: c.g, b: c.b, a: 120, darker: c.darker, lighter: c.lighter);
 }
 
-final sevenBgPalette = [
+final sevenLightBgPalette = [
   getTranslucent(MaterialPalette.blue.shadeDefault.lighter),
   getTranslucent(MaterialPalette.teal.shadeDefault.lighter),
   getTranslucent(MaterialPalette.cyan.shadeDefault.lighter),
@@ -23,7 +24,17 @@ final sevenBgPalette = [
   getTranslucent(MaterialPalette.pink.shadeDefault.lighter),
 ];
 
-final sevenFgPalette = [
+final sevenDarkBgPalette = [
+  getTranslucent(MaterialPalette.indigo.shadeDefault.darker),
+  getTranslucent(MaterialPalette.teal.shadeDefault.darker),
+  getTranslucent(MaterialPalette.cyan.shadeDefault.darker),
+  getTranslucent(MaterialPalette.green.shadeDefault.darker),
+  getTranslucent(MaterialPalette.deepOrange.shadeDefault.darker),
+  getTranslucent(MaterialPalette.red.shadeDefault.darker),
+  getTranslucent(MaterialPalette.purple.shadeDefault.darker),
+];
+
+final sevenLightFgPalette = [
   MaterialPalette.indigo.shadeDefault.darker,
   MaterialPalette.teal.shadeDefault.darker,
   MaterialPalette.cyan.shadeDefault.darker,
@@ -33,7 +44,17 @@ final sevenFgPalette = [
   MaterialPalette.purple.shadeDefault.darker,
 ];
 
-final fiveBgPalette = [
+final sevenDarkFgPalette = [
+  MaterialPalette.blue.shadeDefault.lighter,
+  MaterialPalette.teal.shadeDefault.lighter,
+  MaterialPalette.cyan.shadeDefault.lighter,
+  MaterialPalette.lime.shadeDefault.lighter,
+  MaterialPalette.yellow.shadeDefault.lighter,
+  MaterialPalette.red.shadeDefault.lighter,
+  MaterialPalette.pink.shadeDefault.lighter,
+];
+
+final fiveLightBgPalette = [
   getTranslucent(MaterialPalette.blue.shadeDefault.lighter),
   getTranslucent(MaterialPalette.cyan.shadeDefault.lighter),
   getTranslucent(MaterialPalette.lime.shadeDefault.lighter),
@@ -41,7 +62,15 @@ final fiveBgPalette = [
   getTranslucent(MaterialPalette.red.shadeDefault.lighter),
 ];
 
-final fiveFgPalette = [
+final fiveDarkBgPalette = [
+  getTranslucent(MaterialPalette.indigo.shadeDefault.darker),
+  getTranslucent(MaterialPalette.teal.shadeDefault.darker),
+  getTranslucent(MaterialPalette.green.shadeDefault.darker),
+  getTranslucent(MaterialPalette.deepOrange.shadeDefault.darker),
+  getTranslucent(MaterialPalette.red.shadeDefault.darker),
+];
+
+final fiveLightFgPalette = [
   MaterialPalette.indigo.shadeDefault.darker,
   MaterialPalette.teal.shadeDefault.darker,
   MaterialPalette.green.shadeDefault.darker,
@@ -49,10 +78,56 @@ final fiveFgPalette = [
   MaterialPalette.red.shadeDefault.darker,
 ];
 
+final fiveDarkFgPalette = [
+  MaterialPalette.blue.shadeDefault.lighter,
+  MaterialPalette.cyan.shadeDefault.lighter,
+  MaterialPalette.lime.shadeDefault.lighter,
+  MaterialPalette.yellow.shadeDefault.lighter,
+  MaterialPalette.red.shadeDefault.lighter,
+];
+
+final sevenLightPiePalette = [
+  MaterialPalette.blue.shadeDefault,
+  MaterialPalette.teal.shadeDefault,
+  MaterialPalette.cyan.shadeDefault,
+  MaterialPalette.lime.shadeDefault,
+  MaterialPalette.yellow.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+  MaterialPalette.pink.shadeDefault,
+];
+
+final fiveLightPiePalette = [
+  MaterialPalette.blue.shadeDefault,
+  MaterialPalette.cyan.shadeDefault,
+  MaterialPalette.lime.shadeDefault,
+  MaterialPalette.yellow.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+];
+
+final sevenDarkPiePalette = [
+  MaterialPalette.indigo.shadeDefault,
+  MaterialPalette.teal.shadeDefault,
+  MaterialPalette.cyan.shadeDefault,
+  MaterialPalette.green.shadeDefault,
+  MaterialPalette.deepOrange.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+  MaterialPalette.purple.shadeDefault,
+];
+
+final fiveDarkPiePalette = [
+  MaterialPalette.indigo.shadeDefault,
+  MaterialPalette.teal.shadeDefault,
+  MaterialPalette.green.shadeDefault,
+  MaterialPalette.deepOrange.shadeDefault,
+  MaterialPalette.red.shadeDefault,
+];
+
 // https://stackoverflow.com/questions/57481767/dart-rounding-errors
 double decimalRound(double value, {int precision = 100}) {
   return (value * precision).round() / precision;
 }
+
+const String TARGET_HR_SHORT_TITLE = "Target HR";
 
 class PreferencesSpec {
   static const THRESHOLD_CAPITAL = ' Threshold ';
@@ -67,6 +142,15 @@ class PreferencesSpec {
   static const THRESHOLD_PREFIX = 'threshold_';
   static const ZONES_POSTFIX = '_zones';
   static const METRICS = ['power', 'speed', 'cadence', 'hr'];
+  static const ZONE_INDEX_DISPLAY_TAG_POSTFIX = "zone_index_display";
+  static const ZONE_INDEX_DISPLAY_TEXT = "Zone Index Display";
+  static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 = "Display the Zone Index Next to the ";
+  static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART2 = " Measurement Value";
+  static const ZONE_INDEX_DISPLAY_EXTRA_NOTE =
+      "These Zone settings apply for the fixed panel sections. " +
+          "For extra HR zone display feature check out '$TARGET_HR_SHORT_TITLE' configuration " +
+          "in the upstream settings selection. For extra speed feedback check out leaderboard rank settings.";
+  static const ZONE_INDEX_DISPLAY_DEFAULT = false;
 
   static final slowSpeeds = {
     ActivityType.Ride: 5.0,
@@ -95,6 +179,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.bolt,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[1],
@@ -115,6 +200,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.speed,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[2],
@@ -135,6 +221,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [25, 37, 50, 75, 100, 120],
       },
       icon: Icons.directions_bike,
+      indexDisplayDefault: false,
     ),
     PreferencesSpec(
       metric: METRICS[3],
@@ -155,6 +242,7 @@ class PreferencesSpec {
         SPORT_PREFIXES[3]: [50, 60, 70, 80, 90, 100],
       },
       icon: Icons.favorite,
+      indexDisplayDefault: false,
     ),
   ].toList(growable: false);
 
@@ -166,6 +254,8 @@ class PreferencesSpec {
   final Map<String, int> thresholdDefaultInts;
   final String zonesTagPostfix;
   final Map<String, List<int>> zonesDefaultInts;
+  final bool indexDisplayDefault;
+  bool indexDisplay;
   double threshold;
   List<int> zonePercents;
   List<double> zoneBounds;
@@ -186,6 +276,7 @@ class PreferencesSpec {
     @required this.thresholdDefaultInts,
     @required this.zonesTagPostfix,
     @required this.zonesDefaultInts,
+    @required this.indexDisplayDefault,
     @required this.icon,
   })  : assert(metric != null),
         assert(title != null),
@@ -194,15 +285,22 @@ class PreferencesSpec {
         assert(thresholdDefaultInts != null),
         assert(zonesTagPostfix != null),
         assert(zonesDefaultInts != null),
+        assert(indexDisplayDefault != null),
         assert(icon != null) {
     flipZones = false;
     updateMultiLineUnit();
     annotationSegments = [];
+    indexDisplay = indexDisplayDefault;
   }
 
   String get fullTitle => '$title ($unit)';
   String get kmhTitle => '$title (kmh)';
   String get histogramTitle => '$title zones (%)';
+
+  String get zoneIndexText => '$title $ZONE_INDEX_DISPLAY_TEXT';
+  String get zoneIndexTag => metric + '_$ZONE_INDEX_DISPLAY_TAG_POSTFIX';
+  String get zoneIndexDescription =>
+      '$ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 $title $ZONE_INDEX_DISPLAY_DESCRIPTION_PART2';
 
   static String sport2Sport(String sport) {
     return sport == ActivityType.Kayaking ||
@@ -258,9 +356,10 @@ class PreferencesSpec {
     if (flipZones) {
       zoneBounds = zoneBounds.reversed.toList(growable: false);
     }
+    indexDisplay = PrefService.getBool(zoneIndexTag) ?? indexDisplayDefault;
   }
 
-  void calculateBounds(double minVal, double maxVal) {
+  void calculateBounds(double minVal, double maxVal, bool isLight) {
     zoneLower = [...zoneBounds];
     zoneUpper = [...zoneBounds];
 
@@ -282,6 +381,8 @@ class PreferencesSpec {
       zoneUpper.add(decimalRound(maxVal));
     }
 
+    final textColor = isLight ? MaterialPalette.black : MaterialPalette.white;
+    final chartTextStyle = TextStyleSpec(color: textColor);
     List<common.AnnotationSegment> segments = [];
     segments.addAll(List.generate(
       binCount,
@@ -289,9 +390,10 @@ class PreferencesSpec {
         zoneLower[i],
         zoneUpper[i],
         RangeAnnotationAxisType.measure,
-        color: bgColorByBin(i),
+        color: bgColorByBin(i, isLight),
         startLabel: zoneLower[i].toString(),
         labelAnchor: AnnotationLabelAnchor.start,
+        labelStyleSpec: chartTextStyle,
       ),
     ));
     segments.addAll(List.generate(
@@ -302,7 +404,8 @@ class PreferencesSpec {
         startLabel: zoneUpper[i].toString(),
         labelAnchor: AnnotationLabelAnchor.end,
         strokeWidthPx: 1.0,
-        color: MaterialPalette.black,
+        color: textColor,
+        labelStyleSpec: chartTextStyle,
       ),
     ));
     annotationSegments = segments.toList(growable: false);
@@ -326,29 +429,43 @@ class PreferencesSpec {
     return i;
   }
 
-  Color bgColorByBin(int bin) {
-    if (bin > 6) {
-      return getTranslucent(MaterialPalette.blue.shadeDefault.lighter);
-    }
+  Color bgColorByBin(int bin, bool isLight) {
     if (zonePercents.length <= 5) {
-      return fiveBgPalette[bin];
+      bin = min(bin, 4);
+      return isLight ? fiveLightBgPalette[bin] : fiveDarkBgPalette[bin];
     }
-    return sevenBgPalette[bin];
+
+    bin = min(bin, 6);
+    return isLight ? sevenLightBgPalette[bin] : sevenDarkBgPalette[bin];
   }
 
-  Color fgColorByBin(int bin) {
-    if (bin > 6) {
-      return MaterialPalette.blue.shadeDefault.darker;
-    }
+  Color fgColorByBin(int bin, bool isLight) {
     if (zonePercents.length <= 5) {
-      return fiveFgPalette[transformedBinIndex(bin)];
+      bin = min(bin, 4);
+      final trIndex = transformedBinIndex(bin);
+      return isLight ? fiveLightFgPalette[trIndex] : fiveDarkFgPalette[trIndex];
     }
-    return sevenFgPalette[transformedBinIndex(bin)];
+
+    bin = min(bin, 6);
+    final trIndex = transformedBinIndex(bin);
+    return isLight ? sevenLightFgPalette[trIndex] : sevenDarkFgPalette[trIndex];
   }
 
-  Color fgColorByValue(num value) {
+  Color fgColorByValue(num value, bool isLight) {
     final bin = binIndex(value);
-    return fgColorByBin(bin);
+    return fgColorByBin(bin, isLight);
+  }
+
+  Color pieBgColorByBin(int bin, bool isLight) {
+    if (zonePercents.length <= 5) {
+      bin = min(bin, 4);
+      final trIndex = transformedBinIndex(bin);
+      return isLight ? fiveLightPiePalette[trIndex] : fiveDarkPiePalette[trIndex];
+    }
+
+    bin = min(bin, 6);
+    final trIndex = transformedBinIndex(bin);
+    return isLight ? sevenLightPiePalette[trIndex] : sevenDarkPiePalette[trIndex];
   }
 
   static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
@@ -429,7 +546,7 @@ const DEVICE_FILTERING_TAG = "device_filtering";
 const DEVICE_FILTERING_DEFAULT = true;
 const DEVICE_FILTERING_DESCRIPTION =
     "Off: the app won't filter the list of Bluetooth device while scanning. " +
-        "Useful if your equipment has an unexpected Bluetooth name.";
+        "If your device is not listed while filtering is on then most probably it's not compatible.";
 
 const MULTI_SPORT_DEVICE_SUPPORT = "Multi-Sport Device Support";
 const MULTI_SPORT_DEVICE_SUPPORT_TAG = "multi_sport_device_support";
@@ -448,50 +565,47 @@ const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
 const MEASUREMENT_DETAIL_SIZE_TAG = "measurement_detail_size";
 const MEASUREMENT_DETAIL_SIZE_DEFAULT = "00000";
 
-const THROTTLE_POWER = "Throttle Power";
-const THROTTLE_POWER_TAG = "throttle_power";
-const THROTTLE_POWER_DEFAULT = "0";
-const THROTTLE_POWER_DESCRIPTION = "Throttle in percent. Example: 11 means that the app " +
-    "will take only 89% of the reported power reading. " +
-    "Possibly could throttle calories with certain bikes.";
-
-const THROTTLE_OTHER = "Throttle Other";
-const THROTTLE_OTHER_TAG = "throttle_other";
-const THROTTLE_OTHER_DEFAULT = false;
-const THROTTLE_OTHER_DESCRIPTION =
-    "Apply the power throttle to other measurements as well (speed, distance, calories)";
-
-const COMPRESS_DOWNLOAD = "File download compression";
-const COMPRESS_DOWNLOAD_TAG = "compress_download";
-const COMPRESS_DOWNLOAD_DEFAULT = true;
-const COMPRESS_DOWNLOAD_DESCRIPTION = "On: the downloaded file is gzip compressed (TCX.gz). " +
-    "Off: the downloaded file is TCX (no compression)";
+const EXTEND_TUNING = "Extend Power Tuning If Applicable";
+const EXTEND_TUNING_TAG = "extend_tuning";
+const EXTEND_TUNING_DEFAULT = false;
+const EXTEND_TUNING_DESCRIPTION =
+    "Apply power tuning to other attributes (speed, distance) as well when applicable. " +
+        "Note that depending on the equipment the tuning might already affect multiple attributes " +
+        "if they depend on each other like when calories or speed is calculated from power. " +
+        "Also note when both calorie and power tuning applied then their effect may combine.";
 
 const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
 const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
-const STROKE_RATE_SMOOTHING_DEFAULT = "10";
 const STROKE_RATE_SMOOTHING_DEFAULT_INT = 10;
+const STROKE_RATE_SMOOTHING_DEFAULT = "$STROKE_RATE_SMOOTHING_DEFAULT_INT";
 const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery data. Averaging " +
     "these over time soothes the data. This setting tells the window size by how many samples " +
     "could be in the smoothing queue. 1 means no smoothing.";
 
-const EQUIPMENT_DISCONNECTION_WATCHDOG = "Equipment Disconnection Watchdog Timer";
-const EQUIPMENT_DISCONNECTION_WATCHDOG_TAG = "equipment_disconnection_watchdog_timer";
-const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT = "5";
-const EQUIPMENT_DISCONNECTION_WATCHDOG_DEFAULT_INT = 5;
-const EQUIPMENT_DISCONNECTION_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered " +
-    "as a disconnection. A watchdog would finish the workout, reconnect to the equipment, and " +
-    "start a new workout. 0 means the watchdog will be turned off. Disabling the watchdog " +
-    "if your fitness equipment stops sending data when the workout is paused to avoid unwanted " +
-    "restarts.";
+const DATA_STREAM_GAP_WATCHDOG = "Data Stream Gap Watchdog Timer";
+const DATA_STREAM_GAP_WATCHDOG_TAG = "data_stream_gap_watchdog_timer";
+const DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT = 5;
+const DATA_STREAM_GAP_WATCHDOG_DEFAULT = "$DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT";
+const DATA_STREAM_GAP_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered " +
+    "as a disconnection. A watchdog would finish the workout and can trigger sound warnings as well. " +
+    "Zero means disabled";
 
-const CALORIE_CARRYOVER_WORKAROUND = "Calorie Carryover Workaround";
-const CALORIE_CARRYOVER_WORKAROUND_TAG = "calorie_carryover_workaround";
-const CALORIE_CARRYOVER_WORKAROUND_DEFAULT = false;
-const CALORIE_CARRYOVER_WORKAROUND_DESCRIPTION = "On: Calorie count could be preserved if the " +
-    "workout is restarted accidentally or automatically. " +
-    "(Note that data points will be still missing.) " +
-    "Off: Calorie count will start from zero after workout restart.";
+const SOUND_EFFECT_NONE = "none";
+const SOUND_EFFECT_NONE_DESCRIPTION = "No sound effect.";
+const SOUND_EFFECT_ONE_TONE = "one_tone_beep";
+const SOUND_EFFECT_ONE_TONE_DESCRIPTION = "A single tone 1200Hz beep.";
+const SOUND_EFFECT_TWO_TONE = "two_tone_beep";
+const SOUND_EFFECT_TWO_TONE_DESCRIPTION = "Two beep tones repeated twice";
+const SOUND_EFFECT_THREE_TONE = "three_tone_beep";
+const SOUND_EFFECT_THREE_TONE_DESCRIPTION = "Three beep tones after one another";
+const SOUND_EFFECT_BLEEP = "media_bleep";
+const SOUND_EFFECT_BLEEP_DESCRIPTION = "A Media Call type bleep.";
+
+const DATA_STREAM_GAP_SOUND_EFFECT = "Data Stream Gap Audio Warning";
+const DATA_STREAM_GAP_SOUND_EFFECT_TAG = "data_stream_gap_sound_effect";
+const DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION =
+    "Select the type of sound effect played when data acquisition timeout happens.";
+const DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_THREE_TONE;
 
 const CADENCE_GAP_WORKAROUND = "Cadence Data Gap Workaround";
 const CADENCE_GAP_WORKAROUND_TAG = "cadence_data_gap_workaround";
@@ -516,10 +630,10 @@ const HEART_RATE_GAP_WORKAROUND_DEFAULT = DATA_GAP_WORKAROUND_LAST_POSITIVE_VALU
 
 const HEART_RATE_UPPER_LIMIT = "Heart Rate Upper Limit";
 const HEART_RATE_UPPER_LIMIT_TAG = "heart_rate_upper_limit";
-const HEART_RATE_UPPER_LIMIT_DEFAULT = "0";
 const HEART_RATE_UPPER_LIMIT_DEFAULT_INT = 0;
-const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is the heart rate upper bound where the methods" +
-    "bellow would be applied. 0 means no limiting is performed.";
+const HEART_RATE_UPPER_LIMIT_DEFAULT = "$HEART_RATE_UPPER_LIMIT_DEFAULT_INT";
+const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is a heart rate upper bound where the methods " +
+    "bellow would be applied. 0 means no upper limiting is performed.";
 
 const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection";
 const HEART_RATE_LIMITING_METHOD_TAG = "heart_rate_limiting_method";
@@ -536,6 +650,118 @@ const HEART_RATE_LIMITING_NO_LIMIT = "no_limit";
 const HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION = "Don't apply any limiting.";
 const HEART_RATE_LIMITING_METHOD_DEFAULT = HEART_RATE_LIMITING_NO_LIMIT;
 
+const TARGET_HEART_RATE_MODE = "Target Heart Rate Mode";
+const TARGET_HEART_RATE_MODE_TAG = "target_heart_rate_mode";
+const TARGET_HEART_RATE_MODE_DESCRIPTION =
+    "You can configure target heart rate BPM range or zone range. " +
+        "The app will alert visually (and optionally audio as well) when you are outside of the range. " +
+        "The lower and upper zone can be the same if you want to target just one zone.";
+const TARGET_HEART_RATE_MODE_NONE = "none";
+const TARGET_HEART_RATE_MODE_NONE_DESCRIPTION = "Target heart rate alert is turned off.";
+const TARGET_HEART_RATE_MODE_BPM = "bpm";
+const TARGET_HEART_RATE_MODE_BPM_DESCRIPTION =
+    "Bounds are specified by explicit beat per minute numbers.";
+const TARGET_HEART_RATE_MODE_ZONES = "zones";
+const TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION = "Bounds are specified by HR zone numbers.";
+const TARGET_HEART_RATE_MODE_DEFAULT = TARGET_HEART_RATE_MODE_NONE;
+
+const TARGET_HEART_RATE_LOWER_BPM = "Target Heart Rate Lower BPM";
+const TARGET_HEART_RATE_LOWER_BPM_TAG = "target_heart_rate_bpm_lower";
+const TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT = 120;
+const TARGET_HEART_RATE_LOWER_BPM_DEFAULT = "$TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT";
+const TARGET_HEART_RATE_LOWER_BPM_DESCRIPTION =
+    "Lower bpm of the target heart rate (for bpm target mode).";
+
+const TARGET_HEART_RATE_UPPER_BPM = "Target Heart Rate Upper BPM";
+const TARGET_HEART_RATE_UPPER_BPM_TAG = "target_heart_rate_bpm_upper";
+const TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT = 140;
+const TARGET_HEART_RATE_UPPER_BPM_DEFAULT = "$TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT";
+const TARGET_HEART_RATE_UPPER_BPM_DESCRIPTION =
+    "Upper bpm of the target heart rate (for bpm target mode).";
+
+const TARGET_HEART_RATE_LOWER_ZONE = "Target Heart Rate Lower Zone";
+const TARGET_HEART_RATE_LOWER_ZONE_TAG = "target_heart_rate_zone_lower";
+const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT = 3;
+const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT = "$TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT";
+const TARGET_HEART_RATE_LOWER_ZONE_DESCRIPTION =
+    "Lower zone of the target heart rate (for zone target mode).";
+
+const TARGET_HEART_RATE_UPPER_ZONE = "Target Heart Rate Upper Zone";
+const TARGET_HEART_RATE_UPPER_ZONE_TAG = "target_heart_rate_zone_upper";
+const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT = 3;
+const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT = "$TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT";
+const TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION =
+    "Upper zone of the target heart rate (for zone target mode).";
+
+const TARGET_HEART_RATE_AUDIO = "Target Heart Rate Audio";
+const TARGET_HEART_RATE_AUDIO_TAG = "target_heart_rate_audio";
+const TARGET_HEART_RATE_AUDIO_DEFAULT = false;
+const TARGET_HEART_RATE_AUDIO_DESCRIPTION = "Should a sound effect play when HR is out of range.";
+
+const TARGET_HEART_RATE_AUDIO_PERIOD = "Target HR Audio Period (seconds)";
+const TARGET_HEART_RATE_AUDIO_PERIOD_TAG = "target_heart_rate_audio_period";
+const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT = 0;
+const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT = "$TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT";
+const TARGET_HEART_RATE_AUDIO_PERIOD_DESCRIPTION =
+    "0 or 1: no periodicity. Larger than 1 seconds: " +
+        "the selected sound effect will play with the periodicity until the HR is back in range.";
+
+const TARGET_HEART_RATE_SOUND_EFFECT = "Target Heart Rate Out of Range Sound Effect";
+const TARGET_HEART_RATE_SOUND_EFFECT_TAG = "target_heart_rate_sound_effect";
+const TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION =
+    "Select the type of sound effect played when the HR gets out of range.";
+const TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_TWO_TONE;
+
+const AUDIO_VOLUME = "Audio Volume (%)";
+const AUDIO_VOLUME_TAG = "audio_volume";
+const AUDIO_VOLUME_DEFAULT_INT = 50;
+const AUDIO_VOLUME_DEFAULT = "$AUDIO_VOLUME_DEFAULT_INT";
+const AUDIO_VOLUME_DESCRIPTION = "Volume base of the audio effects.";
+
+const LEADERBOARD_FEATURE = "Leaderboard Feature";
+const LEADERBOARD_FEATURE_TAG = "leaderboard_feature";
+const LEADERBOARD_FEATURE_DEFAULT = false;
+const LEADERBOARD_FEATURE_DESCRIPTION =
+    "Leaderboard registry: should the app record workout entries for leaderboard purposes.";
+
+const RANK_RIBBON_VISUALIZATION = "Display Rank Ribbons Above the Speed Graph";
+const RANK_RIBBON_VISUALIZATION_TAG = "rank_ribbon_visualization";
+const RANK_RIBBON_VISUALIZATION_DEFAULT = false;
+const RANK_RIBBON_VISUALIZATION_DESCRIPTION =
+    "Should the app provide UI feedback by ribbons above the speed graph. " +
+        "Blue color means behind the top leaderboard, green marks record pace.";
+
+const RANKING_FOR_DEVICE = "Ranking Based on the Actual Device";
+const RANKING_FOR_DEVICE_TAG = "ranking_for_device";
+const RANKING_FOR_DEVICE_DEFAULT = false;
+const RANKING_FOR_DEVICE_DESCRIPTION =
+    "Should the app display ranking for the particular device. " +
+        "This affects both the ribbon type and the track visualization.";
+
+const RANKING_FOR_SPORT = "Ranking Based on the Whole Sport";
+const RANKING_FOR_SPORT_TAG = "ranking_for_sport";
+const RANKING_FOR_SPORT_DEFAULT = false;
+const RANKING_FOR_SPORT_DESCRIPTION =
+    "Should the app display ranking for all devices for the sport. " +
+        "This affects both the ribbon type and the track visualization.";
+
+const RANK_TRACK_VISUALIZATION = "Visualize Rank Positions on the Track";
+const RANK_TRACK_VISUALIZATION_TAG = "rank_track_visualization";
+const RANK_TRACK_VISUALIZATION_DEFAULT = false;
+const RANK_TRACK_VISUALIZATION_DESCRIPTION =
+    "For performance reasons only the position right ahead (green color) and right behind " +
+        "(blue color) of the current effort is displayed. Both positions have a the rank " +
+        "number inside their dot.";
+
+const RANK_INFO_ON_TRACK =
+    "Display rank information at the center of the track (on top of positions)";
+const RANK_INFO_ON_TRACK_TAG = "rank_info_on_track";
+const RANK_INFO_ON_TRACK_DEFAULT = true;
+const RANK_INFO_ON_TRACK_DESCRIPTION =
+    "On: when rank position is enabled this switch will display extra information in the middle of the track: " +
+        "it'll list the preceding and following positions along with the distance compared to the athlete's current " +
+        "position";
+
 const EXPERT_PREFERENCES = "Expert Preferences";
 
 const APP_DEBUG_MODE = "Application Debug Mode";
@@ -548,7 +774,7 @@ const APP_DEBUG_MODE_DESCRIPTION =
 const DATA_CONNECTION_ADDRESSES = "Data Connection Addresses";
 const DATA_CONNECTION_ADDRESSES_TAG = "data_connection_addresses";
 const DATA_CONNECTION_ADDRESSES_DEFAULT =
-    "52.44.84.95,54.160.234.139,52.87.57.116,3.93.102.29," + "54.157.131.119,3.226.9.14";
+    "52.44.84.95,54.160.234.139,52.87.57.116,3.93.102.29,54.157.131.119,3.226.9.14";
 
 const DATA_CONNECTION_ADDRESSES_DESCRIPTION =
     "Following is a comma separated list of IP addresses with optional comma separated port " +
@@ -561,7 +787,40 @@ const ZONE_PREFERENCES = " Zone Preferences";
 const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
 const SLOW_SPEED_TAG_PREFIX = "slow_speed_";
 
-const FONT_FAMILY = "RobotoMono";
+const THEME_SELECTION = "Theme Selection (System / Light / Dark)";
+const THEME_SELECTION_TAG = "theme_selection";
+const THEME_SELECTION_DESCRIPTION =
+    "Should the theme match the system default, be light, or be dark.";
+const THEME_SELECTION_SYSTEM = "system";
+const THEME_SELECTION_SYSTEM_DESCRIPTION = "Matching the system default theme.";
+const THEME_SELECTION_LIGHT = "light";
+const THEME_SELECTION_LIGHT_DESCRIPTION = "Light theme.";
+const THEME_SELECTION_DARK = "dark";
+const THEME_SELECTION_DARK_DESCRIPTION = "Dark theme.";
+const THEME_SELECTION_DEFAULT = THEME_SELECTION_SYSTEM;
+
+const ZONE_INDEX_DISPLAY_COLORING = "Color the measurement based on zones";
+const ZONE_INDEX_DISPLAY_COLORING_TAG = "zone_index_display_coloring";
+const ZONE_INDEX_DISPLAY_COLORING_DEFAULT = true;
+const ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION =
+    "On: The measurement font and background is color modified to reflect the zone value. " +
+        "Off: The zone is displayed without any re-coloring, this is less performance intensive.";
+
+const ATHLETE_BODY_WEIGHT = "Body Weight (kg)";
+const ATHLETE_BODY_WEIGHT_TAG = "athlete_body_weight";
+const ATHLETE_BODY_WEIGHT_DEFAULT_INT = 60;
+const ATHLETE_BODY_WEIGHT_DEFAULT = "$ATHLETE_BODY_WEIGHT_DEFAULT_INT";
+const ATHLETE_BODY_WEIGHT_DESCRIPTION =
+    "This settings is optional. It is only used right now for spin-down capable devices to set " +
+        "the initial value displayed in the weight input until the device sends the last inputted weight. " +
+        "As soon as the last inputted weight is received from the device it'll override the value in the input";
+
+const REMEMBER_ATHLETE_BODY_WEIGHT = "Remember last inputted weight at spin-down";
+const REMEMBER_ATHLETE_BODY_WEIGHT_TAG = "remember_athlete_body_weight";
+const REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT = true;
+const REMEMBER_ATHLETE_BODY_WEIGHT_DESCRIPTION =
+    "On: The weight inputted at the beginning of a spin-down will override the weight above. " +
+        "Off: The weight input adjusted at spin-down won't be stored back to the setting above.";
 
 Future<bool> getSimplerUiDefault() async {
   var simplerUiDefault = SIMPLER_UI_FAST_DEFAULT;
@@ -573,6 +832,10 @@ Future<bool> getSimplerUiDefault() async {
     }
   }
   return simplerUiDefault;
+}
+
+painting.Color paletteToPaintColor(common.Color paletteColor) {
+  return painting.Color.fromARGB(paletteColor.a, paletteColor.r, paletteColor.g, paletteColor.b);
 }
 
 const KM2MI = 0.621371;

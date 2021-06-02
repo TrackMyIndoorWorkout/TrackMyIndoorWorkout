@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/statistics_accumulator.dart';
 import 'utils.dart';
@@ -112,7 +111,7 @@ void main() {
   group('StatisticsAccumulator initializes max speed when max requested', () {
     SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(sport: sport, calculateMaxSpeed: true);
-      test("$sport -> ${accu.maxSpeed}", () {
+      test("$sport -> ${accu.maxSpeed}", () async {
         expect(accu.si, null);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, false);
@@ -257,7 +256,7 @@ void main() {
         calculateAvgHeartRate: true,
         calculateMaxHeartRate: true,
       );
-      test("$sport -> ${accu.maxSpeed}", () {
+      test("$sport -> ${accu.maxSpeed}", () async {
         expect(accu.si, null);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, true);

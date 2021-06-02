@@ -1,9 +1,9 @@
 import 'package:floor/floor.dart';
-import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import '../../persistence/preferences.dart';
-import '../../tcx/activity_type.dart';
-import '../../tcx/tcx_output.dart';
+import '../../utils/constants.dart';
+import '../../utils/display.dart' as disp;
+import 'workout_summary.dart';
 
 const String ACTIVITIES_TABLE_NAME = 'activities';
 
@@ -35,6 +35,12 @@ class Activity {
   final String fourCC;
   @required
   final String sport;
+  @ColumnInfo(name: 'power_factor')
+  @required
+  final double powerFactor;
+  @ColumnInfo(name: 'calorie_factor')
+  @required
+  final double calorieFactor;
 
   @ignore
   DateTime startDateTime;
@@ -55,10 +61,18 @@ class Activity {
     this.startDateTime,
     this.fourCC,
     this.sport,
+    this.powerFactor,
+    this.calorieFactor,
   })  : assert(deviceName != null),
         assert(deviceId != null),
         assert(fourCC != null),
-        assert(sport != null);
+        assert(sport != null),
+        assert(powerFactor != null),
+        assert(calorieFactor != null) {
+    if (distance == null) {
+      distance = 0.0;
+    }
+  }
 
   bool flipForPace(String item) {
     return item == "speed" && sport != ActivityType.Ride;
@@ -66,9 +80,9 @@ class Activity {
 
   void finish(double distance, int elapsed, int calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;
-    this.distance = distance;
-    this.elapsed = elapsed;
-    this.calories = calories;
+    this.distance = distance ?? 0.0;
+    this.elapsed = elapsed ?? 0;
+    this.calories = calories ?? 0;
   }
 
   void markUploaded(int stravaId) {
@@ -76,33 +90,30 @@ class Activity {
     this.stravaId = stravaId;
   }
 
-  Map<String, dynamic> getPersistenceValues(bool compressed) {
-    final startStamp = DateTime.fromMillisecondsSinceEpoch(start);
-    final dateString = DateFormat.yMd().format(startStamp);
-    final timeString = DateFormat.Hms().format(startStamp);
-    final fileName = 'Activity_${dateString}_$timeString.${TCXOutput.fileExtension(compressed)}'
-        .replaceAll('/', '-')
-        .replaceAll(':', '-');
-    return {
-      'startStamp': startStamp,
-      'name': '$sport at $dateString $timeString',
-      'description': '$sport by $deviceName',
-      'fileName': fileName,
-    };
-  }
-
   String distanceString(bool si) {
-    if (si) return '${distance.toStringAsFixed(0)}';
-    return '${(distance * M2MILE).toStringAsFixed(2)}';
+    return disp.distanceString(distance, si);
   }
 
   String distanceByUnit(bool si) {
-    final distanceStr = distanceString(si);
-    return '$distanceStr ${si ? "m" : "mi"}';
+    return disp.distanceByUnit(distance, si);
   }
 
   Activity hydrate() {
     startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
     return this;
+  }
+
+  WorkoutSummary getWorkoutSummary(String manufacturer) {
+    return WorkoutSummary(
+      deviceName: deviceName,
+      deviceId: deviceId,
+      manufacturer: manufacturer,
+      start: start,
+      distance: distance,
+      elapsed: elapsed,
+      sport: sport,
+      powerFactor: powerFactor,
+      calorieFactor: calorieFactor,
+    );
   }
 }

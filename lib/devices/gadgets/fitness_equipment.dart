@@ -10,6 +10,7 @@ import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/preferences.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../bluetooth_device_ex.dart';
 import '../gatt_constants.dart';
@@ -19,14 +20,13 @@ import 'heart_rate_monitor.dart';
 typedef RecordHandlerFunction = Function(Record data);
 
 class FitnessEquipment extends DeviceBase {
-  final DeviceDescriptor descriptor;
+  DeviceDescriptor descriptor;
   String manufacturerName;
   double _residueCalories;
   int _lastPositiveCadence; // #101
   bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
   double _lastPositiveCalories; // #111
   bool hasTotalCalorieCounting;
-  bool _calorieCarryoverWorkaround = CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
   Timer _timer;
   Record lastRecord;
   HeartRateMonitor heartRateMonitor;
@@ -41,10 +41,9 @@ class FitnessEquipment extends DeviceBase {
   bool equipmentDiscovery;
 
   FitnessEquipment({this.descriptor, device})
-      : assert(descriptor != null),
-        super(
-          serviceId: descriptor.dataServiceId,
-          characteristicsId: descriptor.dataCharacteristicId,
+      : super(
+          serviceId: descriptor?.dataServiceId ?? FITNESS_MACHINE_ID,
+          characteristicsId: descriptor?.dataCharacteristicId,
           device: device,
         ) {
     _residueCalories = 0.0;
@@ -53,35 +52,27 @@ class FitnessEquipment extends DeviceBase {
         PrefService.getBool(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
     _lastPositiveCalories = 0.0;
     hasTotalCalorieCounting = false;
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
-        CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
     measuring = false;
     calibrating = false;
     _random = Random();
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
-    lastRecord = RecordWithSport(
-      timeStamp: 0,
-      distance: uxDebug ? _random.nextInt(5000).toDouble() : 0.0,
-      elapsed: 0,
-      calories: 0,
-      power: 0,
-      speed: 0.0,
-      cadence: 0,
-      heartRate: 0,
-      elapsedMillis: 0,
-      sport: sport,
-    );
     _heartRateGapWorkaround =
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
-    final heartRateUpperLimitString =
-        PrefService.getString(HEART_RATE_UPPER_LIMIT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
-    _heartRateUpperLimit = int.tryParse(heartRateUpperLimitString);
+    _heartRateUpperLimit = getStringIntegerPreference(
+      HEART_RATE_UPPER_LIMIT_TAG,
+      HEART_RATE_UPPER_LIMIT_DEFAULT,
+      HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
+    );
     _heartRateLimitingMethod =
         PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
     equipmentDiscovery = false;
   }
 
   String get sport => _activity?.sport ?? descriptor.defaultSport;
+  double get powerFactor => _activity?.powerFactor ?? descriptor.powerFactor;
+  double get calorieFactor => _activity?.calorieFactor ?? descriptor.calorieFactor;
+  double get residueCalories => _residueCalories;
+  double get lastPositiveCalories => _lastPositiveCalories;
 
   Stream<Record> get _listenToData async* {
     if (!attached) return;
@@ -100,15 +91,7 @@ class FitnessEquipment extends DeviceBase {
       _timer = Timer(
         Duration(seconds: 1),
         () {
-          final record = processRecord(Record(
-            timeStamp: DateTime.now().millisecondsSinceEpoch,
-            calories: _random.nextInt(1500),
-            power: 50 + _random.nextInt(500),
-            speed: 15.0 + _random.nextDouble() * 15.0,
-            cadence: 30 + _random.nextInt(100),
-            heartRate: 60 + _random.nextInt(120),
-            sport: sport,
-          ));
+          final record = processRecord(RecordWithSport.getRandom(sport, _random));
           recordHandlerFunction(record);
           pumpData(recordHandlerFunction);
         },
@@ -126,55 +109,57 @@ class FitnessEquipment extends DeviceBase {
   }
 
   void setActivity(Activity activity) {
-    this._activity = activity;
+    _activity = activity;
+    lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }
 
-  Future<bool> connectOnDemand(BluetoothDeviceState deviceState) async {
+  Future<bool> connectOnDemand(BluetoothDeviceState deviceState, {identify = false}) async {
     if (deviceState == BluetoothDeviceState.disconnected ||
         deviceState == BluetoothDeviceState.disconnecting) {
       await connect();
     }
 
     if (deviceState == BluetoothDeviceState.connected && !discovering || connected) {
-      return await discover();
+      return await discover(identify: identify);
     }
 
     return false;
   }
 
-  Future<bool> discover({bool retry = false}) async {
+  Future<bool> discover({bool identify = false, bool retry = false}) async {
     if (uxDebug) return true;
 
     final success = await super.discover(retry: retry);
-    if (!success) return false;
+    if (identify || !success) return success;
 
     if (equipmentDiscovery) return false;
 
     equipmentDiscovery = true;
     // Check manufacturer name
-    // Will need to elaborate when generic GATT Fitness Machine support is added
-    final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
-    final nameCharacteristic =
-        BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
-    try {
-      final nameBytes = await nameCharacteristic.read();
-      manufacturerName = String.fromCharCodes(nameBytes);
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      // 2nd try
+    if (manufacturerName == null) {
+      final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
+      final nameCharacteristic =
+          BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
       try {
         final nameBytes = await nameCharacteristic.read();
         manufacturerName = String.fromCharCodes(nameBytes);
       } on PlatformException catch (e, stack) {
         debugPrint("$e");
         debugPrintStack(stackTrace: stack, label: "trace:");
+        // 2nd try
+        try {
+          final nameBytes = await nameCharacteristic.read();
+          manufacturerName = String.fromCharCodes(nameBytes);
+        } on PlatformException catch (e, stack) {
+          debugPrint("$e");
+          debugPrintStack(stackTrace: stack, label: "trace:");
+        }
       }
     }
 
     equipmentDiscovery = false;
-    return manufacturerName == descriptor.manufacturer;
+    return manufacturerName == descriptor.manufacturer || descriptor.manufacturer == "Unknown";
   }
 
   Record processRecord(Record stub) {
@@ -201,9 +186,13 @@ class FitnessEquipment extends DeviceBase {
     }
 
     final dT = (elapsedMillis - lastRecord.elapsedMillis) / 1000.0;
-    if ((stub.distance ?? 0.0) < EPS && (stub.speed ?? 0.0) > 0 && dT > EPS) {
-      double dD = stub.speed * DeviceDescriptor.KMH2MS * descriptor.distanceFactor * dT;
-      stub.distance = (lastRecord.distance ?? 0) + dD;
+    if ((stub.distance ?? 0.0) < EPS) {
+      stub.distance = (lastRecord.distance ?? 0);
+      if ((stub.speed ?? 0.0) > 0 && dT > EPS) {
+        // Speed possibly already has powerFactor effect
+        double dD = stub.speed * DeviceDescriptor.KMH2MS * dT;
+        stub.distance += dD;
+      }
     }
 
     var calories = 0.0;
@@ -211,7 +200,7 @@ class FitnessEquipment extends DeviceBase {
       calories = stub.calories.toDouble();
       hasTotalCalorieCounting = true;
     } else {
-      double deltaCalories = 0;
+      var deltaCalories = 0.0;
       if (stub.caloriesPerHour != null && stub.caloriesPerHour > EPS) {
         deltaCalories = stub.caloriesPerHour / (60 * 60) * dT;
       }
@@ -221,15 +210,14 @@ class FitnessEquipment extends DeviceBase {
       }
 
       if (deltaCalories < EPS && stub.power != null && stub.power > EPS) {
-        deltaCalories = stub.power * dT * DeviceDescriptor.J2KCAL * descriptor.calorieFactor;
+        deltaCalories = stub.power * dT * DeviceDescriptor.J2KCAL * calorieFactor;
       }
 
-      if (deltaCalories > 0) {
-        _residueCalories += deltaCalories;
-        calories = (lastRecord.calories ?? 0) + _residueCalories;
-        if (calories.floor() > lastRecord.calories) {
-          _residueCalories = calories - calories.floor();
-        }
+      _residueCalories += deltaCalories;
+      final lastCalories = lastRecord.calories ?? 0.0;
+      calories = lastCalories + _residueCalories;
+      if (calories.floor() > lastCalories) {
+        _residueCalories = calories - calories.floor();
       }
     }
 
@@ -243,20 +231,13 @@ class FitnessEquipment extends DeviceBase {
       } else if (stub.cadence != null && stub.cadence > 0) {
         _lastPositiveCadence = stub.cadence;
       }
-
-      // #111
-      if ((calories == null || calories < EPS) && _lastPositiveCalories > 0) {
-        calories = _lastPositiveCalories;
-      } else if (calories != null && calories > EPS) {
-        _lastPositiveCalories = calories;
-      }
     }
 
-    if (_calorieCarryoverWorkaround &&
-        lastRecord.calories != null &&
-        lastRecord.calories > 0 &&
-        (calories == null || lastRecord.calories > calories)) {
-      calories = lastRecord.calories.toDouble();
+    // #111
+    if ((calories == null || calories < EPS) && _lastPositiveCalories > 0) {
+      calories = _lastPositiveCalories;
+    } else if (calories != null && calories > EPS) {
+      _lastPositiveCalories = calories;
     }
 
     stub.calories = calories?.floor() ?? 0;
@@ -287,12 +268,17 @@ class FitnessEquipment extends DeviceBase {
     return stub;
   }
 
+  void startWorkout() {
+    _residueCalories = 0.0;
+    _lastPositiveCalories = 0.0;
+    lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
+  }
+
   void stopWorkout() {
-    _calorieCarryoverWorkaround = PrefService.getBool(CALORIE_CARRYOVER_WORKAROUND_TAG) ??
-        CALORIE_CARRYOVER_WORKAROUND_DEFAULT;
     uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();
+    descriptor.stopWorkout();
   }
 }

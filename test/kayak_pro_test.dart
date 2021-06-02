@@ -4,7 +4,7 @@ import 'package:track_my_indoor_exercise/devices/device_descriptors/rower_device
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/persistence/preferences.dart';
-import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
   final List<int> data;
@@ -15,18 +15,18 @@ class TestPair {
 
 void main() {
   test('KayakPro Rower Device constructor tests', () async {
-    final rower = deviceMap["KPro"];
+    final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC];
 
     expect(rower.canMeasureHeartRate, false);
     expect(rower.defaultSport, ActivityType.Kayaking);
-    expect(rower.fourCC, "KPro");
+    expect(rower.fourCC, KAYAK_PRO_GENESIS_PORT_FOURCC);
   });
 
   test('Rower Device interprets KayakPro flags properly', () async {
-    final rower = deviceMap["KPro"] as RowerDeviceDescriptor;
+    final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC] as RowerDeviceDescriptor;
     final lsb = 44;
     final msb = 9;
-    final flag = 256 * msb + lsb;
+    final flag = MAX_UINT8 * msb + lsb;
     await PrefService.init(prefix: 'pref_');
     PrefService.setDefaultValues({STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT});
     rower.stopWorkout();
@@ -49,7 +49,7 @@ void main() {
   group('Rower Device interprets KayakPro data properly', () {
     [
       TestPair(
-        data: [44, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 255, 0, 0],
+        data: [44, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, MAX_BYTE, MAX_BYTE, 0, 0, MAX_BYTE, 0, 0],
         record: RecordWithSport(
           distance: 0.0,
           elapsed: 0,
@@ -65,7 +65,27 @@ void main() {
         ),
       ),
       TestPair(
-        data: [44, 9, 79, 33, 0, 50, 0, 0, 86, 1, 12, 0, 255, 255, 89, 1, 255, 62, 0],
+        data: [
+          44,
+          9,
+          79,
+          33,
+          0,
+          50,
+          0,
+          0,
+          86,
+          1,
+          12,
+          0,
+          MAX_BYTE,
+          MAX_BYTE,
+          89,
+          1,
+          MAX_BYTE,
+          62,
+          0
+        ],
         record: RecordWithSport(
           distance: 50.0,
           elapsed: 62,
@@ -81,7 +101,27 @@ void main() {
         ),
       ),
       TestPair(
-        data: [44, 9, 152, 65, 0, 105, 0, 0, 60, 1, 16, 0, 255, 255, 97, 1, 255, 106, 0],
+        data: [
+          44,
+          9,
+          152,
+          65,
+          0,
+          105,
+          0,
+          0,
+          60,
+          1,
+          16,
+          0,
+          MAX_BYTE,
+          MAX_BYTE,
+          97,
+          1,
+          MAX_BYTE,
+          106,
+          0
+        ],
         record: RecordWithSport(
           distance: 105.0,
           elapsed: 106,
@@ -97,7 +137,27 @@ void main() {
         ),
       ),
       TestPair(
-        data: [44, 9, 85, 150, 0, 246, 0, 0, 39, 1, 20, 0, 255, 255, 107, 1, 255, 45, 1],
+        data: [
+          44,
+          9,
+          85,
+          150,
+          0,
+          246,
+          0,
+          0,
+          39,
+          1,
+          20,
+          0,
+          MAX_BYTE,
+          MAX_BYTE,
+          107,
+          1,
+          MAX_BYTE,
+          45,
+          1
+        ],
         record: RecordWithSport(
           distance: 246.0,
           elapsed: 301,
@@ -113,7 +173,27 @@ void main() {
         ),
       ),
       TestPair(
-        data: [44, 9, 177, 184, 0, 48, 1, 0, 0, 1, 30, 0, 255, 255, 133, 1, 255, 91, 1],
+        data: [
+          44,
+          9,
+          177,
+          184,
+          0,
+          48,
+          1,
+          0,
+          0,
+          1,
+          30,
+          0,
+          MAX_BYTE,
+          MAX_BYTE,
+          133,
+          1,
+          MAX_BYTE,
+          91,
+          1
+        ],
         record: RecordWithSport(
           distance: 304.0,
           elapsed: 347,
@@ -133,7 +213,7 @@ void main() {
       test("$sum", () async {
         PrefService.init(prefix: 'pref_');
         PrefService.setDefaultValues({STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT});
-        final rower = deviceMap["KPro"];
+        final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC];
         rower.stopWorkout();
 
         final record = rower.stubRecord(testPair.data);

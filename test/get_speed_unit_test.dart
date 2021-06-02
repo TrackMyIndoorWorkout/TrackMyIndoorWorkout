@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/display.dart';
 
 void main() {
@@ -16,7 +16,7 @@ void main() {
   group("getSpeedUnit for paddle sports:", () {
     [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing].forEach((sport) {
       final expected = "min /500";
-      test("$sport -> $expected", () {
+      test("$sport -> $expected", () async {
         expect(getSpeedUnit(true, sport), expected);
         expect(getSpeedUnit(false, sport), expected);
       });

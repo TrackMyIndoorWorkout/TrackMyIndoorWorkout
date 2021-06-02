@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/precor_spinner_chrono_power.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
-import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
   final List<int> data;
@@ -13,15 +13,15 @@ class TestPair {
 
 void main() {
   test('Precor Spinner Chrono Power constructor tests', () async {
-    final bike = deviceMap["PSCP"];
+    final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC];
 
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.Ride);
-    expect(bike.fourCC, "PSCP");
+    expect(bike.fourCC, PRECOR_SPINNER_CHRONO_POWER_FOURCC);
   });
 
   test('Precor Spinner Chrono Power interprets Data flags properly', () async {
-    final bike = deviceMap["PSCP"] as PrecorSpinnerChronoPower;
+    final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC] as PrecorSpinnerChronoPower;
 
     expect(
         bike.canDataProcessed([83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), true);
@@ -201,7 +201,7 @@ void main() {
     ].forEach((testPair) {
       final sum = testPair.data.fold(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap["PSCP"];
+        final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC];
         final record = bike.stubRecord(testPair.data);
 
         expect(record.id, null);

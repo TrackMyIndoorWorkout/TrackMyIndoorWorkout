@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../../persistence/models/record.dart';
-import '../../tcx/activity_type.dart';
+import '../../utils/constants.dart';
 import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 
@@ -12,13 +12,13 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     @required modelName,
     @required namePrefix,
     manufacturer,
+    manufacturerFitId,
     model,
     dataServiceId = FITNESS_MACHINE_ID,
     dataCharacteristicId = INDOOR_BIKE_ID,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactor = 1.0,
-    distanceFactor = 1.0,
+    calorieFactorDefault = 1.0,
   }) : super(
           defaultSport: ActivityType.Ride,
           isMultiSport: false,
@@ -27,13 +27,13 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
           modelName: modelName,
           namePrefix: namePrefix,
           manufacturer: manufacturer,
+          manufacturerFitId: manufacturerFitId,
           model: model,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactor: calorieFactor,
-          distanceFactor: distanceFactor,
+          calorieFactorDefault: calorieFactorDefault,
         );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.indoor_bike_data.xml

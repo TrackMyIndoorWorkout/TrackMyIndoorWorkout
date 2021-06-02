@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
-
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
 import '../ui/import_form.dart';
 import '../utils/constants.dart';
+import '../utils/preferences.dart';
 import 'models/activity.dart';
 import 'models/record.dart';
 import 'database.dart';
@@ -29,11 +29,12 @@ class WorkoutRow {
     bool heartRateGapWorkaround,
     int heartRateUpperLimit,
     String heartRateLimitingMethod,
-    double throttleRatio,
+    double tuneRatio,
+    bool extendTuning,
   }) {
     if (rowString != null) {
       final values = rowString.split(",");
-      this.power = (int.tryParse(values[0]) * throttleRatio).round();
+      this.power = (int.tryParse(values[0]) * tuneRatio).round();
       this.cadence = int.tryParse(values[1]);
       this.heartRate = int.tryParse(values[2]);
       if (this.heartRate == 0 && lastHeartRate > 0 && heartRateGapWorkaround) {
@@ -48,7 +49,7 @@ class WorkoutRow {
         }
       }
 
-      this.distance = double.tryParse(values[3]);
+      this.distance = double.tryParse(values[3]) * (extendTuning ? tuneRatio : 1.0);
     }
   }
 }
@@ -75,16 +76,9 @@ class MPowerEchelon2Importer {
   List<String> _lines;
   int _linePointer;
   Map<int, double> _velocityForPowerDict;
-  double _throttleRatio;
 
-  MPowerEchelon2Importer({
-    @required this.start,
-    @required String throttlePercentString,
-  })  : assert(start != null),
-        assert(throttlePercentString != null) {
+  MPowerEchelon2Importer({@required this.start}) : assert(start != null) {
     _velocityForPowerDict = Map<int, double>();
-    final throttlePercent = int.tryParse(throttlePercentString);
-    _throttleRatio = (100 - throttlePercent) / 100;
   }
 
   bool _findLine(String lead) {
@@ -202,10 +196,11 @@ class MPowerEchelon2Importer {
       return null;
     }
 
-    DeviceDescriptor device = deviceMap["SAP+"];
+    DeviceDescriptor device = deviceMap[SCHWINN_AC_PERF_PLUS_FOURCC];
+    device.refreshTuning(MPOWER_IMPORT_DEVICE_ID);
     var activity = Activity(
       deviceName: device.namePrefix,
-      deviceId: "",
+      deviceId: MPOWER_IMPORT_DEVICE_ID,
       start: start.millisecondsSinceEpoch,
       end: start.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch,
       distance: totalDistance,
@@ -214,8 +209,10 @@ class MPowerEchelon2Importer {
       startDateTime: start,
       fourCC: device.fourCC,
       sport: device.defaultSport,
+      calorieFactor: device.calorieFactor,
+      powerFactor: device.powerFactor,
     );
-
+    final extendTuning = PrefService.getBool(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
     final database = Get.find<AppDatabase>();
     final id = await database?.activityDao?.insertActivity(activity);
     activity.id = id;
@@ -242,9 +239,11 @@ class MPowerEchelon2Importer {
         PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     bool heartRateGapWorkaround =
         heartRateGapWorkaroundSetting == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
-    String heartRateUpperLimitString =
-        PrefService.getString(HEART_RATE_UPPER_LIMIT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
-    int heartRateUpperLimit = int.tryParse(heartRateUpperLimitString);
+    int heartRateUpperLimit = getStringIntegerPreference(
+      HEART_RATE_UPPER_LIMIT_TAG,
+      HEART_RATE_UPPER_LIMIT_DEFAULT,
+      HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
+    );
     String heartRateLimitingMethod =
         PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
 
@@ -257,7 +256,8 @@ class MPowerEchelon2Importer {
           heartRateGapWorkaround: heartRateGapWorkaround,
           heartRateUpperLimit: heartRateUpperLimit,
           heartRateLimitingMethod: heartRateLimitingMethod,
-          throttleRatio: _throttleRatio,
+          tuneRatio: device.powerFactor,
+          extendTuning: extendTuning,
         );
       }
 
@@ -270,7 +270,8 @@ class MPowerEchelon2Importer {
           heartRateGapWorkaround: heartRateGapWorkaround,
           heartRateUpperLimit: heartRateUpperLimit,
           heartRateLimitingMethod: heartRateLimitingMethod,
-          throttleRatio: 1.0,
+          tuneRatio: 1.0,
+          extendTuning: extendTuning,
         );
       } else {
         nextRow = WorkoutRow(
@@ -279,7 +280,8 @@ class MPowerEchelon2Importer {
           heartRateGapWorkaround: heartRateGapWorkaround,
           heartRateUpperLimit: heartRateUpperLimit,
           heartRateLimitingMethod: heartRateLimitingMethod,
-          throttleRatio: _throttleRatio,
+          tuneRatio: device.powerFactor,
+          extendTuning: extendTuning,
         );
       }
 

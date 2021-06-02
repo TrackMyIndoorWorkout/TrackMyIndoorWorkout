@@ -1,34 +1,47 @@
+import 'dart:math';
+import 'dart:typed_data';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
-import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:preferences/preferences.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../export/activity_export.dart';
+import '../export/fit/fit_export.dart';
+import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../strava/error_codes.dart';
 import '../strava/strava_service.dart';
-import '../tcx/tcx_output.dart';
-import '../ui/device_usages.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
-import 'find_devices.dart';
+import '../utils/theme_manager.dart';
+import 'calorie_tunes.dart';
+import 'device_usages.dart';
 import 'import_form.dart';
+import 'leaderboards/leaderboard_type_picker.dart';
+import 'parts/calorie_override.dart';
+import 'parts/circular_menu.dart';
+import 'parts/data_format_picker.dart';
+import 'parts/power_factor_tune.dart';
+import 'power_tunes.dart';
 import 'records.dart';
 
 class ActivitiesScreen extends StatefulWidget {
-  ActivitiesScreen({key}) : super(key: key);
+  final bool hasLeaderboardData;
+
+  ActivitiesScreen({key, this.hasLeaderboardData}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return ActivitiesScreenState();
+    return ActivitiesScreenState(hasLeaderboardData: hasLeaderboardData);
   }
 }
 
@@ -36,7 +49,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database;
   int _editCount;
   bool _si;
-  bool _compress;
+  bool _leaderboardFeature;
+  bool hasLeaderboardData;
   double _mediaWidth;
   double _sizeDefault;
   double _sizeDefault2;
@@ -44,14 +58,25 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   TextStyle _textStyle;
   TextStyle _headerStyle;
   TextStyle _unitStyle;
+  ThemeManager _themeManager;
+  ExpandableThemeData _expandableThemeData;
+  double _ringDiameter;
+  double _ringWidth;
+
+  ActivitiesScreenState({@required this.hasLeaderboardData}) : assert(hasLeaderboardData != null);
 
   @override
   void initState() {
     super.initState();
     _editCount = 0;
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
-    _compress = PrefService.getBool(COMPRESS_DOWNLOAD_TAG);
+    _leaderboardFeature =
+        PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _database = Get.find<AppDatabase>();
+    _themeManager = Get.find<ThemeManager>();
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
+    _ringWidth = _ringDiameter * 0.2;
   }
 
   Widget _actionButtonRow(Activity activity, double size) {
@@ -61,7 +86,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         IconButton(
           icon: Icon(
             BrandIcons.strava,
-            color: activity.uploaded ? Colors.grey : Colors.deepOrangeAccent,
+            color:
+                activity.uploaded ? _themeManager.getGreyColor() : _themeManager.getOrangeColor(),
             size: size,
           ),
           onPressed: () async {
@@ -96,19 +122,64 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           },
         ),
         IconButton(
-          icon: Icon(Icons.file_download, color: Colors.black, size: size),
+          icon: _themeManager.getActionIcon(Icons.file_download, size),
           onPressed: () async {
+            if (!await Permission.storage.request().isGranted) {
+              return false;
+            }
+
+            final formatPick = await Get.bottomSheet(
+              DataFormatPickerBottomSheet(),
+              enableDrag: false,
+            );
+
+            if (formatPick == null) {
+              return false;
+            }
+
             final records = await _database.recordDao.findAllActivityRecords(activity.id);
-            final tcxStream = await TCXOutput().getTcxOfActivity(activity, records, _compress);
-            final persistenceValues = activity.getPersistenceValues(_compress);
-            ShareFilesAndScreenshotWidgets().shareFile(persistenceValues['name'],
-                persistenceValues['fileName'], tcxStream, TCXOutput.mimeType(_compress),
-                text: 'Share a ride on ${activity.deviceName}');
+            ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport();
+            final fileStream = await exporter.getExport(activity, records, false);
+            final persistenceValues = exporter.getPersistenceValues(activity, false);
+            ShareFilesAndScreenshotWidgets().shareFile(
+              persistenceValues['name'],
+              persistenceValues['fileName'],
+              Uint8List.fromList(fileStream),
+              exporter.mimeType(false),
+              text: 'Share a ride on ${activity.deviceName}',
+            );
+          },
+        ),
+        IconButton(
+          icon: _themeManager.getActionIcon(Icons.bolt, size),
+          onPressed: () async {
+            if (activity.powerFactor == null || activity.powerFactor < EPS) {
+              Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
+              return;
+            }
+            await Get.bottomSheet(
+              PowerFactorTuneBottomSheet(
+                  deviceId: activity.deviceId, powerFactor: activity.powerFactor),
+              enableDrag: false,
+            );
+          },
+        ),
+        IconButton(
+          icon: _themeManager.getActionIcon(Icons.whatshot, size),
+          onPressed: () async {
+            if (activity.calories == null || activity.calories == 0) {
+              Get.snackbar("Error", "Cannot tune calories of activity with 0 calories");
+              return;
+            }
+            await Get.bottomSheet(
+              CalorieOverrideBottomSheet(deviceId: activity.deviceId, calories: activity.calories),
+              enableDrag: false,
+            );
           },
         ),
         Spacer(),
         IconButton(
-          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
@@ -133,7 +204,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Icon(Icons.chevron_right, color: Colors.black, size: size),
+          icon: _themeManager.getActionIcon(Icons.chevron_right, size),
           onPressed: () async =>
               await Get.to(RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
         ),
@@ -143,7 +214,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = Get.mediaQuery.size.width;
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
       _sizeDefault = _mediaWidth / 7;
@@ -160,10 +231,33 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         fontFamily: FONT_FAMILY,
         fontSize: _sizeDefault2,
       );
-      _unitStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault / 3,
-        color: Colors.indigo,
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
+    }
+
+    List<FloatingActionButton> floatingActionButtons = [
+      _themeManager.getExitFab(),
+      _themeManager.getHelpFab(),
+      _themeManager.getBlueFab(Icons.file_upload, () async {
+        await Get.to(ImportForm()).whenComplete(() => setState(() {
+              _editCount++;
+            }));
+      }),
+      _themeManager.getBlueFab(Icons.collections_bookmark, () async {
+        await Get.to(DeviceUsagesScreen());
+      }),
+      _themeManager.getBlueFab(Icons.bolt, () async {
+        await Get.to(PowerTunesScreen());
+      }),
+      _themeManager.getBlueFab(Icons.whatshot, () async {
+        await Get.to(CalorieTunesScreen());
+      }),
+    ];
+
+    if (_leaderboardFeature && hasLeaderboardData) {
+      floatingActionButtons.add(
+        _themeManager.getBlueFab(Icons.leaderboard, () async {
+          await Get.bottomSheet(LeaderBoardTypeBottomSheet(), enableDrag: false);
+        }),
       );
     }
 
@@ -175,8 +269,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         initialOffset: 0,
         loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
-          fetchItems: (int offset, int limit) async {
-            final data = await _database.activityDao.findActivities(offset, limit);
+          fetchItems: (int page, int limit) async {
+            final offset = page * limit;
+            final data = await _database.activityDao.findActivities(limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -203,13 +298,14 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${activity.id} ${activity.stravaId}"),
+              theme: _expandableThemeData,
               header: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(Icons.calendar_today, color: Colors.indigo, size: _sizeDefault2),
+                      _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault2),
                       Text(dateString, style: _headerStyle),
                     ],
                   ),
@@ -217,7 +313,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(Icons.watch, color: Colors.indigo, size: _sizeDefault2),
+                      _themeManager.getBlueIcon(Icons.watch, _sizeDefault2),
                       Text(timeString, style: _headerStyle),
                     ],
                   ),
@@ -232,7 +328,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(getIcon(activity.sport), color: Colors.indigo, size: _sizeDefault),
+                        _themeManager.getBlueIcon(getIcon(activity.sport), _sizeDefault),
                         Expanded(
                           child: TextOneLine(
                             activity.deviceName,
@@ -247,7 +343,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.timer, color: Colors.indigo, size: _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
                         Spacer(),
                         Text(activity.elapsedString, style: _measurementStyle),
                       ],
@@ -256,7 +352,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_road, color: Colors.indigo, size: _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
                         Spacer(),
                         Text(activity.distanceString(_si), style: _measurementStyle),
                         SizedBox(
@@ -269,7 +365,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.whatshot, color: Colors.indigo, size: _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
                         Spacer(),
                         Text('${activity.calories}', style: _measurementStyle),
                         SizedBox(
@@ -287,44 +383,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FabCircularMenu(
-        fabOpenIcon: const Icon(Icons.menu, color: Colors.white),
-        fabCloseIcon: const Icon(Icons.close, color: Colors.white),
-        children: [
-          FloatingActionButton(
-            heroTag: null,
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.indigo,
-            child: Icon(Icons.collections_bookmark),
-            onPressed: () async {
-              await Get.to(DeviceUsagesScreen());
-            },
-          ),
-          FloatingActionButton(
-            heroTag: null,
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.indigo,
-            child: Icon(Icons.file_upload),
-            onPressed: () async {
-              await Get.to(ImportForm()).whenComplete(() => setState(() {
-                    _editCount++;
-                  }));
-            },
-          ),
-          FloatingActionButton(
-            heroTag: null,
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.indigo,
-            child: Icon(Icons.help),
-            onPressed: () async {
-              if (await canLaunch(HELP_URL)) {
-                launch(HELP_URL);
-              } else {
-                Get.snackbar("Attention", "Cannot open URL");
-              }
-            },
-          ),
-        ],
+      floatingActionButton: CircularMenu(
+        fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+        fabOpenColor: _themeManager.getBlueColor(),
+        fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+        fabCloseColor: _themeManager.getBlueColor(),
+        ringColor: _themeManager.getBlueColorInverse(),
+        ringDiameter: _ringDiameter,
+        ringWidth: _ringWidth,
+        children: floatingActionButtons,
       ),
     );
   }

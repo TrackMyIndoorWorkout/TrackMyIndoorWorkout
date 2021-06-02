@@ -65,10 +65,10 @@ void main() {
     List.generate(REPETITION, (index) => index).forEach((index) {
       final ipParts = getRandomInts(4, 320, rnd);
       final port = rnd.nextInt(81920);
-      final valid = ipParts.fold(true, (prev, part) => prev && part < 256) &&
+      final valid = ipParts.fold(true, (prev, part) => prev && part < MAX_UINT8) &&
           ipParts[0] > 0 &&
           port > 0 &&
-          port < 65536;
+          port < MAX_UINT16;
       final addressString = ipParts.map((part) => part.toString()).join(".");
       final fullAddress = addressString + ":$port";
       final expected = valid ? Tuple2<String, int>(addressString, port) : null;

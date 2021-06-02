@@ -23,7 +23,7 @@ class TrackCalculator {
     final offset = trackOffset;
 
     final trackLength = TRACK_LENGTH * track.lengthFactor;
-    final d = distance % trackLength;
+    final d = (distance ?? 0.0) % trackLength;
     if (d <= track.laneLength) {
       // top straight
       final displacement = d / track.laneLength * pi * track.laneShrink / track.radiusBoost * r;

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/preferences.dart';
 
 import 'utils.dart';
@@ -61,7 +62,8 @@ void main() {
     final rnd = Random();
     List.generate(REPETITION, (index) => index).forEach((index) {
       final ipParts = getRandomInts(4, 320, rnd);
-      final expected = ipParts.fold(true, (prev, part) => prev && part < 256) && ipParts[0] > 0;
+      final expected =
+          ipParts.fold(true, (prev, part) => prev && part < MAX_UINT8) && ipParts[0] > 0;
       final addressString = ipParts.map((part) => part.toString()).join(".");
       test('$addressString -> $expected', () async {
         expect(isIpAddress(addressString), expected);

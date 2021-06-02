@@ -1,32 +1,26 @@
 name: track_my_indoor_exercise
-description: Recording indoor exercises as if circling on a running track.
+description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.24+33
+version: 1.1.55+55
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  assorted_layout_widgets: ^4.0.1
+  assorted_layout_widgets: ^4.0.0-nullsafety.1
   charts_flutter: ^0.10.0
-  convert: ^3.0.0
   datetime_picker_formfield: ^2.0.0
-  device_info: ^2.0.0
+  device_info: ^2.0.2
+  edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
   fab_circular_menu: ^1.0.2
-  file_picker: ^3.0.0
-  floor:
-    git:
-      url: https://github.com/MrCsabaToth/floor.git
-      path: floor
-  flutter_blue:
-    git:
-      url: https://github.com/CsabaConsulting/flutter_blue.git
-        ref: patch-3
+  file_picker: ^3.0.2+2
+  floor: ^1.1.0
+  flutter_blue: ^0.8.0
   flutter_brand_icons: ^1.1.0
-  get: ^4.0.0-nullsafety.2
-  http: ^0.13.1
+  get: ^4.1.4
+  http: ^0.13.3
   http_parser: ^4.0.0
   internet_connection_checker: ^0.0.1
   intl: ^0.17.0
@@ -34,12 +28,14 @@ dependencies:
     git:
       url: https://github.com/WaleedAlrashed/flutter-listutils.git
   loading_overlay: ^0.3.0
-  meta: ^1.2.4
+  meta: ^1.4.0
+  permission_handler: ^8.0.0+2
   preferences: any
-  progress_indicators: ^0.1.5
-  rxdart: ^0.26.0
+  progress_indicators: ^1.0.0
+  rxdart: ^0.27.1
   share_files_and_screenshot_widgets: ^1.0.3
   shared_preferences: ^2.0.5
+  soundpool: ^2.1.0
   spinner_input: ^0.1.2
   sqflite: ^2.0.0+3
   tuple: ^2.0.0
@@ -51,10 +47,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^1.12.2
-  floor_generator:
-    git:
-      url: https://github.com/MrCsabaToth/floor.git
-      path: floor_generator
+  floor_generator: ^1.1.0
   integration_test: ^1.0.2+2
   mockito: ^5.0.3
   mock_data: ^1.2.8
@@ -70,4 +63,4 @@ flutter:
       fonts:
         - asset: fonts/RobotoMono-Bold.ttf
   assets:
-    - assets/CompanyNames.txt.gz
+    - assets/

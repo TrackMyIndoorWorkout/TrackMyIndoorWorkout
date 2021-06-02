@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:expandable/expandable.dart';
@@ -10,13 +12,14 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/statistics_accumulator.dart';
+import '../utils/theme_manager.dart';
 import 'models/display_record.dart';
 import 'models/histogram_data.dart';
 import 'models/measurement_counter.dart';
 import 'models/tile_configuration.dart';
-import 'find_devices.dart';
 
 class RecordsScreen extends StatefulWidget {
   final Activity activity;
@@ -55,6 +58,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   bool _si;
   List<PreferencesSpec> _preferencesSpecs;
 
+  double _mediaWidth;
   double _sizeDefault;
   double _sizeDefault2;
   TextStyle _measurementStyle;
@@ -62,6 +66,10 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _unitStyle;
   TextStyle _selectionStyle;
   TextStyle _selectionTextStyle;
+  ThemeManager _themeManager;
+  bool _isLight;
+  charts.TextStyleSpec _chartTextStyle;
+  ExpandableThemeData _expandableThemeData;
 
   Future<void> extraInit() async {
     final database = Get.find<AppDatabase>();
@@ -116,7 +124,10 @@ class RecordsScreenState extends State<RecordsScreen> {
           avgString: accu.avgPower.toStringAsFixed(2),
         );
         prefSpec.calculateBounds(
-            measurementCounter.minPower.toDouble(), measurementCounter.maxPower.toDouble());
+          measurementCounter.minPower.toDouble(),
+          measurementCounter.maxPower.toDouble(),
+          _isLight,
+        );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
@@ -137,10 +148,14 @@ class RecordsScreenState extends State<RecordsScreen> {
           dataFn: _getSpeedData,
           dataStringFn: _getSpeedString,
           selectionListener: _speedSelectionListener,
-          maxString: paceString(accu.maxSpeed),
-          avgString: paceString(accu.avgSpeed),
+          maxString: speedOrPaceString(accu.maxSpeed, _si, activity.sport),
+          avgString: speedOrPaceString(accu.avgSpeed, _si, activity.sport),
         );
-        prefSpec.calculateBounds(measurementCounter.minSpeed, measurementCounter.maxSpeed);
+        prefSpec.calculateBounds(
+          measurementCounter.minSpeed,
+          measurementCounter.maxSpeed,
+          _isLight,
+        );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
@@ -165,7 +180,10 @@ class RecordsScreenState extends State<RecordsScreen> {
           avgString: "${accu.avgCadence}",
         );
         prefSpec.calculateBounds(
-            measurementCounter.minCadence.toDouble(), measurementCounter.maxCadence.toDouble());
+          measurementCounter.minCadence.toDouble(),
+          measurementCounter.maxCadence.toDouble(),
+          _isLight,
+        );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
@@ -190,7 +208,10 @@ class RecordsScreenState extends State<RecordsScreen> {
           avgString: "${accu.avgHeartRate}",
         );
         prefSpec.calculateBounds(
-            measurementCounter.minHr.toDouble(), measurementCounter.maxHr.toDouble());
+          measurementCounter.minHr.toDouble(),
+          measurementCounter.maxHr.toDouble(),
+          _isLight,
+        );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
@@ -278,40 +299,29 @@ class RecordsScreenState extends State<RecordsScreen> {
     _si = PrefService.getBool(UNIT_SYSTEM_TAG);
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, activity.sport);
     activity.hydrate();
+    _themeManager = Get.find<ThemeManager>();
+    _isLight = !_themeManager.isDark();
+    _chartTextStyle = charts.TextStyleSpec(
+      color: _isLight ? charts.MaterialPalette.black : charts.MaterialPalette.white,
+    );
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
     extraInit();
-
-    _sizeDefault = Get.mediaQuery.size.width / 7;
-    _sizeDefault2 = _sizeDefault / 1.5;
-    _measurementStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
-      fontSize: _sizeDefault,
-    );
-    _textStyle = TextStyle(
-      fontSize: _sizeDefault2,
-    );
-    _unitStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
-      fontSize: _sizeDefault2 / 2,
-      color: Colors.indigo,
-    );
-    _selectionStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
-      fontSize: _sizeDefault2 / 2,
-    );
-    _selectionTextStyle = TextStyle(
-      fontSize: _sizeDefault2 / 2,
-    );
   }
 
   List<charts.Series<DisplayRecord, DateTime>> _getPowerData() {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'power',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(record.power),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(
+          record.power,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.power,
         data: _sampledRecords,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -333,11 +343,16 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'powerHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[0].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[0].pieBgColorByBin(
+          data.index,
+          _isLight,
+        ),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["power"].histogram,
         labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
       ),
     ];
   }
@@ -346,11 +361,15 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'speed',
-        colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[1].fgColorByValue(record.speedByUnit(_si, activity.sport)),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[1].fgColorByValue(
+          record.speedByUnit(_si, activity.sport),
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, activity.sport),
         data: _sampledRecords,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -372,11 +391,16 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'speedHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[1].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[1].pieBgColorByBin(
+          data.index,
+          _isLight,
+        ),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["speed"].histogram,
         labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
       ),
     ];
   }
@@ -385,10 +409,15 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'cadence',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(record.cadence),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(
+          record.cadence,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.cadence,
         data: _sampledRecords,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -410,11 +439,16 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'cadenceHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[2].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[2].pieBgColorByBin(
+          data.index,
+          _isLight,
+        ),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["cadence"].histogram,
         labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
       ),
     ];
   }
@@ -423,11 +457,15 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<DisplayRecord, DateTime>>[
       charts.Series<DisplayRecord, DateTime>(
         id: 'hr',
-        colorFn: (DisplayRecord record, __) =>
-            _preferencesSpecs[3].fgColorByValue(record.heartRate),
+        colorFn: (DisplayRecord record, __) => _preferencesSpecs[3].fgColorByValue(
+          record.heartRate,
+          _isLight,
+        ),
         domainFn: (DisplayRecord record, _) => record.dt,
         measureFn: (DisplayRecord record, _) => record.heartRate,
         data: _sampledRecords,
+        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -449,16 +487,43 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.Series<HistogramData, double>>[
       charts.Series<HistogramData, double>(
         id: 'hrHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[3].fgColorByBin(data.index),
+        colorFn: (HistogramData data, __) => _preferencesSpecs[3].pieBgColorByBin(
+          data.index,
+          _isLight,
+        ),
         domainFn: (HistogramData data, _) => data.upper,
         measureFn: (HistogramData data, _) => data.percent,
         data: _tileConfigurations["hr"].histogram,
         labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
       ),
     ];
   }
 
   Widget build(BuildContext context) {
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
+    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
+      _mediaWidth = mediaWidth;
+      _sizeDefault = mediaWidth / 7;
+      _sizeDefault2 = _sizeDefault / 1.5;
+      _measurementStyle = TextStyle(
+        fontFamily: FONT_FAMILY,
+        fontSize: _sizeDefault,
+      );
+      _textStyle = TextStyle(
+        fontSize: _sizeDefault2,
+      );
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
+      _selectionStyle = TextStyle(
+        fontFamily: FONT_FAMILY,
+        fontSize: _sizeDefault2 / 2,
+      );
+      _selectionTextStyle = TextStyle(
+        fontSize: _sizeDefault2 / 2,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Activities'),
@@ -489,11 +554,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          getIcon(activity.sport),
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
+                        _themeManager.getBlueIcon(getIcon(activity.sport), _sizeDefault),
                         Expanded(
                           child: TextOneLine(
                             activity.deviceName,
@@ -508,11 +569,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.timer,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
+                        _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
                         Spacer(),
                         Text(
                           activity.elapsedString,
@@ -524,11 +581,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.add_road,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
+                        _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
                         Spacer(),
                         Text(
                           activity.distanceString(_si),
@@ -547,11 +600,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.whatshot,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
+                        _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
                         Spacer(),
                         Text(
                           '${activity.calories}',
@@ -574,6 +623,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                 return Card(
                   elevation: 6,
                   child: ExpandablePanel(
+                    theme: _expandableThemeData,
                     header: Column(
                       children: [
                         Row(
@@ -590,11 +640,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(
-                              _preferencesSpecs[index].icon,
-                              color: Colors.indigo,
-                              size: _sizeDefault2,
-                            ),
+                            _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
                             Text("MAX", style: _unitStyle),
                             Spacer(),
                             Text(
@@ -614,11 +660,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(
-                              _preferencesSpecs[index].icon,
-                              color: Colors.indigo,
-                              size: _sizeDefault2,
-                            ),
+                            _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
                             Text("AVG", style: _unitStyle),
                             Spacer(),
                             Text(
@@ -655,7 +697,10 @@ class RecordsScreenState extends State<RecordsScreen> {
                                   charts.LinePointHighlighterFollowLineType.nearest,
                             ),
                             charts.SelectNearest(eventTrigger: charts.SelectionTrigger.tapAndDrag),
-                            charts.RangeAnnotation(_preferencesSpecs[index].annotationSegments),
+                            charts.RangeAnnotation(
+                              _preferencesSpecs[index].annotationSegments,
+                              defaultLabelStyleSpec: _chartTextStyle,
+                            ),
                           ],
                           selectionModels: [
                             charts.SelectionModelConfig(
@@ -688,7 +733,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                           _tileConfigurations[item].histogramFn(),
                           animate: false,
                           defaultRenderer: charts.ArcRendererConfig(
-                              arcWidth: 60, arcRendererDecorators: [charts.ArcLabelDecorator()]),
+                            arcWidth: 60,
+                            arcRendererDecorators: [charts.ArcLabelDecorator()],
+                          ),
                           behaviors: [
                             charts.DatumLegend(
                               position: charts.BehaviorPosition.start,
@@ -696,6 +743,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                               cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
                               showMeasures: true,
                               legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
+                              entryTextStyle: _chartTextStyle,
                               measureFormatter: (num value) {
                                 return value == null ? '-' : '$value %';
                               },

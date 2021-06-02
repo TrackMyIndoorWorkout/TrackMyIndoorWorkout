@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import '../../devices/company_registry.dart';
-import '../../persistence/preferences.dart';
+import '../../utils/constants.dart';
 import '../../utils/scan_result_ex.dart';
 import '../../utils/string_ex.dart';
-import 'common.dart';
+import '../../utils/theme_manager.dart';
 
 class ScanResultTile extends StatelessWidget {
   const ScanResultTile({
@@ -21,7 +21,7 @@ class ScanResultTile extends StatelessWidget {
   final VoidCallback onEquipmentTap;
   final VoidCallback onHrmTap;
 
-  Widget _buildTitle(BuildContext context, TextStyle adjustedCaptionStyle, TextStyle dataStyle) {
+  Widget _buildTitle(ThemeManager themeManger, TextStyle captionStyle, TextStyle dataStyle) {
     if (result.device.name.isNotEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -29,7 +29,7 @@ class ScanResultTile extends StatelessWidget {
         children: [
           Text(
             result.device.name,
-            style: standOutStyle(adjustedCaptionStyle, FONT_SIZE_FACTOR),
+            style: themeManger.boldStyle(captionStyle, fontSizeFactor: FONT_SIZE_FACTOR),
             overflow: TextOverflow.ellipsis,
           ),
           Text(
@@ -43,24 +43,15 @@ class ScanResultTile extends StatelessWidget {
     }
   }
 
-  Widget _buildAdvRow(BuildContext context, String title, String value,
-      TextStyle adjustedCaptionStyle, TextStyle dataStyle) {
+  Widget _buildAdvRow(String title, String value, TextStyle captionStyle, TextStyle dataStyle) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: adjustedCaptionStyle),
-          SizedBox(
-            width: 12.0,
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: dataStyle.apply(color: Colors.black),
-              softWrap: true,
-            ),
-          ),
+          Text(title, style: captionStyle),
+          SizedBox(width: 12.0),
+          Expanded(child: Text(value, softWrap: true)),
         ],
       ),
     );
@@ -101,62 +92,58 @@ class ScanResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final adjustedCaptionStyle =
-        Theme.of(context).textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
-    final secondaryStyle = adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY);
+    final captionStyle = Get.textTheme.headline6;
+    final secondaryStyle = captionStyle.apply(fontFamily: FONT_FAMILY);
+    final themeManager = Get.find<ThemeManager>();
+
     return ExpansionTile(
-      title: _buildTitle(context, adjustedCaptionStyle, secondaryStyle),
+      title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: Text(
         result.rssi.toString(),
-        style: adjustedCaptionStyle.apply(fontFamily: FONT_FAMILY),
+        style: captionStyle.apply(fontFamily: FONT_FAMILY),
       ),
-      trailing: FloatingActionButton(
-        heroTag: null,
-        child: result.isHeartRateMonitor ? Icon(Icons.favorite) : Icon(Icons.play_arrow),
-        foregroundColor: Colors.white,
-        backgroundColor: result.advertisementData.connectable ? Colors.blue : Colors.grey,
-        onPressed: result.advertisementData.connectable
+      trailing: themeManager.getIconFab(
+        result.advertisementData.connectable
+            ? themeManager.getBlueColor()
+            : themeManager.getGreyColor(),
+        result.isHeartRateMonitor ? Icons.favorite : Icons.play_arrow,
+        result.advertisementData.connectable
             ? (result.isHeartRateMonitor ? onHrmTap : onEquipmentTap)
             : null,
       ),
       children: [
         _buildAdvRow(
-          context,
           'Complete Local Name',
           result.advertisementData.localName,
-          adjustedCaptionStyle,
-          adjustedCaptionStyle,
+          captionStyle,
+          captionStyle,
         ),
         _buildAdvRow(
-          context,
           'Tx Power Level',
           '${result.advertisementData.txPowerLevel ?? 'N/A'}',
-          adjustedCaptionStyle,
+          captionStyle,
           secondaryStyle,
         ),
         _buildAdvRow(
-          context,
           'Manufacturer Data',
           getNiceManufacturerData(
                   result.advertisementData.manufacturerData?.keys?.toList(growable: false)) ??
               'N/A',
-          adjustedCaptionStyle,
+          captionStyle,
           secondaryStyle,
         ),
         _buildAdvRow(
-          context,
           'Service UUIDs',
           (result.advertisementData.serviceUuids.isNotEmpty)
               ? result.serviceUuids.join(', ').toUpperCase()
               : 'N/A',
-          adjustedCaptionStyle,
+          captionStyle,
           secondaryStyle,
         ),
         _buildAdvRow(
-          context,
           'Service Data',
           getNiceServiceData(result.advertisementData.serviceData) ?? 'N/A',
-          adjustedCaptionStyle,
+          captionStyle,
           secondaryStyle,
         ),
       ],

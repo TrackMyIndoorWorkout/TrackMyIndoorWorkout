@@ -1,7 +1,9 @@
-import '../../tcx/activity_type.dart';
+import '../../export/fit/fit_manufacturer.dart';
+import '../../utils/constants.dart';
+import '../device_map.dart';
+import '../gatt_constants.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
-import '../gatt_constants.dart';
 import 'fixed_layout_device_descriptor.dart';
 
 class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
@@ -9,11 +11,12 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
       : super(
           defaultSport: ActivityType.Ride,
           isMultiSport: false,
-          fourCC: "PSCP",
+          fourCC: PRECOR_SPINNER_CHRONO_POWER_FOURCC,
           vendorName: "Precor",
           modelName: "Spinner Chrono Power",
           namePrefix: "CHRONO",
           manufacturer: "Precor",
+          manufacturerFitId: PRECOR_FIT_ID,
           model: "1",
           dataServiceId: PRECOR_SERVICE_ID,
           dataCharacteristicId: PRECOR_MEASUREMENT_ID,

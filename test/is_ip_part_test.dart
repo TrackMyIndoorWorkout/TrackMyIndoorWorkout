@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/preferences.dart';
 
 import 'utils.dart';
@@ -59,7 +60,7 @@ void main() {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 512, rnd).forEach((number) {
       bool allowZero = rnd.nextBool();
-      final expected = number <= 256 && (allowZero || number > 0);
+      final expected = number < MAX_UINT8 && (allowZero || number > 0);
       test('$number, $allowZero -> $expected', () async {
         expect(isIpPart("$number", allowZero), expected);
       });

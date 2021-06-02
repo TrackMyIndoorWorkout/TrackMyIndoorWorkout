@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:track_my_indoor_exercise/tcx/activity_type.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 const SMALL_REPETITION = 10;
 const REPETITION = 50;

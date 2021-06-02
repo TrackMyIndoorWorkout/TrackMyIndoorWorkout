@@ -30,7 +30,7 @@ void main() {
     ];
     paces.forEach((pacePair) {
       final expected = pacePair[1];
-      test("${pacePair[0]} -> $expected", () {
+      test("${pacePair[0]} -> $expected", () async {
         expect(paceString(pacePair[0]), expected);
       });
     });
@@ -39,7 +39,7 @@ void main() {
     1.to(REPETITION).forEach((input) {
       final randomPace = rnd.nextDouble() * 100;
       final expected = paceString(randomPace);
-      test("$randomPace -> $expected", () {
+      test("$randomPace -> $expected", () async {
         expect(paceString(randomPace), expected);
       });
     });

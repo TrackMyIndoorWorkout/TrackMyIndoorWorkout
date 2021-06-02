@@ -1,4 +1,6 @@
-import '../../tcx/activity_type.dart';
+import '../../export/fit/fit_base_type.dart';
+import '../../utils/constants.dart';
+import '../device_map.dart';
 import 'device_descriptor.dart';
 
 class SchwinnACPerformancePlus extends DeviceDescriptor {
@@ -6,14 +8,16 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
       : super(
           defaultSport: ActivityType.Ride,
           isMultiSport: false,
-          fourCC: "SAP+",
+          fourCC: SCHWINN_AC_PERF_PLUS_FOURCC,
           vendorName: "Schwinn",
           modelName: "AC Performance Plus",
           namePrefix: "Schwinn AC Perf+",
           manufacturer: "Schwinn",
+          manufacturerFitId: FitBaseTypes.uint16Type.invalidValue,
           dataServiceId: null,
           dataCharacteristicId: null,
-          calorieFactor: 3.9,
+          antPlus: true,
+          calorieFactorDefault: 3.9,
         );
 
   @override

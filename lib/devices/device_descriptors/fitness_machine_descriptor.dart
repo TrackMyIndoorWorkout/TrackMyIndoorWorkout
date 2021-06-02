@@ -13,13 +13,13 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     @required modelName,
     @required namePrefix,
     manufacturer,
+    manufacturerFitId,
     model,
     dataServiceId,
     dataCharacteristicId,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactor = 1.0,
-    distanceFactor = 1.0,
+    calorieFactorDefault = 1.0,
   }) : super(
           defaultSport: defaultSport,
           isMultiSport: isMultiSport,
@@ -28,13 +28,13 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           modelName: modelName,
           namePrefix: namePrefix,
           manufacturer: manufacturer,
+          manufacturerFitId: manufacturerFitId,
           model: model,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactor: calorieFactor,
-          distanceFactor: distanceFactor,
+          calorieFactorDefault: calorieFactorDefault,
         );
 
   @override

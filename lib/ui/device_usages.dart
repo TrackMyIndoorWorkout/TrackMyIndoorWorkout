@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import '../utils/theme_manager.dart';
 import 'parts/sport_picker.dart';
 
 class DeviceUsagesScreen extends StatefulWidget {
@@ -23,15 +23,21 @@ class DeviceUsagesScreen extends StatefulWidget {
 class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
   AppDatabase _database;
   int _editCount;
-  double _mediaWidth;
+  ThemeManager _themeManager;
   double _sizeDefault;
-  TextStyle _headerStyle;
+  TextStyle _textStyle;
+  ExpandableThemeData _expandableThemeData;
 
   @override
   void initState() {
     super.initState();
     _editCount = 0;
     _database = Get.find<AppDatabase>();
+    _themeManager = Get.find<ThemeManager>();
+    _textStyle = Get.textTheme.headline4
+        .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
+    _sizeDefault = _textStyle.fontSize;
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(DeviceUsage deviceUsage, double size) {
@@ -39,11 +45,10 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(Icons.edit, color: Colors.black, size: size),
+          icon: _themeManager.getActionIcon(Icons.edit, size),
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
               SportPickerBottomSheet(initialSport: deviceUsage.sport, allSports: true),
-              isDismissible: false,
               enableDrag: false,
             );
             if (sportPick != null) {
@@ -58,7 +63,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
         ),
         Spacer(),
         IconButton(
-          icon: Icon(Icons.delete, color: Colors.redAccent, size: size),
+          icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
@@ -86,16 +91,6 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = Get.mediaQuery.size.width;
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 12;
-      _headerStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault,
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text('Device Usages')),
       body: CustomListView(
@@ -104,8 +99,9 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
         initialOffset: 0,
         loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
-          fetchItems: (int offset, int limit) async {
-            final data = await _database.deviceUsageDao.findDeviceUsages(offset, limit);
+          fetchItems: (int page, int limit) async {
+            final offset = page * limit;
+            final data = await _database.deviceUsageDao.findDeviceUsages(limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -132,17 +128,18 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${deviceUsage.id}"),
+              theme: _expandableThemeData,
               header: Column(
                 children: [
                   TextOneLine(
                     deviceUsage.name,
-                    style: _headerStyle,
+                    style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextOneLine(
                     deviceUsage.mac,
-                    style: _headerStyle,
+                    style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -150,15 +147,8 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        getIcon(deviceUsage.sport),
-                        color: Colors.indigo,
-                        size: _sizeDefault,
-                      ),
-                      Text(
-                        deviceUsage.sport,
-                        style: _headerStyle,
-                      ),
+                      _themeManager.getBlueIcon(getIcon(deviceUsage.sport), _sizeDefault),
+                      Text(deviceUsage.sport, style: _textStyle),
                     ],
                   ),
                 ],
@@ -170,30 +160,16 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.calendar_today,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          dateString,
-                          style: _headerStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        Text(dateString, style: _textStyle),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.watch,
-                          color: Colors.indigo,
-                          size: _sizeDefault,
-                        ),
-                        Text(
-                          timeString,
-                          style: _headerStyle,
-                        ),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        Text(timeString, style: _textStyle),
                       ],
                     ),
                     _actionButtonRow(deviceUsage, _sizeDefault),

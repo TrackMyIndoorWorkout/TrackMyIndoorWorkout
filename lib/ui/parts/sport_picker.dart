@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../persistence/preferences.dart';
-import '../../tcx/activity_type.dart';
+import '../../utils/constants.dart';
 import '../../utils/display.dart';
+import '../../utils/theme_manager.dart';
 
 class SportPickerBottomSheet extends StatefulWidget {
   final String initialSport;
@@ -36,17 +36,13 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
   final bool allSports;
   int _sportIndex;
   List<String> _sportChoices;
-  double _sizeDefault;
-  TextStyle _selectedTextStyle;
+  ThemeManager _themeManager;
   TextStyle _largerTextStyle;
+  TextStyle _selectedTextStyle;
 
   @override
   void initState() {
     super.initState();
-
-    _sizeDefault = Get.mediaQuery.size.width / 10;
-    _selectedTextStyle = TextStyle(fontFamily: FONT_FAMILY, fontSize: _sizeDefault);
-    _largerTextStyle = _selectedTextStyle.apply(color: Colors.black);
 
     _sportChoices = allSports
         ? [
@@ -64,60 +60,57 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
             ActivityType.Swim,
           ];
     _sportIndex = max(0, _sportChoices.indexOf(initialSport));
+    _themeManager = Get.find<ThemeManager>();
+    _largerTextStyle = Get.textTheme.headline3;
+    _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: _sportChoices
-            .asMap()
-            .entries
-            .map(
-              (e) => Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Transform.scale(
-                    scale: 2,
-                    child: Radio(
-                      value: e.key,
-                      groupValue: _sportIndex,
-                      onChanged: (value) {
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: _sportChoices
+              .asMap()
+              .entries
+              .map(
+                (e) => Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Transform.scale(
+                      scale: 2,
+                      child: Radio(
+                        value: e.key,
+                        groupValue: _sportIndex,
+                        onChanged: (value) {
+                          setState(() {
+                            _sportIndex = value;
+                          });
+                        },
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {
                         setState(() {
-                          _sportIndex = value;
+                          _sportIndex = e.key;
                         });
                       },
+                      icon: _themeManager.getBlueIcon(getIcon(e.value), _largerTextStyle.fontSize),
+                      label: Text(e.value,
+                          style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _sportIndex = e.key;
-                      });
-                    },
-                    icon: Icon(
-                      getIcon(e.value),
-                      color: Colors.indigo,
-                      size: _largerTextStyle.fontSize,
-                    ),
-                    label: Text(e.value,
-                        style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
-                  ),
-                ],
-              ),
-            )
-            .toList(growable: false),
+                  ],
+                ),
+              )
+              .toList(growable: false),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.green,
-        child: Icon(Icons.check),
-        onPressed: () => Get.back(result: _sportChoices[_sportIndex]),
-      ),
+      floatingActionButton: _themeManager.getGreenFab(
+          Icons.check, () => Get.back(result: _sportChoices[_sportIndex])),
     );
   }
 }

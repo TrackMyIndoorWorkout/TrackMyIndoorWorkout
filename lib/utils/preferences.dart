@@ -1,3 +1,4 @@
+import 'package:preferences/preference_service.dart';
 import 'package:tuple/tuple.dart';
 import 'constants.dart';
 
@@ -9,11 +10,11 @@ bool isBoundedInteger(String integerString, int minValue, int maxValue) {
 }
 
 bool isPortNumber(String portString) {
-  return isBoundedInteger(portString, 1, 65535);
+  return isBoundedInteger(portString, 1, MAX_UINT16 - 1);
 }
 
 bool isIpPart(String ipAddressPart, bool allowZero) {
-  return isBoundedInteger(ipAddressPart, allowZero ? 0 : 1, 255);
+  return isBoundedInteger(ipAddressPart, allowZero ? 0 : 1, MAX_BYTE);
 }
 
 bool isIpAddress(String ipAddress) {
@@ -60,4 +61,9 @@ List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
     addresses.removeWhere((value) => value == null);
   }
   return addresses;
+}
+
+int getStringIntegerPreference(String tag, String defaultString, int defaultInt) {
+  final valueString = PrefService.getString(tag) ?? defaultString;
+  return int.tryParse(valueString) ?? defaultInt;
 }
