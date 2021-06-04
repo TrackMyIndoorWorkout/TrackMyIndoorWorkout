@@ -19,6 +19,7 @@ dependencies:
   floor: ^1.1.0
   flutter_blue: ^0.8.0
   flutter_brand_icons: ^1.1.0
+  flutter_spinbox: ^0.5.2
   get: ^4.1.4
   http: ^0.13.3
   http_parser: ^4.0.0
