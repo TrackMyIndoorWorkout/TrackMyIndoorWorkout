@@ -12,7 +12,7 @@ void main() {
   test('FitFileCreator data has the expected length', () async {
     final fileCreator = FitFileCreator(0);
     final output = fileCreator.serializeData(null);
-    final expected = fileCreator.fields.fold(0, (accu, field) => accu + field.size);
+    final expected = fileCreator.fields.fold<int>(0, (accu, field) => accu + field.size);
 
     expect(output.length, expected + 1);
   });

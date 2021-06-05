@@ -39,7 +39,7 @@ void main() {
       ..power = 0.0;
 
     final output = dataRecord.serializeData(exportRecord);
-    final expected = dataRecord.fields.fold(0, (accu, field) => accu + field.size);
+    final expected = dataRecord.fields.fold<int>(0, (accu, field) => accu + field.size);
 
     expect(output.length, expected + 1);
   });

@@ -8,12 +8,12 @@ class TestPair {
   final List<int> data;
   final RecordWithSport record;
 
-  TestPair({this.data, this.record});
+  TestPair({required this.data, required this.record});
 }
 
 void main() {
   test('Schwinn IC4 constructor tests', () async {
-    final bike = deviceMap["SIC4"];
+    final bike = deviceMap["SIC4"]!;
 
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.Ride);
@@ -154,12 +154,12 @@ void main() {
         ),
       ),
     ].forEach((testPair) {
-      final sum = testPair.data.fold(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap["SIC4"];
+        final bike = deviceMap["SIC4"]!;
         bike.stopWorkout();
 
-        final record = bike.stubRecord(testPair.data);
+        final record = bike.stubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);

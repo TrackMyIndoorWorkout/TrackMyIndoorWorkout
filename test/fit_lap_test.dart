@@ -38,7 +38,7 @@ void main() {
       ..maximumPower = 0.0;
 
     final output = lap.serializeData(exportModel);
-    final expected = lap.fields.fold(0, (accu, field) => accu + field.size);
+    final expected = lap.fields.fold<int>(0, (accu, field) => accu + field.size);
 
     expect(output.length, expected + 1);
   });

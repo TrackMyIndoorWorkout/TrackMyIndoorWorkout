@@ -38,7 +38,7 @@ void main() {
       ..maximumPower = 0.0;
 
     final output = session.serializeData(exportModel);
-    final expected = session.fields.fold(0, (accu, field) => accu + field.size);
+    final expected = session.fields.fold<int>(0, (accu, field) => accu + field.size);
 
     expect(output.length, expected + 1);
   });

@@ -8,7 +8,7 @@ class TestPair {
   final bool pad;
   final int crc;
 
-  TestPair({this.data, this.pad, this.crc}) {
+  TestPair({required this.data, required this.pad, required this.crc}) {
     if (pad) {
       data.addAll(utf8.encode(".FIT"));
     }
@@ -195,7 +195,7 @@ void main() {
         0x03
       ], pad: false, crc: 0x9ed3),
     ].forEach((testPair) {
-      final sum = testPair.data.fold(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum -> ${testPair.crc}", () async {
         expect(crcData(testPair.data), testPair.crc);
       });

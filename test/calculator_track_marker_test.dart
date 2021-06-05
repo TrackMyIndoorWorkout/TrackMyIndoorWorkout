@@ -33,7 +33,7 @@ void main() {
       calculator.trackOffset = offset;
 
       test("${track.radiusBoost} $lengthFactor", () async {
-        final marker = calculator.trackMarker(0);
+        final marker = calculator.trackMarker(0)!;
 
         expect(marker.dx, closeTo(size.width - THICK - offset.dx - r, EPS));
         expect(marker.dy, closeTo(THICK + offset.dy, EPS));
@@ -63,7 +63,7 @@ void main() {
       final laps = rnd.nextInt(100);
 
       test("${track.radiusBoost} $lengthFactor $laps", () async {
-        final marker = calculator.trackMarker(laps * TRACK_LENGTH * lengthFactor);
+        final marker = calculator.trackMarker(laps * TRACK_LENGTH * lengthFactor)!;
 
         expect(marker.dx, closeTo(size.width - THICK - offset.dx - r, EPS));
         expect(marker.dy, closeTo(THICK + offset.dy, EPS));
@@ -98,7 +98,7 @@ void main() {
       final displacement = d / track.laneLength * pi * track.laneShrink / track.radiusBoost * r;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
-        final marker = calculator.trackMarker(distance);
+        final marker = calculator.trackMarker(distance)!;
 
         expect(marker.dx, closeTo(size.width - THICK - offset.dx - r - displacement, EPS));
         expect(marker.dy, closeTo(THICK + offset.dy, EPS));
@@ -134,7 +134,7 @@ void main() {
       final rad = (1 - (d - track.laneLength) / track.halfCircle) * pi;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
-        final marker = calculator.trackMarker(distance);
+        final marker = calculator.trackMarker(distance)!;
 
         expect(marker.dx, closeTo((1 - sin(rad)) * r + THICK + offset.dx, EPS));
         expect(marker.dy, closeTo((cos(rad) + 1) * r + THICK + offset.dy, EPS));
@@ -171,7 +171,7 @@ void main() {
           (d - trackLength / 2) / track.laneLength * pi * track.laneShrink / track.radiusBoost * r;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
-        final marker = calculator.trackMarker(distance);
+        final marker = calculator.trackMarker(distance)!;
 
         expect(marker.dx, closeTo(THICK + offset.dx + r + displacement, EPS));
         expect(marker.dy, closeTo(size.height - THICK - offset.dy, EPS));
@@ -208,7 +208,7 @@ void main() {
       final rad = (2 + (d - trackLength / 2 - track.laneLength) / track.halfCircle) * pi;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
-        final marker = calculator.trackMarker(distance);
+        final marker = calculator.trackMarker(distance)!;
 
         expect(marker.dx, closeTo(size.width - THICK - offset.dx - (1 - sin(rad)) * r, EPS));
         expect(marker.dy, closeTo(r * (cos(rad) + 1) + THICK + offset.dy, EPS));

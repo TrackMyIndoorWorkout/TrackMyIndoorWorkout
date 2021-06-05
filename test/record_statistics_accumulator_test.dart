@@ -11,7 +11,7 @@ void main() {
   group('StatisticsAccumulator calculates avg power when requested', () {
     final rnd = Random();
     SPORTS.forEach((sport) {
-      final accu = StatisticsAccumulator(sport: sport, calculateAvgPower: true);
+      final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgPower: true);
       var count = rnd.nextInt(99) + 1;
       double sum = 0.0;
       getRandomInts(count, 100, rnd).forEach((number) {
@@ -53,7 +53,7 @@ void main() {
   group('StatisticsAccumulator calculates max power when requested', () {
     final rnd = Random();
     SPORTS.forEach((sport) {
-      final accu = StatisticsAccumulator(sport: sport, calculateMaxPower: true);
+      final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxPower: true);
       final count = rnd.nextInt(99) + 1;
       int maximum = MAX_INIT;
       getRandomInts(count, 100, rnd).forEach((number) {

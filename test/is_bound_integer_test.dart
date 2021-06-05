@@ -9,14 +9,13 @@ class TestPair {
   final String input;
   final bool expected;
 
-  TestPair({this.input, this.expected});
+  TestPair({required this.input, required this.expected});
 }
 
 void main() {
   group('isBoundedInteger corner cases', () {
     final rnd = Random();
     [
-      TestPair(input: null, expected: false),
       TestPair(input: "", expected: false),
       TestPair(input: " ", expected: false),
       TestPair(input: "*^&@%", expected: false),

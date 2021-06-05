@@ -14,7 +14,7 @@ void main() {
     final activity = FitActivity(0);
     final exportModel = ExportModel()..dateActivity = DateTime.now();
     final output = activity.serializeData(exportModel);
-    final expected = activity.fields.fold(0, (accu, field) => accu + field.size);
+    final expected = activity.fields.fold<int>(0, (accu, field) => accu + field.size);
 
     expect(output.length, expected + 1);
   });

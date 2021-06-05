@@ -9,7 +9,7 @@ void main() {
   group("Record getRandom provides random:", () {
     SPORTS.forEach((sport) {
       test("for $sport", () async {
-        final blank = RecordWithSport.getBlank(sport, false, null);
+        final blank = RecordWithSport.getBlank(sport, false, Random());
         expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
         expect(blank.distance, closeTo(0.0, EPS));
         expect(blank.elapsed, 0);

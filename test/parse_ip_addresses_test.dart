@@ -8,13 +8,12 @@ class TestPair {
   final String addresses;
   final List<Tuple2<String, int>> expected;
 
-  TestPair({this.addresses, this.expected});
+  TestPair({required this.addresses, required this.expected});
 }
 
 void main() {
   group('parseIpAddresses corner cases', () {
     [
-      TestPair(addresses: null, expected: []),
       TestPair(addresses: "", expected: []),
       TestPair(addresses: "", expected: []),
       TestPair(addresses: " ", expected: []),

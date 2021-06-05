@@ -24,7 +24,7 @@ void main() {
       final exportModel = ExportModel()
         ..dateActivity = DateTime.now()
         ..descriptor = deviceDescriptor;
-      final expected = deviceInfo.fields.fold(0, (accu, field) => accu + field.size);
+      final expected = deviceInfo.fields.fold<int>(0, (accu, field) => accu + field.size);
 
       test('$text(${text.length}) -> $expected', () async {
         final output = deviceInfo.serializeData(exportModel);

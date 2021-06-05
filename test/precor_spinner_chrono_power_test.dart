@@ -8,12 +8,12 @@ class TestPair {
   final List<int> data;
   final RecordWithSport record;
 
-  TestPair({this.data, this.record});
+  TestPair({required this.data, required this.record});
 }
 
 void main() {
   test('Precor Spinner Chrono Power constructor tests', () async {
-    final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC];
+    final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC]!;
 
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.Ride);
@@ -199,10 +199,10 @@ void main() {
         ),
       ),
     ].forEach((testPair) {
-      final sum = testPair.data.fold(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC];
-        final record = bike.stubRecord(testPair.data);
+        final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC]!;
+        final record = bike.stubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);
