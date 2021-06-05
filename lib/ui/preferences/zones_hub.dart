@@ -15,17 +15,17 @@ class ZonesHubScreen extends StatefulWidget {
 }
 
 class ZonesHubScreenState extends State<ZonesHubScreen> {
-  double _sizeDefault;
-  TextStyle _textStyle;
+  late double _sizeDefault;
+  late TextStyle _textStyle;
 
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline4.apply(
+    _textStyle = Get.textTheme.headline4!.apply(
       fontFamily: FONT_FAMILY,
       color: Colors.white,
     );
-    _sizeDefault = _textStyle.fontSize * 2;
+    _sizeDefault = _textStyle.fontSize! * 2;
     if (!Get.isRegistered<SoundService>()) {
       Get.put<SoundService>(SoundService());
     }

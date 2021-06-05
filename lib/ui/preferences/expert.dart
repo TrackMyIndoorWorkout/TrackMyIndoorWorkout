@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/preferences.dart';
 import 'preferences_base.dart';
@@ -12,43 +12,45 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> expertPreferences = [
-      PreferenceTitle(DATA_CONNECTION_ADDRESSES_DESCRIPTION),
-      TextFieldPreference(
-        DATA_CONNECTION_ADDRESSES,
-        DATA_CONNECTION_ADDRESSES_TAG,
-        defaultVal: DATA_CONNECTION_ADDRESSES_DEFAULT,
+      PrefTitle(title: Text(DATA_CONNECTION_ADDRESSES_DESCRIPTION)),
+      PrefText(
+        label: DATA_CONNECTION_ADDRESSES,
+        pref: DATA_CONNECTION_ADDRESSES_TAG,
         validator: (str) {
+          if (str == null) {
+            return "Invalid or empty addresses, address won't be changed or default DNS servers will be used";
+          }
+
           final addressTuples = parseIpAddresses(str);
-          if (addressTuples == null || addressTuples.isEmpty) {
-            return "Invalid or empty addresses, default DNS servers will be used";
+          if (addressTuples.isEmpty) {
+            return "Invalid or empty addresses, address won't be changed or default DNS servers will be used";
           } else {
             if (str.split(",").length > addressTuples.length) {
               return "There's some malformed address(es) in the configuration";
             }
           }
+
           return null;
         },
       ),
-      SwitchPreference(
-        DEVICE_FILTERING,
-        DEVICE_FILTERING_TAG,
-        defaultVal: DEVICE_FILTERING_DEFAULT,
-        desc: DEVICE_FILTERING_DESCRIPTION,
-      ),
+      PrefCheckbox(
+        title: Text(DEVICE_FILTERING),
+        subtitle: Text(DEVICE_FILTERING_DESCRIPTION),
+        pref: DEVICE_FILTERING_TAG,
+      )
     ];
 
     if (kDebugMode) {
-      expertPreferences.add(SwitchPreference(
-        APP_DEBUG_MODE,
-        APP_DEBUG_MODE_TAG,
-        defaultVal: APP_DEBUG_MODE_DEFAULT,
-        desc: APP_DEBUG_MODE_DESCRIPTION,
+      expertPreferences.add(PrefCheckbox(
+        title: Text(APP_DEBUG_MODE),
+        subtitle: Text(APP_DEBUG_MODE_DESCRIPTION),
+        pref: APP_DEBUG_MODE_TAG,
       ));
     }
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: PreferencePage(expertPreferences),
+      body: PrefPage(children: expertPreferences),
     );
   }
 }

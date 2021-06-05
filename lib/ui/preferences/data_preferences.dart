@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/sound.dart';
 import 'preferences_base.dart';
@@ -12,167 +12,166 @@ class DataPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> dataPreferences = [
-      PreferenceTitle(TUNING_PREFERENCES),
-      SwitchPreference(
-        EXTEND_TUNING,
-        EXTEND_TUNING_TAG,
-        defaultVal: EXTEND_TUNING_DEFAULT,
-        desc: EXTEND_TUNING_DESCRIPTION,
+      PrefTitle(title: Text(TUNING_PREFERENCES)),
+      PrefCheckbox(
+        title: Text(EXTEND_TUNING),
+        subtitle: Text(EXTEND_TUNING_DESCRIPTION),
+        pref: EXTEND_TUNING_TAG,
       ),
-      PreferenceTitle(STROKE_RATE_SMOOTHING_DESCRIPTION),
-      TextFieldPreference(
-        STROKE_RATE_SMOOTHING,
-        STROKE_RATE_SMOOTHING_TAG,
-        defaultVal: STROKE_RATE_SMOOTHING_DEFAULT,
+      PrefTitle(title: Text(STROKE_RATE_SMOOTHING_DESCRIPTION)),
+      PrefText(
+        label: STROKE_RATE_SMOOTHING,
+        pref: STROKE_RATE_SMOOTHING_TAG,
         validator: (str) {
-          if (!isInteger(str, 1, 50)) {
+          if (str == null || !isInteger(str, 1, 50)) {
             return "Invalid window size (should be integer: 1 <= size <= 50)";
           }
+
           return null;
         },
       ),
-      PreferenceTitle(WORKAROUND_PREFERENCES),
-      PreferenceTitle(DATA_STREAM_GAP_WATCHDOG_DESCRIPTION),
-      TextFieldPreference(
-        DATA_STREAM_GAP_WATCHDOG,
-        DATA_STREAM_GAP_WATCHDOG_TAG,
-        defaultVal: DATA_STREAM_GAP_WATCHDOG_DEFAULT,
+      PrefTitle(title: Text(WORKAROUND_PREFERENCES)),
+      PrefTitle(title: Text(DATA_STREAM_GAP_WATCHDOG_DESCRIPTION)),
+      PrefText(
+        label: DATA_STREAM_GAP_WATCHDOG,
+        pref: DATA_STREAM_GAP_WATCHDOG_TAG,
         validator: (str) {
-          if (!isInteger(str, 0, 50)) {
+          if (str == null || !isInteger(str, 0, 50)) {
             return "Invalid timeout (should be integer 0s <= time <= 50s)";
           }
+
           return null;
         },
       ),
-      PreferenceTitle(DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION),
-      PreferenceDialogLink(
-        DATA_STREAM_GAP_SOUND_EFFECT,
-        dialog: PreferenceDialog(
-          [
-            RadioPreference(
-              SOUND_EFFECT_NONE_DESCRIPTION,
-              SOUND_EFFECT_NONE,
-              DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+      PrefTitle(title: Text(DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION)),
+      PrefDialogButton(
+        title: Text(DATA_STREAM_GAP_SOUND_EFFECT),
+        subtitle: Text(DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION),
+        dialog: PrefDialog(
+          title: Text('Select Data Gap Sound Effect'),
+          submit: Text('Close'),
+          children: [
+            PrefRadio(
+              title: Text(SOUND_EFFECT_NONE_DESCRIPTION),
+              value: SOUND_EFFECT_NONE,
+              pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
             ),
-            RadioPreference(
-              SOUND_EFFECT_ONE_TONE_DESCRIPTION,
-              SOUND_EFFECT_ONE_TONE,
-              DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+            PrefRadio(
+              title: Text(SOUND_EFFECT_ONE_TONE_DESCRIPTION),
+              value: SOUND_EFFECT_ONE_TONE,
+              pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
               onSelect: () =>
                   Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
             ),
-            RadioPreference(
-              SOUND_EFFECT_TWO_TONE_DESCRIPTION,
-              SOUND_EFFECT_TWO_TONE,
-              DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+            PrefRadio(
+              title: Text(SOUND_EFFECT_TWO_TONE_DESCRIPTION),
+              value: SOUND_EFFECT_TWO_TONE,
+              pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
               onSelect: () =>
                   Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
             ),
-            RadioPreference(
-              SOUND_EFFECT_THREE_TONE_DESCRIPTION,
-              SOUND_EFFECT_THREE_TONE,
-              DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+            PrefRadio(
+              title: Text(SOUND_EFFECT_THREE_TONE_DESCRIPTION),
+              value: SOUND_EFFECT_THREE_TONE,
+              pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
               onSelect: () =>
                   Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
             ),
-            RadioPreference(
-              SOUND_EFFECT_BLEEP_DESCRIPTION,
-              SOUND_EFFECT_BLEEP,
-              DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+            PrefRadio(
+              title: Text(SOUND_EFFECT_BLEEP_DESCRIPTION),
+              value: SOUND_EFFECT_BLEEP,
+              pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
               onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
             ),
           ],
-          title: 'Select Target HR Sound Effect',
-          cancelText: 'Close',
         ),
       ),
-      TextFieldPreference(
-        AUDIO_VOLUME,
-        AUDIO_VOLUME_TAG,
-        defaultVal: AUDIO_VOLUME_DEFAULT,
+      PrefText(
+        label: AUDIO_VOLUME,
+        pref: AUDIO_VOLUME_TAG,
         validator: (str) {
-          if (!isInteger(str, 0, 100)) {
+          if (str == null || !isInteger(str, 0, 100)) {
             return "Invalid, has to be: 0% <= volume <= 100%)";
           }
+
           return null;
         },
       ),
-      SwitchPreference(
-        CADENCE_GAP_WORKAROUND,
-        CADENCE_GAP_WORKAROUND_TAG,
-        defaultVal: CADENCE_GAP_WORKAROUND_DEFAULT,
-        desc: CADENCE_GAP_WORKAROUND_DESCRIPTION,
+      PrefCheckbox(
+        title: Text(CADENCE_GAP_WORKAROUND),
+        subtitle: Text(CADENCE_GAP_WORKAROUND_DESCRIPTION),
+        pref: CADENCE_GAP_WORKAROUND_TAG,
       ),
-      PreferenceDialogLink(
-        HEART_RATE_GAP_WORKAROUND,
-        dialog: PreferenceDialog(
-          [
-            RadioPreference(
-              DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION,
-              DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE,
-              HEART_RATE_GAP_WORKAROUND_TAG,
+      PrefDialogButton(
+        title: Text(HEART_RATE_GAP_WORKAROUND),
+        dialog: PrefDialog(
+          title: Text('Select Workaround Type'),
+          submit: Text('Close'),
+          children: [
+            PrefRadio(
+              title: Text(DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION),
+              value: DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE,
+              pref: HEART_RATE_GAP_WORKAROUND_TAG,
             ),
-            RadioPreference(
-              DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION,
-              DATA_GAP_WORKAROUND_NO_WORKAROUND,
-              HEART_RATE_GAP_WORKAROUND_TAG,
+            PrefRadio(
+              title: Text(DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION),
+              value: DATA_GAP_WORKAROUND_NO_WORKAROUND,
+              pref: HEART_RATE_GAP_WORKAROUND_TAG,
             ),
-            RadioPreference(
-              DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION,
-              DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS,
-              HEART_RATE_GAP_WORKAROUND_TAG,
+            PrefRadio(
+              title: Text(DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION),
+              value: DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS,
+              pref: HEART_RATE_GAP_WORKAROUND_TAG,
             ),
           ],
-          title: 'Select workaround type',
-          cancelText: 'Close',
         ),
       ),
-      PreferenceTitle(HEART_RATE_UPPER_LIMIT_DESCRIPTION),
-      TextFieldPreference(
-        HEART_RATE_UPPER_LIMIT,
-        HEART_RATE_UPPER_LIMIT_TAG,
-        defaultVal: HEART_RATE_UPPER_LIMIT_DEFAULT,
+      PrefTitle(title: Text(HEART_RATE_UPPER_LIMIT_DESCRIPTION)),
+      PrefText(
+        label: HEART_RATE_UPPER_LIMIT,
+        pref: HEART_RATE_UPPER_LIMIT_TAG,
         validator: (str) {
-          if (!isInteger(str, 0, 300)) {
+          if (str == null || !isInteger(str, 0, 300)) {
             return "Invalid heart rate limit (should be 0 <= size <= 300)";
           }
+
           return null;
         },
       ),
-      PreferenceDialogLink(
-        HEART_RATE_LIMITING_METHOD,
-        dialog: PreferenceDialog(
-          [
-            RadioPreference(
-              HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION,
-              HEART_RATE_LIMITING_WRITE_ZERO,
-              HEART_RATE_LIMITING_METHOD_TAG,
+      PrefDialogButton(
+        title: Text(HEART_RATE_LIMITING_METHOD),
+        dialog: PrefDialog(
+          title: Text('Select HR Limiting Method'),
+          submit: Text('Close'),
+          children: [
+            PrefRadio(
+              title: Text(HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION),
+              value: HEART_RATE_LIMITING_WRITE_ZERO,
+              pref: HEART_RATE_LIMITING_METHOD_TAG,
             ),
-            RadioPreference(
-              HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION,
-              HEART_RATE_LIMITING_WRITE_NOTHING,
-              HEART_RATE_LIMITING_METHOD_TAG,
+            PrefRadio(
+              title: Text(HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION),
+              value: HEART_RATE_LIMITING_WRITE_NOTHING,
+              pref: HEART_RATE_LIMITING_METHOD_TAG,
             ),
-            RadioPreference(
-              HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION,
-              HEART_RATE_LIMITING_CAP_AT_LIMIT,
-              HEART_RATE_LIMITING_METHOD_TAG,
+            PrefRadio(
+              title: Text(HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION),
+              value: HEART_RATE_LIMITING_CAP_AT_LIMIT,
+              pref: HEART_RATE_LIMITING_METHOD_TAG,
             ),
-            RadioPreference(
-              HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION,
-              HEART_RATE_LIMITING_NO_LIMIT,
-              HEART_RATE_LIMITING_METHOD_TAG,
+            PrefRadio(
+              title: Text(HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION),
+              value: HEART_RATE_LIMITING_NO_LIMIT,
+              pref: HEART_RATE_LIMITING_METHOD_TAG,
             ),
           ],
-          title: 'Select HR Limiting Method',
-          cancelText: 'Close',
         ),
       ),
     ];
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: PreferencePage(dataPreferences),
+      body: PrefPage(children: dataPreferences),
     );
   }
 }
