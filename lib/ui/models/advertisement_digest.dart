@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import '../../devices/gatt_constants.dart';
 
 class AdvertisementDigest {
@@ -9,13 +7,13 @@ class AdvertisementDigest {
   final int txPower;
 
   AdvertisementDigest({
-    @required this.id,
-    @required this.serviceUuids,
-    @required this.manufacturer,
-    @required this.txPower,
+    required this.id,
+    required this.serviceUuids,
+    required this.manufacturer,
+    required this.txPower,
   });
 
   bool isHeartRateMonitor() {
-    return serviceUuids?.contains(HEART_RATE_SERVICE_ID) ?? false;
+    return serviceUuids.contains(HEART_RATE_SERVICE_ID);
   }
 }

@@ -2,7 +2,7 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
-import 'package:preferences/preference_service.dart';
+import 'package:pref/pref.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
@@ -16,11 +16,11 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
 }
 
 class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
-  int _scanDuration;
-  TextStyle _captionStyle;
-  TextStyle _subtitleStyle;
-  List<String> _scanResults;
-  ThemeManager _themeManager;
+  late int _scanDuration;
+  late TextStyle _captionStyle;
+  late TextStyle _subtitleStyle;
+  late List<String> _scanResults;
+  late ThemeManager _themeManager;
 
   @override
   void dispose() {
@@ -39,11 +39,12 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   void initState() {
     super.initState();
     _scanResults = [];
-    _scanDuration = PrefService.getInt(SCAN_DURATION_TAG);
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    _scanDuration = prefService.getInt(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
     _themeManager = Get.find<ThemeManager>();
-    _captionStyle = Get.textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
+    _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       startScan();
     });
   }
@@ -52,9 +53,10 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   Widget build(BuildContext context) {
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () {
-          startScan();
-          return;
+        onRefresh: () async {
+          WidgetsBinding.instance?.addPostFrameCallback((_) {
+            startScan();
+          });
         },
         child: SingleChildScrollView(
           child: Column(
@@ -63,12 +65,12 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                 stream: Stream.periodic(Duration(seconds: 2))
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
                 initialData: [],
-                builder: (c, snapshot) => Column(
-                  children: snapshot.data
+                builder: (c, snapshot) => snapshot.data == null ? Container() : Column(
+                  children: snapshot.data!
                       .where((h) =>
                           _scanResults.contains(h.id.id) ||
                           (Get.isRegistered<HeartRateMonitor>() &&
-                              Get.find<HeartRateMonitor>()?.device?.id?.id == h.id.id))
+                              Get.find<HeartRateMonitor>().device?.id.id == h.id.id))
                       .map((d) {
                     return ListTile(
                       title: TextOneLine(
@@ -98,8 +100,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
               StreamBuilder<List<ScanResult>>(
                 stream: FlutterBlue.instance.scanResults,
                 initialData: [],
-                builder: (c, snapshot) => Column(
-                    children: snapshot.data.where((d) => d.isWorthy()).map((r) {
+                builder: (c, snapshot) => snapshot.data == null ? Container() : Column(
+                    children: snapshot.data!.where((d) => d.isWorthy()).map((r) {
                   _scanResults.add(r.device.id.id);
                   return HeartRateMonitorScanResultTile(result: r);
                 }).toList(growable: false)),

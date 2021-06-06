@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:meta/meta.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/preferences.dart';
@@ -10,20 +9,20 @@ import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 
 class RowerDeviceDescriptor extends FitnessMachineDescriptor {
-  ByteMetricDescriptor strokeRateMetric;
-  ShortMetricDescriptor strokeCountMetric;
-  ShortMetricDescriptor paceMetric;
+  ByteMetricDescriptor? strokeRateMetric;
+  ShortMetricDescriptor? strokeCountMetric;
+  ShortMetricDescriptor? paceMetric;
 
-  int _strokeRateWindowSize;
-  ListQueue<int> _strokeRates;
-  int _strokeRateSum;
+  late int _strokeRateWindowSize;
+  late ListQueue<int> _strokeRates;
+  late int _strokeRateSum;
 
   RowerDeviceDescriptor({
-    @required defaultSport,
-    @required fourCC,
-    @required vendorName,
-    @required modelName,
-    @required namePrefix,
+    required defaultSport,
+    required fourCC,
+    required vendorName,
+    required modelName,
+    required namePrefix,
     manufacturer,
     manufacturerFitId,
     model,
@@ -62,6 +61,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       STROKE_RATE_SMOOTHING_TAG,
       STROKE_RATE_SMOOTHING_DEFAULT,
       STROKE_RATE_SMOOTHING_DEFAULT_INT,
+      null,
     );
 
     // KayakPro Compact: two flag bytes
@@ -90,10 +90,10 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     final pace = getPace(data);
 
     var strokeRate = getStrokeRate(data);
-    if ((strokeRate == null || strokeRate == 0) && (pace == 0 || pace > slowPace)) {
+    if ((strokeRate == null || strokeRate == 0) && (pace == null || pace == 0 || (slowPace != null && pace > slowPace!))) {
       clearStrokeRates();
     }
-    if (_strokeRateWindowSize > 1) {
+    if (_strokeRateWindowSize > 1 && strokeRate != null) {
       _strokeRates.add(strokeRate);
       _strokeRateSum += strokeRate;
       if (_strokeRates.length > _strokeRateWindowSize) {
@@ -164,11 +164,11 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     return flag;
   }
 
-  int getStrokeRate(List<int> data) {
+  int? getStrokeRate(List<int> data) {
     return strokeRateMetric?.getMeasurementValue(data)?.toInt();
   }
 
-  double getPace(List<int> data) {
+  double? getPace(List<int> data) {
     var pace = paceMetric?.getMeasurementValue(data);
     if (pace == null || !extendTuning) {
       return pace;

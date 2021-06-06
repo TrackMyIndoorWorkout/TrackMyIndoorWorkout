@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
@@ -14,9 +14,7 @@ import '../../utils/theme_manager.dart';
 class SportLeaderboardScreen extends StatefulWidget {
   final String sport;
 
-  SportLeaderboardScreen({key, @required this.sport})
-      : assert(sport != null),
-        super(key: key);
+  SportLeaderboardScreen({key, required this.sport}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -26,27 +24,28 @@ class SportLeaderboardScreen extends StatefulWidget {
 
 class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   final String sport;
-  AppDatabase _database;
-  bool _si;
-  int _editCount;
-  double _sizeDefault;
-  TextStyle _textStyle;
-  TextStyle _textStyle2;
-  ThemeManager _themeManager;
-  ExpandableThemeData _expandableThemeData;
+  late AppDatabase _database;
+  late bool _si;
+  late int _editCount;
+  late double _sizeDefault;
+  late TextStyle _textStyle;
+  late TextStyle _textStyle2;
+  late ThemeManager _themeManager;
+  late ExpandableThemeData _expandableThemeData;
 
-  SportLeaderboardScreenState({@required this.sport}) : assert(sport != null);
+  SportLeaderboardScreenState({required this.sport});
 
   @override
   void initState() {
     super.initState();
     _editCount = 0;
     _database = Get.find<AppDatabase>();
-    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    _si = prefService.getBool(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline4
+    _textStyle = Get.textTheme.headline4!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
-    _sizeDefault = _textStyle.fontSize;
+    _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
@@ -167,6 +166,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
                   ),
                 ],
               ),
+              collapsed: Container(),
               expanded: ListTile(
                 title: Column(
                   children: [

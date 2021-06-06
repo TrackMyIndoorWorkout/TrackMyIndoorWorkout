@@ -2,15 +2,15 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../export/activity_export.dart';
 import '../export/fit/fit_export.dart';
@@ -37,7 +37,7 @@ import 'records.dart';
 class ActivitiesScreen extends StatefulWidget {
   final bool hasLeaderboardData;
 
-  ActivitiesScreen({key, this.hasLeaderboardData}) : super(key: key);
+  ActivitiesScreen({key, required this.hasLeaderboardData}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -46,32 +46,33 @@ class ActivitiesScreen extends StatefulWidget {
 }
 
 class ActivitiesScreenState extends State<ActivitiesScreen> {
-  AppDatabase _database;
-  int _editCount;
-  bool _si;
-  bool _leaderboardFeature;
+  late AppDatabase _database;
+  late int _editCount;
+  late bool _si;
+  late bool _leaderboardFeature;
   bool hasLeaderboardData;
-  double _mediaWidth;
-  double _sizeDefault;
-  double _sizeDefault2;
-  TextStyle _measurementStyle;
-  TextStyle _textStyle;
-  TextStyle _headerStyle;
-  TextStyle _unitStyle;
-  ThemeManager _themeManager;
-  ExpandableThemeData _expandableThemeData;
-  double _ringDiameter;
-  double _ringWidth;
+  double? _mediaWidth;
+  late double _sizeDefault;
+  late double _sizeDefault2;
+  late TextStyle _measurementStyle;
+  late TextStyle _textStyle;
+  late TextStyle _headerStyle;
+  late TextStyle _unitStyle;
+  late ThemeManager _themeManager;
+  late ExpandableThemeData _expandableThemeData;
+  late double _ringDiameter;
+  late double _ringWidth;
 
-  ActivitiesScreenState({@required this.hasLeaderboardData}) : assert(hasLeaderboardData != null);
+  ActivitiesScreenState({required this.hasLeaderboardData});
 
   @override
   void initState() {
     super.initState();
     _editCount = 0;
-    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    _si = prefService.getBool(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _leaderboardFeature =
-        PrefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
+        prefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _database = Get.find<AppDatabase>();
     _themeManager = Get.find<ThemeManager>();
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
@@ -91,7 +92,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             size: size,
           ),
           onPressed: () async {
-            if (!await DataConnectionChecker().hasConnection) {
+            if (!await InternetConnectionChecker().hasConnection) {
               Get.snackbar("Warning", "No data connection detected");
               return;
             }
@@ -108,7 +109,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               return;
             }
 
-            final records = await _database.recordDao.findAllActivityRecords(activity.id);
+            final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
 
             final statusCode = await stravaService.upload(activity, records);
             setState(() {
@@ -125,7 +126,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           icon: _themeManager.getActionIcon(Icons.file_download, size),
           onPressed: () async {
             if (!await Permission.storage.request().isGranted) {
-              return false;
+              return;
             }
 
             final formatPick = await Get.bottomSheet(
@@ -134,10 +135,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             );
 
             if (formatPick == null) {
-              return false;
+              return;
             }
 
-            final records = await _database.recordDao.findAllActivityRecords(activity.id);
+            final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
             ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport();
             final fileStream = await exporter.getExport(activity, records, false);
             final persistenceValues = exporter.getPersistenceValues(activity, false);
@@ -153,7 +154,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         IconButton(
           icon: _themeManager.getActionIcon(Icons.bolt, size),
           onPressed: () async {
-            if (activity.powerFactor == null || activity.powerFactor < EPS) {
+            if (activity.powerFactor < EPS) {
               Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
               return;
             }
@@ -167,7 +168,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         IconButton(
           icon: _themeManager.getActionIcon(Icons.whatshot, size),
           onPressed: () async {
-            if (activity.calories == null || activity.calories == 0) {
+            if (activity.calories == 0) {
               Get.snackbar("Error", "Cannot tune calories of activity with 0 calories");
               return;
             }
@@ -187,7 +188,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               confirm: TextButton(
                 child: Text("Yes"),
                 onPressed: () async {
-                  await _database.recordDao.deleteAllActivityRecords(activity.id);
+                  await _database.recordDao.deleteAllActivityRecords(activity.id ?? 0);
                   await _database.activityDao.deleteActivity(activity);
                   setState(() {
                     _editCount++;
@@ -215,9 +216,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
+    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth / 7;
+      _sizeDefault = _mediaWidth! / 7;
       _sizeDefault2 = _sizeDefault / 1.5;
 
       _measurementStyle = TextStyle(
@@ -238,7 +239,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       _themeManager.getExitFab(),
       _themeManager.getHelpFab(),
       _themeManager.getBlueFab(Icons.file_upload, () async {
-        await Get.to(ImportForm()).whenComplete(() => setState(() {
+        await Get.to(ImportForm())?.whenComplete(() => setState(() {
               _editCount++;
             }));
       }),
@@ -319,6 +320,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                   ),
                 ],
               ),
+              collapsed: Container(),
               expanded: ListTile(
                 onTap: () async =>
                     await Get.to(RecordsScreen(activity: item, size: Get.mediaQuery.size)),
@@ -383,7 +385,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: CircularMenu(
+      floatingActionButton: CircularFabMenu(
         fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
         fabOpenColor: _themeManager.getBlueColor(),
         fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),

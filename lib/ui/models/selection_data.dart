@@ -1,8 +1,6 @@
-import 'package:meta/meta.dart';
-
 class SelectionData {
-  DateTime time;
+  DateTime? time;
   String value;
 
-  SelectionData({@required this.time, @required this.value}) : assert(value != null);
+  SelectionData({required this.time, required this.value});
 }

@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
@@ -6,12 +5,12 @@ import 'device_descriptor.dart';
 
 abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   FitnessMachineDescriptor({
-    @required defaultSport,
-    @required isMultiSport,
-    @required fourCC,
-    @required vendorName,
-    @required modelName,
-    @required namePrefix,
+    required defaultSport,
+    required isMultiSport,
+    required fourCC,
+    required vendorName,
+    required modelName,
+    required namePrefix,
     manufacturer,
     manufacturerFitId,
     model,
@@ -39,7 +38,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
 
   @override
   bool canDataProcessed(List<int> data) {
-    final dataLength = data?.length ?? 0;
+    final dataLength = data.length;
     return byteCounter > 2 ? dataLength == byteCounter : dataLength > 2;
   }
 

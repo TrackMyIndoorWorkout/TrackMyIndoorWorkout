@@ -51,7 +51,7 @@ dev_dependencies:
   floor_generator: ^1.1.0
   integration_test: ^1.0.2+3
   mockito: ^5.0.9
-  mock_data: ^1.2.8
+  mock_data: ^2.0.0
   flutter_test:
     sdk: flutter
   flutter_driver:

@@ -9,7 +9,7 @@ import 'upload.dart';
 /// prompt: to choose to ask Strava always to authenticate or only when needed (with 'auto')
 /// scope: Strava scope check https://developers.strava.com/docs/oauth-updates/
 class Strava with Upload, Auth {
-  String secret;
+  late String secret;
 
   /// Initialize the Strava class
   /// Needed to call Strava API

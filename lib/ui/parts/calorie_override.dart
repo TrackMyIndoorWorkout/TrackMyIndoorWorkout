@@ -10,10 +10,7 @@ class CalorieOverrideBottomSheet extends StatefulWidget {
   final String deviceId;
   final int calories;
 
-  CalorieOverrideBottomSheet({Key key, @required this.deviceId, @required this.calories})
-      : assert(deviceId != null),
-        assert(calories != null),
-        super(key: key);
+  CalorieOverrideBottomSheet({Key? key, required this.deviceId, required this.calories}) : super(key: key);
 
   @override
   CalorieOverrideBottomSheetState createState() =>
@@ -21,22 +18,20 @@ class CalorieOverrideBottomSheet extends StatefulWidget {
 }
 
 class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> {
-  CalorieOverrideBottomSheetState({@required this.deviceId, @required this.oldCalories})
-      : assert(deviceId != null),
-        assert(oldCalories != null);
+  CalorieOverrideBottomSheetState({required this.deviceId, required this.oldCalories});
 
   final String deviceId;
   final double oldCalories;
-  double _newCalorie;
-  TextStyle _largerTextStyle;
-  ThemeManager _themeManager;
+  late double _newCalorie;
+  late TextStyle _largerTextStyle;
+  late ThemeManager _themeManager;
 
   @override
   void initState() {
     super.initState();
     _newCalorie = oldCalories;
     _themeManager = Get.find<ThemeManager>();
-    _largerTextStyle = Get.textTheme.headline3.apply(
+    _largerTextStyle = Get.textTheme.headline3!.apply(
       fontFamily: FONT_FAMILY,
       color: _themeManager.getProtagonistColor(),
     );
@@ -65,13 +60,17 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
       floatingActionButton: _themeManager.getGreenFab(Icons.check, () async {
         final database = Get.find<AppDatabase>();
         final calorieFactor = _newCalorie / oldCalories;
-        if (await database?.hasCalorieTune(deviceId) ?? false) {
-          var calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
+        CalorieTune? calorieTune;
+        if (await database.hasCalorieTune(deviceId)) {
+          calorieTune = await database.calorieTuneDao.findCalorieTuneByMac(deviceId).first;
+        }
+
+        if (calorieTune != null) {
           calorieTune.calorieFactor = calorieFactor;
-          await database?.calorieTuneDao?.updateCalorieTune(calorieTune);
+          await database.calorieTuneDao.updateCalorieTune(calorieTune);
         } else {
-          final calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor);
-          await database?.calorieTuneDao?.insertCalorieTune(calorieTune);
+          calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor, time: DateTime.now().millisecondsSinceEpoch,);
+          await database.calorieTuneDao.insertCalorieTune(calorieTune);
         }
         Get.back(result: calorieFactor);
       }),

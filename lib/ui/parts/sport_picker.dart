@@ -11,12 +11,10 @@ class SportPickerBottomSheet extends StatefulWidget {
   final bool allSports;
 
   SportPickerBottomSheet({
-    Key key,
-    @required this.initialSport,
-    @required this.allSports,
-  })  : assert(initialSport != null),
-        assert(allSports != null),
-        super(key: key);
+    Key? key,
+    required this.initialSport,
+    required this.allSports,
+  }) : super(key: key);
 
   @override
   SportPickerBottomSheetState createState() => SportPickerBottomSheetState(
@@ -27,18 +25,17 @@ class SportPickerBottomSheet extends StatefulWidget {
 
 class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
   SportPickerBottomSheetState({
-    @required this.initialSport,
-    @required this.allSports,
-  })  : assert(initialSport != null),
-        assert(allSports != null);
+    required this.initialSport,
+    required this.allSports,
+  });
 
   final String initialSport;
   final bool allSports;
-  int _sportIndex;
-  List<String> _sportChoices;
-  ThemeManager _themeManager;
-  TextStyle _largerTextStyle;
-  TextStyle _selectedTextStyle;
+  late int _sportIndex;
+  late List<String> _sportChoices;
+  late ThemeManager _themeManager;
+  late TextStyle _largerTextStyle;
+  late TextStyle _selectedTextStyle;
 
   @override
   void initState() {
@@ -61,7 +58,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
           ];
     _sportIndex = max(0, _sportChoices.indexOf(initialSport));
     _themeManager = Get.find<ThemeManager>();
-    _largerTextStyle = Get.textTheme.headline3;
+    _largerTextStyle = Get.textTheme.headline3!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
 
@@ -87,7 +84,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
                         groupValue: _sportIndex,
                         onChanged: (value) {
                           setState(() {
-                            _sportIndex = value;
+                            _sportIndex = value as int;
                           });
                         },
                       ),
@@ -98,7 +95,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
                           _sportIndex = e.key;
                         });
                       },
-                      icon: _themeManager.getBlueIcon(getIcon(e.value), _largerTextStyle.fontSize),
+                      icon: _themeManager.getBlueIcon(getIcon(e.value), _largerTextStyle.fontSize!),
                       label: Text(e.value,
                           style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),

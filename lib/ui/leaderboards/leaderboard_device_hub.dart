@@ -8,9 +8,7 @@ import 'device_leaderboard.dart';
 class LeaderboardDeviceHubScreen extends StatefulWidget {
   final List<Tuple2<String, String>> devices;
 
-  LeaderboardDeviceHubScreen({Key key, @required this.devices})
-      : assert(devices != null),
-        super(key: key);
+  LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => LeaderboardDeviceHubScreenState(devices: devices);
@@ -18,21 +16,21 @@ class LeaderboardDeviceHubScreen extends StatefulWidget {
 
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {
   final List<Tuple2<String, String>> devices;
-  double _sizeDefault;
-  TextStyle _textStyle;
-  TextStyle _subTextStyle;
+  late double _sizeDefault;
+  late TextStyle _textStyle;
+  late TextStyle _subTextStyle;
 
-  LeaderboardDeviceHubScreenState({@required this.devices}) : assert(devices != null);
+  LeaderboardDeviceHubScreenState({required this.devices});
 
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline5.apply(
+    _textStyle = Get.textTheme.headline5!.apply(
       fontFamily: FONT_FAMILY,
       color: Colors.white,
     );
-    _sizeDefault = _textStyle.fontSize * 3;
-    _subTextStyle = Get.textTheme.headline6.apply(
+    _sizeDefault = _textStyle.fontSize! * 3;
+    _subTextStyle = Get.textTheme.headline6!.apply(
       fontFamily: FONT_FAMILY,
       color: Colors.white,
     );

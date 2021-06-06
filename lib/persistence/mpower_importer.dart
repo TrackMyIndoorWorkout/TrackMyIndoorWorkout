@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
-import 'package:meta/meta.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
 import '../ui/import_form.dart';
@@ -20,23 +19,23 @@ class WorkoutRow {
   double distance;
 
   WorkoutRow({
-    this.power,
-    this.cadence,
-    this.heartRate,
-    this.distance,
-    String rowString,
-    int lastHeartRate,
-    bool heartRateGapWorkaround,
-    int heartRateUpperLimit,
-    String heartRateLimitingMethod,
-    double tuneRatio,
-    bool extendTuning,
+    this.power = 0,
+    this.cadence = 0,
+    this.heartRate = 0,
+    this.distance = 0.0,
+    String rowString = "",
+    int lastHeartRate = 0,
+    required bool heartRateGapWorkaround,
+    required int heartRateUpperLimit,
+    required String heartRateLimitingMethod,
+    required double tuneRatio,
+    required bool extendTuning,
   }) {
-    if (rowString != null) {
+    if (rowString.length > 0) {
       final values = rowString.split(",");
-      this.power = (int.tryParse(values[0]) * tuneRatio).round();
-      this.cadence = int.tryParse(values[1]);
-      this.heartRate = int.tryParse(values[2]);
+      this.power = (int.tryParse(values[0]) ?? 0 * tuneRatio).round();
+      this.cadence = int.tryParse(values[1]) ?? 0;
+      this.heartRate = int.tryParse(values[2]) ?? 0;
       if (this.heartRate == 0 && lastHeartRate > 0 && heartRateGapWorkaround) {
         this.heartRate = lastHeartRate;
       } else if (heartRateUpperLimit > 0 &&
@@ -49,7 +48,7 @@ class WorkoutRow {
         }
       }
 
-      this.distance = double.tryParse(values[3]) * (extendTuning ? tuneRatio : 1.0);
+      this.distance = (double.tryParse(values[3]) ?? 0.0) * (extendTuning ? tuneRatio : 1.0);
     }
   }
 }
@@ -71,13 +70,13 @@ class MPowerEchelon2Importer {
   static const AIR_DENSITY = 0.076537 * LB_TO_KG / (FT_TO_M * FT_TO_M * FT_TO_M);
 
   final DateTime start;
-  String message;
+  late String message;
 
-  List<String> _lines;
-  int _linePointer;
-  Map<int, double> _velocityForPowerDict;
+  late List<String> _lines;
+  late int _linePointer;
+  late Map<int, double> _velocityForPowerDict;
 
-  MPowerEchelon2Importer({@required this.start}) : assert(start != null) {
+  MPowerEchelon2Importer({required this.start}) {
     _velocityForPowerDict = Map<int, double>();
   }
 
@@ -103,7 +102,7 @@ class MPowerEchelon2Importer {
 
   double velocityForPower(int power) {
     if (_velocityForPowerDict.containsKey(power)) {
-      return _velocityForPowerDict[power];
+      return _velocityForPowerDict[power] ?? 0.0;
     }
 
     var lowerVelocity = 0.0;
@@ -128,7 +127,7 @@ class MPowerEchelon2Importer {
     return middleVelocity;
   }
 
-  Future<Activity> import(String csv, SetProgress setProgress) async {
+  Future<Activity?> import(String csv, SetProgress setProgress) async {
     LineSplitter lineSplitter = LineSplitter();
     _lines = lineSplitter.convert(csv);
     if (_lines.length < 20) {
@@ -196,7 +195,7 @@ class MPowerEchelon2Importer {
       return null;
     }
 
-    DeviceDescriptor device = deviceMap[SCHWINN_AC_PERF_PLUS_FOURCC];
+    DeviceDescriptor device = deviceMap[SCHWINN_AC_PERF_PLUS_FOURCC]!;
     device.refreshTuning(MPOWER_IMPORT_DEVICE_ID);
     var activity = Activity(
       deviceName: device.namePrefix,
@@ -212,9 +211,10 @@ class MPowerEchelon2Importer {
       calorieFactor: device.calorieFactor,
       powerFactor: device.powerFactor,
     );
-    final extendTuning = PrefService.getBool(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    final extendTuning = prefService.getBool(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
     final database = Get.find<AppDatabase>();
-    final id = await database?.activityDao?.insertActivity(activity);
+    final id = await database.activityDao.insertActivity(activity);
     activity.id = id;
 
     final numRow = _lines.length - _linePointer;
@@ -232,41 +232,35 @@ class MPowerEchelon2Importer {
     double energy = 0;
     double distance = 0;
     double elapsed = 0;
-    WorkoutRow nextRow;
+    WorkoutRow? nextRow;
     int lastHeartRate = 0;
     int timeStamp = start.millisecondsSinceEpoch;
     String heartRateGapWorkaroundSetting =
-        PrefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+        prefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     bool heartRateGapWorkaround =
         heartRateGapWorkaroundSetting == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
     int heartRateUpperLimit = getStringIntegerPreference(
       HEART_RATE_UPPER_LIMIT_TAG,
       HEART_RATE_UPPER_LIMIT_DEFAULT,
       HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
+      prefService,
     );
     String heartRateLimitingMethod =
-        PrefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+        prefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
 
     while (_linePointer < _lines.length) {
-      WorkoutRow row = nextRow;
-      if (row == null) {
-        row = WorkoutRow(
-          rowString: _lines[_linePointer],
-          lastHeartRate: lastHeartRate,
-          heartRateGapWorkaround: heartRateGapWorkaround,
-          heartRateUpperLimit: heartRateUpperLimit,
-          heartRateLimitingMethod: heartRateLimitingMethod,
-          tuneRatio: device.powerFactor,
-          extendTuning: extendTuning,
-        );
-      }
+      WorkoutRow row = nextRow ?? WorkoutRow(
+        rowString: _lines[_linePointer],
+        lastHeartRate: lastHeartRate,
+        heartRateGapWorkaround: heartRateGapWorkaround,
+        heartRateUpperLimit: heartRateUpperLimit,
+        heartRateLimitingMethod: heartRateLimitingMethod,
+        tuneRatio: device.powerFactor,
+        extendTuning: extendTuning,
+      );
 
       if (_linePointer + 1 >= _lines.length) {
         nextRow = WorkoutRow(
-          power: 0,
-          cadence: 0,
-          heartRate: 0,
-          distance: 0.0,
           heartRateGapWorkaround: heartRateGapWorkaround,
           heartRateUpperLimit: heartRateUpperLimit,
           heartRateLimitingMethod: heartRateLimitingMethod,
@@ -316,7 +310,7 @@ class MPowerEchelon2Importer {
         final dEnergy =
             power * milliSecondsPerRecord / 1000 * DeviceDescriptor.J2KCAL * device.calorieFactor;
         energy += dEnergy;
-        await database?.recordDao?.insertRecord(record);
+        await database.recordDao.insertRecord(record);
 
         timeStamp += milliSecondsPerRecordInt;
         elapsed += milliSecondsPerRecord;
@@ -335,7 +329,7 @@ class MPowerEchelon2Importer {
 
     activity.distance = distance;
     activity.calories = energy.round();
-    await database?.activityDao?.updateActivity(activity);
+    await database.activityDao.updateActivity(activity);
 
     return activity;
   }

@@ -13,11 +13,11 @@ extension ScanResultEx on ScanResult {
       return false;
     }
 
-    if (device.name == null || device.name.isEmpty) {
+    if (device.name.isEmpty) {
       return false;
     }
 
-    if (device.id.id == null || device.id.id.isEmpty) {
+    if (device.id.id.isEmpty) {
       return false;
     }
 
@@ -53,7 +53,7 @@ extension ScanResultEx on ScanResult {
   String manufacturerName() {
     final companyRegistry = Get.find<CompanyRegistry>();
 
-    final companyIds = advertisementData?.manufacturerData?.keys;
+    final companyIds = advertisementData.manufacturerData.keys;
     if (companyIds.isEmpty) {
       return NOT_AVAILABLE;
     }

@@ -1,5 +1,4 @@
 import 'package:floor/floor.dart';
-import 'package:meta/meta.dart';
 
 const String CALORIE_TUNE_TABLE_NAME = 'calorie_tune';
 
@@ -11,25 +10,19 @@ const String CALORIE_TUNE_TABLE_NAME = 'calorie_tune';
 )
 class CalorieTune {
   @PrimaryKey(autoGenerate: true)
-  int id;
-  @required
+  int? id;
   final String mac;
   @ColumnInfo(name: 'calorie_factor')
   double calorieFactor;
 
-  int time; // ms since epoch
+  late int time; // ms since epoch
 
   CalorieTune({
     this.id,
-    this.mac,
-    this.calorieFactor,
-    this.time,
-  })  : assert(mac != null),
-        assert(calorieFactor != null) {
-    if (time == null) {
-      time = DateTime.now().millisecondsSinceEpoch;
-    }
-  }
+    required this.mac,
+    required this.calorieFactor,
+    required this.time,
+  });
 
   DateTime get timeStamp => DateTime.fromMillisecondsSinceEpoch(time);
 }

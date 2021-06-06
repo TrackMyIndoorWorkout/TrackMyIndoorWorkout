@@ -4,7 +4,7 @@ import 'fit_record.dart';
 abstract class FitDefinitionMessage extends FitRecord {
   static const int FORTY_RECORD = 0x40;
 
-  List<FitField> fields;
+  late List<FitField> fields;
 
   FitDefinitionMessage(localMessageType, globalMessageNumber)
       : super(

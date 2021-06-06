@@ -8,7 +8,7 @@ import '../export_model.dart';
 import '../export_record.dart';
 
 class TCXExport extends ActivityExport {
-  StringBuffer _sb;
+  late StringBuffer _sb;
 
   TCXExport() : super(nonCompressedFileExtension: 'tcx', nonCompressedMimeType: 'text/xml') {
     _sb = StringBuffer();
@@ -61,13 +61,13 @@ class TCXExport extends ActivityExport {
     // Add Maximum speed in meter/second
     addElement('MaximumSpeed', exportModel.maximumSpeed.toStringAsFixed(2));
 
-    if ((exportModel.averageHeartRate ?? 0) > 0) {
+    if (exportModel.averageHeartRate > 0) {
       addElement('AverageHeartRateBpm', exportModel.averageHeartRate.toStringAsFixed(2));
     }
-    if ((exportModel.maximumHeartRate ?? 0) > 0) {
+    if (exportModel.maximumHeartRate > 0) {
       addElement('MaximumHeartRateBpm', exportModel.maximumHeartRate.toString());
     }
-    if ((exportModel.averageCadence ?? 0) > 0) {
+    if (exportModel.averageCadence > 0) {
       final cadence = min(max(exportModel.averageCadence, 0), 254).toInt();
       addElement('Cadence', cadence.toStringAsFixed(2));
     }
@@ -107,14 +107,14 @@ class TCXExport extends ActivityExport {
     addElement('AltitudeMeters', record.altitude.toString());
     addElement('DistanceMeters', record.distance.toStringAsFixed(2));
     if (record.cadence != null) {
-      final cadence = min(max(record.cadence, 0), 254).toInt();
+      final cadence = min(max(record.cadence!, 0), 254).toInt();
       addElement('Cadence', cadence.toString());
     }
 
     addExtensions('Speed', record.speed.toStringAsFixed(2), 'Watts', record.power);
 
     if (record.heartRate != null &&
-        (record.heartRate > 0 ||
+        (record.heartRate! > 0 ||
             heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND ||
             heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO)) {
       addHeartRate(record.heartRate);
@@ -164,7 +164,7 @@ class TCXExport extends ActivityExport {
   /// Does not handle multiple values like
   /// Speed AND Watts in the same extension
   ///
-  void addExtensions(String tag1, String value1, String tag2, double value2) {
+  void addExtensions(String tag1, String value1, String tag2, double? value2) {
     double _value = value2 ?? 0.0;
     _sb.write("""    <Extensions>
       <ns3:TPX>
@@ -180,7 +180,7 @@ class TCXExport extends ActivityExport {
   ///         <Value>61</Value>
   ///       </HeartRateBpm>
   ///
-  void addHeartRate(int heartRate) {
+  void addHeartRate(int? heartRate) {
     int _heartRate = heartRate ?? 0;
     _sb.write("""                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
                 <Value>${_heartRate.toString()}</Value>

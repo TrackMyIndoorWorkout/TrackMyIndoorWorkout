@@ -19,12 +19,12 @@ class PowerTunesScreen extends StatefulWidget {
 }
 
 class PowerTunesScreenState extends State<PowerTunesScreen> {
-  AppDatabase _database;
-  int _editCount;
-  double _sizeDefault;
-  TextStyle _textStyle;
-  ThemeManager _themeManager;
-  ExpandableThemeData _expandableThemeData;
+  late AppDatabase _database;
+  late int _editCount;
+  late double _sizeDefault;
+  late TextStyle _textStyle;
+  late ThemeManager _themeManager;
+  late ExpandableThemeData _expandableThemeData;
 
   @override
   void initState() {
@@ -32,8 +32,8 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
     _editCount = 0;
     _database = Get.find<AppDatabase>();
     _themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline3;
-    _sizeDefault = _textStyle.fontSize;
+    _textStyle = Get.textTheme.headline3!;
+    _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
@@ -143,6 +143,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
                   ),
                 ],
               ),
+              collapsed: Container(),
               expanded: ListTile(
                 title: Column(
                   children: [

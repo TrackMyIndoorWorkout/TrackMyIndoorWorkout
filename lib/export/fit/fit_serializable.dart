@@ -6,13 +6,13 @@ import 'fit_crc.dart';
 
 abstract class FitSerializable {
   static final fitEpoch = DateTime.utc(1989, 12, 31, 0, 0, 0).millisecondsSinceEpoch;
-  List<int> output;
+  late List<int> output;
 
   FitSerializable() {
     output = [];
   }
 
-  void addNonFloatingNumber(int number, int length, {bool signed = false}) {
+  void addNonFloatingNumber(int? number, int length, {bool signed = false}) {
     if (number == null) {
       if (length == 1) {
         number = signed ? FitBaseTypes.sint8Type.invalidValue : FitBaseTypes.uint8Type.invalidValue;
@@ -22,6 +22,8 @@ abstract class FitSerializable {
       } else if (length == 4) {
         number =
             signed ? FitBaseTypes.sint32Type.invalidValue : FitBaseTypes.uint32Type.invalidValue;
+      } else {
+        number = 0;
       }
     }
 
@@ -40,21 +42,21 @@ abstract class FitSerializable {
     }
 
     for (int i = 0; i < length; i++) {
-      output.add(number % MAX_UINT8);
+      output.add(number! % MAX_UINT8);
       number ~/= MAX_UINT8;
     }
     assert(number == 0);
   }
 
-  void addByte(int byte, {bool signed = false}) {
+  void addByte(int? byte, {bool signed = false}) {
     addNonFloatingNumber(byte, 1, signed: signed);
   }
 
-  void addShort(int integer, {bool signed = false}) {
+  void addShort(int? integer, {bool signed = false}) {
     addNonFloatingNumber(integer, 2, signed: signed);
   }
 
-  void addLong(int long, {bool signed = false}) {
+  void addLong(int? long, {bool signed = false}) {
     addNonFloatingNumber(long, 4, signed: signed);
   }
 

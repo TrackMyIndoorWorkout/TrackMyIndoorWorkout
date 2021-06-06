@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:floor/floor.dart';
-import 'package:meta/meta.dart';
 import '../../ui/models/display_record.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
@@ -20,34 +19,34 @@ const String RECORDS_TABLE_NAME = 'records';
 ])
 class Record {
   @PrimaryKey(autoGenerate: true)
-  int id;
+  int? id;
   @ColumnInfo(name: 'activity_id')
-  int activityId;
+  int? activityId;
   @ColumnInfo(name: 'time_stamp')
-  int timeStamp; // ms since epoch
-  double distance; // m
-  int elapsed; // s
-  int calories; // kCal
-  int power; // W
-  double speed; // km/h
-  int cadence;
+  int? timeStamp; // ms since epoch
+  double? distance; // m
+  int? elapsed; // s
+  int? calories; // kCal
+  int? power; // W
+  double? speed; // km/h
+  int? cadence;
   @ColumnInfo(name: 'heart_rate')
-  int heartRate;
+  int? heartRate;
 
   @ignore
-  DateTime dt;
+  DateTime? dt;
   @ignore
-  int elapsedMillis;
+  int? elapsedMillis;
   @ignore
-  double pace;
+  double? pace;
   @ignore
-  double strokeCount;
+  double? strokeCount;
   @ignore
-  String sport;
+  String? sport;
   @ignore
-  double caloriesPerHour;
+  double? caloriesPerHour;
   @ignore
-  double caloriesPerMinute;
+  double? caloriesPerMinute;
 
   Record({
     this.id,
@@ -68,7 +67,7 @@ class Record {
     this.caloriesPerMinute,
   }) {
     if (dt == null) {
-      if (timeStamp != null && timeStamp > 0) {
+      if (timeStamp != null && timeStamp! > 0) {
         _dtFromTimeStamp();
       } else {
         dt = DateTime.now();
@@ -76,7 +75,7 @@ class Record {
     }
 
     if ((timeStamp == null || timeStamp == 0) && dt != null) {
-      timeStamp = dt.millisecondsSinceEpoch;
+      timeStamp = dt!.millisecondsSinceEpoch;
     }
 
     paceToSpeed();
@@ -84,50 +83,50 @@ class Record {
 
   void paceToSpeed() {
     if (sport != null && speed == null && pace != null) {
-      if (pace.abs() < DISPLAY_EPS) {
+      if (pace!.abs() < DISPLAY_EPS) {
         speed = 0.0;
       } else {
         if (sport == ActivityType.Run) {
           // minutes / km pace
-          speed = 60.0 / pace;
+          speed = 60.0 / pace!;
         } else if (sport == ActivityType.Kayaking ||
             sport == ActivityType.Canoeing ||
             sport == ActivityType.Rowing) {
           // seconds / 500m pace
-          speed = 30.0 / (pace / 60.0);
+          speed = 30.0 / (pace! / 60.0);
         } else if (sport == ActivityType.Swim) {
           // seconds / 100m pace
-          speed = 6.0 / (pace / 60.0);
+          speed = 6.0 / (pace! / 60.0);
         } else {
           // minutes / km pace
-          speed = 60.0 / pace;
+          speed = 60.0 / pace!;
         }
       }
     }
   }
 
   void _dtFromTimeStamp() {
-    dt = DateTime.fromMillisecondsSinceEpoch(timeStamp);
+    if (timeStamp == null) return;
+
+    dt = DateTime.fromMillisecondsSinceEpoch(timeStamp!);
   }
 
   Record hydrate(String sport) {
     _dtFromTimeStamp();
-    if (sport != null) {
-      this.sport = sport;
-    }
+    this.sport = sport;
     return this;
   }
 
   double speedByUnit(bool si, String sport) {
-    return speedOrPace(speed, si, sport);
+    return speedOrPace(speed ?? 0.0, si, sport);
   }
 
   String speedStringByUnit(bool si, String sport) {
-    return speedOrPaceString(speed, si, sport);
+    return speedOrPaceString(speed ?? 0.0, si, sport);
   }
 
   String distanceStringByUnit(bool si) {
-    return distanceString(distance, si);
+    return distanceString(distance ?? 0.0, si);
   }
 
   DisplayRecord display() {
@@ -150,7 +149,7 @@ class RecordWithSport extends Record {
     elapsedMillis,
     pace,
     strokeCount,
-    @required sport,
+    required sport,
     caloriesPerHour,
     caloriesPerMinute,
   })  : assert(sport != null),

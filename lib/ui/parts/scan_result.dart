@@ -9,13 +9,11 @@ import '../../utils/theme_manager.dart';
 
 class ScanResultTile extends StatelessWidget {
   const ScanResultTile({
-    Key key,
-    this.result,
-    @required this.onEquipmentTap,
-    @required this.onHrmTap,
-  })  : assert(onEquipmentTap != null),
-        assert(onHrmTap != null),
-        super(key: key);
+    Key? key,
+    required this.result,
+    required this.onEquipmentTap,
+    required this.onHrmTap,
+  }) : super(key: key);
 
   final ScanResult result;
   final VoidCallback onEquipmentTap;
@@ -65,7 +63,7 @@ class ScanResultTile extends StatelessWidget {
 
   String getNiceManufacturerData(List<int> companyIds) {
     if (companyIds.isEmpty) {
-      return null;
+      return 'N/A';
     }
 
     final companyRegistry = Get.find<CompanyRegistry>();
@@ -79,7 +77,7 @@ class ScanResultTile extends StatelessWidget {
 
   String getNiceServiceData(Map<String, List<int>> data) {
     if (data.isEmpty) {
-      return null;
+      return 'N/A';
     }
 
     List<String> res = [];
@@ -92,7 +90,7 @@ class ScanResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final captionStyle = Get.textTheme.headline6;
+    final captionStyle = Get.textTheme.headline6!;
     final secondaryStyle = captionStyle.apply(fontFamily: FONT_FAMILY);
     final themeManager = Get.find<ThemeManager>();
 
@@ -127,8 +125,7 @@ class ScanResultTile extends StatelessWidget {
         _buildAdvRow(
           'Manufacturer Data',
           getNiceManufacturerData(
-                  result.advertisementData.manufacturerData?.keys?.toList(growable: false)) ??
-              'N/A',
+                  result.advertisementData.manufacturerData.keys.toList(growable: false)),
           captionStyle,
           secondaryStyle,
         ),
@@ -142,7 +139,7 @@ class ScanResultTile extends StatelessWidget {
         ),
         _buildAdvRow(
           'Service Data',
-          getNiceServiceData(result.advertisementData.serviceData) ?? 'N/A',
+          getNiceServiceData(result.advertisementData.serviceData),
           captionStyle,
           secondaryStyle,
         ),

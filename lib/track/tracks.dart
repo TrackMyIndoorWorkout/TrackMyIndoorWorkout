@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/painting.dart';
-import 'package:meta/meta.dart';
 
 import '../utils/constants.dart';
 import 'constants.dart';
@@ -9,7 +8,7 @@ import 'constants.dart';
 const TRACK_PAINTING_RADIUS_BOOST = 1.2;
 
 class TrackDescriptor {
-  final Offset center; // lon, lat
+  late Offset center; // lon, lat
   final double radiusBoost;
   final double horizontalMeter; // in GPS coordinates
   final double verticalMeter; // in GPS coordinates
@@ -24,14 +23,15 @@ class TrackDescriptor {
   double get gpsLaneHalf => laneLength / 2.0 * horizontalMeter;
 
   TrackDescriptor({
-    @required this.radiusBoost,
-    this.center,
-    this.horizontalMeter,
-    this.verticalMeter,
-    this.altitude,
-    @required this.lengthFactor,
-  })  : assert(radiusBoost != null),
-        assert(lengthFactor != null);
+    required this.radiusBoost,
+    center,
+    this.horizontalMeter = EPS,
+    this.verticalMeter = EPS,
+    this.altitude = 0.0,
+    required this.lengthFactor,
+  }) {
+    this.center = center ?? Offset(0, 0);
+  }
 }
 
 Map<String, TrackDescriptor> trackMap = {
@@ -83,5 +83,6 @@ Map<String, String> defaultTrackMap = {
 };
 
 TrackDescriptor getDefaultTrack(String sport) {
-  return trackMap[defaultTrackMap[sport]];
+  String trackName = defaultTrackMap[sport] ?? "Marymoor";
+  return trackMap[trackName]!;
 }

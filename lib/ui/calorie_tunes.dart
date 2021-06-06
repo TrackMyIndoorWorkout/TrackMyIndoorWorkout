@@ -19,12 +19,12 @@ class CalorieTunesScreen extends StatefulWidget {
 }
 
 class CalorieTunesScreenState extends State<CalorieTunesScreen> {
-  AppDatabase _database;
-  int _editCount;
-  ThemeManager _themeManager;
-  TextStyle _textStyle;
-  double _sizeDefault;
-  ExpandableThemeData _expandableThemeData;
+  late AppDatabase _database;
+  late int _editCount;
+  late ThemeManager _themeManager;
+  late TextStyle _textStyle;
+  late double _sizeDefault;
+  late ExpandableThemeData _expandableThemeData;
 
   @override
   void initState() {
@@ -32,8 +32,8 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
     _editCount = 0;
     _database = Get.find<AppDatabase>();
     _themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline3;
-    _sizeDefault = _textStyle.fontSize;
+    _textStyle = Get.textTheme.headline3!;
+    _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
@@ -143,6 +143,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
                   ),
                 ],
               ),
+              collapsed: Container(),
               expanded: ListTile(
                 title: Column(
                   children: [

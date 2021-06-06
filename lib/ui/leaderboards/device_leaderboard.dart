@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
@@ -15,9 +15,7 @@ import '../../utils/theme_manager.dart';
 class DeviceLeaderboardScreen extends StatefulWidget {
   final Tuple2<String, String> device;
 
-  DeviceLeaderboardScreen({key, @required this.device})
-      : assert(device != null),
-        super(key: key);
+  DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -27,27 +25,28 @@ class DeviceLeaderboardScreen extends StatefulWidget {
 
 class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
   final Tuple2<String, String> device;
-  AppDatabase _database;
-  bool _si;
-  int _editCount;
-  double _sizeDefault;
-  TextStyle _textStyle;
-  TextStyle _textStyle2;
-  ThemeManager _themeManager;
-  ExpandableThemeData _expandableThemeData;
+  late AppDatabase _database;
+  late bool _si;
+  late int _editCount;
+  late double _sizeDefault;
+  late TextStyle _textStyle;
+  late TextStyle _textStyle2;
+  late ThemeManager _themeManager;
+  late ExpandableThemeData _expandableThemeData;
 
-  DeviceLeaderboardScreenState({@required this.device}) : assert(device != null);
+  DeviceLeaderboardScreenState({required this.device});
 
   @override
   void initState() {
     super.initState();
     _editCount = 0;
     _database = Get.find<AppDatabase>();
-    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    _si = prefService.getBool(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline4
+    _textStyle = Get.textTheme.headline4!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
-    _sizeDefault = _textStyle.fontSize;
+    _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
@@ -158,6 +157,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
                   ),
                 ],
               ),
+              collapsed: Container(),
               expanded: ListTile(
                 title: Column(
                   children: [

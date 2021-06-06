@@ -15,25 +15,25 @@ class LeaderBoardTypeBottomSheet extends StatefulWidget {
 }
 
 class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> {
-  double _sizeDefault;
-  TextStyle _textStyle;
-  TextStyle _inverseTextStyle;
-  AppDatabase _database;
+  late double _sizeDefault;
+  late TextStyle _textStyle;
+  late TextStyle _inverseTextStyle;
+  late AppDatabase _database;
 
   @override
   void initState() {
     super.initState();
     _database = Get.find<AppDatabase>();
     final themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline3.apply(
+    _textStyle = Get.textTheme.headline3!.apply(
       fontFamily: FONT_FAMILY,
       color: Colors.white,
     );
-    _inverseTextStyle = Get.textTheme.headline3.apply(
+    _inverseTextStyle = Get.textTheme.headline3!.apply(
       fontFamily: FONT_FAMILY,
       color: themeManager.getProtagonistColor(),
     );
-    _sizeDefault = _textStyle.fontSize * 2;
+    _sizeDefault = _textStyle.fontSize! * 2;
   }
 
   @override
@@ -51,7 +51,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
               child: ElevatedButton(
                 onPressed: () async {
                   final sports = await _database.findDistinctWorkoutSummarySports();
-                  if (sports == null || sports.length <= 0) {
+                  if (sports.length <= 0) {
                     Get.snackbar("Warning", "No sports found");
                   } else if (sports.length > 1) {
                     Get.to(LeaderboardSportHubScreen(sports: sports));
@@ -80,7 +80,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
               child: ElevatedButton(
                 onPressed: () async {
                   final devices = await _database.findDistinctWorkoutSummaryDevices();
-                  if (devices == null || devices.length <= 0) {
+                  if (devices.length <= 0) {
                     Get.snackbar("Warning", "No devices found");
                   } else if (devices.length > 1) {
                     Get.to(LeaderboardDeviceHubScreen(devices: devices));

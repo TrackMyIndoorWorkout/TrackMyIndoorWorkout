@@ -1,11 +1,11 @@
 import 'fault.dart';
 
 class Token {
-  String accessToken;
-  String refreshToken;
-  String tokenType;
-  int expiresAt;
-  String scope;
+  String? accessToken;
+  String? refreshToken;
+  String? tokenType;
+  int? expiresAt;
+  String? scope;
 
   Token();
 
@@ -26,7 +26,6 @@ class Token {
   }
 
   static Token fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
     return Token()
       ..accessToken = map['access_token']
       ..refreshToken = map['refresh_token']
@@ -36,21 +35,21 @@ class Token {
 }
 
 class RefreshAnswer {
-  Fault fault;
-  String accessToken;
-  String refreshToken;
-  int expiresAt;
+  Fault? fault;
+  String? accessToken;
+  String? refreshToken;
+  int? expiresAt;
 
   RefreshAnswer();
 
   factory RefreshAnswer.fromJson(Map<String, dynamic> json) => RefreshAnswer.fromMap(json);
 
   static RefreshAnswer fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
     RefreshAnswer model = RefreshAnswer()
       ..accessToken = map['access_token']
       ..refreshToken = map['refresh_token']
       ..expiresAt = map['expires_at'];
+
     return model;
   }
 }

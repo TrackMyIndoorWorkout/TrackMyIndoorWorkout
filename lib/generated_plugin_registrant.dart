@@ -7,7 +7,7 @@
 import 'package:file_picker/src/file_picker_web.dart';
 import 'package:shared_preferences_web/shared_preferences_web.dart';
 import 'package:soundpool_web/soundpool_web.dart';
-import 'package:uni_links_web2/uni_links_web.dart';
+import 'package:uni_links_web/uni_links_web.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
 import 'package:wakelock_web/wakelock_web.dart';
 

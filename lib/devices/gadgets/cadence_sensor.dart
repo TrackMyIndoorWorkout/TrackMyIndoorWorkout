@@ -11,9 +11,9 @@ class CadenceSensor extends IntegerSensor {
   static const int EVENT_TIME_OVERFLOW = 64; // Overflows every 64 seconds
 
   // Secondary (Crank cadence) metrics
-  ShortMetricDescriptor revolutionsMetric;
-  ShortMetricDescriptor revolutionTime;
-  ListQueue<CadenceData> cadenceData;
+  ShortMetricDescriptor? revolutionsMetric;
+  ShortMetricDescriptor? revolutionTime;
+  late ListQueue<CadenceData> cadenceData;
 
   CadenceSensor(device) : super(CADENCE_SERVICE_ID, CADENCE_MEASUREMENT_ID, device) {
     cadenceData = ListQueue<CadenceData>();
@@ -22,7 +22,7 @@ class CadenceSensor extends IntegerSensor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
   @override
   bool canMeasurementProcessed(List<int> data) {
-    if (data == null || data.length < 1) return false;
+    if (data.length < 1) return false;
 
     var flag = data[0];
     // 16 bit revolution and 16 bit time
@@ -56,8 +56,8 @@ class CadenceSensor extends IntegerSensor {
     if (!canMeasurementProcessed(data)) return 0;
 
     cadenceData.add(CadenceData(
-      seconds: getRevolutionTime(data),
-      revolutions: getRevolutions(data),
+      seconds: getRevolutionTime(data) ?? 0.0,
+      revolutions: getRevolutions(data) ?? 0,
     ));
 
     var firstData = cadenceData.first;
@@ -90,11 +90,11 @@ class CadenceSensor extends IntegerSensor {
     return metric;
   }
 
-  int getRevolutions(List<int> data) {
+  int? getRevolutions(List<int> data) {
     return revolutionsMetric?.getMeasurementValue(data)?.toInt();
   }
 
-  double getRevolutionTime(List<int> data) {
+  double? getRevolutionTime(List<int> data) {
     return revolutionTime?.getMeasurementValue(data);
   }
 

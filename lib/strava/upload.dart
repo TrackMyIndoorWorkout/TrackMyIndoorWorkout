@@ -73,7 +73,7 @@ abstract class Upload {
     globals.displayInfo('Response: ${response.statusCode} ${response.reasonPhrase}');
 
     fault.statusCode = response.statusCode;
-    fault.message = response.reasonPhrase;
+    fault.message = response.reasonPhrase ?? "Unknown reason";
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       // response.statusCode != 201
@@ -96,7 +96,7 @@ abstract class Upload {
 
         final database = Get.find<AppDatabase>();
         activity.markUploaded(_response.id);
-        await database?.activityDao?.updateActivity(activity);
+        await database.activityDao.updateActivity(activity);
         debugPrint('id ${_response.id}');
         idUpload = _response.id;
         onUploadPending.add(idUpload);
@@ -105,7 +105,7 @@ abstract class Upload {
       String reqCheckUpgrade = '$UPLOADS_ENDPOINT/';
       onUploadPending.stream.listen((id) async {
         reqCheckUpgrade = reqCheckUpgrade + id.toString();
-        var resp = await http.get(reqCheckUpgrade, headers: _header);
+        var resp = await http.get(Uri.parse(reqCheckUpgrade), headers: _header);
         debugPrint('check status ${resp.reasonPhrase}  ${resp.statusCode}');
 
         // Everything is fine the file has been loaded
@@ -120,26 +120,31 @@ abstract class Upload {
           debugPrint('---> 404 activity already loaded  ${resp.reasonPhrase}');
         }
 
-        if (resp.reasonPhrase.compareTo(ready) == 0) {
-          debugPrint('---> Activity successfully uploaded');
-          onUploadPending.close();
-        }
+        if (resp.reasonPhrase != null) {
+          if (resp.reasonPhrase!.compareTo(ready) == 0) {
+            debugPrint('---> Activity successfully uploaded');
+            onUploadPending.close();
+          }
 
-        if ((resp.reasonPhrase.compareTo(notFound) == 0) ||
-            (resp.reasonPhrase.compareTo(errorMsg) == 0)) {
-          debugPrint('---> Error while checking status upload');
-          onUploadPending.close();
-        }
+          if ((resp.reasonPhrase!.compareTo(notFound) == 0) ||
+              (resp.reasonPhrase!.compareTo(errorMsg) == 0)) {
+            debugPrint('---> Error while checking status upload');
+            onUploadPending.close();
+          }
 
-        if (resp.reasonPhrase.compareTo(deleted) == 0) {
-          debugPrint('---> Activity deleted');
-          onUploadPending.close();
-        }
+          if (resp.reasonPhrase!.compareTo(deleted) == 0) {
+            debugPrint('---> Activity deleted');
+            onUploadPending.close();
+          }
 
-        if (resp.reasonPhrase.compareTo(processed) == 0) {
-          debugPrint('---> try another time');
-          // wait 2 sec before checking again status
-          Timer(Duration(seconds: 2), () => onUploadPending.add(id));
+          if (resp.reasonPhrase!.compareTo(processed) == 0) {
+            debugPrint('---> try another time');
+            // wait 2 sec before checking again status
+            Timer(Duration(seconds: 2), () => onUploadPending.add(id));
+          }
+        } else {
+          debugPrint('---> Unknown error');
+          onUploadPending.close();
         }
       });
     }

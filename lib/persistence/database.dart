@@ -37,13 +37,13 @@ abstract class AppDatabase extends FloorDatabase {
 
   Future<int> rowCount(String tableName, String deviceId) async {
     final result = await database
-        .rawQuery("SELECT COUNT(id) AS cnt FROM $tableName WHERE mac = ?", [deviceId]);
+        .rawQuery("SELECT COUNT(`id`) AS cnt FROM `$tableName` WHERE `mac` = ?", [deviceId]);
 
-    if (result == null || result.length < 1) {
+    if (result.length < 1) {
       return 0;
     }
 
-    return result[0]['cnt'];
+    return result[0]['cnt'] as int? ?? 0;
   }
 
   Future<bool> hasDeviceUsage(String deviceId) async {
@@ -59,7 +59,7 @@ abstract class AppDatabase extends FloorDatabase {
       return 1.0;
     }
 
-    final powerTune = await powerTuneDao?.findPowerTuneByMac(deviceId)?.first;
+    final powerTune = await powerTuneDao.findPowerTuneByMac(deviceId).first;
 
     return powerTune?.powerFactor ?? 1.0;
   }
@@ -73,27 +73,27 @@ abstract class AppDatabase extends FloorDatabase {
       return descriptor.calorieFactorDefault;
     }
 
-    final calorieTune = await calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
+    final calorieTune = await calorieTuneDao.findCalorieTuneByMac(deviceId).first;
 
     return calorieTune?.calorieFactor ?? descriptor.calorieFactorDefault;
   }
 
   Future<bool> hasLeaderboardData() async {
     final result =
-        await database.rawQuery("SELECT COUNT(id) AS cnt FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+        await database.rawQuery("SELECT COUNT(`id`) AS cnt FROM `$WORKOUT_SUMMARIES_TABLE_NAME`");
 
-    if (result == null || result.length < 1) {
+    if (result.length < 1) {
       return false;
     }
 
-    return result[0]['cnt'] > 0;
+    return (result[0]['cnt'] as int? ?? 0) > 0;
   }
 
   Future<List<String>> findDistinctWorkoutSummarySports() async {
     final result =
-        await database.rawQuery("SELECT DISTINCT sport FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+        await database.rawQuery("SELECT DISTINCT `sport` FROM `$WORKOUT_SUMMARIES_TABLE_NAME`");
 
-    if (result == null || result.length < 1) {
+    if (result.length < 1) {
       return [];
     }
 
@@ -102,32 +102,32 @@ abstract class AppDatabase extends FloorDatabase {
 
   Future<List<Tuple2<String, String>>> findDistinctWorkoutSummaryDevices() async {
     final result = await database
-        .rawQuery("SELECT DISTINCT device_id, device_name FROM $WORKOUT_SUMMARIES_TABLE_NAME");
+        .rawQuery("SELECT DISTINCT `device_id`, `device_name` FROM `$WORKOUT_SUMMARIES_TABLE_NAME`");
 
-    if (result == null || result.length < 1) {
+    if (result.length < 1) {
       return [];
     }
 
     return result
-        .map((row) => Tuple2<String, String>(row['device_id'], row['device_name']))
+        .map((row) => Tuple2<String, String>(row['device_id'] as String, row['device_name'] as String))
         .toList(growable: false);
   }
 }
 
 final migration1to2 = Migration(1, 2, (database) async {
-  await database.execute("ALTER TABLE $ACTIVITIES_TABLE_NAME ADD COLUMN four_cc TEXT");
+  await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `four_cc` TEXT");
 });
 
 final migration2to3 = Migration(2, 3, (database) async {
   await database.execute(
-      "UPDATE $ACTIVITIES_TABLE_NAME SET four_cc='$PRECOR_SPINNER_CHRONO_POWER_FOURCC' WHERE 1=1");
+      "UPDATE `$ACTIVITIES_TABLE_NAME` SET four_cc='$PRECOR_SPINNER_CHRONO_POWER_FOURCC' WHERE 1=1");
 });
 
 final migration3to4 = Migration(3, 4, (database) async {
-  await database.execute("ALTER TABLE $ACTIVITIES_TABLE_NAME ADD COLUMN sport TEXT");
+  await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `sport` TEXT");
   await database.execute(
-      "UPDATE $ACTIVITIES_TABLE_NAME SET sport='Kayaking' WHERE four_cc='$KAYAK_PRO_GENESIS_PORT_FOURCC'");
-  await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET sport='Ride' WHERE sport IS NULL");
+      "UPDATE `$ACTIVITIES_TABLE_NAME` SET `sport`='Kayaking' WHERE `four_cc`='$KAYAK_PRO_GENESIS_PORT_FOURCC'");
+  await database.execute("UPDATE `$ACTIVITIES_TABLE_NAME` SET `sport`='Ride' WHERE `sport` IS NULL");
 });
 
 final migration4to5 = Migration(4, 5, (database) async {
@@ -144,17 +144,17 @@ final migration5to6 = Migration(5, 6, (database) async {
       "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `power_factor` REAL, " +
       "`time` INTEGER)");
 
-  await database.execute("ALTER TABLE $ACTIVITIES_TABLE_NAME ADD COLUMN power_factor FLOAT");
-  await database.execute("ALTER TABLE $ACTIVITIES_TABLE_NAME ADD COLUMN calorie_factor FLOAT");
+  await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `power_factor` FLOAT");
+  await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `calorie_factor` FLOAT");
 
-  await database.execute("UPDATE $ACTIVITIES_TABLE_NAME " +
-      "SET device_id='$MPOWER_IMPORT_DEVICE_ID' WHERE device_id=''");
-  await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET power_factor=1.0");
-  await database.execute("UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=1.0");
+  await database.execute("UPDATE `$ACTIVITIES_TABLE_NAME` " +
+      "SET device_id='$MPOWER_IMPORT_DEVICE_ID' WHERE `device_id`=''");
+  await database.execute("UPDATE `$ACTIVITIES_TABLE_NAME` SET `power_factor`=1.0");
+  await database.execute("UPDATE `$ACTIVITIES_TABLE_NAME` SET `calorie_factor`=1.0");
   await database.execute(
-      "UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=1.4 WHERE four_cc='$SCHWINN_IC_BIKE_FOURCC'");
+      "UPDATE `$ACTIVITIES_TABLE_NAME` SET `calorie_factor`=1.4 WHERE `four_cc`='$SCHWINN_IC_BIKE_FOURCC'");
   await database.execute(
-      "UPDATE $ACTIVITIES_TABLE_NAME SET calorie_factor=3.9 WHERE four_cc='$SCHWINN_AC_PERF_PLUS_FOURCC'");
+      "UPDATE `$ACTIVITIES_TABLE_NAME` SET `calorie_factor`=3.9 WHERE `four_cc`='$SCHWINN_AC_PERF_PLUS_FOURCC'");
 });
 
 final migration6to7 = Migration(6, 7, (database) async {

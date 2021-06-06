@@ -8,7 +8,8 @@ import 'fault.dart';
 import 'strava.dart';
 
 class StravaService {
-  Strava _strava;
+  late Strava _strava;
+
   StravaService() {
     _strava = Strava(kDebugMode, STRAVA_SECRET);
   }
@@ -22,7 +23,7 @@ class StravaService {
   }
 
   Future<int> upload(Activity activity, List<Record> records) async {
-    if (records == null || records.length <= 0) {
+    if (records.length <= 0) {
       return statusJsonIsEmpty;
     }
 

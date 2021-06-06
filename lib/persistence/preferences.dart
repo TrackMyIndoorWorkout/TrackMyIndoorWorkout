@@ -6,7 +6,8 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' as painting;
-import 'package:preferences/preferences.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 
@@ -249,44 +250,36 @@ class PreferencesSpec {
   final String metric;
   String title;
   String unit;
-  String multiLineUnit;
+  late String multiLineUnit;
   final String thresholdTagPostfix;
   final Map<String, int> thresholdDefaultInts;
   final String zonesTagPostfix;
   final Map<String, List<int>> zonesDefaultInts;
   final bool indexDisplayDefault;
-  bool indexDisplay;
-  double threshold;
-  List<int> zonePercents;
-  List<double> zoneBounds;
-  List<double> zoneLower;
-  List<double> zoneUpper;
   IconData icon;
-  bool si;
-  String sport;
-  bool flipZones;
+  late bool indexDisplay;
+  late double threshold;
+  late List<int> zonePercents;
+  late List<double> zoneBounds;
+  late List<double> zoneLower;
+  late List<double> zoneUpper;
+  late bool si;
+  late String sport;
+  late bool flipZones;
 
-  List<common.AnnotationSegment> annotationSegments;
+  late List<common.AnnotationSegment> annotationSegments;
 
   PreferencesSpec({
-    @required this.metric,
-    @required this.title,
-    @required this.unit,
-    @required this.thresholdTagPostfix,
-    @required this.thresholdDefaultInts,
-    @required this.zonesTagPostfix,
-    @required this.zonesDefaultInts,
-    @required this.indexDisplayDefault,
-    @required this.icon,
-  })  : assert(metric != null),
-        assert(title != null),
-        assert(unit != null),
-        assert(thresholdTagPostfix != null),
-        assert(thresholdDefaultInts != null),
-        assert(zonesTagPostfix != null),
-        assert(zonesDefaultInts != null),
-        assert(indexDisplayDefault != null),
-        assert(icon != null) {
+    required this.metric,
+    required this.title,
+    required this.unit,
+    required this.thresholdTagPostfix,
+    required this.thresholdDefaultInts,
+    required this.zonesTagPostfix,
+    required this.zonesDefaultInts,
+    required this.indexDisplayDefault,
+    required this.icon,
+  }) {
     flipZones = false;
     updateMultiLineUnit();
     annotationSegments = [];
@@ -315,7 +308,7 @@ class PreferencesSpec {
   }
 
   String zonesDefault(String sport) {
-    return zonesDefaultInts[sport2Sport(sport)].map((z) => z.toString()).join(",");
+    return zonesDefaultInts[sport2Sport(sport)]!.map((z) => z.toString()).join(",");
   }
 
   String thresholdTag(String sport) {
@@ -342,21 +335,22 @@ class PreferencesSpec {
   void calculateZones(bool si, String sport) {
     this.si = si;
     this.sport = sport;
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
     flipZones = sport != ActivityType.Ride && metric == "speed";
-    final thresholdString = PrefService.getString(thresholdTag(sport));
-    threshold = double.tryParse(thresholdString);
+    final thresholdString = prefService.getString(thresholdTag(sport))!;
+    threshold = double.tryParse(thresholdString) ?? EPS;
     if (metric == "speed") {
       threshold = speedOrPace(threshold, si, sport);
     }
 
-    final zonesSpecStr = PrefService.getString(zonesTag(sport));
-    zonePercents = zonesSpecStr.split(',').map((zs) => int.tryParse(zs)).toList(growable: false);
+    final zonesSpecStr = prefService.getString(zonesTag(sport))!;
+    zonePercents = zonesSpecStr.split(',').map((zs) => int.tryParse(zs) ?? 0).toList(growable: false);
     zoneBounds =
         zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList(growable: false);
     if (flipZones) {
       zoneBounds = zoneBounds.reversed.toList(growable: false);
     }
-    indexDisplay = PrefService.getBool(zoneIndexTag) ?? indexDisplayDefault;
+    indexDisplay = prefService.getBool(zoneIndexTag) ?? indexDisplayDefault;
   }
 
   void calculateBounds(double minVal, double maxVal, bool isLight) {
@@ -480,6 +474,8 @@ class PreferencesSpec {
     return prefSpecs;
   }
 }
+
+const PREFERENCES_PREFIX = "pref_";
 
 const PREFERENCES_VERSION_TAG = "version";
 const PREFERENCES_VERSION_DEFAULT = 1;

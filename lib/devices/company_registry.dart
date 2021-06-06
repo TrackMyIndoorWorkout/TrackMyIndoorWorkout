@@ -7,7 +7,7 @@ import '../utils/constants.dart';
 // Bluetooth SIG registered companies
 class CompanyRegistry {
   static const BLANK_KEY = 1930;
-  Map<int, String> registry;
+  late Map<int, String> registry;
 
   CompanyRegistry() {
     registry = Map<int, String>();
@@ -23,6 +23,6 @@ class CompanyRegistry {
   String nameForId(int id) {
     if (!registry.containsKey(id)) return NOT_AVAILABLE;
 
-    return registry[id];
+    return registry[id]!;
   }
 }

@@ -1,21 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:preferences/preference_service.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/rower_device_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
-import 'package:track_my_indoor_exercise/persistence/preferences.dart';
+// import 'package:track_my_indoor_exercise/persistence/preferences.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
   final List<int> data;
   final RecordWithSport record;
 
-  TestPair({this.data, this.record});
+  TestPair({required this.data, required this.record});
 }
 
 void main() {
   test('KayakPro Rower Device constructor tests', () async {
-    final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC];
+    final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC]!;
 
     expect(rower.canMeasureHeartRate, false);
     expect(rower.defaultSport, ActivityType.Kayaking);
@@ -27,8 +26,8 @@ void main() {
     final lsb = 44;
     final msb = 9;
     final flag = MAX_UINT8 * msb + lsb;
-    await PrefService.init(prefix: 'pref_');
-    PrefService.setDefaultValues({STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT});
+    // await PrefService.init(prefix: 'pref_');
+    // PrefService.setDefaultValues({STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT});
     rower.stopWorkout();
 
     rower.processFlag(flag);
@@ -209,14 +208,14 @@ void main() {
         ),
       ),
     ].forEach((testPair) {
-      final sum = testPair.data.fold(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        PrefService.init(prefix: 'pref_');
-        PrefService.setDefaultValues({STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT});
-        final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC];
+        // PrefService.init(prefix: 'pref_');
+        // PrefService.setDefaultValues({STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT});
+        final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC]!;
         rower.stopWorkout();
 
-        final record = rower.stubRecord(testPair.data);
+        final record = rower.stubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);

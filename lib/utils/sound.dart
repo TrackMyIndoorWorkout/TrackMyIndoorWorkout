@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:preferences/preference_service.dart';
+import 'package:pref/pref.dart';
 import 'package:soundpool/soundpool.dart';
 import '../persistence/preferences.dart';
 import 'preferences.dart';
@@ -14,7 +14,7 @@ final Map<SoundEffect, String> _soundAssetPaths = {
 };
 
 class SoundService {
-  Soundpool _soundPool;
+  late Soundpool _soundPool;
 
   Map<SoundEffect, int> _soundIds = {
     SoundEffect.Bleep: 0,
@@ -37,9 +37,9 @@ class SoundService {
 
   SoundService() {
     Get.putAsync<Soundpool>(() async {
-      _soundPool = Soundpool(streamType: StreamType.music, maxStreams: 2);
+      _soundPool = Soundpool.fromOptions(options: SoundpoolOptions(streamType: StreamType.music, maxStreams: 2));
       _soundAssetPaths.forEach((k, v) async {
-        if (_soundIds[k] <= 0) {
+        if ((_soundIds[k] ?? 0) <= 0) {
           var asset = await rootBundle.load(v);
           final soundId = await _soundPool.load(asset);
           _soundIds.addAll({k: soundId});
@@ -50,36 +50,40 @@ class SoundService {
   }
 
   Future<int> playSoundEffect(SoundEffect soundEffect) async {
-    final soundId = _soundIds[soundEffect];
-    if (soundId > 0) {
-      final volumePercent = getStringIntegerPreference(
-        AUDIO_VOLUME_TAG,
-        AUDIO_VOLUME_DEFAULT,
-        AUDIO_VOLUME_DEFAULT_INT,
-      );
-      final volume = volumePercent / 100.0;
-      _soundPool.setVolume(soundId: soundId, volume: volume);
-      final streamId = await _soundPool.play(soundId);
-      _streamIds.addAll({soundEffect: streamId});
-      _soundPool.setVolume(streamId: streamId, volume: volume);
-      return streamId;
-    } else {
+    final soundId = _soundIds[soundEffect] ?? 0;
+    if (soundId <= 0) {
       return 0;
     }
+
+    final volumePercent = getStringIntegerPreference(
+      AUDIO_VOLUME_TAG,
+      AUDIO_VOLUME_DEFAULT,
+      AUDIO_VOLUME_DEFAULT_INT,
+      null,
+    );
+    final volume = volumePercent / 100.0;
+    _soundPool.setVolume(soundId: soundId, volume: volume);
+    final streamId = await _soundPool.play(soundId);
+    _streamIds.addAll({soundEffect: streamId});
+    _soundPool.setVolume(streamId: streamId, volume: volume);
+    return streamId;
   }
 
   Future<int> playSpecificSoundEffect(String soundEffectString) async {
-    return await playSoundEffect(_soundPreferences[soundEffectString]);
+    final soundEffect = _soundPreferences[soundEffectString] ?? SoundEffect.Bleep;
+    return await playSoundEffect(soundEffect);
   }
 
   Future<int> playTargetHrSoundEffect() async {
-    final soundEffectString = PrefService.getString(TARGET_HEART_RATE_SOUND_EFFECT_TAG) ??
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    final soundEffectString = prefService.getString(TARGET_HEART_RATE_SOUND_EFFECT_TAG) ??
         TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT;
     return await playSpecificSoundEffect(soundEffectString);
   }
 
   Future<int> playDataTimeoutSoundEffect() async {
-    final soundEffectString = PrefService.getString(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    final soundEffectString = prefService.getString(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
         DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
     if (soundEffectString == SOUND_EFFECT_NONE) {
       return 0;
@@ -89,7 +93,7 @@ class SoundService {
   }
 
   stopSoundEffect(SoundEffect soundEffect) async {
-    final streamId = _streamIds[soundEffect];
+    final streamId = _streamIds[soundEffect] ?? 0;
     if (streamId > 0) {
       await _soundPool.stop(streamId);
       _streamIds[soundEffect] = 0;

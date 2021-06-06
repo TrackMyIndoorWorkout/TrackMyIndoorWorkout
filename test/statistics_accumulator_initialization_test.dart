@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/statistics_accumulator.dart';
@@ -5,9 +7,7 @@ import 'utils.dart';
 
 void main() {
   test('StatisticsAccumulator is empty after creation', () async {
-    final accu = StatisticsAccumulator();
-    expect(accu.si, null);
-    expect(accu.sport, null);
+    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.Ride);
     expect(accu.calculateAvgPower, false);
     expect(accu.calculateMaxPower, false);
     expect(accu.calculateAvgSpeed, false);
@@ -31,9 +31,7 @@ void main() {
   });
 
   test('StatisticsAccumulator initializes power variables when avg requested', () async {
-    final accu = StatisticsAccumulator(calculateAvgPower: true);
-    expect(accu.si, null);
-    expect(accu.sport, null);
+    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.Ride, calculateAvgPower: true,);
     expect(accu.calculateAvgPower, true);
     expect(accu.calculateMaxPower, false);
     expect(accu.calculateAvgSpeed, false);
@@ -57,9 +55,7 @@ void main() {
   });
 
   test('StatisticsAccumulator initializes max power when max requested', () async {
-    final accu = StatisticsAccumulator(calculateMaxPower: true);
-    expect(accu.si, null);
-    expect(accu.sport, null);
+    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.Ride, calculateMaxPower: true,);
     expect(accu.calculateAvgPower, false);
     expect(accu.calculateMaxPower, true);
     expect(accu.calculateAvgSpeed, false);
@@ -83,9 +79,7 @@ void main() {
   });
 
   test('StatisticsAccumulator initializes speed variables when avg requested', () async {
-    final accu = StatisticsAccumulator(calculateAvgSpeed: true);
-    expect(accu.si, null);
-    expect(accu.sport, null);
+    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.Ride, calculateAvgSpeed: true,);
     expect(accu.calculateAvgPower, false);
     expect(accu.calculateMaxPower, false);
     expect(accu.calculateAvgSpeed, true);
@@ -110,9 +104,8 @@ void main() {
 
   group('StatisticsAccumulator initializes max speed when max requested', () {
     SPORTS.forEach((sport) {
-      final accu = StatisticsAccumulator(sport: sport, calculateMaxSpeed: true);
+      final accu = StatisticsAccumulator(si: Random().nextBool(), sport: sport, calculateMaxSpeed: true,);
       test("$sport -> ${accu.maxSpeed}", () async {
-        expect(accu.si, null);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, false);
         expect(accu.calculateMaxPower, false);
@@ -140,9 +133,7 @@ void main() {
   });
 
   test('StatisticsAccumulator initializes hr variables when avg requested', () async {
-    final accu = StatisticsAccumulator(calculateAvgHeartRate: true);
-    expect(accu.si, null);
-    expect(accu.sport, null);
+    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.Ride, calculateAvgHeartRate: true,);
     expect(accu.calculateAvgPower, false);
     expect(accu.calculateMaxPower, false);
     expect(accu.calculateAvgSpeed, false);
@@ -166,9 +157,7 @@ void main() {
   });
 
   test('StatisticsAccumulator initializes max hr when max requested', () async {
-    final accu = StatisticsAccumulator(calculateMaxHeartRate: true);
-    expect(accu.si, null);
-    expect(accu.sport, null);
+    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.Ride, calculateMaxHeartRate: true,);
     expect(accu.calculateAvgPower, false);
     expect(accu.calculateMaxPower, false);
     expect(accu.calculateAvgSpeed, false);
@@ -192,9 +181,7 @@ void main() {
   });
 
   test('StatisticsAccumulator initializes cadence variables when avg requested', () async {
-    final accu = StatisticsAccumulator(calculateAvgCadence: true);
-    expect(accu.si, null);
-    expect(accu.sport, null);
+    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.Ride, calculateAvgCadence: true,);
     expect(accu.calculateAvgPower, false);
     expect(accu.calculateMaxPower, false);
     expect(accu.calculateAvgSpeed, false);
@@ -218,9 +205,7 @@ void main() {
   });
 
   test('StatisticsAccumulator initializes max cadence when max requested', () async {
-    final accu = StatisticsAccumulator(calculateMaxCadence: true);
-    expect(accu.si, null);
-    expect(accu.sport, null);
+    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.Ride, calculateMaxCadence: true,);
     expect(accu.calculateAvgPower, false);
     expect(accu.calculateMaxPower, false);
     expect(accu.calculateAvgSpeed, false);
@@ -246,6 +231,7 @@ void main() {
   group('StatisticsAccumulator initializes everything when all requested', () {
     SPORTS.forEach((sport) {
       final accu = StatisticsAccumulator(
+        si: Random().nextBool(),
         sport: sport,
         calculateAvgPower: true,
         calculateMaxPower: true,
@@ -257,7 +243,6 @@ void main() {
         calculateMaxHeartRate: true,
       );
       test("$sport -> ${accu.maxSpeed}", () async {
-        expect(accu.si, null);
         expect(accu.sport, sport);
         expect(accu.calculateAvgPower, true);
         expect(accu.calculateMaxPower, true);

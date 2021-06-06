@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
-import 'package:preferences/preference_service.dart';
+import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/preferences.dart';
 import '../utils/constants.dart';
 
 class ThemeManager {
   ThemeMode getThemeMode() {
-    final themeSelection = PrefService.getString(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    final themeSelection = prefService.getString(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
     if (themeSelection == "light") {
       return ThemeMode.light;
     } else if (themeSelection == "dark") {
@@ -22,7 +23,8 @@ class ThemeManager {
   }
 
   bool isDark() {
-    final themeSelection = PrefService.getString(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    final themeSelection = prefService.getString(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
     if (themeSelection == "light") {
       return false;
     } else if (themeSelection == "dark") {
@@ -97,7 +99,7 @@ class ThemeManager {
     Color foregroundColor,
     Color backgroundColor,
     Widget widget,
-    Function onPressed,
+    VoidCallback? onPressed,
   ) {
     return FloatingActionButton(
       heroTag: null,
@@ -108,27 +110,27 @@ class ThemeManager {
     );
   }
 
-  FloatingActionButton getIconFab(Color color, IconData icon, Function onPressed) {
+  FloatingActionButton getIconFab(Color color, IconData icon, VoidCallback? onPressed) {
     return _getFabCore(getAntagonistColor(), color, Icon(icon), onPressed);
   }
 
-  FloatingActionButton getBlueFab(IconData icon, Function onPressed) {
+  FloatingActionButton getBlueFab(IconData icon, VoidCallback? onPressed) {
     return getIconFab(getBlueColor(), icon, onPressed);
   }
 
-  FloatingActionButton getRedFab(IconData icon, Function onPressed) {
+  FloatingActionButton getRedFab(IconData icon, VoidCallback? onPressed) {
     return getIconFab(getRedColor(), icon, onPressed);
   }
 
-  FloatingActionButton getGreenFab(IconData icon, Function onPressed) {
+  FloatingActionButton getGreenFab(IconData icon, VoidCallback? onPressed) {
     return getIconFab(getGreenColor(), icon, onPressed);
   }
 
-  FloatingActionButton getGreenGenericFab(Widget widget, Function onPressed) {
+  FloatingActionButton getGreenGenericFab(Widget widget, VoidCallback? onPressed) {
     return _getFabCore(getAntagonistColor(), getGreenColor(), widget, onPressed);
   }
 
-  FloatingActionButton getStravaFab(Function onPressed) {
+  FloatingActionButton getStravaFab(VoidCallback? onPressed) {
     return _getFabCore(Colors.white, getOrangeColor(), Icon(BrandIcons.strava), onPressed);
   }
 
@@ -156,7 +158,7 @@ class ThemeManager {
   }
 
   FloatingActionButton getRankIcon(int rank) {
-    final textStyle = Get.textTheme.headline4.apply(fontFamily: FONT_FAMILY, color: Colors.black);
+    final textStyle = Get.textTheme.headline4!.apply(fontFamily: FONT_FAMILY, color: Colors.black);
     return _getFabCore(
       Colors.black,
       getYellowColor(),

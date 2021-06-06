@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../gatt_constants.dart';
@@ -7,10 +5,10 @@ import 'fitness_machine_descriptor.dart';
 
 class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
   IndoorBikeDeviceDescriptor({
-    @required fourCC,
-    @required vendorName,
-    @required modelName,
-    @required namePrefix,
+    required fourCC,
+    required vendorName,
+    required modelName,
+    required namePrefix,
     manufacturer,
     manufacturerFitId,
     model,

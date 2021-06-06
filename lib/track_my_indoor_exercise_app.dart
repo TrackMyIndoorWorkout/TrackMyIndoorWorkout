@@ -13,9 +13,9 @@ class TrackMyIndoorExerciseApp extends StatefulWidget {
 
   const TrackMyIndoorExerciseApp({
     key,
-    @required this.blueOn,
-    @required this.bluetoothStateString,
-    @required this.permissionState,
+    required this.blueOn,
+    required this.bluetoothStateString,
+    required this.permissionState,
   }) : super(key: key);
 
   @override
@@ -32,16 +32,14 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
   final bool blueOn;
   final String bluetoothStateString;
   PermissionStatus permissionState;
-  Future<PermissionStatus> permissionFuture;
-  ThemeManager _themeManager;
+  late Future<PermissionStatus> permissionFuture;
+  late ThemeManager _themeManager;
 
   TrackMyIndoorExerciseAppState({
-    @required this.blueOn,
-    @required this.bluetoothStateString,
-    @required this.permissionState,
-  })  : assert(blueOn != null),
-        assert(bluetoothStateString != null),
-        assert(permissionState != null);
+    required this.blueOn,
+    required this.bluetoothStateString,
+    required this.permissionState,
+  });
 
   @override
   void initState() {
@@ -62,7 +60,7 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
         stream: FlutterBlue.instance.state,
         initialData: blueOn ? BluetoothState.on : BluetoothState.unknown,
         builder: (streamContext, streamSnapshot) {
-          return FutureBuilder(
+          return FutureBuilder<PermissionStatus>(
             future: permissionFuture,
             builder: (BuildContext futureContext, futureSnapshot) {
               final bluetoothState = streamSnapshot.data;

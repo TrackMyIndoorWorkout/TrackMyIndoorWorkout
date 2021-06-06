@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:preferences/preferences.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
@@ -11,32 +13,33 @@ import '../gatt_constants.dart';
 
 abstract class DeviceBase {
   final String serviceId;
-  String characteristicsId;
-  BluetoothDevice device;
-  BluetoothService _service;
-  List<BluetoothService> services;
-  BluetoothCharacteristic characteristic;
-  StreamSubscription subscription;
+  String? characteristicsId;
+  BluetoothDevice? device;
+  BluetoothService? _service;
+  late List<BluetoothService> services;
+  BluetoothCharacteristic? characteristic;
+  StreamSubscription? subscription;
 
-  bool connecting;
-  bool connected;
-  bool attached;
-  bool discovering;
-  bool discovered;
-  bool uxDebug;
+  late bool connecting;
+  late bool connected;
+  late bool attached;
+  late bool discovering;
+  late bool discovered;
+  late bool uxDebug;
 
   DeviceBase({
-    this.serviceId,
+    required this.serviceId,
     this.characteristicsId,
     this.device,
-  })  : assert(serviceId != null),
-        assert(device != null) {
+  }) {
+    services = [];
     connecting = false;
     connected = false;
     attached = false;
     discovering = false;
     discovered = false;
-    uxDebug = PrefService.getBool(APP_DEBUG_MODE_TAG);
+    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    uxDebug = prefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }
 
   Future<bool> connect() async {
@@ -49,9 +52,9 @@ abstract class DeviceBase {
 
     try {
       connecting = true;
-      await device.connect();
-    } catch (e) {
-      if (e.code != 'already_connected') {
+      await device?.connect();
+    } on Exception catch (e) {
+      if (e is PlatformException && e.code != 'already_connected') {
         throw e;
       }
     } finally {
@@ -67,11 +70,11 @@ abstract class DeviceBase {
       return true;
     }
 
-    if (discovering) return false;
+    if (discovering || device == null) return false;
 
     discovering = true;
     try {
-      services = await device.discoverServices();
+      services = await device!.discoverServices();
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
@@ -82,26 +85,25 @@ abstract class DeviceBase {
 
     discovering = false;
     discovered = true;
-    _service = services.firstWhere((service) => service.uuid.uuidString() == serviceId,
-        orElse: () => null);
+    _service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
 
     if (_service != null) {
       if (characteristicsId != null) {
-        characteristic = _service.characteristics
-            .firstWhere((ch) => ch.uuid.uuidString() == characteristicsId, orElse: () => null);
+        characteristic = _service!.characteristics
+            .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
       } else {
-        characteristic = _service.characteristics.firstWhere(
-            (ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()),
-            orElse: () => null);
-        characteristicsId = characteristic.uuid.uuidString();
+        characteristic = _service!.characteristics.firstWhereOrNull(
+            (ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()));
+        characteristicsId = characteristic?.uuid.uuidString();
       }
     } else {
       return false;
     }
+
     return characteristic != null;
   }
 
-  String inferSportFromCharacteristicsId() {
+  String? inferSportFromCharacteristicsId() {
     if (characteristicsId == TREADMILL_ID) {
       return ActivityType.Run;
     } else if (characteristicsId == PRECOR_MEASUREMENT_ID || characteristicsId == INDOOR_BIKE_ID) {
@@ -121,7 +123,7 @@ abstract class DeviceBase {
 
     if (attached) return;
 
-    await characteristic.setNotifyValue(true);
+    await characteristic?.setNotifyValue(true);
     attached = true;
   }
 
@@ -154,9 +156,9 @@ abstract class DeviceBase {
     if (!uxDebug) {
       await detach();
       characteristic = null;
-      services = null;
+      services = [];
       _service = null;
-      await device.disconnect();
+      await device?.disconnect();
     }
     connected = false;
     connecting = false;

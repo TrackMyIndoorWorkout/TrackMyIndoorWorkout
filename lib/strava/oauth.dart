@@ -22,16 +22,16 @@ abstract class Auth {
 
   /// Save the token and the expiry date
   Future<void> _saveToken(
-    String token,
-    int expire,
-    String scope,
-    String refreshToken,
+    String? token,
+    int? expire,
+    String? scope,
+    String? refreshToken,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('strava_accessToken', token);
-    prefs.setInt('strava_expire', expire); // Stored in seconds
-    prefs.setString('strava_scope', scope);
-    prefs.setString('strava_refreshToken', refreshToken);
+    prefs.setString('strava_accessToken', token ?? '');
+    prefs.setInt('strava_expire', expire ?? 0); // Stored in seconds
+    prefs.setString('strava_scope', scope ?? '');
+    prefs.setString('strava_refreshToken', refreshToken ?? '');
 
     // Save also in globals to get direct access
     globals.token.accessToken = token;
@@ -53,7 +53,7 @@ abstract class Auth {
     globals.displayInfo('Entering getStoredToken');
 
     try {
-      localToken.accessToken = prefs.getString('strava_accessToken').toString();
+      localToken.accessToken = prefs.getString('strava_accessToken')?.toString();
       // localToken.expiresAt = prefs.getInt('expire') * 1000; // To get in ms
       localToken.expiresAt = prefs.getInt('strava_expire');
       localToken.scope = prefs.getString('strava_scope');
@@ -72,14 +72,14 @@ abstract class Auth {
     }
 
     if (localToken.expiresAt != null) {
-      final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt);
+      final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt!);
       final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
           '${dateExpired.hour.toString()} hours';
       globals.displayInfo('stored token ${localToken.accessToken} ${localToken.expiresAt} ' +
           '${localToken.scope} expires: $details');
     }
 
-    return (localToken);
+    return localToken;
   }
 
   /// Get the code from Strava server
@@ -105,7 +105,7 @@ abstract class Auth {
 
     final reqAuth = AUTHORIZATION_ENDPOINT + params;
     globals.displayInfo(reqAuth);
-    StreamSubscription _sub;
+    StreamSubscription? _sub;
 
     // closeWebView();
     launch(reqAuth,
@@ -129,27 +129,32 @@ abstract class Auth {
       globals.displayInfo('Running on iOS or Android');
 
       // Attach a listener to the stream
-      _sub = getUriLinksStream().listen((Uri uri) {
-        // Parse the link and warn the user, if it is not correct
-        globals.displayInfo('Get a link!! $uri');
-        if (uri.scheme.compareTo('stravaflutter_$clientID') != 0) {
-          globals.displayInfo('This is not the good scheme ${uri.scheme}');
+      _sub = uriLinkStream.listen((Uri? uri) {
+        if (uri == null) {
+          globals.displayInfo('Subscription was null');
+          _sub?.cancel();
+        } else {
+          // Parse the link and warn the user, if it is not correct
+          globals.displayInfo('Got a link!! $uri');
+          if (uri.scheme.compareTo('stravaflutter_$clientID') != 0) {
+            globals.displayInfo('This is not the good scheme ${uri.scheme}');
+          }
+          code = uri.queryParameters["code"] ?? "N/A";
+          final error = uri.queryParameters["error"];
+
+          globals.displayInfo('code $code, error $error');
+
+          closeWebView();
+          onCodeReceived.add(code);
+
+          globals.displayInfo('Got the new code: $code');
+
+          _sub?.cancel();
         }
-        code = uri.queryParameters["code"];
-        final error = uri.queryParameters["error"];
-
-        globals.displayInfo('code $code, error $error');
-
-        closeWebView();
-        onCodeReceived.add(code);
-
-        globals.displayInfo('Got the new code: $code');
-
-        _sub.cancel();
       }, onError: (err) {
         // Handle exception by warning the user their action did not succeed
         globals.displayInfo('Found an error $err');
-        _sub.cancel();
+        _sub?.cancel();
       });
     }
 
@@ -185,7 +190,7 @@ abstract class Auth {
 
   Future<bool> hasValidToken() async {
     final prefs = await SharedPreferences.getInstance();
-    String accessToken = prefs.getString('strava_accessToken').toString();
+    String? accessToken = prefs.getString('strava_accessToken')?.toString();
     if (accessToken == null || accessToken.length == 0) {
       return false;
     }
@@ -212,7 +217,7 @@ abstract class Auth {
     bool isExpired;
 
     final Token tokenStored = await getStoredToken();
-    final String _token = tokenStored.accessToken;
+    final String? _token = tokenStored.accessToken;
 
     isExpired = _isTokenExpired(tokenStored);
     globals.displayInfo('is token expired? $isExpired');
@@ -228,9 +233,9 @@ abstract class Auth {
     if (isExpired) {
       // _token != null || _token != "null"
       RefreshAnswer _refreshAnswer =
-          await _getNewAccessToken(clientID, secret, tokenStored.refreshToken);
+          await _getNewAccessToken(clientID, secret, tokenStored.refreshToken ?? "0");
       // Update with new values if HTTP status code is 200
-      if (_refreshAnswer.fault.statusCode >= 200 && _refreshAnswer.fault.statusCode < 300) {
+      if (_refreshAnswer.fault != null && _refreshAnswer.fault!.statusCode >= 200 && _refreshAnswer.fault!.statusCode < 300) {
         await _saveToken(_refreshAnswer.accessToken, _refreshAnswer.expiresAt, scope,
             _refreshAnswer.refreshToken);
       } else {
@@ -299,7 +304,7 @@ abstract class Auth {
     globals.displayInfo('Entering getNewAccessToken');
     // globals.displayInfo('urlRefresh $urlRefresh');
 
-    final resp = await http.post(urlRefresh);
+    final resp = await http.post(Uri.parse(urlRefresh));
 
     globals.displayInfo('body ${resp.body}');
     if (resp.statusCode >= 200 && resp.statusCode < 300) {
@@ -311,7 +316,7 @@ abstract class Auth {
       globals.displayInfo('Error while refreshing the token');
     }
 
-    returnToken.fault = globals.errorCheck(resp.statusCode, resp.reasonPhrase);
+    returnToken.fault = globals.errorCheck(resp.statusCode, resp.reasonPhrase ?? "N/A");
     return returnToken;
   }
 
@@ -329,7 +334,7 @@ abstract class Auth {
 
     globals.displayInfo('urlToken $urlToken');
 
-    final value = await http.post(urlToken);
+    final value = await http.post(Uri.parse(urlToken));
 
     globals.displayInfo('body ${value.body}');
 
@@ -360,14 +365,14 @@ abstract class Auth {
   /// including when there is no token yet
   bool _isTokenExpired(Token token) {
     globals.displayInfo(' current time in ms ${DateTime.now().millisecondsSinceEpoch / 1000}' +
-        '   exp. time: ${token.expiresAt}');
+        ' exp. time: ${token.expiresAt}');
 
-    // when it is the first run or after a deAuthotrize
+    // when it is the first run or after a deAuthorize
     if (token.expiresAt == null) {
       return false;
     }
 
-    if (token.expiresAt < DateTime.now().millisecondsSinceEpoch / 1000) {
+    if (token.expiresAt! < DateTime.now().millisecondsSinceEpoch / 1000) {
       return true;
     } else {
       return false;
@@ -395,7 +400,7 @@ abstract class Auth {
     if (_header.containsKey('88') == false) {
       final requestDeAuthorize = DEAUTHORIZATION_ENDPOINT;
       globals.displayInfo('request $requestDeAuthorize');
-      final rep = await http.post(requestDeAuthorize, headers: _header);
+      final rep = await http.post(Uri.parse(requestDeAuthorize), headers: _header);
       if (rep.statusCode >= 200 && rep.statusCode < 300) {
         globals.displayInfo('DeAuthorize done');
         globals.displayInfo('response ${rep.body}');

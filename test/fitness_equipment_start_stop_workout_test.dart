@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:preferences/preference_service.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
 import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
@@ -16,8 +15,8 @@ import 'fitness_equipment_process_record_test.mocks.dart';
 void main() {
   test('startWorkout blanks out leftover lastRecord', () async {
     final rnd = Random();
-    await PrefService.init(prefix: 'pref_');
-    final descriptor = deviceMap["SIC4"];
+    // await PrefService.init(prefix: 'pref_');
+    final descriptor = deviceMap["SIC4"]!;
     final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
     equipment.lastRecord = RecordWithSport.getRandom(descriptor.defaultSport, rnd);
 
@@ -45,12 +44,13 @@ void main() {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 300, rnd).forEach((calories) {
       test('$calories', () async {
-        await PrefService.init(prefix: 'pref_');
+        // await PrefService.init(prefix: 'pref_');
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"];
+        final descriptor = deviceMap["SIC4"]!;
         final activity = Activity(
           deviceId: MPOWER_IMPORT_DEVICE_ID,
           deviceName: descriptor.modelName,
+          start: oneSecondAgo.millisecondsSinceEpoch,
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.defaultSport,
