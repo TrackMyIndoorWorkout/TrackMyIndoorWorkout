@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
-import 'package:track_my_indoor_exercise/ui/models/selection_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -20,6 +19,7 @@ import '../utils/theme_manager.dart';
 import 'models/display_record.dart';
 import 'models/histogram_data.dart';
 import 'models/measurement_counter.dart';
+import 'models/selection_data.dart';
 import 'models/tile_configuration.dart';
 
 class RecordsScreen extends StatefulWidget {

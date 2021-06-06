@@ -22,7 +22,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
-import '../strava/error_codes.dart';
+import '../strava/strava_status_code.dart';
 import '../strava/strava_service.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
@@ -678,7 +678,7 @@ class RecordingState extends State<RecordingScreen> {
     final statusCode = await stravaService.upload(_activity!, records);
     Get.snackbar(
         "Upload",
-        statusCode == statusOk || statusCode >= 200 && statusCode < 300
+        statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300
             ? "Activity ${_activity!.id} submitted successfully"
             : "Activity ${_activity!.id} upload failure");
   }

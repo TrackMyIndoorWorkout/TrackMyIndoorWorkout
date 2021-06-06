@@ -1,9 +1,8 @@
-import 'package:flutter/foundation.dart';
 import '../export/fit/fit_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/secret.dart';
-import '../strava/error_codes.dart';
+import '../strava/strava_status_code.dart';
 import 'fault.dart';
 import 'strava.dart';
 
@@ -11,7 +10,7 @@ class StravaService {
   late Strava _strava;
 
   StravaService() {
-    _strava = Strava(kDebugMode, STRAVA_SECRET);
+    _strava = Strava(STRAVA_SECRET);
   }
 
   Future<bool> login() async {
@@ -24,7 +23,7 @@ class StravaService {
 
   Future<int> upload(Activity activity, List<Record> records) async {
     if (records.length <= 0) {
-      return statusJsonIsEmpty;
+      return StravaStatusCode.statusJsonIsEmpty;
     }
 
     final exporter = FitExport();

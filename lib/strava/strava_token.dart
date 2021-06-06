@@ -1,22 +1,22 @@
 import 'fault.dart';
 
-class Token {
+class StravaToken {
   String? accessToken;
   String? refreshToken;
   String? tokenType;
   int? expiresAt;
   String? scope;
 
-  Token();
+  StravaToken({this.accessToken, this.refreshToken, this.expiresAt, this.scope});
 
-  factory Token.fromJson(Map<String, dynamic> json) => Token.fromMap(json);
+  factory StravaToken.fromJson(Map<String, dynamic> json) => StravaToken.fromMap(json);
 
-  Map toMap() => Token.toJsonMap(this);
+  Map toMap() => StravaToken.toJsonMap(this);
 
   @override
-  String toString() => Token.toJsonMap(this).toString();
+  String toString() => StravaToken.toJsonMap(this).toString();
 
-  static Map toJsonMap(Token model) {
+  static Map toJsonMap(StravaToken model) {
     return {
       'access_token': model.accessToken ?? 'Error',
       'token_type': model.tokenType ?? 'Error',
@@ -25,12 +25,24 @@ class Token {
     };
   }
 
-  static Token fromMap(Map<String, dynamic> map) {
-    return Token()
+  static StravaToken fromMap(Map<String, dynamic> map) {
+    return StravaToken()
       ..accessToken = map['access_token']
       ..refreshToken = map['refresh_token']
       ..tokenType = map['token_type']
       ..expiresAt = map['expires_at'];
+  }
+
+  /// Generate the header to use with http requests
+  ///
+  /// return {null, null} if there is not token yet
+  /// stored in globals
+  Map<String, String> getAuthorizationHeader() {
+    if (accessToken != null && accessToken!.length > 0 && accessToken != "Error") {
+      return {'Authorization': 'Bearer $accessToken'};
+    } else {
+      return {'88': '00'};
+    }
   }
 }
 

@@ -18,7 +18,7 @@ import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
-import '../strava/error_codes.dart';
+import '../strava/strava_status_code.dart';
 import '../strava/strava_service.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -117,7 +117,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             });
             Get.snackbar(
                 "Upload",
-                statusCode == statusOk || statusCode >= 200 && statusCode < 300
+                statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300
                     ? "Activity ${activity.id} submitted successfully"
                     : "Activity ${activity.id} upload failure");
           },
