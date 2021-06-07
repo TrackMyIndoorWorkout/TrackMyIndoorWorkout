@@ -35,7 +35,9 @@ dependencies:
       url: https://github.com/CsabaConsulting/Share-Files-And-Screenshot-Widgets-Flutter.git
   shared_preferences: ^2.0.5
   soundpool: ^2.1.0
-  spinner_input: ^0.1.2
+  spinner_input:
+    git:
+      url: https://github.com/CsabaConsulting/spinner_input.git
   sqflite: ^2.0.0+3
   tuple: ^2.0.0
   uni_links: ^0.5.1

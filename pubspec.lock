@@ -757,10 +757,12 @@ packages:
   spinner_input:
     dependency: "direct main"
     description:
-      name: spinner_input
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.2"
+      path: "."
+      ref: HEAD
+      resolved-ref: "28f8d9ddbee6e5c0848d9734d5a080b481031213"
+      url: "https://github.com/CsabaConsulting/spinner_input.git"
+    source: git
+    version: "0.1.1"
   sqflite:
     dependency: "direct main"
     description:
