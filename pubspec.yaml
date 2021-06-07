@@ -9,7 +9,9 @@ environment:
 
 dependencies:
   assorted_layout_widgets: ^4.0.10
-  bluetooth_enable: ^0.1.1
+  bluetooth_enable:
+    git:
+      url: https://github.com/CsabaConsulting/bluetooth_enable.git
   charts_flutter: ^0.10.0
   datetime_picker_formfield: ^2.0.0
   device_info: ^2.0.2
@@ -49,13 +51,14 @@ dependencies:
 dev_dependencies:
   build_runner: ^2.0.4
   floor_generator: ^1.1.0
-  integration_test: ^1.0.2+3
-  mockito: ^5.0.9
-  mock_data: ^2.0.0
-  flutter_test:
-    sdk: flutter
   flutter_driver:
     sdk: flutter
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  mockito: ^5.0.9
+  mock_data: ^2.0.0
 
 flutter:
   uses-material-design: true

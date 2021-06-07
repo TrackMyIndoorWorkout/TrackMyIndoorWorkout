@@ -46,10 +46,12 @@ packages:
   bluetooth_enable:
     dependency: "direct main"
     description:
-      name: bluetooth_enable
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1"
+      path: "."
+      ref: HEAD
+      resolved-ref: "6b12d416d5b213f8b5f1117a7758ca0e5b46aed0"
+      url: "https://github.com/CsabaConsulting/bluetooth_enable.git"
+    source: git
+    version: "0.1.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -392,11 +394,9 @@ packages:
     version: "4.0.0"
   integration_test:
     dependency: "direct dev"
-    description:
-      name: integration_test
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2+3"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   internet_connection_checker:
     dependency: "direct main"
     description:
