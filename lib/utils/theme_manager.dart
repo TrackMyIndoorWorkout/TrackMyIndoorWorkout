@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_brand_icons/flutter_brand_icons.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/preferences.dart';
+import '../ui/parts/flutter_brand_icons.dart';
 import '../utils/constants.dart';
 
 class ThemeManager {
