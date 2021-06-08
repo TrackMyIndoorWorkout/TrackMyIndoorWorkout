@@ -15,7 +15,7 @@ import 'fitness_equipment_process_record_test.mocks.dart';
 void main() {
   test('startWorkout blanks out leftover lastRecord', () async {
     final rnd = Random();
-    // await PrefService.init(prefix: 'pref_');
+    await initPrefServiceForTest();
     final descriptor = deviceMap["SIC4"]!;
     final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
     equipment.lastRecord = RecordWithSport.getRandom(descriptor.defaultSport, rnd);
@@ -44,7 +44,7 @@ void main() {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 300, rnd).forEach((calories) {
       test('$calories', () async {
-        // await PrefService.init(prefix: 'pref_');
+        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
         final descriptor = deviceMap["SIC4"]!;
         final activity = Activity(

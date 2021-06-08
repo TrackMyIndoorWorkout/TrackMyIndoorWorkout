@@ -2,8 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/rower_device_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
-// import 'package:track_my_indoor_exercise/persistence/preferences.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+
+import 'utils.dart';
 
 class TestPair {
   final List<int> data;
@@ -26,8 +27,7 @@ void main() {
     final lsb = 44;
     final msb = 9;
     final flag = MAX_UINT8 * msb + lsb;
-    // await PrefService.init(prefix: 'pref_');
-    // PrefService.setDefaultValues({STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT});
+    await initPrefServiceForTest();
     rower.stopWorkout();
 
     rower.processFlag(flag);
@@ -210,8 +210,7 @@ void main() {
     ].forEach((testPair) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        // PrefService.init(prefix: 'pref_');
-        // PrefService.setDefaultValues({STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT});
+        await initPrefServiceForTest();
         final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC]!;
         rower.stopWorkout();
 

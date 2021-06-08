@@ -19,7 +19,7 @@ void main() {
     getRandomInts(SMALL_REPETITION, 400, rnd).forEach((calorieBase) {
       final calorie = calorieBase + 100;
       test('$calorie', () async {
-        // await PrefService.init(prefix: 'pref_');
+        await initPrefServiceForTest();
         final equipment =
             FitnessEquipment(descriptor: deviceMap["SIC4"], device: MockBluetoothDevice());
 
@@ -34,7 +34,7 @@ void main() {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 500, rnd).forEach((calorie) {
       test('$calorie', () async {
-        // await PrefService.init(prefix: 'pref_');
+        await initPrefServiceForTest();
         final equipment =
             FitnessEquipment(descriptor: deviceMap["SIC4"], device: MockBluetoothDevice());
 
@@ -51,7 +51,7 @@ void main() {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 500, rnd).forEach((calorie) {
       test('$calorie', () async {
-        // await PrefService.init(prefix: 'pref_');
+        await initPrefServiceForTest();
         final equipment =
             FitnessEquipment(descriptor: deviceMap["SIC4"], device: MockBluetoothDevice());
 
@@ -72,7 +72,7 @@ void main() {
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final seconds = 60;
       test('$calPerHour $powerFactor $calorieFactor', () async {
-        // await PrefService.init(prefix: 'pref_');
+        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: seconds));
         final descriptor = deviceMap["SIC4"]!;
         final activity = Activity(
@@ -107,7 +107,7 @@ void main() {
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final power = ((150 + pow) / DeviceDescriptor.J2KCAL).floor();
       test('$power', () async {
-        // await PrefService.init(prefix: 'pref_');
+        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
         final activity = Activity(
           deviceId: MPOWER_IMPORT_DEVICE_ID,
@@ -138,7 +138,7 @@ void main() {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       test('$calories', () async {
-        // await PrefService.init(prefix: 'pref_');
+        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
         final descriptor = deviceMap["SIC4"]!;
         final activity = Activity(
@@ -170,7 +170,7 @@ void main() {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       test('$speed', () async {
-        // await PrefService.init(prefix: 'pref_');
+        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
         final descriptor = deviceMap["SIC4"]!;
         final activity = Activity(
@@ -201,7 +201,7 @@ void main() {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       test('$distance', () async {
-        // await PrefService.init(prefix: 'pref_');
+        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
         final descriptor = deviceMap["SIC4"]!;
         final activity = Activity(
