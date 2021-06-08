@@ -1,3 +1,4 @@
+import '../../../utils/constants.dart';
 import '../../export_model.dart';
 import '../enums/fit_event.dart';
 import '../enums/fit_event_type.dart';
@@ -57,15 +58,27 @@ class FitSession extends FitDefinitionMessage {
     data.addByte(fitSport.item2);
     data.addLong((model.totalTime * 1000).ceil());
     data.addLong((model.totalDistance * 100).ceil());
-    data.addShort(model.calories);
-    data.addShort((model.averageSpeed * 1000).round());
-    data.addShort((model.maximumSpeed * 1000).round());
-    data.addByte(model.averageHeartRate);
-    data.addByte(model.maximumHeartRate);
-    data.addByte(model.averageCadence);
-    data.addByte(model.maximumCadence);
-    data.addShort(model.averagePower.round());
-    data.addShort(model.maximumPower.round());
+    data.addShort(model.calories > 0 ? model.calories : FitBaseTypes.uint16Type.invalidValue);
+    data.addShort(model.averageSpeed > EPS
+        ? (model.averageSpeed * 1000).round()
+        : FitBaseTypes.uint16Type.invalidValue);
+    data.addShort(model.maximumSpeed > EPS
+        ? (model.maximumSpeed * 1000).round()
+        : FitBaseTypes.uint16Type.invalidValue);
+    data.addByte(
+        model.averageHeartRate > 0 ? model.averageHeartRate : FitBaseTypes.uint8Type.invalidValue);
+    data.addByte(
+        model.maximumHeartRate > 0 ? model.maximumHeartRate : FitBaseTypes.uint8Type.invalidValue);
+    data.addByte(
+        model.averageCadence > 0 ? model.averageCadence : FitBaseTypes.uint8Type.invalidValue);
+    data.addByte(
+        model.maximumCadence > 0 ? model.maximumCadence : FitBaseTypes.uint8Type.invalidValue);
+    data.addShort(model.averagePower > EPS
+        ? model.averagePower.round()
+        : FitBaseTypes.uint16Type.invalidValue);
+    data.addShort(model.maximumPower > EPS
+        ? model.maximumPower.round()
+        : FitBaseTypes.uint16Type.invalidValue);
     data.addShort(1);
     data.addByte(FitSessionTrigger.ActivityEnd);
 

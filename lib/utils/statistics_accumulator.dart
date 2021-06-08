@@ -30,8 +30,8 @@ class StatisticsAccumulator {
   late int cadenceCount;
   late int maxCadence;
 
-  double get avgPower => powerCount > 0 ? powerSum / powerCount : 0;
-  double get avgSpeed => speedCount > 0 ? speedSum / speedCount : 0;
+  double get avgPower => powerCount > 0 ? powerSum / powerCount : 0.0;
+  double get avgSpeed => speedCount > 0 ? speedSum / speedCount : 0.0;
   int get avgCadence => cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0;
   int get avgHeartRate => heartRateCount > 0 ? heartRateSum ~/ heartRateCount : 0;
 
@@ -47,10 +47,10 @@ class StatisticsAccumulator {
     this.calculateAvgHeartRate = false,
     this.calculateMaxHeartRate = false,
   }) {
-    powerSum = 0;
+    powerSum = 0.0;
     powerCount = 0;
     maxPower = MAX_INIT.toDouble();
-    speedSum = 0;
+    speedSum = 0.0;
     speedCount = 0;
     maxSpeed = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
     heartRateSum = 0;
