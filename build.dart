@@ -10,13 +10,10 @@ import 'dart:io' as _i7;
 final _builders = <_i1.BuilderApplication>[
   _i1.apply(r'floor_generator:floor_generator', [_i2.floorBuilder],
       _i1.toDependentsOf(r'floor_generator'),
-      hideOutput: true,
-      appliesBuilders: const [r'source_gen:combining_builder']),
-  _i1.apply(
-      r'mockito:mockBuilder', [_i3.buildMocks], _i1.toDependentsOf(r'mockito'),
+      hideOutput: true, appliesBuilders: const [r'source_gen:combining_builder']),
+  _i1.apply(r'mockito:mockBuilder', [_i3.buildMocks], _i1.toDependentsOf(r'mockito'),
       hideOutput: false),
-  _i1.apply(r'source_gen:combining_builder', [_i4.combiningBuilder],
-      _i1.toNoneByDefault(),
+  _i1.apply(r'source_gen:combining_builder', [_i4.combiningBuilder], _i1.toNoneByDefault(),
       hideOutput: false, appliesBuilders: const [r'source_gen:part_cleanup']),
   _i1.applyPostProcess(r'source_gen:part_cleanup', _i4.partCleanup)
 ];

@@ -10,7 +10,12 @@ class TestData {
   final int dataSize;
   final int crc;
 
-  TestData({required this.protocolVersion, required this.profileVersion, required this.dataSize, required this.crc,});
+  TestData({
+    required this.protocolVersion,
+    required this.profileVersion,
+    required this.dataSize,
+    required this.crc,
+  });
 }
 
 void main() {

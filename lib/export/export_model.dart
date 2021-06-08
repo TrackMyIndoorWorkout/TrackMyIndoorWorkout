@@ -63,9 +63,7 @@ class ExportModel {
     if (records.length > 0) {
       ExportRecord lastRecord = records.last;
       ExportRecord firstRecord = records.first;
-      if (totalTime == 0 &&
-          lastRecord.date != null &&
-          firstRecord.date != null) {
+      if (totalTime == 0 && lastRecord.date != null && firstRecord.date != null) {
         totalTime =
             (lastRecord.date!.millisecondsSinceEpoch - firstRecord.date!.millisecondsSinceEpoch) /
                 1000;

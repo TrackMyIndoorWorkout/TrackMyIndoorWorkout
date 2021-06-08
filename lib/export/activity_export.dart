@@ -63,7 +63,8 @@ abstract class ActivityExport {
     if (record.distance == null) {
       record.distance = 0.0;
     }
-    Offset gps = record.distance != null ? calculator.gpsCoordinates(record.distance!) : Offset(0, 0);
+    Offset gps =
+        record.distance != null ? calculator.gpsCoordinates(record.distance!) : Offset(0, 0);
     return ExportRecord()
       ..longitude = gps.dx
       ..latitude = gps.dy
@@ -84,44 +85,44 @@ abstract class ActivityExport {
     final track = getDefaultTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     final exportRecords = records.map((r) {
-        final record = recordToExport(r, calculator);
+      final record = recordToExport(r, calculator);
 
-        if (record.speed > EPS) {
-          // #101, #122
-          if ((record.cadence == null || record.cadence == 0) &&
-              _lastPositiveCadence > 0 &&
-              _cadenceGapWorkaround) {
-            record.cadence = _lastPositiveCadence;
-          } else if (record.cadence != null && record.cadence! > 0) {
-            _lastPositiveCadence = record.cadence!;
-          }
+      if (record.speed > EPS) {
+        // #101, #122
+        if ((record.cadence == null || record.cadence == 0) &&
+            _lastPositiveCadence > 0 &&
+            _cadenceGapWorkaround) {
+          record.cadence = _lastPositiveCadence;
+        } else if (record.cadence != null && record.cadence! > 0) {
+          _lastPositiveCadence = record.cadence!;
         }
+      }
 
-        if (record.heartRate == null && heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
+      if (record.heartRate == null && heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
+        record.heartRate = 0;
+      }
+      // #93, #113
+      if ((record.heartRate == 0 || record.heartRate == null) &&
+          _lastPositiveHeartRate > 0 &&
+          heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
+        record.heartRate = _lastPositiveHeartRate;
+      } else if (record.heartRate != null && record.heartRate! > 0) {
+        _lastPositiveHeartRate = record.heartRate!;
+      }
+      // #114
+      if (heartRateUpperLimit > 0 &&
+          record.heartRate != null &&
+          record.heartRate! > heartRateUpperLimit &&
+          heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
+        if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+          record.heartRate = heartRateUpperLimit;
+        } else {
           record.heartRate = 0;
         }
-        // #93, #113
-        if ((record.heartRate == 0 || record.heartRate == null) &&
-            _lastPositiveHeartRate > 0 &&
-            heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
-          record.heartRate = _lastPositiveHeartRate;
-        } else if (record.heartRate != null && record.heartRate! > 0) {
-          _lastPositiveHeartRate = record.heartRate!;
-        }
-        // #114
-        if (heartRateUpperLimit > 0 &&
-            record.heartRate != null &&
-            record.heartRate! > heartRateUpperLimit &&
-            heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
-          if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
-            record.heartRate = heartRateUpperLimit;
-          } else {
-            record.heartRate = 0;
-          }
-        }
+      }
 
-        return record;
-      }).toList(growable: false);
+      return record;
+    }).toList(growable: false);
     ExportModel exportModel = ExportModel(
       sport: activity.sport,
       totalDistance: activity.distance,
@@ -146,7 +147,8 @@ abstract class ActivityExport {
       buildVersionMinor: minor,
       langID: 'en-US',
       partNumber: '0',
-      records: exportRecords,);
+      records: exportRecords,
+    );
 
     return await getFile(exportModel, compress);
   }

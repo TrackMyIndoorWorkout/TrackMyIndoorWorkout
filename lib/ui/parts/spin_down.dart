@@ -157,7 +157,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
     if (!(_fitnessEquipment?.discovered ?? false)) return false;
 
-    final userData = BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], USER_DATA_SERVICE);
+    final userData =
+        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], USER_DATA_SERVICE);
     _weightData =
         BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, WEIGHT_CHARACTERISTIC);
     if (_weightData == null) return false;
@@ -251,11 +252,11 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         setState(() {
           _calibrationState = CalibrationState.CalibrationInProgress;
           _targetSpeedHigh = (data[3] * MAX_UINT8 + data[4]) / 100;
-          _targetSpeedHighString =
-              speedOrPaceString(_targetSpeedHigh, _si, _fitnessEquipment?.descriptor?.defaultSport ?? ActivityType.Ride);
+          _targetSpeedHighString = speedOrPaceString(_targetSpeedHigh, _si,
+              _fitnessEquipment?.descriptor?.defaultSport ?? ActivityType.Ride);
           _targetSpeedLow = (data[5] * MAX_UINT8 + data[6]) / 100;
-          _targetSpeedLowString =
-              speedOrPaceString(_targetSpeedLow, _si, _fitnessEquipment?.descriptor?.defaultSport ?? ActivityType.Ride);
+          _targetSpeedLowString = speedOrPaceString(_targetSpeedLow, _si,
+              _fitnessEquipment?.descriptor?.defaultSport ?? ActivityType.Ride);
         });
       }
     });
@@ -442,8 +443,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _fitnessEquipment?.pumpData((record) async {
       setState(() {
         _currentSpeed = record.speed ?? 0.0;
-        _currentSpeedString =
-            record.speedStringByUnit(_si, _fitnessEquipment?.descriptor?.defaultSport ?? ActivityType.Ride);
+        _currentSpeedString = record.speedStringByUnit(
+            _si, _fitnessEquipment?.descriptor?.defaultSport ?? ActivityType.Ride);
       });
     });
   }

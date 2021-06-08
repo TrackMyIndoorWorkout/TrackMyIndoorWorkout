@@ -101,15 +101,16 @@ abstract class AppDatabase extends FloorDatabase {
   }
 
   Future<List<Tuple2<String, String>>> findDistinctWorkoutSummaryDevices() async {
-    final result = await database
-        .rawQuery("SELECT DISTINCT `device_id`, `device_name` FROM `$WORKOUT_SUMMARIES_TABLE_NAME`");
+    final result = await database.rawQuery(
+        "SELECT DISTINCT `device_id`, `device_name` FROM `$WORKOUT_SUMMARIES_TABLE_NAME`");
 
     if (result.length < 1) {
       return [];
     }
 
     return result
-        .map((row) => Tuple2<String, String>(row['device_id'] as String, row['device_name'] as String))
+        .map((row) =>
+            Tuple2<String, String>(row['device_id'] as String, row['device_name'] as String))
         .toList(growable: false);
   }
 }
@@ -127,7 +128,8 @@ final migration3to4 = Migration(3, 4, (database) async {
   await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `sport` TEXT");
   await database.execute(
       "UPDATE `$ACTIVITIES_TABLE_NAME` SET `sport`='Kayaking' WHERE `four_cc`='$KAYAK_PRO_GENESIS_PORT_FOURCC'");
-  await database.execute("UPDATE `$ACTIVITIES_TABLE_NAME` SET `sport`='Ride' WHERE `sport` IS NULL");
+  await database
+      .execute("UPDATE `$ACTIVITIES_TABLE_NAME` SET `sport`='Ride' WHERE `sport` IS NULL");
 });
 
 final migration4to5 = Migration(4, 5, (database) async {

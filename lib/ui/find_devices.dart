@@ -216,7 +216,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     if (descriptor.isMultiSport) {
-      final multiSportSupport = prefService.getBool(MULTI_SPORT_DEVICE_SUPPORT_TAG) ?? MULTI_SPORT_DEVICE_SUPPORT_DEFAULT;
+      final multiSportSupport =
+          prefService.getBool(MULTI_SPORT_DEVICE_SUPPORT_TAG) ?? MULTI_SPORT_DEVICE_SUPPORT_DEFAULT;
       if (deviceUsage == null || multiSportSupport) {
         final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
         final sportPick = await Get.bottomSheet(
@@ -360,133 +361,143 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 stream: Stream.periodic(Duration(seconds: 2))
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
                 initialData: [],
-                builder: (c, snapshot) => snapshot.data == null ? Container() : Column(
-                  children:
-                      snapshot.data!.where((d) => _advertisementCache.hasEntry(d.id.id)).map((d) {
-                    if (!(_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ?? false)) {
-                      _openedDevice = d;
-                    }
-
-                    return ListTile(
-                      title: TextOneLine(
-                        d.name,
-                        overflow: TextOverflow.ellipsis,
-                        style: _themeManager.boldStyle(_captionStyle,
-                            fontSizeFactor: FONT_SIZE_FACTOR),
-                      ),
-                      subtitle: Text(d.id.id, style: _subtitleStyle),
-                      trailing: StreamBuilder<BluetoothDeviceState>(
-                        stream: d.state,
-                        initialData: BluetoothDeviceState.disconnected,
-                        builder: (c, snapshot) {
-                          if (snapshot.data == BluetoothDeviceState.connected) {
-                            return _themeManager.getGreenGenericFab(
-                              (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ?? false)
-                                  ? ((Get.isRegistered<HeartRateMonitor>() &&
-                                          Get.find<HeartRateMonitor>().device?.id.id == d.id.id)
-                                      ? Text(_heartRate?.toString() ?? "--")
-                                      : Icon(Icons.favorite))
-                                  : Icon(Icons.open_in_new),
-                              () async {
-                                if (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
-                                    false) {
-                                  return;
-                                }
-                                await FlutterBlue.instance.stopScan();
-                                await Future.delayed(Duration(milliseconds: 100));
-                                await goToRecording(d, snapshot.data!);
-                              },
-                            );
-                          } else {
-                            return Text(snapshot.data.toString());
+                builder: (c, snapshot) => snapshot.data == null
+                    ? Container()
+                    : Column(
+                        children: snapshot.data!
+                            .where((d) => _advertisementCache.hasEntry(d.id.id))
+                            .map((d) {
+                          if (!(_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
+                              false)) {
+                            _openedDevice = d;
                           }
-                        },
+
+                          return ListTile(
+                            title: TextOneLine(
+                              d.name,
+                              overflow: TextOverflow.ellipsis,
+                              style: _themeManager.boldStyle(_captionStyle,
+                                  fontSizeFactor: FONT_SIZE_FACTOR),
+                            ),
+                            subtitle: Text(d.id.id, style: _subtitleStyle),
+                            trailing: StreamBuilder<BluetoothDeviceState>(
+                              stream: d.state,
+                              initialData: BluetoothDeviceState.disconnected,
+                              builder: (c, snapshot) {
+                                if (snapshot.data == BluetoothDeviceState.connected) {
+                                  return _themeManager.getGreenGenericFab(
+                                    (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
+                                            false)
+                                        ? ((Get.isRegistered<HeartRateMonitor>() &&
+                                                Get.find<HeartRateMonitor>().device?.id.id ==
+                                                    d.id.id)
+                                            ? Text(_heartRate?.toString() ?? "--")
+                                            : Icon(Icons.favorite))
+                                        : Icon(Icons.open_in_new),
+                                    () async {
+                                      if (_advertisementCache
+                                              .getEntry(d.id.id)
+                                              ?.isHeartRateMonitor() ??
+                                          false) {
+                                        return;
+                                      }
+                                      await FlutterBlue.instance.stopScan();
+                                      await Future.delayed(Duration(milliseconds: 100));
+                                      await goToRecording(d, snapshot.data!);
+                                    },
+                                  );
+                                } else {
+                                  return Text(snapshot.data.toString());
+                                }
+                              },
+                            ),
+                          );
+                        }).toList(growable: false),
                       ),
-                    );
-                  }).toList(growable: false),
-                ),
               ),
               StreamBuilder<List<ScanResult>>(
                 stream: FlutterBlue.instance.scanResults,
                 initialData: [],
-                builder: (c, snapshot) => snapshot.data == null ? Container() : Column(
-                  children: snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
-                    addScannedDevice(r);
-                    if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {
-                      FlutterBlue.instance.stopScan().whenComplete(() async {
-                        await Future.delayed(Duration(milliseconds: 100));
-                      });
-                    }
-                    return ScanResultTile(
-                      result: r,
-                      onEquipmentTap: () async {
-                        await FlutterBlue.instance.stopScan();
-                        await Future.delayed(Duration(milliseconds: 100));
-                        await goToRecording(r.device, BluetoothDeviceState.disconnected);
-                      },
-                      onHrmTap: () async {
-                        var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
-                            ? Get.find<HeartRateMonitor>()
-                            : null;
-                        bool disconnectOnly = false;
-                        if (heartRateMonitor != null) {
-                          disconnectOnly = heartRateMonitor.device?.id.id == r.device.id.id;
-                          final title = disconnectOnly
-                              ? 'You are connected to that HRM right now'
-                              : 'You are connected to a HRM right now';
-                          final content = disconnectOnly
-                              ? 'Disconnect from the selected HRM?'
-                              : 'Disconnect from that HRM to connect to the selected one?';
-                          if (!(await showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text(title),
-                                  content: Text(content),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Get.close(1),
-                                      child: Text('No'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(true);
-                                      },
-                                      child: Text('Yes'),
-                                    ),
-                                  ],
-                                ),
-                              ) ??
-                              false)) {
-                            return;
+                builder: (c, snapshot) => snapshot.data == null
+                    ? Container()
+                    : Column(
+                        children: snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
+                          addScannedDevice(r);
+                          if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {
+                            FlutterBlue.instance.stopScan().whenComplete(() async {
+                              await Future.delayed(Duration(milliseconds: 100));
+                            });
                           }
-                        }
+                          return ScanResultTile(
+                            result: r,
+                            onEquipmentTap: () async {
+                              await FlutterBlue.instance.stopScan();
+                              await Future.delayed(Duration(milliseconds: 100));
+                              await goToRecording(r.device, BluetoothDeviceState.disconnected);
+                            },
+                            onHrmTap: () async {
+                              var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                  ? Get.find<HeartRateMonitor>()
+                                  : null;
+                              bool disconnectOnly = false;
+                              if (heartRateMonitor != null) {
+                                disconnectOnly = heartRateMonitor.device?.id.id == r.device.id.id;
+                                final title = disconnectOnly
+                                    ? 'You are connected to that HRM right now'
+                                    : 'You are connected to a HRM right now';
+                                final content = disconnectOnly
+                                    ? 'Disconnect from the selected HRM?'
+                                    : 'Disconnect from that HRM to connect to the selected one?';
+                                if (!(await showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text(title),
+                                        content: Text(content),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Get.close(1),
+                                            child: Text('No'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop(true);
+                                            },
+                                            child: Text('Yes'),
+                                          ),
+                                        ],
+                                      ),
+                                    ) ??
+                                    false)) {
+                                  return;
+                                }
+                              }
 
-                        if (heartRateMonitor != null) {
-                          await heartRateMonitor.detach();
-                          await heartRateMonitor.disconnect();
-                          if (disconnectOnly) {
-                            return;
-                          }
-                        }
+                              if (heartRateMonitor != null) {
+                                await heartRateMonitor.detach();
+                                await heartRateMonitor.disconnect();
+                                if (disconnectOnly) {
+                                  return;
+                                }
+                              }
 
-                        if (heartRateMonitor == null ||
-                            heartRateMonitor.device?.id.id != r.device.id.id) {
-                          heartRateMonitor = new HeartRateMonitor(r.device);
-                          Get.put<HeartRateMonitor>(heartRateMonitor);
-                          await heartRateMonitor.connect();
-                          await heartRateMonitor.discover();
-                        }
+                              if (heartRateMonitor == null ||
+                                  heartRateMonitor.device?.id.id != r.device.id.id) {
+                                heartRateMonitor = new HeartRateMonitor(r.device);
+                                Get.put<HeartRateMonitor>(heartRateMonitor);
+                                await heartRateMonitor.connect();
+                                await heartRateMonitor.discover();
+                              }
 
-                        await heartRateMonitor.attach();
-                        heartRateMonitor.pumpMetric((heartRate) {
-                          setState(() {
-                            _heartRate = heartRate;
-                          });
-                        });
-                      },
-                    );
-                  }).toList(growable: false),
-                ),
+                              await heartRateMonitor.attach();
+                              heartRateMonitor.pumpMetric((heartRate) {
+                                setState(() {
+                                  _heartRate = heartRate;
+                                });
+                              });
+                            },
+                          );
+                        }).toList(growable: false),
+                      ),
               ),
             ],
           ),

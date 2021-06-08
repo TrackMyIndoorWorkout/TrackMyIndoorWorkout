@@ -77,7 +77,8 @@ abstract class Auth {
       localToken.scope = prefs.getString(TOKEN_SCOPE_TAG);
 
       // load the data into Get
-      registerToken(localToken.accessToken, localToken.refreshToken, localToken.expiresAt, localToken.scope);
+      registerToken(
+          localToken.accessToken, localToken.refreshToken, localToken.expiresAt, localToken.scope);
     } catch (error) {
       debugPrint('Error while retrieving the token');
       localToken.accessToken = null;
@@ -241,8 +242,15 @@ abstract class Auth {
       RefreshAnswer _refreshAnswer =
           await _getNewAccessToken(clientID, secret, tokenStored.refreshToken ?? "0");
       // Update with new values if HTTP status code is 200
-      if (_refreshAnswer.fault != null && _refreshAnswer.fault!.statusCode >= 200 && _refreshAnswer.fault!.statusCode < 300) {
-        await _saveToken(_refreshAnswer.accessToken, _refreshAnswer.refreshToken, _refreshAnswer.expiresAt, scope,);
+      if (_refreshAnswer.fault != null &&
+          _refreshAnswer.fault!.statusCode >= 200 &&
+          _refreshAnswer.fault!.statusCode < 300) {
+        await _saveToken(
+          _refreshAnswer.accessToken,
+          _refreshAnswer.refreshToken,
+          _refreshAnswer.expiresAt,
+          scope,
+        );
       } else {
         debugPrint('Problem doing the refresh process');
         isAuthOk = false;

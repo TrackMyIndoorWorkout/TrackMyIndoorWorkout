@@ -10,7 +10,8 @@ class CalorieOverrideBottomSheet extends StatefulWidget {
   final String deviceId;
   final int calories;
 
-  CalorieOverrideBottomSheet({Key? key, required this.deviceId, required this.calories}) : super(key: key);
+  CalorieOverrideBottomSheet({Key? key, required this.deviceId, required this.calories})
+      : super(key: key);
 
   @override
   CalorieOverrideBottomSheetState createState() =>
@@ -69,7 +70,11 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
           calorieTune.calorieFactor = calorieFactor;
           await database.calorieTuneDao.updateCalorieTune(calorieTune);
         } else {
-          calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor, time: DateTime.now().millisecondsSinceEpoch,);
+          calorieTune = CalorieTune(
+            mac: deviceId,
+            calorieFactor: calorieFactor,
+            time: DateTime.now().millisecondsSinceEpoch,
+          );
           await database.calorieTuneDao.insertCalorieTune(calorieTune);
         }
         Get.back(result: calorieFactor);

@@ -67,7 +67,8 @@ List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
   return addresses;
 }
 
-int getStringIntegerPreference(String tag, String defaultString, int defaultInt, SharedPreferences? prefService) {
+int getStringIntegerPreference(
+    String tag, String defaultString, int defaultInt, SharedPreferences? prefService) {
   if (prefService == null) {
     prefService = Get.find<PrefServiceShared>().sharedPreferences;
   }

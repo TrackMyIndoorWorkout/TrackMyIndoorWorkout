@@ -486,8 +486,10 @@ class RecordingState extends State<RecordingScreen> {
     ];
     _rowControllers = [];
     _expandedHeights = [];
-    final expandedStateStr = prefService.getString(MEASUREMENT_PANELS_EXPANDED_TAG) ?? MEASUREMENT_PANELS_EXPANDED_DEFAULT;
-    final expandedHeightStr = prefService.getString(MEASUREMENT_DETAIL_SIZE_TAG) ?? MEASUREMENT_DETAIL_SIZE_DEFAULT;
+    final expandedStateStr = prefService.getString(MEASUREMENT_PANELS_EXPANDED_TAG) ??
+        MEASUREMENT_PANELS_EXPANDED_DEFAULT;
+    final expandedHeightStr =
+        prefService.getString(MEASUREMENT_DETAIL_SIZE_TAG) ?? MEASUREMENT_DETAIL_SIZE_DEFAULT;
     _expandedState = List<bool>.generate(expandedStateStr.length, (int index) {
       final expanded = expandedStateStr[index] == "1";
       ExpandableController rowController = ExpandableController(initialExpanded: expanded);
@@ -697,8 +699,8 @@ class RecordingState extends State<RecordingScreen> {
 
     if (!_uxDebug) {
       if (_leaderboardFeature) {
-        await _database.workoutSummaryDao
-            .insertWorkoutSummary(_activity!.getWorkoutSummary(_fitnessEquipment.manufacturerName ?? "Unknown"));
+        await _database.workoutSummaryDao.insertWorkoutSummary(
+            _activity!.getWorkoutSummary(_fitnessEquipment.manufacturerName ?? "Unknown"));
       }
 
       final retVal = await _database.activityDao.updateActivity(_activity!);
@@ -1166,7 +1168,8 @@ class RecordingState extends State<RecordingScreen> {
             width: size.width,
             height: height,
             child: charts.SfCartesianChart(
-              primaryXAxis: charts.DateTimeAxis(/*labelStyle: null, isInversed, edgeLabelPlacement*/),
+              primaryXAxis:
+                  charts.DateTimeAxis(/*labelStyle: null, isInversed, edgeLabelPlacement*/),
               margin: EdgeInsets.all(0),
               series: _metricToDataFn[entry.value.metric]!(),
               // behaviors: [
@@ -1179,7 +1182,8 @@ class RecordingState extends State<RecordingScreen> {
           ),
         );
         if (entry.value.metric == "hr" && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
-          int zoneIndex = targetHrState == TargetHrState.Off ? 0 : entry.value.binIndex(_heartRate ?? 0);
+          int zoneIndex =
+              targetHrState == TargetHrState.Off ? 0 : entry.value.binIndex(_heartRate ?? 0);
           String targetText = _getTargetHrText(targetHrState);
           targetText = "Z$zoneIndex $targetText";
           extra = Column(
@@ -1250,7 +1254,10 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           if (_rankInfoOnTrack) {
-            if (_rankingForDevice && deviceRankInfo != null && _rankingForDevice && sportRankInfo != null) {
+            if (_rankingForDevice &&
+                deviceRankInfo != null &&
+                _rankingForDevice &&
+                sportRankInfo != null) {
               rankInfo = Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

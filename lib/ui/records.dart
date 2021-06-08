@@ -314,7 +314,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         dataSource: _sampledRecords,
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.power,
-        color:_chartTextColor,
+        color: _chartTextColor,
       ),
     ];
   }

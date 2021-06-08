@@ -9,7 +9,8 @@ abstract class RecordDao {
   @Query('SELECT * FROM `$RECORDS_TABLE_NAME` WHERE `id` = :id')
   Stream<Record?> findRecordById(int id);
 
-  @Query('SELECT * FROM `$RECORDS_TABLE_NAME` WHERE `activity_id` = :activityId ORDER BY `time_stamp`')
+  @Query(
+      'SELECT * FROM `$RECORDS_TABLE_NAME` WHERE `activity_id` = :activityId ORDER BY `time_stamp`')
   Future<List<Record>> findAllActivityRecords(int activityId);
 
   @insert

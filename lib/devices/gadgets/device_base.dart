@@ -92,8 +92,8 @@ abstract class DeviceBase {
         characteristic = _service!.characteristics
             .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
       } else {
-        characteristic = _service!.characteristics.firstWhereOrNull(
-            (ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()));
+        characteristic = _service!.characteristics
+            .firstWhereOrNull((ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()));
         characteristicsId = characteristic?.uuid.uuidString();
       }
     } else {

@@ -52,7 +52,8 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
   @override
   Widget build(BuildContext context) {
     final bluetoothDisplay = bluetoothState?.toString().substring(15) ?? 'N/A';
-    final locationDisplay = locationState.isGranted ? "Granted" : (locationState.isLimited ? "Limited" : "Denied");
+    final locationDisplay =
+        locationState.isGranted ? "Granted" : (locationState.isLimited ? "Limited" : "Denied");
     return Scaffold(
       backgroundColor: _themeManager.getHeaderColor(),
       body: GestureDetector(

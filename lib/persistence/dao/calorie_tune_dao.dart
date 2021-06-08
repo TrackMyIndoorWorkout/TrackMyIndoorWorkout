@@ -12,7 +12,8 @@ abstract class CalorieTuneDao {
   @Query('SELECT * FROM `$CALORIE_TUNE_TABLE_NAME` WHERE `mac` = :mac ORDER BY `time` DESC LIMIT 1')
   Stream<CalorieTune?> findCalorieTuneByMac(String mac);
 
-  @Query('SELECT * FROM `$CALORIE_TUNE_TABLE_NAME` ORDER BY `time` DESC LIMIT :limit OFFSET :offset')
+  @Query(
+      'SELECT * FROM `$CALORIE_TUNE_TABLE_NAME` ORDER BY `time` DESC LIMIT :limit OFFSET :offset')
   Future<List<CalorieTune>> findCalorieTunes(int limit, int offset);
 
   @insert

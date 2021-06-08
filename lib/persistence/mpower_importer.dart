@@ -249,15 +249,16 @@ class MPowerEchelon2Importer {
         prefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
 
     while (_linePointer < _lines.length) {
-      WorkoutRow row = nextRow ?? WorkoutRow(
-        rowString: _lines[_linePointer],
-        lastHeartRate: lastHeartRate,
-        heartRateGapWorkaround: heartRateGapWorkaround,
-        heartRateUpperLimit: heartRateUpperLimit,
-        heartRateLimitingMethod: heartRateLimitingMethod,
-        tuneRatio: device.powerFactor,
-        extendTuning: extendTuning,
-      );
+      WorkoutRow row = nextRow ??
+          WorkoutRow(
+            rowString: _lines[_linePointer],
+            lastHeartRate: lastHeartRate,
+            heartRateGapWorkaround: heartRateGapWorkaround,
+            heartRateUpperLimit: heartRateUpperLimit,
+            heartRateLimitingMethod: heartRateLimitingMethod,
+            tuneRatio: device.powerFactor,
+            extendTuning: extendTuning,
+          );
 
       if (_linePointer + 1 >= _lines.length) {
         nextRow = WorkoutRow(

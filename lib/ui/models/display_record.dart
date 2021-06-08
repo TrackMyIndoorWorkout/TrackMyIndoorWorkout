@@ -17,7 +17,10 @@ class DisplayRecord {
     speed = (sport != ActivityType.Ride &&
             source.speed != null &&
             source.speed! > 0 &&
-            source.speed! < (PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport ?? ActivityType.Run)] ?? EPS))
+            source.speed! <
+                (PreferencesSpec
+                        .slowSpeeds[PreferencesSpec.sport2Sport(sport ?? ActivityType.Run)] ??
+                    EPS))
         ? 0
         : source.speed;
     cadence = source.cadence;

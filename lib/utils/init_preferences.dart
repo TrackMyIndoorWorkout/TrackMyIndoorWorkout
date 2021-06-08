@@ -70,10 +70,12 @@ Future<void> initPreferences() async {
     });
   });
 
-  final prefService = await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
+  final prefService =
+      await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
   Get.put<PrefServiceShared>(prefService);
 
-  final prefVersion = prefService.sharedPreferences.getInt(PREFERENCES_VERSION_TAG) ?? PREFERENCES_VERSION_NEXT;
+  final prefVersion =
+      prefService.sharedPreferences.getInt(PREFERENCES_VERSION_TAG) ?? PREFERENCES_VERSION_NEXT;
   if (prefVersion < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
     PreferencesSpec.preferencesSpecs.forEach((prefSpec) async {
       final thresholdTag = PreferencesSpec.THRESHOLD_PREFIX + prefSpec.metric;
@@ -82,23 +84,27 @@ Future<void> initPreferences() async {
         final threshold = double.tryParse(thresholdString) ?? EPS;
         thresholdString = decimalRound(threshold * MI2KM).toString();
       }
-      await prefService.sharedPreferences.setString(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
+      await prefService.sharedPreferences
+          .setString(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
       final zoneTag = prefSpec.metric + PreferencesSpec.ZONES_POSTFIX;
-      await prefService.sharedPreferences.setString(prefSpec.zonesTag(ActivityType.Ride), prefService.sharedPreferences.getString(zoneTag) ?? "55,75,90,105,120,150");
+      await prefService.sharedPreferences.setString(prefSpec.zonesTag(ActivityType.Ride),
+          prefService.sharedPreferences.getString(zoneTag) ?? "55,75,90,105,120,150");
     });
   }
 
   if (prefVersion < PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT) {
     final lastEquipmentId = prefService.sharedPreferences.getString(LAST_EQUIPMENT_ID_TAG) ?? "";
     if (lastEquipmentId.trim().length > 0) {
-      await prefService.sharedPreferences.setString(LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride, lastEquipmentId);
+      await prefService.sharedPreferences
+          .setString(LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride, lastEquipmentId);
     }
   }
   await prefService.sharedPreferences.setInt(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);
 
   PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
     if (sport != ActivityType.Ride) {
-      final slowSpeedString = prefService.sharedPreferences.getString(PreferencesSpec.slowSpeedTag(sport)) ?? "";
+      final slowSpeedString =
+          prefService.sharedPreferences.getString(PreferencesSpec.slowSpeedTag(sport)) ?? "";
       PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? EPS;
     }
   });

@@ -37,7 +37,8 @@ void main() {
         expect(accu.maxPower, MAX_INIT.toDouble());
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
-        expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+        expect(
+            accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
         expect(accu.maxHeartRate, MAX_INIT);
@@ -74,7 +75,8 @@ void main() {
         expect(accu.maxPower, maximum);
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
-        expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+        expect(
+            accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
         expect(accu.maxHeartRate, MAX_INIT);
@@ -116,7 +118,8 @@ void main() {
         expect(accu.maxPower, MAX_INIT.toDouble());
         expect(accu.speedSum, sum);
         expect(accu.speedCount, count);
-        expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+        expect(
+            accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
         expect(accu.maxHeartRate, MAX_INIT);
@@ -206,7 +209,8 @@ void main() {
         expect(accu.maxPower, MAX_INIT.toDouble());
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
-        expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+        expect(
+            accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
         expect(accu.heartRateSum, sum);
         expect(accu.heartRateCount, count);
         expect(accu.maxHeartRate, MAX_INIT);
@@ -245,7 +249,8 @@ void main() {
         expect(accu.maxPower, MAX_INIT.toDouble());
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
-        expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+        expect(
+            accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
         expect(accu.maxHeartRate, maximum);
@@ -287,7 +292,8 @@ void main() {
         expect(accu.maxPower, MAX_INIT.toDouble());
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
-        expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+        expect(
+            accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
         expect(accu.maxHeartRate, MAX_INIT);
@@ -326,7 +332,8 @@ void main() {
         expect(accu.maxPower, MAX_INIT.toDouble());
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
-        expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+        expect(
+            accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
         expect(accu.maxHeartRate, MAX_INIT);

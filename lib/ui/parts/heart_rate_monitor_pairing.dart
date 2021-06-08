@@ -65,46 +65,50 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                 stream: Stream.periodic(Duration(seconds: 2))
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
                 initialData: [],
-                builder: (c, snapshot) => snapshot.data == null ? Container() : Column(
-                  children: snapshot.data!
-                      .where((h) =>
-                          _scanResults.contains(h.id.id) ||
-                          (Get.isRegistered<HeartRateMonitor>() &&
-                              Get.find<HeartRateMonitor>().device?.id.id == h.id.id))
-                      .map((d) {
-                    return ListTile(
-                      title: TextOneLine(
-                        d.name,
-                        overflow: TextOverflow.ellipsis,
-                        style: _themeManager.boldStyle(_captionStyle,
-                            fontSizeFactor: FONT_SIZE_FACTOR),
+                builder: (c, snapshot) => snapshot.data == null
+                    ? Container()
+                    : Column(
+                        children: snapshot.data!
+                            .where((h) =>
+                                _scanResults.contains(h.id.id) ||
+                                (Get.isRegistered<HeartRateMonitor>() &&
+                                    Get.find<HeartRateMonitor>().device?.id.id == h.id.id))
+                            .map((d) {
+                          return ListTile(
+                            title: TextOneLine(
+                              d.name,
+                              overflow: TextOverflow.ellipsis,
+                              style: _themeManager.boldStyle(_captionStyle,
+                                  fontSizeFactor: FONT_SIZE_FACTOR),
+                            ),
+                            subtitle: Text(d.id.id, style: _subtitleStyle),
+                            trailing: StreamBuilder<BluetoothDeviceState>(
+                              stream: d.state,
+                              initialData: BluetoothDeviceState.disconnected,
+                              builder: (c, snapshot) {
+                                if (snapshot.data == BluetoothDeviceState.connected) {
+                                  return _themeManager.getGreenFab(Icons.favorite, () {
+                                    Get.snackbar("Info", "Already connected");
+                                  });
+                                } else {
+                                  return Text(snapshot.data.toString());
+                                }
+                              },
+                            ),
+                          );
+                        }).toList(growable: false),
                       ),
-                      subtitle: Text(d.id.id, style: _subtitleStyle),
-                      trailing: StreamBuilder<BluetoothDeviceState>(
-                        stream: d.state,
-                        initialData: BluetoothDeviceState.disconnected,
-                        builder: (c, snapshot) {
-                          if (snapshot.data == BluetoothDeviceState.connected) {
-                            return _themeManager.getGreenFab(Icons.favorite, () {
-                              Get.snackbar("Info", "Already connected");
-                            });
-                          } else {
-                            return Text(snapshot.data.toString());
-                          }
-                        },
-                      ),
-                    );
-                  }).toList(growable: false),
-                ),
               ),
               StreamBuilder<List<ScanResult>>(
                 stream: FlutterBlue.instance.scanResults,
                 initialData: [],
-                builder: (c, snapshot) => snapshot.data == null ? Container() : Column(
-                    children: snapshot.data!.where((d) => d.isWorthy()).map((r) {
-                  _scanResults.add(r.device.id.id);
-                  return HeartRateMonitorScanResultTile(result: r);
-                }).toList(growable: false)),
+                builder: (c, snapshot) => snapshot.data == null
+                    ? Container()
+                    : Column(
+                        children: snapshot.data!.where((d) => d.isWorthy()).map((r) {
+                        _scanResults.add(r.device.id.id);
+                        return HeartRateMonitorScanResultTile(result: r);
+                      }).toList(growable: false)),
               ),
             ],
           ),

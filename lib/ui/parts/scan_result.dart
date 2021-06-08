@@ -125,7 +125,7 @@ class ScanResultTile extends StatelessWidget {
         _buildAdvRow(
           'Manufacturer Data',
           getNiceManufacturerData(
-                  result.advertisementData.manufacturerData.keys.toList(growable: false)),
+              result.advertisementData.manufacturerData.keys.toList(growable: false)),
           captionStyle,
           secondaryStyle,
         ),

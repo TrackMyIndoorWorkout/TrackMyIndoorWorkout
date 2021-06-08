@@ -10,7 +10,8 @@ class PowerFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
   final double powerFactor;
 
-  PowerFactorTuneBottomSheet({Key? key, required this.deviceId, required this.powerFactor}) : super(key: key);
+  PowerFactorTuneBottomSheet({Key? key, required this.deviceId, required this.powerFactor})
+      : super(key: key);
 
   @override
   PowerFactorTuneBottomSheetState createState() =>
@@ -69,7 +70,11 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
           powerTune.powerFactor = powerFactor;
           await database.powerTuneDao.updatePowerTune(powerTune);
         } else {
-          final powerTune = PowerTune(mac: deviceId, powerFactor: powerFactor, time: DateTime.now().millisecondsSinceEpoch,);
+          final powerTune = PowerTune(
+            mac: deviceId,
+            powerFactor: powerFactor,
+            time: DateTime.now().millisecondsSinceEpoch,
+          );
           await database.powerTuneDao.insertPowerTune(powerTune);
         }
         Get.back(result: powerFactor);

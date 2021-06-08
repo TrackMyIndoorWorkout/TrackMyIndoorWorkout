@@ -5,7 +5,13 @@ class FitBaseType {
   final int invalidValue;
   final int size;
 
-  const FitBaseType({required this.endianable, required this.id, required this.name, required this.invalidValue, required this.size,});
+  const FitBaseType({
+    required this.endianable,
+    required this.id,
+    required this.name,
+    required this.invalidValue,
+    required this.size,
+  });
 }
 
 class FitBaseTypes {

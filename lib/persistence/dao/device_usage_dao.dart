@@ -12,7 +12,8 @@ abstract class DeviceUsageDao {
   @Query('SELECT * FROM `$DEVICE_USAGE_TABLE_NAME` WHERE `mac` = :mac ORDER BY `time` DESC LIMIT 1')
   Stream<DeviceUsage?> findDeviceUsageByMac(String mac);
 
-  @Query('SELECT * FROM `$DEVICE_USAGE_TABLE_NAME` ORDER BY `time` DESC LIMIT :limit OFFSET :offset')
+  @Query(
+      'SELECT * FROM `$DEVICE_USAGE_TABLE_NAME` ORDER BY `time` DESC LIMIT :limit OFFSET :offset')
   Future<List<DeviceUsage>> findDeviceUsages(int limit, int offset);
 
   @insert

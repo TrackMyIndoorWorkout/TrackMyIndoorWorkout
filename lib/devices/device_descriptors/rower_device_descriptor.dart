@@ -90,7 +90,8 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     final pace = getPace(data);
 
     var strokeRate = getStrokeRate(data);
-    if ((strokeRate == null || strokeRate == 0) && (pace == null || pace == 0 || (slowPace != null && pace > slowPace!))) {
+    if ((strokeRate == null || strokeRate == 0) &&
+        (pace == null || pace == 0 || (slowPace != null && pace > slowPace!))) {
       clearStrokeRates();
     }
     if (_strokeRateWindowSize > 1 && strokeRate != null) {

@@ -1,4 +1,4 @@
- import 'dart:math';
+import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
@@ -11,7 +11,8 @@ void main() {
     final rnd = Random();
     SPORTS.forEach((sport) {
       1.to(SMALL_REPETITION).forEach((input) {
-        final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgPower: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgPower: true);
         final count = rnd.nextInt(99) + 1;
         double sum = 0.0;
         getRandomDoubles(count, 100, rnd).forEach((number) {
@@ -33,7 +34,8 @@ void main() {
           expect(accu.maxPower, MAX_INIT.toDouble());
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+          expect(accu.maxSpeed,
+              sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
           expect(accu.maxHeartRate, MAX_INIT);
@@ -50,7 +52,8 @@ void main() {
     final rnd = Random();
     SPORTS.forEach((sport) {
       1.to(SMALL_REPETITION).forEach((input) {
-        final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxPower: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxPower: true);
         final count = rnd.nextInt(99) + 1;
         double maximum = MAX_INIT.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
@@ -72,7 +75,8 @@ void main() {
           expect(accu.maxPower, maximum);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+          expect(accu.maxSpeed,
+              sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
           expect(accu.maxHeartRate, MAX_INIT);
@@ -88,7 +92,8 @@ void main() {
     final rnd = Random();
     SPORTS.forEach((sport) {
       1.to(SMALL_REPETITION).forEach((input) {
-        final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgSpeed: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgSpeed: true);
         final count = rnd.nextInt(99) + 1;
         double sum = 0.0;
         getRandomDoubles(count, 100, rnd).forEach((number) {
@@ -110,7 +115,8 @@ void main() {
           expect(accu.maxPower, MAX_INIT.toDouble());
           expect(accu.speedSum, sum);
           expect(accu.speedCount, count);
-          expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+          expect(accu.maxSpeed,
+              sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
           expect(accu.maxHeartRate, MAX_INIT);
@@ -127,7 +133,8 @@ void main() {
     final rnd = Random();
     SPORTS.forEach((sport) {
       1.to(SMALL_REPETITION).forEach((input) {
-        final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxSpeed: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxSpeed: true);
         final count = rnd.nextInt(99) + 1;
         double maximum = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
@@ -169,7 +176,8 @@ void main() {
     final rnd = Random();
     SPORTS.forEach((sport) {
       1.to(SMALL_REPETITION).forEach((input) {
-        final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgHeartRate: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgHeartRate: true);
         final count = rnd.nextInt(99) + 1;
         int sum = 0;
         int cnt = 0;
@@ -195,7 +203,8 @@ void main() {
           expect(accu.maxPower, MAX_INIT.toDouble());
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+          expect(accu.maxSpeed,
+              sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
           expect(accu.heartRateSum, sum);
           expect(accu.heartRateCount, cnt);
           expect(accu.maxHeartRate, MAX_INIT);
@@ -212,7 +221,8 @@ void main() {
     final rnd = Random();
     SPORTS.forEach((sport) {
       1.to(SMALL_REPETITION).forEach((input) {
-        final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxHeartRate: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxHeartRate: true);
         final count = rnd.nextInt(99) + 1;
         int maximum = MAX_INIT;
         getRandomInts(count, 100, rnd).forEach((number) {
@@ -234,7 +244,8 @@ void main() {
           expect(accu.maxPower, MAX_INIT.toDouble());
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+          expect(accu.maxSpeed,
+              sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
           expect(accu.maxHeartRate, maximum);
@@ -250,7 +261,8 @@ void main() {
     final rnd = Random();
     SPORTS.forEach((sport) {
       1.to(SMALL_REPETITION).forEach((input) {
-        final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgCadence: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgCadence: true);
         final count = rnd.nextInt(99) + 1;
         int sum = 0;
         int cnt = 0;
@@ -276,7 +288,8 @@ void main() {
           expect(accu.maxPower, MAX_INIT.toDouble());
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+          expect(accu.maxSpeed,
+              sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
           expect(accu.maxHeartRate, MAX_INIT);
@@ -293,7 +306,8 @@ void main() {
     final rnd = Random();
     SPORTS.forEach((sport) {
       1.to(SMALL_REPETITION).forEach((input) {
-        final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxCadence: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxCadence: true);
         final count = rnd.nextInt(99) + 1;
         int maximum = MAX_INIT;
         getRandomInts(count, 100, rnd).forEach((number) {
@@ -315,7 +329,8 @@ void main() {
           expect(accu.maxPower, MAX_INIT.toDouble());
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
+          expect(accu.maxSpeed,
+              sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
           expect(accu.maxHeartRate, MAX_INIT);

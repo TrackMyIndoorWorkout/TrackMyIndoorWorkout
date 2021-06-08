@@ -334,7 +334,8 @@ class PreferencesSpec {
     }
 
     final zonesSpecStr = prefService.getString(zonesTag(sport))!;
-    zonePercents = zonesSpecStr.split(',').map((zs) => int.tryParse(zs) ?? 0).toList(growable: false);
+    zonePercents =
+        zonesSpecStr.split(',').map((zs) => int.tryParse(zs) ?? 0).toList(growable: false);
     zoneBounds =
         zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList(growable: false);
     // if (flipZones) {
@@ -361,8 +362,8 @@ class PreferencesSpec {
     //   zoneLower.insert(0, decimalRound(maxVal));
     //   zoneUpper.add(decimalRound(minVal));
     // } else {
-      zoneLower.insert(0, decimalRound(minVal));
-      zoneUpper.add(decimalRound(maxVal));
+    zoneLower.insert(0, decimalRound(minVal));
+    zoneUpper.add(decimalRound(maxVal));
     // }
 
     // final textColor = isLight ? MaterialPalette.black : MaterialPalette.white;
