@@ -5,17 +5,17 @@ import 'export_record.dart';
 
 class ExportModel {
   String sport;
-  double totalDistance; // Total distance in meters
+  double totalDistance = 0.0; // Total distance in meters
   double totalTime; // in seconds
-  late double averageSpeed; // in m/s
-  late double maximumSpeed; // in m/s
+  double averageSpeed = 0.0; // in m/s
+  double maximumSpeed = 0.0; // in m/s
   int calories;
-  late int averageHeartRate;
-  late int maximumHeartRate;
-  late int averageCadence;
-  late int maximumCadence;
-  late double averagePower;
-  late double maximumPower;
+  int averageHeartRate = 0;
+  int maximumHeartRate = 0;
+  int averageCadence = 0;
+  int maximumCadence = 0;
+  double averagePower = 0.0;
+  double maximumPower = 0.0;
   DateTime dateActivity; // Date of the activity
   List<ExportRecord> records;
 
@@ -91,36 +91,13 @@ class ExportModel {
       accu.processExportRecord(trackPoint);
     });
 
-    if (accu.speedCount > 0) {
-      averageSpeed = accu.avgSpeed;
-    }
-
-    if (accu.maxSpeed > 0.0) {
-      maximumSpeed = accu.maxSpeed;
-    }
-
-    if (accu.heartRateCount > 0) {
-      averageHeartRate = accu.avgHeartRate;
-    }
-
-    if (accu.maxHeartRate > 0) {
-      maximumHeartRate = accu.maxHeartRate;
-    }
-
-    if (accu.cadenceCount > 0) {
-      averageCadence = accu.avgCadence;
-    }
-
-    if (accu.maxCadence > 0) {
-      maximumCadence = accu.maxCadence;
-    }
-
-    if (accu.powerCount > 0) {
-      averagePower = accu.avgPower;
-    }
-
-    if (accu.maxPower > 0) {
-      maximumPower = accu.maxPower;
-    }
+    averageSpeed = accu.avgSpeed;
+    maximumSpeed = accu.maxSpeed;
+    averageHeartRate = accu.avgHeartRate;
+    maximumHeartRate = accu.maxHeartRate;
+    averageCadence = accu.avgCadence;
+    maximumCadence = accu.maxCadence;
+    averagePower = accu.avgPower;
+    maximumPower = accu.maxPower;
   }
 }

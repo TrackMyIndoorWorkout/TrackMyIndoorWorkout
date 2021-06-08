@@ -1,15 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
-import 'package:track_my_indoor_exercise/export/export_model.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_file_id.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
-import 'fit_file_id_test.mocks.dart';
+import 'utils.dart';
 
-@GenerateMocks([ExportModel])
 void main() {
   test('FitFileId has the expected global message number', () async {
     final fileId = FitFileId(0, 0);
@@ -23,9 +20,10 @@ void main() {
       final globalMessageNumber = rnd.nextInt(MAX_UINT16);
       final text = deviceDescriptor.fullName;
       final fileId = FitFileId(globalMessageNumber, text.length);
-      final exportModel = MockExportModel()
-        ..dateActivity = DateTime.now()
-        ..descriptor = deviceDescriptor;
+      final exportModel = ExportModelForTests(
+          dateActivity: DateTime.now(),
+          descriptor: deviceDescriptor,
+      );
       final expected = fileId.fields.fold<int>(0, (accu, field) => accu + field.size);
 
       test('$text(${text.length}) -> $expected', () async {
