@@ -67,8 +67,8 @@ flutter:
     - family: RobotoMono
       fonts:
         - asset: fonts/RobotoMono-Bold.ttf
-    - family: BrandIcons
+    - family: brands
       fonts:
-        - asset: fonts/BrandIcons.ttf
+        - asset: fonts/brands.ttf
   assets:
     - assets/
