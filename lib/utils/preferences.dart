@@ -33,23 +33,25 @@ bool isIpAddress(String ipAddress) {
       isIpPart(ipParts[3], true);
 }
 
+final dummyAddressTuple = Tuple2<String, int>("", 0);
+
 Tuple2<String, int> parseIpAddress(String ipAddress) {
-  if (ipAddress.trim().isEmpty) return Tuple2<String, int>("", 0);
+  if (ipAddress.trim().isEmpty) return dummyAddressTuple;
 
   final addressParts = ipAddress.trim().split(":");
-  if (addressParts[0].isEmpty) return Tuple2<String, int>("", 0);
+  if (addressParts[0].isEmpty) return dummyAddressTuple;
 
   int portNumber = HTTPS_PORT;
   if (addressParts.length > 1 && addressParts[1].trim().isNotEmpty) {
     final portNumberString = addressParts[1].trim();
-    if (!isPortNumber(portNumberString)) return Tuple2<String, int>("", 0);
+    if (!isPortNumber(portNumberString)) return dummyAddressTuple;
 
     final parsedPort = int.tryParse(portNumberString);
     if (parsedPort != null && parsedPort > 0) {
       portNumber = parsedPort;
     }
   }
-  if (!isIpAddress(addressParts[0])) return Tuple2<String, int>("", 0);
+  if (!isIpAddress(addressParts[0])) return dummyAddressTuple;
 
   return Tuple2<String, int>(addressParts[0], portNumber);
 }
