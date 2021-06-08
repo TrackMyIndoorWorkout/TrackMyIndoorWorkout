@@ -1,13 +1,12 @@
-import 'package:charts_common/common.dart' as common;
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 
 import 'display_record.dart';
 import 'histogram_data.dart';
-import 'selection_data.dart';
+// import 'selection_data.dart';
 
-typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
+typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 typedef DataStringFn = String Function(DisplayRecord);
-typedef HistogramFn = List<charts.Series<HistogramData, double>> Function();
+typedef HistogramFn = List<charts.CircularSeries<HistogramData, int>> Function();
 
 class TileConfiguration {
   final String title;
@@ -18,7 +17,7 @@ class TileConfiguration {
   final List<double>? zoneBounds;
   late int count;
   late List<HistogramData> histogram;
-  final common.SelectionModelListener<DateTime> selectionListener;
+  // final common.SelectionModelListener<DateTime> selectionListener;
   final String maxString;
   final String avgString;
 
@@ -27,7 +26,7 @@ class TileConfiguration {
     required this.histogramTitle,
     required this.dataFn,
     required this.dataStringFn,
-    required this.selectionListener,
+    // required this.selectionListener,
     this.zoneBounds,
     required this.maxString,
     required this.avgString,
@@ -36,14 +35,14 @@ class TileConfiguration {
   }
   bool get hasMeasurement => count > 0;
 
-  SelectionData getSelectionData(charts.SelectionModel<DateTime> model) {
-    final selectedDatum = model.selectedDatum;
-
-    if (selectedDatum.isNotEmpty) {
-      final datum = selectedDatum.first.datum;
-      return SelectionData(time: datum.dt, value: dataStringFn(datum));
-    }
-
-    return SelectionData(time: null, value: "--");
-  }
+  // SelectionData getSelectionData(charts.SelectionModel<DateTime> model) {
+  //   final selectedDatum = model.selectedDatum;
+  //
+  //   if (selectedDatum.isNotEmpty) {
+  //     final datum = selectedDatum.first.datum;
+  //     return SelectionData(time: datum.dt, value: dataStringFn(datum));
+  //   }
+  //
+  //   return SelectionData(time: null, value: "--");
+  // }
 }

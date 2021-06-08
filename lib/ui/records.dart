@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,7 +19,7 @@ import '../utils/theme_manager.dart';
 import 'models/display_record.dart';
 import 'models/histogram_data.dart';
 import 'models/measurement_counter.dart';
-import 'models/selection_data.dart';
+// import 'models/selection_data.dart';
 import 'models/tile_configuration.dart';
 
 class RecordsScreen extends StatefulWidget {
@@ -66,7 +66,8 @@ class RecordsScreenState extends State<RecordsScreen> {
   late TextStyle _selectionTextStyle;
   late ThemeManager _themeManager;
   late bool _isLight;
-  late charts.TextStyleSpec _chartTextStyle;
+  late Color _chartTextColor;
+  late Color _chartBackground;
   late ExpandableThemeData _expandableThemeData;
 
   Future<void> extraInit() async {
@@ -117,7 +118,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getPowerData,
           dataStringFn: _getPowerString,
-          selectionListener: _powerSelectionListener,
+          // selectionListener: _powerSelectionListener,
           maxString: accu.maxPower.toStringAsFixed(2),
           avgString: accu.avgPower.toStringAsFixed(2),
         );
@@ -145,7 +146,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getSpeedData,
           dataStringFn: _getSpeedString,
-          selectionListener: _speedSelectionListener,
+          // selectionListener: _speedSelectionListener,
           maxString: speedOrPaceString(accu.maxSpeed, _si, activity.sport),
           avgString: speedOrPaceString(accu.avgSpeed, _si, activity.sport),
         );
@@ -173,7 +174,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getCadenceData,
           dataStringFn: _getCadenceString,
-          selectionListener: _cadenceSelectionListener,
+          // selectionListener: _cadenceSelectionListener,
           maxString: "${accu.maxCadence}",
           avgString: "${accu.avgCadence}",
         );
@@ -201,7 +202,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getHrData,
           dataStringFn: _getHrString,
-          selectionListener: _hrSelectionListener,
+          // selectionListener: _hrSelectionListener,
           maxString: "${accu.maxHeartRate}",
           avgString: "${accu.avgHeartRate}",
         );
@@ -300,27 +301,20 @@ class RecordsScreenState extends State<RecordsScreen> {
     activity.hydrate();
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
-    _chartTextStyle = charts.TextStyleSpec(
-      color: _isLight ? charts.MaterialPalette.black : charts.MaterialPalette.white,
-    );
+    _chartTextColor = _themeManager.getProtagonistColor();
+    _chartBackground = _themeManager.getAntagonistColor();
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
     extraInit();
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _getPowerData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'power',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(
-          record.power ?? 0,
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.power,
-        data: _sampledRecords,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _getPowerData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _sampledRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.power,
+        color:_chartTextColor,
       ),
     ];
   }
@@ -329,52 +323,42 @@ class RecordsScreenState extends State<RecordsScreen> {
     return record.power.toString();
   }
 
-  String _getSelectedTime(SelectionData selectionData, Activity activity) {
-    if (selectionData.time == null || activity.startDateTime == null) return "-";
+  // String _getSelectedTime(SelectionData selectionData, Activity activity) {
+  //   if (selectionData.time == null || activity.startDateTime == null) return "-";
+  //
+  //   return selectionData.time!.difference(activity.startDateTime!).toDisplay();
+  // }
 
-    return selectionData.time!.difference(activity.startDateTime!).toDisplay();
-  }
+  // void _powerSelectionListener(charts.SelectionModel<DateTime> model) {
+  //   final selectionData = _tileConfigurations["power"]!.getSelectionData(model);
+  //
+  //   setState(() {
+  //     _selectedTimes[0] = _getSelectedTime(selectionData, activity);
+  //     _selectedValues[0] = selectionData.value;
+  //   });
+  // }
 
-  void _powerSelectionListener(charts.SelectionModel<DateTime> model) {
-    final selectionData = _tileConfigurations["power"]!.getSelectionData(model);
-
-    setState(() {
-      _selectedTimes[0] = _getSelectedTime(selectionData, activity);
-      _selectedValues[0] = selectionData.value;
-    });
-  }
-
-  List<charts.Series<HistogramData, double>> _getPowerHistogram() {
-    return <charts.Series<HistogramData, double>>[
-      charts.Series<HistogramData, double>(
-        id: 'powerHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[0].pieBgColorByBin(
-          data.index,
-          _isLight,
-        ),
-        domainFn: (HistogramData data, _) => data.upper,
-        measureFn: (HistogramData data, _) => data.percent,
-        data: _tileConfigurations["power"]!.histogram,
-        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
-        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+  List<charts.CircularSeries<HistogramData, int>> _getPowerHistogram() {
+    return <charts.CircularSeries<HistogramData, int>>[
+      charts.DoughnutSeries<HistogramData, int>(
+        xValueMapper: (HistogramData data, int index) => index,
+        yValueMapper: (HistogramData data, _) => data.percent,
+        dataSource: _tileConfigurations["power"]!.histogram,
+        // dataLabelMapper: ?
+        // dataLabelSettings: ?
+        // palette: ?
+        // labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _getSpeedData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'speed',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[1].fgColorByValue(
-          record.speedByUnit(_si, activity.sport),
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, activity.sport),
-        data: _sampledRecords,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _getSpeedData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _sampledRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si, activity.sport),
+        color: _chartTextColor,
       ),
     ];
   }
@@ -383,46 +367,36 @@ class RecordsScreenState extends State<RecordsScreen> {
     return speedOrPaceString(record.speed ?? 0.0, _si, activity.sport);
   }
 
-  void _speedSelectionListener(charts.SelectionModel<DateTime> model) {
-    final selectionData = _tileConfigurations["speed"]!.getSelectionData(model);
+  // void _speedSelectionListener(charts.SelectionModel<DateTime> model) {
+  //   final selectionData = _tileConfigurations["speed"]!.getSelectionData(model);
+  //
+  //   setState(() {
+  //     _selectedTimes[1] = _getSelectedTime(selectionData, activity);
+  //     _selectedValues[1] = selectionData.value;
+  //   });
+  // }
 
-    setState(() {
-      _selectedTimes[1] = _getSelectedTime(selectionData, activity);
-      _selectedValues[1] = selectionData.value;
-    });
-  }
-
-  List<charts.Series<HistogramData, double>> _getSpeedHistogram() {
-    return <charts.Series<HistogramData, double>>[
-      charts.Series<HistogramData, double>(
-        id: 'speedHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[1].pieBgColorByBin(
-          data.index,
-          _isLight,
-        ),
-        domainFn: (HistogramData data, _) => data.upper,
-        measureFn: (HistogramData data, _) => data.percent,
-        data: _tileConfigurations["speed"]!.histogram,
-        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
-        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+  List<charts.CircularSeries<HistogramData, int>> _getSpeedHistogram() {
+    return <charts.CircularSeries<HistogramData, int>>[
+      charts.DoughnutSeries<HistogramData, int>(
+        dataSource: _tileConfigurations["speed"]!.histogram,
+        xValueMapper: (HistogramData data, int index) => index,
+        yValueMapper: (HistogramData data, _) => data.percent,
+        // dataLabelMapper: ?
+        // dataLabelSettings: ?
+        // palette: ?
+        // labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _getCadenceData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'cadence',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(
-          record.cadence ?? 0,
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.cadence,
-        data: _sampledRecords,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _getCadenceData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _sampledRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.cadence,
+        color: _chartTextColor,
       ),
     ];
   }
@@ -431,46 +405,36 @@ class RecordsScreenState extends State<RecordsScreen> {
     return record.cadence.toString();
   }
 
-  void _cadenceSelectionListener(charts.SelectionModel<DateTime> model) {
-    final selectionData = _tileConfigurations["cadence"]!.getSelectionData(model);
+  // void _cadenceSelectionListener(charts.SelectionModel<DateTime> model) {
+  //   final selectionData = _tileConfigurations["cadence"]!.getSelectionData(model);
+  //
+  //   setState(() {
+  //     _selectedTimes[2] = _getSelectedTime(selectionData, activity);
+  //     _selectedValues[2] = selectionData.value;
+  //   });
+  // }
 
-    setState(() {
-      _selectedTimes[2] = _getSelectedTime(selectionData, activity);
-      _selectedValues[2] = selectionData.value;
-    });
-  }
-
-  List<charts.Series<HistogramData, double>> _getCadenceHistogram() {
-    return <charts.Series<HistogramData, double>>[
-      charts.Series<HistogramData, double>(
-        id: 'cadenceHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[2].pieBgColorByBin(
-          data.index,
-          _isLight,
-        ),
-        domainFn: (HistogramData data, _) => data.upper,
-        measureFn: (HistogramData data, _) => data.percent,
-        data: _tileConfigurations["cadence"]!.histogram,
-        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
-        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+  List<charts.CircularSeries<HistogramData, int>> _getCadenceHistogram() {
+    return <charts.CircularSeries<HistogramData, int>>[
+      charts.DoughnutSeries<HistogramData, int>(
+        dataSource: _tileConfigurations["cadence"]!.histogram,
+        xValueMapper: (HistogramData data, int index) => index,
+        yValueMapper: (HistogramData data, _) => data.percent,
+        // dataLabelMapper: ?
+        // dataLabelSettings: ?
+        // palette: ?
+        // labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _getHrData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'hr',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[3].fgColorByValue(
-          record.heartRate ?? 0,
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.heartRate,
-        data: _sampledRecords,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _getHrData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _sampledRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.heartRate,
+        color: _chartTextColor,
       ),
     ];
   }
@@ -479,29 +443,25 @@ class RecordsScreenState extends State<RecordsScreen> {
     return record.heartRate.toString();
   }
 
-  void _hrSelectionListener(charts.SelectionModel<DateTime> model) {
-    final selectionData = _tileConfigurations["hr"]!.getSelectionData(model);
+  // void _hrSelectionListener(charts.SelectionModel<DateTime> model) {
+  //   final selectionData = _tileConfigurations["hr"]!.getSelectionData(model);
+  //
+  //   setState(() {
+  //     _selectedTimes[3] = _getSelectedTime(selectionData, activity);
+  //     _selectedValues[3] = selectionData.value;
+  //   });
+  // }
 
-    setState(() {
-      _selectedTimes[3] = _getSelectedTime(selectionData, activity);
-      _selectedValues[3] = selectionData.value;
-    });
-  }
-
-  List<charts.Series<HistogramData, double>> _getHrHistogram() {
-    return <charts.Series<HistogramData, double>>[
-      charts.Series<HistogramData, double>(
-        id: 'hrHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[3].pieBgColorByBin(
-          data.index,
-          _isLight,
-        ),
-        domainFn: (HistogramData data, _) => data.upper,
-        measureFn: (HistogramData data, _) => data.percent,
-        data: _tileConfigurations["hr"]!.histogram,
-        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
-        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+  List<charts.CircularSeries<HistogramData, int>> _getHrHistogram() {
+    return <charts.CircularSeries<HistogramData, int>>[
+      charts.DoughnutSeries<HistogramData, int>(
+        dataSource: _tileConfigurations["hr"]!.histogram,
+        xValueMapper: (HistogramData data, int index) => index,
+        yValueMapper: (HistogramData data, _) => data.percent,
+        // dataLabelMapper: ?
+        // dataLabelSettings: ?
+        // palette: ?
+        // labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
       ),
     ];
   }
@@ -688,32 +648,31 @@ class RecordsScreenState extends State<RecordsScreen> {
                       SizedBox(
                         width: size.width,
                         height: size.height / 2,
-                        child: charts.TimeSeriesChart(
-                          _tileConfigurations[item]!.dataFn(),
-                          animate: false,
-                          flipVerticalAxis: activity.flipForPace(item),
-                          primaryMeasureAxis: charts.NumericAxisSpec(
-                            renderSpec: charts.NoneRenderSpec(),
-                          ),
-                          behaviors: [
-                            charts.LinePointHighlighter(
-                              showHorizontalFollowLine:
-                                  charts.LinePointHighlighterFollowLineType.nearest,
-                              showVerticalFollowLine:
-                                  charts.LinePointHighlighterFollowLineType.nearest,
-                            ),
-                            charts.SelectNearest(eventTrigger: charts.SelectionTrigger.tapAndDrag),
-                            charts.RangeAnnotation(
-                              _preferencesSpecs[index].annotationSegments,
-                              defaultLabelStyleSpec: _chartTextStyle,
-                            ),
-                          ],
-                          selectionModels: [
-                            charts.SelectionModelConfig(
-                              type: charts.SelectionModelType.info,
-                              changedListener: _tileConfigurations[item]!.selectionListener,
-                            ),
-                          ],
+                        child: charts.SfCartesianChart(
+                          primaryXAxis: charts.DateTimeAxis(),
+                          margin: EdgeInsets.all(0),
+                          series: _tileConfigurations[item]!.dataFn(),
+
+                          // behaviors: [
+                          //   charts.LinePointHighlighter(
+                          //     showHorizontalFollowLine:
+                          //         charts.LinePointHighlighterFollowLineType.nearest,
+                          //     showVerticalFollowLine:
+                          //         charts.LinePointHighlighterFollowLineType.nearest,
+                          //   ),
+                          //   charts.SelectNearest(eventTrigger: charts.SelectionTrigger.tapAndDrag),
+                          //   charts.RangeAnnotation(
+                          //     _preferencesSpecs[index].annotationSegments,
+                          //     // defaultLabelStyleSpec: _chartTextStyle,
+                          //   ),
+                          // ],
+
+                          // selectionModels: [
+                          //   charts.SelectionModelConfig(
+                          //     type: charts.SelectionModelType.info,
+                          //     changedListener: _tileConfigurations[item]!.selectionListener,
+                          //   ),
+                          // ],
                         ),
                       ),
                       Row(
@@ -735,26 +694,29 @@ class RecordsScreenState extends State<RecordsScreen> {
                       SizedBox(
                         width: size.width,
                         height: size.height / 3,
-                        child: charts.PieChart(
-                          _tileConfigurations[item]!.histogramFn(),
-                          animate: false,
-                          defaultRenderer: charts.ArcRendererConfig(
-                            arcWidth: 60,
-                            arcRendererDecorators: [charts.ArcLabelDecorator()],
-                          ),
-                          behaviors: [
-                            charts.DatumLegend(
-                              position: charts.BehaviorPosition.start,
-                              horizontalFirst: false,
-                              cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
-                              showMeasures: true,
-                              legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-                              entryTextStyle: _chartTextStyle,
-                              measureFormatter: (num value) {
-                                return '$value %';
-                              },
-                            ),
-                          ],
+                        child: charts.SfCircularChart(
+                          margin: EdgeInsets.all(0),
+                          series: _tileConfigurations[item]!.histogramFn(),
+
+                          // palette: [],
+                          // defaultRenderer: charts.ArcRendererConfig(
+                          //   arcWidth: 60,
+                          //   arcRendererDecorators: [charts.ArcLabelDecorator()],
+                          // ),
+
+                          // behaviors: [
+                          //   charts.DatumLegend(
+                          //     position: charts.BehaviorPosition.start,
+                          //     horizontalFirst: false,
+                          //     cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
+                          //     showMeasures: true,
+                          //     legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
+                          //     // entryTextStyle: _chartTextStyle,
+                          //     measureFormatter: (num value) {
+                          //       return '$value %';
+                          //     },
+                          //   ),
+                          // ],
                         ),
                       ),
                     ]),

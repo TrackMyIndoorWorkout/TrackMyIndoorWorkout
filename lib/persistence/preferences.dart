@@ -1,126 +1,119 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:charts_common/common.dart' as common;
-import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart' as painting;
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 
-Color getTranslucent(Color c) {
-  return Color(r: c.r, g: c.g, b: c.b, a: 120, darker: c.darker, lighter: c.lighter);
-}
-
 final sevenLightBgPalette = [
-  getTranslucent(MaterialPalette.blue.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.teal.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.cyan.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.lime.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.yellow.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.red.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.pink.shadeDefault.lighter),
+  Colors.lightBlueAccent.shade100.withAlpha(120),
+  Colors.cyanAccent.shade100.withAlpha(120),
+  Colors.tealAccent.shade100.withAlpha(120),
+  Colors.limeAccent.shade100.withAlpha(120),
+  Colors.yellowAccent.shade100.withAlpha(120),
+  Colors.redAccent.shade50.withAlpha(120),
+  Colors.pinkAccent.shade100.withAlpha(120),
 ];
 
 final sevenDarkBgPalette = [
-  getTranslucent(MaterialPalette.indigo.shadeDefault.darker),
-  getTranslucent(MaterialPalette.teal.shadeDefault.darker),
-  getTranslucent(MaterialPalette.cyan.shadeDefault.darker),
-  getTranslucent(MaterialPalette.green.shadeDefault.darker),
-  getTranslucent(MaterialPalette.deepOrange.shadeDefault.darker),
-  getTranslucent(MaterialPalette.red.shadeDefault.darker),
-  getTranslucent(MaterialPalette.purple.shadeDefault.darker),
+  Colors.indigo.shade900.withAlpha(120),
+  Colors.cyan.shade900.withAlpha(120),
+  Colors.teal.shade900.withAlpha(120),
+  Colors.green.shade900.withAlpha(120),
+  Colors.yellow.shade900.withAlpha(120),
+  Colors.red.shade900.withAlpha(120),
+  Colors.purple.shade900.withAlpha(120),
 ];
 
 final sevenLightFgPalette = [
-  MaterialPalette.indigo.shadeDefault.darker,
-  MaterialPalette.teal.shadeDefault.darker,
-  MaterialPalette.cyan.shadeDefault.darker,
-  MaterialPalette.green.shadeDefault.darker,
-  MaterialPalette.deepOrange.shadeDefault.darker,
-  MaterialPalette.red.shadeDefault.darker,
-  MaterialPalette.purple.shadeDefault.darker,
+  Colors.indigo,
+  Colors.cyan,
+  Colors.teal,
+  Colors.green,
+  Colors.orange,
+  Colors.red,
+  Colors.purple,
 ];
 
 final sevenDarkFgPalette = [
-  MaterialPalette.blue.shadeDefault.lighter,
-  MaterialPalette.teal.shadeDefault.lighter,
-  MaterialPalette.cyan.shadeDefault.lighter,
-  MaterialPalette.lime.shadeDefault.lighter,
-  MaterialPalette.yellow.shadeDefault.lighter,
-  MaterialPalette.red.shadeDefault.lighter,
-  MaterialPalette.pink.shadeDefault.lighter,
+  Colors.blueAccent,
+  Colors.cyanAccent,
+  Colors.tealAccent,
+  Colors.lightGreenAccent,
+  Colors.yellowAccent,
+  Colors.redAccent,
+  Colors.pinkAccent,
 ];
 
 final fiveLightBgPalette = [
-  getTranslucent(MaterialPalette.blue.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.cyan.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.lime.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.yellow.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.red.shadeDefault.lighter),
+  Colors.lightBlueAccent.shade100.withAlpha(120),
+  Colors.cyanAccent.shade100.withAlpha(120),
+  Colors.lightGreenAccent.shade100.withAlpha(120),
+  Colors.yellowAccent.shade100.withAlpha(120),
+  Colors.redAccent.shade50.withAlpha(120),
 ];
 
 final fiveDarkBgPalette = [
-  getTranslucent(MaterialPalette.indigo.shadeDefault.darker),
-  getTranslucent(MaterialPalette.teal.shadeDefault.darker),
-  getTranslucent(MaterialPalette.green.shadeDefault.darker),
-  getTranslucent(MaterialPalette.deepOrange.shadeDefault.darker),
-  getTranslucent(MaterialPalette.red.shadeDefault.darker),
+  Colors.indigo.shade900.withAlpha(120),
+  Colors.cyan.shade900.withAlpha(120),
+  Colors.green.shade900.withAlpha(120),
+  Colors.yellow.shade900.withAlpha(120),
+  Colors.red.shade900.withAlpha(120),
 ];
 
 final fiveLightFgPalette = [
-  MaterialPalette.indigo.shadeDefault.darker,
-  MaterialPalette.teal.shadeDefault.darker,
-  MaterialPalette.green.shadeDefault.darker,
-  MaterialPalette.deepOrange.shadeDefault.darker,
-  MaterialPalette.red.shadeDefault.darker,
+  Colors.indigo,
+  Colors.cyan,
+  Colors.green,
+  Colors.orange,
+  Colors.red,
 ];
 
 final fiveDarkFgPalette = [
-  MaterialPalette.blue.shadeDefault.lighter,
-  MaterialPalette.cyan.shadeDefault.lighter,
-  MaterialPalette.lime.shadeDefault.lighter,
-  MaterialPalette.yellow.shadeDefault.lighter,
-  MaterialPalette.red.shadeDefault.lighter,
+  Colors.blueAccent,
+  Colors.cyanAccent,
+  Colors.lightGreenAccent,
+  Colors.yellowAccent,
+  Colors.redAccent,
 ];
 
 final sevenLightPiePalette = [
-  MaterialPalette.blue.shadeDefault,
-  MaterialPalette.teal.shadeDefault,
-  MaterialPalette.cyan.shadeDefault,
-  MaterialPalette.lime.shadeDefault,
-  MaterialPalette.yellow.shadeDefault,
-  MaterialPalette.red.shadeDefault,
-  MaterialPalette.pink.shadeDefault,
+  Colors.blue,
+  Colors.teal,
+  Colors.cyan,
+  Colors.lime,
+  Colors.yellow,
+  Colors.red,
+  Colors.pink,
 ];
 
 final fiveLightPiePalette = [
-  MaterialPalette.blue.shadeDefault,
-  MaterialPalette.cyan.shadeDefault,
-  MaterialPalette.lime.shadeDefault,
-  MaterialPalette.yellow.shadeDefault,
-  MaterialPalette.red.shadeDefault,
+  Colors.blue,
+  Colors.cyan,
+  Colors.lime,
+  Colors.yellow,
+  Colors.red,
 ];
 
 final sevenDarkPiePalette = [
-  MaterialPalette.indigo.shadeDefault,
-  MaterialPalette.teal.shadeDefault,
-  MaterialPalette.cyan.shadeDefault,
-  MaterialPalette.green.shadeDefault,
-  MaterialPalette.deepOrange.shadeDefault,
-  MaterialPalette.red.shadeDefault,
-  MaterialPalette.purple.shadeDefault,
+  Colors.indigo,
+  Colors.teal,
+  Colors.cyan,
+  Colors.green,
+  Colors.deepOrange,
+  Colors.red,
+  Colors.purple,
 ];
 
 final fiveDarkPiePalette = [
-  MaterialPalette.indigo.shadeDefault,
-  MaterialPalette.teal.shadeDefault,
-  MaterialPalette.green.shadeDefault,
-  MaterialPalette.deepOrange.shadeDefault,
-  MaterialPalette.red.shadeDefault,
+  Colors.indigo,
+  Colors.teal,
+  Colors.green,
+  Colors.deepOrange,
+  Colors.red,
 ];
 
 // https://stackoverflow.com/questions/57481767/dart-rounding-errors
@@ -265,9 +258,8 @@ class PreferencesSpec {
   late List<double> zoneUpper;
   late bool si;
   late String sport;
-  late bool flipZones;
 
-  late List<common.AnnotationSegment> annotationSegments;
+  // late List<common.AnnotationSegment> annotationSegments;
 
   PreferencesSpec({
     required this.metric,
@@ -280,9 +272,8 @@ class PreferencesSpec {
     required this.indexDisplayDefault,
     required this.icon,
   }) {
-    flipZones = false;
     updateMultiLineUnit();
-    annotationSegments = [];
+    // annotationSegments = [];
     indexDisplay = indexDisplayDefault;
   }
 
@@ -336,7 +327,6 @@ class PreferencesSpec {
     this.si = si;
     this.sport = sport;
     final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    flipZones = sport != ActivityType.Ride && metric == "speed";
     final thresholdString = prefService.getString(thresholdTag(sport))!;
     threshold = double.tryParse(thresholdString) ?? EPS;
     if (metric == "speed") {
@@ -347,9 +337,9 @@ class PreferencesSpec {
     zonePercents = zonesSpecStr.split(',').map((zs) => int.tryParse(zs) ?? 0).toList(growable: false);
     zoneBounds =
         zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList(growable: false);
-    if (flipZones) {
-      zoneBounds = zoneBounds.reversed.toList(growable: false);
-    }
+    // if (flipZones) {
+    //   zoneBounds = zoneBounds.reversed.toList(growable: false);
+    // }
     indexDisplay = prefService.getBool(zoneIndexTag) ?? indexDisplayDefault;
   }
 
@@ -357,59 +347,59 @@ class PreferencesSpec {
     zoneLower = [...zoneBounds];
     zoneUpper = [...zoneBounds];
 
-    final zoneMin = flipZones ? zoneUpper.last : zoneLower[0];
+    final zoneMin = /*flipZones ? zoneUpper.last :*/ zoneLower[0];
     if (minVal < 0 || minVal > 0 && minVal > zoneMin) {
       minVal = zoneMin * 0.7;
     }
 
-    final zoneMax = flipZones ? zoneLower[0] : zoneUpper.last;
+    final zoneMax = /*flipZones ? zoneLower[0] :*/ zoneUpper.last;
     if (maxVal < 0 || maxVal > 0 && maxVal < zoneMax) {
       maxVal = zoneMax * 1.2;
     }
 
-    if (flipZones) {
-      zoneLower.insert(0, decimalRound(maxVal));
-      zoneUpper.add(decimalRound(minVal));
-    } else {
+    // if (flipZones) {
+    //   zoneLower.insert(0, decimalRound(maxVal));
+    //   zoneUpper.add(decimalRound(minVal));
+    // } else {
       zoneLower.insert(0, decimalRound(minVal));
       zoneUpper.add(decimalRound(maxVal));
-    }
+    // }
 
-    final textColor = isLight ? MaterialPalette.black : MaterialPalette.white;
-    final chartTextStyle = TextStyleSpec(color: textColor);
-    List<common.AnnotationSegment> segments = [];
-    segments.addAll(List.generate(
-      binCount,
-      (i) => RangeAnnotationSegment(
-        zoneLower[i],
-        zoneUpper[i],
-        RangeAnnotationAxisType.measure,
-        color: bgColorByBin(i, isLight),
-        startLabel: zoneLower[i].toString(),
-        labelAnchor: AnnotationLabelAnchor.start,
-        labelStyleSpec: chartTextStyle,
-      ),
-    ));
-    segments.addAll(List.generate(
-      binCount,
-      (i) => LineAnnotationSegment(
-        zoneUpper[i],
-        RangeAnnotationAxisType.measure,
-        startLabel: zoneUpper[i].toString(),
-        labelAnchor: AnnotationLabelAnchor.end,
-        strokeWidthPx: 1.0,
-        color: textColor,
-        labelStyleSpec: chartTextStyle,
-      ),
-    ));
-    annotationSegments = segments.toList(growable: false);
+    // final textColor = isLight ? MaterialPalette.black : MaterialPalette.white;
+    // final chartTextStyle = TextStyleSpec(color: textColor);
+    // List<common.AnnotationSegment> segments = [];
+    // segments.addAll(List.generate(
+    //   binCount,
+    //   (i) => RangeAnnotationSegment(
+    //     zoneLower[i],
+    //     zoneUpper[i],
+    //     RangeAnnotationAxisType.measure,
+    //     color: bgColorByBin(i, isLight),
+    //     startLabel: zoneLower[i].toString(),
+    //     labelAnchor: AnnotationLabelAnchor.start,
+    //     labelStyleSpec: chartTextStyle,
+    //   ),
+    // ));
+    // segments.addAll(List.generate(
+    //   binCount,
+    //   (i) => LineAnnotationSegment(
+    //     zoneUpper[i],
+    //     RangeAnnotationAxisType.measure,
+    //     startLabel: zoneUpper[i].toString(),
+    //     labelAnchor: AnnotationLabelAnchor.end,
+    //     strokeWidthPx: 1.0,
+    //     color: textColor,
+    //     labelStyleSpec: chartTextStyle,
+    //   ),
+    // ));
+    // annotationSegments = segments.toList(growable: false);
   }
 
   int get binCount => zonePercents.length + 1;
 
   int transformedBinIndex(int bin) {
     bin = min(max(0, bin), zonePercents.length - 1);
-    return flipZones ? zonePercents.length - 1 - bin : bin;
+    return /* flipZones ? zonePercents.length - 1 - bin :*/ bin;
   }
 
   int binIndex(num value) {
@@ -828,10 +818,6 @@ Future<bool> getSimplerUiDefault() async {
     }
   }
   return simplerUiDefault;
-}
-
-painting.Color paletteToPaintColor(common.Color paletteColor) {
-  return painting.Color.fromARGB(paletteColor.a, paletteColor.r, paletteColor.g, paletteColor.b);
 }
 
 const KM2MI = 0.621371;

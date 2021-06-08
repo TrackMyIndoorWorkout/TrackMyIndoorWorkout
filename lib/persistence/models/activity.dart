@@ -1,6 +1,5 @@
 import 'package:floor/floor.dart';
 import '../../persistence/preferences.dart';
-import '../../utils/constants.dart';
 import '../../utils/display.dart' as disp;
 import 'workout_summary.dart';
 
@@ -57,10 +56,6 @@ class Activity {
     required this.powerFactor,
     required this.calorieFactor,
   });
-
-  bool flipForPace(String item) {
-    return item == "speed" && sport != ActivityType.Ride;
-  }
 
   void finish(double? distance, int? elapsed, int? calories) {
     this.end = DateTime.now().millisecondsSinceEpoch;

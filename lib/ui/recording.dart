@@ -4,8 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:charts_common/common.dart' as common;
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +41,7 @@ import 'parts/heart_rate_monitor_pairing.dart';
 import 'parts/spin_down.dart';
 import 'activities.dart';
 
-typedef DataFn = List<charts.Series<DisplayRecord, DateTime>> Function();
+typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 
 enum TargetHrState {
   Off,
@@ -103,7 +102,8 @@ class RecordingState extends State<RecordingScreen> {
   late double _sizeDefault;
   late TextStyle _measurementStyle;
   late TextStyle _unitStyle;
-  late charts.TextStyleSpec _chartTextStyle;
+  late Color _chartTextColor;
+  late Color _chartBackground;
   late TextStyle _markerStyle;
   late ExpandableThemeData _expandableThemeData;
   late List<bool> _expandedState;
@@ -446,9 +446,8 @@ class RecordingState extends State<RecordingScreen> {
       "hr": _hRChartData,
     };
 
-    _chartTextStyle = charts.TextStyleSpec(
-      color: _isLight ? charts.MaterialPalette.black : charts.MaterialPalette.white,
-    );
+    _chartTextColor = _themeManager.getProtagonistColor();
+    _chartBackground = _themeManager.getAntagonistColor();
     _expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
       iconColor: _themeManager.getProtagonistColor(),
@@ -540,24 +539,12 @@ class RecordingState extends State<RecordingScreen> {
     _rankInfoOnTrack = prefService.getBool(RANK_INFO_ON_TRACK_TAG) ?? RANK_INFO_ON_TRACK_DEFAULT;
 
     final isLight = !_themeManager.isDark();
-    _darkRed = paletteToPaintColor(isLight
-        ? common.MaterialPalette.red.shadeDefault.darker
-        : common.MaterialPalette.red.shadeDefault.lighter);
-    _darkGreen = paletteToPaintColor(isLight
-        ? common.MaterialPalette.green.shadeDefault.darker
-        : common.MaterialPalette.lime.shadeDefault.lighter);
-    _darkBlue = paletteToPaintColor(isLight
-        ? common.MaterialPalette.indigo.shadeDefault.darker
-        : common.MaterialPalette.blue.shadeDefault.lighter);
-    _lightRed = paletteToPaintColor(isLight
-        ? common.MaterialPalette.red.shadeDefault.lighter
-        : common.MaterialPalette.red.shadeDefault.darker);
-    _lightGreen = paletteToPaintColor(isLight
-        ? common.MaterialPalette.lime.shadeDefault.lighter
-        : common.MaterialPalette.green.shadeDefault.darker);
-    _lightBlue = paletteToPaintColor(isLight
-        ? common.MaterialPalette.blue.shadeDefault.lighter
-        : common.MaterialPalette.indigo.shadeDefault.darker);
+    _darkRed = isLight ? Colors.red.shade900 : Colors.redAccent.shade100;
+    _darkGreen = isLight ? Colors.green.shade900 : Colors.lightGreenAccent.shade100;
+    _darkBlue = isLight ? Colors.indigo.shade900 : Colors.lightBlueAccent.shade100;
+    _lightRed = isLight ? Colors.redAccent.shade100 : Colors.red.shade900;
+    _lightGreen = isLight ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
+    _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
 
     _zoneIndexColoring =
         prefService.getBool(ZONE_INDEX_DISPLAY_COLORING_TAG) ?? ZONE_INDEX_DISPLAY_COLORING_DEFAULT;
@@ -726,70 +713,54 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _powerChartData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'power',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(
-          record.power ?? 0,
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.power,
-        data: graphData,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _powerChartData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: graphData,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.power,
+        color: _chartTextColor,
+        // insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        // outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _speedChartData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'speed',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[1].fgColorByValue(
-          record.speedByUnit(_si, descriptor.defaultSport),
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, descriptor.defaultSport),
-        data: graphData,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _speedChartData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: graphData,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si, descriptor.defaultSport),
+        color: _chartTextColor,
+        // insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        // outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _cadenceChartData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'cadence',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(
-          record.cadence ?? 0,
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.cadence,
-        data: graphData,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _cadenceChartData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: graphData,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.cadence,
+        color: _chartTextColor,
+        // insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        // outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _hRChartData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'hr',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[3].fgColorByValue(
-          record.heartRate ?? 0,
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.heartRate,
-        data: graphData,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _hRChartData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: graphData,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.heartRate,
+        color: _chartTextColor,
+        // insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+        // outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -829,9 +800,9 @@ class RecordingState extends State<RecordingScreen> {
       return background ? Colors.transparent : _themeManager.getProtagonistColor();
     }
 
-    return paletteToPaintColor(background
+    return background
         ? _preferencesSpecs[metricIndex].bgColorByBin(_zoneIndexes[metricIndex]!, _isLight)
-        : _preferencesSpecs[metricIndex].fgColorByBin(_zoneIndexes[metricIndex]!, _isLight));
+        : _preferencesSpecs[metricIndex].fgColorByBin(_zoneIndexes[metricIndex]!, _isLight);
   }
 
   int? _getRank(List<WorkoutSummary> leaderboard) {
@@ -1194,17 +1165,16 @@ class RecordingState extends State<RecordingScreen> {
           child: SizedBox(
             width: size.width,
             height: height,
-            child: charts.TimeSeriesChart(
-              _metricToDataFn[entry.value.metric]!(),
-              animate: false,
-              flipVerticalAxis: entry.value.flipZones,
-              primaryMeasureAxis: charts.NumericAxisSpec(renderSpec: charts.NoneRenderSpec()),
-              behaviors: [
-                charts.RangeAnnotation(
-                  entry.value.annotationSegments,
-                  defaultLabelStyleSpec: _chartTextStyle,
-                ),
-              ],
+            child: charts.SfCartesianChart(
+              primaryXAxis: charts.DateTimeAxis(/*labelStyle: null, isInversed, edgeLabelPlacement*/),
+              margin: EdgeInsets.all(0),
+              series: _metricToDataFn[entry.value.metric]!(),
+              // behaviors: [
+              //   charts.RangeAnnotation(
+              //     entry.value.annotationSegments,
+              //     defaultLabelStyleSpec: _chartTextStyle,
+              //   ),
+              // ],
             ),
           ),
         );
