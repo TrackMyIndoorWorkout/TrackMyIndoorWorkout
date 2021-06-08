@@ -47,41 +47,18 @@ class StatisticsAccumulator {
     this.calculateAvgHeartRate = false,
     this.calculateMaxHeartRate = false,
   }) {
-    if (calculateAvgPower) {
-      powerSum = 0;
-      powerCount = 0;
-    }
-
-    if (calculateMaxPower) {
-      maxPower = MAX_INIT.toDouble();
-    }
-
-    if (calculateAvgSpeed) {
-      speedSum = 0;
-      speedCount = 0;
-    }
-
-    if (calculateMaxSpeed) {
-      maxSpeed = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
-    }
-
-    if (calculateAvgHeartRate) {
-      heartRateSum = 0;
-      heartRateCount = 0;
-    }
-
-    if (calculateMaxHeartRate) {
-      maxHeartRate = MAX_INIT;
-    }
-
-    if (calculateAvgCadence) {
-      cadenceSum = 0;
-      cadenceCount = 0;
-    }
-
-    if (calculateMaxCadence) {
-      maxCadence = MAX_INIT;
-    }
+    powerSum = 0;
+    powerCount = 0;
+    maxPower = MAX_INIT.toDouble();
+    speedSum = 0;
+    speedCount = 0;
+    maxSpeed = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
+    heartRateSum = 0;
+    heartRateCount = 0;
+    maxHeartRate = MAX_INIT;
+    cadenceSum = 0;
+    cadenceCount = 0;
+    maxCadence = MAX_INIT;
   }
 
   processExportRecord(ExportRecord exportRecord) {
