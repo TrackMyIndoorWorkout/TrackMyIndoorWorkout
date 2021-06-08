@@ -11,7 +11,7 @@ import 'utils/init_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await initPreferences();
+  final prefService = await initPreferences();
 
   final companyRegistry = CompanyRegistry();
   await companyRegistry.loadCompanyIdentifiers();
@@ -24,6 +24,7 @@ void main() async {
   final permissionState = await Permission.locationWhenInUse.request();
 
   runApp(TrackMyIndoorExerciseApp(
+    prefService: prefService,
     blueOn: blueOn,
     bluetoothStateString: bluetoothStateString,
     permissionState: permissionState,
