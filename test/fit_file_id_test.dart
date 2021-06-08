@@ -21,8 +21,8 @@ void main() {
       final text = deviceDescriptor.fullName;
       final fileId = FitFileId(globalMessageNumber, text.length);
       final exportModel = ExportModelForTests(
-          dateActivity: DateTime.now(),
-          descriptor: deviceDescriptor,
+        dateActivity: DateTime.now(),
+        descriptor: deviceDescriptor,
       );
       final expected = fileId.fields.fold<int>(0, (accu, field) => accu + field.size);
 
