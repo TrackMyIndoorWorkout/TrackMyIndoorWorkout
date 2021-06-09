@@ -67,101 +67,88 @@ class RecordingScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return RecordingState(
-      device: device,
-      descriptor: descriptor,
-      initialState: initialState,
-      size: size,
-      sport: sport,
-    );
-  }
+  State<StatefulWidget> createState() => RecordingState();
 }
 
 class RecordingState extends State<RecordingScreen> {
-  RecordingState({
-    required this.device,
-    required this.descriptor,
-    required this.initialState,
-    required this.size,
-    required this.sport,
-  });
+  RecordingState() {
+    size = widget.size;
+  }
 
-  Size size;
-  final BluetoothDevice device;
-  final DeviceDescriptor descriptor;
-  final BluetoothDeviceState initialState;
-  final String sport;
-  late FitnessEquipment _fitnessEquipment;
+  late Size size;
+  FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
-  late TrackCalculator _trackCalculator;
-  late bool _measuring;
-  late int _pointCount;
-  late ListQueue<DisplayRecord> _graphData;
+  TrackCalculator? _trackCalculator;
+  bool _measuring = false;
+  int _pointCount = 0;
+  ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
   double? _mediaWidth;
-  late double _sizeDefault;
-  late TextStyle _measurementStyle;
-  late TextStyle _unitStyle;
-  late Color _chartTextColor;
-  late Color _chartBackground;
-  late TextStyle _markerStyle;
-  late ExpandableThemeData _expandableThemeData;
-  late List<bool> _expandedState;
-  late List<ExpandableController> _rowControllers;
-  late List<int> _expandedHeights;
-  late List<PreferencesSpec> _preferencesSpecs;
+  double _sizeDefault = 10.0;
+  TextStyle _measurementStyle = TextStyle();
+  TextStyle _unitStyle = TextStyle();
+  Color _chartTextColor = Colors.black;
+  Color _chartBackground = Colors.white;
+  TextStyle _markerStyle = TextStyle();
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(
+    hasIcon: !SIMPLER_UI_SLOW_DEFAULT,
+    iconColor: Colors.black,
+  );
+  List<bool> _expandedState = [];
+  List<ExpandableController> _rowControllers = [];
+  List<int> _expandedHeights = [];
+  List<PreferencesSpec> _preferencesSpecs = [];
 
   Activity? _activity;
-  late AppDatabase _database;
-  late bool _si;
-  late bool _simplerUi;
-  late bool _instantUpload;
-  late bool _uxDebug;
+  AppDatabase _database = Get.find<AppDatabase>();
+  bool _si = UNIT_SYSTEM_DEFAULT;
+  bool _simplerUi = SIMPLER_UI_SLOW_DEFAULT;
+  bool _instantUpload = INSTANT_UPLOAD_DEFAULT;
+  bool _uxDebug = APP_DEBUG_MODE_DEFAULT;
 
   Timer? _dataGapWatchdog;
   int _dataGapWatchdogTime = DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT;
-  late String _dataGapSoundEffect;
+  String _dataGapSoundEffect = DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
   Timer? _dataGapBeeperTimer;
 
   List<DisplayRecord> get graphData => _graphData.toList();
   Map<String, DataFn> _metricToDataFn = {};
-  late List<RowConfiguration> _rowConfig;
-  late List<String> _values;
-  late List<int?> _zoneIndexes;
-  late double _distance;
-  late int _elapsed;
+  List<RowConfiguration> _rowConfig = [];
+  List<String> _values = [];
+  List<int?> _zoneIndexes = [];
+  double _distance = 0.0;
+  int _elapsed = 0;
 
-  late String _targetHrMode;
-  late Tuple2<double, double> _targetHrBounds;
+  String _targetHrMode = TARGET_HEART_RATE_MODE_DEFAULT;
+  Tuple2<double, double> _targetHrBounds = Tuple2(0, 0);
   int? _heartRate;
   Timer? _hrBeepPeriodTimer;
   int _hrBeepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT;
-  late bool _targetHrAudio;
-  late bool _targetHrAlerting;
-  late bool _leaderboardFeature;
-  late bool _rankingForDevice;
-  late List<WorkoutSummary> _deviceLeaderboard;
+  bool _targetHrAudio = TARGET_HEART_RATE_AUDIO_DEFAULT;
+  bool _targetHrAlerting = false;
+  bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
+  bool _rankingForDevice = RANKING_FOR_DEVICE_DEFAULT;
+  List<WorkoutSummary> _deviceLeaderboard = [];
   int? _deviceRank;
-  late String _deviceRankString;
-  late bool _rankingForSport;
-  late List<WorkoutSummary> _sportLeaderboard;
+  String _deviceRankString = "";
+  bool _rankingForSport = RANKING_FOR_SPORT_DEFAULT;
+  List<WorkoutSummary> _sportLeaderboard = [];
   int? _sportRank;
-  late String _sportRankString;
-  late bool _rankRibbonVisualization;
-  late bool _rankTrackVisualization;
-  late bool _rankInfoOnTrack;
-  late Color _darkRed;
-  late Color _darkGreen;
-  late Color _darkBlue;
-  late Color _lightRed;
-  late Color _lightGreen;
-  late Color _lightBlue;
-  late ThemeManager _themeManager;
-  late bool _isLight;
-  late bool _zoneIndexColoring;
+  String _sportRankString = "";
+  bool _rankRibbonVisualization = RANK_RIBBON_VISUALIZATION_DEFAULT;
+  bool _rankTrackVisualization = RANK_TRACK_VISUALIZATION_DEFAULT;
+  bool _rankInfoOnTrack = RANK_INFO_ON_TRACK_DEFAULT;
+  Color _darkRed = Colors.red;
+  Color _darkGreen = Colors.green;
+  Color _darkBlue = Colors.blue;
+  Color _lightRed = Colors.redAccent;
+  Color _lightGreen = Colors.lightGreenAccent;
+  Color _lightBlue = Colors.lightBlueAccent;
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  bool _isLight = true;
+  bool _zoneIndexColoring = false;
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
-    bool success = await _fitnessEquipment.connectOnDemand(deviceState);
+    bool success = await _fitnessEquipment?.connectOnDemand(deviceState) ?? false;
     if (success) {
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(INSTANT_MEASUREMENT_START_TAG) ??
@@ -170,7 +157,7 @@ class RecordingState extends State<RecordingScreen> {
       }
     } else {
       Get.defaultDialog(
-        middleText: 'Problem co-operating with ${descriptor.fullName}. Aborting...',
+        middleText: 'Problem co-operating with ${widget.descriptor.fullName}. Aborting...',
         confirm: TextButton(
           child: Text("Ok"),
           onPressed: () => Get.close(1),
@@ -191,15 +178,15 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> _startMeasurement() async {
     final now = DateTime.now();
-    final powerFactor = await _database.powerFactor(device.id.id);
-    final calorieFactor = await _database.calorieFactor(device.id.id, descriptor);
+    final powerFactor = await _database.powerFactor(widget.device.id.id);
+    final calorieFactor = await _database.calorieFactor(widget.device.id.id, widget.descriptor);
     _activity = Activity(
-      fourCC: descriptor.fourCC,
-      deviceName: device.name,
-      deviceId: device.id.id,
+      fourCC: widget.descriptor.fourCC,
+      deviceName: widget.device.name,
+      deviceId: widget.device.id.id,
       start: now.millisecondsSinceEpoch,
       startDateTime: now,
-      sport: descriptor.defaultSport,
+      sport: widget.descriptor.defaultSport,
       powerFactor: powerFactor,
       calorieFactor: calorieFactor,
     );
@@ -212,28 +199,28 @@ class RecordingState extends State<RecordingScreen> {
       _deviceRank = null;
       _deviceRankString = "";
       _deviceLeaderboard =
-          await _database.workoutSummaryDao.findAllWorkoutSummariesByDevice(device.id.id);
+          await _database.workoutSummaryDao.findAllWorkoutSummariesByDevice(widget.device.id.id);
     }
     if (_rankingForSport) {
       _sportRank = null;
       _sportRankString = "";
-      _sportLeaderboard =
-          await _database.workoutSummaryDao.findAllWorkoutSummariesBySport(descriptor.defaultSport);
+      _sportLeaderboard = await _database.workoutSummaryDao
+          .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport);
     }
 
-    _fitnessEquipment.setActivity(_activity!);
+    _fitnessEquipment?.setActivity(_activity!);
 
-    await _fitnessEquipment.attach();
+    await _fitnessEquipment?.attach();
     setState(() {
       _elapsed = 0;
       _distance = 0.0;
       _measuring = true;
       _zoneIndexes = [null, null, null, null];
     });
-    _fitnessEquipment.measuring = true;
-    _fitnessEquipment.startWorkout();
+    _fitnessEquipment?.measuring = true;
+    _fitnessEquipment?.startWorkout();
 
-    _fitnessEquipment.pumpData((record) async {
+    _fitnessEquipment?.pumpData((record) async {
       _dataGapWatchdog?.cancel();
       _dataGapBeeperTimer?.cancel();
       if (_dataGapWatchdogTime > 0) {
@@ -248,7 +235,7 @@ class RecordingState extends State<RecordingScreen> {
           await _database.recordDao.insertRecord(record);
         }
 
-        _fitnessEquipment.lastRecord = record;
+        _fitnessEquipment?.lastRecord = record;
 
         setState(() {
           if (!_simplerUi) {
@@ -277,7 +264,7 @@ class RecordingState extends State<RecordingScreen> {
           _values = [
             record.calories.toString(),
             record.power.toString(),
-            record.speedStringByUnit(_si, descriptor.defaultSport),
+            record.speedStringByUnit(_si, widget.descriptor.defaultSport),
             record.cadence.toString(),
             record.heartRate.toString(),
             record.distanceStringByUnit(_si),
@@ -336,8 +323,8 @@ class RecordingState extends State<RecordingScreen> {
     final discovered = (await _heartRateMonitor?.discover()) ?? false;
     if (discovered) {
       if (_heartRateMonitor?.device?.id.id !=
-          (_fitnessEquipment.heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE)) {
-        _fitnessEquipment.setHeartRateMonitor(_heartRateMonitor!);
+          (_fitnessEquipment?.heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE)) {
+        _fitnessEquipment?.setHeartRateMonitor(_heartRateMonitor!);
       }
       _heartRateMonitor?.attach().then((_) async {
         if (_heartRateMonitor?.subscription != null) {
@@ -373,22 +360,22 @@ class RecordingState extends State<RecordingScreen> {
     _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 1.4);
     final prefService = Get.find<BasePrefService>();
     prefService.set<String>(
-      LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport),
-      device.id.id,
+      LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(widget.sport),
+      widget.device.id.id,
     );
-    descriptor.refreshTuning(device.id.id);
+    widget.descriptor.refreshTuning(widget.device.id.id);
     if (Get.isRegistered<FitnessEquipment>()) {
       _fitnessEquipment = Get.find<FitnessEquipment>();
-      _fitnessEquipment.descriptor = descriptor;
+      _fitnessEquipment?.descriptor = widget.descriptor;
     } else {
-      _fitnessEquipment =
-          Get.put<FitnessEquipment>(FitnessEquipment(descriptor: descriptor, device: device));
+      _fitnessEquipment = Get.put<FitnessEquipment>(
+          FitnessEquipment(descriptor: widget.descriptor, device: widget.device));
     }
 
     _trackCalculator = TrackCalculator(
       track: TrackDescriptor(
         radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
-        lengthFactor: descriptor.lengthFactor,
+        lengthFactor: widget.descriptor.lengthFactor,
       ),
     );
     _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
@@ -396,13 +383,13 @@ class RecordingState extends State<RecordingScreen> {
     _instantUpload = prefService.get<bool>(INSTANT_UPLOAD_TAG) ?? INSTANT_UPLOAD_DEFAULT;
     _graphData = ListQueue<DisplayRecord>(_simplerUi ? 0 : _pointCount);
 
-    if (sport != ActivityType.Ride) {
-      final slowPace = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)]!;
-      descriptor.slowPace = slowPace;
-      _fitnessEquipment.slowPace = slowPace;
+    if (widget.sport != ActivityType.Ride) {
+      final slowPace = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(widget.sport)]!;
+      widget.descriptor.slowPace = slowPace;
+      _fitnessEquipment?.slowPace = slowPace;
     }
 
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, descriptor.defaultSport);
+    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
     _preferencesSpecs.forEach((prefSpec) => prefSpec.calculateBounds(
           0,
           decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
@@ -485,8 +472,6 @@ class RecordingState extends State<RecordingScreen> {
         expandable: !_simplerUi,
       ),
     ];
-    _rowControllers = [];
-    _expandedHeights = [];
     final expandedStateStr = prefService.get<String>(MEASUREMENT_PANELS_EXPANDED_TAG) ??
         MEASUREMENT_PANELS_EXPANDED_DEFAULT;
     final expandedHeightStr =
@@ -520,12 +505,9 @@ class RecordingState extends State<RecordingScreen> {
     });
 
     _uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
-    _measuring = false;
-    _fitnessEquipment.measuring = false;
+    _fitnessEquipment?.measuring = false;
     _values = ["--", "--", "--", "--", "--", "--"];
     _zoneIndexes = [null, null, null, null];
-    _distance = 0.0;
-    _elapsed = 0;
 
     _leaderboardFeature =
         prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
@@ -553,7 +535,7 @@ class RecordingState extends State<RecordingScreen> {
         ZONE_INDEX_DISPLAY_COLORING_DEFAULT;
 
     _initializeHeartRateMonitor();
-    _connectOnDemand(initialState);
+    _connectOnDemand(widget.initialState);
     _database = Get.find<AppDatabase>();
   }
 
@@ -575,7 +557,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     try {
-      await _fitnessEquipment.detach();
+      await _fitnessEquipment?.detach();
     } on PlatformException catch (e, stack) {
       debugPrint("Equipment got turned off?");
       debugPrint("$e");
@@ -608,10 +590,10 @@ class RecordingState extends State<RecordingScreen> {
     setState(() {
       _measuring = false;
     });
-    _fitnessEquipment.measuring = false;
+    _fitnessEquipment?.measuring = false;
     try {
-      await _fitnessEquipment.detach();
-      await _fitnessEquipment.disconnect();
+      await _fitnessEquipment?.detach();
+      await _fitnessEquipment?.disconnect();
     } on PlatformException catch (e, stack) {
       debugPrint("Equipment got turned off?");
       debugPrint("$e");
@@ -674,7 +656,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _stopMeasurement(bool quick) async {
-    _fitnessEquipment.measuring = false;
+    _fitnessEquipment?.measuring = false;
     if (!_measuring || _activity == null) return;
 
     _hrBeepPeriodTimer?.cancel();
@@ -689,19 +671,19 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
 
-    _fitnessEquipment.detach();
+    _fitnessEquipment?.detach();
 
     _activity!.finish(
-      _fitnessEquipment.lastRecord.distance,
-      _fitnessEquipment.lastRecord.elapsed,
-      _fitnessEquipment.lastRecord.calories,
+      _fitnessEquipment?.lastRecord.distance,
+      _fitnessEquipment?.lastRecord.elapsed,
+      _fitnessEquipment?.lastRecord.calories,
     );
-    _fitnessEquipment.stopWorkout();
+    _fitnessEquipment?.stopWorkout();
 
     if (!_uxDebug) {
       if (_leaderboardFeature) {
         await _database.workoutSummaryDao.insertWorkoutSummary(
-            _activity!.getWorkoutSummary(_fitnessEquipment.manufacturerName ?? "Unknown"));
+            _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown"));
       }
 
       final retVal = await _database.activityDao.updateActivity(_activity!);
@@ -734,7 +716,8 @@ class RecordingState extends State<RecordingScreen> {
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
         xValueMapper: (DisplayRecord record, _) => record.dt,
-        yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si, descriptor.defaultSport),
+        yValueMapper: (DisplayRecord record, _) =>
+            record.speedByUnit(_si, widget.descriptor.defaultSport),
         color: _chartTextColor,
         // insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
         // outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
@@ -851,7 +834,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getSportRankString() {
-    return "#${_getRankString(_sportRank, _sportLeaderboard)} (${descriptor.defaultSport})";
+    return "#${_getRankString(_sportRank, _sportLeaderboard)} (${widget.descriptor.defaultSport})";
   }
 
   Color _getPaceLightColor(int? deviceRank, int? sportRank, {required bool background}) {
@@ -951,7 +934,7 @@ class RecordingState extends State<RecordingScreen> {
 
   List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int? rank) {
     List<Widget> markers = [];
-    if (leaderboard.length <= 0 || rank == null) {
+    if (leaderboard.length <= 0 || rank == null || _trackCalculator == null) {
       return markers;
     }
 
@@ -959,7 +942,7 @@ class RecordingState extends State<RecordingScreen> {
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
       final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
-      final position = _trackCalculator.trackMarker(distance);
+      final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0x8800FF00, "${rank - 2}", false));
       }
@@ -968,7 +951,7 @@ class RecordingState extends State<RecordingScreen> {
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
       final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
-      final position = _trackCalculator.trackMarker(distance);
+      final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0x8800FF00, "${rank - 1}", false));
       }
@@ -977,7 +960,7 @@ class RecordingState extends State<RecordingScreen> {
     // Following dot (following directly) if any
     if (rank - 1 < length) {
       final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
-      final position = _trackCalculator.trackMarker(distance);
+      final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0x880000FF, "${rank + 1}", false));
       }
@@ -986,7 +969,7 @@ class RecordingState extends State<RecordingScreen> {
     // Following dot after the follower (if any)
     if (rank < length) {
       final distance = leaderboard[rank].distanceAtTime(_elapsed);
-      final position = _trackCalculator.trackMarker(distance);
+      final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0x880000FF, "${rank + 2}", false));
       }
@@ -1217,7 +1200,7 @@ class RecordingState extends State<RecordingScreen> {
       });
 
       List<Widget> markers = [];
-      final markerPosition = _trackCalculator.trackMarker(_distance);
+      final markerPosition = _trackCalculator?.trackMarker(_distance);
       if (markerPosition != null) {
         var selfMarkerText = "";
         var selfMarkerColor = 0xFFFF0000;
@@ -1282,16 +1265,18 @@ class RecordingState extends State<RecordingScreen> {
             markerPosition, selfMarkerColor, selfMarkerText, _rankTrackVisualization));
       }
 
-      extras.add(
-        CustomPaint(
-          painter: TrackPainter(calculator: _trackCalculator),
-          child: SizedBox(
-            width: size.width,
-            height: size.width / 1.9,
-            child: Stack(children: markers),
+      if (_trackCalculator != null) {
+        extras.add(
+          CustomPaint(
+            painter: TrackPainter(calculator: _trackCalculator!),
+            child: SizedBox(
+              width: size.width,
+              height: size.width / 1.9,
+              child: Stack(children: markers),
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
 
     return WillPopScope(
@@ -1299,26 +1284,26 @@ class RecordingState extends State<RecordingScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: TextOneLine(
-            device.name,
+            widget.device.name,
             overflow: TextOverflow.ellipsis,
           ),
           actions: [
             StreamBuilder<BluetoothDeviceState>(
-              stream: device.state,
-              initialData: initialState,
+              stream: widget.device.state,
+              initialData: widget.initialState,
               builder: (c, snapshot) {
                 VoidCallback? onPressed;
                 IconData icon;
                 switch (snapshot.data) {
                   case BluetoothDeviceState.connected:
                     onPressed = () async {
-                      await _fitnessEquipment.disconnect();
+                      await _fitnessEquipment?.disconnect();
                     };
                     icon = Icons.bluetooth_connected;
                     break;
                   case BluetoothDeviceState.disconnected:
                     onPressed = () async {
-                      await _fitnessEquipment.connect();
+                      await _fitnessEquipment?.connect();
                     };
                     icon = Icons.bluetooth_disabled;
                     break;
@@ -1440,7 +1425,7 @@ class RecordingState extends State<RecordingScreen> {
             _themeManager.getBlueFab(Icons.build, () async {
               if (_measuring) {
                 Get.snackbar("Warning", "Cannot calibrate while measurement is under progress");
-              } else if (!(_fitnessEquipment.descriptor?.isFitnessMachine ?? false)) {
+              } else if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
                 Get.snackbar("Error", "Not compatible with the calibration method");
               } else {
                 await Get.bottomSheet(
