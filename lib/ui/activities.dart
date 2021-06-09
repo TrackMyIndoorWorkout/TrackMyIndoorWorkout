@@ -41,7 +41,7 @@ class ActivitiesScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return ActivitiesScreenState(hasLeaderboardData: hasLeaderboardData);
+    return ActivitiesScreenState();
   }
 }
 
@@ -50,7 +50,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   late int _editCount;
   late bool _si;
   late bool _leaderboardFeature;
-  bool hasLeaderboardData;
   double? _mediaWidth;
   late double _sizeDefault;
   late double _sizeDefault2;
@@ -63,16 +62,14 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   late double _ringDiameter;
   late double _ringWidth;
 
-  ActivitiesScreenState({required this.hasLeaderboardData});
-
   @override
   void initState() {
     super.initState();
     _editCount = 0;
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    _si = prefService.getBool(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _leaderboardFeature =
-        prefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
+        prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _database = Get.find<AppDatabase>();
     _themeManager = Get.find<ThemeManager>();
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
@@ -254,7 +251,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       }),
     ];
 
-    if (_leaderboardFeature && hasLeaderboardData) {
+    if (_leaderboardFeature && widget.hasLeaderboardData) {
       floatingActionButtons.add(
         _themeManager.getBlueFab(Icons.leaderboard, () async {
           await Get.bottomSheet(LeaderBoardTypeBottomSheet(), enableDrag: false);

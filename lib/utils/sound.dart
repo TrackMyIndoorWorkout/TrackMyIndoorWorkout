@@ -76,15 +76,15 @@ class SoundService {
   }
 
   Future<int> playTargetHrSoundEffect() async {
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    final soundEffectString = prefService.getString(TARGET_HEART_RATE_SOUND_EFFECT_TAG) ??
+    final prefService = Get.find<BasePrefService>();
+    final soundEffectString = prefService.get<String>(TARGET_HEART_RATE_SOUND_EFFECT_TAG) ??
         TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT;
     return await playSpecificSoundEffect(soundEffectString);
   }
 
   Future<int> playDataTimeoutSoundEffect() async {
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    final soundEffectString = prefService.getString(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
+    final prefService = Get.find<BasePrefService>();
+    final soundEffectString = prefService.get<String>(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
         DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
     if (soundEffectString == SOUND_EFFECT_NONE) {
       return 0;

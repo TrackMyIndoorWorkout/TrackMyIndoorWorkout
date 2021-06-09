@@ -49,17 +49,17 @@ class FitnessEquipment extends DeviceBase {
         ) {
     _residueCalories = 0.0;
     _lastPositiveCadence = 0;
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
-        prefService.getBool(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
+        prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
     _lastPositiveCalories = 0.0;
     hasTotalCalorieCounting = false;
     measuring = false;
     calibrating = false;
     _random = Random();
-    uxDebug = prefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _heartRateGapWorkaround =
-        prefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+        prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     _heartRateUpperLimit = getStringIntegerPreference(
       HEART_RATE_UPPER_LIMIT_TAG,
       HEART_RATE_UPPER_LIMIT_DEFAULT,
@@ -67,7 +67,7 @@ class FitnessEquipment extends DeviceBase {
       prefService,
     );
     _heartRateLimitingMethod =
-        prefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+        prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
     equipmentDiscovery = false;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
@@ -116,8 +116,8 @@ class FitnessEquipment extends DeviceBase {
   void setActivity(Activity activity) {
     _activity = activity;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    uxDebug = prefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }
 
   Future<bool> connectOnDemand(BluetoothDeviceState deviceState, {identify = false}) async {
@@ -287,8 +287,8 @@ class FitnessEquipment extends DeviceBase {
   }
 
   void stopWorkout() {
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    uxDebug = prefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();

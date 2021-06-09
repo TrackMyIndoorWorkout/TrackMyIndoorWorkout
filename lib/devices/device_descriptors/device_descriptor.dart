@@ -111,8 +111,8 @@ abstract class DeviceDescriptor {
     final database = Get.find<AppDatabase>();
     calorieFactor = await database.calorieFactor(deviceId, this);
     powerFactor = await database.powerFactor(deviceId);
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    extendTuning = prefService.getBool(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
   }
 
   double? getSpeed(List<int> data) {

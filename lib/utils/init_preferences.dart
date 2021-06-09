@@ -7,7 +7,7 @@ import '../persistence/preferences.dart';
 import 'constants.dart';
 import 'preferences.dart';
 
-Future<BasePrefService> initPreferences() async {
+Future<PrefServiceShared> initPreferences() async {
   Map<String, dynamic> prefDefaults = {
     PREFERENCES_VERSION_TAG: PREFERENCES_VERSION_NEXT,
     UNIT_SYSTEM_TAG: UNIT_SYSTEM_DEFAULT,

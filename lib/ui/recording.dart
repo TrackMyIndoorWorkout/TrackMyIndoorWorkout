@@ -163,8 +163,9 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment.connectOnDemand(deviceState);
     if (success) {
-      final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-      if (prefService.getBool(INSTANT_MEASUREMENT_START_TAG) ?? INSTANT_MEASUREMENT_START_DEFAULT) {
+      final prefService = Get.find<BasePrefService>();
+      if (prefService.get<bool>(INSTANT_MEASUREMENT_START_TAG) ??
+          INSTANT_MEASUREMENT_START_DEFAULT) {
         await _startMeasurement();
       }
     } else {
@@ -295,8 +296,8 @@ class RecordingState extends State<RecordingScreen> {
       final expandedStateStr =
           List<String>.generate(_expandedState.length, (index) => _expandedState[index] ? "1" : "0")
               .join("");
-      final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-      prefService.setString(MEASUREMENT_PANELS_EXPANDED_TAG, expandedStateStr);
+      final prefService = Get.find<BasePrefService>();
+      prefService.set<String>(MEASUREMENT_PANELS_EXPANDED_TAG, expandedStateStr);
     });
   }
 
@@ -325,8 +326,8 @@ class RecordingState extends State<RecordingScreen> {
       _expandedHeights[index] = (_expandedHeights[index] + 1) % 3;
       final expandedHeightStr = List<String>.generate(
           _expandedHeights.length, (index) => _expandedHeights[index].toString()).join("");
-      final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-      prefService.setString(MEASUREMENT_DETAIL_SIZE_TAG, expandedHeightStr);
+      final prefService = Get.find<BasePrefService>();
+      prefService.set<String>(MEASUREMENT_DETAIL_SIZE_TAG, expandedHeightStr);
     });
   }
 
@@ -370,8 +371,8 @@ class RecordingState extends State<RecordingScreen> {
       color: _themeManager.getBlueColor(),
     );
     _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 1.4);
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    prefService.setString(
+    final prefService = Get.find<BasePrefService>();
+    prefService.set<String>(
       LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(sport),
       device.id.id,
     );
@@ -390,9 +391,9 @@ class RecordingState extends State<RecordingScreen> {
         lengthFactor: descriptor.lengthFactor,
       ),
     );
-    _si = prefService.getBool(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _simplerUi = prefService.getBool(SIMPLER_UI_TAG) ?? SIMPLER_UI_SLOW_DEFAULT;
-    _instantUpload = prefService.getBool(INSTANT_UPLOAD_TAG) ?? INSTANT_UPLOAD_DEFAULT;
+    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _simplerUi = prefService.get<bool>(SIMPLER_UI_TAG) ?? SIMPLER_UI_SLOW_DEFAULT;
+    _instantUpload = prefService.get<bool>(INSTANT_UPLOAD_TAG) ?? INSTANT_UPLOAD_DEFAULT;
     _graphData = ListQueue<DisplayRecord>(_simplerUi ? 0 : _pointCount);
 
     if (sport != ActivityType.Ride) {
@@ -414,15 +415,15 @@ class RecordingState extends State<RecordingScreen> {
       DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT,
       prefService,
     );
-    _dataGapSoundEffect = prefService.getString(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
+    _dataGapSoundEffect = prefService.get<String>(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
         DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
 
     _targetHrMode =
-        prefService.getString(TARGET_HEART_RATE_MODE_TAG) ?? TARGET_HEART_RATE_MODE_DEFAULT;
+        prefService.get<String>(TARGET_HEART_RATE_MODE_TAG) ?? TARGET_HEART_RATE_MODE_DEFAULT;
     _targetHrBounds = getTargetHeartRateBounds(_targetHrMode, _preferencesSpecs[3], prefService);
     _targetHrAlerting = false;
     _targetHrAudio =
-        prefService.getBool(TARGET_HEART_RATE_AUDIO_TAG) ?? TARGET_HEART_RATE_AUDIO_DEFAULT;
+        prefService.get<bool>(TARGET_HEART_RATE_AUDIO_TAG) ?? TARGET_HEART_RATE_AUDIO_DEFAULT;
     if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
       _hrBeepPeriod = getStringIntegerPreference(
         TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
@@ -486,10 +487,10 @@ class RecordingState extends State<RecordingScreen> {
     ];
     _rowControllers = [];
     _expandedHeights = [];
-    final expandedStateStr = prefService.getString(MEASUREMENT_PANELS_EXPANDED_TAG) ??
+    final expandedStateStr = prefService.get<String>(MEASUREMENT_PANELS_EXPANDED_TAG) ??
         MEASUREMENT_PANELS_EXPANDED_DEFAULT;
     final expandedHeightStr =
-        prefService.getString(MEASUREMENT_DETAIL_SIZE_TAG) ?? MEASUREMENT_DETAIL_SIZE_DEFAULT;
+        prefService.get<String>(MEASUREMENT_DETAIL_SIZE_TAG) ?? MEASUREMENT_DETAIL_SIZE_DEFAULT;
     _expandedState = List<bool>.generate(expandedStateStr.length, (int index) {
       final expanded = expandedStateStr[index] == "1";
       ExpandableController rowController = ExpandableController(initialExpanded: expanded);
@@ -518,7 +519,7 @@ class RecordingState extends State<RecordingScreen> {
       return expanded;
     });
 
-    _uxDebug = prefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    _uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _measuring = false;
     _fitnessEquipment.measuring = false;
     _values = ["--", "--", "--", "--", "--", "--"];
@@ -527,18 +528,18 @@ class RecordingState extends State<RecordingScreen> {
     _elapsed = 0;
 
     _leaderboardFeature =
-        prefService.getBool(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
+        prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _rankRibbonVisualization =
-        prefService.getBool(RANK_RIBBON_VISUALIZATION_TAG) ?? RANK_RIBBON_VISUALIZATION_DEFAULT;
-    _rankingForDevice = prefService.getBool(RANKING_FOR_DEVICE_TAG) ?? RANKING_FOR_DEVICE_DEFAULT;
+        prefService.get<bool>(RANK_RIBBON_VISUALIZATION_TAG) ?? RANK_RIBBON_VISUALIZATION_DEFAULT;
+    _rankingForDevice = prefService.get<bool>(RANKING_FOR_DEVICE_TAG) ?? RANKING_FOR_DEVICE_DEFAULT;
     _deviceLeaderboard = [];
     _deviceRankString = "";
-    _rankingForSport = prefService.getBool(RANKING_FOR_SPORT_TAG) ?? RANKING_FOR_SPORT_DEFAULT;
+    _rankingForSport = prefService.get<bool>(RANKING_FOR_SPORT_TAG) ?? RANKING_FOR_SPORT_DEFAULT;
     _sportLeaderboard = [];
     _sportRankString = "";
     _rankTrackVisualization =
-        prefService.getBool(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
-    _rankInfoOnTrack = prefService.getBool(RANK_INFO_ON_TRACK_TAG) ?? RANK_INFO_ON_TRACK_DEFAULT;
+        prefService.get<bool>(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
+    _rankInfoOnTrack = prefService.get<bool>(RANK_INFO_ON_TRACK_TAG) ?? RANK_INFO_ON_TRACK_DEFAULT;
 
     final isLight = !_themeManager.isDark();
     _darkRed = isLight ? Colors.red.shade900 : Colors.redAccent.shade100;
@@ -548,8 +549,8 @@ class RecordingState extends State<RecordingScreen> {
     _lightGreen = isLight ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
     _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
 
-    _zoneIndexColoring =
-        prefService.getBool(ZONE_INDEX_DISPLAY_COLORING_TAG) ?? ZONE_INDEX_DISPLAY_COLORING_DEFAULT;
+    _zoneIndexColoring = prefService.get<bool>(ZONE_INDEX_DISPLAY_COLORING_TAG) ??
+        ZONE_INDEX_DISPLAY_COLORING_DEFAULT;
 
     _initializeHeartRateMonitor();
     _connectOnDemand(initialState);

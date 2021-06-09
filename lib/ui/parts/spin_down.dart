@@ -101,15 +101,15 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _targetSpeedHigh = 0.0;
     _targetSpeedLow = 0.0;
     _currentSpeed = 0.0;
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    _si = prefService.getBool(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _preferencesWeight = getStringIntegerPreference(
       ATHLETE_BODY_WEIGHT_TAG,
       ATHLETE_BODY_WEIGHT_DEFAULT,
       ATHLETE_BODY_WEIGHT_DEFAULT_INT,
       prefService,
     );
-    _rememberLastWeight = prefService.getBool(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ??
+    _rememberLastWeight = prefService.get<bool>(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ??
         REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
     _weight = (_preferencesWeight * (_si ? 1.0 : KG_TO_LB)).round();
     final weightBytes = getWeightBytes(_weight);
@@ -339,8 +339,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     try {
       if (_rememberLastWeight) {
         final weightKg = _weight * (_si ? 1.0 : LB_TO_KG);
-        final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-        await prefService.setString(ATHLETE_BODY_WEIGHT_TAG, weightKg.toString());
+        final prefService = Get.find<BasePrefService>();
+        await prefService.set<String>(ATHLETE_BODY_WEIGHT_TAG, weightKg.toString());
       }
 
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);

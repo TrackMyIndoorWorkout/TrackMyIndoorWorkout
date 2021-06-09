@@ -295,8 +295,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     _tiles = [];
     _selectedTimes = [];
     _selectedValues = [];
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    _si = prefService.getBool(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, activity.sport);
     activity.hydrate();
     _themeManager = Get.find<ThemeManager>();

@@ -38,8 +38,8 @@ abstract class DeviceBase {
     attached = false;
     discovering = false;
     discovered = false;
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    uxDebug = prefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }
 
   Future<bool> connect() async {

@@ -100,18 +100,18 @@ class FindDevicesState extends State<FindDevicesScreen> {
     initializeDateFormatting();
     super.initState();
     _scannedDevices = [];
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    _instantScan = prefService.getBool(INSTANT_SCAN_TAG) ?? INSTANT_SCAN_DEFAULT;
-    _scanDuration = prefService.getInt(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
-    _autoConnect = prefService.getBool(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    _instantScan = prefService.get<bool>(INSTANT_SCAN_TAG) ?? INSTANT_SCAN_DEFAULT;
+    _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
+    _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
     _lastEquipmentIds = [];
     PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
-      final lastEquipmentId = prefService.getString(LAST_EQUIPMENT_ID_TAG_PREFIX + sport) ?? "";
+      final lastEquipmentId = prefService.get<String>(LAST_EQUIPMENT_ID_TAG_PREFIX + sport) ?? "";
       if (lastEquipmentId.isNotEmpty) {
         _lastEquipmentIds.add(lastEquipmentId);
       }
     });
-    _filterDevices = prefService.getBool(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
+    _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
     if (_instantScan) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         startScan();
@@ -203,9 +203,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
     }
 
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    final prefService = Get.find<BasePrefService>();
     if (descriptor == null) {
-      if (prefService.getBool(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT) {
+      if (prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT) {
         descriptor = deviceMap[GENERIC_FTMS_BIKE_FOURCC]!;
       } else {
         Get.snackbar("Error", "Device identification failed");
@@ -216,8 +216,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     if (descriptor.isMultiSport) {
-      final multiSportSupport =
-          prefService.getBool(MULTI_SPORT_DEVICE_SUPPORT_TAG) ?? MULTI_SPORT_DEVICE_SUPPORT_DEFAULT;
+      final multiSportSupport = prefService.get<bool>(MULTI_SPORT_DEVICE_SUPPORT_TAG) ??
+          MULTI_SPORT_DEVICE_SUPPORT_DEFAULT;
       if (deviceUsage == null || multiSportSupport) {
         final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
         final sportPick = await Get.bottomSheet(

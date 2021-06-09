@@ -326,14 +326,14 @@ class PreferencesSpec {
   void calculateZones(bool si, String sport) {
     this.si = si;
     this.sport = sport;
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    final thresholdString = prefService.getString(thresholdTag(sport))!;
+    final prefService = Get.find<BasePrefService>();
+    final thresholdString = prefService.get<String>(thresholdTag(sport))!;
     threshold = double.tryParse(thresholdString) ?? EPS;
     if (metric == "speed") {
       threshold = speedOrPace(threshold, si, sport);
     }
 
-    final zonesSpecStr = prefService.getString(zonesTag(sport))!;
+    final zonesSpecStr = prefService.get<String>(zonesTag(sport))!;
     zonePercents =
         zonesSpecStr.split(',').map((zs) => int.tryParse(zs) ?? 0).toList(growable: false);
     zoneBounds =
@@ -341,7 +341,7 @@ class PreferencesSpec {
     // if (flipZones) {
     //   zoneBounds = zoneBounds.reversed.toList(growable: false);
     // }
-    indexDisplay = prefService.getBool(zoneIndexTag) ?? indexDisplayDefault;
+    indexDisplay = prefService.get<bool>(zoneIndexTag) ?? indexDisplayDefault;
   }
 
   void calculateBounds(double minVal, double maxVal, bool isLight) {

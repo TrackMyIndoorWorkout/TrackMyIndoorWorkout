@@ -11,8 +11,8 @@ import '../utils/constants.dart';
 
 class ThemeManager {
   ThemeMode getThemeMode() {
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    final themeSelection = prefService.getString(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    final themeSelection = prefService.get<String>(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
     if (themeSelection == "light") {
       return ThemeMode.light;
     } else if (themeSelection == "dark") {
@@ -23,8 +23,8 @@ class ThemeManager {
   }
 
   bool isDark() {
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    final themeSelection = prefService.getString(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    final themeSelection = prefService.get<String>(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
     if (themeSelection == "light") {
       return false;
     } else if (themeSelection == "dark") {

@@ -211,8 +211,8 @@ class MPowerEchelon2Importer {
       calorieFactor: device.calorieFactor,
       powerFactor: device.powerFactor,
     );
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    final extendTuning = prefService.getBool(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    final extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
     final database = Get.find<AppDatabase>();
     final id = await database.activityDao.insertActivity(activity);
     activity.id = id;
@@ -236,7 +236,7 @@ class MPowerEchelon2Importer {
     int lastHeartRate = 0;
     int timeStamp = start.millisecondsSinceEpoch;
     String heartRateGapWorkaroundSetting =
-        prefService.getString(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+        prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     bool heartRateGapWorkaround =
         heartRateGapWorkaroundSetting == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
     int heartRateUpperLimit = getStringIntegerPreference(
@@ -246,7 +246,7 @@ class MPowerEchelon2Importer {
       prefService,
     );
     String heartRateLimitingMethod =
-        prefService.getString(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+        prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
 
     while (_linePointer < _lines.length) {
       WorkoutRow row = nextRow ??

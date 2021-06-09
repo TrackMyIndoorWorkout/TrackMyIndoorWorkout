@@ -39,8 +39,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   void initState() {
     super.initState();
     _scanResults = [];
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    _scanDuration = prefService.getInt(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
     _themeManager = Get.find<ThemeManager>();
     _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);

@@ -41,8 +41,8 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
     super.initState();
     _editCount = 0;
     _database = Get.find<AppDatabase>();
-    final prefService = Get.find<PrefServiceShared>().sharedPreferences;
-    _si = prefService.getBool(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    final prefService = Get.find<BasePrefService>();
+    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline4!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());

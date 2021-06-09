@@ -1,11 +1,11 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
 import '../persistence/preferences.dart';
 import '../utils/preferences.dart';
 
 // This can be eliminated once #107 takes care of integer preferences
 Tuple2<double, double> getTargetHeartRateBounds(
-    String targetMode, PreferencesSpec heartRatePreferences, SharedPreferences prefService) {
+    String targetMode, PreferencesSpec heartRatePreferences, BasePrefService prefService) {
   if (targetMode == TARGET_HEART_RATE_MODE_NONE) {
     return Tuple2<double, double>(0, 0);
   }

@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'constants.dart';
 
@@ -68,11 +67,11 @@ List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
 }
 
 int getStringIntegerPreference(
-    String tag, String defaultString, int defaultInt, SharedPreferences? prefService) {
+    String tag, String defaultString, int defaultInt, BasePrefService? prefService) {
   if (prefService == null) {
-    prefService = Get.find<PrefServiceShared>().sharedPreferences;
+    prefService = Get.find<BasePrefService>();
   }
 
-  final valueString = prefService.getString(tag) ?? defaultString;
+  final valueString = prefService.get<String>(tag) ?? defaultString;
   return int.tryParse(valueString) ?? defaultInt;
 }
