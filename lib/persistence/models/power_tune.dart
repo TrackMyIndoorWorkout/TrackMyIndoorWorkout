@@ -15,7 +15,7 @@ class PowerTune {
   @ColumnInfo(name: 'power_factor')
   double powerFactor;
 
-  late int time; // ms since epoch
+  int time; // ms since epoch
 
   PowerTune({
     this.id,

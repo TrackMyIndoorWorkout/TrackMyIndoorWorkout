@@ -15,29 +15,21 @@ class BluetoothIssueScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return BluetoothIssueScreenState(
-      bluetoothState: bluetoothState,
-      locationState: locationState,
-    );
-  }
+  State<StatefulWidget> createState() => BluetoothIssueScreenState();
 }
 
 class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
-  final BluetoothState? bluetoothState;
-  PermissionStatus locationState;
-  late ThemeManager _themeManager;
-  late TextStyle _textStyle;
+  late PermissionStatus locationState;
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _textStyle = TextStyle();
 
-  BluetoothIssueScreenState({
-    this.bluetoothState,
-    required this.locationState,
-  });
+  BluetoothIssueScreenState() {
+    locationState = widget.locationState;
+  }
 
   @override
   void initState() {
     super.initState();
-    _themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline6!.apply(color: Colors.white);
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
       if (locationState != PermissionStatus.granted && locationState != PermissionStatus.limited) {
@@ -51,7 +43,7 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bluetoothDisplay = bluetoothState?.toString().substring(15) ?? 'N/A';
+    final bluetoothDisplay = widget.bluetoothState?.toString().substring(15) ?? 'N/A';
     final locationDisplay =
         locationState.isGranted ? "Granted" : (locationState.isLimited ? "Limited" : "Denied");
     return Scaffold(

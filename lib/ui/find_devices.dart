@@ -31,26 +31,24 @@ class FindDevicesScreen extends StatefulWidget {
   FindDevicesScreen({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return FindDevicesState();
-  }
+  State<StatefulWidget> createState() => FindDevicesState();
 }
 
 class FindDevicesState extends State<FindDevicesScreen> {
   bool _instantScan = INSTANT_SCAN_DEFAULT;
   int _scanDuration = SCAN_DURATION_DEFAULT;
   bool _autoConnect = AUTO_CONNECT_DEFAULT;
-  late List<String> _lastEquipmentIds;
+  List<String> _lastEquipmentIds = [];
   bool _filterDevices = DEVICE_FILTERING_DEFAULT;
   BluetoothDevice? _openedDevice;
-  late List<BluetoothDevice> _scannedDevices;
-  late TextStyle _captionStyle;
-  late TextStyle _subtitleStyle;
+  List<BluetoothDevice> _scannedDevices = [];
+  TextStyle _captionStyle = TextStyle();
+  TextStyle _subtitleStyle = TextStyle();
   int? _heartRate;
-  late AdvertisementCache _advertisementCache;
-  late ThemeManager _themeManager;
-  late double _ringDiameter;
-  late double _ringWidth;
+  AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  double _ringDiameter = 1.0;
+  double _ringWidth = 1.0;
 
   @override
   void dispose() {
@@ -99,12 +97,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
   void initState() {
     initializeDateFormatting();
     super.initState();
-    _scannedDevices = [];
     final prefService = Get.find<BasePrefService>();
     _instantScan = prefService.get<bool>(INSTANT_SCAN_TAG) ?? INSTANT_SCAN_DEFAULT;
     _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
     _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
-    _lastEquipmentIds = [];
     PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
       final lastEquipmentId = prefService.get<String>(LAST_EQUIPMENT_ID_TAG_PREFIX + sport) ?? "";
       if (lastEquipmentId.isNotEmpty) {
@@ -119,8 +115,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
     _openDatabase();
 
-    _advertisementCache = Get.find<AdvertisementCache>();
-    _themeManager = Get.find<ThemeManager>();
     _captionStyle = Get.textTheme.headline6!;
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
     _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;

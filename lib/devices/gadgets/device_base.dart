@@ -16,28 +16,22 @@ abstract class DeviceBase {
   String? characteristicsId;
   BluetoothDevice? device;
   BluetoothService? _service;
-  late List<BluetoothService> services;
+  List<BluetoothService> services = [];
   BluetoothCharacteristic? characteristic;
   StreamSubscription? subscription;
 
-  late bool connecting;
-  late bool connected;
-  late bool attached;
-  late bool discovering;
-  late bool discovered;
-  late bool uxDebug;
+  bool connecting = false;
+  bool connected = false;
+  bool attached = false;
+  bool discovering = false;
+  bool discovered = false;
+  bool uxDebug = APP_DEBUG_MODE_DEFAULT;
 
   DeviceBase({
     required this.serviceId,
     this.characteristicsId,
     this.device,
   }) {
-    services = [];
-    connecting = false;
-    connected = false;
-    attached = false;
-    discovering = false;
-    discovered = false;
     final prefService = Get.find<BasePrefService>();
     uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }

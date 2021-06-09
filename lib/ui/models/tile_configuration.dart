@@ -13,10 +13,10 @@ class TileConfiguration {
   final String histogramTitle;
   final DataFn dataFn;
   final DataStringFn dataStringFn;
-  late HistogramFn histogramFn;
+  HistogramFn? histogramFn;
   final List<double>? zoneBounds;
-  late int count;
-  late List<HistogramData> histogram;
+  int count = 0;
+  List<HistogramData> histogram = [];
   // final common.SelectionModelListener<DateTime> selectionListener;
   final String maxString;
   final String avgString;
@@ -30,9 +30,7 @@ class TileConfiguration {
     this.zoneBounds,
     required this.maxString,
     required this.avgString,
-  }) {
-    count = 0;
-  }
+  });
   bool get hasMeasurement => count > 0;
 
   // SelectionData getSelectionData(charts.SelectionModel<DateTime> model) {

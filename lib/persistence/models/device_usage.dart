@@ -20,7 +20,7 @@ class DeviceUsage {
   @ColumnInfo(name: 'manufacturer_name')
   String? manufacturerName;
 
-  late int time; // ms since epoch
+  int time; // ms since epoch
 
   DeviceUsage({
     this.id,

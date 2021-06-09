@@ -35,11 +35,11 @@ enum CalibrationState {
 class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
-  late String _hrmBatteryLevel;
-  late String _batteryLevel;
-  late ThemeManager _themeManager;
-  late double _sizeDefault;
-  late TextStyle _textStyle;
+  String _hrmBatteryLevel = NOT_AVAILABLE;
+  String _batteryLevel = NOT_AVAILABLE;
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
 
   Future<String> _readBatteryLevelCore(List<BluetoothService> services) async {
     final batteryService = BluetoothDeviceEx.filterService(services, BATTERY_SERVICE_ID);
@@ -89,7 +89,6 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline2!.apply(
       fontFamily: FONT_FAMILY,
       color: _themeManager.getProtagonistColor(),
@@ -97,8 +96,6 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     _sizeDefault = _textStyle.fontSize!;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-    _hrmBatteryLevel = NOT_AVAILABLE;
-    _batteryLevel = NOT_AVAILABLE;
     _readBatteryLevels();
   }
 

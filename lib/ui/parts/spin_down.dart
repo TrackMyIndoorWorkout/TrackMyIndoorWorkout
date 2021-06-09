@@ -45,33 +45,35 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   static const STEP_NOT_SUPPORTED = 3;
 
   FitnessEquipment? _fitnessEquipment;
-  late double _sizeDefault;
-  late TextStyle _smallerTextStyle;
-  late TextStyle _largerTextStyle;
-  late bool _si;
-  late int _step;
-  late int _weight;
-  late int _oldWeightLsb;
-  late int _oldWeightMsb;
-  late int _newWeightLsb;
-  late int _newWeightMsb;
+  double _sizeDefault = 10.0;
+  TextStyle _smallerTextStyle = TextStyle();
+  TextStyle _largerTextStyle = TextStyle();
+  bool _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+  int _step = STEP_WEIGHT_INPUT;
+  int _weight = 80;
+  int _oldWeightLsb = 0;
+  int _oldWeightMsb = 0;
+  int _newWeightLsb = 0;
+  int _newWeightMsb = 0;
   BluetoothCharacteristic? _weightData;
   StreamSubscription? _weightDataSubscription;
   BluetoothCharacteristic? _controlPoint;
   StreamSubscription? _controlPointSubscription;
   BluetoothCharacteristic? _fitnessMachineStatus;
   StreamSubscription? _statusSubscription;
-  late CalibrationState _calibrationState;
-  late double _targetSpeedHigh;
-  late double _targetSpeedLow;
-  late double _currentSpeed;
-  late String _targetSpeedHighString;
-  late String _targetSpeedLowString;
-  late String _currentSpeedString;
-  late ThemeManager _themeManager;
-  late bool _isLight;
+  CalibrationState _calibrationState = CalibrationState.PreInit;
+  double _targetSpeedHigh = 0.0;
+  double _targetSpeedLow = 0.0;
+  double _currentSpeed = 0.0;
+  String _targetSpeedHighString = "...";
+  String _targetSpeedLowString = "...";
+  String _currentSpeedString = "...";
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  bool _isLight = true;
   int _preferencesWeight = ATHLETE_BODY_WEIGHT_DEFAULT_INT;
-  late bool _rememberLastWeight;
+  bool _rememberLastWeight =
+      Get.find<BasePrefService>().get<bool>(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ??
+          REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
 
   bool get _spinDownPossible =>
       _weightData != null &&
@@ -93,31 +95,19 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   @override
   void initState() {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-    _step = STEP_WEIGHT_INPUT;
-    _calibrationState = CalibrationState.PreInit;
-    _targetSpeedHighString = "...";
-    _targetSpeedLowString = "...";
-    _currentSpeedString = "...";
-    _targetSpeedHigh = 0.0;
-    _targetSpeedLow = 0.0;
-    _currentSpeed = 0.0;
     final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _preferencesWeight = getStringIntegerPreference(
       ATHLETE_BODY_WEIGHT_TAG,
       ATHLETE_BODY_WEIGHT_DEFAULT,
       ATHLETE_BODY_WEIGHT_DEFAULT_INT,
       prefService,
     );
-    _rememberLastWeight = prefService.get<bool>(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ??
-        REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
     _weight = (_preferencesWeight * (_si ? 1.0 : KG_TO_LB)).round();
     final weightBytes = getWeightBytes(_weight);
     _oldWeightLsb = weightBytes.item1;
     _oldWeightMsb = weightBytes.item2;
     _newWeightLsb = weightBytes.item1;
     _newWeightMsb = weightBytes.item2;
-    _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
     _smallerTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: FONT_FAMILY,

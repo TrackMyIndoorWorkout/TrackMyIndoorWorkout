@@ -32,19 +32,10 @@ class RecordsScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return RecordsScreenState(activity: activity, size: size);
-  }
+  State<StatefulWidget> createState() => RecordsScreenState();
 }
 
 class RecordsScreenState extends State<RecordsScreen> {
-  RecordsScreenState({
-    required this.activity,
-    required this.size,
-  });
-
-  final Activity activity;
-  final Size size;
   late int _pointCount;
   late List<Record> _allRecords;
   late List<DisplayRecord> _sampledRecords;
@@ -72,29 +63,30 @@ class RecordsScreenState extends State<RecordsScreen> {
 
   Future<void> extraInit() async {
     final database = Get.find<AppDatabase>();
-    _allRecords = await database.recordDao.findAllActivityRecords(activity.id ?? 0);
+    _allRecords = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
 
     setState(() {
-      _pointCount = size.width.toInt() - 20;
+      _pointCount = widget.size.width.toInt() - 20;
       if (_allRecords.length < _pointCount) {
-        _sampledRecords =
-            _allRecords.map((r) => r.hydrate(activity.sport).display()).toList(growable: false);
+        _sampledRecords = _allRecords
+            .map((r) => r.hydrate(widget.activity.sport).display())
+            .toList(growable: false);
       } else {
         final nth = _allRecords.length / _pointCount;
         _sampledRecords = List.generate(
           _pointCount,
-          (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate(activity.sport).display(),
+          (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate(widget.activity.sport).display(),
           growable: false,
         );
       }
-      final measurementCounter = MeasurementCounter(si: _si, sport: activity.sport);
+      final measurementCounter = MeasurementCounter(si: _si, sport: widget.activity.sport);
       _allRecords.forEach((record) {
         measurementCounter.processRecord(record);
       });
 
       var accu = StatisticsAccumulator(
         si: _si,
-        sport: activity.sport,
+        sport: widget.activity.sport,
         calculateAvgPower: measurementCounter.hasPower,
         calculateMaxPower: measurementCounter.hasPower,
         calculateAvgSpeed: measurementCounter.hasSpeed,
@@ -147,8 +139,8 @@ class RecordsScreenState extends State<RecordsScreen> {
           dataFn: _getSpeedData,
           dataStringFn: _getSpeedString,
           // selectionListener: _speedSelectionListener,
-          maxString: speedOrPaceString(accu.maxSpeed, _si, activity.sport),
-          avgString: speedOrPaceString(accu.avgSpeed, _si, activity.sport),
+          maxString: speedOrPaceString(accu.maxSpeed, _si, widget.activity.sport),
+          avgString: speedOrPaceString(accu.avgSpeed, _si, widget.activity.sport),
         );
         prefSpec.calculateBounds(
           measurementCounter.minSpeed,
@@ -233,7 +225,8 @@ class RecordsScreenState extends State<RecordsScreen> {
           if (record.speed != null && record.speed! > 0) {
             var tileConfig = _tileConfigurations["speed"]!;
             tileConfig.count++;
-            final binIndex = _preferencesSpecs[1].binIndex(record.speedByUnit(_si, activity.sport));
+            final binIndex =
+                _preferencesSpecs[1].binIndex(record.speedByUnit(_si, widget.activity.sport));
             tileConfig.histogram[binIndex].increment();
           }
         }
@@ -297,8 +290,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     _selectedValues = [];
     final prefService = Get.find<BasePrefService>();
     _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, activity.sport);
-    activity.hydrate();
+    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.activity.sport);
+    widget.activity.hydrate();
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
@@ -357,14 +350,14 @@ class RecordsScreenState extends State<RecordsScreen> {
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _sampledRecords,
         xValueMapper: (DisplayRecord record, _) => record.dt,
-        yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si, activity.sport),
+        yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si, widget.activity.sport),
         color: _chartTextColor,
       ),
     ];
   }
 
   String _getSpeedString(DisplayRecord record) {
-    return speedOrPaceString(record.speed ?? 0.0, _si, activity.sport);
+    return speedOrPaceString(record.speed ?? 0.0, _si, widget.activity.sport);
   }
 
   // void _speedSelectionListener(charts.SelectionModel<DateTime> model) {
@@ -519,10 +512,10 @@ class RecordsScreenState extends State<RecordsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(getIcon(activity.sport), _sizeDefault),
+                        _themeManager.getBlueIcon(getIcon(widget.activity.sport), _sizeDefault),
                         Expanded(
                           child: TextOneLine(
-                            activity.deviceName,
+                            widget.activity.deviceName,
                             style: _textStyle,
                             textAlign: TextAlign.right,
                             overflow: TextOverflow.ellipsis,
@@ -537,7 +530,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
                         Spacer(),
                         Text(
-                          activity.elapsedString,
+                          widget.activity.elapsedString,
                           style: _measurementStyle,
                         ),
                       ],
@@ -549,7 +542,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
                         Spacer(),
                         Text(
-                          activity.distanceString(_si),
+                          widget.activity.distanceString(_si),
                           style: _measurementStyle,
                         ),
                         SizedBox(
@@ -568,7 +561,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
                         Spacer(),
                         Text(
-                          '${activity.calories}',
+                          '${widget.activity.calories}',
                           style: _measurementStyle,
                         ),
                         SizedBox(
@@ -646,8 +639,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                     collapsed: Container(),
                     expanded: Column(children: [
                       SizedBox(
-                        width: size.width,
-                        height: size.height / 2,
+                        width: widget.size.width,
+                        height: widget.size.height / 2,
                         child: charts.SfCartesianChart(
                           primaryXAxis: charts.DateTimeAxis(),
                           margin: EdgeInsets.all(0),
@@ -692,11 +685,11 @@ class RecordsScreenState extends State<RecordsScreen> {
                         style: _textStyle,
                       ),
                       SizedBox(
-                        width: size.width,
-                        height: size.height / 3,
+                        width: widget.size.width,
+                        height: widget.size.height / 3,
                         child: charts.SfCircularChart(
                           margin: EdgeInsets.all(0),
-                          series: _tileConfigurations[item]!.histogramFn(),
+                          series: _tileConfigurations[item]!.histogramFn!(),
 
                           // palette: [],
                           // defaultRenderer: charts.ArcRendererConfig(

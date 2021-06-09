@@ -15,7 +15,7 @@ class CalorieTune {
   @ColumnInfo(name: 'calorie_factor')
   double calorieFactor;
 
-  late int time; // ms since epoch
+  int time; // ms since epoch
 
   CalorieTune({
     this.id,

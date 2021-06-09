@@ -10,18 +10,16 @@ class DataFormatPickerBottomSheet extends StatefulWidget {
 }
 
 class DataFormatPickerBottomSheetState extends State<DataFormatPickerBottomSheet> {
-  late int _formatIndex;
-  late List<String> _formatChoices;
-  late ThemeManager _themeManager;
-  late TextStyle _largerTextStyle;
-  late TextStyle _selectedTextStyle;
+  int _formatIndex = 0;
+  List<String> _formatChoices = ["FIT", "TCX"];
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = TextStyle();
+  TextStyle _selectedTextStyle = TextStyle();
 
   @override
   void initState() {
     super.initState();
-    _formatChoices = ["FIT", "TCX"];
     _formatIndex = max(0, _formatChoices.indexOf("FIT"));
-    _themeManager = Get.find<ThemeManager>();
     _largerTextStyle = Get.textTheme.headline3!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }

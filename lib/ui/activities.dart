@@ -40,39 +40,31 @@ class ActivitiesScreen extends StatefulWidget {
   ActivitiesScreen({key, required this.hasLeaderboardData}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return ActivitiesScreenState();
-  }
+  State<StatefulWidget> createState() => ActivitiesScreenState();
 }
 
 class ActivitiesScreenState extends State<ActivitiesScreen> {
-  late AppDatabase _database;
-  late int _editCount;
-  late bool _si;
-  late bool _leaderboardFeature;
+  AppDatabase _database = Get.find<AppDatabase>();
+  int _editCount = 0;
+  bool _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+  bool _leaderboardFeature =
+      Get.find<BasePrefService>().get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
   double? _mediaWidth;
-  late double _sizeDefault;
-  late double _sizeDefault2;
-  late TextStyle _measurementStyle;
-  late TextStyle _textStyle;
-  late TextStyle _headerStyle;
-  late TextStyle _unitStyle;
-  late ThemeManager _themeManager;
-  late ExpandableThemeData _expandableThemeData;
-  late double _ringDiameter;
-  late double _ringWidth;
+  double _sizeDefault = 10.0;
+  double _sizeDefault2 = 10.0;
+  TextStyle _measurementStyle = TextStyle();
+  TextStyle _textStyle = TextStyle();
+  TextStyle _headerStyle = TextStyle();
+  TextStyle _unitStyle = TextStyle();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData =
+      ExpandableThemeData(iconColor: Get.find<ThemeManager>().getProtagonistColor());
+  double _ringDiameter = 1.0;
+  double _ringWidth = 1.0;
 
   @override
   void initState() {
     super.initState();
-    _editCount = 0;
-    final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _leaderboardFeature =
-        prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
-    _database = Get.find<AppDatabase>();
-    _themeManager = Get.find<ThemeManager>();
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
     _ringWidth = _ringDiameter * 0.2;
   }
@@ -157,7 +149,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             }
             await Get.bottomSheet(
               PowerFactorTuneBottomSheet(
-                  deviceId: activity.deviceId, powerFactor: activity.powerFactor),
+                  deviceId: activity.deviceId, oldPowerFactor: activity.powerFactor),
               enableDrag: false,
             );
           },
@@ -170,7 +162,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               return;
             }
             await Get.bottomSheet(
-              CalorieOverrideBottomSheet(deviceId: activity.deviceId, calories: activity.calories),
+              CalorieOverrideBottomSheet(
+                  deviceId: activity.deviceId, oldCalories: activity.calories.toDouble()),
               enableDrag: false,
             );
           },

@@ -17,8 +17,8 @@ class PreferencesHubScreen extends StatefulWidget {
 }
 
 class PreferencesHubScreenState extends State<PreferencesHubScreen> {
-  late double _sizeDefault;
-  late TextStyle _textStyle;
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
 
   @override
   void initState() {

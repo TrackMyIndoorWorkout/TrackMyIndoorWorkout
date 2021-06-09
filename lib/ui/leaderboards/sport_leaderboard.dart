@@ -17,37 +17,27 @@ class SportLeaderboardScreen extends StatefulWidget {
   SportLeaderboardScreen({key, required this.sport}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return SportLeaderboardScreenState(sport: sport);
-  }
+  State<StatefulWidget> createState() => SportLeaderboardScreenState();
 }
 
 class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
-  final String sport;
-  late AppDatabase _database;
-  late bool _si;
-  late int _editCount;
-  late double _sizeDefault;
-  late TextStyle _textStyle;
-  late TextStyle _textStyle2;
-  late ThemeManager _themeManager;
-  late ExpandableThemeData _expandableThemeData;
-
-  SportLeaderboardScreenState({required this.sport});
+  AppDatabase _database = Get.find<AppDatabase>();
+  bool _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+  int _editCount = 0;
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
+  TextStyle _textStyle2 = TextStyle();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData =
+      ExpandableThemeData(iconColor: Get.find<ThemeManager>().getProtagonistColor());
 
   @override
   void initState() {
     super.initState();
-    _editCount = 0;
-    _database = Get.find<AppDatabase>();
-    final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline4!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
@@ -84,7 +74,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('$sport Leaderboard')),
+      appBar: AppBar(title: Text('${widget.sport} Leaderboard')),
       body: CustomListView(
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
@@ -93,8 +83,8 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
-            final data =
-                await _database.workoutSummaryDao.findWorkoutSummaryBySport(sport, limit, offset);
+            final data = await _database.workoutSummaryDao
+                .findWorkoutSummaryBySport(widget.sport, limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

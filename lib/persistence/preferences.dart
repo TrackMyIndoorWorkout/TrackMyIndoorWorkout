@@ -243,21 +243,21 @@ class PreferencesSpec {
   final String metric;
   String title;
   String unit;
-  late String multiLineUnit;
+  String multiLineUnit = "";
   final String thresholdTagPostfix;
   final Map<String, int> thresholdDefaultInts;
   final String zonesTagPostfix;
   final Map<String, List<int>> zonesDefaultInts;
   final bool indexDisplayDefault;
   IconData icon;
-  late bool indexDisplay;
-  late double threshold;
-  late List<int> zonePercents;
-  late List<double> zoneBounds;
-  late List<double> zoneLower;
-  late List<double> zoneUpper;
-  late bool si;
-  late String sport;
+  bool indexDisplay = false;
+  double threshold = 0.0;
+  List<int> zonePercents = [];
+  List<double> zoneBounds = [];
+  List<double> zoneLower = [];
+  List<double> zoneUpper = [];
+  bool si = false;
+  String sport = ActivityType.Ride;
 
   // late List<common.AnnotationSegment> annotationSegments;
 

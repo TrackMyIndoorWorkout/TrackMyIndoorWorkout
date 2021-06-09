@@ -23,11 +23,11 @@ typedef RecordHandlerFunction = Function(Record data);
 class FitnessEquipment extends DeviceBase {
   DeviceDescriptor? descriptor;
   String? manufacturerName;
-  late double _residueCalories;
-  late int _lastPositiveCadence; // #101
+  double _residueCalories = 0.0;
+  int _lastPositiveCadence = 0; // #101
   bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
-  late double _lastPositiveCalories; // #111
-  late bool hasTotalCalorieCounting;
+  double _lastPositiveCalories = 0.0; // #111
+  bool hasTotalCalorieCounting = false;
   Timer? _timer;
   late Record lastRecord;
   HeartRateMonitor? heartRateMonitor;
@@ -35,11 +35,11 @@ class FitnessEquipment extends DeviceBase {
   int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT_INT;
   String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
   Activity? _activity;
-  late bool measuring;
-  late bool calibrating;
-  late Random _random;
+  bool measuring = false;
+  bool calibrating = false;
+  Random _random = Random();
   double? slowPace;
-  late bool equipmentDiscovery;
+  bool equipmentDiscovery = false;
 
   FitnessEquipment({this.descriptor, device})
       : super(
@@ -47,16 +47,9 @@ class FitnessEquipment extends DeviceBase {
           characteristicsId: descriptor?.dataCharacteristicId,
           device: device,
         ) {
-    _residueCalories = 0.0;
-    _lastPositiveCadence = 0;
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
         prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
-    _lastPositiveCalories = 0.0;
-    hasTotalCalorieCounting = false;
-    measuring = false;
-    calibrating = false;
-    _random = Random();
     uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _heartRateGapWorkaround =
         prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
@@ -68,7 +61,6 @@ class FitnessEquipment extends DeviceBase {
     );
     _heartRateLimitingMethod =
         prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
-    equipmentDiscovery = false;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 

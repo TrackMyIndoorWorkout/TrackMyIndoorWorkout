@@ -7,11 +7,7 @@ import '../utils/constants.dart';
 // Bluetooth SIG registered companies
 class CompanyRegistry {
   static const BLANK_KEY = 1930;
-  late Map<int, String> registry;
-
-  CompanyRegistry() {
-    registry = Map<int, String>();
-  }
+  Map<int, String> registry = Map<int, String>();
 
   Future<void> loadCompanyIdentifiers() async {
     ByteData namesGzip = await rootBundle.load('assets/CompanyNames.txt.gz');

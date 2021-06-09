@@ -17,31 +17,21 @@ class SportPickerBottomSheet extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  SportPickerBottomSheetState createState() => SportPickerBottomSheetState(
-        initialSport: initialSport,
-        allSports: allSports,
-      );
+  SportPickerBottomSheetState createState() => SportPickerBottomSheetState();
 }
 
 class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
-  SportPickerBottomSheetState({
-    required this.initialSport,
-    required this.allSports,
-  });
-
-  final String initialSport;
-  final bool allSports;
-  late int _sportIndex;
-  late List<String> _sportChoices;
-  late ThemeManager _themeManager;
-  late TextStyle _largerTextStyle;
-  late TextStyle _selectedTextStyle;
+  int _sportIndex = 0;
+  List<String> _sportChoices = [];
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = TextStyle();
+  TextStyle _selectedTextStyle = TextStyle();
 
   @override
   void initState() {
     super.initState();
 
-    _sportChoices = allSports
+    _sportChoices = widget.allSports
         ? [
             ActivityType.Ride,
             ActivityType.Run,
@@ -56,8 +46,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
             ActivityType.Rowing,
             ActivityType.Swim,
           ];
-    _sportIndex = max(0, _sportChoices.indexOf(initialSport));
-    _themeManager = Get.find<ThemeManager>();
+    _sportIndex = max(0, _sportChoices.indexOf(widget.initialSport));
     _largerTextStyle = Get.textTheme.headline3!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }

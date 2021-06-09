@@ -17,22 +17,18 @@ class ImportForm extends StatefulWidget {
 
 class _ImportFormState extends State<ImportForm> {
   final dateTimeFormat = DateFormat("yyyy-MM-dd HH:mm");
-  late GlobalKey<FormState> _formKey;
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _filePath;
   DateTime? _activityDateTime;
-  late bool _isLoading;
-  late double _progressValue;
-  late double _sizeDefault;
-  late TextEditingController _textController;
+  bool _isLoading = false;
+  double _progressValue = 0.0;
+  double _sizeDefault = 10.0;
+  TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _isLoading = false;
-    _formKey = GlobalKey<FormState>();
-    _progressValue = 0;
     _sizeDefault = Get.textTheme.headline1!.fontSize!;
-    _textController = TextEditingController();
   }
 
   void setProgress(double progress) {

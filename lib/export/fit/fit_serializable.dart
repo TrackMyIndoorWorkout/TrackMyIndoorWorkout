@@ -6,11 +6,7 @@ import 'fit_crc.dart';
 
 abstract class FitSerializable {
   static final fitEpoch = DateTime.utc(1989, 12, 31, 0, 0, 0).millisecondsSinceEpoch;
-  late List<int> output;
-
-  FitSerializable() {
-    output = [];
-  }
+  late List<int> output = [];
 
   void addNonFloatingNumber(int? number, int length, {bool signed = false}) {
     if (number == null) {

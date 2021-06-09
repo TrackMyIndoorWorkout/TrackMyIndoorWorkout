@@ -1,16 +1,13 @@
 class HistogramData {
   final int index;
   final double upper;
-  late int count;
-  late int percent;
+  int count = 0;
+  int percent = 0;
 
   HistogramData({
     required this.index,
     required this.upper,
-  }) {
-    count = 0;
-    percent = 0;
-  }
+  });
 
   void increment() {
     count++;

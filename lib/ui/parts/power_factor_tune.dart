@@ -8,30 +8,24 @@ import '../../utils/theme_manager.dart';
 
 class PowerFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
-  final double powerFactor;
+  final double oldPowerFactor;
 
-  PowerFactorTuneBottomSheet({Key? key, required this.deviceId, required this.powerFactor})
+  PowerFactorTuneBottomSheet({Key? key, required this.deviceId, required this.oldPowerFactor})
       : super(key: key);
 
   @override
-  PowerFactorTuneBottomSheetState createState() =>
-      PowerFactorTuneBottomSheetState(deviceId: deviceId, oldPowerFactor: powerFactor);
+  PowerFactorTuneBottomSheetState createState() => PowerFactorTuneBottomSheetState();
 }
 
 class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> {
-  PowerFactorTuneBottomSheetState({required this.deviceId, required this.oldPowerFactor});
-
-  final String deviceId;
-  final double oldPowerFactor;
-  late double _powerFactorPercent;
-  late TextStyle _largerTextStyle;
-  late ThemeManager _themeManager;
+  double _powerFactorPercent = 100.0;
+  TextStyle _largerTextStyle = TextStyle();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
     super.initState();
-    _powerFactorPercent = oldPowerFactor * 100.0;
-    _themeManager = Get.find<ThemeManager>();
+    _powerFactorPercent = widget.oldPowerFactor * 100.0;
     _largerTextStyle = Get.textTheme.headline3!.apply(
       fontFamily: FONT_FAMILY,
       color: _themeManager.getProtagonistColor(),
@@ -62,8 +56,8 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
         final database = Get.find<AppDatabase>();
         final powerFactor = _powerFactorPercent / 100.0;
         PowerTune? powerTune;
-        if (await database.hasPowerTune(deviceId)) {
-          powerTune = await database.powerTuneDao.findPowerTuneByMac(deviceId).first;
+        if (await database.hasPowerTune(widget.deviceId)) {
+          powerTune = await database.powerTuneDao.findPowerTuneByMac(widget.deviceId).first;
         }
 
         if (powerTune != null) {
@@ -71,7 +65,7 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
           await database.powerTuneDao.updatePowerTune(powerTune);
         } else {
           final powerTune = PowerTune(
-            mac: deviceId,
+            mac: widget.deviceId,
             powerFactor: powerFactor,
             time: DateTime.now().millisecondsSinceEpoch,
           );

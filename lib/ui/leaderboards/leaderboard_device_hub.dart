@@ -11,16 +11,13 @@ class LeaderboardDeviceHubScreen extends StatefulWidget {
   LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => LeaderboardDeviceHubScreenState(devices: devices);
+  State<StatefulWidget> createState() => LeaderboardDeviceHubScreenState();
 }
 
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {
-  final List<Tuple2<String, String>> devices;
-  late double _sizeDefault;
-  late TextStyle _textStyle;
-  late TextStyle _subTextStyle;
-
-  LeaderboardDeviceHubScreenState({required this.devices});
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
+  TextStyle _subTextStyle = TextStyle();
 
   @override
   void initState() {
@@ -44,7 +41,7 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: devices
+          children: widget.devices
               .map(
                 (device) => Container(
                   padding: const EdgeInsets.all(5.0),

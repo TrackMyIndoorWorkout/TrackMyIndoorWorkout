@@ -7,11 +7,7 @@ import 'fault.dart';
 import 'strava.dart';
 
 class StravaService {
-  late Strava _strava;
-
-  StravaService() {
-    _strava = Strava(STRAVA_SECRET);
-  }
+  Strava _strava = Strava(STRAVA_SECRET);
 
   Future<bool> login() async {
     return await _strava.oauth(STRAVA_CLIENT_ID, 'activity:write', STRAVA_SECRET, 'auto');

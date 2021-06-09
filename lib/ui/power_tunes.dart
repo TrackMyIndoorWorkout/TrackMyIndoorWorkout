@@ -13,28 +13,23 @@ class PowerTunesScreen extends StatefulWidget {
   PowerTunesScreen({key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return PowerTunesScreenState();
-  }
+  State<StatefulWidget> createState() => PowerTunesScreenState();
 }
 
 class PowerTunesScreenState extends State<PowerTunesScreen> {
-  late AppDatabase _database;
-  late int _editCount;
-  late double _sizeDefault;
-  late TextStyle _textStyle;
-  late ThemeManager _themeManager;
-  late ExpandableThemeData _expandableThemeData;
+  AppDatabase _database = Get.find<AppDatabase>();
+  int _editCount = 0;
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData =
+      ExpandableThemeData(iconColor: Get.find<ThemeManager>().getProtagonistColor());
 
   @override
   void initState() {
     super.initState();
-    _editCount = 0;
-    _database = Get.find<AppDatabase>();
-    _themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline3!;
     _sizeDefault = _textStyle.fontSize!;
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(PowerTune powerTune, double size) {
@@ -47,7 +42,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
             final result = await Get.bottomSheet(
               PowerFactorTuneBottomSheet(
                 deviceId: powerTune.mac,
-                powerFactor: powerTune.powerFactor,
+                oldPowerFactor: powerTune.powerFactor,
               ),
               enableDrag: false,
             );

@@ -8,11 +8,9 @@ import '../export_model.dart';
 import '../export_record.dart';
 
 class TCXExport extends ActivityExport {
-  late StringBuffer _sb;
+  StringBuffer _sb = StringBuffer();
 
-  TCXExport() : super(nonCompressedFileExtension: 'tcx', nonCompressedMimeType: 'text/xml') {
-    _sb = StringBuffer();
-  }
+  TCXExport() : super(nonCompressedFileExtension: 'tcx', nonCompressedMimeType: 'text/xml');
 
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     // The prolog of the TCX file

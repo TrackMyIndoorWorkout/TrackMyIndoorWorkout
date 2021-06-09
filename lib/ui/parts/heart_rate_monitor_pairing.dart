@@ -16,11 +16,11 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
 }
 
 class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
-  late int _scanDuration;
-  late TextStyle _captionStyle;
-  late TextStyle _subtitleStyle;
-  late List<String> _scanResults;
-  late ThemeManager _themeManager;
+  int _scanDuration = 4;
+  TextStyle _captionStyle = TextStyle();
+  TextStyle _subtitleStyle = TextStyle();
+  List<String> _scanResults = [];
+  ThemeManager _themeManager = Get.find<ThemeManager>();
 
   @override
   void dispose() {
@@ -38,10 +38,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   @override
   void initState() {
     super.initState();
-    _scanResults = [];
     final prefService = Get.find<BasePrefService>();
     _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
-    _themeManager = Get.find<ThemeManager>();
     _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
     WidgetsBinding.instance?.addPostFrameCallback((_) {

@@ -10,15 +10,12 @@ class LeaderboardSportHubScreen extends StatefulWidget {
   LeaderboardSportHubScreen({Key? key, required this.sports}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => LeaderboardSportHubScreenState(sports: sports);
+  State<StatefulWidget> createState() => LeaderboardSportHubScreenState();
 }
 
 class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
-  final List<String> sports;
-  late double _sizeDefault;
-  late TextStyle _textStyle;
-
-  LeaderboardSportHubScreenState({required this.sports});
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
 
   @override
   void initState() {
@@ -38,7 +35,7 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: sports
+          children: widget.sports
               .map(
                 (sport) => Container(
                   padding: const EdgeInsets.all(5.0),

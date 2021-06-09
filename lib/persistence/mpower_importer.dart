@@ -70,15 +70,13 @@ class MPowerEchelon2Importer {
   static const AIR_DENSITY = 0.076537 * LB_TO_KG / (FT_TO_M * FT_TO_M * FT_TO_M);
 
   final DateTime start;
-  late String message;
+  String message = "";
 
-  late List<String> _lines;
-  late int _linePointer;
-  late Map<int, double> _velocityForPowerDict;
+  List<String> _lines = [];
+  int _linePointer = 0;
+  Map<int, double> _velocityForPowerDict = Map<int, double>();
 
-  MPowerEchelon2Importer({required this.start}) {
-    _velocityForPowerDict = Map<int, double>();
-  }
+  MPowerEchelon2Importer({required this.start});
 
   bool _findLine(String lead) {
     while (_linePointer < _lines.length && !_lines[_linePointer].startsWith(lead)) {

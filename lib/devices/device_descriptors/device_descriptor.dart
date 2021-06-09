@@ -29,8 +29,8 @@ abstract class DeviceDescriptor {
   String? dataCharacteristicId;
   final bool antPlus;
 
-  late int featuresFlag;
-  late int byteCounter;
+  int featuresFlag = 0;
+  int byteCounter = 0;
 
   bool canMeasureHeartRate;
   int? heartRateByteIndex;
@@ -47,10 +47,10 @@ abstract class DeviceDescriptor {
 
   // Adjusting skewed calories
   double calorieFactorDefault;
-  late double calorieFactor;
+  double calorieFactor = 1.0;
   // Adjusting skewed distance
-  late double powerFactor;
-  late bool extendTuning;
+  double powerFactor = 1.0;
+  bool extendTuning = EXTEND_TUNING_DEFAULT;
   double? slowPace;
 
   DeviceDescriptor({
@@ -76,11 +76,7 @@ abstract class DeviceDescriptor {
     this.distanceMetric,
     this.calorieFactorDefault = 1.0,
   }) {
-    featuresFlag = 0;
-    byteCounter = 0;
     calorieFactor = calorieFactorDefault;
-    powerFactor = 1.0;
-    extendTuning = EXTEND_TUNING_DEFAULT;
   }
 
   String get fullName => '$vendorName $modelName';

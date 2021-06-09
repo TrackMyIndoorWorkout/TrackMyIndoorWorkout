@@ -13,9 +13,9 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   ShortMetricDescriptor? strokeCountMetric;
   ShortMetricDescriptor? paceMetric;
 
-  late int _strokeRateWindowSize;
-  late ListQueue<int> _strokeRates;
-  late int _strokeRateSum;
+  int _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
+  ListQueue<int> _strokeRates = ListQueue<int>();
+  int _strokeRateSum = 0;
 
   RowerDeviceDescriptor({
     required defaultSport,
@@ -47,11 +47,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
           calorieFactorDefault: calorieFactorDefault,
-        ) {
-    _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
-    _strokeRates = ListQueue<int>();
-    _strokeRateSum = 0;
-  }
+        );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override

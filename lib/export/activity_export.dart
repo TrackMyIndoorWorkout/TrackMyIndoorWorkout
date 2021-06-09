@@ -24,20 +24,18 @@ abstract class ActivityExport {
   final String nonCompressedMimeType;
   final String compressedMimeType = 'application/x-gzip';
 
-  late int _lastPositiveCadence; // #101
+  int _lastPositiveCadence = 0; // #101
   bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
-  late int _lastPositiveHeartRate;
+  int _lastPositiveHeartRate = 0;
   String heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
   int heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT_INT;
   String heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
 
   ActivityExport({required this.nonCompressedFileExtension, required this.nonCompressedMimeType}) {
     compressedFileExtension = nonCompressedFileExtension + '.gz';
-    _lastPositiveCadence = 0;
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
         prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
-    _lastPositiveHeartRate = 0;
     heartRateGapWorkaround =
         prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     heartRateUpperLimit = getStringIntegerPreference(

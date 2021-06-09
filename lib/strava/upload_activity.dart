@@ -1,9 +1,9 @@
 class UploadActivity {
-  late int activityId;
-  late String externalId;
-  late int id;
-  late String error;
-  late String status;
+  int activityId = 0;
+  String externalId = "";
+  int id = 0;
+  String error = "";
+  String status = "";
 
   UploadActivity(this.activityId, this.externalId, this.id, this.error, this.status);
 
@@ -27,11 +27,11 @@ class UploadActivity {
 }
 
 class ResponseUploadActivity {
-  late int id;
-  late String externalId;
-  late String error;
-  late String status;
-  late int activityId;
+  int id = 0;
+  String externalId = "";
+  String error = "";
+  String status = "";
+  int activityId = 0;
 
   ResponseUploadActivity(this.id, this.externalId, this.error, this.status, this.activityId);
 

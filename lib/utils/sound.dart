@@ -14,7 +14,7 @@ final Map<SoundEffect, String> _soundAssetPaths = {
 };
 
 class SoundService {
-  late Soundpool _soundPool;
+  Soundpool? _soundPool;
 
   Map<SoundEffect, int> _soundIds = {
     SoundEffect.Bleep: 0,
@@ -42,11 +42,14 @@ class SoundService {
       _soundAssetPaths.forEach((k, v) async {
         if ((_soundIds[k] ?? 0) <= 0) {
           var asset = await rootBundle.load(v);
-          final soundId = await _soundPool.load(asset);
-          _soundIds.addAll({k: soundId});
+          final soundId = await _soundPool?.load(asset) ?? 0;
+          if (soundId > 0) {
+            _soundIds.addAll({k: soundId});
+          }
         }
       });
-      return _soundPool;
+
+      return _soundPool!;
     });
   }
 
@@ -63,10 +66,13 @@ class SoundService {
       null,
     );
     final volume = volumePercent / 100.0;
-    _soundPool.setVolume(soundId: soundId, volume: volume);
-    final streamId = await _soundPool.play(soundId);
-    _streamIds.addAll({soundEffect: streamId});
-    _soundPool.setVolume(streamId: streamId, volume: volume);
+    _soundPool?.setVolume(soundId: soundId, volume: volume);
+    final streamId = await _soundPool?.play(soundId) ?? 0;
+    if (streamId > 0) {
+      _streamIds.addAll({soundEffect: streamId});
+      _soundPool?.setVolume(streamId: streamId, volume: volume);
+    }
+
     return streamId;
   }
 
@@ -96,7 +102,7 @@ class SoundService {
   stopSoundEffect(SoundEffect soundEffect) async {
     final streamId = _streamIds[soundEffect] ?? 0;
     if (streamId > 0) {
-      await _soundPool.stop(streamId);
+      await _soundPool?.stop(streamId);
       _streamIds[soundEffect] = 0;
     }
   }
@@ -109,7 +115,7 @@ class SoundService {
 
   Future<void> updateVolume(newVolume) async {
     _soundIds.forEach((k, v) async {
-      _soundPool.setVolume(soundId: v, volume: newVolume / 100.0);
+      _soundPool?.setVolume(soundId: v, volume: newVolume / 100.0);
     });
   }
 }

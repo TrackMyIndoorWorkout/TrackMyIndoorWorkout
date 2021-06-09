@@ -25,7 +25,7 @@ class MeasurementCounter {
   int minHr = MIN_INIT;
   int maxHr = MAX_INIT;
 
-  late double slowPace;
+  double slowPace = EPS;
 
   MeasurementCounter({
     required this.si,

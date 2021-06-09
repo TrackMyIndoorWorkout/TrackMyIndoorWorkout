@@ -53,14 +53,14 @@ class CircularFabMenu extends StatefulWidget {
 }
 
 class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProviderStateMixin {
-  late double _screenWidth;
-  late double _screenHeight;
-  late double _marginH;
-  late double _marginV;
-  late double _directionX;
-  late double _directionY;
-  late double _translationX;
-  late double _translationY;
+  double _screenWidth = 0.0;
+  double _screenHeight = 0.0;
+  double _marginH = 0.0;
+  double _marginV = 0.0;
+  double _directionX = 1.0;
+  double _directionY = 1.0;
+  double _translationX = 0.0;
+  double _translationY = 0.0;
 
   Color? _ringColor;
   double? _ringDiameter;
@@ -68,15 +68,15 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
   Color? _fabColor;
   Color? _fabOpenColor;
   Color? _fabCloseColor;
-  late ShapeBorder _fabIconBorder;
+  ShapeBorder _fabIconBorder = CircleBorder();
 
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-  late Animation _scaleCurve;
-  late Animation<double> _rotateAnimation;
-  late Animation _rotateCurve;
+  AnimationController? _animationController;
+  Animation<double>? _scaleAnimation;
+  Animation? _scaleCurve;
+  Animation<double>? _rotateAnimation;
+  Animation? _rotateCurve;
   Animation<Color?>? _colorAnimation;
-  late Animation _colorCurve;
+  Animation? _colorCurve;
 
   bool _isOpen = false;
   bool _isAnimating = false;
@@ -88,14 +88,14 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
     _animationController = AnimationController(duration: widget.animationDuration, vsync: this);
 
     _scaleCurve = CurvedAnimation(
-        parent: _animationController, curve: Interval(0.0, 0.4, curve: widget.animationCurve));
+        parent: _animationController!, curve: Interval(0.0, 0.4, curve: widget.animationCurve));
     _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_scaleCurve as Animation<double>)
       ..addListener(() {
         setState(() {});
       });
 
     _rotateCurve = CurvedAnimation(
-        parent: _animationController, curve: Interval(0.4, 1.0, curve: widget.animationCurve));
+        parent: _animationController!, curve: Interval(0.4, 1.0, curve: widget.animationCurve));
     _rotateAnimation =
         Tween<double>(begin: 0.5, end: 1.0).animate(_rotateCurve as Animation<double>)
           ..addListener(() {
@@ -105,7 +105,7 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _animationController?.dispose();
     super.dispose();
   }
 
@@ -135,7 +135,7 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
               _translationX,
               _translationY,
               0.0,
-            )..scale(_scaleAnimation.value),
+            )..scale(_scaleAnimation!.value),
             alignment: FractionalOffset.center,
             child: Container(
               width: _ringDiameter,
@@ -145,9 +145,9 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
                   width: _ringWidth,
                   color: _ringColor,
                 ),
-                child: _scaleAnimation.value == 1.0
+                child: _scaleAnimation!.value == 1.0
                     ? Transform.rotate(
-                        angle: (2 * pi) * _rotateAnimation.value * _directionX * _directionY,
+                        angle: (2 * pi) * _rotateAnimation!.value * _directionX * _directionY,
                         child: Container(
                           child: Stack(
                             alignment: Alignment.center,
@@ -186,7 +186,7 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
             },
             child: Center(
               child: widget.fabChild == null
-                  ? (_scaleAnimation.value == 1.0 ? widget.fabCloseIcon : widget.fabOpenIcon)
+                  ? (_scaleAnimation!.value == 1.0 ? widget.fabCloseIcon : widget.fabOpenIcon)
                   : widget.fabChild,
             ),
           ),
@@ -236,7 +236,7 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
 
     if (_colorAnimation == null || !kReleaseMode) {
       _colorCurve = CurvedAnimation(
-          parent: _animationController,
+          parent: _animationController!,
           curve: Interval(
             0.0,
             0.4,
@@ -252,7 +252,7 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
 
   void open() {
     _isAnimating = true;
-    _animationController.forward().then((_) {
+    _animationController?.forward().then((_) {
       _isAnimating = false;
       _isOpen = true;
       if (widget.onDisplayChange != null) {
@@ -263,7 +263,7 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
 
   void close() {
     _isAnimating = true;
-    _animationController.reverse().then((_) {
+    _animationController?.reverse().then((_) {
       _isAnimating = false;
       _isOpen = false;
       if (widget.onDisplayChange != null) {

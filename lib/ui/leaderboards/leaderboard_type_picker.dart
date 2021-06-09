@@ -15,15 +15,14 @@ class LeaderBoardTypeBottomSheet extends StatefulWidget {
 }
 
 class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> {
-  late double _sizeDefault;
-  late TextStyle _textStyle;
-  late TextStyle _inverseTextStyle;
-  late AppDatabase _database;
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
+  TextStyle _inverseTextStyle = TextStyle();
+  AppDatabase _database = Get.find<AppDatabase>();
 
   @override
   void initState() {
     super.initState();
-    _database = Get.find<AppDatabase>();
     final themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline3!.apply(
       fontFamily: FONT_FAMILY,

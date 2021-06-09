@@ -26,8 +26,8 @@ class TrackMyIndoorExerciseApp extends StatefulWidget {
 }
 
 class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
-  late Future<PermissionStatus> permissionFuture;
-  late ThemeManager _themeManager;
+  Future<PermissionStatus>? permissionFuture;
+  ThemeManager? _themeManager;
 
   @override
   void initState() {
@@ -42,10 +42,10 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
       service: widget.prefService,
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        color: _themeManager.getHeaderColor(),
+        color: _themeManager!.getHeaderColor(),
         theme: ThemeData.light(),
         darkTheme: ThemeData.dark(),
-        themeMode: _themeManager.getThemeMode(),
+        themeMode: _themeManager!.getThemeMode(),
         home: StreamBuilder<BluetoothState>(
           stream: FlutterBlue.instance.state,
           initialData: widget.blueOn ? BluetoothState.on : BluetoothState.unknown,

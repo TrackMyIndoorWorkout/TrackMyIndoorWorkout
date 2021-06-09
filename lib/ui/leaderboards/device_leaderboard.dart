@@ -18,37 +18,27 @@ class DeviceLeaderboardScreen extends StatefulWidget {
   DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return DeviceLeaderboardScreenState(device: device);
-  }
+  State<StatefulWidget> createState() => DeviceLeaderboardScreenState();
 }
 
 class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
-  final Tuple2<String, String> device;
-  late AppDatabase _database;
-  late bool _si;
-  late int _editCount;
-  late double _sizeDefault;
-  late TextStyle _textStyle;
-  late TextStyle _textStyle2;
-  late ThemeManager _themeManager;
-  late ExpandableThemeData _expandableThemeData;
-
-  DeviceLeaderboardScreenState({required this.device});
+  AppDatabase _database = Get.find<AppDatabase>();
+  bool _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+  int _editCount = 0;
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
+  TextStyle _textStyle2 = TextStyle();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData =
+      ExpandableThemeData(iconColor: Get.find<ThemeManager>().getProtagonistColor());
 
   @override
   void initState() {
     super.initState();
-    _editCount = 0;
-    _database = Get.find<AppDatabase>();
-    final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline4!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
@@ -85,7 +75,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${device.item2} Leaderboard')),
+      appBar: AppBar(title: Text('${widget.device.item2} Leaderboard')),
       body: CustomListView(
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
@@ -95,7 +85,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
             final data = await _database.workoutSummaryDao
-                .findWorkoutSummaryByDevice(device.item1, limit, offset);
+                .findWorkoutSummaryByDevice(widget.device.item1, limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
