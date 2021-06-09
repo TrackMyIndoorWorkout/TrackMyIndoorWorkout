@@ -10,25 +10,26 @@ class UXPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> uxPreferences = [
-      PrefDropdown<String>(
+      PrefLabel(
         title: Text(THEME_SELECTION),
         subtitle: Text(THEME_SELECTION_DESCRIPTION),
-        pref: THEME_SELECTION_TAG,
-        items: [
-          DropdownMenuItem(
-            value: THEME_SELECTION_SYSTEM,
-            child: Text(THEME_SELECTION_SYSTEM_DESCRIPTION),
-          ),
-          DropdownMenuItem(
-            value: THEME_SELECTION_LIGHT,
-            child: Text(THEME_SELECTION_LIGHT_DESCRIPTION),
-          ),
-          DropdownMenuItem(
-            value: THEME_SELECTION_DARK,
-            child: Text(THEME_SELECTION_DARK_DESCRIPTION),
-          ),
-        ],
       ),
+      PrefRadio<String>(
+        title: Text(THEME_SELECTION_SYSTEM_DESCRIPTION),
+        value: THEME_SELECTION_SYSTEM,
+        pref: THEME_SELECTION_TAG,
+      ),
+      PrefRadio<String>(
+        title: Text(THEME_SELECTION_LIGHT_DESCRIPTION),
+        value: THEME_SELECTION_LIGHT,
+        pref: THEME_SELECTION_TAG,
+      ),
+      PrefRadio<String>(
+        title: Text(THEME_SELECTION_DARK_DESCRIPTION),
+        value: THEME_SELECTION_DARK,
+        pref: THEME_SELECTION_TAG,
+      ),
+      PrefLabel(title: Divider(height: 1)),
       PrefCheckbox(
         title: Text(UNIT_SYSTEM),
         subtitle: Text(UNIT_SYSTEM_DESCRIPTION),
