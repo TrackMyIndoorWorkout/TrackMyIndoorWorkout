@@ -647,10 +647,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "68c1e406cf597978de654c7f513d308f8b6a2965"
+      resolved-ref: "56703dbf3fcb83c0ff2ef5d3a8f8420bf93a4970"
       url: "https://github.com/CsabaConsulting/Share-Files-And-Screenshot-Widgets-Flutter.git"
     source: git
-    version: "1.0.4"
+    version: "1.0.5"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -759,10 +759,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "28f8d9ddbee6e5c0848d9734d5a080b481031213"
+      resolved-ref: "3540b46ba561332c7df2df3fb2cbd2b306b6bb9b"
       url: "https://github.com/CsabaConsulting/spinner_input.git"
     source: git
-    version: "0.1.1"
+    version: "0.1.2"
   sqflite:
     dependency: "direct main"
     description:
