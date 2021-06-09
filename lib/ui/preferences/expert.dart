@@ -12,7 +12,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> expertPreferences = [
-      PrefTitle(title: Text(DATA_CONNECTION_ADDRESSES_DESCRIPTION)),
+      PrefLabel(title: Text(DATA_CONNECTION_ADDRESSES_DESCRIPTION, maxLines: 10)),
       PrefText(
         label: DATA_CONNECTION_ADDRESSES,
         pref: DATA_CONNECTION_ADDRESSES_TAG,

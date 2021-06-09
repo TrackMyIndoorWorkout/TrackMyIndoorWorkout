@@ -13,30 +13,24 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> targetHrPreferences = [
-      PrefDialogButton(
+      PrefDropdown<String>(
         title: Text(TARGET_HEART_RATE_MODE),
         subtitle: Text(TARGET_HEART_RATE_MODE_DESCRIPTION),
-        dialog: PrefDialog(
-          title: Text('Select Target HR Method'),
-          submit: Text('Close'),
-          children: [
-            PrefRadio(
-              title: Text(TARGET_HEART_RATE_MODE_NONE_DESCRIPTION),
-              value: TARGET_HEART_RATE_MODE_NONE,
-              pref: TARGET_HEART_RATE_MODE_TAG,
-            ),
-            PrefRadio(
-              title: Text(TARGET_HEART_RATE_MODE_BPM_DESCRIPTION),
-              value: TARGET_HEART_RATE_MODE_BPM,
-              pref: TARGET_HEART_RATE_MODE_TAG,
-            ),
-            PrefRadio(
-              title: Text(TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION),
-              value: TARGET_HEART_RATE_MODE_ZONES,
-              pref: TARGET_HEART_RATE_MODE_TAG,
-            ),
-          ],
-        ),
+        pref: TARGET_HEART_RATE_MODE_TAG,
+        items: [
+          DropdownMenuItem(
+            value: TARGET_HEART_RATE_MODE_NONE,
+            child: Text(TARGET_HEART_RATE_MODE_NONE_DESCRIPTION),
+          ),
+          DropdownMenuItem(
+            value: TARGET_HEART_RATE_MODE_BPM,
+            child: Text(TARGET_HEART_RATE_MODE_BPM_DESCRIPTION),
+          ),
+          DropdownMenuItem(
+            value: TARGET_HEART_RATE_MODE_ZONES,
+            child: Text(TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION),
+          ),
+        ],
       ),
       PrefText(
         label: TARGET_HEART_RATE_LOWER_BPM,
@@ -122,42 +116,32 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
           return null;
         },
       ),
-      PrefDialogButton(
+      PrefDropdown<String>(
         title: Text(TARGET_HEART_RATE_SOUND_EFFECT),
         subtitle: Text(TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION),
-        dialog: PrefDialog(
-          title: Text('Select Target HR Sound Effect'),
-          submit: Text('Close'),
-          children: [
-            PrefRadio(
-              title: Text(SOUND_EFFECT_ONE_TONE_DESCRIPTION),
-              value: SOUND_EFFECT_ONE_TONE,
-              pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () =>
-                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
-            ),
-            PrefRadio(
-              title: Text(SOUND_EFFECT_TWO_TONE_DESCRIPTION),
-              value: SOUND_EFFECT_TWO_TONE,
-              pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () =>
-                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
-            ),
-            PrefRadio(
-              title: Text(SOUND_EFFECT_THREE_TONE_DESCRIPTION),
-              value: SOUND_EFFECT_THREE_TONE,
-              pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () =>
-                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
-            ),
-            PrefRadio(
-              title: Text(SOUND_EFFECT_BLEEP_DESCRIPTION),
-              value: SOUND_EFFECT_BLEEP,
-              pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
-            ),
-          ],
-        ),
+        pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+        items: [
+          DropdownMenuItem(
+            value: SOUND_EFFECT_ONE_TONE,
+            child: Text(SOUND_EFFECT_ONE_TONE_DESCRIPTION),
+            onTap: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
+          ),
+          DropdownMenuItem(
+            value: SOUND_EFFECT_TWO_TONE,
+            child: Text(SOUND_EFFECT_TWO_TONE_DESCRIPTION),
+            onTap: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
+          ),
+          DropdownMenuItem(
+            value: SOUND_EFFECT_THREE_TONE,
+            child: Text(SOUND_EFFECT_THREE_TONE_DESCRIPTION),
+            onTap: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
+          ),
+          DropdownMenuItem(
+            value: SOUND_EFFECT_BLEEP,
+            child: Text(SOUND_EFFECT_BLEEP_DESCRIPTION),
+            onTap: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
+          ),
+        ],
       ),
       PrefText(
         label: AUDIO_VOLUME,

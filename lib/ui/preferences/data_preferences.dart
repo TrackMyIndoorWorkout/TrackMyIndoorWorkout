@@ -18,7 +18,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(EXTEND_TUNING_DESCRIPTION),
         pref: EXTEND_TUNING_TAG,
       ),
-      PrefTitle(title: Text(STROKE_RATE_SMOOTHING_DESCRIPTION)),
+      PrefLabel(title: Text(STROKE_RATE_SMOOTHING_DESCRIPTION, maxLines: 10)),
       PrefText(
         label: STROKE_RATE_SMOOTHING,
         pref: STROKE_RATE_SMOOTHING_TAG,
@@ -31,7 +31,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         },
       ),
       PrefTitle(title: Text(WORKAROUND_PREFERENCES)),
-      PrefTitle(title: Text(DATA_STREAM_GAP_WATCHDOG_DESCRIPTION)),
+      PrefLabel(title: Text(DATA_STREAM_GAP_WATCHDOG_DESCRIPTION, maxLines: 10)),
       PrefText(
         label: DATA_STREAM_GAP_WATCHDOG,
         pref: DATA_STREAM_GAP_WATCHDOG_TAG,
@@ -43,48 +43,33 @@ class DataPreferencesScreen extends PreferencesScreenBase {
           return null;
         },
       ),
-      PrefTitle(title: Text(DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION)),
-      PrefDialogButton(
+      PrefDropdown<String>(
         title: Text(DATA_STREAM_GAP_SOUND_EFFECT),
         subtitle: Text(DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION),
-        dialog: PrefDialog(
-          title: Text('Select Data Gap Sound Effect'),
-          submit: Text('Close'),
-          children: [
-            PrefRadio(
-              title: Text(SOUND_EFFECT_NONE_DESCRIPTION),
-              value: SOUND_EFFECT_NONE,
-              pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-            ),
-            PrefRadio(
-              title: Text(SOUND_EFFECT_ONE_TONE_DESCRIPTION),
-              value: SOUND_EFFECT_ONE_TONE,
-              pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-              onSelect: () =>
-                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
-            ),
-            PrefRadio(
-              title: Text(SOUND_EFFECT_TWO_TONE_DESCRIPTION),
-              value: SOUND_EFFECT_TWO_TONE,
-              pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-              onSelect: () =>
-                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
-            ),
-            PrefRadio(
-              title: Text(SOUND_EFFECT_THREE_TONE_DESCRIPTION),
-              value: SOUND_EFFECT_THREE_TONE,
-              pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-              onSelect: () =>
-                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
-            ),
-            PrefRadio(
-              title: Text(SOUND_EFFECT_BLEEP_DESCRIPTION),
-              value: SOUND_EFFECT_BLEEP,
-              pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
-            ),
-          ],
-        ),
+        pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+        items: [
+          DropdownMenuItem(value: SOUND_EFFECT_NONE, child: Text(SOUND_EFFECT_NONE_DESCRIPTION)),
+          DropdownMenuItem(
+            value: SOUND_EFFECT_ONE_TONE,
+            child: Text(SOUND_EFFECT_ONE_TONE_DESCRIPTION),
+            onTap: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
+          ),
+          DropdownMenuItem(
+            value: SOUND_EFFECT_TWO_TONE,
+            child: Text(SOUND_EFFECT_TWO_TONE_DESCRIPTION),
+            onTap: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
+          ),
+          DropdownMenuItem(
+            value: SOUND_EFFECT_THREE_TONE,
+            child: Text(SOUND_EFFECT_THREE_TONE_DESCRIPTION),
+            onTap: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
+          ),
+          DropdownMenuItem(
+            value: SOUND_EFFECT_BLEEP,
+            child: Text(SOUND_EFFECT_BLEEP_DESCRIPTION),
+            onTap: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
+          ),
+        ],
       ),
       PrefText(
         label: AUDIO_VOLUME,
@@ -102,31 +87,25 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(CADENCE_GAP_WORKAROUND_DESCRIPTION),
         pref: CADENCE_GAP_WORKAROUND_TAG,
       ),
-      PrefDialogButton(
-        title: Text(HEART_RATE_GAP_WORKAROUND),
-        dialog: PrefDialog(
-          title: Text('Select Workaround Type'),
-          submit: Text('Close'),
-          children: [
-            PrefRadio(
-              title: Text(DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION),
-              value: DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE,
-              pref: HEART_RATE_GAP_WORKAROUND_TAG,
-            ),
-            PrefRadio(
-              title: Text(DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION),
-              value: DATA_GAP_WORKAROUND_NO_WORKAROUND,
-              pref: HEART_RATE_GAP_WORKAROUND_TAG,
-            ),
-            PrefRadio(
-              title: Text(DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION),
-              value: DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS,
-              pref: HEART_RATE_GAP_WORKAROUND_TAG,
-            ),
-          ],
-        ),
+      PrefDropdown<String>(
+        title: Text(HEART_RATE_GAP_WORKAROUND_SELECTION),
+        pref: HEART_RATE_GAP_WORKAROUND_TAG,
+        items: [
+          DropdownMenuItem(
+            value: DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE,
+            child: Text(DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION),
+          ),
+          DropdownMenuItem(
+            value: DATA_GAP_WORKAROUND_NO_WORKAROUND,
+            child: Text(DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION),
+          ),
+          DropdownMenuItem(
+            value: DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS,
+            child: Text(DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION),
+          ),
+        ],
       ),
-      PrefTitle(title: Text(HEART_RATE_UPPER_LIMIT_DESCRIPTION)),
+      PrefLabel(title: Text(HEART_RATE_UPPER_LIMIT_DESCRIPTION, maxLines: 10)),
       PrefText(
         label: HEART_RATE_UPPER_LIMIT,
         pref: HEART_RATE_UPPER_LIMIT_TAG,
@@ -138,34 +117,27 @@ class DataPreferencesScreen extends PreferencesScreenBase {
           return null;
         },
       ),
-      PrefDialogButton(
+      PrefDropdown<String>(
         title: Text(HEART_RATE_LIMITING_METHOD),
-        dialog: PrefDialog(
-          title: Text('Select HR Limiting Method'),
-          submit: Text('Close'),
-          children: [
-            PrefRadio(
-              title: Text(HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION),
-              value: HEART_RATE_LIMITING_WRITE_ZERO,
-              pref: HEART_RATE_LIMITING_METHOD_TAG,
-            ),
-            PrefRadio(
-              title: Text(HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION),
-              value: HEART_RATE_LIMITING_WRITE_NOTHING,
-              pref: HEART_RATE_LIMITING_METHOD_TAG,
-            ),
-            PrefRadio(
-              title: Text(HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION),
-              value: HEART_RATE_LIMITING_CAP_AT_LIMIT,
-              pref: HEART_RATE_LIMITING_METHOD_TAG,
-            ),
-            PrefRadio(
-              title: Text(HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION),
-              value: HEART_RATE_LIMITING_NO_LIMIT,
-              pref: HEART_RATE_LIMITING_METHOD_TAG,
-            ),
-          ],
-        ),
+        pref: HEART_RATE_LIMITING_METHOD_TAG,
+        items: [
+          DropdownMenuItem(
+            value: HEART_RATE_LIMITING_WRITE_ZERO,
+            child: Text(HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION),
+          ),
+          DropdownMenuItem(
+            value: HEART_RATE_LIMITING_WRITE_NOTHING,
+            child: Text(HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION),
+          ),
+          DropdownMenuItem(
+            value: HEART_RATE_LIMITING_CAP_AT_LIMIT,
+            child: Text(HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION),
+          ),
+          DropdownMenuItem(
+            value: HEART_RATE_LIMITING_NO_LIMIT,
+            child: Text(HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION),
+          ),
+        ],
       ),
     ];
 

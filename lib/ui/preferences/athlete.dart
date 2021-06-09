@@ -10,7 +10,7 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> athletePreferences = [
-      PrefTitle(title: Text(ATHLETE_BODY_WEIGHT_DESCRIPTION)),
+      PrefLabel(title: Text(ATHLETE_BODY_WEIGHT_DESCRIPTION, maxLines: 10)),
       PrefText(
         label: ATHLETE_BODY_WEIGHT,
         pref: ATHLETE_BODY_WEIGHT_TAG,
