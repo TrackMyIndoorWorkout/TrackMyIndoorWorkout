@@ -7,7 +7,7 @@ import '../persistence/preferences.dart';
 import 'constants.dart';
 import 'preferences.dart';
 
-Future<PrefServiceShared> initPreferences() async {
+Future<BasePrefService> initPreferences() async {
   Map<String, dynamic> prefDefaults = {
     PREFERENCES_VERSION_TAG: PREFERENCES_VERSION_NEXT,
     UNIT_SYSTEM_TAG: UNIT_SYSTEM_DEFAULT,
@@ -72,7 +72,7 @@ Future<PrefServiceShared> initPreferences() async {
 
   final prefService =
       await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
-  Get.put<PrefServiceShared>(prefService);
+  Get.put<BasePrefService>(prefService);
 
   final prefVersion =
       prefService.sharedPreferences.getInt(PREFERENCES_VERSION_TAG) ?? PREFERENCES_VERSION_NEXT;

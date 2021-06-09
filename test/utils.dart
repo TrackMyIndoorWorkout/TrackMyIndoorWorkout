@@ -128,5 +128,5 @@ Future<void> initPrefServiceForTest() async {
   };
   final prefService =
       await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
-  Get.put<PrefServiceShared>(prefService);
+  Get.put<BasePrefService>(prefService);
 }
