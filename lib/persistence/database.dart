@@ -19,7 +19,7 @@ import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 7, entities: [
+@Database(version: 8, entities: [
   Activity,
   Record,
   DeviceUsage,
@@ -116,6 +116,7 @@ abstract class AppDatabase extends FloorDatabase {
 }
 
 final migration1to2 = Migration(1, 2, (database) async {
+  // Cannot add a non null column
   await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `four_cc` TEXT");
 });
 
@@ -125,6 +126,7 @@ final migration2to3 = Migration(2, 3, (database) async {
 });
 
 final migration3to4 = Migration(3, 4, (database) async {
+  // Cannot add a non null column
   await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `sport` TEXT");
   await database.execute(
       "UPDATE `$ACTIVITIES_TABLE_NAME` SET `sport`='Kayaking' WHERE `four_cc`='$KAYAK_PRO_GENESIS_PORT_FOURCC'");
@@ -134,18 +136,20 @@ final migration3to4 = Migration(3, 4, (database) async {
 
 final migration4to5 = Migration(4, 5, (database) async {
   await database.execute("CREATE TABLE IF NOT EXISTS `$DEVICE_USAGE_TABLE_NAME` " +
-      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT, `mac` TEXT, `name` TEXT, " +
-      "`manufacturer` TEXT, `manufacturer_name` TEXT, `time` INTEGER)");
+      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT NOT NULL, `mac` TEXT NOT NULL, " +
+      "`name` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `manufacturer_name` TEXT, " +
+      "`time` INTEGER NOT NULL)");
 });
 
 final migration5to6 = Migration(5, 6, (database) async {
   await database.execute("CREATE TABLE IF NOT EXISTS `$CALORIE_TUNE_TABLE_NAME` " +
-      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `calorie_factor` REAL, " +
-      "`time` INTEGER)");
+      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, " +
+      "`calorie_factor` REAL NOT NULL, `time` INTEGER NOT NULL)");
   await database.execute("CREATE TABLE IF NOT EXISTS `$POWER_TUNE_TABLE_NAME` " +
-      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `power_factor` REAL, " +
-      "`time` INTEGER)");
+      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, " +
+      "`power_factor` REAL NOT NULL, `time` INTEGER NOT NULL)");
 
+  // Cannot add a non null column
   await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `power_factor` FLOAT");
   await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `calorie_factor` FLOAT");
 
@@ -160,8 +164,14 @@ final migration5to6 = Migration(5, 6, (database) async {
 });
 
 final migration6to7 = Migration(6, 7, (database) async {
-  await database.execute('CREATE TABLE IF NOT EXISTS `$WORKOUT_SUMMARIES_TABLE_NAME` ' +
-      '(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, ' +
-      '`manufacturer` TEXT, `start` INTEGER, `distance` REAL, `elapsed` INTEGER, ' +
-      '`speed` REAL, `sport` TEXT, `power_factor` REAL, `calorie_factor` REAL)');
+  await database.execute("CREATE TABLE IF NOT EXISTS `$WORKOUT_SUMMARIES_TABLE_NAME` " +
+      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, " +
+      "`device_id` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `start` INTEGER NOT NULL, " +
+      "`distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `speed` REAL NOT NULL, " +
+      "`sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL)");
+});
+
+final migration7to8 = Migration(7, 8, (database) async {
+  await database
+      .execute("UPDATE `$ACTIVITIES_TABLE_NAME` SET `strava_id`=0 WHERE `strava_id` IS NULL");
 });
