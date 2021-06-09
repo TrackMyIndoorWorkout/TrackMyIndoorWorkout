@@ -494,7 +494,7 @@ packages:
       name: mockito
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.9"
+    version: "5.0.10"
   package_config:
     dependency: transitive
     description:
@@ -832,14 +832,14 @@ packages:
       name: syncfusion_flutter_charts
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.1.66+1"
+    version: "19.1.67"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.1.66"
+    version: "19.1.67"
   synchronized:
     dependency: transitive
     description:
