@@ -22,14 +22,14 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
   double _sizeDefault = 10.0;
   TextStyle _textStyle = TextStyle();
   ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData =
-      ExpandableThemeData(iconColor: Get.find<ThemeManager>().getProtagonistColor());
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
     super.initState();
     _textStyle = Get.textTheme.headline3!;
     _sizeDefault = _textStyle.fontSize!;
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(PowerTune powerTune, double size) {

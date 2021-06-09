@@ -22,14 +22,14 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
   ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _textStyle = TextStyle();
   double _sizeDefault = 10.0;
-  ExpandableThemeData _expandableThemeData =
-      ExpandableThemeData(iconColor: Get.find<ThemeManager>().getProtagonistColor());
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
     super.initState();
     _textStyle = Get.textTheme.headline3!;
     _sizeDefault = _textStyle.fontSize!;
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(CalorieTune calorieTune, double size) {

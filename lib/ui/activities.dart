@@ -46,9 +46,8 @@ class ActivitiesScreen extends StatefulWidget {
 class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
-  bool _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-  bool _leaderboardFeature =
-      Get.find<BasePrefService>().get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
+  bool _si = UNIT_SYSTEM_DEFAULT;
+  bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeDefault2 = 10.0;
@@ -57,14 +56,18 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   TextStyle _headerStyle = TextStyle();
   TextStyle _unitStyle = TextStyle();
   ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData =
-      ExpandableThemeData(iconColor: Get.find<ThemeManager>().getProtagonistColor());
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
   double _ringDiameter = 1.0;
   double _ringWidth = 1.0;
 
   @override
   void initState() {
     super.initState();
+    final prefService = Get.find<BasePrefService>();
+    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _leaderboardFeature =
+        prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
     _ringWidth = _ringDiameter * 0.2;
   }

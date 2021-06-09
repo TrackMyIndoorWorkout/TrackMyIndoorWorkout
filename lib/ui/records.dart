@@ -36,30 +36,30 @@ class RecordsScreen extends StatefulWidget {
 }
 
 class RecordsScreenState extends State<RecordsScreen> {
-  late int _pointCount;
-  late List<Record> _allRecords;
-  late List<DisplayRecord> _sampledRecords;
-  late Map<String, TileConfiguration> _tileConfigurations;
-  late List<String> _tiles;
-  late bool _initialized;
-  late List<String> _selectedTimes;
-  late List<String> _selectedValues;
-  late bool _si;
-  late List<PreferencesSpec> _preferencesSpecs;
+  int _pointCount = 0;
+  List<Record> _allRecords = [];
+  List<DisplayRecord> _sampledRecords = [];
+  Map<String, TileConfiguration> _tileConfigurations = {};
+  List<String> _tiles = [];
+  bool _initialized = false;
+  List<String> _selectedTimes = [];
+  List<String> _selectedValues = [];
+  bool _si = UNIT_SYSTEM_DEFAULT;
+  List<PreferencesSpec> _preferencesSpecs = [];
 
   double? _mediaWidth;
-  late double _sizeDefault;
-  late double _sizeDefault2;
-  late TextStyle _measurementStyle;
-  late TextStyle _textStyle;
-  late TextStyle _unitStyle;
-  late TextStyle _selectionStyle;
-  late TextStyle _selectionTextStyle;
-  late ThemeManager _themeManager;
-  late bool _isLight;
-  late Color _chartTextColor;
-  late Color _chartBackground;
-  late ExpandableThemeData _expandableThemeData;
+  double _sizeDefault = 10.0;
+  double _sizeDefault2 = 10.0;
+  TextStyle _measurementStyle = TextStyle();
+  TextStyle _textStyle = TextStyle();
+  TextStyle _unitStyle = TextStyle();
+  TextStyle _selectionStyle = TextStyle();
+  TextStyle _selectionTextStyle = TextStyle();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  bool _isLight = true;
+  Color _chartTextColor = Colors.black;
+  Color _chartBackground = Colors.white;
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   Future<void> extraInit() async {
     final database = Get.find<AppDatabase>();
@@ -283,16 +283,10 @@ class RecordsScreenState extends State<RecordsScreen> {
   @override
   void initState() {
     super.initState();
-    _initialized = false;
-    _tileConfigurations = {};
-    _tiles = [];
-    _selectedTimes = [];
-    _selectedValues = [];
     final prefService = Get.find<BasePrefService>();
     _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.activity.sport);
     widget.activity.hydrate();
-    _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
     _chartBackground = _themeManager.getAntagonistColor();

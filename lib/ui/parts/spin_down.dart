@@ -48,7 +48,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   double _sizeDefault = 10.0;
   TextStyle _smallerTextStyle = TextStyle();
   TextStyle _largerTextStyle = TextStyle();
-  bool _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+  bool _si = UNIT_SYSTEM_DEFAULT;
   int _step = STEP_WEIGHT_INPUT;
   int _weight = 80;
   int _oldWeightLsb = 0;
@@ -71,9 +71,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   int _preferencesWeight = ATHLETE_BODY_WEIGHT_DEFAULT_INT;
-  bool _rememberLastWeight =
-      Get.find<BasePrefService>().get<bool>(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ??
-          REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
+  bool _rememberLastWeight = REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
 
   bool get _spinDownPossible =>
       _weightData != null &&
@@ -96,6 +94,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   void initState() {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     final prefService = Get.find<BasePrefService>();
+    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _rememberLastWeight = prefService.get<bool>(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ??
+        REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
     _preferencesWeight = getStringIntegerPreference(
       ATHLETE_BODY_WEIGHT_TAG,
       ATHLETE_BODY_WEIGHT_DEFAULT,

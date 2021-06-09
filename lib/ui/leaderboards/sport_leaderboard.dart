@@ -22,22 +22,23 @@ class SportLeaderboardScreen extends StatefulWidget {
 
 class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   AppDatabase _database = Get.find<AppDatabase>();
-  bool _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+  bool _si = UNIT_SYSTEM_DEFAULT;
   int _editCount = 0;
   double _sizeDefault = 10.0;
   TextStyle _textStyle = TextStyle();
   TextStyle _textStyle2 = TextStyle();
   ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData =
-      ExpandableThemeData(iconColor: Get.find<ThemeManager>().getProtagonistColor());
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
     super.initState();
+    _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _textStyle = Get.textTheme.headline4!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {

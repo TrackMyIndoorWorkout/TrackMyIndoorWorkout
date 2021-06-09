@@ -24,8 +24,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
   ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
   TextStyle _textStyle = TextStyle();
-  ExpandableThemeData _expandableThemeData =
-      ExpandableThemeData(iconColor: Get.find<ThemeManager>().getProtagonistColor());
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
@@ -33,6 +32,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
     _textStyle = Get.textTheme.headline4!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
+    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
   Widget _actionButtonRow(DeviceUsage deviceUsage, double size) {
