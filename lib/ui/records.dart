@@ -67,11 +67,10 @@ class RecordsScreenState extends State<RecordsScreen> {
       zoomMode: charts.ZoomMode.xy,
       enablePanning: true,
   );
-  charts.CrosshairBehavior _crosshairBehavior = charts.CrosshairBehavior(
-      enable: true,
-      activationMode: charts.ActivationMode.singleTap,
-      lineColor: Colors.grey,
-      lineWidth: 2,
+  charts.TrackballBehavior _trackballBehavior = charts.TrackballBehavior(
+    enable: true,
+    activationMode: charts.ActivationMode.singleTap,
+    tooltipDisplayMode: charts.TrackballDisplayMode.nearestPoint,
   );
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
@@ -639,9 +638,8 @@ class RecordsScreenState extends State<RecordsScreen> {
                           ),
                           margin: EdgeInsets.all(0),
                           series: _tileConfigurations[item]!.dataFn(),
-                          // tooltipBehavior: _tooltipBehavior,
                           zoomPanBehavior: _zoomPanBehavior,
-                          crosshairBehavior: _crosshairBehavior,
+                          trackballBehavior: _trackballBehavior,
                         ),
                       ),
                       Row(
