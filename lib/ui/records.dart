@@ -608,16 +608,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                         width: widget.size.width,
                         height: widget.size.height / 2,
                         child: charts.SfCartesianChart(
-                          primaryXAxis: charts.DateTimeAxis(
-                            interactiveTooltip: charts.InteractiveTooltip(
-                              enable: true,
-                            ),
-                          ),
+                          primaryXAxis: charts.DateTimeAxis(),
                           primaryYAxis: charts.NumericAxis(
                             plotBands: _preferencesSpecs[index].plotBands,
-                            interactiveTooltip: charts.InteractiveTooltip(
-                              enable: true,
-                            ),
                           ),
                           margin: EdgeInsets.all(0),
                           series: _tileConfigurations[item]!.dataFn(),
