@@ -311,7 +311,6 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
-        // enableTooltip: true,
       ),
     ];
   }
@@ -344,7 +343,6 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si, widget.activity.sport),
         color: _chartTextColor,
-        // enableTooltip: true,
       ),
     ];
   }
@@ -377,7 +375,6 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartTextColor,
-        // enableTooltip: true,
       ),
     ];
   }
@@ -410,7 +407,6 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
-        // enableTooltip: true,
       ),
     ];
   }
