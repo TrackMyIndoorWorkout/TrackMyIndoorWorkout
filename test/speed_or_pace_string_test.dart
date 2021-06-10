@@ -42,7 +42,6 @@ void main() {
     speeds.forEach((speed) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed;
       final expected = paceString(pace);
-      // final expected
       test("$speed (Run) -> $expected", () async {
         expect(speedOrPaceString(speed, true, ActivityType.Run), expected);
       });
@@ -86,13 +85,22 @@ void main() {
     });
   });
 
-  group("speedStringByUnit for elliptical sports:", () {
+  group("speedStringByUnit for metric system and elliptical sports:", () {
     speeds.forEach((speed) {
-      final expected = speed.toStringAsFixed(2);
+      final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed;
+      final expected = paceString(pace);
       test("$speed (Elliptical) -> $expected", () async {
-        // There's no imperial for water sports, it's always 500m
-        expect(speedOrPaceString(speed, false, ActivityType.Elliptical), expected);
         expect(speedOrPaceString(speed, true, ActivityType.Elliptical), expected);
+      });
+    });
+  });
+
+  group("speedStringByUnit for imperial system and elliptical sports:", () {
+    speeds.forEach((speed) {
+      final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed / KM2MI;
+      final expected = paceString(pace);
+      test("$speed (Elliptical) -> $expected", () async {
+        expect(speedOrPaceString(speed, false, ActivityType.Elliptical), expected);
       });
     });
   });

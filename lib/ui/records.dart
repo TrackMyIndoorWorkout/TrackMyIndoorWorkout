@@ -139,8 +139,8 @@ class RecordsScreenState extends State<RecordsScreen> {
           dataFn: _getSpeedData,
           dataStringFn: _getSpeedString,
           // selectionListener: _speedSelectionListener,
-          maxString: speedOrPaceString(accu.maxSpeed, _si, widget.activity.sport),
-          avgString: speedOrPaceString(accu.avgSpeed, _si, widget.activity.sport),
+          maxString: speedOrPaceStringCore(accu.maxSpeed, widget.activity.sport),
+          avgString: speedOrPaceStringCore(accu.avgSpeed, widget.activity.sport),
         );
         prefSpec.calculateBounds(
           measurementCounter.minSpeed,

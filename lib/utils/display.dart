@@ -36,7 +36,8 @@ String speedOrPaceString(double speed, bool si, String sport) {
       sport == ActivityType.Kayaking ||
       sport == ActivityType.Canoeing ||
       sport == ActivityType.Rowing ||
-      sport == ActivityType.Swim) {
+      sport == ActivityType.Swim ||
+      sport == ActivityType.Elliptical) {
     if (speed.abs() < DISPLAY_EPS) return "0:00";
     var pace = 60.0 / speed;
     if (sport == ActivityType.Kayaking ||
@@ -51,6 +52,14 @@ String speedOrPaceString(double speed, bool si, String sport) {
     return paceString(pace);
   }
   return spd.toStringAsFixed(2);
+}
+
+String speedOrPaceStringCore(double speedOrPace, String sport) {
+  if (sport == ActivityType.Ride) {
+    return speedOrPace.toStringAsFixed(2);
+  } else {
+    return paceString(speedOrPace);
+  }
 }
 
 String paceString(double pace) {
