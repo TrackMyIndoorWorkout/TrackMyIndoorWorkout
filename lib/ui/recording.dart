@@ -87,7 +87,6 @@ class RecordingState extends State<RecordingScreen> {
   TextStyle _measurementStyle = TextStyle();
   TextStyle _unitStyle = TextStyle();
   Color _chartTextColor = Colors.black;
-  Color _chartBackground = Colors.white;
   TextStyle _markerStyle = TextStyle();
   ExpandableThemeData _expandableThemeData = ExpandableThemeData(
     hasIcon: !SIMPLER_UI_SLOW_DEFAULT,
@@ -435,7 +434,6 @@ class RecordingState extends State<RecordingScreen> {
     };
 
     _chartTextColor = _themeManager.getProtagonistColor();
-    _chartBackground = _themeManager.getAntagonistColor();
     _expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
       iconColor: _themeManager.getProtagonistColor(),

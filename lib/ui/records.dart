@@ -19,7 +19,6 @@ import '../utils/theme_manager.dart';
 import 'models/display_record.dart';
 import 'models/histogram_data.dart';
 import 'models/measurement_counter.dart';
-// import 'models/selection_data.dart';
 import 'models/tile_configuration.dart';
 
 class RecordsScreen extends StatefulWidget {
@@ -61,10 +60,22 @@ class RecordsScreenState extends State<RecordsScreen> {
     fontSize: 16,
   );
   charts.TooltipBehavior _tooltipBehavior = charts.TooltipBehavior(enable: true);
+  charts.ZoomPanBehavior _zoomPanBehavior = charts.ZoomPanBehavior(
+      enableDoubleTapZooming: true,
+      enablePinching: true,
+      enableSelectionZooming: true,
+      zoomMode: charts.ZoomMode.xy,
+      enablePanning: true,
+  );
+  charts.CrosshairBehavior _crosshairBehavior = charts.CrosshairBehavior(
+      enable: true,
+      activationMode: charts.ActivationMode.singleTap,
+      lineColor: Colors.grey,
+      lineWidth: 2,
+  );
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   Color _chartTextColor = Colors.black;
-  Color _chartBackground = Colors.white;
   ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   Future<void> extraInit() async {
@@ -295,7 +306,6 @@ class RecordsScreenState extends State<RecordsScreen> {
     widget.activity.hydrate();
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
-    _chartBackground = _themeManager.getAntagonistColor();
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
     extraInit();
@@ -308,7 +318,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
-        enableTooltip: true,
+        // enableTooltip: true,
       ),
     ];
   }
@@ -316,21 +326,6 @@ class RecordsScreenState extends State<RecordsScreen> {
   String _getPowerString(DisplayRecord record) {
     return record.power.toString();
   }
-
-  // String _getSelectedTime(SelectionData selectionData, Activity activity) {
-  //   if (selectionData.time == null || activity.startDateTime == null) return "-";
-  //
-  //   return selectionData.time!.difference(activity.startDateTime!).toDisplay();
-  // }
-
-  // void _powerSelectionListener(charts.SelectionModel<DateTime> model) {
-  //   final selectionData = _tileConfigurations["power"]!.getSelectionData(model);
-  //
-  //   setState(() {
-  //     _selectedTimes[0] = _getSelectedTime(selectionData, activity);
-  //     _selectedValues[0] = selectionData.value;
-  //   });
-  // }
 
   List<charts.CircularSeries<HistogramData, String>> _getPowerHistogram() {
     return <charts.CircularSeries<HistogramData, String>>[
@@ -356,7 +351,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si, widget.activity.sport),
         color: _chartTextColor,
-        enableTooltip: true,
+        // enableTooltip: true,
       ),
     ];
   }
@@ -364,15 +359,6 @@ class RecordsScreenState extends State<RecordsScreen> {
   String _getSpeedString(DisplayRecord record) {
     return speedOrPaceString(record.speed ?? 0.0, _si, widget.activity.sport);
   }
-
-  // void _speedSelectionListener(charts.SelectionModel<DateTime> model) {
-  //   final selectionData = _tileConfigurations["speed"]!.getSelectionData(model);
-  //
-  //   setState(() {
-  //     _selectedTimes[1] = _getSelectedTime(selectionData, activity);
-  //     _selectedValues[1] = selectionData.value;
-  //   });
-  // }
 
   List<charts.CircularSeries<HistogramData, String>> _getSpeedHistogram() {
     return <charts.CircularSeries<HistogramData, String>>[
@@ -398,7 +384,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartTextColor,
-        enableTooltip: true,
+        // enableTooltip: true,
       ),
     ];
   }
@@ -406,15 +392,6 @@ class RecordsScreenState extends State<RecordsScreen> {
   String _getCadenceString(DisplayRecord record) {
     return record.cadence.toString();
   }
-
-  // void _cadenceSelectionListener(charts.SelectionModel<DateTime> model) {
-  //   final selectionData = _tileConfigurations["cadence"]!.getSelectionData(model);
-  //
-  //   setState(() {
-  //     _selectedTimes[2] = _getSelectedTime(selectionData, activity);
-  //     _selectedValues[2] = selectionData.value;
-  //   });
-  // }
 
   List<charts.CircularSeries<HistogramData, String>> _getCadenceHistogram() {
     return <charts.CircularSeries<HistogramData, String>>[
@@ -440,7 +417,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
-        enableTooltip: true,
+        // enableTooltip: true,
       ),
     ];
   }
@@ -448,15 +425,6 @@ class RecordsScreenState extends State<RecordsScreen> {
   String _getHrString(DisplayRecord record) {
     return record.heartRate.toString();
   }
-
-  // void _hrSelectionListener(charts.SelectionModel<DateTime> model) {
-  //   final selectionData = _tileConfigurations["hr"]!.getSelectionData(model);
-  //
-  //   setState(() {
-  //     _selectedTimes[3] = _getSelectedTime(selectionData, activity);
-  //     _selectedValues[3] = selectionData.value;
-  //   });
-  // }
 
   List<charts.CircularSeries<HistogramData, String>> _getHrHistogram() {
     return <charts.CircularSeries<HistogramData, String>>[
@@ -658,31 +626,22 @@ class RecordsScreenState extends State<RecordsScreen> {
                         width: widget.size.width,
                         height: widget.size.height / 2,
                         child: charts.SfCartesianChart(
-                          primaryXAxis: charts.DateTimeAxis(),
+                          primaryXAxis: charts.DateTimeAxis(
+                            interactiveTooltip: charts.InteractiveTooltip(
+                              enable: true,
+                            ),
+                          ),
+                          primaryYAxis: charts.NumericAxis(
+                            plotBands: _preferencesSpecs[index].plotBands,
+                            interactiveTooltip: charts.InteractiveTooltip(
+                              enable: true,
+                            ),
+                          ),
                           margin: EdgeInsets.all(0),
                           series: _tileConfigurations[item]!.dataFn(),
-                          tooltipBehavior: _tooltipBehavior,
-
-                          // behaviors: [
-                          //   charts.LinePointHighlighter(
-                          //     showHorizontalFollowLine:
-                          //         charts.LinePointHighlighterFollowLineType.nearest,
-                          //     showVerticalFollowLine:
-                          //         charts.LinePointHighlighterFollowLineType.nearest,
-                          //   ),
-                          //   charts.SelectNearest(eventTrigger: charts.SelectionTrigger.tapAndDrag),
-                          //   charts.RangeAnnotation(
-                          //     _preferencesSpecs[index].annotationSegments,
-                          //     // defaultLabelStyleSpec: _chartTextStyle,
-                          //   ),
-                          // ],
-
-                          // selectionModels: [
-                          //   charts.SelectionModelConfig(
-                          //     type: charts.SelectionModelType.info,
-                          //     changedListener: _tileConfigurations[item]!.selectionListener,
-                          //   ),
-                          // ],
+                          // tooltipBehavior: _tooltipBehavior,
+                          zoomPanBehavior: _zoomPanBehavior,
+                          crosshairBehavior: _crosshairBehavior,
                         ),
                       ),
                       Row(

@@ -5,6 +5,7 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import '../utils/constants.dart';
 import '../utils/display.dart';
 
@@ -259,7 +260,7 @@ class PreferencesSpec {
   bool si = false;
   String sport = ActivityType.Ride;
 
-  // late List<common.AnnotationSegment> annotationSegments;
+  late List<charts.PlotBand> plotBands;
 
   PreferencesSpec({
     required this.metric,
@@ -273,7 +274,7 @@ class PreferencesSpec {
     required this.icon,
   }) {
     updateMultiLineUnit();
-    // annotationSegments = [];
+    plotBands = [];
     indexDisplay = indexDisplayDefault;
   }
 
@@ -366,34 +367,28 @@ class PreferencesSpec {
     zoneUpper.add(decimalRound(maxVal));
     // }
 
-    // final textColor = isLight ? MaterialPalette.black : MaterialPalette.white;
-    // final chartTextStyle = TextStyleSpec(color: textColor);
-    // List<common.AnnotationSegment> segments = [];
-    // segments.addAll(List.generate(
-    //   binCount,
-    //   (i) => RangeAnnotationSegment(
-    //     zoneLower[i],
-    //     zoneUpper[i],
-    //     RangeAnnotationAxisType.measure,
-    //     color: bgColorByBin(i, isLight),
-    //     startLabel: zoneLower[i].toString(),
-    //     labelAnchor: AnnotationLabelAnchor.start,
-    //     labelStyleSpec: chartTextStyle,
-    //   ),
-    // ));
-    // segments.addAll(List.generate(
-    //   binCount,
-    //   (i) => LineAnnotationSegment(
-    //     zoneUpper[i],
-    //     RangeAnnotationAxisType.measure,
-    //     startLabel: zoneUpper[i].toString(),
-    //     labelAnchor: AnnotationLabelAnchor.end,
-    //     strokeWidthPx: 1.0,
-    //     color: textColor,
-    //     labelStyleSpec: chartTextStyle,
-    //   ),
-    // ));
-    // annotationSegments = segments.toList(growable: false);
+    final textColor = isLight ? Colors.black : Colors.white;
+    List<charts.PlotBand> plotBandsGen = [];
+    plotBandsGen.addAll(List.generate(
+      binCount,
+      (i) => charts.PlotBand(
+        isVisible: true,
+        start: zoneLower[i],
+        end: zoneUpper[i],
+        color: bgColorByBin(i, isLight),
+      ),
+    ));
+    plotBandsGen.addAll(List.generate(
+      binCount,
+      (i) => charts.PlotBand(
+        start: zoneUpper[i],
+        end: zoneUpper[i],
+        shouldRenderAboveSeries: true,
+        size: 2.0,
+        color: textColor,
+      ),
+    ));
+    plotBands = plotBandsGen.toList(growable: false);
   }
 
   int get binCount => zonePercents.length + 1;
