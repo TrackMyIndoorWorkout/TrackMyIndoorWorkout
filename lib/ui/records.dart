@@ -52,8 +52,6 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _measurementStyle = TextStyle();
   TextStyle _textStyle = TextStyle();
   TextStyle _unitStyle = TextStyle();
-  TextStyle _selectionStyle = TextStyle();
-  TextStyle _selectionTextStyle = TextStyle();
   TextStyle _chartLabelStyle = const TextStyle(
     fontFamily: FONT_FAMILY,
     fontWeight: FontWeight.bold,
@@ -126,7 +124,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getPowerData,
           dataStringFn: _getPowerString,
-          // selectionListener: _powerSelectionListener,
           maxString: accu.maxPower.toStringAsFixed(2),
           avgString: accu.avgPower.toStringAsFixed(2),
         );
@@ -154,7 +151,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getSpeedData,
           dataStringFn: _getSpeedString,
-          // selectionListener: _speedSelectionListener,
           maxString: speedOrPaceStringCore(accu.maxSpeed, widget.activity.sport),
           avgString: speedOrPaceStringCore(accu.avgSpeed, widget.activity.sport),
         );
@@ -182,7 +178,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getCadenceData,
           dataStringFn: _getCadenceString,
-          // selectionListener: _cadenceSelectionListener,
           maxString: "${accu.maxCadence}",
           avgString: "${accu.avgCadence}",
         );
@@ -210,7 +205,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getHrData,
           dataStringFn: _getHrString,
-          // selectionListener: _hrSelectionListener,
           maxString: "${accu.maxHeartRate}",
           avgString: "${accu.avgHeartRate}",
         );
@@ -456,13 +450,6 @@ class RecordsScreenState extends State<RecordsScreen> {
         fontSize: _sizeDefault2,
       );
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
-      _selectionStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault2 / 2,
-      );
-      _selectionTextStyle = TextStyle(
-        fontSize: _sizeDefault2 / 2,
-      );
     }
 
     return Scaffold(
@@ -641,17 +628,6 @@ class RecordsScreenState extends State<RecordsScreen> {
                           zoomPanBehavior: _zoomPanBehavior,
                           trackballBehavior: _trackballBehavior,
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(_selectedValues[index], style: _selectionStyle),
-                          Text(" ", style: _selectionTextStyle),
-                          Text(_preferencesSpecs[index].unit, style: _unitStyle),
-                          Text(" @ ", style: _selectionTextStyle),
-                          Text(_selectedTimes[index], style: _selectionStyle),
-                        ],
                       ),
                       Divider(height: 20, thickness: 2),
                       Text(
