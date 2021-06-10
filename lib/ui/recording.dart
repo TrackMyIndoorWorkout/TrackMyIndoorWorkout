@@ -146,6 +146,12 @@ class RecordingState extends State<RecordingScreen> {
   bool _isLight = true;
   bool _zoneIndexColoring = false;
 
+  charts.TrackballBehavior _trackballBehavior = charts.TrackballBehavior(
+    enable: true,
+    activationMode: charts.ActivationMode.singleTap,
+    tooltipDisplayMode: charts.TrackballDisplayMode.nearestPoint,
+  );
+
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment?.connectOnDemand(deviceState) ?? false;
     if (success) {
@@ -703,8 +709,6 @@ class RecordingState extends State<RecordingScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
-        // insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        // outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -717,8 +721,6 @@ class RecordingState extends State<RecordingScreen> {
         yValueMapper: (DisplayRecord record, _) =>
             record.speedByUnit(_si, widget.descriptor.defaultSport),
         color: _chartTextColor,
-        // insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        // outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -730,8 +732,6 @@ class RecordingState extends State<RecordingScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartTextColor,
-        // insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        // outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -743,8 +743,6 @@ class RecordingState extends State<RecordingScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
-        // insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        // outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
       ),
     ];
   }
@@ -1150,16 +1148,13 @@ class RecordingState extends State<RecordingScreen> {
             width: size.width,
             height: height,
             child: charts.SfCartesianChart(
-              primaryXAxis:
-                  charts.DateTimeAxis(/*labelStyle: null, isInversed, edgeLabelPlacement*/),
+              primaryXAxis: charts.DateTimeAxis(),
+              primaryYAxis: charts.NumericAxis(
+                plotBands: entry.value.plotBands,
+              ),
               margin: EdgeInsets.all(0),
               series: _metricToDataFn[entry.value.metric]!(),
-              // behaviors: [
-              //   charts.RangeAnnotation(
-              //     entry.value.annotationSegments,
-              //     defaultLabelStyleSpec: _chartTextStyle,
-              //   ),
-              // ],
+              trackballBehavior: _trackballBehavior,
             ),
           ),
         );
