@@ -450,9 +450,9 @@ class PreferencesSpec {
 
   List<Color> getPiePalette(bool isLight) {
     if (zonePercents.length <= 5) {
-      return isLight ? fiveLightPiePalette : fiveDarkFgPalette;
+      return isLight ? fiveDarkFgPalette : fiveLightFgPalette;
     } else {
-      return isLight ? sevenLightPiePalette : sevenDarkPiePalette;
+      return isLight ? sevenDarkFgPalette : sevenLightFgPalette;
     }
   }
 
