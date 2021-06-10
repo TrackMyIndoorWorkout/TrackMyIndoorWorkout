@@ -6,7 +6,7 @@ import 'histogram_data.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 typedef DataStringFn = String Function(DisplayRecord);
-typedef HistogramFn = List<charts.CircularSeries<HistogramData, int>> Function();
+typedef HistogramFn = List<charts.CircularSeries<HistogramData, String>> Function();
 
 class TileConfiguration {
   final String title;

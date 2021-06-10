@@ -55,6 +55,12 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _unitStyle = TextStyle();
   TextStyle _selectionStyle = TextStyle();
   TextStyle _selectionTextStyle = TextStyle();
+  TextStyle _chartLabelStyle = const TextStyle(
+    fontFamily: FONT_FAMILY,
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+  );
+  charts.TooltipBehavior _tooltipBehavior = charts.TooltipBehavior(enable: true);
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   Color _chartTextColor = Colors.black;
@@ -302,6 +308,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
+        enableTooltip: true,
       ),
     ];
   }
@@ -325,16 +332,19 @@ class RecordsScreenState extends State<RecordsScreen> {
   //   });
   // }
 
-  List<charts.CircularSeries<HistogramData, int>> _getPowerHistogram() {
-    return <charts.CircularSeries<HistogramData, int>>[
-      charts.DoughnutSeries<HistogramData, int>(
-        xValueMapper: (HistogramData data, int index) => index,
+  List<charts.CircularSeries<HistogramData, String>> _getPowerHistogram() {
+    return <charts.CircularSeries<HistogramData, String>>[
+      charts.PieSeries<HistogramData, String>(
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
         dataSource: _tileConfigurations["power"]!.histogram,
-        // dataLabelMapper: ?
-        // dataLabelSettings: ?
-        // palette: ?
-        // labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        explode: true,
+        dataLabelSettings: charts.DataLabelSettings(
+          isVisible: true,
+          showZeroValue: false,
+          textStyle: _chartLabelStyle,
+        ),
+        enableTooltip: true,
       ),
     ];
   }
@@ -346,6 +356,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si, widget.activity.sport),
         color: _chartTextColor,
+        enableTooltip: true,
       ),
     ];
   }
@@ -363,16 +374,19 @@ class RecordsScreenState extends State<RecordsScreen> {
   //   });
   // }
 
-  List<charts.CircularSeries<HistogramData, int>> _getSpeedHistogram() {
-    return <charts.CircularSeries<HistogramData, int>>[
-      charts.DoughnutSeries<HistogramData, int>(
+  List<charts.CircularSeries<HistogramData, String>> _getSpeedHistogram() {
+    return <charts.CircularSeries<HistogramData, String>>[
+      charts.PieSeries<HistogramData, String>(
         dataSource: _tileConfigurations["speed"]!.histogram,
-        xValueMapper: (HistogramData data, int index) => index,
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
-        // dataLabelMapper: ?
-        // dataLabelSettings: ?
-        // palette: ?
-        // labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        explode: true,
+        dataLabelSettings: charts.DataLabelSettings(
+          isVisible: true,
+          showZeroValue: false,
+          textStyle: _chartLabelStyle,
+        ),
+        enableTooltip: true,
       ),
     ];
   }
@@ -384,6 +398,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartTextColor,
+        enableTooltip: true,
       ),
     ];
   }
@@ -401,16 +416,19 @@ class RecordsScreenState extends State<RecordsScreen> {
   //   });
   // }
 
-  List<charts.CircularSeries<HistogramData, int>> _getCadenceHistogram() {
-    return <charts.CircularSeries<HistogramData, int>>[
-      charts.DoughnutSeries<HistogramData, int>(
+  List<charts.CircularSeries<HistogramData, String>> _getCadenceHistogram() {
+    return <charts.CircularSeries<HistogramData, String>>[
+      charts.PieSeries<HistogramData, String>(
         dataSource: _tileConfigurations["cadence"]!.histogram,
-        xValueMapper: (HistogramData data, int index) => index,
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
-        // dataLabelMapper: ?
-        // dataLabelSettings: ?
-        // palette: ?
-        // labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        explode: true,
+        dataLabelSettings: charts.DataLabelSettings(
+          isVisible: true,
+          showZeroValue: false,
+          textStyle: _chartLabelStyle,
+        ),
+        enableTooltip: true,
       ),
     ];
   }
@@ -422,6 +440,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
+        enableTooltip: true,
       ),
     ];
   }
@@ -439,16 +458,19 @@ class RecordsScreenState extends State<RecordsScreen> {
   //   });
   // }
 
-  List<charts.CircularSeries<HistogramData, int>> _getHrHistogram() {
-    return <charts.CircularSeries<HistogramData, int>>[
-      charts.DoughnutSeries<HistogramData, int>(
+  List<charts.CircularSeries<HistogramData, String>> _getHrHistogram() {
+    return <charts.CircularSeries<HistogramData, String>>[
+      charts.PieSeries<HistogramData, String>(
         dataSource: _tileConfigurations["hr"]!.histogram,
-        xValueMapper: (HistogramData data, int index) => index,
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
-        // dataLabelMapper: ?
-        // dataLabelSettings: ?
-        // palette: ?
-        // labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
+        explode: true,
+        dataLabelSettings: charts.DataLabelSettings(
+          isVisible: true,
+          showZeroValue: false,
+          textStyle: _chartLabelStyle,
+        ),
+        enableTooltip: true,
       ),
     ];
   }
@@ -639,6 +661,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                           primaryXAxis: charts.DateTimeAxis(),
                           margin: EdgeInsets.all(0),
                           series: _tileConfigurations[item]!.dataFn(),
+                          tooltipBehavior: _tooltipBehavior,
 
                           // behaviors: [
                           //   charts.LinePointHighlighter(
@@ -683,27 +706,10 @@ class RecordsScreenState extends State<RecordsScreen> {
                         height: widget.size.height / 3,
                         child: charts.SfCircularChart(
                           margin: EdgeInsets.all(0),
+                          legend: charts.Legend(isVisible: true, textStyle: _chartLabelStyle),
                           series: _tileConfigurations[item]!.histogramFn!(),
-
-                          // palette: [],
-                          // defaultRenderer: charts.ArcRendererConfig(
-                          //   arcWidth: 60,
-                          //   arcRendererDecorators: [charts.ArcLabelDecorator()],
-                          // ),
-
-                          // behaviors: [
-                          //   charts.DatumLegend(
-                          //     position: charts.BehaviorPosition.start,
-                          //     horizontalFirst: false,
-                          //     cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
-                          //     showMeasures: true,
-                          //     legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-                          //     // entryTextStyle: _chartTextStyle,
-                          //     measureFormatter: (num value) {
-                          //       return '$value %';
-                          //     },
-                          //   ),
-                          // ],
+                          palette: _preferencesSpecs[index].getPiePalette(_isLight),
+                          tooltipBehavior: _tooltipBehavior,
                         ),
                       ),
                     ]),

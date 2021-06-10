@@ -453,6 +453,14 @@ class PreferencesSpec {
     return isLight ? sevenLightPiePalette[trIndex] : sevenDarkPiePalette[trIndex];
   }
 
+  List<Color> getPiePalette(bool isLight) {
+    if (zonePercents.length <= 5) {
+      return isLight ? fiveLightPiePalette : fiveDarkFgPalette;
+    } else {
+      return isLight ? sevenLightPiePalette : sevenDarkPiePalette;
+    }
+  }
+
   static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
 
   static List<PreferencesSpec> getPreferencesSpecs(bool si, String sport) {
