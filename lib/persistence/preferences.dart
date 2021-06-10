@@ -261,6 +261,12 @@ class PreferencesSpec {
   String sport = ActivityType.Ride;
 
   late List<charts.PlotBand> plotBands;
+  TextStyle _bandTextStyle = const TextStyle(
+    fontFamily: FONT_FAMILY,
+    fontWeight: FontWeight.bold,
+    fontSize: 14,
+    color: Colors.grey,
+  );
 
   PreferencesSpec({
     required this.metric,
@@ -367,28 +373,20 @@ class PreferencesSpec {
     zoneUpper.add(decimalRound(maxVal));
     // }
 
-    final textColor = isLight ? Colors.black : Colors.white;
-    List<charts.PlotBand> plotBandsGen = [];
-    plotBandsGen.addAll(List.generate(
+    plotBands.clear();
+    plotBands.addAll(List.generate(
       binCount,
       (i) => charts.PlotBand(
         isVisible: true,
         start: zoneLower[i],
         end: zoneUpper[i],
         color: bgColorByBin(i, isLight),
+        text: "${zoneLower[i]} - ${zoneUpper[i]}",
+        textStyle: _bandTextStyle,
+        horizontalTextAlignment: charts.TextAnchor.start,
+        verticalTextAlignment: charts.TextAnchor.end,
       ),
     ));
-    plotBandsGen.addAll(List.generate(
-      binCount,
-      (i) => charts.PlotBand(
-        start: zoneUpper[i],
-        end: zoneUpper[i],
-        shouldRenderAboveSeries: true,
-        size: 2.0,
-        color: textColor,
-      ),
-    ));
-    plotBands = plotBandsGen.toList(growable: false);
   }
 
   int get binCount => zonePercents.length + 1;
