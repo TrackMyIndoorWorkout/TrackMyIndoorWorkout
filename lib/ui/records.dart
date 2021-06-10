@@ -123,7 +123,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           title: prefSpec.fullTitle,
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getPowerData,
-          dataStringFn: _getPowerString,
           maxString: accu.maxPower.toStringAsFixed(2),
           avgString: accu.avgPower.toStringAsFixed(2),
         );
@@ -150,7 +149,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           title: prefSpec.fullTitle,
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getSpeedData,
-          dataStringFn: _getSpeedString,
           maxString: speedOrPaceStringCore(accu.maxSpeed, widget.activity.sport),
           avgString: speedOrPaceStringCore(accu.avgSpeed, widget.activity.sport),
         );
@@ -177,7 +175,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           title: prefSpec.fullTitle,
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getCadenceData,
-          dataStringFn: _getCadenceString,
           maxString: "${accu.maxCadence}",
           avgString: "${accu.avgCadence}",
         );
@@ -204,7 +201,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           title: prefSpec.fullTitle,
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getHrData,
-          dataStringFn: _getHrString,
           maxString: "${accu.maxHeartRate}",
           avgString: "${accu.avgHeartRate}",
         );
@@ -315,10 +311,6 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  String _getPowerString(DisplayRecord record) {
-    return record.power.toString();
-  }
-
   List<charts.CircularSeries<HistogramData, String>> _getPowerHistogram() {
     return <charts.CircularSeries<HistogramData, String>>[
       charts.PieSeries<HistogramData, String>(
@@ -343,12 +335,9 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si, widget.activity.sport),
         color: _chartTextColor,
+        // dataLabelMapper: (DisplayRecord record, _) => speedOrPaceString(record.speed ?? 0.0, _si, widget.activity.sport),
       ),
     ];
-  }
-
-  String _getSpeedString(DisplayRecord record) {
-    return speedOrPaceString(record.speed ?? 0.0, _si, widget.activity.sport);
   }
 
   List<charts.CircularSeries<HistogramData, String>> _getSpeedHistogram() {
@@ -379,10 +368,6 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
-  String _getCadenceString(DisplayRecord record) {
-    return record.cadence.toString();
-  }
-
   List<charts.CircularSeries<HistogramData, String>> _getCadenceHistogram() {
     return <charts.CircularSeries<HistogramData, String>>[
       charts.PieSeries<HistogramData, String>(
@@ -409,10 +394,6 @@ class RecordsScreenState extends State<RecordsScreen> {
         color: _chartTextColor,
       ),
     ];
-  }
-
-  String _getHrString(DisplayRecord record) {
-    return record.heartRate.toString();
   }
 
   List<charts.CircularSeries<HistogramData, String>> _getHrHistogram() {
