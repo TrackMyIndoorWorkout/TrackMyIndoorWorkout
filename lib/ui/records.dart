@@ -61,11 +61,11 @@ class RecordsScreenState extends State<RecordsScreen> {
   );
   charts.TooltipBehavior _tooltipBehavior = charts.TooltipBehavior(enable: true);
   charts.ZoomPanBehavior _zoomPanBehavior = charts.ZoomPanBehavior(
-      enableDoubleTapZooming: true,
-      enablePinching: true,
-      enableSelectionZooming: true,
-      zoomMode: charts.ZoomMode.xy,
-      enablePanning: true,
+    enableDoubleTapZooming: true,
+    enablePinching: true,
+    enableSelectionZooming: true,
+    zoomMode: charts.ZoomMode.x,
+    enablePanning: true,
   );
   charts.TrackballBehavior _trackballBehavior = charts.TrackballBehavior(
     enable: true,
