@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
-import 'package:track_my_indoor_exercise/utils/display.dart';
 import 'package:track_my_indoor_exercise/utils/statistics_accumulator.dart';
 import 'utils.dart';
 
@@ -95,7 +94,7 @@ void main() {
       getRandomDoubles(count, 100, rnd).forEach((number) {
         accu.processRecord(RecordWithSport(speed: number, sport: sport));
         if (number > 0) {
-          sum += speedOrPace(number, si, sport);
+          sum += number;
         } else {
           count--;
         }
@@ -134,15 +133,10 @@ void main() {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(si: si, sport: sport, calculateMaxSpeed: true);
       final count = rnd.nextInt(99) + 1;
-      double maximum = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
+      double maximum = MAX_INIT.toDouble();
       getRandomDoubles(count, 100, rnd).forEach((number) {
         accu.processRecord(RecordWithSport(speed: number, sport: sport));
-        final speed = speedOrPace(number, si, sport);
-        if (sport == ActivityType.Ride) {
-          maximum = max(speed, maximum);
-        } else {
-          maximum = min(speed, maximum);
-        }
+        maximum = max(number, maximum);
       });
       test("$count ($sport) -> $maximum", () async {
         expect(accu.si, si);
@@ -360,7 +354,7 @@ void main() {
       final powers = getRandomInts(count, 100, rnd);
       double speedSum = 0.0;
       int speedCount = 0;
-      double maxSpeed = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
+      double maxSpeed = MAX_INIT.toDouble();
       final speeds = getRandomDoubles(count, 100, rnd);
       int cadenceSum = 0;
       int cadenceCount = 0;
@@ -383,16 +377,11 @@ void main() {
           powerCount++;
         }
         maxPower = max(powers[index], maxPower);
-        final speed = speedOrPace(speeds[index], si, sport);
-        speedSum += speed;
-        if (speed > 0) {
+        speedSum += speeds[index];
+        if (speeds[index] > 0) {
           speedCount++;
         }
-        if (sport == ActivityType.Ride) {
-          maxSpeed = max(speed, maxSpeed);
-        } else {
-          maxSpeed = min(speed, maxSpeed);
-        }
+        maxSpeed = max(speeds[index], maxSpeed);
         cadenceSum += cadences[index];
         if (cadences[index] > 0) {
           cadenceCount++;

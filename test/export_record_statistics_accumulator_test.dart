@@ -133,14 +133,10 @@ void main() {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxSpeed: true);
         final count = rnd.nextInt(99) + 1;
-        double maximum = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
+        double maximum = MAX_INIT.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
           accu.processExportRecord(ExportRecord()..speed = number);
-          if (sport == ActivityType.Ride) {
-            maximum = max(number, maximum);
-          } else {
-            maximum = min(number, maximum);
-          }
+          maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () async {
           expect(accu.sport, sport);
@@ -356,7 +352,7 @@ void main() {
         double maxPower = MAX_INIT.toDouble();
         final powers = getRandomDoubles(count, 100, rnd);
         double speedSum = 0.0;
-        double maxSpeed = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
+        double maxSpeed = MAX_INIT.toDouble();
         final speeds = getRandomDoubles(count, 100, rnd);
         int cadenceSum = 0;
         int cadenceCount = 0;
@@ -375,11 +371,7 @@ void main() {
           powerSum += powers[index];
           maxPower = max(powers[index], maxPower);
           speedSum += speeds[index];
-          if (sport == ActivityType.Ride) {
-            maxSpeed = max(speeds[index], maxSpeed);
-          } else {
-            maxSpeed = min(speeds[index], maxSpeed);
-          }
+          maxSpeed = max(speeds[index], maxSpeed);
           cadenceSum += cadences[index];
           if (cadences[index] > 0) {
             cadenceCount++;
