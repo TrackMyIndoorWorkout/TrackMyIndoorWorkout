@@ -306,6 +306,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
+        animationDuration: 0,
       ),
     ];
   }
@@ -323,6 +324,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           textStyle: _chartLabelStyle,
         ),
         enableTooltip: true,
+        animationDuration: 0,
       ),
     ];
   }
@@ -334,6 +336,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
         color: _chartTextColor,
+        animationDuration: 0,
       ),
     ];
   }
@@ -351,6 +354,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           textStyle: _chartLabelStyle,
         ),
         enableTooltip: true,
+        animationDuration: 0,
       ),
     ];
   }
@@ -362,6 +366,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartTextColor,
+        animationDuration: 0,
       ),
     ];
   }
@@ -379,6 +384,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           textStyle: _chartLabelStyle,
         ),
         enableTooltip: true,
+        animationDuration: 0,
       ),
     ];
   }
@@ -390,6 +396,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
+        animationDuration: 0,
       ),
     ];
   }
@@ -407,6 +414,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           textStyle: _chartLabelStyle,
         ),
         enableTooltip: true,
+        animationDuration: 0,
       ),
     ];
   }
