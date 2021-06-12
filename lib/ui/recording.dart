@@ -71,11 +71,7 @@ class RecordingScreen extends StatefulWidget {
 }
 
 class RecordingState extends State<RecordingScreen> {
-  RecordingState() {
-    size = widget.size;
-  }
-
-  late Size size;
+  late Size size = Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   TrackCalculator? _trackCalculator;
@@ -351,6 +347,8 @@ class RecordingState extends State<RecordingScreen> {
   @override
   void initState() {
     super.initState();
+
+    size = widget.size;
 
     Wakelock.enable();
     SystemChrome.setEnabledSystemUIOverlays([]);
