@@ -269,7 +269,7 @@ class RecordingState extends State<RecordingScreen> {
           _values = [
             record.calories.toString(),
             record.power.toString(),
-            record.speedStringByUnit(_si, widget.descriptor.defaultSport),
+            record.speedOrPaceStringByUnit(_si, widget.descriptor.defaultSport),
             record.cadence.toString(),
             record.heartRate.toString(),
             record.distanceStringByUnit(_si),
@@ -718,8 +718,7 @@ class RecordingState extends State<RecordingScreen> {
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
         xValueMapper: (DisplayRecord record, _) => record.dt,
-        yValueMapper: (DisplayRecord record, _) =>
-            record.speedByUnit(_si, widget.descriptor.defaultSport),
+        yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
         color: _chartTextColor,
       ),
     ];

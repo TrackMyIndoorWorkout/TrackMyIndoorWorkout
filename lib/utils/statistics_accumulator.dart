@@ -52,7 +52,7 @@ class StatisticsAccumulator {
     maxPower = MAX_INIT.toDouble();
     speedSum = 0.0;
     speedCount = 0;
-    maxSpeed = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
+    maxSpeed = MAX_INIT.toDouble();
     heartRateSum = 0;
     heartRateCount = 0;
     maxHeartRate = MAX_INIT;
@@ -80,11 +80,7 @@ class StatisticsAccumulator {
       }
 
       if (calculateMaxSpeed) {
-        if (sport == ActivityType.Ride) {
-          maxSpeed = max(maxSpeed, exportRecord.speed);
-        } else {
-          maxSpeed = min(maxSpeed, exportRecord.speed);
-        }
+        maxSpeed = max(maxSpeed, exportRecord.speed);
       }
     }
 
@@ -123,18 +119,13 @@ class StatisticsAccumulator {
     }
 
     if (record.speed != null) {
-      final speed = record.speedByUnit(si, sport);
       if (calculateAvgSpeed && record.speed! > 0) {
-        speedSum += speed;
+        speedSum += record.speed!;
         speedCount++;
       }
 
       if (calculateMaxSpeed) {
-        if (sport == ActivityType.Ride) {
-          maxSpeed = max(maxSpeed, speed);
-        } else {
-          maxSpeed = min(maxSpeed, speed);
-        }
+        maxSpeed = max(maxSpeed, record.speed!);
       }
     }
 

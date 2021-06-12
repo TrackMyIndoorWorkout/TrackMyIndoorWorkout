@@ -149,8 +149,8 @@ class RecordsScreenState extends State<RecordsScreen> {
           title: prefSpec.fullTitle,
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getSpeedData,
-          maxString: speedOrPaceStringCore(accu.maxSpeed, widget.activity.sport),
-          avgString: speedOrPaceStringCore(accu.avgSpeed, widget.activity.sport),
+          maxString: speedOrPaceString(accu.maxSpeed, _si, widget.activity.sport),
+          avgString: speedOrPaceString(accu.avgSpeed, _si, widget.activity.sport),
         );
         prefSpec.calculateBounds(
           measurementCounter.minSpeed,
@@ -231,8 +231,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           if (record.speed != null && record.speed! > 0) {
             var tileConfig = _tileConfigurations["speed"]!;
             tileConfig.count++;
-            final binIndex =
-                _preferencesSpecs[1].binIndex(record.speedByUnit(_si, widget.activity.sport));
+            final binIndex = _preferencesSpecs[1].binIndex(record.speedByUnit(_si));
             tileConfig.histogram[binIndex].increment();
           }
         }
@@ -333,9 +332,8 @@ class RecordsScreenState extends State<RecordsScreen> {
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _sampledRecords,
         xValueMapper: (DisplayRecord record, _) => record.dt,
-        yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si, widget.activity.sport),
+        yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
         color: _chartTextColor,
-        // dataLabelMapper: (DisplayRecord record, _) => speedOrPaceString(record.speed ?? 0.0, _si, widget.activity.sport),
       ),
     ];
   }

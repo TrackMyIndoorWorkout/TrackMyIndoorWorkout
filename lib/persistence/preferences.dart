@@ -337,7 +337,7 @@ class PreferencesSpec {
     final thresholdString = prefService.get<String>(thresholdTag(sport))!;
     threshold = double.tryParse(thresholdString) ?? EPS;
     if (metric == "speed") {
-      threshold = speedOrPace(threshold, si, sport);
+      threshold = speedByUnitCore(threshold, si);
     }
 
     final zonesSpecStr = prefService.get<String>(zonesTag(sport))!;
@@ -345,9 +345,6 @@ class PreferencesSpec {
         zonesSpecStr.split(',').map((zs) => int.tryParse(zs) ?? 0).toList(growable: false);
     zoneBounds =
         zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList(growable: false);
-    // if (flipZones) {
-    //   zoneBounds = zoneBounds.reversed.toList(growable: false);
-    // }
     indexDisplay = prefService.get<bool>(zoneIndexTag) ?? indexDisplayDefault;
   }
 
@@ -355,24 +352,18 @@ class PreferencesSpec {
     zoneLower = [...zoneBounds];
     zoneUpper = [...zoneBounds];
 
-    final zoneMin = /*flipZones ? zoneUpper.last :*/ zoneLower[0];
+    final zoneMin = zoneLower[0];
     if (minVal < 0 || minVal > 0 && minVal > zoneMin) {
       minVal = zoneMin * 0.7;
     }
 
-    final zoneMax = /*flipZones ? zoneLower[0] :*/ zoneUpper.last;
+    final zoneMax = zoneUpper.last;
     if (maxVal < 0 || maxVal > 0 && maxVal < zoneMax) {
       maxVal = zoneMax * 1.2;
     }
 
-    // if (flipZones) {
-    //   zoneLower.insert(0, decimalRound(maxVal));
-    //   zoneUpper.add(decimalRound(minVal));
-    // } else {
     zoneLower.insert(0, decimalRound(minVal));
     zoneUpper.add(decimalRound(maxVal));
-    // }
-
     plotBands.clear();
     plotBands.addAll(List.generate(
       binCount,
@@ -390,11 +381,6 @@ class PreferencesSpec {
   }
 
   int get binCount => zonePercents.length + 1;
-
-  int transformedBinIndex(int bin) {
-    bin = min(max(0, bin), zonePercents.length - 1);
-    return /* flipZones ? zonePercents.length - 1 - bin :*/ bin;
-  }
 
   int binIndex(num value) {
     int i = 0;
@@ -420,13 +406,11 @@ class PreferencesSpec {
   Color fgColorByBin(int bin, bool isLight) {
     if (zonePercents.length <= 5) {
       bin = min(bin, 4);
-      final trIndex = transformedBinIndex(bin);
-      return isLight ? fiveLightFgPalette[trIndex] : fiveDarkFgPalette[trIndex];
+      return isLight ? fiveLightFgPalette[bin] : fiveDarkFgPalette[bin];
     }
 
     bin = min(bin, 6);
-    final trIndex = transformedBinIndex(bin);
-    return isLight ? sevenLightFgPalette[trIndex] : sevenDarkFgPalette[trIndex];
+    return isLight ? sevenLightFgPalette[bin] : sevenDarkFgPalette[bin];
   }
 
   Color fgColorByValue(num value, bool isLight) {
@@ -437,13 +421,11 @@ class PreferencesSpec {
   Color pieBgColorByBin(int bin, bool isLight) {
     if (zonePercents.length <= 5) {
       bin = min(bin, 4);
-      final trIndex = transformedBinIndex(bin);
-      return isLight ? fiveLightPiePalette[trIndex] : fiveDarkPiePalette[trIndex];
+      return isLight ? fiveLightPiePalette[bin] : fiveDarkPiePalette[bin];
     }
 
     bin = min(bin, 6);
-    final trIndex = transformedBinIndex(bin);
-    return isLight ? sevenLightPiePalette[trIndex] : sevenDarkPiePalette[trIndex];
+    return isLight ? sevenLightPiePalette[bin] : sevenDarkPiePalette[bin];
   }
 
   List<Color> getPiePalette(bool isLight) {

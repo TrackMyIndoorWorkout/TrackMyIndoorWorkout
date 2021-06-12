@@ -117,11 +117,11 @@ class Record {
     return this;
   }
 
-  double speedByUnit(bool si, String sport) {
-    return speedOrPace(speed ?? 0.0, si, sport);
+  double speedByUnit(bool si) {
+    return speedByUnitCore(speed ?? 0.0, si);
   }
 
-  String speedStringByUnit(bool si, String sport) {
+  String speedOrPaceStringByUnit(bool si, String sport) {
     return speedOrPaceString(speed ?? 0.0, si, sport);
   }
 

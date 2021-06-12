@@ -48,10 +48,7 @@ class MeasurementCounter {
 
     if (record.speed != null && record.speed! > 0) {
       speedCounter++;
-      var speed = record.speedByUnit(si, sport);
-      if (sport != ActivityType.Ride && speed > slowPace) {
-        speed = slowPace;
-      }
+      var speed = record.speedByUnit(si);
       maxSpeed = max(maxSpeed, speed);
       minSpeed = min(minSpeed, speed);
     }
