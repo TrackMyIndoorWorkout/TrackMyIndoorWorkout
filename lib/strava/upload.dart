@@ -87,12 +87,14 @@ abstract class Upload {
         final Map<String, dynamic> _body = json.decode(value);
         final response = ResponseUploadActivity.fromJson(_body);
 
-        final database = Get.find<AppDatabase>();
-        activity.markUploaded(response.id);
-        await database.activityDao.updateActivity(activity);
-        debugPrint('id ${response.id}');
-        idUpload = response.id;
-        onUploadPending.add(idUpload);
+        if (response.id > 0) {
+          final database = Get.find<AppDatabase>();
+          activity.markUploaded(response.id);
+          await database.activityDao.updateActivity(activity);
+          debugPrint('id ${response.id}');
+          idUpload = response.id;
+          onUploadPending.add(idUpload);
+        }
       });
 
       String reqCheckUpgrade = '$UPLOADS_ENDPOINT/';

@@ -8,11 +8,11 @@ class UploadActivity {
   UploadActivity(this.activityId, this.externalId, this.id, this.error, this.status);
 
   UploadActivity.fromJson(Map<String, dynamic> json) {
-    activityId = json['activity_id'];
-    externalId = json['external_id'];
-    id = json['id'];
-    error = json['error'];
-    status = json['status'];
+    activityId = json['activity_id'] ?? 0;
+    externalId = json['external_id'] ?? "";
+    id = json['id'] ?? 0;
+    error = json['error'] ?? "";
+    status = json['status'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -36,10 +36,10 @@ class ResponseUploadActivity {
   ResponseUploadActivity(this.id, this.externalId, this.error, this.status, this.activityId);
 
   ResponseUploadActivity.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    externalId = json['external_id'];
-    error = json['error'];
-    status = json['status'];
-    activityId = json['activity_id'];
+    id = json['id'] ?? 0;
+    externalId = json['external_id'] ?? "";
+    error = json['error'] ?? "";
+    status = json['status'] ?? "";
+    activityId = json['activity_id'] ?? 0;
   }
 }
