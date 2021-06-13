@@ -46,7 +46,7 @@ void main() {
         final desc = ShortMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);
 
-        expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, EPS));
+        expect(desc.getMeasurementValue(data), closeTo(expected, EPS));
       });
     });
   });

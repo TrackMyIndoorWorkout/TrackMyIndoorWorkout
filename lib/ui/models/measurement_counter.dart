@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:meta/meta.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
@@ -26,43 +25,44 @@ class MeasurementCounter {
   int minHr = MIN_INIT;
   int maxHr = MAX_INIT;
 
-  double slowPace;
+  double slowPace = EPS;
 
   MeasurementCounter({
-    @required this.si,
-    @required this.sport,
-  })  : assert(si != null),
-        assert(sport != null) {
+    required this.si,
+    required this.sport,
+  }) {
     if (sport != ActivityType.Ride) {
-      final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)];
+      final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)] ?? EPS;
       slowPace = speedOrPace(slowSpeed, si, sport);
+    } else {
+      slowPace = 0.0;
     }
   }
 
   void processRecord(Record record) {
-    if (record.power > 0) {
+    if (record.power != null && record.power! > 0) {
       powerCounter++;
-      maxPower = max(maxPower, record.power);
-      minPower = min(minPower, record.power);
+      maxPower = max(maxPower, record.power!);
+      minPower = min(minPower, record.power!);
     }
-    if (record.speed > 0) {
+
+    if (record.speed != null && record.speed! > 0) {
       speedCounter++;
-      var speed = record.speedByUnit(si, sport);
-      if (sport != ActivityType.Ride && speed > slowPace) {
-        speed = slowPace;
-      }
+      var speed = record.speedByUnit(si);
       maxSpeed = max(maxSpeed, speed);
       minSpeed = min(minSpeed, speed);
     }
-    if (record.cadence > 0) {
+
+    if (record.cadence != null && record.cadence! > 0) {
       cadenceCounter++;
-      maxCadence = max(maxCadence, record.cadence);
-      minCadence = min(minCadence, record.cadence);
+      maxCadence = max(maxCadence, record.cadence!);
+      minCadence = min(minCadence, record.cadence!);
     }
-    if (record.heartRate > 0) {
+
+    if (record.heartRate != null && record.heartRate! > 0) {
       hrCounter++;
-      maxHr = max(maxHr, record.heartRate);
-      minHr = min(minHr, record.heartRate);
+      maxHr = max(maxHr, record.heartRate!);
+      minHr = min(minHr, record.heartRate!);
     }
   }
 

@@ -31,10 +31,10 @@ class FitStringFieldTest extends FitDefinitionMessage {
   FitStringFieldTest({
     localMessageType,
     globalMessageNumber,
-    this.definitionNumber,
-    this.byte1,
-    this.text,
-    this.byte2,
+    required this.definitionNumber,
+    required this.byte1,
+    required this.text,
+    required this.byte2,
   }) : super(localMessageType, globalMessageNumber) {
     fields = [
       FitField(definitionNumber, FitBaseTypes.uint8Type),

@@ -6,8 +6,8 @@ import 'device_base.dart';
 typedef MetricProcessingFunction = Function(int heartRate);
 
 abstract class IntegerSensor extends DeviceBase {
-  int featureFlag;
-  int metric;
+  int featureFlag = 0;
+  int metric = 0;
 
   IntegerSensor(
     serviceId,
@@ -17,15 +17,12 @@ abstract class IntegerSensor extends DeviceBase {
           serviceId: serviceId,
           characteristicsId: characteristicsId,
           device: device,
-        ) {
-    featureFlag = 0;
-    metric = 0;
-  }
+        );
 
   Stream<int> get _listenToMetric async* {
     if (!attached || characteristic == null) return;
 
-    await for (var byteString in characteristic.value.throttleTime(Duration(milliseconds: 950))) {
+    await for (var byteString in characteristic!.value.throttleTime(Duration(milliseconds: 950))) {
       if (!canMeasurementProcessed(byteString)) continue;
 
       metric = processMeasurement(byteString);
@@ -36,9 +33,7 @@ abstract class IntegerSensor extends DeviceBase {
   void pumpMetric(MetricProcessingFunction metricProcessingFunction) {
     subscription = _listenToMetric.listen((newValue) {
       metric = newValue;
-      if (metricProcessingFunction != null) {
-        metricProcessingFunction(newValue);
-      }
+      metricProcessingFunction(newValue);
     });
   }
 

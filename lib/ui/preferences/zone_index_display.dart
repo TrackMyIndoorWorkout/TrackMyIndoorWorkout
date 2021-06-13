@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import 'preferences_base.dart';
 
@@ -10,28 +10,26 @@ class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> indexDisplayPreferences = [
-      PreferenceTitle(PreferencesSpec.ZONE_INDEX_DISPLAY_EXTRA_NOTE),
-      SwitchPreference(
-        ZONE_INDEX_DISPLAY_COLORING,
-        ZONE_INDEX_DISPLAY_COLORING_TAG,
-        defaultVal: ZONE_INDEX_DISPLAY_COLORING_DEFAULT,
-        desc: ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION,
+      PrefLabel(title: Text(PreferencesSpec.ZONE_INDEX_DISPLAY_EXTRA_NOTE, maxLines: 10)),
+      PrefCheckbox(
+        title: Text(ZONE_INDEX_DISPLAY_COLORING),
+        subtitle: Text(ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION),
+        pref: ZONE_INDEX_DISPLAY_COLORING_TAG,
       ),
     ];
 
     indexDisplayPreferences.addAll(
         PreferencesSpec.preferencesSpecs.where((spec) => spec.metric != "speed").map((prefSpec) {
-      return SwitchPreference(
-        prefSpec.zoneIndexText,
-        prefSpec.zoneIndexTag,
-        defaultVal: prefSpec.indexDisplayDefault,
-        desc: prefSpec.zoneIndexDescription,
+      return PrefCheckbox(
+        title: Text(prefSpec.zoneIndexText),
+        subtitle: Text(prefSpec.zoneIndexDescription),
+        pref: prefSpec.zoneIndexTag,
       );
     }));
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: PreferencePage(indexDisplayPreferences),
+      body: PrefPage(children: indexDisplayPreferences),
     );
   }
 }

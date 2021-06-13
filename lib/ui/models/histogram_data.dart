@@ -1,19 +1,13 @@
-import 'package:meta/meta.dart';
-
 class HistogramData {
   final int index;
   final double upper;
-  int count;
-  int percent;
+  int count = 0;
+  int percent = 0;
 
   HistogramData({
-    @required this.index,
-    @required this.upper,
-  })  : assert(index != null),
-        assert(upper != null) {
-    count = 0;
-    percent = 0;
-  }
+    required this.index,
+    required this.upper,
+  });
 
   void increment() {
     count++;

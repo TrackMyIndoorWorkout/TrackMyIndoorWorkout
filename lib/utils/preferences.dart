@@ -1,9 +1,10 @@
-import 'package:preferences/preference_service.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
 import 'constants.dart';
 
 bool isBoundedInteger(String integerString, int minValue, int maxValue) {
-  if (integerString == null || integerString.trim().isEmpty) return false;
+  if (integerString.trim().isEmpty) return false;
 
   final integer = int.tryParse(integerString);
   return integer != null && integer >= minValue && integer <= maxValue;
@@ -18,11 +19,11 @@ bool isIpPart(String ipAddressPart, bool allowZero) {
 }
 
 bool isIpAddress(String ipAddress) {
-  if (ipAddress == null || ipAddress.trim().isEmpty) return false;
+  if (ipAddress.trim().isEmpty) return false;
 
   final ipParts = ipAddress.trim().split(".");
   final trimCheck =
-      ipParts.fold(true, (prev, ipPart) => prev && ipPart.length == ipPart.trim().length);
+      ipParts.fold<bool>(true, (prev, ipPart) => prev && ipPart.length == ipPart.trim().length);
   return ipParts.length == 4 &&
       trimCheck &&
       isIpPart(ipParts[0], false) &&
@@ -31,39 +32,46 @@ bool isIpAddress(String ipAddress) {
       isIpPart(ipParts[3], true);
 }
 
+final dummyAddressTuple = Tuple2<String, int>("", 0);
+
 Tuple2<String, int> parseIpAddress(String ipAddress) {
-  if (ipAddress == null || ipAddress.trim().isEmpty) return null;
+  if (ipAddress.trim().isEmpty) return dummyAddressTuple;
 
   final addressParts = ipAddress.trim().split(":");
-  if (addressParts[0].isEmpty) return null;
+  if (addressParts[0].isEmpty) return dummyAddressTuple;
 
   int portNumber = HTTPS_PORT;
   if (addressParts.length > 1 && addressParts[1].trim().isNotEmpty) {
     final portNumberString = addressParts[1].trim();
-    if (!isPortNumber(portNumberString)) return null;
+    if (!isPortNumber(portNumberString)) return dummyAddressTuple;
 
     final parsedPort = int.tryParse(portNumberString);
     if (parsedPort != null && parsedPort > 0) {
       portNumber = parsedPort;
     }
   }
-  if (!isIpAddress(addressParts[0])) return null;
+  if (!isIpAddress(addressParts[0])) return dummyAddressTuple;
 
   return Tuple2<String, int>(addressParts[0], portNumber);
 }
 
 List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
   List<Tuple2<String, int>> addresses = [];
-  if (ipAddresses != null && ipAddresses.trim().isNotEmpty) {
+  if (ipAddresses.trim().isNotEmpty) {
     addresses = ipAddresses.split(",").map((ipAddress) => parseIpAddress(ipAddress)).toList();
 
     // .whereType<Tuple2<String, int>>() I think reflection could be slower
-    addresses.removeWhere((value) => value == null);
+    addresses.removeWhere((value) => value.item2 == 0);
   }
   return addresses;
 }
 
-int getStringIntegerPreference(String tag, String defaultString, int defaultInt) {
-  final valueString = PrefService.getString(tag) ?? defaultString;
+int getStringIntegerPreference(
+    String tag, String defaultString, int defaultInt, BasePrefService? prefService) {
+  if (prefService == null) {
+    prefService = Get.find<BasePrefService>();
+  }
+
+  final valueString = prefService.get<String>(tag) ?? defaultString;
   return int.tryParse(valueString) ?? defaultInt;
 }

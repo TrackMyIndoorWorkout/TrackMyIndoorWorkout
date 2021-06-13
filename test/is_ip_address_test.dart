@@ -10,13 +10,12 @@ class TestPair {
   final String input;
   final bool expected;
 
-  TestPair({this.input, this.expected});
+  TestPair({required this.input, required this.expected});
 }
 
 void main() {
   group('isIpAddress corner cases', () {
     [
-      TestPair(input: null, expected: false),
       TestPair(input: "", expected: false),
       TestPair(input: " ", expected: false),
       TestPair(input: "*^&@%", expected: false),
@@ -63,7 +62,7 @@ void main() {
     List.generate(REPETITION, (index) => index).forEach((index) {
       final ipParts = getRandomInts(4, 320, rnd);
       final expected =
-          ipParts.fold(true, (prev, part) => prev && part < MAX_UINT8) && ipParts[0] > 0;
+          ipParts.fold<bool>(true, (prev, part) => prev && part < MAX_UINT8) && ipParts[0] > 0;
       final addressString = ipParts.map((part) => part.toString()).join(".");
       test('$addressString -> $expected', () async {
         expect(isIpAddress(addressString), expected);

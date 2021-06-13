@@ -5,18 +5,17 @@ import 'export_record.dart';
 
 class ExportModel {
   String sport;
-  double totalDistance; // Total distance in meters
+  double totalDistance = 0.0; // Total distance in meters
   double totalTime; // in seconds
-  double averageSpeed; // in m/s
-  double maximumSpeed; // in m/s
+  double averageSpeed = 0.0; // in m/s
+  double maximumSpeed = 0.0; // in m/s
   int calories;
-  int averageHeartRate;
-  int maximumHeartRate;
-  int averageCadence;
-  int maximumCadence;
-  double averagePower;
-  double maximumPower;
-  String intensity;
+  int averageHeartRate = 0;
+  int maximumHeartRate = 0;
+  int averageCadence = 0;
+  int maximumCadence = 0;
+  double averagePower = 0.0;
+  double maximumPower = 0.0;
   DateTime dateActivity; // Date of the activity
   List<ExportRecord> records;
 
@@ -38,92 +37,67 @@ class ExportModel {
   String langID;
   String partNumber;
 
-  ExportModel() {
-    records = [];
-  }
-
-  process() {
+  ExportModel({
+    required this.sport,
+    required this.totalDistance,
+    required this.totalTime,
+    required this.calories,
+    required this.dateActivity,
+    required this.descriptor,
+    required this.deviceId,
+    required this.versionMajor,
+    required this.versionMinor,
+    required this.buildMajor,
+    required this.buildMinor,
+    required this.author,
+    required this.name,
+    required this.swVersionMajor,
+    required this.swVersionMinor,
+    required this.buildVersionMajor,
+    required this.buildVersionMinor,
+    required this.langID,
+    required this.partNumber,
+    required this.records,
+  }) {
     // Assuming that points are ordered by time stamp ascending
-    ExportRecord lastRecord = records.last;
-    if (lastRecord != null) {
+    if (records.length > 0) {
+      ExportRecord lastRecord = records.last;
       ExportRecord firstRecord = records.first;
-      if ((totalTime == null || totalTime == 0) &&
-          lastRecord.date != null &&
-          firstRecord.date != null) {
+      if (totalTime == 0 && lastRecord.date != null && firstRecord.date != null) {
         totalTime =
-            (lastRecord.date.millisecondsSinceEpoch - firstRecord.date.millisecondsSinceEpoch) /
+            (lastRecord.date!.millisecondsSinceEpoch - firstRecord.date!.millisecondsSinceEpoch) /
                 1000;
       }
 
-      if ((totalDistance == null || totalDistance == 0) && lastRecord.distance > 0) {
+      if (totalDistance < EPS && lastRecord.distance > EPS) {
         totalDistance = lastRecord.distance;
       }
     }
 
-    final calculateAvgSpeed = averageSpeed == null || averageSpeed == 0;
-    final calculateMaxSpeed = maximumSpeed == null || maximumSpeed == 0;
-    final calculateAvgHeartRate = averageHeartRate == null || averageHeartRate == 0;
-    final calculateMaxHeartRate = maximumHeartRate == null || maximumHeartRate == 0;
-    final calculateAvgCadence = averageCadence == null || averageCadence == 0;
-    final calculateMaxCadence = maximumCadence == null || maximumCadence == 0;
-    final calculateAvgPower = averagePower == null || averagePower == 0;
-    final calculateMaxPower = maximumPower == null || maximumPower == 0;
     var accu = StatisticsAccumulator(
       si: true,
       sport: ActivityType.Ride,
-      calculateAvgSpeed: calculateAvgSpeed,
-      calculateMaxSpeed: calculateMaxSpeed,
-      calculateAvgHeartRate: calculateAvgHeartRate,
-      calculateMaxHeartRate: calculateMaxHeartRate,
-      calculateAvgCadence: calculateAvgCadence,
-      calculateMaxCadence: calculateMaxCadence,
-      calculateAvgPower: calculateAvgPower,
-      calculateMaxPower: calculateMaxPower,
+      calculateAvgSpeed: true,
+      calculateMaxSpeed: true,
+      calculateAvgHeartRate: true,
+      calculateMaxHeartRate: true,
+      calculateAvgCadence: true,
+      calculateMaxCadence: true,
+      calculateAvgPower: true,
+      calculateMaxPower: true,
     );
 
-    if (calculateAvgSpeed ||
-        calculateMaxSpeed ||
-        calculateAvgHeartRate ||
-        calculateMaxHeartRate ||
-        calculateAvgCadence ||
-        calculateMaxCadence ||
-        calculateAvgPower ||
-        calculateMaxPower) {
-      records.forEach((trackPoint) {
-        accu.processExportRecord(trackPoint);
-      });
-    }
+    records.forEach((trackPoint) {
+      accu.processExportRecord(trackPoint);
+    });
 
-    if (calculateAvgSpeed && accu.speedCount > 0) {
-      averageSpeed = accu.avgSpeed;
-    }
-
-    if (calculateMaxSpeed && accu.maxSpeed > 0.0) {
-      maximumSpeed = accu.maxSpeed;
-    }
-
-    if (calculateAvgHeartRate && accu.heartRateCount > 0) {
-      averageHeartRate = accu.avgHeartRate;
-    }
-
-    if (calculateMaxHeartRate && accu.maxHeartRate > 0) {
-      maximumHeartRate = accu.maxHeartRate;
-    }
-
-    if (calculateAvgCadence && accu.cadenceCount > 0) {
-      averageCadence = accu.avgCadence;
-    }
-
-    if (calculateMaxCadence && accu.maxCadence > 0) {
-      maximumCadence = accu.maxCadence;
-    }
-
-    if (calculateAvgPower && accu.powerCount > 0) {
-      averagePower = accu.avgPower;
-    }
-
-    if (calculateMaxPower && accu.maxPower > 0) {
-      maximumPower = accu.maxPower;
-    }
+    averageSpeed = accu.avgSpeed;
+    maximumSpeed = accu.maxSpeed;
+    averageHeartRate = accu.avgHeartRate;
+    maximumHeartRate = accu.maxHeartRate;
+    averageCadence = accu.avgCadence;
+    maximumCadence = accu.maxCadence;
+    averagePower = accu.avgPower;
+    maximumPower = accu.maxPower;
   }
 }

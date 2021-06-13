@@ -106,3 +106,21 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: "Generic Swim Ergometer",
   ),
 };
+
+DeviceDescriptor genericDescriptorForSport(String sport) {
+  if (sport == ActivityType.Ride) {
+    return deviceMap[GENERIC_FTMS_BIKE_FOURCC]!;
+  } else if (sport == ActivityType.Run) {
+    return deviceMap[GENERIC_FTMS_TREADMILL_FOURCC]!;
+  } else if (sport == ActivityType.Kayaking) {
+    return deviceMap[GENERIC_FTMS_KAYAK_FOURCC]!;
+  } else if (sport == ActivityType.Canoeing) {
+    return deviceMap[GENERIC_FTMS_CANOE_FOURCC]!;
+  } else if (sport == ActivityType.Rowing) {
+    return deviceMap[GENERIC_FTMS_ROWER_FOURCC]!;
+  } else if (sport == ActivityType.Swim) {
+    return deviceMap[GENERIC_FTMS_SWIM_FOURCC]!;
+  }
+
+  return deviceMap[GENERIC_FTMS_BIKE_FOURCC]!;
+}

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
-import 'package:preferences/preferences.dart';
-import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:pref/pref.dart';
+import '../../utils/constants.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../persistence/preferences.dart';
@@ -14,39 +14,29 @@ import '../../utils/theme_manager.dart';
 class SportLeaderboardScreen extends StatefulWidget {
   final String sport;
 
-  SportLeaderboardScreen({key, @required this.sport})
-      : assert(sport != null),
-        super(key: key);
+  SportLeaderboardScreen({key, required this.sport}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return SportLeaderboardScreenState(sport: sport);
-  }
+  State<StatefulWidget> createState() => SportLeaderboardScreenState();
 }
 
 class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
-  final String sport;
-  AppDatabase _database;
-  bool _si;
-  int _editCount;
-  double _sizeDefault;
-  TextStyle _textStyle;
-  TextStyle _textStyle2;
-  ThemeManager _themeManager;
-  ExpandableThemeData _expandableThemeData;
-
-  SportLeaderboardScreenState({@required this.sport}) : assert(sport != null);
+  AppDatabase _database = Get.find<AppDatabase>();
+  bool _si = UNIT_SYSTEM_DEFAULT;
+  int _editCount = 0;
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
+  TextStyle _textStyle2 = TextStyle();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
     super.initState();
-    _editCount = 0;
-    _database = Get.find<AppDatabase>();
-    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
-    _themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline4
+    _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _textStyle = Get.textTheme.headline4!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
-    _sizeDefault = _textStyle.fontSize;
+    _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
@@ -85,7 +75,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('$sport Leaderboard')),
+      appBar: AppBar(title: Text('${widget.sport} Leaderboard')),
       body: CustomListView(
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
@@ -94,8 +84,8 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
-            final data =
-                await _database.workoutSummaryDao.findWorkoutSummaryBySport(sport, limit, offset);
+            final data = await _database.workoutSummaryDao
+                .findWorkoutSummaryBySport(widget.sport, limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -167,6 +157,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
                   ),
                 ],
               ),
+              collapsed: Container(),
               expanded: ListTile(
                 title: Column(
                   children: [

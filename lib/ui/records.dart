@@ -1,12 +1,12 @@
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -25,77 +25,82 @@ class RecordsScreen extends StatefulWidget {
   final Activity activity;
   final Size size;
   RecordsScreen({
-    Key key,
-    @required this.activity,
-    @required this.size,
-  })  : assert(activity != null),
-        assert(size != null),
-        super(key: key);
+    Key? key,
+    required this.activity,
+    required this.size,
+  }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return RecordsScreenState(activity: activity, size: size);
-  }
+  State<StatefulWidget> createState() => RecordsScreenState();
 }
 
 class RecordsScreenState extends State<RecordsScreen> {
-  RecordsScreenState({
-    @required this.activity,
-    @required this.size,
-  })  : assert(activity != null),
-        assert(size != null);
+  int _pointCount = 0;
+  List<Record> _allRecords = [];
+  List<DisplayRecord> _sampledRecords = [];
+  Map<String, TileConfiguration> _tileConfigurations = {};
+  List<String> _tiles = [];
+  bool _initialized = false;
+  List<String> _selectedTimes = [];
+  List<String> _selectedValues = [];
+  bool _si = UNIT_SYSTEM_DEFAULT;
+  List<PreferencesSpec> _preferencesSpecs = [];
 
-  final Activity activity;
-  final Size size;
-  int _pointCount;
-  List<Record> _allRecords;
-  List<DisplayRecord> _sampledRecords;
-  Map<String, TileConfiguration> _tileConfigurations;
-  List<String> _tiles;
-  bool _initialized;
-  List<String> _selectedTimes;
-  List<String> _selectedValues;
-  bool _si;
-  List<PreferencesSpec> _preferencesSpecs;
-
-  double _mediaWidth;
-  double _sizeDefault;
-  double _sizeDefault2;
-  TextStyle _measurementStyle;
-  TextStyle _textStyle;
-  TextStyle _unitStyle;
-  TextStyle _selectionStyle;
-  TextStyle _selectionTextStyle;
-  ThemeManager _themeManager;
-  bool _isLight;
-  charts.TextStyleSpec _chartTextStyle;
-  ExpandableThemeData _expandableThemeData;
+  double? _mediaWidth;
+  double _sizeDefault = 10.0;
+  double _sizeDefault2 = 10.0;
+  TextStyle _measurementStyle = TextStyle();
+  TextStyle _textStyle = TextStyle();
+  TextStyle _unitStyle = TextStyle();
+  TextStyle _chartLabelStyle = const TextStyle(
+    fontFamily: FONT_FAMILY,
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+  );
+  charts.TooltipBehavior _tooltipBehavior = charts.TooltipBehavior(enable: true);
+  charts.ZoomPanBehavior _zoomPanBehavior = charts.ZoomPanBehavior(
+    enableDoubleTapZooming: true,
+    enablePinching: true,
+    enableSelectionZooming: true,
+    zoomMode: charts.ZoomMode.x,
+    enablePanning: true,
+  );
+  charts.TrackballBehavior _trackballBehavior = charts.TrackballBehavior(
+    enable: true,
+    activationMode: charts.ActivationMode.singleTap,
+    tooltipDisplayMode: charts.TrackballDisplayMode.nearestPoint,
+  );
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  bool _isLight = true;
+  Color _chartTextColor = Colors.black;
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   Future<void> extraInit() async {
     final database = Get.find<AppDatabase>();
-    _allRecords = await database.recordDao.findAllActivityRecords(activity.id);
+    _allRecords = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
 
     setState(() {
-      _pointCount = size.width.toInt() - 20;
+      _pointCount = widget.size.width.toInt() - 20;
       if (_allRecords.length < _pointCount) {
-        _sampledRecords =
-            _allRecords.map((r) => r.hydrate(activity.sport).display()).toList(growable: false);
+        _sampledRecords = _allRecords
+            .map((r) => r.hydrate(widget.activity.sport).display())
+            .toList(growable: false);
       } else {
         final nth = _allRecords.length / _pointCount;
         _sampledRecords = List.generate(
           _pointCount,
-          (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate(activity.sport).display(),
+          (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate(widget.activity.sport).display(),
           growable: false,
         );
       }
-      final measurementCounter = MeasurementCounter(si: _si, sport: activity.sport);
+      final measurementCounter = MeasurementCounter(si: _si, sport: widget.activity.sport);
       _allRecords.forEach((record) {
         measurementCounter.processRecord(record);
       });
 
       var accu = StatisticsAccumulator(
         si: _si,
-        sport: activity.sport,
+        sport: widget.activity.sport,
         calculateAvgPower: measurementCounter.hasPower,
         calculateMaxPower: measurementCounter.hasPower,
         calculateAvgSpeed: measurementCounter.hasSpeed,
@@ -118,8 +123,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           title: prefSpec.fullTitle,
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getPowerData,
-          dataStringFn: _getPowerString,
-          selectionListener: _powerSelectionListener,
           maxString: accu.maxPower.toStringAsFixed(2),
           avgString: accu.avgPower.toStringAsFixed(2),
         );
@@ -146,10 +149,8 @@ class RecordsScreenState extends State<RecordsScreen> {
           title: prefSpec.fullTitle,
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getSpeedData,
-          dataStringFn: _getSpeedString,
-          selectionListener: _speedSelectionListener,
-          maxString: speedOrPaceString(accu.maxSpeed, _si, activity.sport),
-          avgString: speedOrPaceString(accu.avgSpeed, _si, activity.sport),
+          maxString: speedOrPaceString(accu.maxSpeed, _si, widget.activity.sport),
+          avgString: speedOrPaceString(accu.avgSpeed, _si, widget.activity.sport),
         );
         prefSpec.calculateBounds(
           measurementCounter.minSpeed,
@@ -174,8 +175,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           title: prefSpec.fullTitle,
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getCadenceData,
-          dataStringFn: _getCadenceString,
-          selectionListener: _cadenceSelectionListener,
           maxString: "${accu.maxCadence}",
           avgString: "${accu.avgCadence}",
         );
@@ -202,8 +201,6 @@ class RecordsScreenState extends State<RecordsScreen> {
           title: prefSpec.fullTitle,
           histogramTitle: prefSpec.histogramTitle,
           dataFn: _getHrData,
-          dataStringFn: _getHrString,
-          selectionListener: _hrSelectionListener,
           maxString: "${accu.maxHeartRate}",
           avgString: "${accu.avgHeartRate}",
         );
@@ -223,67 +220,67 @@ class RecordsScreenState extends State<RecordsScreen> {
       }
       _allRecords.forEach((record) {
         if (measurementCounter.hasPower) {
-          if (record.power > 0) {
-            var tileConfig = _tileConfigurations["power"];
+          if (record.power != null && record.power! > 0) {
+            var tileConfig = _tileConfigurations["power"]!;
             tileConfig.count++;
-            final binIndex = _preferencesSpecs[0].binIndex(record.power);
+            final binIndex = _preferencesSpecs[0].binIndex(record.power!);
             tileConfig.histogram[binIndex].increment();
           }
         }
         if (measurementCounter.hasSpeed) {
-          if (record.speed > 0) {
-            var tileConfig = _tileConfigurations["speed"];
+          if (record.speed != null && record.speed! > 0) {
+            var tileConfig = _tileConfigurations["speed"]!;
             tileConfig.count++;
-            final binIndex = _preferencesSpecs[1].binIndex(record.speedByUnit(_si, activity.sport));
+            final binIndex = _preferencesSpecs[1].binIndex(record.speedByUnit(_si));
             tileConfig.histogram[binIndex].increment();
           }
         }
         if (measurementCounter.hasCadence) {
-          if (record.cadence > 0) {
-            var tileConfig = _tileConfigurations["cadence"];
+          if (record.cadence != null && record.cadence! > 0) {
+            var tileConfig = _tileConfigurations["cadence"]!;
             tileConfig.count++;
-            final binIndex = _preferencesSpecs[2].binIndex(record.cadence);
+            final binIndex = _preferencesSpecs[2].binIndex(record.cadence!);
             tileConfig.histogram[binIndex].increment();
           }
         }
         if (measurementCounter.hasHeartRate) {
-          if (record.heartRate > 0) {
-            var tileConfig = _tileConfigurations["hr"];
+          if (record.heartRate != null && record.heartRate! > 0) {
+            var tileConfig = _tileConfigurations["hr"]!;
             tileConfig.count++;
-            final binIndex = _preferencesSpecs[3].binIndex(record.heartRate);
+            final binIndex = _preferencesSpecs[3].binIndex(record.heartRate!);
             tileConfig.histogram[binIndex].increment();
           }
         }
       });
       if (measurementCounter.hasPower) {
-        var tileConfig = _tileConfigurations["power"];
+        var tileConfig = _tileConfigurations["power"]!;
         tileConfig.histogram.forEach((h) {
           h.calculatePercent(tileConfig.count);
         });
         tileConfig.histogramFn = _getPowerHistogram;
       }
       if (measurementCounter.hasSpeed) {
-        var tileConfig = _tileConfigurations["speed"];
+        var tileConfig = _tileConfigurations["speed"]!;
         tileConfig.histogram.forEach((h) {
           h.calculatePercent(tileConfig.count);
         });
         tileConfig.histogramFn = _getSpeedHistogram;
       }
       if (measurementCounter.hasCadence) {
-        var tileConfig = _tileConfigurations["cadence"];
+        var tileConfig = _tileConfigurations["cadence"]!;
         tileConfig.histogram.forEach((h) {
           h.calculatePercent(tileConfig.count);
         });
         tileConfig.histogramFn = _getCadenceHistogram;
       }
       if (measurementCounter.hasHeartRate) {
-        var tileConfig = _tileConfigurations["hr"];
+        var tileConfig = _tileConfigurations["hr"]!;
         tileConfig.histogram.forEach((h) {
           h.calculatePercent(tileConfig.count);
         });
         tileConfig.histogramFn = _getHrHistogram;
       }
-      _allRecords = null;
+      _allRecords = [];
       _initialized = true;
     });
   }
@@ -291,219 +288,140 @@ class RecordsScreenState extends State<RecordsScreen> {
   @override
   void initState() {
     super.initState();
-    _initialized = false;
-    _tileConfigurations = {};
-    _tiles = [];
-    _selectedTimes = [];
-    _selectedValues = [];
-    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, activity.sport);
-    activity.hydrate();
-    _themeManager = Get.find<ThemeManager>();
+    final prefService = Get.find<BasePrefService>();
+    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.activity.sport);
+    widget.activity.hydrate();
     _isLight = !_themeManager.isDark();
-    _chartTextStyle = charts.TextStyleSpec(
-      color: _isLight ? charts.MaterialPalette.black : charts.MaterialPalette.white,
-    );
+    _chartTextColor = _themeManager.getProtagonistColor();
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
     extraInit();
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _getPowerData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'power',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[0].fgColorByValue(
-          record.power,
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.power,
-        data: _sampledRecords,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _getPowerData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _sampledRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.power,
+        color: _chartTextColor,
+        animationDuration: 0,
       ),
     ];
   }
 
-  String _getPowerString(DisplayRecord record) {
-    return record.power.toString();
-  }
-
-  void _powerSelectionListener(charts.SelectionModel<DateTime> model) {
-    final selectionData = _tileConfigurations["power"].getSelectionData(model);
-
-    setState(() {
-      _selectedTimes[0] = selectionData.time.difference(activity.startDateTime).toDisplay();
-      _selectedValues[0] = selectionData.value;
-    });
-  }
-
-  List<charts.Series<HistogramData, double>> _getPowerHistogram() {
-    return <charts.Series<HistogramData, double>>[
-      charts.Series<HistogramData, double>(
-        id: 'powerHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[0].pieBgColorByBin(
-          data.index,
-          _isLight,
+  List<charts.CircularSeries<HistogramData, String>> _getPowerHistogram() {
+    return <charts.CircularSeries<HistogramData, String>>[
+      charts.PieSeries<HistogramData, String>(
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        yValueMapper: (HistogramData data, _) => data.percent,
+        dataSource: _tileConfigurations["power"]!.histogram,
+        explode: true,
+        dataLabelSettings: charts.DataLabelSettings(
+          isVisible: true,
+          showZeroValue: false,
+          textStyle: _chartLabelStyle,
         ),
-        domainFn: (HistogramData data, _) => data.upper,
-        measureFn: (HistogramData data, _) => data.percent,
-        data: _tileConfigurations["power"].histogram,
-        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
-        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        enableTooltip: true,
+        animationDuration: 0,
       ),
     ];
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _getSpeedData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'speed',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[1].fgColorByValue(
-          record.speedByUnit(_si, activity.sport),
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.speedByUnit(_si, activity.sport),
-        data: _sampledRecords,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _getSpeedData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _sampledRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
+        color: _chartTextColor,
+        animationDuration: 0,
       ),
     ];
   }
 
-  String _getSpeedString(DisplayRecord record) {
-    return speedOrPaceString(record.speed, _si, activity.sport);
-  }
-
-  void _speedSelectionListener(charts.SelectionModel<DateTime> model) {
-    final selectionData = _tileConfigurations["speed"].getSelectionData(model);
-
-    setState(() {
-      _selectedTimes[1] = selectionData.time.difference(activity.startDateTime).toDisplay();
-      _selectedValues[1] = selectionData.value;
-    });
-  }
-
-  List<charts.Series<HistogramData, double>> _getSpeedHistogram() {
-    return <charts.Series<HistogramData, double>>[
-      charts.Series<HistogramData, double>(
-        id: 'speedHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[1].pieBgColorByBin(
-          data.index,
-          _isLight,
+  List<charts.CircularSeries<HistogramData, String>> _getSpeedHistogram() {
+    return <charts.CircularSeries<HistogramData, String>>[
+      charts.PieSeries<HistogramData, String>(
+        dataSource: _tileConfigurations["speed"]!.histogram,
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        yValueMapper: (HistogramData data, _) => data.percent,
+        explode: true,
+        dataLabelSettings: charts.DataLabelSettings(
+          isVisible: true,
+          showZeroValue: false,
+          textStyle: _chartLabelStyle,
         ),
-        domainFn: (HistogramData data, _) => data.upper,
-        measureFn: (HistogramData data, _) => data.percent,
-        data: _tileConfigurations["speed"].histogram,
-        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
-        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        enableTooltip: true,
+        animationDuration: 0,
       ),
     ];
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _getCadenceData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'cadence',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[2].fgColorByValue(
-          record.cadence,
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.cadence,
-        data: _sampledRecords,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _getCadenceData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _sampledRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.cadence,
+        color: _chartTextColor,
+        animationDuration: 0,
       ),
     ];
   }
 
-  String _getCadenceString(DisplayRecord record) {
-    return record.cadence.toString();
-  }
-
-  void _cadenceSelectionListener(charts.SelectionModel<DateTime> model) {
-    final selectionData = _tileConfigurations["cadence"].getSelectionData(model);
-
-    setState(() {
-      _selectedTimes[2] = selectionData.time.difference(activity.startDateTime).toDisplay();
-      _selectedValues[2] = selectionData.value;
-    });
-  }
-
-  List<charts.Series<HistogramData, double>> _getCadenceHistogram() {
-    return <charts.Series<HistogramData, double>>[
-      charts.Series<HistogramData, double>(
-        id: 'cadenceHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[2].pieBgColorByBin(
-          data.index,
-          _isLight,
+  List<charts.CircularSeries<HistogramData, String>> _getCadenceHistogram() {
+    return <charts.CircularSeries<HistogramData, String>>[
+      charts.PieSeries<HistogramData, String>(
+        dataSource: _tileConfigurations["cadence"]!.histogram,
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        yValueMapper: (HistogramData data, _) => data.percent,
+        explode: true,
+        dataLabelSettings: charts.DataLabelSettings(
+          isVisible: true,
+          showZeroValue: false,
+          textStyle: _chartLabelStyle,
         ),
-        domainFn: (HistogramData data, _) => data.upper,
-        measureFn: (HistogramData data, _) => data.percent,
-        data: _tileConfigurations["cadence"].histogram,
-        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
-        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        enableTooltip: true,
+        animationDuration: 0,
       ),
     ];
   }
 
-  List<charts.Series<DisplayRecord, DateTime>> _getHrData() {
-    return <charts.Series<DisplayRecord, DateTime>>[
-      charts.Series<DisplayRecord, DateTime>(
-        id: 'hr',
-        colorFn: (DisplayRecord record, __) => _preferencesSpecs[3].fgColorByValue(
-          record.heartRate,
-          _isLight,
-        ),
-        domainFn: (DisplayRecord record, _) => record.dt,
-        measureFn: (DisplayRecord record, _) => record.heartRate,
-        data: _sampledRecords,
-        insideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (DisplayRecord record, _) => _chartTextStyle,
+  List<charts.LineSeries<DisplayRecord, DateTime>> _getHrData() {
+    return <charts.LineSeries<DisplayRecord, DateTime>>[
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _sampledRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.heartRate,
+        color: _chartTextColor,
+        animationDuration: 0,
       ),
     ];
   }
 
-  String _getHrString(DisplayRecord record) {
-    return record.heartRate.toString();
-  }
-
-  void _hrSelectionListener(charts.SelectionModel<DateTime> model) {
-    final selectionData = _tileConfigurations["hr"].getSelectionData(model);
-
-    setState(() {
-      _selectedTimes[3] = selectionData.time.difference(activity.startDateTime).toDisplay();
-      _selectedValues[3] = selectionData.value;
-    });
-  }
-
-  List<charts.Series<HistogramData, double>> _getHrHistogram() {
-    return <charts.Series<HistogramData, double>>[
-      charts.Series<HistogramData, double>(
-        id: 'hrHistogram',
-        colorFn: (HistogramData data, __) => _preferencesSpecs[3].pieBgColorByBin(
-          data.index,
-          _isLight,
+  List<charts.CircularSeries<HistogramData, String>> _getHrHistogram() {
+    return <charts.CircularSeries<HistogramData, String>>[
+      charts.PieSeries<HistogramData, String>(
+        dataSource: _tileConfigurations["hr"]!.histogram,
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        yValueMapper: (HistogramData data, _) => data.percent,
+        explode: true,
+        dataLabelSettings: charts.DataLabelSettings(
+          isVisible: true,
+          showZeroValue: false,
+          textStyle: _chartLabelStyle,
         ),
-        domainFn: (HistogramData data, _) => data.upper,
-        measureFn: (HistogramData data, _) => data.percent,
-        data: _tileConfigurations["hr"].histogram,
-        labelAccessorFn: (HistogramData data, _) => 'Z${data.index}: ${data.percent}%',
-        insideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
-        outsideLabelStyleAccessorFn: (HistogramData data, _) => _chartTextStyle,
+        enableTooltip: true,
+        animationDuration: 0,
       ),
     ];
   }
 
   Widget build(BuildContext context) {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth - mediaWidth).abs() > EPS) {
+    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > EPS) {
       _mediaWidth = mediaWidth;
       _sizeDefault = mediaWidth / 7;
       _sizeDefault2 = _sizeDefault / 1.5;
@@ -515,13 +433,6 @@ class RecordsScreenState extends State<RecordsScreen> {
         fontSize: _sizeDefault2,
       );
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
-      _selectionStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
-        fontSize: _sizeDefault2 / 2,
-      );
-      _selectionTextStyle = TextStyle(
-        fontSize: _sizeDefault2 / 2,
-      );
     }
 
     return Scaffold(
@@ -554,10 +465,10 @@ class RecordsScreenState extends State<RecordsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(getIcon(activity.sport), _sizeDefault),
+                        _themeManager.getBlueIcon(getIcon(widget.activity.sport), _sizeDefault),
                         Expanded(
                           child: TextOneLine(
-                            activity.deviceName,
+                            widget.activity.deviceName,
                             style: _textStyle,
                             textAlign: TextAlign.right,
                             overflow: TextOverflow.ellipsis,
@@ -572,7 +483,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
                         Spacer(),
                         Text(
-                          activity.elapsedString,
+                          widget.activity.elapsedString,
                           style: _measurementStyle,
                         ),
                       ],
@@ -584,7 +495,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
                         Spacer(),
                         Text(
-                          activity.distanceString(_si),
+                          widget.activity.distanceString(_si),
                           style: _measurementStyle,
                         ),
                         SizedBox(
@@ -603,7 +514,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
                         Spacer(),
                         Text(
-                          '${activity.calories}',
+                          '${widget.activity.calories}',
                           style: _measurementStyle,
                         ),
                         SizedBox(
@@ -631,7 +542,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              _tileConfigurations[item].title,
+                              _tileConfigurations[item]!.title,
                               style: _textStyle,
                             ),
                           ],
@@ -644,7 +555,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                             Text("MAX", style: _unitStyle),
                             Spacer(),
                             Text(
-                              _tileConfigurations[item].maxString,
+                              _tileConfigurations[item]!.maxString,
                               style: _measurementStyle,
                             ),
                             Spacer(),
@@ -664,7 +575,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                             Text("AVG", style: _unitStyle),
                             Spacer(),
                             Text(
-                              _tileConfigurations[item].avgString,
+                              _tileConfigurations[item]!.avgString,
                               style: _measurementStyle,
                             ),
                             Spacer(),
@@ -678,77 +589,42 @@ class RecordsScreenState extends State<RecordsScreen> {
                         ),
                       ],
                     ),
+                    collapsed: Container(),
                     expanded: Column(children: [
+                      item == "speed" && widget.activity.sport != ActivityType.Ride
+                          ? Text(
+                              "Speed ${_si ? 'km' : 'mi'}/h",
+                              style: _textStyle,
+                            )
+                          : Container(),
                       SizedBox(
-                        width: size.width,
-                        height: size.height / 2,
-                        child: charts.TimeSeriesChart(
-                          _tileConfigurations[item].dataFn(),
-                          animate: false,
-                          flipVerticalAxis: activity.flipForPace(item),
-                          primaryMeasureAxis: charts.NumericAxisSpec(
-                            renderSpec: charts.NoneRenderSpec(),
+                        width: widget.size.width,
+                        height: widget.size.height / 2,
+                        child: charts.SfCartesianChart(
+                          primaryXAxis: charts.DateTimeAxis(),
+                          primaryYAxis: charts.NumericAxis(
+                            plotBands: _preferencesSpecs[index].plotBands,
                           ),
-                          behaviors: [
-                            charts.LinePointHighlighter(
-                              showHorizontalFollowLine:
-                                  charts.LinePointHighlighterFollowLineType.nearest,
-                              showVerticalFollowLine:
-                                  charts.LinePointHighlighterFollowLineType.nearest,
-                            ),
-                            charts.SelectNearest(eventTrigger: charts.SelectionTrigger.tapAndDrag),
-                            charts.RangeAnnotation(
-                              _preferencesSpecs[index].annotationSegments,
-                              defaultLabelStyleSpec: _chartTextStyle,
-                            ),
-                          ],
-                          selectionModels: [
-                            charts.SelectionModelConfig(
-                              type: charts.SelectionModelType.info,
-                              changedListener: _tileConfigurations[item].selectionListener,
-                            ),
-                          ],
+                          margin: EdgeInsets.all(0),
+                          series: _tileConfigurations[item]!.dataFn(),
+                          zoomPanBehavior: _zoomPanBehavior,
+                          trackballBehavior: _trackballBehavior,
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(_selectedValues[index], style: _selectionStyle),
-                          Text(" ", style: _selectionTextStyle),
-                          Text(_preferencesSpecs[index].unit, style: _unitStyle),
-                          Text(" @ ", style: _selectionTextStyle),
-                          Text(_selectedTimes[index], style: _selectionStyle),
-                        ],
                       ),
                       Divider(height: 20, thickness: 2),
                       Text(
-                        _tileConfigurations[item].histogramTitle,
+                        _tileConfigurations[item]!.histogramTitle,
                         style: _textStyle,
                       ),
                       SizedBox(
-                        width: size.width,
-                        height: size.height / 3,
-                        child: charts.PieChart(
-                          _tileConfigurations[item].histogramFn(),
-                          animate: false,
-                          defaultRenderer: charts.ArcRendererConfig(
-                            arcWidth: 60,
-                            arcRendererDecorators: [charts.ArcLabelDecorator()],
-                          ),
-                          behaviors: [
-                            charts.DatumLegend(
-                              position: charts.BehaviorPosition.start,
-                              horizontalFirst: false,
-                              cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
-                              showMeasures: true,
-                              legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-                              entryTextStyle: _chartTextStyle,
-                              measureFormatter: (num value) {
-                                return value == null ? '-' : '$value %';
-                              },
-                            ),
-                          ],
+                        width: widget.size.width,
+                        height: widget.size.height / 3,
+                        child: charts.SfCircularChart(
+                          margin: EdgeInsets.all(0),
+                          legend: charts.Legend(isVisible: true, textStyle: _chartLabelStyle),
+                          series: _tileConfigurations[item]!.histogramFn!(),
+                          palette: _preferencesSpecs[index].getPiePalette(_isLight),
+                          tooltipBehavior: _tooltipBehavior,
                         ),
                       ),
                     ]),

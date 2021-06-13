@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 abstract class MetricDescriptor {
   final int lsb;
   final int msb;
@@ -7,14 +5,11 @@ abstract class MetricDescriptor {
   final bool optional;
 
   MetricDescriptor({
-    @required this.lsb,
-    @required this.msb,
-    @required this.divider,
+    required this.lsb,
+    required this.msb,
+    required this.divider,
     this.optional = false,
-  })  : assert(lsb != null),
-        assert(msb != null),
-        assert(divider != null),
-        assert(optional != null);
+  });
 
-  double getMeasurementValue(List<int> data);
+  double? getMeasurementValue(List<int> data);
 }

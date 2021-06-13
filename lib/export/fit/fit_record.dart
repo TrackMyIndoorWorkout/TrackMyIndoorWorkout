@@ -4,13 +4,13 @@ abstract class FitRecord extends FitSerializable {
   static const int LITTLE_ENDIAN = 0;
   static const int BIG_ENDIAN = 1;
 
-  int header;
+  late int header;
   final int reserved = 0;
   int architecture = LITTLE_ENDIAN;
   int localMessageType = 0; // 3 bits
   final int globalMessageNumber; // 2 bytes
 
-  FitRecord({this.localMessageType, this.globalMessageNumber}) : super() {
+  FitRecord({required this.localMessageType, required this.globalMessageNumber}) {
     header = localMessageType;
   }
 

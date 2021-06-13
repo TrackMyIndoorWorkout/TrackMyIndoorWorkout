@@ -23,7 +23,7 @@ void main() {
       test("$sport", () {
         final now = DateTime.now();
         final record = RecordWithSport(sport: sport);
-        expect(now.millisecondsSinceEpoch - record.dt.millisecondsSinceEpoch < 100, true);
+        expect(now.millisecondsSinceEpoch - (record.dt?.millisecondsSinceEpoch ?? 0) < 100, true);
       });
     });
   });

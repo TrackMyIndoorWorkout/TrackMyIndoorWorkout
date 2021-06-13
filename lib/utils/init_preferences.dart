@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:data_connection_checker/data_connection_checker.dart';
-import 'package:preferences/preferences.dart';
+import 'package:get/get.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:pref/pref.dart';
 import '../persistence/preferences.dart';
 import 'constants.dart';
 import 'preferences.dart';
 
-Future<void> initPreferences() async {
-  await PrefService.init(prefix: 'pref_');
+Future<BasePrefService> initPreferences() async {
   Map<String, dynamic> prefDefaults = {
-    PREFERENCES_VERSION_TAG: PREFERENCES_VERSION_DEFAULT,
+    PREFERENCES_VERSION_TAG: PREFERENCES_VERSION_NEXT,
     UNIT_SYSTEM_TAG: UNIT_SYSTEM_DEFAULT,
     INSTANT_SCAN_TAG: INSTANT_SCAN_DEFAULT,
     SCAN_DURATION_TAG: SCAN_DURATION_DEFAULT,
@@ -70,41 +70,50 @@ Future<void> initPreferences() async {
     });
   });
 
-  PrefService.setDefaultValues(prefDefaults);
+  final prefService =
+      await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
+  Get.put<BasePrefService>(prefService);
 
-  if (PrefService.getInt(PREFERENCES_VERSION_TAG) < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
-    PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+  final prefVersion =
+      prefService.sharedPreferences.getInt(PREFERENCES_VERSION_TAG) ?? PREFERENCES_VERSION_NEXT;
+  if (prefVersion < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
+    PreferencesSpec.preferencesSpecs.forEach((prefSpec) async {
       final thresholdTag = PreferencesSpec.THRESHOLD_PREFIX + prefSpec.metric;
-      var thresholdString = PrefService.getString(thresholdTag);
+      var thresholdString = prefService.sharedPreferences.getString(thresholdTag) ?? "";
       if (prefSpec.metric == "speed") {
-        thresholdString = decimalRound(double.tryParse(thresholdString) * MI2KM).toString();
+        final threshold = double.tryParse(thresholdString) ?? EPS;
+        thresholdString = decimalRound(threshold * MI2KM).toString();
       }
-      PrefService.setString(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
+      await prefService.sharedPreferences
+          .setString(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
       final zoneTag = prefSpec.metric + PreferencesSpec.ZONES_POSTFIX;
-      PrefService.setString(prefSpec.zonesTag(ActivityType.Ride), PrefService.getString(zoneTag));
+      await prefService.sharedPreferences.setString(prefSpec.zonesTag(ActivityType.Ride),
+          prefService.sharedPreferences.getString(zoneTag) ?? "55,75,90,105,120,150");
     });
   }
-  if (PrefService.getInt(PREFERENCES_VERSION_TAG) <
-      PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT) {
-    final lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG);
-    if ((lastEquipmentId?.length ?? 0) > 0) {
-      PrefService.setString(LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride, lastEquipmentId);
+
+  if (prefVersion < PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT) {
+    final lastEquipmentId = prefService.sharedPreferences.getString(LAST_EQUIPMENT_ID_TAG) ?? "";
+    if (lastEquipmentId.trim().length > 0) {
+      await prefService.sharedPreferences
+          .setString(LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride, lastEquipmentId);
     }
   }
-  PrefService.setInt(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_DEFAULT + 1);
+  await prefService.sharedPreferences.setInt(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);
 
   PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
     if (sport != ActivityType.Ride) {
-      final slowSpeedString = PrefService.getString(PreferencesSpec.slowSpeedTag(sport));
-      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString);
+      final slowSpeedString =
+          prefService.sharedPreferences.getString(PreferencesSpec.slowSpeedTag(sport)) ?? "";
+      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? EPS;
     }
   });
 
-  final addressesString = PrefService.getString(DATA_CONNECTION_ADDRESSES) ?? "";
+  final addressesString = prefService.sharedPreferences.getString(DATA_CONNECTION_ADDRESSES) ?? "";
   if (addressesString.trim().isNotEmpty) {
     final addressTuples = parseIpAddresses(addressesString);
     if (addressTuples.length > 0) {
-      DataConnectionChecker().addresses = addressTuples
+      InternetConnectionChecker().addresses = addressTuples
           .map((addressTuple) => AddressCheckOptions(
                 InternetAddress(addressTuple.item1),
                 port: addressTuple.item2,
@@ -112,4 +121,6 @@ Future<void> initPreferences() async {
           .toList(growable: false);
     }
   }
+
+  return prefService;
 }

@@ -1,125 +1,120 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:charts_common/common.dart' as common;
-import 'package:charts_flutter/flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart' as painting;
-import 'package:preferences/preferences.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
+import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import '../utils/constants.dart';
 import '../utils/display.dart';
 
-Color getTranslucent(Color c) {
-  return Color(r: c.r, g: c.g, b: c.b, a: 120, darker: c.darker, lighter: c.lighter);
-}
-
 final sevenLightBgPalette = [
-  getTranslucent(MaterialPalette.blue.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.teal.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.cyan.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.lime.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.yellow.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.red.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.pink.shadeDefault.lighter),
+  Colors.lightBlueAccent.shade100.withAlpha(120),
+  Colors.cyanAccent.shade100.withAlpha(120),
+  Colors.tealAccent.shade100.withAlpha(120),
+  Colors.limeAccent.shade100.withAlpha(120),
+  Colors.yellowAccent.shade100.withAlpha(120),
+  Colors.redAccent.shade50.withAlpha(120),
+  Colors.pinkAccent.shade100.withAlpha(120),
 ];
 
 final sevenDarkBgPalette = [
-  getTranslucent(MaterialPalette.indigo.shadeDefault.darker),
-  getTranslucent(MaterialPalette.teal.shadeDefault.darker),
-  getTranslucent(MaterialPalette.cyan.shadeDefault.darker),
-  getTranslucent(MaterialPalette.green.shadeDefault.darker),
-  getTranslucent(MaterialPalette.deepOrange.shadeDefault.darker),
-  getTranslucent(MaterialPalette.red.shadeDefault.darker),
-  getTranslucent(MaterialPalette.purple.shadeDefault.darker),
+  Colors.indigo.shade900.withAlpha(120),
+  Colors.cyan.shade900.withAlpha(120),
+  Colors.teal.shade900.withAlpha(120),
+  Colors.green.shade900.withAlpha(120),
+  Colors.yellow.shade900.withAlpha(120),
+  Colors.red.shade900.withAlpha(120),
+  Colors.purple.shade900.withAlpha(120),
 ];
 
 final sevenLightFgPalette = [
-  MaterialPalette.indigo.shadeDefault.darker,
-  MaterialPalette.teal.shadeDefault.darker,
-  MaterialPalette.cyan.shadeDefault.darker,
-  MaterialPalette.green.shadeDefault.darker,
-  MaterialPalette.deepOrange.shadeDefault.darker,
-  MaterialPalette.red.shadeDefault.darker,
-  MaterialPalette.purple.shadeDefault.darker,
+  Colors.indigo,
+  Colors.cyan,
+  Colors.teal,
+  Colors.green,
+  Colors.orange,
+  Colors.red,
+  Colors.purple,
 ];
 
 final sevenDarkFgPalette = [
-  MaterialPalette.blue.shadeDefault.lighter,
-  MaterialPalette.teal.shadeDefault.lighter,
-  MaterialPalette.cyan.shadeDefault.lighter,
-  MaterialPalette.lime.shadeDefault.lighter,
-  MaterialPalette.yellow.shadeDefault.lighter,
-  MaterialPalette.red.shadeDefault.lighter,
-  MaterialPalette.pink.shadeDefault.lighter,
+  Colors.blueAccent,
+  Colors.cyanAccent,
+  Colors.tealAccent,
+  Colors.lightGreenAccent,
+  Colors.yellowAccent,
+  Colors.redAccent,
+  Colors.pinkAccent,
 ];
 
 final fiveLightBgPalette = [
-  getTranslucent(MaterialPalette.blue.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.cyan.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.lime.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.yellow.shadeDefault.lighter),
-  getTranslucent(MaterialPalette.red.shadeDefault.lighter),
+  Colors.lightBlueAccent.shade100.withAlpha(120),
+  Colors.cyanAccent.shade100.withAlpha(120),
+  Colors.lightGreenAccent.shade100.withAlpha(120),
+  Colors.yellowAccent.shade100.withAlpha(120),
+  Colors.redAccent.shade50.withAlpha(120),
 ];
 
 final fiveDarkBgPalette = [
-  getTranslucent(MaterialPalette.indigo.shadeDefault.darker),
-  getTranslucent(MaterialPalette.teal.shadeDefault.darker),
-  getTranslucent(MaterialPalette.green.shadeDefault.darker),
-  getTranslucent(MaterialPalette.deepOrange.shadeDefault.darker),
-  getTranslucent(MaterialPalette.red.shadeDefault.darker),
+  Colors.indigo.shade900.withAlpha(120),
+  Colors.cyan.shade900.withAlpha(120),
+  Colors.green.shade900.withAlpha(120),
+  Colors.yellow.shade900.withAlpha(120),
+  Colors.red.shade900.withAlpha(120),
 ];
 
 final fiveLightFgPalette = [
-  MaterialPalette.indigo.shadeDefault.darker,
-  MaterialPalette.teal.shadeDefault.darker,
-  MaterialPalette.green.shadeDefault.darker,
-  MaterialPalette.deepOrange.shadeDefault.darker,
-  MaterialPalette.red.shadeDefault.darker,
+  Colors.indigo,
+  Colors.cyan,
+  Colors.green,
+  Colors.orange,
+  Colors.red,
 ];
 
 final fiveDarkFgPalette = [
-  MaterialPalette.blue.shadeDefault.lighter,
-  MaterialPalette.cyan.shadeDefault.lighter,
-  MaterialPalette.lime.shadeDefault.lighter,
-  MaterialPalette.yellow.shadeDefault.lighter,
-  MaterialPalette.red.shadeDefault.lighter,
+  Colors.blueAccent,
+  Colors.cyanAccent,
+  Colors.lightGreenAccent,
+  Colors.yellowAccent,
+  Colors.redAccent,
 ];
 
 final sevenLightPiePalette = [
-  MaterialPalette.blue.shadeDefault,
-  MaterialPalette.teal.shadeDefault,
-  MaterialPalette.cyan.shadeDefault,
-  MaterialPalette.lime.shadeDefault,
-  MaterialPalette.yellow.shadeDefault,
-  MaterialPalette.red.shadeDefault,
-  MaterialPalette.pink.shadeDefault,
+  Colors.blue,
+  Colors.teal,
+  Colors.cyan,
+  Colors.lime,
+  Colors.yellow,
+  Colors.red,
+  Colors.pink,
 ];
 
 final fiveLightPiePalette = [
-  MaterialPalette.blue.shadeDefault,
-  MaterialPalette.cyan.shadeDefault,
-  MaterialPalette.lime.shadeDefault,
-  MaterialPalette.yellow.shadeDefault,
-  MaterialPalette.red.shadeDefault,
+  Colors.blue,
+  Colors.cyan,
+  Colors.lime,
+  Colors.yellow,
+  Colors.red,
 ];
 
 final sevenDarkPiePalette = [
-  MaterialPalette.indigo.shadeDefault,
-  MaterialPalette.teal.shadeDefault,
-  MaterialPalette.cyan.shadeDefault,
-  MaterialPalette.green.shadeDefault,
-  MaterialPalette.deepOrange.shadeDefault,
-  MaterialPalette.red.shadeDefault,
-  MaterialPalette.purple.shadeDefault,
+  Colors.indigo,
+  Colors.teal,
+  Colors.cyan,
+  Colors.green,
+  Colors.deepOrange,
+  Colors.red,
+  Colors.purple,
 ];
 
 final fiveDarkPiePalette = [
-  MaterialPalette.indigo.shadeDefault,
-  MaterialPalette.teal.shadeDefault,
-  MaterialPalette.green.shadeDefault,
-  MaterialPalette.deepOrange.shadeDefault,
-  MaterialPalette.red.shadeDefault,
+  Colors.indigo,
+  Colors.teal,
+  Colors.green,
+  Colors.deepOrange,
+  Colors.red,
 ];
 
 // https://stackoverflow.com/questions/57481767/dart-rounding-errors
@@ -249,47 +244,43 @@ class PreferencesSpec {
   final String metric;
   String title;
   String unit;
-  String multiLineUnit;
+  String multiLineUnit = "";
   final String thresholdTagPostfix;
   final Map<String, int> thresholdDefaultInts;
   final String zonesTagPostfix;
   final Map<String, List<int>> zonesDefaultInts;
   final bool indexDisplayDefault;
-  bool indexDisplay;
-  double threshold;
-  List<int> zonePercents;
-  List<double> zoneBounds;
-  List<double> zoneLower;
-  List<double> zoneUpper;
   IconData icon;
-  bool si;
-  String sport;
-  bool flipZones;
+  bool indexDisplay = false;
+  double threshold = 0.0;
+  List<int> zonePercents = [];
+  List<double> zoneBounds = [];
+  List<double> zoneLower = [];
+  List<double> zoneUpper = [];
+  bool si = false;
+  String sport = ActivityType.Ride;
 
-  List<common.AnnotationSegment> annotationSegments;
+  late List<charts.PlotBand> plotBands;
+  TextStyle _bandTextStyle = const TextStyle(
+    fontFamily: FONT_FAMILY,
+    fontWeight: FontWeight.bold,
+    fontSize: 14,
+    color: Colors.grey,
+  );
 
   PreferencesSpec({
-    @required this.metric,
-    @required this.title,
-    @required this.unit,
-    @required this.thresholdTagPostfix,
-    @required this.thresholdDefaultInts,
-    @required this.zonesTagPostfix,
-    @required this.zonesDefaultInts,
-    @required this.indexDisplayDefault,
-    @required this.icon,
-  })  : assert(metric != null),
-        assert(title != null),
-        assert(unit != null),
-        assert(thresholdTagPostfix != null),
-        assert(thresholdDefaultInts != null),
-        assert(zonesTagPostfix != null),
-        assert(zonesDefaultInts != null),
-        assert(indexDisplayDefault != null),
-        assert(icon != null) {
-    flipZones = false;
+    required this.metric,
+    required this.title,
+    required this.unit,
+    required this.thresholdTagPostfix,
+    required this.thresholdDefaultInts,
+    required this.zonesTagPostfix,
+    required this.zonesDefaultInts,
+    required this.indexDisplayDefault,
+    required this.icon,
+  }) {
     updateMultiLineUnit();
-    annotationSegments = [];
+    plotBands = [];
     indexDisplay = indexDisplayDefault;
   }
 
@@ -315,7 +306,7 @@ class PreferencesSpec {
   }
 
   String zonesDefault(String sport) {
-    return zonesDefaultInts[sport2Sport(sport)].map((z) => z.toString()).join(",");
+    return zonesDefaultInts[sport2Sport(sport)]!.map((z) => z.toString()).join(",");
   }
 
   String thresholdTag(String sport) {
@@ -342,81 +333,54 @@ class PreferencesSpec {
   void calculateZones(bool si, String sport) {
     this.si = si;
     this.sport = sport;
-    flipZones = sport != ActivityType.Ride && metric == "speed";
-    final thresholdString = PrefService.getString(thresholdTag(sport));
-    threshold = double.tryParse(thresholdString);
+    final prefService = Get.find<BasePrefService>();
+    final thresholdString = prefService.get<String>(thresholdTag(sport))!;
+    threshold = double.tryParse(thresholdString) ?? EPS;
     if (metric == "speed") {
-      threshold = speedOrPace(threshold, si, sport);
+      threshold = speedByUnitCore(threshold, si);
     }
 
-    final zonesSpecStr = PrefService.getString(zonesTag(sport));
-    zonePercents = zonesSpecStr.split(',').map((zs) => int.tryParse(zs)).toList(growable: false);
+    final zonesSpecStr = prefService.get<String>(zonesTag(sport))!;
+    zonePercents =
+        zonesSpecStr.split(',').map((zs) => int.tryParse(zs) ?? 0).toList(growable: false);
     zoneBounds =
         zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList(growable: false);
-    if (flipZones) {
-      zoneBounds = zoneBounds.reversed.toList(growable: false);
-    }
-    indexDisplay = PrefService.getBool(zoneIndexTag) ?? indexDisplayDefault;
+    indexDisplay = prefService.get<bool>(zoneIndexTag) ?? indexDisplayDefault;
   }
 
   void calculateBounds(double minVal, double maxVal, bool isLight) {
     zoneLower = [...zoneBounds];
     zoneUpper = [...zoneBounds];
 
-    final zoneMin = flipZones ? zoneUpper.last : zoneLower[0];
+    final zoneMin = zoneLower[0];
     if (minVal < 0 || minVal > 0 && minVal > zoneMin) {
       minVal = zoneMin * 0.7;
     }
 
-    final zoneMax = flipZones ? zoneLower[0] : zoneUpper.last;
+    final zoneMax = zoneUpper.last;
     if (maxVal < 0 || maxVal > 0 && maxVal < zoneMax) {
       maxVal = zoneMax * 1.2;
     }
 
-    if (flipZones) {
-      zoneLower.insert(0, decimalRound(maxVal));
-      zoneUpper.add(decimalRound(minVal));
-    } else {
-      zoneLower.insert(0, decimalRound(minVal));
-      zoneUpper.add(decimalRound(maxVal));
-    }
-
-    final textColor = isLight ? MaterialPalette.black : MaterialPalette.white;
-    final chartTextStyle = TextStyleSpec(color: textColor);
-    List<common.AnnotationSegment> segments = [];
-    segments.addAll(List.generate(
+    zoneLower.insert(0, decimalRound(minVal));
+    zoneUpper.add(decimalRound(maxVal));
+    plotBands.clear();
+    plotBands.addAll(List.generate(
       binCount,
-      (i) => RangeAnnotationSegment(
-        zoneLower[i],
-        zoneUpper[i],
-        RangeAnnotationAxisType.measure,
+      (i) => charts.PlotBand(
+        isVisible: true,
+        start: zoneLower[i],
+        end: zoneUpper[i],
         color: bgColorByBin(i, isLight),
-        startLabel: zoneLower[i].toString(),
-        labelAnchor: AnnotationLabelAnchor.start,
-        labelStyleSpec: chartTextStyle,
+        text: "${zoneLower[i]} - ${zoneUpper[i]}",
+        textStyle: _bandTextStyle,
+        horizontalTextAlignment: charts.TextAnchor.start,
+        verticalTextAlignment: charts.TextAnchor.end,
       ),
     ));
-    segments.addAll(List.generate(
-      binCount,
-      (i) => LineAnnotationSegment(
-        zoneUpper[i],
-        RangeAnnotationAxisType.measure,
-        startLabel: zoneUpper[i].toString(),
-        labelAnchor: AnnotationLabelAnchor.end,
-        strokeWidthPx: 1.0,
-        color: textColor,
-        labelStyleSpec: chartTextStyle,
-      ),
-    ));
-    annotationSegments = segments.toList(growable: false);
   }
 
   int get binCount => zonePercents.length + 1;
-
-  int transformedBinIndex(int bin) {
-    bin = min(max(0, bin), zonePercents.length - 1);
-    return flipZones ? zonePercents.length - 1 - bin : bin;
-  }
 
   int binIndex(num value) {
     int i = 0;
@@ -442,13 +406,11 @@ class PreferencesSpec {
   Color fgColorByBin(int bin, bool isLight) {
     if (zonePercents.length <= 5) {
       bin = min(bin, 4);
-      final trIndex = transformedBinIndex(bin);
-      return isLight ? fiveLightFgPalette[trIndex] : fiveDarkFgPalette[trIndex];
+      return isLight ? fiveLightFgPalette[bin] : fiveDarkFgPalette[bin];
     }
 
     bin = min(bin, 6);
-    final trIndex = transformedBinIndex(bin);
-    return isLight ? sevenLightFgPalette[trIndex] : sevenDarkFgPalette[trIndex];
+    return isLight ? sevenLightFgPalette[bin] : sevenDarkFgPalette[bin];
   }
 
   Color fgColorByValue(num value, bool isLight) {
@@ -459,13 +421,19 @@ class PreferencesSpec {
   Color pieBgColorByBin(int bin, bool isLight) {
     if (zonePercents.length <= 5) {
       bin = min(bin, 4);
-      final trIndex = transformedBinIndex(bin);
-      return isLight ? fiveLightPiePalette[trIndex] : fiveDarkPiePalette[trIndex];
+      return isLight ? fiveLightPiePalette[bin] : fiveDarkPiePalette[bin];
     }
 
     bin = min(bin, 6);
-    final trIndex = transformedBinIndex(bin);
-    return isLight ? sevenLightPiePalette[trIndex] : sevenDarkPiePalette[trIndex];
+    return isLight ? sevenLightPiePalette[bin] : sevenDarkPiePalette[bin];
+  }
+
+  List<Color> getPiePalette(bool isLight) {
+    if (zonePercents.length <= 5) {
+      return isLight ? fiveDarkFgPalette : fiveLightFgPalette;
+    } else {
+      return isLight ? sevenDarkFgPalette : sevenLightFgPalette;
+    }
   }
 
   static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
@@ -480,6 +448,8 @@ class PreferencesSpec {
     return prefSpecs;
   }
 }
+
+const PREFERENCES_PREFIX = "pref_";
 
 const PREFERENCES_VERSION_TAG = "version";
 const PREFERENCES_VERSION_DEFAULT = 1;
@@ -591,23 +561,23 @@ const DATA_STREAM_GAP_WATCHDOG_DESCRIPTION = "How many seconds of data gap consi
     "Zero means disabled";
 
 const SOUND_EFFECT_NONE = "none";
-const SOUND_EFFECT_NONE_DESCRIPTION = "No sound effect.";
+const SOUND_EFFECT_NONE_DESCRIPTION = "No sound effect";
 const SOUND_EFFECT_ONE_TONE = "one_tone_beep";
-const SOUND_EFFECT_ONE_TONE_DESCRIPTION = "A single tone 1200Hz beep.";
+const SOUND_EFFECT_ONE_TONE_DESCRIPTION = "A single tone 1200Hz beep";
 const SOUND_EFFECT_TWO_TONE = "two_tone_beep";
 const SOUND_EFFECT_TWO_TONE_DESCRIPTION = "Two beep tones repeated twice";
 const SOUND_EFFECT_THREE_TONE = "three_tone_beep";
 const SOUND_EFFECT_THREE_TONE_DESCRIPTION = "Three beep tones after one another";
 const SOUND_EFFECT_BLEEP = "media_bleep";
-const SOUND_EFFECT_BLEEP_DESCRIPTION = "A Media Call type bleep.";
+const SOUND_EFFECT_BLEEP_DESCRIPTION = "A Media Call type bleep";
 
-const DATA_STREAM_GAP_SOUND_EFFECT = "Data Stream Gap Audio Warning";
+const DATA_STREAM_GAP_SOUND_EFFECT = "Data Stream Gap Audio Warning:";
 const DATA_STREAM_GAP_SOUND_EFFECT_TAG = "data_stream_gap_sound_effect";
 const DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION =
-    "Select the type of sound effect played when data acquisition timeout happens.";
+    "Select the type of sound effect played when data acquisition timeout happens:";
 const DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_THREE_TONE;
 
-const CADENCE_GAP_WORKAROUND = "Cadence Data Gap Workaround";
+const CADENCE_GAP_WORKAROUND = "Cadence Data Gap Workaround:";
 const CADENCE_GAP_WORKAROUND_TAG = "cadence_data_gap_workaround";
 const CADENCE_GAP_WORKAROUND_DEFAULT = true;
 const CADENCE_GAP_WORKAROUND_DESCRIPTION = "On: When speed / pace is non zero but the " +
@@ -615,17 +585,18 @@ const CADENCE_GAP_WORKAROUND_DESCRIPTION = "On: When speed / pace is non zero bu
     "positive cadence reading. " +
     "Off: Zero cadence will be recorded without modification.";
 
-const HEART_RATE_GAP_WORKAROUND = "Heart Rate Data Gap Workaround Selection";
+const HEART_RATE_GAP_WORKAROUND = "Heart Rate Data Gap Workaround";
 const HEART_RATE_GAP_WORKAROUND_TAG = "heart_rate_gap_workaround";
+const HEART_RATE_GAP_WORKAROUND_SELECTION = "Heart Rate Data Gap Workaround Selection:";
 const DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE = "last_positive_value";
 const DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION =
-    "Persist the last known positive reading when a zero intermittent reading is encountered.";
+    "Persist the last known positive reading when a zero intermittent reading is encountered";
 const DATA_GAP_WORKAROUND_NO_WORKAROUND = "no_workaround";
 const DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION =
-    "Persist any values (including zeros) just as they are read from the device.";
+    "Persist any values (including zeros) just as they are read from the device";
 const DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS = "do_not_write_zeros";
 const DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION =
-    "Don't output any reading when zero data is recorded. Certain standards may not support that.";
+    "Don't output any reading when zero data is recorded. Certain standards may not support that";
 const HEART_RATE_GAP_WORKAROUND_DEFAULT = DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
 
 const HEART_RATE_UPPER_LIMIT = "Heart Rate Upper Limit";
@@ -635,34 +606,33 @@ const HEART_RATE_UPPER_LIMIT_DEFAULT = "$HEART_RATE_UPPER_LIMIT_DEFAULT_INT";
 const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is a heart rate upper bound where the methods " +
     "bellow would be applied. 0 means no upper limiting is performed.";
 
-const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection";
+const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection:";
 const HEART_RATE_LIMITING_METHOD_TAG = "heart_rate_limiting_method";
 const HEART_RATE_LIMITING_WRITE_ZERO = "write_zero";
 const HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION =
-    "Persist zero when the heart rate limit is reached.";
+    "Persist zero when the heart rate limit is reached";
 const HEART_RATE_LIMITING_WRITE_NOTHING = "write_nothing";
 const HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION =
-    "Don't persist any heart rate when the limit is reached.";
+    "Don't persist any heart rate when the limit is reached";
 const HEART_RATE_LIMITING_CAP_AT_LIMIT = "cap_at_limit";
-const HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION =
-    "Cap the value at the level configured bellow.";
+const HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION = "Cap the value at the level configured bellow";
 const HEART_RATE_LIMITING_NO_LIMIT = "no_limit";
-const HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION = "Don't apply any limiting.";
+const HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION = "Don't apply any limiting";
 const HEART_RATE_LIMITING_METHOD_DEFAULT = HEART_RATE_LIMITING_NO_LIMIT;
 
-const TARGET_HEART_RATE_MODE = "Target Heart Rate Mode";
+const TARGET_HEART_RATE_MODE = "Target Heart Rate Mode:";
 const TARGET_HEART_RATE_MODE_TAG = "target_heart_rate_mode";
 const TARGET_HEART_RATE_MODE_DESCRIPTION =
     "You can configure target heart rate BPM range or zone range. " +
         "The app will alert visually (and optionally audio as well) when you are outside of the range. " +
         "The lower and upper zone can be the same if you want to target just one zone.";
 const TARGET_HEART_RATE_MODE_NONE = "none";
-const TARGET_HEART_RATE_MODE_NONE_DESCRIPTION = "Target heart rate alert is turned off.";
+const TARGET_HEART_RATE_MODE_NONE_DESCRIPTION = "Target heart rate alert is turned off";
 const TARGET_HEART_RATE_MODE_BPM = "bpm";
 const TARGET_HEART_RATE_MODE_BPM_DESCRIPTION =
-    "Bounds are specified by explicit beat per minute numbers.";
+    "Bounds are specified by explicit beat per minute numbers";
 const TARGET_HEART_RATE_MODE_ZONES = "zones";
-const TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION = "Bounds are specified by HR zone numbers.";
+const TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION = "Bounds are specified by HR zone numbers";
 const TARGET_HEART_RATE_MODE_DEFAULT = TARGET_HEART_RATE_MODE_NONE;
 
 const TARGET_HEART_RATE_LOWER_BPM = "Target Heart Rate Lower BPM";
@@ -706,10 +676,10 @@ const TARGET_HEART_RATE_AUDIO_PERIOD_DESCRIPTION =
     "0 or 1: no periodicity. Larger than 1 seconds: " +
         "the selected sound effect will play with the periodicity until the HR is back in range.";
 
-const TARGET_HEART_RATE_SOUND_EFFECT = "Target Heart Rate Out of Range Sound Effect";
+const TARGET_HEART_RATE_SOUND_EFFECT = "Target Heart Rate Out of Range Sound Effect:";
 const TARGET_HEART_RATE_SOUND_EFFECT_TAG = "target_heart_rate_sound_effect";
 const TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION =
-    "Select the type of sound effect played when the HR gets out of range.";
+    "Select the type of sound effect played when the HR gets out of range:";
 const TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_TWO_TONE;
 
 const AUDIO_VOLUME = "Audio Volume (%)";
@@ -787,16 +757,16 @@ const ZONE_PREFERENCES = " Zone Preferences";
 const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
 const SLOW_SPEED_TAG_PREFIX = "slow_speed_";
 
-const THEME_SELECTION = "Theme Selection (System / Light / Dark)";
+const THEME_SELECTION = "Theme Selection (System / Light / Dark):";
 const THEME_SELECTION_TAG = "theme_selection";
 const THEME_SELECTION_DESCRIPTION =
-    "Should the theme match the system default, be light, or be dark.";
+    "Should the theme match the system default, be light, or be dark:";
 const THEME_SELECTION_SYSTEM = "system";
-const THEME_SELECTION_SYSTEM_DESCRIPTION = "Matching the system default theme.";
+const THEME_SELECTION_SYSTEM_DESCRIPTION = "System's theme";
 const THEME_SELECTION_LIGHT = "light";
-const THEME_SELECTION_LIGHT_DESCRIPTION = "Light theme.";
+const THEME_SELECTION_LIGHT_DESCRIPTION = "Light theme";
 const THEME_SELECTION_DARK = "dark";
-const THEME_SELECTION_DARK_DESCRIPTION = "Dark theme.";
+const THEME_SELECTION_DARK_DESCRIPTION = "Dark theme";
 const THEME_SELECTION_DEFAULT = THEME_SELECTION_SYSTEM;
 
 const ZONE_INDEX_DISPLAY_COLORING = "Color the measurement based on zones";
@@ -832,10 +802,6 @@ Future<bool> getSimplerUiDefault() async {
     }
   }
   return simplerUiDefault;
-}
-
-painting.Color paletteToPaintColor(common.Color paletteColor) {
-  return painting.Color.fromARGB(paletteColor.a, paletteColor.r, paletteColor.g, paletteColor.b);
 }
 
 const KM2MI = 0.621371;

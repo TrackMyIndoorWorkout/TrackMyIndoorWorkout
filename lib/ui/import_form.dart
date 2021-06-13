@@ -17,22 +17,18 @@ class ImportForm extends StatefulWidget {
 
 class _ImportFormState extends State<ImportForm> {
   final dateTimeFormat = DateFormat("yyyy-MM-dd HH:mm");
-  GlobalKey<FormState> _formKey;
-  String _filePath;
-  DateTime _activityDateTime;
-  bool _isLoading;
-  double _progressValue;
-  double _sizeDefault;
-  TextEditingController _textController;
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String? _filePath;
+  DateTime? _activityDateTime;
+  bool _isLoading = false;
+  double _progressValue = 0.0;
+  double _sizeDefault = 10.0;
+  TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _isLoading = false;
-    _formKey = GlobalKey<FormState>();
-    _progressValue = 0;
-    _sizeDefault = Get.textTheme.headline1.fontSize;
-    _textController = TextEditingController();
+    _sizeDefault = Get.textTheme.headline1!.fontSize!;
   }
 
   void setProgress(double progress) {
@@ -72,16 +68,16 @@ class _ImportFormState extends State<ImportForm> {
                       style: TextStyle(fontSize: 30),
                     ),
                     onPressed: () async {
-                      FilePickerResult result = await FilePicker.platform.pickFiles();
-                      if (result != null) {
-                        _textController.text = result.files.single.path;
+                      FilePickerResult? result = await FilePicker.platform.pickFiles();
+                      if (result != null && result.files.single.path != null) {
+                        _textController.text = result.files.single.path!;
                       }
                     },
                   ),
                 ),
                 controller: _textController,
                 validator: (value) {
-                  if (value.isEmpty) {
+                  if (value == null || value.isEmpty) {
                     return 'Please pick a file';
                   }
                   setState(() {
@@ -131,15 +127,27 @@ class _ImportFormState extends State<ImportForm> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (_formKey.currentState.validate()) {
-                          _formKey.currentState.save();
+                        if (_formKey.currentState == null) {
+                          return;
+                        }
+
+                        if (_filePath == null) {
+                          Get.snackbar("Error", "Please pick a file");
+                        }
+
+                        if (_activityDateTime == null) {
+                          Get.snackbar("Error", "Please pick a date and time");
+                        }
+
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
                           setState(() {
                             _isLoading = true;
                           });
                           try {
-                            File file = File(_filePath);
+                            File file = File(_filePath!);
                             String contents = await file.readAsString();
-                            final importer = MPowerEchelon2Importer(start: _activityDateTime);
+                            final importer = MPowerEchelon2Importer(start: _activityDateTime!);
                             var activity = await importer.import(contents, setProgress);
                             setState(() {
                               _isLoading = false;
@@ -167,7 +175,7 @@ class _ImportFormState extends State<ImportForm> {
                   Expanded(child: Container()),
                   ElevatedButton(
                     child: Text('Reset'),
-                    onPressed: () => _formKey.currentState.reset(),
+                    onPressed: () => _formKey.currentState?.reset(),
                   ),
                 ],
               ),

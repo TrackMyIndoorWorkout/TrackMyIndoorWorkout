@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../persistence/preferences.dart';
 import 'constants.dart';
 
+double speedByUnitCore(double speed, bool si) {
+  return si ? speed : speed * KM2MI;
+}
+
 double speedOrPace(double speed, bool si, String sport) {
   if (sport == ActivityType.Ride) {
     if (si) return speed;
@@ -36,7 +40,8 @@ String speedOrPaceString(double speed, bool si, String sport) {
       sport == ActivityType.Kayaking ||
       sport == ActivityType.Canoeing ||
       sport == ActivityType.Rowing ||
-      sport == ActivityType.Swim) {
+      sport == ActivityType.Swim ||
+      sport == ActivityType.Elliptical) {
     if (speed.abs() < DISPLAY_EPS) return "0:00";
     var pace = 60.0 / speed;
     if (sport == ActivityType.Kayaking ||
@@ -82,7 +87,7 @@ String speedTitle(String sport) {
   return sport == ActivityType.Ride ? "Speed" : "Pace";
 }
 
-IconData getIcon(String sport) {
+IconData getIcon(String? sport) {
   if (sport == ActivityType.Ride) {
     return Icons.directions_bike;
   } else if (sport == ActivityType.Run) {

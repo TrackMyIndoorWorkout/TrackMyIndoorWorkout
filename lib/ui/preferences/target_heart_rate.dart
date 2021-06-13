@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/preferences.dart';
 import '../../utils/sound.dart';
@@ -13,157 +13,147 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> targetHrPreferences = [
-      PreferenceTitle(TARGET_HEART_RATE_MODE_DESCRIPTION),
-      PreferenceDialogLink(
-        TARGET_HEART_RATE_MODE,
-        dialog: PreferenceDialog(
-          [
-            RadioPreference(
-              TARGET_HEART_RATE_MODE_NONE_DESCRIPTION,
-              TARGET_HEART_RATE_MODE_NONE,
-              TARGET_HEART_RATE_MODE_TAG,
-            ),
-            RadioPreference(
-              TARGET_HEART_RATE_MODE_BPM_DESCRIPTION,
-              TARGET_HEART_RATE_MODE_BPM,
-              TARGET_HEART_RATE_MODE_TAG,
-            ),
-            RadioPreference(
-              TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION,
-              TARGET_HEART_RATE_MODE_ZONES,
-              TARGET_HEART_RATE_MODE_TAG,
-            ),
-          ],
-          title: 'Select Target HR Method',
-          cancelText: 'Close',
-        ),
+      PrefLabel(
+        title: Text(TARGET_HEART_RATE_MODE),
+        subtitle: Text(TARGET_HEART_RATE_MODE_DESCRIPTION),
       ),
-      TextFieldPreference(
-        TARGET_HEART_RATE_LOWER_BPM,
-        TARGET_HEART_RATE_LOWER_BPM_TAG,
-        defaultVal: TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
+      PrefRadio<String>(
+        title: Text(TARGET_HEART_RATE_MODE_NONE_DESCRIPTION),
+        value: TARGET_HEART_RATE_MODE_NONE,
+        pref: TARGET_HEART_RATE_MODE_TAG,
+      ),
+      PrefRadio<String>(
+        title: Text(TARGET_HEART_RATE_MODE_BPM_DESCRIPTION),
+        value: TARGET_HEART_RATE_MODE_BPM,
+        pref: TARGET_HEART_RATE_MODE_TAG,
+      ),
+      PrefRadio<String>(
+        title: Text(TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION),
+        value: TARGET_HEART_RATE_MODE_ZONES,
+        pref: TARGET_HEART_RATE_MODE_TAG,
+      ),
+      PrefLabel(title: Divider(height: 1)),
+      PrefText(
+        label: TARGET_HEART_RATE_LOWER_BPM,
+        pref: TARGET_HEART_RATE_LOWER_BPM_TAG,
         validator: (str) {
           final upperLimit = getStringIntegerPreference(
             TARGET_HEART_RATE_UPPER_BPM_TAG,
             TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
             TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT,
+            null,
           );
-          if (!isInteger(str, 0, upperLimit)) {
+          if (str == null || !isInteger(str, 0, upperLimit)) {
             return "Invalid lower target HR (should be 0 <= size <= $upperLimit)";
           }
+
           return null;
         },
       ),
-      TextFieldPreference(
-        TARGET_HEART_RATE_UPPER_BPM,
-        TARGET_HEART_RATE_UPPER_BPM_TAG,
-        defaultVal: TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
+      PrefText(
+        label: TARGET_HEART_RATE_UPPER_BPM,
+        pref: TARGET_HEART_RATE_UPPER_BPM_TAG,
         validator: (str) {
           final lowerLimit = getStringIntegerPreference(
             TARGET_HEART_RATE_LOWER_BPM_TAG,
             TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
             TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT,
+            null,
           );
-          if (!isInteger(str, lowerLimit, 300)) {
+          if (str == null || !isInteger(str, lowerLimit, 300)) {
             return "Invalid heart rate limit (should be $lowerLimit <= size <= 300)";
           }
+
           return null;
         },
       ),
-      TextFieldPreference(
-        TARGET_HEART_RATE_LOWER_ZONE,
-        TARGET_HEART_RATE_LOWER_ZONE_TAG,
-        defaultVal: TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
+      PrefText(
+        label: TARGET_HEART_RATE_LOWER_ZONE,
+        pref: TARGET_HEART_RATE_LOWER_ZONE_TAG,
         validator: (str) {
           final upperLimit = getStringIntegerPreference(
             TARGET_HEART_RATE_UPPER_ZONE_TAG,
             TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
             TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT,
+            null,
           );
-          if (!isInteger(str, 0, upperLimit)) {
+          if (str == null || !isInteger(str, 0, upperLimit)) {
             return "Invalid lower zone (should be 0 <= size <= $upperLimit)";
           }
+
           return null;
         },
       ),
-      TextFieldPreference(
-        TARGET_HEART_RATE_UPPER_ZONE,
-        TARGET_HEART_RATE_UPPER_ZONE_TAG,
-        defaultVal: TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
+      PrefText(
+        label: TARGET_HEART_RATE_UPPER_ZONE,
+        pref: TARGET_HEART_RATE_UPPER_ZONE_TAG,
         validator: (str) {
           final lowerLimit = getStringIntegerPreference(
             TARGET_HEART_RATE_LOWER_ZONE_TAG,
             TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
             TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT,
+            null,
           );
-          if (!isInteger(str, lowerLimit, 7)) {
+          if (str == null || !isInteger(str, lowerLimit, 7)) {
             return "Invalid upper zone (should be $lowerLimit <= size <= 300)";
           }
+
           return null;
         },
       ),
-      SwitchPreference(
-        TARGET_HEART_RATE_AUDIO,
-        TARGET_HEART_RATE_AUDIO_TAG,
-        defaultVal: TARGET_HEART_RATE_AUDIO_DEFAULT,
-        desc: TARGET_HEART_RATE_AUDIO_DESCRIPTION,
+      PrefCheckbox(
+        title: Text(TARGET_HEART_RATE_AUDIO),
+        subtitle: Text(TARGET_HEART_RATE_AUDIO_DESCRIPTION),
+        pref: TARGET_HEART_RATE_AUDIO_TAG,
       ),
-      TextFieldPreference(
-        TARGET_HEART_RATE_AUDIO_PERIOD,
-        TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
-        defaultVal: TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
+      PrefText(
+        label: TARGET_HEART_RATE_AUDIO_PERIOD,
+        pref: TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
         validator: (str) {
-          if (!isInteger(str, 0, 10)) {
+          if (str == null || !isInteger(str, 0, 10)) {
             return "Invalid periodicity: should be 0 <= period <= 10)";
           }
+
           return null;
         },
       ),
-      PreferenceTitle(TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION),
-      PreferenceDialogLink(
-        TARGET_HEART_RATE_SOUND_EFFECT,
-        dialog: PreferenceDialog(
-          [
-            RadioPreference(
-              SOUND_EFFECT_ONE_TONE_DESCRIPTION,
-              SOUND_EFFECT_ONE_TONE,
-              TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () =>
-                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
-            ),
-            RadioPreference(
-              SOUND_EFFECT_TWO_TONE_DESCRIPTION,
-              SOUND_EFFECT_TWO_TONE,
-              TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () =>
-                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
-            ),
-            RadioPreference(
-              SOUND_EFFECT_THREE_TONE_DESCRIPTION,
-              SOUND_EFFECT_THREE_TONE,
-              TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () =>
-                  Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
-            ),
-            RadioPreference(
-              SOUND_EFFECT_BLEEP_DESCRIPTION,
-              SOUND_EFFECT_BLEEP,
-              TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-              onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
-            ),
-          ],
-          title: 'Select Target HR Sound Effect',
-          cancelText: 'Close',
-        ),
+      PrefLabel(
+        title: Text(TARGET_HEART_RATE_SOUND_EFFECT),
+        subtitle: Text(TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION),
       ),
-      TextFieldPreference(
-        AUDIO_VOLUME,
-        AUDIO_VOLUME_TAG,
-        defaultVal: AUDIO_VOLUME_DEFAULT,
+      PrefRadio<String>(
+        title: Text(SOUND_EFFECT_ONE_TONE_DESCRIPTION),
+        value: SOUND_EFFECT_ONE_TONE,
+        pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
+      ),
+      PrefRadio<String>(
+        title: Text(SOUND_EFFECT_TWO_TONE_DESCRIPTION),
+        value: SOUND_EFFECT_TWO_TONE,
+        pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
+      ),
+      PrefRadio<String>(
+        title: Text(SOUND_EFFECT_THREE_TONE_DESCRIPTION),
+        value: SOUND_EFFECT_THREE_TONE,
+        pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
+      ),
+      PrefRadio<String>(
+        title: Text(SOUND_EFFECT_BLEEP_DESCRIPTION),
+        value: SOUND_EFFECT_BLEEP,
+        pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
+      ),
+      PrefLabel(title: Divider(height: 1)),
+      PrefText(
+        label: AUDIO_VOLUME,
+        pref: AUDIO_VOLUME_TAG,
         validator: (str) {
-          if (!isInteger(str, 0, 100)) {
+          if (str == null || !isInteger(str, 0, 100)) {
             return "Invalid, has to be: 0% <= volume <= 100%)";
           }
+
           return null;
         },
       ),
@@ -171,7 +161,7 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: PreferencePage(targetHrPreferences),
+      body: PrefPage(children: targetHrPreferences),
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import 'preferences_base.dart';
 
@@ -10,29 +10,28 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> athletePreferences = [
-      PreferenceTitle(ATHLETE_BODY_WEIGHT_DESCRIPTION),
-      TextFieldPreference(
-        ATHLETE_BODY_WEIGHT,
-        ATHLETE_BODY_WEIGHT_TAG,
-        defaultVal: ATHLETE_BODY_WEIGHT_DEFAULT,
+      PrefLabel(title: Text(ATHLETE_BODY_WEIGHT_DESCRIPTION, maxLines: 10)),
+      PrefText(
+        label: ATHLETE_BODY_WEIGHT,
+        pref: ATHLETE_BODY_WEIGHT_TAG,
         validator: (str) {
-          if (!isInteger(str, 1, 1000)) {
+          if (str == null || !isInteger(str, 1, 1000)) {
             return "Invalid weight (expected integer: 1 <= weight <= 1000)";
           }
+
           return null;
         },
       ),
-      SwitchPreference(
-        REMEMBER_ATHLETE_BODY_WEIGHT,
-        REMEMBER_ATHLETE_BODY_WEIGHT_TAG,
-        defaultVal: REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT,
-        desc: REMEMBER_ATHLETE_BODY_WEIGHT_DESCRIPTION,
+      PrefCheckbox(
+        title: Text(REMEMBER_ATHLETE_BODY_WEIGHT),
+        subtitle: Text(REMEMBER_ATHLETE_BODY_WEIGHT_DESCRIPTION),
+        pref: REMEMBER_ATHLETE_BODY_WEIGHT_TAG,
       ),
     ];
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: PreferencePage(athletePreferences),
+      body: PrefPage(children: athletePreferences),
     );
   }
 }

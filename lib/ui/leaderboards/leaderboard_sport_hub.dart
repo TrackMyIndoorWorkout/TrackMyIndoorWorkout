@@ -7,29 +7,24 @@ import 'sport_leaderboard.dart';
 class LeaderboardSportHubScreen extends StatefulWidget {
   final List<String> sports;
 
-  LeaderboardSportHubScreen({Key key, @required this.sports})
-      : assert(sports != null),
-        super(key: key);
+  LeaderboardSportHubScreen({Key? key, required this.sports}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => LeaderboardSportHubScreenState(sports: sports);
+  State<StatefulWidget> createState() => LeaderboardSportHubScreenState();
 }
 
 class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
-  final List<String> sports;
-  double _sizeDefault;
-  TextStyle _textStyle;
-
-  LeaderboardSportHubScreenState({@required this.sports}) : assert(sports != null);
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
 
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline3.apply(
+    _textStyle = Get.textTheme.headline3!.apply(
       fontFamily: FONT_FAMILY,
       color: Colors.white,
     );
-    _sizeDefault = _textStyle.fontSize * 2;
+    _sizeDefault = _textStyle.fontSize! * 2;
   }
 
   @override
@@ -40,7 +35,7 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: sports
+          children: widget.sports
               .map(
                 (sport) => Container(
                   padding: const EdgeInsets.all(5.0),

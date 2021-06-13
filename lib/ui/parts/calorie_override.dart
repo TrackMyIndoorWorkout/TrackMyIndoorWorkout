@@ -8,35 +8,25 @@ import '../../utils/theme_manager.dart';
 
 class CalorieOverrideBottomSheet extends StatefulWidget {
   final String deviceId;
-  final int calories;
+  final double oldCalories;
 
-  CalorieOverrideBottomSheet({Key key, @required this.deviceId, @required this.calories})
-      : assert(deviceId != null),
-        assert(calories != null),
-        super(key: key);
+  CalorieOverrideBottomSheet({Key? key, required this.deviceId, required this.oldCalories})
+      : super(key: key);
 
   @override
-  CalorieOverrideBottomSheetState createState() =>
-      CalorieOverrideBottomSheetState(deviceId: deviceId, oldCalories: calories.toDouble());
+  CalorieOverrideBottomSheetState createState() => CalorieOverrideBottomSheetState();
 }
 
 class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> {
-  CalorieOverrideBottomSheetState({@required this.deviceId, @required this.oldCalories})
-      : assert(deviceId != null),
-        assert(oldCalories != null);
-
-  final String deviceId;
-  final double oldCalories;
-  double _newCalorie;
-  TextStyle _largerTextStyle;
-  ThemeManager _themeManager;
+  double _newCalorie = 0.0;
+  TextStyle _largerTextStyle = TextStyle();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
     super.initState();
-    _newCalorie = oldCalories;
-    _themeManager = Get.find<ThemeManager>();
-    _largerTextStyle = Get.textTheme.headline3.apply(
+    _newCalorie = widget.oldCalories;
+    _largerTextStyle = Get.textTheme.headline3!.apply(
       fontFamily: FONT_FAMILY,
       color: _themeManager.getProtagonistColor(),
     );
@@ -64,14 +54,22 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: _themeManager.getGreenFab(Icons.check, () async {
         final database = Get.find<AppDatabase>();
-        final calorieFactor = _newCalorie / oldCalories;
-        if (await database?.hasCalorieTune(deviceId) ?? false) {
-          var calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
+        final calorieFactor = _newCalorie / widget.oldCalories;
+        CalorieTune? calorieTune;
+        if (await database.hasCalorieTune(widget.deviceId)) {
+          calorieTune = await database.calorieTuneDao.findCalorieTuneByMac(widget.deviceId).first;
+        }
+
+        if (calorieTune != null) {
           calorieTune.calorieFactor = calorieFactor;
-          await database?.calorieTuneDao?.updateCalorieTune(calorieTune);
+          await database.calorieTuneDao.updateCalorieTune(calorieTune);
         } else {
-          final calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor);
-          await database?.calorieTuneDao?.insertCalorieTune(calorieTune);
+          calorieTune = CalorieTune(
+            mac: widget.deviceId,
+            calorieFactor: calorieFactor,
+            time: DateTime.now().millisecondsSinceEpoch,
+          );
+          await database.calorieTuneDao.insertCalorieTune(calorieTune);
         }
         Get.back(result: calorieFactor);
       }),

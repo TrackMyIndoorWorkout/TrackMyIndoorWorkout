@@ -10,9 +10,10 @@ import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 
 import 'constants.dart';
-import 'error_codes.dart' as error;
+import 'strava_status_code.dart';
 import 'fault.dart';
-import 'globals.dart' as globals;
+import 'strava_status_text.dart';
+import 'strava_token.dart';
 import 'upload_activity.dart';
 
 abstract class Upload {
@@ -30,20 +31,10 @@ abstract class Upload {
     List<int> fileContent,
     ActivityExport exporter,
   ) async {
-    globals.displayInfo('Starting to upload activity');
-
-    // To check if the activity has been uploaded successfully
-    // No numeric error code for the moment given by Strava
-    final String ready = "Your activity is ready.";
-    final String deleted = "The created activity has been deleted.";
-    final String errorMsg = "There was an error processing your activity.";
-    final String processed = "Your activity is still being processed.";
-    final String notFound = 'Not Found';
+    debugPrint('Starting to upload activity');
 
     final postUri = Uri.parse(UPLOADS_ENDPOINT);
     StreamController<int> onUploadPending = StreamController();
-
-    var fault = Fault(888, '');
 
     final persistenceValues = exporter.getPersistenceValues(activity, true);
     var request = http.MultipartRequest("POST", postUri);
@@ -54,31 +45,33 @@ abstract class Upload {
     request.fields['external_id'] = 'strava_flutter';
     request.fields['description'] = persistenceValues["description"];
 
-    var _header = globals.createHeader();
-
-    if (_header.containsKey('88') == true) {
-      globals.displayInfo('Token not yet known');
-      fault = Fault(error.statusTokenNotKnownYet, 'Token not yet known');
-      return fault;
+    if (!Get.isRegistered<StravaToken>()) {
+      debugPrint('Token not yet known');
+      return Fault(StravaStatusCode.statusTokenNotKnownYet, 'Token not yet known');
     }
 
-    request.headers.addAll(_header);
+    final stravaToken = Get.find<StravaToken>();
+    final header = stravaToken.getAuthorizationHeader();
+
+    if (header.containsKey('88') == true) {
+      debugPrint('Token not yet known');
+      return Fault(StravaStatusCode.statusTokenNotKnownYet, 'Token not yet known');
+    }
+
+    request.headers.addAll(header);
 
     request.files.add(http.MultipartFile.fromBytes('file', fileContent,
         filename: persistenceValues["fileName"], contentType: MediaType("application", "x-gzip")));
-    globals.displayInfo(request.toString());
+    debugPrint(request.toString());
 
-    var response = await request.send();
+    final response = await request.send();
 
-    globals.displayInfo('Response: ${response.statusCode} ${response.reasonPhrase}');
-
-    fault.statusCode = response.statusCode;
-    fault.message = response.reasonPhrase;
+    debugPrint('Response: ${response.statusCode} ${response.reasonPhrase}');
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       // response.statusCode != 201
-      globals.displayInfo('Error while uploading the activity');
-      globals.displayInfo('${response.statusCode} - ${response.reasonPhrase}');
+      debugPrint('Error while uploading the activity');
+      debugPrint('${response.statusCode} - ${response.reasonPhrase}');
     }
 
     int idUpload;
@@ -88,24 +81,26 @@ abstract class Upload {
     //----------------------------------------
     if (response.statusCode >= 200 && response.statusCode < 300) {
       // response.statusCode == 201
-      globals.displayInfo('Activity successfully created');
+      debugPrint('Activity successfully created');
       response.stream.transform(utf8.decoder).listen((value) async {
         debugPrint(value);
         final Map<String, dynamic> _body = json.decode(value);
-        ResponseUploadActivity _response = ResponseUploadActivity.fromJson(_body);
+        final response = ResponseUploadActivity.fromJson(_body);
 
-        final database = Get.find<AppDatabase>();
-        activity.markUploaded(_response.id);
-        await database?.activityDao?.updateActivity(activity);
-        debugPrint('id ${_response.id}');
-        idUpload = _response.id;
-        onUploadPending.add(idUpload);
+        if (response.id > 0) {
+          final database = Get.find<AppDatabase>();
+          activity.markUploaded(response.id);
+          await database.activityDao.updateActivity(activity);
+          debugPrint('id ${response.id}');
+          idUpload = response.id;
+          onUploadPending.add(idUpload);
+        }
       });
 
       String reqCheckUpgrade = '$UPLOADS_ENDPOINT/';
       onUploadPending.stream.listen((id) async {
         reqCheckUpgrade = reqCheckUpgrade + id.toString();
-        var resp = await http.get(reqCheckUpgrade, headers: _header);
+        final resp = await http.get(Uri.parse(reqCheckUpgrade), headers: header);
         debugPrint('check status ${resp.reasonPhrase}  ${resp.statusCode}');
 
         // Everything is fine the file has been loaded
@@ -120,30 +115,35 @@ abstract class Upload {
           debugPrint('---> 404 activity already loaded  ${resp.reasonPhrase}');
         }
 
-        if (resp.reasonPhrase.compareTo(ready) == 0) {
-          debugPrint('---> Activity successfully uploaded');
-          onUploadPending.close();
-        }
+        if (resp.reasonPhrase != null) {
+          if (resp.reasonPhrase!.compareTo(StravaStatusText.ready) == 0) {
+            debugPrint('---> Activity successfully uploaded');
+            onUploadPending.close();
+          }
 
-        if ((resp.reasonPhrase.compareTo(notFound) == 0) ||
-            (resp.reasonPhrase.compareTo(errorMsg) == 0)) {
-          debugPrint('---> Error while checking status upload');
-          onUploadPending.close();
-        }
+          if ((resp.reasonPhrase!.compareTo(StravaStatusText.notFound) == 0) ||
+              (resp.reasonPhrase!.compareTo(StravaStatusText.errorMsg) == 0)) {
+            debugPrint('---> Error while checking status upload');
+            onUploadPending.close();
+          }
 
-        if (resp.reasonPhrase.compareTo(deleted) == 0) {
-          debugPrint('---> Activity deleted');
-          onUploadPending.close();
-        }
+          if (resp.reasonPhrase!.compareTo(StravaStatusText.deleted) == 0) {
+            debugPrint('---> Activity deleted');
+            onUploadPending.close();
+          }
 
-        if (resp.reasonPhrase.compareTo(processed) == 0) {
-          debugPrint('---> try another time');
-          // wait 2 sec before checking again status
-          Timer(Duration(seconds: 2), () => onUploadPending.add(id));
+          if (resp.reasonPhrase!.compareTo(StravaStatusText.processed) == 0) {
+            debugPrint('---> try another time');
+            // wait 2 sec before checking again status
+            Timer(Duration(seconds: 2), () => onUploadPending.add(id));
+          }
+        } else {
+          debugPrint('---> Unknown error');
+          onUploadPending.close();
         }
       });
     }
 
-    return fault;
+    return Fault(response.statusCode, response.reasonPhrase ?? "Unknown reason");
   }
 }

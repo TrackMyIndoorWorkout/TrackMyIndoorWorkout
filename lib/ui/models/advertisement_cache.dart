@@ -4,11 +4,7 @@ import '../../utils/scan_result_ex.dart';
 import 'advertisement_digest.dart';
 
 class AdvertisementCache {
-  Map<String, AdvertisementDigest> _advertisementMap;
-
-  AdvertisementCache() {
-    _advertisementMap = Map<String, AdvertisementDigest>();
-  }
+  Map<String, AdvertisementDigest> _advertisementMap = Map<String, AdvertisementDigest>();
 
   void addEntry(ScanResult scanResult) {
     final id = scanResult.device.id.id;
@@ -25,12 +21,10 @@ class AdvertisementCache {
   }
 
   bool hasAnyEntry(List<String> ids) {
-    return ids.fold(false, (a, b) => a || _advertisementMap.containsKey(b));
+    return ids.fold<bool>(false, (a, b) => a || _advertisementMap.containsKey(b));
   }
 
-  AdvertisementDigest getEntry(String id) {
-    if (_advertisementMap.containsKey(id)) return _advertisementMap[id];
-
-    return null;
+  AdvertisementDigest? getEntry(String id) {
+    return _advertisementMap[id];
   }
 }

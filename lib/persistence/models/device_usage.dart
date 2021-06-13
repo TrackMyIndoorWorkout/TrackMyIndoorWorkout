@@ -1,5 +1,4 @@
 import 'package:floor/floor.dart';
-import 'package:meta/meta.dart';
 
 const String DEVICE_USAGE_TABLE_NAME = 'device_usage';
 
@@ -12,37 +11,26 @@ const String DEVICE_USAGE_TABLE_NAME = 'device_usage';
 )
 class DeviceUsage {
   @PrimaryKey(autoGenerate: true)
-  int id;
-  @required
+  int? id;
   String sport;
-  @required
   final String mac;
-  @required
   final String name;
-  @required
   final String manufacturer;
 
   @ColumnInfo(name: 'manufacturer_name')
-  String manufacturerName;
+  String? manufacturerName;
 
   int time; // ms since epoch
 
   DeviceUsage({
     this.id,
-    this.sport,
-    this.mac,
-    this.name,
-    this.manufacturer,
+    required this.sport,
+    required this.mac,
+    required this.name,
+    required this.manufacturer,
     this.manufacturerName,
-    this.time,
-  })  : assert(sport != null),
-        assert(mac != null),
-        assert(name != null),
-        assert(manufacturer != null) {
-    if (time == null) {
-      time = DateTime.now().millisecondsSinceEpoch;
-    }
-  }
+    required this.time,
+  });
 
   DateTime get timeStamp => DateTime.fromMillisecondsSinceEpoch(time);
 }

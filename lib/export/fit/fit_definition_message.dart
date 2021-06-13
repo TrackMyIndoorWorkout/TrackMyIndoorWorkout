@@ -4,7 +4,7 @@ import 'fit_record.dart';
 abstract class FitDefinitionMessage extends FitRecord {
   static const int FORTY_RECORD = 0x40;
 
-  List<FitField> fields;
+  List<FitField> fields = [];
 
   FitDefinitionMessage(localMessageType, globalMessageNumber)
       : super(
@@ -12,7 +12,6 @@ abstract class FitDefinitionMessage extends FitRecord {
           globalMessageNumber: globalMessageNumber,
         ) {
     header += FORTY_RECORD;
-    fields = [];
   }
 
   List<int> binarySerialize() {

@@ -13,11 +13,11 @@ extension HeartRateMonitorScanResult on ScanResult {
       return false;
     }
 
-    if (device.name == null || device.name.isEmpty) {
+    if (device.name.isEmpty) {
       return false;
     }
 
-    if (device.id.id == null || device.id.id.isEmpty) {
+    if (device.id.id.isEmpty) {
       return false;
     }
 
@@ -35,8 +35,8 @@ extension HeartRateMonitorScanResult on ScanResult {
 
 class HeartRateMonitorScanResultTile extends StatelessWidget {
   const HeartRateMonitorScanResultTile({
-    Key key,
-    this.result,
+    Key? key,
+    required this.result,
   }) : super(key: key);
 
   final ScanResult result;
@@ -67,7 +67,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    final captionStyle = Get.textTheme.caption.apply(fontSizeFactor: FONT_SIZE_FACTOR);
+    final captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     final secondaryStyle = captionStyle.apply(fontFamily: FONT_FAMILY);
     final themeManager = Get.find<ThemeManager>();
 
@@ -78,11 +78,11 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         style: captionStyle.apply(fontFamily: FONT_FAMILY),
       ),
       trailing: themeManager.getIconFab(
-          (heartRateMonitor?.device?.id?.id ?? NOT_AVAILABLE) == result.device.id.id
+          (heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE) == result.device.id.id
               ? themeManager.getGreenColor()
               : themeManager.getBlueColor(),
           Icons.favorite, () async {
-        final existingId = heartRateMonitor?.device?.id?.id ?? NOT_AVAILABLE;
+        final existingId = heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
         if (existingId != NOT_AVAILABLE && existingId != result.device.id.id) {
           if (!(await showDialog(
                 context: context,
@@ -107,17 +107,17 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
             return;
           }
         }
-        if (heartRateMonitor != null && heartRateMonitor.device.id.id != result.device.id.id) {
-          await heartRateMonitor.detach();
-          await heartRateMonitor.disconnect();
+        if (heartRateMonitor != null && heartRateMonitor!.device?.id.id != result.device.id.id) {
+          await heartRateMonitor!.detach();
+          await heartRateMonitor!.disconnect();
         }
-        if (heartRateMonitor == null || heartRateMonitor.device?.id?.id != result.device.id.id) {
+        if (heartRateMonitor == null || heartRateMonitor!.device?.id.id != result.device.id.id) {
           heartRateMonitor = new HeartRateMonitor(result.device);
-          Get.put<HeartRateMonitor>(heartRateMonitor);
-          await heartRateMonitor.connect();
-          await heartRateMonitor.discover();
+          Get.put<HeartRateMonitor>(heartRateMonitor!);
+          await heartRateMonitor!.connect();
+          await heartRateMonitor!.discover();
         }
-        await heartRateMonitor.attach();
+        await heartRateMonitor?.attach();
       }),
     );
   }

@@ -6,10 +6,10 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
-  group("Record getRandom provides random:", () {
+  group("Record getBlank provides blank:", () {
     SPORTS.forEach((sport) {
       test("for $sport", () async {
-        final blank = RecordWithSport.getBlank(sport, false, null);
+        final blank = RecordWithSport.getBlank(sport, false, Random());
         expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
         expect(blank.distance, closeTo(0.0, EPS));
         expect(blank.elapsed, 0);
@@ -38,7 +38,7 @@ void main() {
         expect(random.elapsed, null);
         expect(random.calories, inInclusiveRange(0, 1500));
         expect(random.power, inInclusiveRange(50, 550));
-        expect(random.speed, inInclusiveRange(15.0, 30.0));
+        expect(random.speed, inInclusiveRange(30.0, 40.0));
         expect(random.cadence, inInclusiveRange(30, 130));
         expect(random.heartRate, inInclusiveRange(60, 180));
         expect(random.elapsedMillis, null);

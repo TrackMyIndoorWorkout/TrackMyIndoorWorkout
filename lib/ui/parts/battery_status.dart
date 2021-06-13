@@ -33,13 +33,13 @@ enum CalibrationState {
 }
 
 class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
-  FitnessEquipment _fitnessEquipment;
-  HeartRateMonitor _heartRateMonitor;
-  String _hrmBatteryLevel;
-  String _batteryLevel;
-  ThemeManager _themeManager;
-  double _sizeDefault;
-  TextStyle _textStyle;
+  FitnessEquipment? _fitnessEquipment;
+  HeartRateMonitor? _heartRateMonitor;
+  String _hrmBatteryLevel = NOT_AVAILABLE;
+  String _batteryLevel = NOT_AVAILABLE;
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
 
   Future<String> _readBatteryLevelCore(List<BluetoothService> services) async {
     final batteryService = BluetoothDeviceEx.filterService(services, BATTERY_SERVICE_ID);
@@ -57,8 +57,8 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     return "${batteryLevelData[0]}%";
   }
 
-  Future<String> _readBatteryLevel(DeviceBase device) async {
-    if (device?.device == null) return NOT_AVAILABLE;
+  Future<String> _readBatteryLevel(DeviceBase? device) async {
+    if (device == null || device.device == null) return NOT_AVAILABLE;
 
     if (!device.connected) {
       await device.connect();
@@ -89,16 +89,13 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline2.apply(
+    _textStyle = Get.textTheme.headline2!.apply(
       fontFamily: FONT_FAMILY,
       color: _themeManager.getProtagonistColor(),
     );
-    _sizeDefault = _textStyle.fontSize;
+    _sizeDefault = _textStyle.fontSize!;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-    _hrmBatteryLevel = NOT_AVAILABLE;
-    _batteryLevel = NOT_AVAILABLE;
     _readBatteryLevels();
   }
 
@@ -114,7 +111,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _themeManager.getBlueIcon(getIcon(_fitnessEquipment.sport), _sizeDefault),
+                _themeManager.getBlueIcon(getIcon(_fitnessEquipment?.sport), _sizeDefault),
                 _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
                 Text(_batteryLevel, style: _textStyle),
               ],
