@@ -138,15 +138,12 @@ class RecordingState extends State<RecordingScreen> {
   Color _lightRed = Colors.redAccent;
   Color _lightGreen = Colors.lightGreenAccent;
   Color _lightBlue = Colors.lightBlueAccent;
+  DateTime? _chartTouchInteractionDownTime;
+  Offset _chartTouchInteractionPosition = Offset(0, 0);
+  int _chartTouchInteractionIndex = -1;
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   bool _zoneIndexColoring = false;
-
-  charts.TrackballBehavior _trackballBehavior = charts.TrackballBehavior(
-    enable: true,
-    activationMode: charts.ActivationMode.singleTap,
-    tooltipDisplayMode: charts.TrackballDisplayMode.nearestPoint,
-  );
 
   Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
     bool success = await _fitnessEquipment?.connectOnDemand(deviceState) ?? false;
@@ -309,7 +306,7 @@ class RecordingState extends State<RecordingScreen> {
     _onToggleDetails(4);
   }
 
-  void _onLongPress(int index) {
+  void _rotateChartHeight(int index) {
     setState(() {
       _expandedHeights[index] = (_expandedHeights[index] + 1) % 3;
       final expandedHeightStr = List<String>.generate(
@@ -317,6 +314,27 @@ class RecordingState extends State<RecordingScreen> {
       final prefService = Get.find<BasePrefService>();
       prefService.set<String>(MEASUREMENT_DETAIL_SIZE_TAG, expandedHeightStr);
     });
+  }
+
+  void _onChartTouchInteractionDown(int index, Offset position) {
+    _chartTouchInteractionDownTime = DateTime.now();
+    _chartTouchInteractionPosition = position;
+    _chartTouchInteractionIndex = index;
+  }
+
+  void _onChartTouchInteractionUp(int index, Offset position) {
+    if (_chartTouchInteractionIndex == index && _chartTouchInteractionDownTime != null) {
+      final distanceSquared = (position - _chartTouchInteractionPosition).distanceSquared;
+      if (distanceSquared <= 25) {
+        Duration pressTime = DateTime.now().difference(_chartTouchInteractionDownTime!);
+        if (pressTime.inMilliseconds >= 1300) {
+          _rotateChartHeight(index);
+        }
+      }
+    }
+
+    _chartTouchInteractionDownTime = null;
+    _chartTouchInteractionIndex = -1;
   }
 
   Future<void> _initializeHeartRateMonitor() async {
@@ -1149,20 +1167,19 @@ class RecordingState extends State<RecordingScreen> {
             height = size.height / 2;
             break;
         }
-        Widget extra = GestureDetector(
-          onLongPress: () => _onLongPress(entry.key),
-          child: SizedBox(
-            width: size.width,
-            height: height,
-            child: charts.SfCartesianChart(
-              primaryXAxis: charts.DateTimeAxis(),
-              primaryYAxis: charts.NumericAxis(
-                plotBands: entry.value.plotBands,
-              ),
-              margin: EdgeInsets.all(0),
-              series: _metricToDataFn[entry.value.metric]!(),
-              trackballBehavior: _trackballBehavior,
+        Widget extra = SizedBox(
+          width: size.width,
+          height: height,
+          child: charts.SfCartesianChart(
+            primaryXAxis: charts.DateTimeAxis(),
+            primaryYAxis: charts.NumericAxis(
+              plotBands: entry.value.plotBands,
             ),
+            margin: EdgeInsets.all(0),
+            series: _metricToDataFn[entry.value.metric]!(),
+            onChartTouchInteractionDown: (arg) =>
+                _onChartTouchInteractionDown(entry.key, arg.position),
+            onChartTouchInteractionUp: (arg) => _onChartTouchInteractionUp(entry.key, arg.position),
           ),
         );
         if (entry.value.metric == "hr" && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
