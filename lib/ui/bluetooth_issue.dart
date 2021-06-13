@@ -19,17 +19,14 @@ class BluetoothIssueScreen extends StatefulWidget {
 }
 
 class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
-  late PermissionStatus locationState;
+  late PermissionStatus locationState = PermissionStatus.denied;
   ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _textStyle = TextStyle();
-
-  BluetoothIssueScreenState() {
-    locationState = widget.locationState;
-  }
 
   @override
   void initState() {
     super.initState();
+    locationState = widget.locationState;
     _textStyle = Get.textTheme.headline6!.apply(color: Colors.white);
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
       if (locationState != PermissionStatus.granted && locationState != PermissionStatus.limited) {
