@@ -591,6 +591,12 @@ class RecordsScreenState extends State<RecordsScreen> {
                     ),
                     collapsed: Container(),
                     expanded: Column(children: [
+                      item == "speed" && widget.activity.sport != ActivityType.Ride
+                          ? Text(
+                              "Speed ${_si ? 'km' : 'mi'}/h",
+                              style: _textStyle,
+                            )
+                          : Container(),
                       SizedBox(
                         width: widget.size.width,
                         height: widget.size.height / 2,

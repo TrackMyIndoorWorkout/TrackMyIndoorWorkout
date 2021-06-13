@@ -1206,6 +1206,9 @@ class RecordingState extends State<RecordingScreen> {
             extraExtras.add(Text(_sportRankString, style: devicePaceLightColor));
           }
 
+          if (widget.descriptor.defaultSport != ActivityType.Ride) {
+            extraExtras.add(Text("Speed ${_si ? 'km' : 'mi'}/h"));
+          }
           extraExtras.add(extra);
           extra = Column(
             mainAxisAlignment: MainAxisAlignment.start,
