@@ -9,13 +9,19 @@ class DisplayRecord {
   DateTime? dt;
   String? sport;
 
-  DisplayRecord(Record source) {
-    sport = source.sport;
-    power = source.power ?? 0;
-    speed = source.speed ?? 0.0;
-    cadence = source.cadence ?? 0;
-    heartRate = source.heartRate ?? 0;
-    dt = source.dt;
+  DisplayRecord(Record? source) {
+    sport = source?.sport;
+    power = source?.power ?? 0;
+    speed = source?.speed ?? 0.0;
+    cadence = source?.cadence ?? 0;
+    heartRate = source?.heartRate ?? 0;
+    dt = source?.dt;
+  }
+
+  factory DisplayRecord.from(String sport, DateTime dateTime) {
+    return DisplayRecord(null)
+      ..sport = sport
+      ..dt = dateTime;
   }
 
   double speedByUnit(bool si) {

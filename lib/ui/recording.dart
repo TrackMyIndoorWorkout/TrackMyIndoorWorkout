@@ -355,7 +355,6 @@ class RecordingState extends State<RecordingScreen> {
 
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
-    _pointCount = min(60, size.width ~/ 2);
     _unitStyle = TextStyle(
       fontFamily: FONT_FAMILY,
       color: _themeManager.getBlueColor(),
@@ -384,7 +383,14 @@ class RecordingState extends State<RecordingScreen> {
     _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _simplerUi = prefService.get<bool>(SIMPLER_UI_TAG) ?? SIMPLER_UI_SLOW_DEFAULT;
     _instantUpload = prefService.get<bool>(INSTANT_UPLOAD_TAG) ?? INSTANT_UPLOAD_DEFAULT;
-    _graphData = ListQueue<DisplayRecord>(_simplerUi ? 0 : _pointCount);
+    _pointCount = min(60, size.width ~/ 2);
+    final now = DateTime.now();
+    _graphData = _simplerUi
+        ? ListQueue<DisplayRecord>(0)
+        : ListQueue.from(List<DisplayRecord>.generate(
+            _pointCount,
+            (i) => DisplayRecord.from(
+                widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
 
     if (widget.sport != ActivityType.Ride) {
       final slowPace = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(widget.sport)]!;
