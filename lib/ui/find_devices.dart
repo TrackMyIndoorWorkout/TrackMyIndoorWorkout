@@ -166,7 +166,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       var sport = ActivityType.Ride;
       if (deviceUsage == null) {
         // Determine FTMS sport by analyzing 0x1826 service's characteristics
-        fitnessEquipment = Get.put<FitnessEquipment>(FitnessEquipment(device: device));
+        fitnessEquipment = FitnessEquipment(device: device);
         success = await fitnessEquipment.connectOnDemand(initialState, identify: true);
         if (success && fitnessEquipment.characteristicsId != null) {
           final inferredSport = fitnessEquipment.inferSportFromCharacteristicsId();
@@ -206,8 +206,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
         Get.snackbar("Error", "Device identification failed");
         return false;
       }
-    } else if (fitnessEquipment != null) {
-      fitnessEquipment.descriptor = descriptor;
     }
 
     if (descriptor.isMultiSport) {
@@ -245,12 +243,32 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
     }
 
-    if (fitnessEquipment == null) {
-      fitnessEquipment = Get.put<FitnessEquipment>(FitnessEquipment(
+    final currentEquipment =
+        Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
+    bool shouldRegister = true;
+    if (currentEquipment != null) {
+      if (currentEquipment.device?.id.id == device.id.id) {
+        fitnessEquipment = currentEquipment;
+        shouldRegister = false;
+      } else {
+        currentEquipment.detach().whenComplete(() async => await currentEquipment.disconnect());
+      }
+    }
+
+    if (fitnessEquipment != null) {
+      fitnessEquipment.descriptor = descriptor;
+    } else {
+      fitnessEquipment = FitnessEquipment(
         descriptor: descriptor,
         device: device,
-      ));
+      );
     }
+
+    if (shouldRegister) {
+      await Get.delete<FitnessEquipment>();
+      Get.put<FitnessEquipment>(fitnessEquipment);
+    }
+
     success = await fitnessEquipment.connectOnDemand(initialState);
     if (!success) {
       Get.defaultDialog(
@@ -266,6 +284,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
         await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
       }
+
       Get.to(RecordingScreen(
         device: device,
         descriptor: descriptor,
@@ -478,6 +497,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               if (heartRateMonitor == null ||
                                   heartRateMonitor.device?.id.id != r.device.id.id) {
                                 heartRateMonitor = new HeartRateMonitor(r.device);
+                                await Get.delete<HeartRateMonitor>();
                                 Get.put<HeartRateMonitor>(heartRateMonitor);
                                 await heartRateMonitor.connect();
                                 await heartRateMonitor.discover();

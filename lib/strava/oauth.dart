@@ -20,12 +20,12 @@ import 'fault.dart';
 abstract class Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
-  void registerToken(
+  Future<void> registerToken(
     String? token,
     String? refreshToken,
     int? expire,
     String? scope,
-  ) {
+  ) async {
     if (Get.isRegistered<StravaToken>()) {
       var stravaToken = Get.find<StravaToken>();
       // Save also in Get
@@ -34,6 +34,7 @@ abstract class Auth {
       stravaToken.expiresAt = expire;
       stravaToken.scope = scope;
     } else {
+      await Get.delete<StravaToken>();
       Get.put<StravaToken>(StravaToken(
         accessToken: token,
         refreshToken: refreshToken,
@@ -55,7 +56,7 @@ abstract class Auth {
     prefs.setString(REFRESH_TOKEN_TAG, refreshToken ?? '');
     prefs.setInt(EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
     prefs.setString(TOKEN_SCOPE_TAG, scope ?? '');
-    registerToken(token, refreshToken, expire, scope);
+    await registerToken(token, refreshToken, expire, scope);
     debugPrint('token saved!!!');
   }
 
@@ -77,7 +78,7 @@ abstract class Auth {
       localToken.scope = prefs.getString(TOKEN_SCOPE_TAG);
 
       // load the data into Get
-      registerToken(
+      await registerToken(
           localToken.accessToken, localToken.refreshToken, localToken.expiresAt, localToken.scope);
     } catch (error) {
       debugPrint('Error while retrieving the token');
