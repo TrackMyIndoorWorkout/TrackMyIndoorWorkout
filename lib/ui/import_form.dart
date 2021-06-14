@@ -71,6 +71,9 @@ class _ImportFormState extends State<ImportForm> {
                       FilePickerResult? result = await FilePicker.platform.pickFiles();
                       if (result != null && result.files.single.path != null) {
                         _textController.text = result.files.single.path!;
+                        setState(() {
+                          _filePath = result.files.single.path!;
+                        });
                       }
                     },
                   ),
@@ -80,11 +83,11 @@ class _ImportFormState extends State<ImportForm> {
                   if (value == null || value.isEmpty) {
                     return 'Please pick a file';
                   }
-                  setState(() {
-                    _filePath = value;
-                  });
                   return null;
                 },
+                onChanged: (value) => setState(() {
+                  _filePath = value;
+                }),
               ),
               SizedBox(height: 24),
               DateTimeField(
