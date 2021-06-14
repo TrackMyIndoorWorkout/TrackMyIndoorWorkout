@@ -114,11 +114,11 @@ class _ImportFormState extends State<ImportForm> {
                   if (value == null) {
                     return 'Please pick a date and time';
                   }
-                  setState(() {
-                    _activityDateTime = value;
-                  });
                   return null;
                 },
+                onChanged: (value) => setState(() {
+                  _activityDateTime = value;
+                }),
               ),
               SizedBox(height: 24),
               Row(
