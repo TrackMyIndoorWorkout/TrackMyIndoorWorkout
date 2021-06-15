@@ -127,8 +127,8 @@ double decimalRound(double value, {int precision = 100}) {
 const String TARGET_HR_SHORT_TITLE = "Target HR";
 
 class PreferencesSpec {
-  static const THRESHOLD_CAPITAL = ' Threshold ';
-  static const ZONES_CAPITAL = ' Zones (list of % of threshold)';
+  static const THRESHOLD_CAPITAL = " Threshold ";
+  static const ZONES_CAPITAL = " Zones (list of % of threshold)";
   static const PADDLE_SPORT = "Paddle";
   static const SPORT_PREFIXES = [
     ActivityType.Ride,
@@ -136,9 +136,9 @@ class PreferencesSpec {
     PADDLE_SPORT,
     ActivityType.Swim
   ];
-  static const THRESHOLD_PREFIX = 'threshold_';
-  static const ZONES_POSTFIX = '_zones';
-  static const METRICS = ['power', 'speed', 'cadence', 'hr'];
+  static const THRESHOLD_PREFIX = "threshold_";
+  static const ZONES_POSTFIX = "_zones";
+  static const METRICS = ["power", "speed", "cadence", "hr"];
   static const ZONE_INDEX_DISPLAY_TAG_POSTFIX = "zone_index_display";
   static const ZONE_INDEX_DISPLAY_TEXT = "Zone Index Display";
   static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 = "Display the Zone Index Next to the ";
@@ -159,8 +159,8 @@ class PreferencesSpec {
   static final _preferencesSpecsTemplate = [
     PreferencesSpec(
       metric: METRICS[0],
-      title: 'Power',
-      unit: 'W',
+      title: "Power",
+      unit: "W",
       thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[0],
       thresholdDefaultInts: {
         SPORT_PREFIXES[0]: 360,
@@ -180,8 +180,8 @@ class PreferencesSpec {
     ),
     PreferencesSpec(
       metric: METRICS[1],
-      title: 'Speed',
-      unit: 'mph',
+      title: "Speed",
+      unit: "mph",
       thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[1],
       thresholdDefaultInts: {
         SPORT_PREFIXES[0]: 32,
@@ -201,8 +201,8 @@ class PreferencesSpec {
     ),
     PreferencesSpec(
       metric: METRICS[2],
-      title: 'Cadence',
-      unit: 'rpm',
+      title: "Cadence",
+      unit: "rpm",
       thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[2],
       thresholdDefaultInts: {
         SPORT_PREFIXES[0]: 120,
@@ -222,8 +222,8 @@ class PreferencesSpec {
     ),
     PreferencesSpec(
       metric: METRICS[3],
-      title: 'Heart Rate',
-      unit: 'bpm',
+      title: "Heart Rate",
+      unit: "bpm",
       thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[3],
       thresholdDefaultInts: {
         SPORT_PREFIXES[0]: 180,
@@ -286,14 +286,14 @@ class PreferencesSpec {
     indexDisplay = indexDisplayDefault;
   }
 
-  String get fullTitle => '$title ($unit)';
-  String get kmhTitle => '$title (kmh)';
-  String get histogramTitle => '$title zones (%)';
+  String get fullTitle => "$title ($unit)";
+  String get kmhTitle => "$title (kmh)";
+  String get histogramTitle => "$title zones (%)";
 
-  String get zoneIndexText => '$title $ZONE_INDEX_DISPLAY_TEXT';
-  String get zoneIndexTag => metric + '_$ZONE_INDEX_DISPLAY_TAG_POSTFIX';
+  String get zoneIndexText => "$title $ZONE_INDEX_DISPLAY_TEXT";
+  String get zoneIndexTag => "${metric}_$ZONE_INDEX_DISPLAY_TAG_POSTFIX";
   String get zoneIndexDescription =>
-      '$ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 $title $ZONE_INDEX_DISPLAY_DESCRIPTION_PART2';
+      "$ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 $title $ZONE_INDEX_DISPLAY_DESCRIPTION_PART2";
 
   static String sport2Sport(String sport) {
     return sport == ActivityType.Kayaking ||
