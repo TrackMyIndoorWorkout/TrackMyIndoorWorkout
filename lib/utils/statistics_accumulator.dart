@@ -17,27 +17,27 @@ class StatisticsAccumulator {
   bool calculateAvgHeartRate;
   bool calculateMaxHeartRate;
 
-  double powerSum;
-  int powerCount;
-  double maxPower;
-  double speedSum;
-  int speedCount;
-  double maxSpeed;
-  int heartRateSum;
-  int heartRateCount;
-  int maxHeartRate;
-  int cadenceSum;
-  int cadenceCount;
-  int maxCadence;
+  late double powerSum;
+  late int powerCount;
+  late double maxPower;
+  late double speedSum;
+  late int speedCount;
+  late double maxSpeed;
+  late int heartRateSum;
+  late int heartRateCount;
+  late int maxHeartRate;
+  late int cadenceSum;
+  late int cadenceCount;
+  late int maxCadence;
 
-  double get avgPower => powerCount > 0 ? powerSum / powerCount : 0;
-  double get avgSpeed => speedCount > 0 ? speedSum / speedCount : 0;
+  double get avgPower => powerCount > 0 ? powerSum / powerCount : 0.0;
+  double get avgSpeed => speedCount > 0 ? speedSum / speedCount : 0.0;
   int get avgCadence => cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0;
   int get avgHeartRate => heartRateCount > 0 ? heartRateSum ~/ heartRateCount : 0;
 
   StatisticsAccumulator({
-    this.si,
-    this.sport,
+    required this.si,
+    required this.sport,
     this.calculateAvgPower = false,
     this.calculateMaxPower = false,
     this.calculateAvgSpeed = false,
@@ -47,119 +47,106 @@ class StatisticsAccumulator {
     this.calculateAvgHeartRate = false,
     this.calculateMaxHeartRate = false,
   }) {
-    if (calculateAvgPower) {
-      powerSum = 0;
-      powerCount = 0;
-    }
-    if (calculateMaxPower) {
-      maxPower = MAX_INIT.toDouble();
-    }
-    if (calculateAvgSpeed) {
-      speedSum = 0;
-      speedCount = 0;
-    }
-    if (calculateMaxSpeed) {
-      maxSpeed = sport == ActivityType.Ride ? MAX_INIT.toDouble() : MIN_INIT.toDouble();
-    }
-    if (calculateAvgHeartRate) {
-      heartRateSum = 0;
-      heartRateCount = 0;
-    }
-    if (calculateMaxHeartRate) {
-      maxHeartRate = MAX_INIT;
-    }
-    if (calculateAvgCadence) {
-      cadenceSum = 0;
-      cadenceCount = 0;
-    }
-    if (calculateMaxCadence) {
-      maxCadence = MAX_INIT;
-    }
+    powerSum = 0.0;
+    powerCount = 0;
+    maxPower = MAX_INIT.toDouble();
+    speedSum = 0.0;
+    speedCount = 0;
+    maxSpeed = MAX_INIT.toDouble();
+    heartRateSum = 0;
+    heartRateCount = 0;
+    maxHeartRate = MAX_INIT;
+    cadenceSum = 0;
+    cadenceCount = 0;
+    maxCadence = MAX_INIT;
   }
 
   processExportRecord(ExportRecord exportRecord) {
-    if (exportRecord.power != null) {
-      if (calculateAvgPower && exportRecord.power > 0) {
-        powerSum += exportRecord.power;
+    if (exportRecord.power != null && exportRecord.power! > 0) {
+      if (calculateAvgPower) {
+        powerSum += exportRecord.power!;
         powerCount++;
       }
+
       if (calculateMaxPower) {
-        maxPower = max(maxPower, exportRecord.power);
+        maxPower = max(maxPower, exportRecord.power!);
       }
     }
-    if (exportRecord.speed != null) {
-      if (calculateAvgSpeed && exportRecord.speed > 0) {
+
+    if (exportRecord.speed > 0) {
+      if (calculateAvgSpeed) {
         speedSum += exportRecord.speed;
         speedCount++;
       }
+
       if (calculateMaxSpeed) {
-        if (sport == ActivityType.Ride) {
-          maxSpeed = max(maxSpeed, exportRecord.speed);
-        } else {
-          maxSpeed = min(maxSpeed, exportRecord.speed);
-        }
+        maxSpeed = max(maxSpeed, exportRecord.speed);
       }
     }
-    if (exportRecord.heartRate != null && exportRecord.heartRate > 0) {
-      if (calculateAvgHeartRate && exportRecord.heartRate > 0) {
-        heartRateSum += exportRecord.heartRate;
+
+    if (exportRecord.heartRate != null && exportRecord.heartRate! > 0) {
+      if (calculateAvgHeartRate) {
+        heartRateSum += exportRecord.heartRate!;
         heartRateCount++;
       }
+
       if (calculateMaxHeartRate) {
-        maxHeartRate = max(maxHeartRate, exportRecord.heartRate);
+        maxHeartRate = max(maxHeartRate, exportRecord.heartRate!);
       }
     }
-    if (exportRecord.cadence != null && exportRecord.cadence > 0) {
-      if (calculateAvgCadence && exportRecord.cadence > 0) {
-        cadenceSum += exportRecord.cadence;
+
+    if (exportRecord.cadence != null && exportRecord.cadence! > 0) {
+      if (calculateAvgCadence) {
+        cadenceSum += exportRecord.cadence!;
         cadenceCount++;
       }
       if (calculateMaxCadence) {
-        maxCadence = max(maxCadence, exportRecord.cadence);
+        maxCadence = max(maxCadence, exportRecord.cadence!);
       }
     }
   }
 
   processRecord(Record record) {
     if (record.power != null) {
-      if (calculateAvgPower && record.power > 0) {
-        powerSum += record.power;
+      if (calculateAvgPower && record.power! > 0) {
+        powerSum += record.power!;
         powerCount++;
       }
+
       if (calculateMaxPower) {
-        maxPower = max(maxPower, record.power.toDouble());
+        maxPower = max(maxPower, record.power!.toDouble());
       }
     }
+
     if (record.speed != null) {
-      final speed = record.speedByUnit(si, sport);
-      if (calculateAvgSpeed && record.speed > 0) {
-        speedSum += speed;
+      if (calculateAvgSpeed && record.speed! > 0) {
+        speedSum += record.speed!;
         speedCount++;
       }
+
       if (calculateMaxSpeed) {
-        if (sport == ActivityType.Ride) {
-          maxSpeed = max(maxSpeed, speed);
-        } else {
-          maxSpeed = min(maxSpeed, speed);
-        }
+        maxSpeed = max(maxSpeed, record.speed!);
       }
     }
-    if (record.heartRate != null && record.heartRate > 0) {
-      if (calculateAvgHeartRate && record.heartRate > 0) {
-        heartRateSum += record.heartRate;
+
+    if (record.heartRate != null && record.heartRate! > 0) {
+      if (calculateAvgHeartRate) {
+        heartRateSum += record.heartRate!;
         heartRateCount++;
       }
+
       if (calculateMaxHeartRate) {
-        maxHeartRate = max(maxHeartRate, record.heartRate);
+        maxHeartRate = max(maxHeartRate, record.heartRate!);
       }
     }
-    if (record.cadence != null && record.cadence > 0) {
-      if (calculateAvgCadence && record.cadence > 0) {
-        cadenceSum += record.cadence;
+
+    if (record.cadence != null) {
+      if (calculateAvgCadence && record.cadence! > 0) {
+        cadenceSum += record.cadence!;
         cadenceCount++;
       }
       if (calculateMaxCadence) {
-        maxCadence = max(maxCadence, record.cadence);
+        maxCadence = max(maxCadence, record.cadence!);
       }
     }
   }

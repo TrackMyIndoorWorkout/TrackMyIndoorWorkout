@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import 'preferences_base.dart';
 
@@ -10,69 +10,75 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> leaderboardPreferences = [
-      SwitchPreference(
-        LEADERBOARD_FEATURE,
-        LEADERBOARD_FEATURE_TAG,
-        defaultVal: LEADERBOARD_FEATURE_DEFAULT,
-        desc: LEADERBOARD_FEATURE_DESCRIPTION,
-        onDisable: () {
-          PrefService.setBool(RANK_RIBBON_VISUALIZATION_TAG, false);
-          PrefService.setBool(RANK_TRACK_VISUALIZATION_TAG, false);
-          PrefService.setBool(RANKING_FOR_DEVICE_TAG, false);
-          PrefService.setBool(RANKING_FOR_SPORT_TAG, false);
+      PrefCheckbox(
+        title: Text(LEADERBOARD_FEATURE),
+        subtitle: Text(LEADERBOARD_FEATURE_DESCRIPTION),
+        pref: LEADERBOARD_FEATURE_TAG,
+        onChange: (value) {
+          if (!value) {
+            PrefService.of(context).set(RANK_RIBBON_VISUALIZATION_TAG, false);
+            PrefService.of(context).set(RANK_TRACK_VISUALIZATION_TAG, false);
+            PrefService.of(context).set(RANKING_FOR_DEVICE_TAG, false);
+            PrefService.of(context).set(RANKING_FOR_SPORT_TAG, false);
+          }
         },
       ),
-      SwitchPreference(
-        RANK_RIBBON_VISUALIZATION,
-        RANK_RIBBON_VISUALIZATION_TAG,
-        defaultVal: RANK_RIBBON_VISUALIZATION_DEFAULT,
-        desc: RANK_RIBBON_VISUALIZATION_DESCRIPTION,
-        onEnable: () {
-          PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
+      PrefCheckbox(
+        title: Text(RANK_RIBBON_VISUALIZATION),
+        subtitle: Text(RANK_RIBBON_VISUALIZATION_DESCRIPTION),
+        pref: RANK_RIBBON_VISUALIZATION_TAG,
+        onChange: (value) {
+          if (value) {
+            PrefService.of(context).set(LEADERBOARD_FEATURE_TAG, true);
+          }
         },
       ),
-      SwitchPreference(
-        RANK_TRACK_VISUALIZATION,
-        RANK_TRACK_VISUALIZATION_TAG,
-        defaultVal: RANK_TRACK_VISUALIZATION_DEFAULT,
-        desc: RANK_TRACK_VISUALIZATION_DESCRIPTION,
-        onEnable: () {
-          PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
+      PrefCheckbox(
+        title: Text(RANK_TRACK_VISUALIZATION),
+        subtitle: Text(RANK_TRACK_VISUALIZATION_DESCRIPTION),
+        pref: RANK_TRACK_VISUALIZATION_TAG,
+        onChange: (value) {
+          if (value) {
+            PrefService.of(context).set(LEADERBOARD_FEATURE_TAG, true);
+          }
         },
       ),
-      SwitchPreference(
-        RANK_INFO_ON_TRACK,
-        RANK_INFO_ON_TRACK_TAG,
-        defaultVal: RANK_INFO_ON_TRACK_DEFAULT,
-        desc: RANK_INFO_ON_TRACK_DESCRIPTION,
-        onEnable: () {
-          PrefService.setBool(RANK_TRACK_VISUALIZATION_TAG, true);
-          PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
+      PrefCheckbox(
+        title: Text(RANK_INFO_ON_TRACK),
+        subtitle: Text(RANK_INFO_ON_TRACK_DESCRIPTION),
+        pref: RANK_INFO_ON_TRACK_TAG,
+        onChange: (value) {
+          if (value) {
+            PrefService.of(context).set(RANK_TRACK_VISUALIZATION_TAG, true);
+            PrefService.of(context).set(LEADERBOARD_FEATURE_TAG, true);
+          }
         },
       ),
-      SwitchPreference(
-        RANKING_FOR_DEVICE,
-        RANKING_FOR_DEVICE_TAG,
-        defaultVal: RANKING_FOR_DEVICE_DEFAULT,
-        desc: RANKING_FOR_DEVICE_DESCRIPTION,
-        onEnable: () {
-          PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
+      PrefCheckbox(
+        title: Text(RANKING_FOR_DEVICE),
+        subtitle: Text(RANKING_FOR_DEVICE_DESCRIPTION),
+        pref: RANKING_FOR_DEVICE_TAG,
+        onChange: (value) {
+          if (value) {
+            PrefService.of(context).set(LEADERBOARD_FEATURE_TAG, true);
+          }
         },
       ),
-      SwitchPreference(
-        RANKING_FOR_SPORT,
-        RANKING_FOR_SPORT_TAG,
-        defaultVal: RANKING_FOR_SPORT_DEFAULT,
-        desc: RANKING_FOR_SPORT_DESCRIPTION,
-        onEnable: () {
-          PrefService.setBool(LEADERBOARD_FEATURE_TAG, true);
+      PrefCheckbox(
+        title: Text(RANKING_FOR_SPORT),
+        subtitle: Text(RANKING_FOR_SPORT_DESCRIPTION),
+        pref: RANKING_FOR_SPORT_TAG,
+        onChange: (value) {
+          if (value) {
+            PrefService.of(context).set(LEADERBOARD_FEATURE_TAG, true);
+          }
         },
       ),
     ];
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: PreferencePage(leaderboardPreferences),
+      body: PrefPage(children: leaderboardPreferences),
     );
   }
 }

@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../gatt_constants.dart';
@@ -8,13 +6,13 @@ import '../metric_descriptors/short_metric_descriptor.dart';
 import 'fitness_machine_descriptor.dart';
 
 class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
-  ByteMetricDescriptor paceMetric;
+  ByteMetricDescriptor? paceMetric;
 
   TreadmillDeviceDescriptor({
-    @required fourCC,
-    @required vendorName,
-    @required modelName,
-    @required namePrefix,
+    required fourCC,
+    required vendorName,
+    required modelName,
+    required namePrefix,
     manufacturer,
     manufacturerFitId,
     model,
@@ -64,12 +62,15 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   RecordWithSport stubRecord(List<int> data) {
     super.stubRecord(data);
 
-    double speed = getSpeed(data);
-    double pace = getPace(data); // km / minute
+    double? speed = getSpeed(data);
+    double? pace = getPace(data); // km / minute
     if (speed == null) {
-      speed = pace * 60.0; // km / h
+      speed = (pace ?? 0.0) * 60.0; // km / h
     }
-    pace = 1 / pace; // now minutes / km
+
+    if (pace != null && pace > 0) {
+      pace = 1 / pace; // now minutes / km
+    }
 
     return RecordWithSport(
       distance: getDistance(data),
@@ -131,7 +132,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     return flag;
   }
 
-  double getPace(List<int> data) {
+  double? getPace(List<int> data) {
     var pace = paceMetric?.getMeasurementValue(data);
     if (pace == null || !extendTuning) {
       return pace;

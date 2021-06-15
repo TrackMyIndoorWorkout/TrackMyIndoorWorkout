@@ -17,17 +17,17 @@ class PreferencesHubScreen extends StatefulWidget {
 }
 
 class PreferencesHubScreenState extends State<PreferencesHubScreen> {
-  double _sizeDefault;
-  TextStyle _textStyle;
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
 
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline4.apply(
+    _textStyle = Get.textTheme.headline4!.apply(
       fontFamily: FONT_FAMILY,
       color: Colors.white,
     );
-    _sizeDefault = _textStyle.fontSize * 2;
+    _sizeDefault = _textStyle.fontSize! * 2;
     if (!Get.isRegistered<SoundService>()) {
       Get.put<SoundService>(SoundService());
     }

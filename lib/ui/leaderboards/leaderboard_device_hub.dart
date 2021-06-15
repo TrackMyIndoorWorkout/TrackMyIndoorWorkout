@@ -8,31 +8,26 @@ import 'device_leaderboard.dart';
 class LeaderboardDeviceHubScreen extends StatefulWidget {
   final List<Tuple2<String, String>> devices;
 
-  LeaderboardDeviceHubScreen({Key key, @required this.devices})
-      : assert(devices != null),
-        super(key: key);
+  LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => LeaderboardDeviceHubScreenState(devices: devices);
+  State<StatefulWidget> createState() => LeaderboardDeviceHubScreenState();
 }
 
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {
-  final List<Tuple2<String, String>> devices;
-  double _sizeDefault;
-  TextStyle _textStyle;
-  TextStyle _subTextStyle;
-
-  LeaderboardDeviceHubScreenState({@required this.devices}) : assert(devices != null);
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
+  TextStyle _subTextStyle = TextStyle();
 
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline5.apply(
+    _textStyle = Get.textTheme.headline5!.apply(
       fontFamily: FONT_FAMILY,
       color: Colors.white,
     );
-    _sizeDefault = _textStyle.fontSize * 3;
-    _subTextStyle = Get.textTheme.headline6.apply(
+    _sizeDefault = _textStyle.fontSize! * 3;
+    _subTextStyle = Get.textTheme.headline6!.apply(
       fontFamily: FONT_FAMILY,
       color: Colors.white,
     );
@@ -46,7 +41,7 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: devices
+          children: widget.devices
               .map(
                 (device) => Container(
                   padding: const EdgeInsets.all(5.0),

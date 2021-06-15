@@ -7,7 +7,7 @@ class TestData {
   final String text;
   final int id;
 
-  TestData({this.text, this.id});
+  TestData({required this.text, required this.id});
 }
 
 void main() {

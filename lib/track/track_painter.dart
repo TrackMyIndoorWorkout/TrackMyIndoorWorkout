@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/rendering.dart';
-import 'package:meta/meta.dart';
 
 import 'calculator.dart';
 import 'constants.dart';
@@ -9,14 +8,14 @@ import 'constants.dart';
 class TrackPainter extends CustomPainter {
   TrackCalculator calculator;
 
-  TrackPainter({@required this.calculator}) : assert(calculator != null);
+  TrackPainter({required this.calculator});
 
   @override
   void paint(Canvas canvas, Size size) {
     final track = calculator.track;
     if (calculator.trackSize == null ||
-        size.width != calculator.trackSize.width ||
-        size.height != calculator.trackSize.height) {
+        size.width != calculator.trackSize!.width ||
+        size.height != calculator.trackSize!.height) {
       calculator.trackSize = size;
       final rX = (size.width - 2 * THICK) / (2 * track.radiusBoost + pi * track.laneShrink);
       final rY = (size.height - 2 * THICK) / (2 * track.radiusBoost);
@@ -48,7 +47,7 @@ class TrackPainter extends CustomPainter {
         ..arcTo(leftHalfCircleRect, pi / 2, pi, true);
     }
 
-    canvas.drawPath(calculator.trackPath, calculator.trackStroke);
+    canvas.drawPath(calculator.trackPath!, calculator.trackStroke!);
   }
 
   @override

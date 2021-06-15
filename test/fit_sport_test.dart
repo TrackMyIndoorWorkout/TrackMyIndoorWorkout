@@ -14,7 +14,7 @@ void main() {
   group('FitSport data has the expected length', () {
     SPORTS.forEach((sport) {
       final fileCreator = FitSport(0);
-      final expected = fileCreator.fields.fold(0, (accu, field) => accu + field.size);
+      final expected = fileCreator.fields.fold<int>(0, (accu, field) => accu + field.size);
 
       test('$sport -> $expected', () async {
         final output = fileCreator.serializeData(sport);

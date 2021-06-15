@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import 'preferences_base.dart';
@@ -19,13 +19,13 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
   bool isMonotoneIncreasingList(String zonesSpecStr) {
     if (!intListRule.hasMatch(zonesSpecStr)) return false;
 
-    List<double> numberList =
+    List<double?> numberList =
         zonesSpecStr.split(',').map((zs) => double.tryParse(zs)).toList(growable: false);
 
     for (int i = 0; i < numberList.length - 1; i++) {
       if (numberList[i] == null || numberList[i + 1] == null) return false;
 
-      if (numberList[i] >= numberList[i + 1]) return false;
+      if (numberList[i]! >= numberList[i + 1]!) return false;
     }
 
     return true;
@@ -37,28 +37,28 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
 
     PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
       zonePreferences.addAll([
-        TextFieldPreference(
-          sport +
+        PrefText(
+          label: sport +
               PreferencesSpec.THRESHOLD_CAPITAL +
               (prefSpec.metric == "speed" ? prefSpec.kmhTitle : prefSpec.fullTitle),
-          prefSpec.thresholdTag(sport),
-          defaultVal: prefSpec.thresholdDefault(sport),
+          pref: prefSpec.thresholdTag(sport),
           validator: (str) {
-            if (!isNumber(str, 0.1, -1)) {
+            if (str == null || !isNumber(str, 0.1, -1)) {
               return "Invalid threshold (should be integer >= 0.1)";
             }
+
             return null;
           },
         ),
-        TextFieldPreference(
-          sport + " " + prefSpec.title + PreferencesSpec.ZONES_CAPITAL,
-          prefSpec.zonesTag(sport),
-          defaultVal: prefSpec.zonesDefault(sport),
+        PrefText(
+          label: sport + " " + prefSpec.title + PreferencesSpec.ZONES_CAPITAL,
+          pref: prefSpec.zonesTag(sport),
           validator: (str) {
-            if (!isMonotoneIncreasingList(str)) {
+            if (str == null || !isMonotoneIncreasingList(str)) {
               return "Invalid zones (should be comma separated list of " +
                   "monotonically increasing numbers)";
             }
+
             return null;
           },
         ),
@@ -66,18 +66,21 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
     });
     if (sport != ActivityType.Ride) {
       zonePreferences.addAll([
-        TextFieldPreference(
-          sport + SLOW_SPEED_POSTFIX,
-          PreferencesSpec.slowSpeedTag(sport),
-          defaultVal: PreferencesSpec.slowSpeeds[sport].toString(),
+        PrefText(
+          label: sport + SLOW_SPEED_POSTFIX,
+          pref: PreferencesSpec.slowSpeedTag(sport),
           validator: (str) {
-            if (!isNumber(str, 0.01, -1)) {
+            if (str == null || !isNumber(str, 0.01, -1)) {
               return "Slow speed has to be positive";
             }
+
             return null;
           },
           onChange: (str) {
-            PreferencesSpec.slowSpeeds[sport] = double.tryParse(str);
+            final slowSpeed = double.tryParse(str);
+            if (slowSpeed != null) {
+              PreferencesSpec.slowSpeeds[sport] = slowSpeed;
+            }
           },
         ),
       ]);
@@ -85,7 +88,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: PreferencePage(zonePreferences),
+      body: PrefPage(children: zonePreferences),
     );
   }
 }

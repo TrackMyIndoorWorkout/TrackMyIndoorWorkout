@@ -1,15 +1,23 @@
 import 'dart:io';
 
-import 'package:data_connection_checker/data_connection_checker.dart';
-import 'package:preferences/preferences.dart';
+import 'package:get/get.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:pref/pref.dart';
 import '../persistence/preferences.dart';
 import 'constants.dart';
 import 'preferences.dart';
 
-Future<void> initPreferences() async {
-  await PrefService.init(prefix: 'pref_');
+void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService prefService) {
+  final valueString = prefService.get<String>(tag) ?? "$defaultInt";
+  final intValue = int.tryParse(valueString);
+  if (intValue != null && intValue != defaultInt) {
+    prefService.set<int>(tag + INT_TAG_POSTFIX, intValue);
+  }
+}
+
+Future<Map<String, dynamic>> getPrefDefaults() async {
   Map<String, dynamic> prefDefaults = {
-    PREFERENCES_VERSION_TAG: PREFERENCES_VERSION_DEFAULT,
+    PREFERENCES_VERSION_TAG: PREFERENCES_VERSION_NEXT,
     UNIT_SYSTEM_TAG: UNIT_SYSTEM_DEFAULT,
     INSTANT_SCAN_TAG: INSTANT_SCAN_DEFAULT,
     SCAN_DURATION_TAG: SCAN_DURATION_DEFAULT,
@@ -23,22 +31,22 @@ Future<void> initPreferences() async {
     MEASUREMENT_DETAIL_SIZE_TAG: MEASUREMENT_DETAIL_SIZE_DEFAULT,
     APP_DEBUG_MODE_TAG: APP_DEBUG_MODE_DEFAULT,
     EXTEND_TUNING_TAG: EXTEND_TUNING_DEFAULT,
-    STROKE_RATE_SMOOTHING_TAG: STROKE_RATE_SMOOTHING_DEFAULT,
-    DATA_STREAM_GAP_WATCHDOG_TAG: DATA_STREAM_GAP_WATCHDOG_DEFAULT,
+    STROKE_RATE_SMOOTHING_INT_TAG: STROKE_RATE_SMOOTHING_DEFAULT,
+    DATA_STREAM_GAP_WATCHDOG_INT_TAG: DATA_STREAM_GAP_WATCHDOG_DEFAULT,
     DATA_STREAM_GAP_SOUND_EFFECT_TAG: DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT,
     CADENCE_GAP_WORKAROUND_TAG: CADENCE_GAP_WORKAROUND_DEFAULT,
     HEART_RATE_GAP_WORKAROUND_TAG: HEART_RATE_GAP_WORKAROUND_DEFAULT,
-    HEART_RATE_UPPER_LIMIT_TAG: HEART_RATE_UPPER_LIMIT_DEFAULT,
+    HEART_RATE_UPPER_LIMIT_INT_TAG: HEART_RATE_UPPER_LIMIT_DEFAULT,
     HEART_RATE_LIMITING_METHOD_TAG: HEART_RATE_LIMITING_METHOD_DEFAULT,
     TARGET_HEART_RATE_MODE_TAG: TARGET_HEART_RATE_MODE_DEFAULT,
-    TARGET_HEART_RATE_LOWER_BPM_TAG: TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
-    TARGET_HEART_RATE_UPPER_BPM_TAG: TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
-    TARGET_HEART_RATE_LOWER_ZONE_TAG: TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
-    TARGET_HEART_RATE_UPPER_ZONE_TAG: TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
+    TARGET_HEART_RATE_LOWER_BPM_INT_TAG: TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
+    TARGET_HEART_RATE_UPPER_BPM_INT_TAG: TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
+    TARGET_HEART_RATE_LOWER_ZONE_INT_TAG: TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
+    TARGET_HEART_RATE_UPPER_ZONE_INT_TAG: TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
     TARGET_HEART_RATE_AUDIO_TAG: TARGET_HEART_RATE_AUDIO_DEFAULT,
-    TARGET_HEART_RATE_AUDIO_PERIOD_TAG: TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
+    TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG: TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
     TARGET_HEART_RATE_SOUND_EFFECT_TAG: TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT,
-    AUDIO_VOLUME_TAG: AUDIO_VOLUME_DEFAULT,
+    AUDIO_VOLUME_INT_TAG: AUDIO_VOLUME_DEFAULT,
     LEADERBOARD_FEATURE_TAG: LEADERBOARD_FEATURE_DEFAULT,
     RANK_RIBBON_VISUALIZATION_TAG: RANK_RIBBON_VISUALIZATION_DEFAULT,
     RANKING_FOR_DEVICE_TAG: RANKING_FOR_DEVICE_DEFAULT,
@@ -47,9 +55,14 @@ Future<void> initPreferences() async {
     RANK_INFO_ON_TRACK_TAG: RANK_INFO_ON_TRACK_DEFAULT,
     THEME_SELECTION_TAG: THEME_SELECTION_DEFAULT,
     ZONE_INDEX_DISPLAY_COLORING_TAG: ZONE_INDEX_DISPLAY_COLORING_DEFAULT,
-    ATHLETE_BODY_WEIGHT_TAG: ATHLETE_BODY_WEIGHT_DEFAULT,
+    ATHLETE_BODY_WEIGHT_INT_TAG: ATHLETE_BODY_WEIGHT_DEFAULT,
     REMEMBER_ATHLETE_BODY_WEIGHT_TAG: REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT,
   };
+  return prefDefaults;
+}
+
+Future<BasePrefService> initPreferences() async {
+  var prefDefaults = await getPrefDefaults();
   PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
     PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
       prefDefaults.addAll({
@@ -70,41 +83,73 @@ Future<void> initPreferences() async {
     });
   });
 
-  PrefService.setDefaultValues(prefDefaults);
+  final prefService =
+      await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
+  Get.put<BasePrefService>(prefService);
 
-  if (PrefService.getInt(PREFERENCES_VERSION_TAG) < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
-    PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+  final prefVersion =
+      prefService.sharedPreferences.getInt(PREFERENCES_VERSION_TAG) ?? PREFERENCES_VERSION_NEXT;
+  if (prefVersion < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
+    PreferencesSpec.preferencesSpecs.forEach((prefSpec) async {
       final thresholdTag = PreferencesSpec.THRESHOLD_PREFIX + prefSpec.metric;
-      var thresholdString = PrefService.getString(thresholdTag);
+      var thresholdString = prefService.sharedPreferences.getString(thresholdTag) ?? "";
       if (prefSpec.metric == "speed") {
-        thresholdString = decimalRound(double.tryParse(thresholdString) * MI2KM).toString();
+        final threshold = double.tryParse(thresholdString) ?? EPS;
+        thresholdString = decimalRound(threshold * MI2KM).toString();
       }
-      PrefService.setString(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
+      await prefService.sharedPreferences
+          .setString(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
       final zoneTag = prefSpec.metric + PreferencesSpec.ZONES_POSTFIX;
-      PrefService.setString(prefSpec.zonesTag(ActivityType.Ride), PrefService.getString(zoneTag));
+      await prefService.sharedPreferences.setString(prefSpec.zonesTag(ActivityType.Ride),
+          prefService.sharedPreferences.getString(zoneTag) ?? "55,75,90,105,120,150");
     });
   }
-  if (PrefService.getInt(PREFERENCES_VERSION_TAG) <
-      PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT) {
-    final lastEquipmentId = PrefService.getString(LAST_EQUIPMENT_ID_TAG);
-    if ((lastEquipmentId?.length ?? 0) > 0) {
-      PrefService.setString(LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride, lastEquipmentId);
+
+  if (prefVersion < PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT) {
+    final lastEquipmentId = prefService.sharedPreferences.getString(LAST_EQUIPMENT_ID_TAG) ?? "";
+    if (lastEquipmentId.trim().length > 0) {
+      await prefService.sharedPreferences
+          .setString(LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride, lastEquipmentId);
     }
   }
-  PrefService.setInt(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_DEFAULT + 1);
+
+  if (prefVersion < PREFERENCES_VERSION_SPINNERS) {
+    migrateStringIntegerPreference(
+        STROKE_RATE_SMOOTHING_TAG, STROKE_RATE_SMOOTHING_DEFAULT, prefService);
+    migrateStringIntegerPreference(
+        DATA_STREAM_GAP_WATCHDOG_TAG, DATA_STREAM_GAP_WATCHDOG_DEFAULT, prefService);
+    migrateStringIntegerPreference(
+        HEART_RATE_UPPER_LIMIT_TAG, HEART_RATE_UPPER_LIMIT_DEFAULT, prefService);
+    migrateStringIntegerPreference(
+        TARGET_HEART_RATE_LOWER_BPM_TAG, TARGET_HEART_RATE_LOWER_BPM_DEFAULT, prefService);
+    migrateStringIntegerPreference(
+        TARGET_HEART_RATE_UPPER_BPM_TAG, TARGET_HEART_RATE_UPPER_BPM_DEFAULT, prefService);
+    migrateStringIntegerPreference(
+        TARGET_HEART_RATE_LOWER_ZONE_TAG, TARGET_HEART_RATE_LOWER_ZONE_DEFAULT, prefService);
+    migrateStringIntegerPreference(
+        TARGET_HEART_RATE_UPPER_ZONE_TAG, TARGET_HEART_RATE_UPPER_ZONE_DEFAULT, prefService);
+    migrateStringIntegerPreference(
+        TARGET_HEART_RATE_AUDIO_PERIOD_TAG, TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT, prefService);
+    migrateStringIntegerPreference(AUDIO_VOLUME_TAG, AUDIO_VOLUME_DEFAULT, prefService);
+    migrateStringIntegerPreference(
+        ATHLETE_BODY_WEIGHT_TAG, ATHLETE_BODY_WEIGHT_DEFAULT, prefService);
+  }
+
+  await prefService.sharedPreferences.setInt(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);
 
   PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
     if (sport != ActivityType.Ride) {
-      final slowSpeedString = PrefService.getString(PreferencesSpec.slowSpeedTag(sport));
-      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString);
+      final slowSpeedString =
+          prefService.sharedPreferences.getString(PreferencesSpec.slowSpeedTag(sport)) ?? "";
+      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? EPS;
     }
   });
 
-  final addressesString = PrefService.getString(DATA_CONNECTION_ADDRESSES) ?? "";
+  final addressesString = prefService.sharedPreferences.getString(DATA_CONNECTION_ADDRESSES) ?? "";
   if (addressesString.trim().isNotEmpty) {
     final addressTuples = parseIpAddresses(addressesString);
     if (addressTuples.length > 0) {
-      DataConnectionChecker().addresses = addressTuples
+      InternetConnectionChecker().addresses = addressTuples
           .map((addressTuple) => AddressCheckOptions(
                 InternetAddress(addressTuple.item1),
                 port: addressTuple.item2,
@@ -112,4 +157,6 @@ Future<void> initPreferences() async {
           .toList(growable: false);
     }
   }
+
+  return prefService;
 }

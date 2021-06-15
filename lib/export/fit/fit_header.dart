@@ -12,7 +12,7 @@ class FitHeader extends FitSerializable {
   final int dataSize; // 4 bytes, little endian
   final String dataType = ".FIT";
 
-  FitHeader({this.dataSize}) : super();
+  FitHeader({required this.dataSize});
 
   List<int> binarySerialize() {
     output = [headerSize, protocolVersion];

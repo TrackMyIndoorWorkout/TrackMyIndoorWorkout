@@ -20,11 +20,11 @@ class $FloorAppDatabase {
 class _$AppDatabaseBuilder {
   _$AppDatabaseBuilder(this.name);
 
-  final String name;
+  final String? name;
 
   final List<Migration> _migrations = [];
 
-  Callback _callback;
+  Callback? _callback;
 
   /// Adds migrations to the builder.
   _$AppDatabaseBuilder addMigrations(List<Migration> migrations) {
@@ -40,7 +40,7 @@ class _$AppDatabaseBuilder {
 
   /// Creates the database and initializes it.
   Future<AppDatabase> build() async {
-    final path = name != null ? await sqfliteDatabaseFactory.getDatabasePath(name) : ':memory:';
+    final path = name != null ? await sqfliteDatabaseFactory.getDatabasePath(name!) : ':memory:';
     final database = _$AppDatabase();
     database.database = await database.open(
       path,
@@ -52,28 +52,29 @@ class _$AppDatabaseBuilder {
 }
 
 class _$AppDatabase extends AppDatabase {
-  _$AppDatabase([StreamController<String> listener]) {
+  _$AppDatabase([StreamController<String>? listener]) {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
-  ActivityDao _activityDaoInstance;
+  ActivityDao? _activityDaoInstance;
 
-  RecordDao _recordDaoInstance;
+  RecordDao? _recordDaoInstance;
 
-  DeviceUsageDao _deviceUsageDaoInstance;
+  DeviceUsageDao? _deviceUsageDaoInstance;
 
-  CalorieTuneDao _calorieTuneDaoInstance;
+  CalorieTuneDao? _calorieTuneDaoInstance;
 
-  PowerTuneDao _powerTuneDaoInstance;
+  PowerTuneDao? _powerTuneDaoInstance;
 
-  WorkoutSummaryDao _workoutSummaryDaoInstance;
+  WorkoutSummaryDao? _workoutSummaryDaoInstance;
 
   Future<sqflite.Database> open(String path, List<Migration> migrations,
-      [Callback callback]) async {
+      [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 7,
+      version: 8,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
+        await callback?.onConfigure?.call(database);
       },
       onOpen: (database) async {
         await callback?.onOpen?.call(database);
@@ -85,17 +86,17 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, `start` INTEGER, `end` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `uploaded` INTEGER, `strava_id` INTEGER, `four_cc` TEXT, `sport` TEXT, `power_factor` REAL, `calorie_factor` REAL)');
+            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `uploaded` INTEGER NOT NULL, `strava_id` INTEGER NOT NULL, `four_cc` TEXT NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `activity_id` INTEGER, `time_stamp` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `power` INTEGER, `speed` REAL, `cadence` INTEGER, `heart_rate` INTEGER, FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `device_usage` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT, `mac` TEXT, `name` TEXT, `manufacturer` TEXT, `manufacturer_name` TEXT, `time` INTEGER)');
+            'CREATE TABLE IF NOT EXISTS `device_usage` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT NOT NULL, `mac` TEXT NOT NULL, `name` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `manufacturer_name` TEXT, `time` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `calorie_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `calorie_factor` REAL, `time` INTEGER)');
+            'CREATE TABLE IF NOT EXISTS `calorie_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, `calorie_factor` REAL NOT NULL, `time` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `power_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT, `power_factor` REAL, `time` INTEGER)');
+            'CREATE TABLE IF NOT EXISTS `power_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, `power_factor` REAL NOT NULL, `time` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `workout_summary` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT, `device_id` TEXT, `manufacturer` TEXT, `start` INTEGER, `distance` REAL, `elapsed` INTEGER, `speed` REAL, `sport` TEXT, `power_factor` REAL, `calorie_factor` REAL)');
+            'CREATE TABLE IF NOT EXISTS `workout_summary` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `start` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `speed` REAL NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL)');
         await database.execute('CREATE INDEX `index_activities_start` ON `activities` (`start`)');
         await database
             .execute('CREATE INDEX `index_records_time_stamp` ON `records` (`time_stamp`)');
@@ -151,7 +152,7 @@ class _$ActivityDao extends ActivityDao {
         _activityInsertionAdapter = InsertionAdapter(
             database,
             'activities',
-            (Activity item) => <String, dynamic>{
+            (Activity item) => <String, Object?>{
                   'id': item.id,
                   'device_name': item.deviceName,
                   'device_id': item.deviceId,
@@ -160,7 +161,7 @@ class _$ActivityDao extends ActivityDao {
                   'distance': item.distance,
                   'elapsed': item.elapsed,
                   'calories': item.calories,
-                  'uploaded': item.uploaded == null ? null : (item.uploaded ? 1 : 0),
+                  'uploaded': item.uploaded ? 1 : 0,
                   'strava_id': item.stravaId,
                   'four_cc': item.fourCC,
                   'sport': item.sport,
@@ -172,7 +173,7 @@ class _$ActivityDao extends ActivityDao {
             database,
             'activities',
             ['id'],
-            (Activity item) => <String, dynamic>{
+            (Activity item) => <String, Object?>{
                   'id': item.id,
                   'device_name': item.deviceName,
                   'device_id': item.deviceId,
@@ -181,7 +182,7 @@ class _$ActivityDao extends ActivityDao {
                   'distance': item.distance,
                   'elapsed': item.elapsed,
                   'calories': item.calories,
-                  'uploaded': item.uploaded == null ? null : (item.uploaded ? 1 : 0),
+                  'uploaded': item.uploaded ? 1 : 0,
                   'strava_id': item.stravaId,
                   'four_cc': item.fourCC,
                   'sport': item.sport,
@@ -193,7 +194,7 @@ class _$ActivityDao extends ActivityDao {
             database,
             'activities',
             ['id'],
-            (Activity item) => <String, dynamic>{
+            (Activity item) => <String, Object?>{
                   'id': item.id,
                   'device_name': item.deviceName,
                   'device_id': item.deviceId,
@@ -202,7 +203,7 @@ class _$ActivityDao extends ActivityDao {
                   'distance': item.distance,
                   'elapsed': item.elapsed,
                   'calories': item.calories,
-                  'uploaded': item.uploaded == null ? null : (item.uploaded ? 1 : 0),
+                  'uploaded': item.uploaded ? 1 : 0,
                   'strava_id': item.stravaId,
                   'four_cc': item.fourCC,
                   'sport': item.sport,
@@ -225,9 +226,9 @@ class _$ActivityDao extends ActivityDao {
 
   @override
   Future<List<Activity>> findAllActivities() async {
-    return _queryAdapter.queryList('SELECT * FROM activities ORDER BY start DESC',
-        mapper: (Map<String, dynamic> row) => Activity(
-            id: row['id'] as int,
+    return _queryAdapter.queryList('SELECT * FROM `activities` ORDER BY `start` DESC',
+        mapper: (Map<String, Object?> row) => Activity(
+            id: row['id'] as int?,
             deviceName: row['device_name'] as String,
             deviceId: row['device_id'] as String,
             start: row['start'] as int,
@@ -235,7 +236,7 @@ class _$ActivityDao extends ActivityDao {
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
             calories: row['calories'] as int,
-            uploaded: row['uploaded'] == null ? null : (row['uploaded'] as int) != 0,
+            uploaded: (row['uploaded'] as int) != 0,
             stravaId: row['strava_id'] as int,
             fourCC: row['four_cc'] as String,
             sport: row['sport'] as String,
@@ -244,13 +245,10 @@ class _$ActivityDao extends ActivityDao {
   }
 
   @override
-  Stream<Activity> findActivityById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM activities WHERE id = ?',
-        arguments: <dynamic>[id],
-        queryableName: 'activities',
-        isView: false,
-        mapper: (Map<String, dynamic> row) => Activity(
-            id: row['id'] as int,
+  Stream<Activity?> findActivityById(int id) {
+    return _queryAdapter.queryStream('SELECT * FROM `activities` WHERE `id` = ?1',
+        mapper: (Map<String, Object?> row) => Activity(
+            id: row['id'] as int?,
             deviceName: row['device_name'] as String,
             deviceId: row['device_id'] as String,
             start: row['start'] as int,
@@ -258,20 +256,23 @@ class _$ActivityDao extends ActivityDao {
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
             calories: row['calories'] as int,
-            uploaded: row['uploaded'] == null ? null : (row['uploaded'] as int) != 0,
+            uploaded: (row['uploaded'] as int) != 0,
             stravaId: row['strava_id'] as int,
             fourCC: row['four_cc'] as String,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double));
+            calorieFactor: row['calorie_factor'] as double),
+        arguments: [id],
+        queryableName: 'activities',
+        isView: false);
   }
 
   @override
   Future<List<Activity>> findActivities(int limit, int offset) async {
-    return _queryAdapter.queryList('SELECT * FROM activities ORDER BY start DESC LIMIT ? OFFSET ?',
-        arguments: <dynamic>[limit, offset],
-        mapper: (Map<String, dynamic> row) => Activity(
-            id: row['id'] as int,
+    return _queryAdapter.queryList(
+        'SELECT * FROM `activities` ORDER BY `start` DESC LIMIT ?1 OFFSET ?2',
+        mapper: (Map<String, Object?> row) => Activity(
+            id: row['id'] as int?,
             deviceName: row['device_name'] as String,
             deviceId: row['device_id'] as String,
             start: row['start'] as int,
@@ -279,12 +280,13 @@ class _$ActivityDao extends ActivityDao {
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
             calories: row['calories'] as int,
-            uploaded: row['uploaded'] == null ? null : (row['uploaded'] as int) != 0,
+            uploaded: (row['uploaded'] as int) != 0,
             stravaId: row['strava_id'] as int,
             fourCC: row['four_cc'] as String,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double));
+            calorieFactor: row['calorie_factor'] as double),
+        arguments: [limit, offset]);
   }
 
   @override
@@ -309,7 +311,7 @@ class _$RecordDao extends RecordDao {
         _recordInsertionAdapter = InsertionAdapter(
             database,
             'records',
-            (Record item) => <String, dynamic>{
+            (Record item) => <String, Object?>{
                   'id': item.id,
                   'activity_id': item.activityId,
                   'time_stamp': item.timeStamp,
@@ -326,7 +328,7 @@ class _$RecordDao extends RecordDao {
             database,
             'records',
             ['id'],
-            (Record item) => <String, dynamic>{
+            (Record item) => <String, Object?>{
                   'id': item.id,
                   'activity_id': item.activityId,
                   'time_stamp': item.timeStamp,
@@ -352,72 +354,72 @@ class _$RecordDao extends RecordDao {
 
   @override
   Future<List<Record>> findAllRecords() async {
-    return _queryAdapter.queryList('SELECT * FROM records ORDER BY time_stamp',
-        mapper: (Map<String, dynamic> row) => Record(
-            id: row['id'] as int,
-            activityId: row['activity_id'] as int,
-            timeStamp: row['time_stamp'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            calories: row['calories'] as int,
-            power: row['power'] as int,
-            speed: row['speed'] as double,
-            cadence: row['cadence'] as int,
-            heartRate: row['heart_rate'] as int));
+    return _queryAdapter.queryList('SELECT * FROM `records` ORDER BY `time_stamp`',
+        mapper: (Map<String, Object?> row) => Record(
+            id: row['id'] as int?,
+            activityId: row['activity_id'] as int?,
+            timeStamp: row['time_stamp'] as int?,
+            distance: row['distance'] as double?,
+            elapsed: row['elapsed'] as int?,
+            calories: row['calories'] as int?,
+            power: row['power'] as int?,
+            speed: row['speed'] as double?,
+            cadence: row['cadence'] as int?,
+            heartRate: row['heart_rate'] as int?));
   }
 
   @override
-  Stream<Record> findRecordById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM records WHERE id = ?',
-        arguments: <dynamic>[id],
+  Stream<Record?> findRecordById(int id) {
+    return _queryAdapter.queryStream('SELECT * FROM `records` WHERE `id` = ?1',
+        mapper: (Map<String, Object?> row) => Record(
+            id: row['id'] as int?,
+            activityId: row['activity_id'] as int?,
+            timeStamp: row['time_stamp'] as int?,
+            distance: row['distance'] as double?,
+            elapsed: row['elapsed'] as int?,
+            calories: row['calories'] as int?,
+            power: row['power'] as int?,
+            speed: row['speed'] as double?,
+            cadence: row['cadence'] as int?,
+            heartRate: row['heart_rate'] as int?),
+        arguments: [id],
         queryableName: 'records',
-        isView: false,
-        mapper: (Map<String, dynamic> row) => Record(
-            id: row['id'] as int,
-            activityId: row['activity_id'] as int,
-            timeStamp: row['time_stamp'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            calories: row['calories'] as int,
-            power: row['power'] as int,
-            speed: row['speed'] as double,
-            cadence: row['cadence'] as int,
-            heartRate: row['heart_rate'] as int));
+        isView: false);
   }
 
   @override
   Future<List<Record>> findAllActivityRecords(int activityId) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM records WHERE activity_id = ? ORDER BY time_stamp',
-        arguments: <dynamic>[activityId],
-        mapper: (Map<String, dynamic> row) => Record(
-            id: row['id'] as int,
-            activityId: row['activity_id'] as int,
-            timeStamp: row['time_stamp'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            calories: row['calories'] as int,
-            power: row['power'] as int,
-            speed: row['speed'] as double,
-            cadence: row['cadence'] as int,
-            heartRate: row['heart_rate'] as int));
+        'SELECT * FROM `records` WHERE `activity_id` = ?1 ORDER BY `time_stamp`',
+        mapper: (Map<String, Object?> row) => Record(
+            id: row['id'] as int?,
+            activityId: row['activity_id'] as int?,
+            timeStamp: row['time_stamp'] as int?,
+            distance: row['distance'] as double?,
+            elapsed: row['elapsed'] as int?,
+            calories: row['calories'] as int?,
+            power: row['power'] as int?,
+            speed: row['speed'] as double?,
+            cadence: row['cadence'] as int?,
+            heartRate: row['heart_rate'] as int?),
+        arguments: [activityId]);
   }
 
   @override
   Future<List<Record>> deleteAllActivityRecords(int activityId) async {
-    return _queryAdapter.queryList('DELETE FROM records WHERE activity_id = ?',
-        arguments: <dynamic>[activityId],
-        mapper: (Map<String, dynamic> row) => Record(
-            id: row['id'] as int,
-            activityId: row['activity_id'] as int,
-            timeStamp: row['time_stamp'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            calories: row['calories'] as int,
-            power: row['power'] as int,
-            speed: row['speed'] as double,
-            cadence: row['cadence'] as int,
-            heartRate: row['heart_rate'] as int));
+    return _queryAdapter.queryList('DELETE FROM `records` WHERE `activity_id` = ?1',
+        mapper: (Map<String, Object?> row) => Record(
+            id: row['id'] as int?,
+            activityId: row['activity_id'] as int?,
+            timeStamp: row['time_stamp'] as int?,
+            distance: row['distance'] as double?,
+            elapsed: row['elapsed'] as int?,
+            calories: row['calories'] as int?,
+            power: row['power'] as int?,
+            speed: row['speed'] as double?,
+            cadence: row['cadence'] as int?,
+            heartRate: row['heart_rate'] as int?),
+        arguments: [activityId]);
   }
 
   @override
@@ -437,7 +439,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
         _deviceUsageInsertionAdapter = InsertionAdapter(
             database,
             'device_usage',
-            (DeviceUsage item) => <String, dynamic>{
+            (DeviceUsage item) => <String, Object?>{
                   'id': item.id,
                   'sport': item.sport,
                   'mac': item.mac,
@@ -451,7 +453,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
             database,
             'device_usage',
             ['id'],
-            (DeviceUsage item) => <String, dynamic>{
+            (DeviceUsage item) => <String, Object?>{
                   'id': item.id,
                   'sport': item.sport,
                   'mac': item.mac,
@@ -465,7 +467,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
             database,
             'device_usage',
             ['id'],
-            (DeviceUsage item) => <String, dynamic>{
+            (DeviceUsage item) => <String, Object?>{
                   'id': item.id,
                   'sport': item.sport,
                   'mac': item.mac,
@@ -490,62 +492,63 @@ class _$DeviceUsageDao extends DeviceUsageDao {
 
   @override
   Future<List<DeviceUsage>> findAllDeviceUsages() async {
-    return _queryAdapter.queryList('SELECT * FROM device_usage ORDER BY time DESC',
-        mapper: (Map<String, dynamic> row) => DeviceUsage(
-            id: row['id'] as int,
+    return _queryAdapter.queryList('SELECT * FROM `device_usage` ORDER BY `time` DESC',
+        mapper: (Map<String, Object?> row) => DeviceUsage(
+            id: row['id'] as int?,
             sport: row['sport'] as String,
             mac: row['mac'] as String,
             name: row['name'] as String,
             manufacturer: row['manufacturer'] as String,
-            manufacturerName: row['manufacturer_name'] as String,
+            manufacturerName: row['manufacturer_name'] as String?,
             time: row['time'] as int));
   }
 
   @override
-  Stream<DeviceUsage> findDeviceUsageById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM device_usage WHERE id = ?',
-        arguments: <dynamic>[id],
+  Stream<DeviceUsage?> findDeviceUsageById(int id) {
+    return _queryAdapter.queryStream('SELECT * FROM `device_usage` WHERE `id` = ?1',
+        mapper: (Map<String, Object?> row) => DeviceUsage(
+            id: row['id'] as int?,
+            sport: row['sport'] as String,
+            mac: row['mac'] as String,
+            name: row['name'] as String,
+            manufacturer: row['manufacturer'] as String,
+            manufacturerName: row['manufacturer_name'] as String?,
+            time: row['time'] as int),
+        arguments: [id],
         queryableName: 'device_usage',
-        isView: false,
-        mapper: (Map<String, dynamic> row) => DeviceUsage(
-            id: row['id'] as int,
-            sport: row['sport'] as String,
-            mac: row['mac'] as String,
-            name: row['name'] as String,
-            manufacturer: row['manufacturer'] as String,
-            manufacturerName: row['manufacturer_name'] as String,
-            time: row['time'] as int));
+        isView: false);
   }
 
   @override
-  Stream<DeviceUsage> findDeviceUsageByMac(String mac) {
+  Stream<DeviceUsage?> findDeviceUsageByMac(String mac) {
     return _queryAdapter.queryStream(
-        'SELECT * FROM device_usage WHERE mac = ? ORDER BY time DESC LIMIT 1',
-        arguments: <dynamic>[mac],
-        queryableName: 'device_usage',
-        isView: false,
-        mapper: (Map<String, dynamic> row) => DeviceUsage(
-            id: row['id'] as int,
+        'SELECT * FROM `device_usage` WHERE `mac` = ?1 ORDER BY `time` DESC LIMIT 1',
+        mapper: (Map<String, Object?> row) => DeviceUsage(
+            id: row['id'] as int?,
             sport: row['sport'] as String,
             mac: row['mac'] as String,
             name: row['name'] as String,
             manufacturer: row['manufacturer'] as String,
-            manufacturerName: row['manufacturer_name'] as String,
-            time: row['time'] as int));
+            manufacturerName: row['manufacturer_name'] as String?,
+            time: row['time'] as int),
+        arguments: [mac],
+        queryableName: 'device_usage',
+        isView: false);
   }
 
   @override
   Future<List<DeviceUsage>> findDeviceUsages(int limit, int offset) async {
-    return _queryAdapter.queryList('SELECT * FROM device_usage ORDER BY time DESC LIMIT ? OFFSET ?',
-        arguments: <dynamic>[limit, offset],
-        mapper: (Map<String, dynamic> row) => DeviceUsage(
-            id: row['id'] as int,
+    return _queryAdapter.queryList(
+        'SELECT * FROM `device_usage` ORDER BY `time` DESC LIMIT ?1 OFFSET ?2',
+        mapper: (Map<String, Object?> row) => DeviceUsage(
+            id: row['id'] as int?,
             sport: row['sport'] as String,
             mac: row['mac'] as String,
             name: row['name'] as String,
             manufacturer: row['manufacturer'] as String,
-            manufacturerName: row['manufacturer_name'] as String,
-            time: row['time'] as int));
+            manufacturerName: row['manufacturer_name'] as String?,
+            time: row['time'] as int),
+        arguments: [limit, offset]);
   }
 
   @override
@@ -571,7 +574,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
         _calorieTuneInsertionAdapter = InsertionAdapter(
             database,
             'calorie_tune',
-            (CalorieTune item) => <String, dynamic>{
+            (CalorieTune item) => <String, Object?>{
                   'id': item.id,
                   'mac': item.mac,
                   'calorie_factor': item.calorieFactor,
@@ -582,7 +585,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
             database,
             'calorie_tune',
             ['id'],
-            (CalorieTune item) => <String, dynamic>{
+            (CalorieTune item) => <String, Object?>{
                   'id': item.id,
                   'mac': item.mac,
                   'calorie_factor': item.calorieFactor,
@@ -593,7 +596,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
             database,
             'calorie_tune',
             ['id'],
-            (CalorieTune item) => <String, dynamic>{
+            (CalorieTune item) => <String, Object?>{
                   'id': item.id,
                   'mac': item.mac,
                   'calorie_factor': item.calorieFactor,
@@ -615,50 +618,51 @@ class _$CalorieTuneDao extends CalorieTuneDao {
 
   @override
   Future<List<CalorieTune>> findAllCalorieTunes() async {
-    return _queryAdapter.queryList('SELECT * FROM calorie_tune ORDER BY time DESC',
-        mapper: (Map<String, dynamic> row) => CalorieTune(
-            id: row['id'] as int,
+    return _queryAdapter.queryList('SELECT * FROM `calorie_tune` ORDER BY `time` DESC',
+        mapper: (Map<String, Object?> row) => CalorieTune(
+            id: row['id'] as int?,
             mac: row['mac'] as String,
             calorieFactor: row['calorie_factor'] as double,
             time: row['time'] as int));
   }
 
   @override
-  Stream<CalorieTune> findCalorieTuneById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM calorie_tune WHERE id = ?',
-        arguments: <dynamic>[id],
+  Stream<CalorieTune?> findCalorieTuneById(int id) {
+    return _queryAdapter.queryStream('SELECT * FROM `calorie_tune` WHERE `id` = ?1',
+        mapper: (Map<String, Object?> row) => CalorieTune(
+            id: row['id'] as int?,
+            mac: row['mac'] as String,
+            calorieFactor: row['calorie_factor'] as double,
+            time: row['time'] as int),
+        arguments: [id],
         queryableName: 'calorie_tune',
-        isView: false,
-        mapper: (Map<String, dynamic> row) => CalorieTune(
-            id: row['id'] as int,
-            mac: row['mac'] as String,
-            calorieFactor: row['calorie_factor'] as double,
-            time: row['time'] as int));
+        isView: false);
   }
 
   @override
-  Stream<CalorieTune> findCalorieTuneByMac(String mac) {
+  Stream<CalorieTune?> findCalorieTuneByMac(String mac) {
     return _queryAdapter.queryStream(
-        'SELECT * FROM calorie_tune WHERE mac = ? ORDER BY time DESC LIMIT 1',
-        arguments: <dynamic>[mac],
-        queryableName: 'calorie_tune',
-        isView: false,
-        mapper: (Map<String, dynamic> row) => CalorieTune(
-            id: row['id'] as int,
+        'SELECT * FROM `calorie_tune` WHERE `mac` = ?1 ORDER BY `time` DESC LIMIT 1',
+        mapper: (Map<String, Object?> row) => CalorieTune(
+            id: row['id'] as int?,
             mac: row['mac'] as String,
             calorieFactor: row['calorie_factor'] as double,
-            time: row['time'] as int));
+            time: row['time'] as int),
+        arguments: [mac],
+        queryableName: 'calorie_tune',
+        isView: false);
   }
 
   @override
   Future<List<CalorieTune>> findCalorieTunes(int limit, int offset) async {
-    return _queryAdapter.queryList('SELECT * FROM calorie_tune ORDER BY time DESC LIMIT ? OFFSET ?',
-        arguments: <dynamic>[limit, offset],
-        mapper: (Map<String, dynamic> row) => CalorieTune(
-            id: row['id'] as int,
+    return _queryAdapter.queryList(
+        'SELECT * FROM `calorie_tune` ORDER BY `time` DESC LIMIT ?1 OFFSET ?2',
+        mapper: (Map<String, Object?> row) => CalorieTune(
+            id: row['id'] as int?,
             mac: row['mac'] as String,
             calorieFactor: row['calorie_factor'] as double,
-            time: row['time'] as int));
+            time: row['time'] as int),
+        arguments: [limit, offset]);
   }
 
   @override
@@ -684,7 +688,7 @@ class _$PowerTuneDao extends PowerTuneDao {
         _powerTuneInsertionAdapter = InsertionAdapter(
             database,
             'power_tune',
-            (PowerTune item) => <String, dynamic>{
+            (PowerTune item) => <String, Object?>{
                   'id': item.id,
                   'mac': item.mac,
                   'power_factor': item.powerFactor,
@@ -695,7 +699,7 @@ class _$PowerTuneDao extends PowerTuneDao {
             database,
             'power_tune',
             ['id'],
-            (PowerTune item) => <String, dynamic>{
+            (PowerTune item) => <String, Object?>{
                   'id': item.id,
                   'mac': item.mac,
                   'power_factor': item.powerFactor,
@@ -706,7 +710,7 @@ class _$PowerTuneDao extends PowerTuneDao {
             database,
             'power_tune',
             ['id'],
-            (PowerTune item) => <String, dynamic>{
+            (PowerTune item) => <String, Object?>{
                   'id': item.id,
                   'mac': item.mac,
                   'power_factor': item.powerFactor,
@@ -728,50 +732,51 @@ class _$PowerTuneDao extends PowerTuneDao {
 
   @override
   Future<List<PowerTune>> findAllPowerTunes() async {
-    return _queryAdapter.queryList('SELECT * FROM power_tune ORDER BY time DESC',
-        mapper: (Map<String, dynamic> row) => PowerTune(
-            id: row['id'] as int,
+    return _queryAdapter.queryList('SELECT * FROM `power_tune` ORDER BY `time` DESC',
+        mapper: (Map<String, Object?> row) => PowerTune(
+            id: row['id'] as int?,
             mac: row['mac'] as String,
             powerFactor: row['power_factor'] as double,
             time: row['time'] as int));
   }
 
   @override
-  Stream<PowerTune> findPowerTuneById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM power_tune WHERE id = ?',
-        arguments: <dynamic>[id],
+  Stream<PowerTune?> findPowerTuneById(int id) {
+    return _queryAdapter.queryStream('SELECT * FROM `power_tune` WHERE `id` = ?1',
+        mapper: (Map<String, Object?> row) => PowerTune(
+            id: row['id'] as int?,
+            mac: row['mac'] as String,
+            powerFactor: row['power_factor'] as double,
+            time: row['time'] as int),
+        arguments: [id],
         queryableName: 'power_tune',
-        isView: false,
-        mapper: (Map<String, dynamic> row) => PowerTune(
-            id: row['id'] as int,
-            mac: row['mac'] as String,
-            powerFactor: row['power_factor'] as double,
-            time: row['time'] as int));
+        isView: false);
   }
 
   @override
-  Stream<PowerTune> findPowerTuneByMac(String mac) {
+  Stream<PowerTune?> findPowerTuneByMac(String mac) {
     return _queryAdapter.queryStream(
-        'SELECT * FROM power_tune WHERE mac = ? ORDER BY time DESC LIMIT 1',
-        arguments: <dynamic>[mac],
-        queryableName: 'power_tune',
-        isView: false,
-        mapper: (Map<String, dynamic> row) => PowerTune(
-            id: row['id'] as int,
+        'SELECT * FROM `power_tune` WHERE `mac` = ?1 ORDER BY `time` DESC LIMIT 1',
+        mapper: (Map<String, Object?> row) => PowerTune(
+            id: row['id'] as int?,
             mac: row['mac'] as String,
             powerFactor: row['power_factor'] as double,
-            time: row['time'] as int));
+            time: row['time'] as int),
+        arguments: [mac],
+        queryableName: 'power_tune',
+        isView: false);
   }
 
   @override
   Future<List<PowerTune>> findPowerTunes(int limit, int offset) async {
-    return _queryAdapter.queryList('SELECT * FROM power_tune ORDER BY time DESC LIMIT ? OFFSET ?',
-        arguments: <dynamic>[limit, offset],
-        mapper: (Map<String, dynamic> row) => PowerTune(
-            id: row['id'] as int,
+    return _queryAdapter.queryList(
+        'SELECT * FROM `power_tune` ORDER BY `time` DESC LIMIT ?1 OFFSET ?2',
+        mapper: (Map<String, Object?> row) => PowerTune(
+            id: row['id'] as int?,
             mac: row['mac'] as String,
             powerFactor: row['power_factor'] as double,
-            time: row['time'] as int));
+            time: row['time'] as int),
+        arguments: [limit, offset]);
   }
 
   @override
@@ -796,7 +801,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
         _workoutSummaryInsertionAdapter = InsertionAdapter(
             database,
             'workout_summary',
-            (WorkoutSummary item) => <String, dynamic>{
+            (WorkoutSummary item) => <String, Object?>{
                   'id': item.id,
                   'device_name': item.deviceName,
                   'device_id': item.deviceId,
@@ -814,7 +819,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             database,
             'workout_summary',
             ['id'],
-            (WorkoutSummary item) => <String, dynamic>{
+            (WorkoutSummary item) => <String, Object?>{
                   'id': item.id,
                   'device_name': item.deviceName,
                   'device_id': item.deviceId,
@@ -832,7 +837,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             database,
             'workout_summary',
             ['id'],
-            (WorkoutSummary item) => <String, dynamic>{
+            (WorkoutSummary item) => <String, Object?>{
                   'id': item.id,
                   'device_name': item.deviceName,
                   'device_id': item.deviceId,
@@ -861,9 +866,9 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
 
   @override
   Future<List<WorkoutSummary>> findAllWorkoutSummaries() async {
-    return _queryAdapter.queryList('SELECT * FROM workout_summary ORDER BY speed DESC',
-        mapper: (Map<String, dynamic> row) => WorkoutSummary(
-            id: row['id'] as int,
+    return _queryAdapter.queryList('SELECT * FROM `workout_summary` ORDER BY `speed` DESC',
+        mapper: (Map<String, Object?> row) => WorkoutSummary(
+            id: row['id'] as int?,
             deviceName: row['device_name'] as String,
             deviceId: row['device_id'] as String,
             manufacturer: row['manufacturer'] as String,
@@ -876,13 +881,10 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
   }
 
   @override
-  Stream<WorkoutSummary> findWorkoutSummaryById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM workout_summary WHERE id = ?',
-        arguments: <dynamic>[id],
-        queryableName: 'workout_summary',
-        isView: false,
-        mapper: (Map<String, dynamic> row) => WorkoutSummary(
-            id: row['id'] as int,
+  Stream<WorkoutSummary?> findWorkoutSummaryById(int id) {
+    return _queryAdapter.queryStream('SELECT * FROM `workout_summary` WHERE `id` = ?1',
+        mapper: (Map<String, Object?> row) => WorkoutSummary(
+            id: row['id'] as int?,
             deviceName: row['device_name'] as String,
             deviceId: row['device_id'] as String,
             manufacturer: row['manufacturer'] as String,
@@ -891,16 +893,18 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             elapsed: row['elapsed'] as int,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double));
+            calorieFactor: row['calorie_factor'] as double),
+        arguments: [id],
+        queryableName: 'workout_summary',
+        isView: false);
   }
 
   @override
   Future<List<WorkoutSummary>> findAllWorkoutSummariesByDevice(String deviceId) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM workout_summary WHERE device_id = ? ORDER BY speed DESC',
-        arguments: <dynamic>[deviceId],
-        mapper: (Map<String, dynamic> row) => WorkoutSummary(
-            id: row['id'] as int,
+        'SELECT * FROM `workout_summary` WHERE `device_id` = ?1 ORDER BY `speed` DESC',
+        mapper: (Map<String, Object?> row) => WorkoutSummary(
+            id: row['id'] as int?,
             deviceName: row['device_name'] as String,
             deviceId: row['device_id'] as String,
             manufacturer: row['manufacturer'] as String,
@@ -909,35 +913,25 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             elapsed: row['elapsed'] as int,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double));
+            calorieFactor: row['calorie_factor'] as double),
+        arguments: [deviceId]);
   }
 
   @override
   Future<List<WorkoutSummary>> findWorkoutSummaryByDevice(
       String deviceId, int limit, int offset) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM workout_summary WHERE device_id = ? ORDER BY speed DESC LIMIT ? OFFSET ?',
-        arguments: <dynamic>[deviceId, limit, offset],
-        mapper: (Map<String, dynamic> row) => WorkoutSummary(
-            id: row['id'] as int,
-            deviceName: row['device_name'] as String,
-            deviceId: row['device_id'] as String,
-            manufacturer: row['manufacturer'] as String,
-            start: row['start'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            sport: row['sport'] as String,
-            powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double));
+        'SELECT * FROM `workout_summary` WHERE `device_id` = ?1 ORDER BY `speed` DESC LIMIT ?2 OFFSET ?3',
+        mapper: (Map<String, Object?> row) => WorkoutSummary(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, manufacturer: row['manufacturer'] as String, start: row['start'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double),
+        arguments: [deviceId, limit, offset]);
   }
 
   @override
   Future<List<WorkoutSummary>> findAllWorkoutSummariesBySport(String sport) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM workout_summary WHERE sport = ? ORDER BY speed DESC',
-        arguments: <dynamic>[sport],
-        mapper: (Map<String, dynamic> row) => WorkoutSummary(
-            id: row['id'] as int,
+        'SELECT * FROM `workout_summary` WHERE `sport` = ?1 ORDER BY `speed` DESC',
+        mapper: (Map<String, Object?> row) => WorkoutSummary(
+            id: row['id'] as int?,
             deviceName: row['device_name'] as String,
             deviceId: row['device_id'] as String,
             manufacturer: row['manufacturer'] as String,
@@ -946,26 +940,17 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             elapsed: row['elapsed'] as int,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double));
+            calorieFactor: row['calorie_factor'] as double),
+        arguments: [sport]);
   }
 
   @override
   Future<List<WorkoutSummary>> findWorkoutSummaryBySport(
       String sport, int limit, int offset) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM workout_summary WHERE sport = ? ORDER BY speed DESC LIMIT ? OFFSET ?',
-        arguments: <dynamic>[sport, limit, offset],
-        mapper: (Map<String, dynamic> row) => WorkoutSummary(
-            id: row['id'] as int,
-            deviceName: row['device_name'] as String,
-            deviceId: row['device_id'] as String,
-            manufacturer: row['manufacturer'] as String,
-            start: row['start'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            sport: row['sport'] as String,
-            powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double));
+        'SELECT * FROM `workout_summary` WHERE `sport` = ?1 ORDER BY `speed` DESC LIMIT ?2 OFFSET ?3',
+        mapper: (Map<String, Object?> row) => WorkoutSummary(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, manufacturer: row['manufacturer'] as String, start: row['start'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double),
+        arguments: [sport, limit, offset]);
   }
 
   @override

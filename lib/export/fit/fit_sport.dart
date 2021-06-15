@@ -72,5 +72,5 @@ Tuple2 toFitSport(String sport) {
     sport = "Workout";
   }
 
-  return fitSport[sport];
+  return fitSport[sport] ?? fitSport["Workout"]!;
 }

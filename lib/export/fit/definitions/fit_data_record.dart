@@ -35,7 +35,7 @@ class FitDataRecord extends FitDefinitionMessage {
 
     var data = FitData();
     data.output = [localMessageType];
-    data.addLong(FitSerializable.fitDateTime(model.date));
+    data.addLong(FitSerializable.fitDateTime(model.date ?? DateTime.now()));
     data.addGpsCoordinate(model.latitude);
     data.addGpsCoordinate(model.longitude);
 
@@ -50,11 +50,11 @@ class FitDataRecord extends FitDefinitionMessage {
       model.heartRate = FitBaseTypes.uint8Type.invalidValue;
     }
 
-    data.addByte(model.heartRate);
-    data.addByte(model.cadence);
+    data.addByte(model.heartRate ?? FitBaseTypes.uint8Type.invalidValue);
+    data.addByte(model.cadence ?? FitBaseTypes.uint8Type.invalidValue);
     data.addLong((model.distance * 100).round());
     data.addShort((model.speed * 1000).round());
-    data.addShort(model.power?.round());
+    data.addShort(model.power?.round() ?? FitBaseTypes.uint16Type.invalidValue);
 
     return data.output;
   }

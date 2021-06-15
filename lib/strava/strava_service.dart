@@ -1,17 +1,13 @@
-import 'package:flutter/foundation.dart';
 import '../export/fit/fit_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/secret.dart';
-import '../strava/error_codes.dart';
+import '../strava/strava_status_code.dart';
 import 'fault.dart';
 import 'strava.dart';
 
 class StravaService {
-  Strava _strava;
-  StravaService() {
-    _strava = Strava(kDebugMode, STRAVA_SECRET);
-  }
+  Strava _strava = Strava(STRAVA_SECRET);
 
   Future<bool> login() async {
     return await _strava.oauth(STRAVA_CLIENT_ID, 'activity:write', STRAVA_SECRET, 'auto');
@@ -22,8 +18,8 @@ class StravaService {
   }
 
   Future<int> upload(Activity activity, List<Record> records) async {
-    if (records == null || records.length <= 0) {
-      return statusJsonIsEmpty;
+    if (records.length <= 0) {
+      return StravaStatusCode.statusJsonIsEmpty;
     }
 
     final exporter = FitExport();

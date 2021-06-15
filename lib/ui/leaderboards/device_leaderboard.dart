@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
@@ -15,39 +15,29 @@ import '../../utils/theme_manager.dart';
 class DeviceLeaderboardScreen extends StatefulWidget {
   final Tuple2<String, String> device;
 
-  DeviceLeaderboardScreen({key, @required this.device})
-      : assert(device != null),
-        super(key: key);
+  DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return DeviceLeaderboardScreenState(device: device);
-  }
+  State<StatefulWidget> createState() => DeviceLeaderboardScreenState();
 }
 
 class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
-  final Tuple2<String, String> device;
-  AppDatabase _database;
-  bool _si;
-  int _editCount;
-  double _sizeDefault;
-  TextStyle _textStyle;
-  TextStyle _textStyle2;
-  ThemeManager _themeManager;
-  ExpandableThemeData _expandableThemeData;
-
-  DeviceLeaderboardScreenState({@required this.device}) : assert(device != null);
+  AppDatabase _database = Get.find<AppDatabase>();
+  bool _si = UNIT_SYSTEM_DEFAULT;
+  int _editCount = 0;
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
+  TextStyle _textStyle2 = TextStyle();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
     super.initState();
-    _editCount = 0;
-    _database = Get.find<AppDatabase>();
-    _si = PrefService.getBool(UNIT_SYSTEM_TAG);
-    _themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline4
+    _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _textStyle = Get.textTheme.headline4!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
-    _sizeDefault = _textStyle.fontSize;
+    _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
@@ -86,7 +76,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${device.item2} Leaderboard')),
+      appBar: AppBar(title: Text('${widget.device.item2} Leaderboard')),
       body: CustomListView(
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
@@ -96,7 +86,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
             final data = await _database.workoutSummaryDao
-                .findWorkoutSummaryByDevice(device.item1, limit, offset);
+                .findWorkoutSummaryByDevice(widget.device.item1, limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -158,6 +148,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
                   ),
                 ],
               ),
+              collapsed: Container(),
               expanded: ListTile(
                 title: Column(
                   children: [

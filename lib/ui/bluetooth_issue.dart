@@ -5,43 +5,31 @@ import 'package:permission_handler/permission_handler.dart';
 import '../utils/theme_manager.dart';
 
 class BluetoothIssueScreen extends StatefulWidget {
-  final BluetoothState bluetoothState;
+  final BluetoothState? bluetoothState;
   final PermissionStatus locationState;
 
   const BluetoothIssueScreen({
     key,
-    @required this.bluetoothState,
-    @required this.locationState,
+    this.bluetoothState,
+    required this.locationState,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return BluetoothIssueScreenState(
-      bluetoothState: bluetoothState,
-      locationState: locationState,
-    );
-  }
+  State<StatefulWidget> createState() => BluetoothIssueScreenState();
 }
 
 class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
-  final BluetoothState bluetoothState;
-  PermissionStatus locationState;
-  ThemeManager _themeManager;
-  TextStyle _textStyle;
-
-  BluetoothIssueScreenState({
-    @required this.bluetoothState,
-    @required this.locationState,
-  })  : assert(bluetoothState != null),
-        assert(locationState != null);
+  late PermissionStatus locationState = PermissionStatus.denied;
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _textStyle = TextStyle();
 
   @override
   void initState() {
     super.initState();
-    _themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline6.apply(color: Colors.white);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      if (locationState == null) {
+    locationState = widget.locationState;
+    _textStyle = Get.textTheme.headline6!.apply(color: Colors.white);
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
+      if (locationState != PermissionStatus.granted && locationState != PermissionStatus.limited) {
         final locationTake2 = await Permission.locationWhenInUse.request();
         setState(() {
           locationState = locationTake2;
@@ -52,8 +40,9 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bluetoothDisplay = bluetoothState?.toString()?.substring(15) ?? 'N/A';
-    final locationDisplay = (locationState.isGranted ?? false) ? "Granted" : "Denied";
+    final bluetoothDisplay = widget.bluetoothState?.toString().substring(15) ?? 'N/A';
+    final locationDisplay =
+        locationState.isGranted ? "Granted" : (locationState.isLimited ? "Limited" : "Denied");
     return Scaffold(
       backgroundColor: _themeManager.getHeaderColor(),
       body: GestureDetector(

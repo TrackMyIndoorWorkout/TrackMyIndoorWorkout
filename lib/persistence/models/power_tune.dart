@@ -1,5 +1,4 @@
 import 'package:floor/floor.dart';
-import 'package:meta/meta.dart';
 
 const String POWER_TUNE_TABLE_NAME = 'power_tune';
 
@@ -11,8 +10,7 @@ const String POWER_TUNE_TABLE_NAME = 'power_tune';
 )
 class PowerTune {
   @PrimaryKey(autoGenerate: true)
-  int id;
-  @required
+  int? id;
   final String mac;
   @ColumnInfo(name: 'power_factor')
   double powerFactor;
@@ -21,15 +19,10 @@ class PowerTune {
 
   PowerTune({
     this.id,
-    this.mac,
-    this.powerFactor,
-    this.time,
-  })  : assert(mac != null),
-        assert(powerFactor != null) {
-    if (time == null) {
-      time = DateTime.now().millisecondsSinceEpoch;
-    }
-  }
+    required this.mac,
+    required this.powerFactor,
+    required this.time,
+  });
 
   DateTime get timeStamp => DateTime.fromMillisecondsSinceEpoch(time);
 }

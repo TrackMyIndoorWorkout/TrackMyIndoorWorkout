@@ -1,5 +1,4 @@
 import 'package:floor/floor.dart';
-import 'package:meta/meta.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/display.dart';
@@ -15,56 +14,39 @@ const String WORKOUT_SUMMARIES_TABLE_NAME = 'workout_summary';
 )
 class WorkoutSummary {
   @PrimaryKey(autoGenerate: true)
-  int id;
+  int? id;
   @ColumnInfo(name: 'device_name')
-  @required
   final String deviceName;
   @ColumnInfo(name: 'device_id')
-  @required
   final String deviceId;
-  @required
   final String manufacturer;
-  @required
   final int start; // ms since epoch
-  @required
   final double distance; // m
-  @required
   final int elapsed; // s
-  double speed; // km/h
-  @required
+  late double speed; // km/h
   final String sport;
   @ColumnInfo(name: 'power_factor')
-  @required
   final double powerFactor;
   @ColumnInfo(name: 'calorie_factor')
-  @required
   final double calorieFactor;
 
   @ignore
-  DateTime startDateTime;
+  late DateTime startDateTime;
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
 
   WorkoutSummary({
     this.id,
-    this.deviceName,
-    this.deviceId,
-    this.manufacturer,
-    this.start,
-    this.distance,
-    this.elapsed,
-    this.sport,
-    this.powerFactor,
-    this.calorieFactor,
-  })  : assert(deviceName != null),
-        assert(deviceId != null),
-        assert(manufacturer != null),
-        assert(start != null),
-        assert(distance != null),
-        assert(elapsed != null),
-        assert(sport != null),
-        assert(powerFactor != null),
-        assert(calorieFactor != null) {
+    required this.deviceName,
+    required this.deviceId,
+    required this.manufacturer,
+    required this.start,
+    required this.distance,
+    required this.elapsed,
+    required this.sport,
+    required this.powerFactor,
+    required this.calorieFactor,
+  }) {
     startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
     speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.MS2KMH : 0.0;
   }
@@ -80,10 +62,6 @@ class WorkoutSummary {
   }
 
   double distanceAtTime(int elapsed) {
-    if (speed == null || elapsed == null) {
-      return 0.0;
-    }
-
     return speed * DeviceDescriptor.KMH2MS * elapsed;
   }
 }

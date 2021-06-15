@@ -34,5 +34,5 @@ int crcByte(int crc, int byte) {
 }
 
 int crcData(List<int> data) {
-  return data.fold(0, (crc, byte) => crcByte(crc, byte));
+  return data.fold<int>(0, (crc, byte) => crcByte(crc, byte));
 }

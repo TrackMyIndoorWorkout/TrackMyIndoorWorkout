@@ -1,15 +1,14 @@
-import 'package:meta/meta.dart';
 import '../../persistence/models/record.dart';
 import 'device_descriptor.dart';
 
 abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   FixedLayoutDeviceDescriptor({
-    @required defaultSport,
-    @required isMultiSport,
-    @required fourCC,
-    @required vendorName,
-    @required modelName,
-    @required namePrefix,
+    required defaultSport,
+    required isMultiSport,
+    required fourCC,
+    required vendorName,
+    required modelName,
+    required namePrefix,
     manufacturer,
     manufacturerFitId,
     model,

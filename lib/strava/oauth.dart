@@ -3,15 +3,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'error_codes.dart' as error;
-import 'globals.dart' as globals;
+import 'strava_status_code.dart';
 import 'constants.dart';
-import 'token.dart';
+import 'strava_token.dart';
 import 'fault.dart';
 
 ///===========================================
@@ -20,66 +20,82 @@ import 'fault.dart';
 abstract class Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
+  Future<void> registerToken(
+    String? token,
+    String? refreshToken,
+    int? expire,
+    String? scope,
+  ) async {
+    if (Get.isRegistered<StravaToken>()) {
+      var stravaToken = Get.find<StravaToken>();
+      // Save also in Get
+      stravaToken.accessToken = token;
+      stravaToken.refreshToken = refreshToken;
+      stravaToken.expiresAt = expire;
+      stravaToken.scope = scope;
+    } else {
+      await Get.delete<StravaToken>();
+      Get.put<StravaToken>(StravaToken(
+        accessToken: token,
+        refreshToken: refreshToken,
+        expiresAt: expire,
+        scope: scope,
+      ));
+    }
+  }
+
   /// Save the token and the expiry date
   Future<void> _saveToken(
-    String token,
-    int expire,
-    String scope,
-    String refreshToken,
+    String? token,
+    String? refreshToken,
+    int? expire,
+    String? scope,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('strava_accessToken', token);
-    prefs.setInt('strava_expire', expire); // Stored in seconds
-    prefs.setString('strava_scope', scope);
-    prefs.setString('strava_refreshToken', refreshToken);
-
-    // Save also in globals to get direct access
-    globals.token.accessToken = token;
-    globals.token.scope = scope;
-    globals.token.expiresAt = expire;
-    globals.token.refreshToken = refreshToken;
-
-    globals.displayInfo('token saved!!!');
+    prefs.setString(ACCESS_TOKEN_TAG, token ?? '');
+    prefs.setString(REFRESH_TOKEN_TAG, refreshToken ?? '');
+    prefs.setInt(EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
+    prefs.setString(TOKEN_SCOPE_TAG, scope ?? '');
+    await registerToken(token, refreshToken, expire, scope);
+    debugPrint('token saved!!!');
   }
 
   /// Get the stored token and expiry date
   ///
   /// And refreshToken as well
-  /// Stored them in globals.token
+  /// Stored them in Get StravaToken
   ///
-  Future<Token> getStoredToken() async {
+  Future<StravaToken> getStoredToken() async {
     final prefs = await SharedPreferences.getInstance();
-    var localToken = Token();
-    globals.displayInfo('Entering getStoredToken');
+    var localToken = StravaToken();
+    debugPrint('Entering getStoredToken');
 
     try {
-      localToken.accessToken = prefs.getString('strava_accessToken').toString();
+      localToken.accessToken = prefs.getString(ACCESS_TOKEN_TAG)?.toString();
+      localToken.refreshToken = prefs.getString(REFRESH_TOKEN_TAG);
       // localToken.expiresAt = prefs.getInt('expire') * 1000; // To get in ms
-      localToken.expiresAt = prefs.getInt('strava_expire');
-      localToken.scope = prefs.getString('strava_scope');
-      localToken.refreshToken = prefs.getString('strava_refreshToken');
+      localToken.expiresAt = prefs.getInt(EXPIRES_AT_TAG);
+      localToken.scope = prefs.getString(TOKEN_SCOPE_TAG);
 
-      // load the data in globals
-      globals.token.accessToken = localToken.accessToken;
-      globals.token.expiresAt = localToken.expiresAt;
-      globals.token.scope = localToken.scope;
-      globals.token.refreshToken = localToken.refreshToken;
+      // load the data into Get
+      await registerToken(
+          localToken.accessToken, localToken.refreshToken, localToken.expiresAt, localToken.scope);
     } catch (error) {
-      globals.displayInfo('Error while retrieving the token');
+      debugPrint('Error while retrieving the token');
       localToken.accessToken = null;
       localToken.expiresAt = null;
       localToken.scope = null;
     }
 
     if (localToken.expiresAt != null) {
-      final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt);
+      final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt!);
       final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
           '${dateExpired.hour.toString()} hours';
-      globals.displayInfo('stored token ${localToken.accessToken} ${localToken.expiresAt} ' +
+      debugPrint('stored token ${localToken.accessToken} ${localToken.expiresAt} ' +
           '${localToken.scope} expires: $details');
     }
 
-    return (localToken);
+    return localToken;
   }
 
   /// Get the code from Strava server
@@ -89,23 +105,15 @@ abstract class Auth {
     String scope,
     String prompt,
   ) async {
-    globals.displayInfo('Entering getStravaCode');
-    var code = "";
-
-    String redirectUrl;
-
-    if (kIsWeb == true) {
-      redirectUrl = REDIRECT_URL_WEB;
-    } else {
-      redirectUrl = REDIRECT_URL_MOBILE;
-    }
+    debugPrint('Entering getStravaCode');
+    String redirectUrl = kIsWeb ? REDIRECT_URL_WEB : REDIRECT_URL_MOBILE;
 
     final params = '?client_id=$clientID&redirect_uri=$redirectUrl' +
         '&response_type=code&approval_prompt=$prompt&scope=$scope';
 
     final reqAuth = AUTHORIZATION_ENDPOINT + params;
-    globals.displayInfo(reqAuth);
-    StreamSubscription _sub;
+    debugPrint(reqAuth);
+    StreamSubscription? sub;
 
     // closeWebView();
     launch(reqAuth,
@@ -116,40 +124,45 @@ abstract class Auth {
 
     //--------  NOT working yet on web
     if (kIsWeb) {
-      globals.displayInfo('Running in web ');
+      debugPrint('Running in web ');
 
       // listening on http the answer from Strava
       final server = await HttpServer.bind(InternetAddress.anyIPv4, 8080, shared: true);
       await for (HttpRequest request in server) {
         // Get the answer from Strava
         // final uri = request.uri;
-        globals.displayInfo('Get the answer from Strava to authenticate! ${request.uri}');
+        debugPrint('Get the answer from Strava to authenticate! ${request.uri}');
       }
     } else {
-      globals.displayInfo('Running on iOS or Android');
+      debugPrint('Running on iOS or Android');
 
       // Attach a listener to the stream
-      _sub = getUriLinksStream().listen((Uri uri) {
-        // Parse the link and warn the user, if it is not correct
-        globals.displayInfo('Get a link!! $uri');
-        if (uri.scheme.compareTo('stravaflutter_$clientID') != 0) {
-          globals.displayInfo('This is not the good scheme ${uri.scheme}');
+      sub = uriLinkStream.listen((Uri? uri) {
+        if (uri == null) {
+          debugPrint('Subscription was null');
+          sub?.cancel();
+        } else {
+          // Parse the link and warn the user, if it is not correct
+          debugPrint('Got a link!! $uri');
+          if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientID') != 0) {
+            debugPrint('This is not the good scheme ${uri.scheme}');
+          }
+          final code = uri.queryParameters["code"] ?? "N/A";
+          final error = uri.queryParameters["error"];
+
+          debugPrint('code $code, error $error');
+
+          closeWebView();
+          onCodeReceived.add(code);
+
+          debugPrint('Got the new code: $code');
+
+          sub?.cancel();
         }
-        code = uri.queryParameters["code"];
-        final error = uri.queryParameters["error"];
-
-        globals.displayInfo('code $code, error $error');
-
-        closeWebView();
-        onCodeReceived.add(code);
-
-        globals.displayInfo('Got the new code: $code');
-
-        _sub.cancel();
       }, onError: (err) {
         // Handle exception by warning the user their action did not succeed
-        globals.displayInfo('Found an error $err');
-        _sub.cancel();
+        debugPrint('Found an error $err');
+        sub?.cancel();
       });
     }
 
@@ -169,14 +182,14 @@ abstract class Auth {
         code = uri.queryParameters["code"];
         final error = uri.queryParameters["error"];
         request.response.close();
-        globals.displayInfo('code $code, error $error');
+        debugPrint('code $code, error $error');
 
         closeWebView();
         server.close(force: true);
 
         onCodeReceived.add(code);
 
-        globals.displayInfo('iOS Got the new code: $code');
+        debugPrint('iOS Got the new code: $code');
       }
     }
     // });
@@ -185,11 +198,11 @@ abstract class Auth {
 
   Future<bool> hasValidToken() async {
     final prefs = await SharedPreferences.getInstance();
-    String accessToken = prefs.getString('strava_accessToken').toString();
+    String? accessToken = prefs.getString(ACCESS_TOKEN_TAG)?.toString();
     if (accessToken == null || accessToken.length == 0) {
       return false;
     }
-    final Token tokenStored = await getStoredToken();
+    final StravaToken tokenStored = await getStoredToken();
     accessToken = tokenStored.accessToken;
     return (accessToken?.length ?? 0) > 0;
   }
@@ -207,42 +220,48 @@ abstract class Auth {
     String secret,
     String prompt,
   ) async {
-    globals.displayInfo('Welcome to Oauth');
+    debugPrint('Welcome to Oauth');
     bool isAuthOk = false;
     bool isExpired;
 
-    final Token tokenStored = await getStoredToken();
-    final String _token = tokenStored.accessToken;
+    final tokenStored = await getStoredToken();
+    final token = tokenStored.accessToken;
 
     isExpired = _isTokenExpired(tokenStored);
-    globals.displayInfo('is token expired? $isExpired');
+    debugPrint('is token expired? $isExpired');
 
     // Check if the token is not expired
-    if (_token != null) {
-      // && _token != "null"
-      globals.displayInfo('token has been stored before! ' +
+    if (token != null) {
+      // && token != "null"
+      debugPrint('token has been stored before! ' +
           '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
     }
 
     // Use the refresh token to get a new access token
     if (isExpired) {
-      // _token != null || _token != "null"
+      // token != null || token != "null"
       RefreshAnswer _refreshAnswer =
-          await _getNewAccessToken(clientID, secret, tokenStored.refreshToken);
+          await _getNewAccessToken(clientID, secret, tokenStored.refreshToken ?? "0");
       // Update with new values if HTTP status code is 200
-      if (_refreshAnswer.fault.statusCode >= 200 && _refreshAnswer.fault.statusCode < 300) {
-        await _saveToken(_refreshAnswer.accessToken, _refreshAnswer.expiresAt, scope,
-            _refreshAnswer.refreshToken);
+      if (_refreshAnswer.fault != null &&
+          _refreshAnswer.fault!.statusCode >= 200 &&
+          _refreshAnswer.fault!.statusCode < 300) {
+        await _saveToken(
+          _refreshAnswer.accessToken,
+          _refreshAnswer.refreshToken,
+          _refreshAnswer.expiresAt,
+          scope,
+        );
       } else {
-        globals.displayInfo('Problem doing the refresh process');
+        debugPrint('Problem doing the refresh process');
         isAuthOk = false;
       }
     }
 
     // Check if the scope has changed
-    if (tokenStored.scope != scope || _token == "null" || _token == null) {
+    if (tokenStored.scope != scope || token == "null" || token == null) {
       // Ask for a new authorization
-      globals.displayInfo('Doing a new authorization');
+      debugPrint('Doing a new authorization');
       isAuthOk = await _newAuthorization(clientID, secret, scope, prompt);
     } else {
       isAuthOk = true;
@@ -263,19 +282,16 @@ abstract class Auth {
 
     final stravaCode = await onCodeReceived.stream.first;
 
-    if (stravaCode != null) {
-      final answer = await _getStravaToken(clientID, secret, stravaCode);
+    final answer = await _getStravaToken(clientID, secret, stravaCode);
 
-      globals.displayInfo('answer ${answer.expiresAt}, ${answer.accessToken}');
+    debugPrint('answer ${answer.expiresAt}, ${answer.accessToken}');
 
-      // Save the token information
-      if (answer.accessToken != null && answer.expiresAt != null) {
-        await _saveToken(answer.accessToken, answer.expiresAt, scope, answer.refreshToken);
-        returnValue = true;
-      }
-    } else {
-      globals.displayInfo('code is still null');
+    // Save the token information
+    if (answer.accessToken != null && answer.expiresAt != null) {
+      await _saveToken(answer.accessToken, answer.refreshToken, answer.expiresAt, scope);
+      returnValue = true;
     }
+
     return returnValue;
   }
 
@@ -290,67 +306,63 @@ abstract class Auth {
     String secret,
     String refreshToken,
   ) async {
-    RefreshAnswer returnToken = RefreshAnswer();
+    var returnToken = RefreshAnswer();
 
     final urlRefresh = TOKEN_ENDPOINT +
         '?client_id=$clientID&client_secret=$secret' +
         '&grant_type=refresh_token&refresh_token=$refreshToken';
 
-    globals.displayInfo('Entering getNewAccessToken');
-    // globals.displayInfo('urlRefresh $urlRefresh');
+    debugPrint('Entering getNewAccessToken');
+    // debugPrint('urlRefresh $urlRefresh');
 
-    final resp = await http.post(urlRefresh);
+    final resp = await http.post(Uri.parse(urlRefresh));
 
-    globals.displayInfo('body ${resp.body}');
+    debugPrint('body ${resp.body}');
     if (resp.statusCode >= 200 && resp.statusCode < 300) {
       // resp.statusCode == 200
       returnToken = RefreshAnswer.fromJson(json.decode(resp.body));
 
-      globals.displayInfo('new exp. date: ${returnToken.expiresAt}');
+      debugPrint('new exp. date: ${returnToken.expiresAt}');
     } else {
-      globals.displayInfo('Error while refreshing the token');
+      debugPrint('Error while refreshing the token');
     }
 
-    returnToken.fault = globals.errorCheck(resp.statusCode, resp.reasonPhrase);
+    returnToken.fault = Fault(resp.statusCode, resp.reasonPhrase ?? "N/A");
     return returnToken;
   }
 
-  Future<Token> _getStravaToken(
+  Future<StravaToken> _getStravaToken(
     String clientID,
     String secret,
     String code,
   ) async {
-    Token _answer = Token();
+    var answer = StravaToken();
 
-    globals.displayInfo('Entering getStravaToken!!');
+    debugPrint('Entering getStravaToken!!');
     // Put your own secret in secret.dart
     final urlToken = '$TOKEN_ENDPOINT?client_id=$clientID&client_secret=$secret' +
         '&code=$code&grant_type=authorization_code';
 
-    globals.displayInfo('urlToken $urlToken');
+    debugPrint('urlToken $urlToken');
 
-    final value = await http.post(urlToken);
+    final value = await http.post(Uri.parse(urlToken));
 
-    globals.displayInfo('body ${value.body}');
+    debugPrint('body ${value.body}');
 
     if (value.body.contains('message')) {
       // This is not the normal message
-      globals.displayInfo('Error in getStravaToken');
-      // will return _answer null
+      debugPrint('Error in getStravaToken');
+      // will return answer null
     } else {
       final Map<String, dynamic> tokenBody = json.decode(value.body);
-      final Token _body = Token.fromJson(tokenBody);
-      var accessToken = _body.accessToken;
-      var refreshToken = _body.refreshToken;
-      // var expiresAt = _body.expiresAt * 1000; // To get the exp. date in ms
-      var expiresAt = _body.expiresAt; // To get the exp. date in ms
-
-      _answer.accessToken = accessToken;
-      _answer.refreshToken = refreshToken;
-      _answer.expiresAt = expiresAt;
+      final StravaToken body = StravaToken.fromJson(tokenBody);
+      // var expiresAt = body.expiresAt * 1000; // To get the exp. date in ms
+      answer.accessToken = body.accessToken;
+      answer.refreshToken = body.refreshToken;
+      answer.expiresAt = body.expiresAt;
     }
 
-    return (_answer);
+    return (answer);
   }
 
   /// Return true the expiry date is passed
@@ -358,16 +370,16 @@ abstract class Auth {
   /// Otherwise return false
   ///
   /// including when there is no token yet
-  bool _isTokenExpired(Token token) {
-    globals.displayInfo(' current time in ms ${DateTime.now().millisecondsSinceEpoch / 1000}' +
-        '   exp. time: ${token.expiresAt}');
+  bool _isTokenExpired(StravaToken token) {
+    debugPrint(' current time in ms ${DateTime.now().millisecondsSinceEpoch / 1000}' +
+        ' exp. time: ${token.expiresAt}');
 
-    // when it is the first run or after a deAuthotrize
+    // when it is the first run or after a deAuthorize
     if (token.expiresAt == null) {
       return false;
     }
 
-    if (token.expiresAt < DateTime.now().millisecondsSinceEpoch / 1000) {
+    if (token.expiresAt! < DateTime.now().millisecondsSinceEpoch / 1000) {
       return true;
     } else {
       return false;
@@ -382,35 +394,39 @@ abstract class Auth {
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
   Future<Fault> deAuthorize() async {
-    Fault fault = Fault(error.statusUnknownError, '');
+    if (!Get.isRegistered<StravaToken>()) {
+      debugPrint('Token not yet known');
+      return Fault(StravaStatusCode.statusTokenNotKnownYet, 'Token not yet known');
+    }
+    var stravaToken = Get.find<StravaToken>();
 
-    if (globals.token.accessToken == null) {
+    if (stravaToken.accessToken == null) {
       // Token has not been yet stored in memory
-      await getStoredToken();
+      stravaToken = await getStoredToken();
     }
 
-    final _header = globals.createHeader();
-
+    final header = stravaToken.getAuthorizationHeader();
+    var fault = Fault(StravaStatusCode.statusUnknownError, "Unknown reason");
     // If header is not "empty"
-    if (_header.containsKey('88') == false) {
+    if (header.containsKey('88') == false) {
       final requestDeAuthorize = DEAUTHORIZATION_ENDPOINT;
-      globals.displayInfo('request $requestDeAuthorize');
-      final rep = await http.post(requestDeAuthorize, headers: _header);
+      debugPrint('request $requestDeAuthorize');
+      final rep = await http.post(Uri.parse(requestDeAuthorize), headers: header);
       if (rep.statusCode >= 200 && rep.statusCode < 300) {
-        globals.displayInfo('DeAuthorize done');
-        globals.displayInfo('response ${rep.body}');
+        debugPrint('DeAuthorize done');
+        debugPrint('response ${rep.body}');
         await _saveToken(null, null, null, null);
-        fault.statusCode = error.statusOk;
+        fault.statusCode = StravaStatusCode.statusOk;
         fault.message = 'DeAuthorize done';
       } else {
         await _saveToken(null, null, null, null);
-        globals.displayInfo('Problem in deAuthorize request');
-        fault.statusCode = error.statusDeAuthorizeError;
+        debugPrint('Problem in deAuthorize request');
+        fault.statusCode = StravaStatusCode.statusDeAuthorizeError;
       }
     } else {
       // No authorization has been done before
-      globals.displayInfo('No Authentication has been done yet');
-      fault.statusCode = error.statusNoAuthenticationYet;
+      debugPrint('No Authentication has been done yet');
+      fault.statusCode = StravaStatusCode.statusNoAuthenticationYet;
       fault.message = 'No Authentication has been done yet';
     }
 

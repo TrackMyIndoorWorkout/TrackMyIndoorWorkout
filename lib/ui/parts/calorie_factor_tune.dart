@@ -8,35 +8,25 @@ import '../../utils/theme_manager.dart';
 
 class CalorieFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
-  final double calorieFactor;
+  final double oldCalorieFactor;
 
-  CalorieFactorTuneBottomSheet({Key key, @required this.deviceId, @required this.calorieFactor})
-      : assert(deviceId != null),
-        assert(calorieFactor != null),
-        super(key: key);
+  CalorieFactorTuneBottomSheet({Key? key, required this.deviceId, required this.oldCalorieFactor})
+      : super(key: key);
 
   @override
-  CalorieFactorTuneBottomSheetState createState() =>
-      CalorieFactorTuneBottomSheetState(deviceId: deviceId, oldCalorieFactor: calorieFactor);
+  CalorieFactorTuneBottomSheetState createState() => CalorieFactorTuneBottomSheetState();
 }
 
 class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomSheet> {
-  CalorieFactorTuneBottomSheetState({@required this.deviceId, @required this.oldCalorieFactor})
-      : assert(deviceId != null),
-        assert(oldCalorieFactor != null);
-
-  final String deviceId;
-  final double oldCalorieFactor;
-  double _calorieFactorPercent;
-  TextStyle _largerTextStyle;
-  ThemeManager _themeManager;
+  double _calorieFactorPercent = 100.0;
+  TextStyle _largerTextStyle = TextStyle();
+  ThemeManager _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
     super.initState();
-    _calorieFactorPercent = oldCalorieFactor * 100.0;
-    _themeManager = Get.find<ThemeManager>();
-    _largerTextStyle = Get.textTheme.headline3.apply(
+    _calorieFactorPercent = widget.oldCalorieFactor * 100.0;
+    _largerTextStyle = Get.textTheme.headline3!.apply(
       fontFamily: FONT_FAMILY,
       color: _themeManager.getProtagonistColor(),
     );
@@ -65,13 +55,21 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
       floatingActionButton: _themeManager.getGreenFab(Icons.check, () async {
         final database = Get.find<AppDatabase>();
         final calorieFactor = _calorieFactorPercent / 100.0;
-        if (await database?.hasCalorieTune(deviceId) ?? false) {
-          var calorieTune = await database?.calorieTuneDao?.findCalorieTuneByMac(deviceId)?.first;
+        CalorieTune? calorieTune;
+        if (await database.hasCalorieTune(widget.deviceId)) {
+          calorieTune = await database.calorieTuneDao.findCalorieTuneByMac(widget.deviceId).first;
+        }
+
+        if (calorieTune != null) {
           calorieTune.calorieFactor = calorieFactor;
-          await database?.calorieTuneDao?.updateCalorieTune(calorieTune);
+          await database.calorieTuneDao.updateCalorieTune(calorieTune);
         } else {
-          final calorieTune = CalorieTune(mac: deviceId, calorieFactor: calorieFactor);
-          await database?.calorieTuneDao?.insertCalorieTune(calorieTune);
+          calorieTune = CalorieTune(
+            mac: widget.deviceId,
+            calorieFactor: calorieFactor,
+            time: DateTime.now().millisecondsSinceEpoch,
+          );
+          await database.calorieTuneDao.insertCalorieTune(calorieTune);
         }
         Get.back(result: calorieFactor);
       }),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:preferences/preferences.dart';
+import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import 'preferences_base.dart';
 
@@ -11,81 +10,74 @@ class UXPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> uxPreferences = [
-      PreferenceTitle(THEME_SELECTION_DESCRIPTION),
-      PreferenceDialogLink(
-        THEME_SELECTION,
-        dialog: PreferenceDialog(
-          [
-            RadioPreference(
-              THEME_SELECTION_SYSTEM_DESCRIPTION,
-              THEME_SELECTION_SYSTEM,
-              THEME_SELECTION_TAG,
-              onSelect: () => Get.changeThemeMode(ThemeMode.system),
-            ),
-            RadioPreference(
-              THEME_SELECTION_LIGHT_DESCRIPTION,
-              THEME_SELECTION_LIGHT,
-              THEME_SELECTION_TAG,
-              onSelect: () => Get.changeThemeMode(ThemeMode.light),
-            ),
-            RadioPreference(
-              THEME_SELECTION_DARK_DESCRIPTION,
-              THEME_SELECTION_DARK,
-              THEME_SELECTION_TAG,
-              onSelect: () => Get.changeThemeMode(ThemeMode.dark),
-            ),
-          ],
-          title: 'Select Theme',
-          cancelText: 'Close',
-        ),
+      PrefLabel(
+        title: Text(THEME_SELECTION),
+        subtitle: Text(THEME_SELECTION_DESCRIPTION),
       ),
-      SwitchPreference(
-        UNIT_SYSTEM,
-        UNIT_SYSTEM_TAG,
-        defaultVal: UNIT_SYSTEM_DEFAULT,
-        desc: UNIT_SYSTEM_DESCRIPTION,
+      PrefRadio<String>(
+        title: Text(THEME_SELECTION_SYSTEM_DESCRIPTION),
+        value: THEME_SELECTION_SYSTEM,
+        pref: THEME_SELECTION_TAG,
       ),
-      SwitchPreference(
-        INSTANT_SCAN,
-        INSTANT_SCAN_TAG,
-        defaultVal: INSTANT_SCAN_DEFAULT,
-        desc: INSTANT_SCAN_DESCRIPTION,
+      PrefRadio<String>(
+        title: Text(THEME_SELECTION_LIGHT_DESCRIPTION),
+        value: THEME_SELECTION_LIGHT,
+        pref: THEME_SELECTION_TAG,
       ),
-      SwitchPreference(
-        AUTO_CONNECT,
-        AUTO_CONNECT_TAG,
-        defaultVal: AUTO_CONNECT_DEFAULT,
-        desc: AUTO_CONNECT_DESCRIPTION,
+      PrefRadio<String>(
+        title: Text(THEME_SELECTION_DARK_DESCRIPTION),
+        value: THEME_SELECTION_DARK,
+        pref: THEME_SELECTION_TAG,
       ),
-      SwitchPreference(
-        INSTANT_MEASUREMENT_START,
-        INSTANT_MEASUREMENT_START_TAG,
-        defaultVal: INSTANT_MEASUREMENT_START_DEFAULT,
-        desc: INSTANT_MEASUREMENT_START_DESCRIPTION,
+      PrefLabel(title: Divider(height: 1)),
+      PrefCheckbox(
+        title: Text(UNIT_SYSTEM),
+        subtitle: Text(UNIT_SYSTEM_DESCRIPTION),
+        pref: UNIT_SYSTEM_TAG,
       ),
-      SwitchPreference(
-        INSTANT_UPLOAD,
-        INSTANT_UPLOAD_TAG,
-        defaultVal: INSTANT_UPLOAD_DEFAULT,
-        desc: INSTANT_UPLOAD_DESCRIPTION,
+      PrefSlider<int>(
+        title: Text(SCAN_DURATION),
+        subtitle: Text(SCAN_DURATION_DESCRIPTION),
+        pref: SCAN_DURATION_TAG,
+        trailing: (num value) => Text("$value s"),
+        min: SCAN_DURATION_MIN,
+        max: SCAN_DURATION_MAX,
       ),
-      SwitchPreference(
-        MULTI_SPORT_DEVICE_SUPPORT,
-        MULTI_SPORT_DEVICE_SUPPORT_TAG,
-        defaultVal: MULTI_SPORT_DEVICE_SUPPORT_DEFAULT,
-        desc: MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION,
+      PrefCheckbox(
+        title: Text(INSTANT_SCAN),
+        subtitle: Text(INSTANT_SCAN_DESCRIPTION),
+        pref: INSTANT_SCAN_TAG,
       ),
-      SwitchPreference(
-        SIMPLER_UI,
-        SIMPLER_UI_TAG,
-        defaultVal: SIMPLER_UI_FAST_DEFAULT,
-        desc: SIMPLER_UI_DESCRIPTION,
+      PrefCheckbox(
+        title: Text(AUTO_CONNECT),
+        subtitle: Text(AUTO_CONNECT_DESCRIPTION),
+        pref: AUTO_CONNECT_TAG,
+      ),
+      PrefCheckbox(
+        title: Text(INSTANT_MEASUREMENT_START),
+        subtitle: Text(INSTANT_MEASUREMENT_START_DESCRIPTION),
+        pref: INSTANT_MEASUREMENT_START_TAG,
+      ),
+      PrefCheckbox(
+        title: Text(INSTANT_UPLOAD),
+        subtitle: Text(INSTANT_UPLOAD_DESCRIPTION),
+        pref: INSTANT_UPLOAD_TAG,
+      ),
+      PrefCheckbox(
+        title: Text(MULTI_SPORT_DEVICE_SUPPORT),
+        subtitle: Text(MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION),
+        pref: MULTI_SPORT_DEVICE_SUPPORT_TAG,
+      ),
+      PrefCheckbox(
+        title: Text(SIMPLER_UI),
+        subtitle: Text(SIMPLER_UI_DESCRIPTION),
+        pref: SIMPLER_UI_TAG,
       ),
     ];
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: PreferencePage(uxPreferences),
+      body: PrefPage(children: uxPreferences),
     );
   }
 }

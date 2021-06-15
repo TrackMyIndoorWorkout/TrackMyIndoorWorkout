@@ -4,15 +4,15 @@ import '../gatt_constants.dart';
 import 'integer_sensor.dart';
 
 class HeartRateMonitor extends IntegerSensor {
-  ByteMetricDescriptor _byteHeartRateMetric;
-  ShortMetricDescriptor _shortHeartRateMetric;
+  ByteMetricDescriptor? _byteHeartRateMetric;
+  ShortMetricDescriptor? _shortHeartRateMetric;
 
   HeartRateMonitor(device) : super(HEART_RATE_SERVICE_ID, HEART_RATE_MEASUREMENT_ID, device);
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.heart_rate_measurement.xml
   @override
   bool canMeasurementProcessed(List<int> data) {
-    if (data == null || data.length < 1) return false;
+    if (data.length < 1) return false;
 
     var flag = data[0];
     // 16 bit revolution and 16 bit time
@@ -50,12 +50,12 @@ class HeartRateMonitor extends IntegerSensor {
   int processMeasurement(List<int> data) {
     if (canMeasurementProcessed(data)) {
       if (_byteHeartRateMetric != null) {
-        final heartRate = _byteHeartRateMetric.getMeasurementValue(data)?.toInt();
+        final heartRate = _byteHeartRateMetric!.getMeasurementValue(data)?.toInt();
         if (heartRate != null && heartRate > 0) {
           metric = heartRate;
         }
       } else if (_shortHeartRateMetric != null) {
-        final heartRate = _shortHeartRateMetric.getMeasurementValue(data)?.toInt();
+        final heartRate = _shortHeartRateMetric!.getMeasurementValue(data)?.toInt();
         if (heartRate != null && heartRate > 0) {
           metric = heartRate;
         }

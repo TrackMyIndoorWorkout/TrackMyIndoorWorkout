@@ -1,29 +1,30 @@
 import 'dart:collection';
 
-import 'package:meta/meta.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
+
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
-import '../../utils/preferences.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 
 class RowerDeviceDescriptor extends FitnessMachineDescriptor {
-  ByteMetricDescriptor strokeRateMetric;
-  ShortMetricDescriptor strokeCountMetric;
-  ShortMetricDescriptor paceMetric;
+  ByteMetricDescriptor? strokeRateMetric;
+  ShortMetricDescriptor? strokeCountMetric;
+  ShortMetricDescriptor? paceMetric;
 
-  int _strokeRateWindowSize;
-  ListQueue<int> _strokeRates;
-  int _strokeRateSum;
+  int _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT;
+  ListQueue<int> _strokeRates = ListQueue<int>();
+  int _strokeRateSum = 0;
 
   RowerDeviceDescriptor({
-    @required defaultSport,
-    @required fourCC,
-    @required vendorName,
-    @required modelName,
-    @required namePrefix,
+    required defaultSport,
+    required fourCC,
+    required vendorName,
+    required modelName,
+    required namePrefix,
     manufacturer,
     manufacturerFitId,
     model,
@@ -48,21 +49,15 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
           calorieFactorDefault: calorieFactorDefault,
-        ) {
-    _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
-    _strokeRates = ListQueue<int>();
-    _strokeRateSum = 0;
-  }
+        );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override
   void processFlag(int flag) {
     super.processFlag(flag);
-    _strokeRateWindowSize = getStringIntegerPreference(
-      STROKE_RATE_SMOOTHING_TAG,
-      STROKE_RATE_SMOOTHING_DEFAULT,
-      STROKE_RATE_SMOOTHING_DEFAULT_INT,
-    );
+    final prefService = Get.find<BasePrefService>();
+    _strokeRateWindowSize =
+        prefService.get<int>(STROKE_RATE_SMOOTHING_INT_TAG) ?? STROKE_RATE_SMOOTHING_DEFAULT;
 
     // KayakPro Compact: two flag bytes
     // 44 00101100 (stroke rate, stroke count), total distance, instant pace, instant power
@@ -90,10 +85,11 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     final pace = getPace(data);
 
     var strokeRate = getStrokeRate(data);
-    if ((strokeRate == null || strokeRate == 0) && (pace == 0 || pace > slowPace)) {
+    if ((strokeRate == null || strokeRate == 0) &&
+        (pace == null || pace == 0 || (slowPace != null && pace > slowPace!))) {
       clearStrokeRates();
     }
-    if (_strokeRateWindowSize > 1) {
+    if (_strokeRateWindowSize > 1 && strokeRate != null) {
       _strokeRates.add(strokeRate);
       _strokeRateSum += strokeRate;
       if (_strokeRates.length > _strokeRateWindowSize) {
@@ -164,11 +160,11 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     return flag;
   }
 
-  int getStrokeRate(List<int> data) {
+  int? getStrokeRate(List<int> data) {
     return strokeRateMetric?.getMeasurementValue(data)?.toInt();
   }
 
-  double getPace(List<int> data) {
+  double? getPace(List<int> data) {
     var pace = paceMetric?.getMeasurementValue(data);
     if (pace == null || !extendTuning) {
       return pace;

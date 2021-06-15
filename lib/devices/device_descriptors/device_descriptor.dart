@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:meta/meta.dart';
-import 'package:preferences/preference_service.dart';
+import 'package:pref/pref.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
@@ -27,44 +25,44 @@ abstract class DeviceDescriptor {
   final String manufacturer;
   final int manufacturerFitId;
   final String model;
-  final String dataServiceId;
-  final String dataCharacteristicId;
+  String? dataServiceId;
+  String? dataCharacteristicId;
   final bool antPlus;
 
-  int featuresFlag;
-  int byteCounter;
+  int featuresFlag = 0;
+  int byteCounter = 0;
 
   bool canMeasureHeartRate;
-  int heartRateByteIndex;
+  int? heartRateByteIndex;
 
   // Common metrics
-  ShortMetricDescriptor speedMetric;
-  ShortMetricDescriptor cadenceMetric;
-  ThreeByteMetricDescriptor distanceMetric;
-  ShortMetricDescriptor powerMetric;
-  ShortMetricDescriptor caloriesMetric;
-  ShortMetricDescriptor timeMetric;
-  ShortMetricDescriptor caloriesPerHourMetric;
-  ByteMetricDescriptor caloriesPerMinuteMetric;
+  ShortMetricDescriptor? speedMetric;
+  ShortMetricDescriptor? cadenceMetric;
+  ThreeByteMetricDescriptor? distanceMetric;
+  ShortMetricDescriptor? powerMetric;
+  ShortMetricDescriptor? caloriesMetric;
+  ShortMetricDescriptor? timeMetric;
+  ShortMetricDescriptor? caloriesPerHourMetric;
+  ByteMetricDescriptor? caloriesPerMinuteMetric;
 
   // Adjusting skewed calories
   double calorieFactorDefault;
-  double calorieFactor;
+  double calorieFactor = 1.0;
   // Adjusting skewed distance
-  double powerFactor;
-  bool extendTuning;
-  double slowPace;
+  double powerFactor = 1.0;
+  bool extendTuning = EXTEND_TUNING_DEFAULT;
+  double? slowPace;
 
   DeviceDescriptor({
-    @required this.defaultSport,
-    @required this.isMultiSport,
-    @required this.fourCC,
-    @required this.vendorName,
-    @required this.modelName,
-    @required this.namePrefix,
-    this.manufacturer,
-    this.manufacturerFitId,
-    this.model,
+    required this.defaultSport,
+    required this.isMultiSport,
+    required this.fourCC,
+    required this.vendorName,
+    required this.modelName,
+    required this.namePrefix,
+    required this.manufacturer, // TODO
+    required this.manufacturerFitId, // TODO
+    required this.model, // TODO
     this.dataServiceId,
     this.dataCharacteristicId,
     this.antPlus = false,
@@ -77,17 +75,8 @@ abstract class DeviceDescriptor {
     this.cadenceMetric,
     this.distanceMetric,
     this.calorieFactorDefault = 1.0,
-  })  : assert(defaultSport != null),
-        assert(isMultiSport != null),
-        assert(fourCC != null),
-        assert(vendorName != null),
-        assert(modelName != null),
-        assert(namePrefix != null) {
-    featuresFlag = 0;
-    byteCounter = 0;
+  }) {
     calorieFactor = calorieFactorDefault;
-    powerFactor = 1.0;
-    extendTuning = EXTEND_TUNING_DEFAULT;
   }
 
   String get fullName => '$vendorName $modelName';
@@ -103,8 +92,8 @@ abstract class DeviceDescriptor {
     byteCounter = 2;
   }
 
-  RecordWithSport stubRecord(List<int> data) {
-    if ((data?.length ?? 0) > 2) {
+  RecordWithSport? stubRecord(List<int> data) {
+    if (data.length > 2) {
       var flag = data[0] + MAX_UINT8 * data[1];
       if (flag != featuresFlag) {
         featuresFlag = flag;
@@ -116,12 +105,13 @@ abstract class DeviceDescriptor {
 
   refreshTuning(String deviceId) async {
     final database = Get.find<AppDatabase>();
-    calorieFactor = await database?.calorieFactor(deviceId, this) ?? 1.0;
-    powerFactor = await database?.powerFactor(deviceId) ?? 1.0;
-    extendTuning = PrefService.getBool(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
+    calorieFactor = await database.calorieFactor(deviceId, this);
+    powerFactor = await database.powerFactor(deviceId);
+    final prefService = Get.find<BasePrefService>();
+    extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
   }
 
-  double getSpeed(List<int> data) {
+  double? getSpeed(List<int> data) {
     var speed = speedMetric?.getMeasurementValue(data);
     if (speed == null || !extendTuning) {
       return speed;
@@ -129,11 +119,11 @@ abstract class DeviceDescriptor {
     return speed * powerFactor;
   }
 
-  double getCadence(List<int> data) {
+  double? getCadence(List<int> data) {
     return cadenceMetric?.getMeasurementValue(data);
   }
 
-  double getDistance(List<int> data) {
+  double? getDistance(List<int> data) {
     var distance = distanceMetric?.getMeasurementValue(data);
     if (distance == null || !extendTuning) {
       return distance;
@@ -141,7 +131,7 @@ abstract class DeviceDescriptor {
     return distance * powerFactor;
   }
 
-  double getPower(List<int> data) {
+  double? getPower(List<int> data) {
     var power = powerMetric?.getMeasurementValue(data);
     if (power == null) {
       return power;
@@ -149,7 +139,7 @@ abstract class DeviceDescriptor {
     return power * powerFactor;
   }
 
-  double getCalories(List<int> data) {
+  double? getCalories(List<int> data) {
     var calories = caloriesMetric?.getMeasurementValue(data);
     if (calories == null || !extendTuning) {
       return calories;
@@ -157,7 +147,7 @@ abstract class DeviceDescriptor {
     return calories * calorieFactor;
   }
 
-  double getCaloriesPerHour(List<int> data) {
+  double? getCaloriesPerHour(List<int> data) {
     var caloriesPerHour = caloriesPerHourMetric?.getMeasurementValue(data);
     if (caloriesPerHour == null || !extendTuning) {
       return caloriesPerHour;
@@ -165,7 +155,7 @@ abstract class DeviceDescriptor {
     return caloriesPerHour * calorieFactor;
   }
 
-  double getCaloriesPerMinute(List<int> data) {
+  double? getCaloriesPerMinute(List<int> data) {
     var caloriesPerMinute = caloriesPerMinuteMetric?.getMeasurementValue(data);
     if (caloriesPerMinute == null || !extendTuning) {
       return caloriesPerMinute;
@@ -173,13 +163,14 @@ abstract class DeviceDescriptor {
     return caloriesPerMinute * calorieFactor;
   }
 
-  double getTime(List<int> data) {
+  double? getTime(List<int> data) {
     return timeMetric?.getMeasurementValue(data);
   }
 
-  double getHeartRate(List<int> data) {
+  double? getHeartRate(List<int> data) {
     if (heartRateByteIndex == null) return 0;
-    return data[heartRateByteIndex].toDouble();
+
+    return data[heartRateByteIndex!].toDouble();
   }
 
   void clearMetrics() {

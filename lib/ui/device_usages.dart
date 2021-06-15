@@ -15,28 +15,23 @@ class DeviceUsagesScreen extends StatefulWidget {
   DeviceUsagesScreen({key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return DeviceUsagesScreenState();
-  }
+  State<StatefulWidget> createState() => DeviceUsagesScreenState();
 }
 
 class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
-  AppDatabase _database;
-  int _editCount;
-  ThemeManager _themeManager;
-  double _sizeDefault;
-  TextStyle _textStyle;
-  ExpandableThemeData _expandableThemeData;
+  AppDatabase _database = Get.find<AppDatabase>();
+  int _editCount = 0;
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  double _sizeDefault = 10.0;
+  TextStyle _textStyle = TextStyle();
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
     super.initState();
-    _editCount = 0;
-    _database = Get.find<AppDatabase>();
-    _themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline4
+    _textStyle = Get.textTheme.headline4!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
-    _sizeDefault = _textStyle.fontSize;
+    _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
@@ -54,7 +49,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
             if (sportPick != null) {
               deviceUsage.sport = sportPick;
               deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
-              await _database?.deviceUsageDao?.updateDeviceUsage(deviceUsage);
+              await _database.deviceUsageDao.updateDeviceUsage(deviceUsage);
               setState(() {
                 _editCount++;
               });
@@ -153,6 +148,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                   ),
                 ],
               ),
+              collapsed: Container(),
               expanded: ListTile(
                 title: Column(
                   children: [
