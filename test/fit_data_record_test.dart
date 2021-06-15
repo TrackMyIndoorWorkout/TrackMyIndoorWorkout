@@ -12,7 +12,7 @@ void main() {
     final dataRecord = FitDataRecord(
       0,
       HEART_RATE_GAP_WORKAROUND_DEFAULT,
-      HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
+      HEART_RATE_UPPER_LIMIT_DEFAULT,
       HEART_RATE_LIMITING_NO_LIMIT,
     );
 
@@ -24,7 +24,7 @@ void main() {
     final dataRecord = FitDataRecord(
       0,
       HEART_RATE_GAP_WORKAROUND_DEFAULT,
-      HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
+      HEART_RATE_UPPER_LIMIT_DEFAULT,
       HEART_RATE_LIMITING_NO_LIMIT,
     );
     final now = DateTime.now();

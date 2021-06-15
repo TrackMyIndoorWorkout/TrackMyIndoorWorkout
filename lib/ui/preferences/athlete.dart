@@ -10,17 +10,13 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> athletePreferences = [
-      PrefLabel(title: Text(ATHLETE_BODY_WEIGHT_DESCRIPTION, maxLines: 10)),
-      PrefText(
-        label: ATHLETE_BODY_WEIGHT,
-        pref: ATHLETE_BODY_WEIGHT_TAG,
-        validator: (str) {
-          if (str == null || !isInteger(str, 1, 1000)) {
-            return "Invalid weight (expected integer: 1 <= weight <= 1000)";
-          }
-
-          return null;
-        },
+      PrefSlider<int>(
+        title: Text(ATHLETE_BODY_WEIGHT),
+        subtitle: Text(ATHLETE_BODY_WEIGHT_DESCRIPTION),
+        pref: ATHLETE_BODY_WEIGHT_INT_TAG,
+        trailing: (num value) => Text("$value kg"),
+        min: ATHLETE_BODY_WEIGHT_MIN,
+        max: ATHLETE_BODY_WEIGHT_MAX,
       ),
       PrefCheckbox(
         title: Text(REMEMBER_ATHLETE_BODY_WEIGHT),

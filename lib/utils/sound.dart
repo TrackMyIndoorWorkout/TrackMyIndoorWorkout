@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:soundpool/soundpool.dart';
 import '../persistence/preferences.dart';
-import 'preferences.dart';
 
 enum SoundEffect { Bleep, FlatBeep, TwoTone, ThreeTone }
 final Map<SoundEffect, String> _soundAssetPaths = {
@@ -59,12 +58,8 @@ class SoundService {
       return 0;
     }
 
-    final volumePercent = getStringIntegerPreference(
-      AUDIO_VOLUME_TAG,
-      AUDIO_VOLUME_DEFAULT,
-      AUDIO_VOLUME_DEFAULT_INT,
-      null,
-    );
+    final prefService = Get.find<BasePrefService>();
+    final volumePercent = prefService.get<int>(AUDIO_VOLUME_INT_TAG) ?? AUDIO_VOLUME_DEFAULT;
     final volume = volumePercent / 100.0;
     _soundPool?.setVolume(soundId: soundId, volume: volume);
     final streamId = await _soundPool?.play(soundId) ?? 0;

@@ -10,11 +10,4 @@ abstract class PreferencesScreenBase extends StatelessWidget {
         (lowerLimit < 0.0 || number >= lowerLimit) &&
         (upperLimit < 0.0 || number <= upperLimit);
   }
-
-  bool isInteger(String str, lowerLimit, upperLimit) {
-    int? integer = int.tryParse(str);
-    return integer != null &&
-        (lowerLimit < 0 || integer >= lowerLimit) &&
-        (upperLimit < 0 || integer <= upperLimit);
-  }
 }

@@ -18,30 +18,22 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(EXTEND_TUNING_DESCRIPTION),
         pref: EXTEND_TUNING_TAG,
       ),
-      PrefLabel(title: Text(STROKE_RATE_SMOOTHING_DESCRIPTION, maxLines: 10)),
-      PrefText(
-        label: STROKE_RATE_SMOOTHING,
-        pref: STROKE_RATE_SMOOTHING_TAG,
-        validator: (str) {
-          if (str == null || !isInteger(str, 1, 50)) {
-            return "Invalid window size (should be integer: 1 <= size <= 50)";
-          }
-
-          return null;
-        },
+      PrefSlider<int>(
+        title: Text(STROKE_RATE_SMOOTHING),
+        subtitle: Text(STROKE_RATE_SMOOTHING_DESCRIPTION),
+        pref: STROKE_RATE_SMOOTHING_INT_TAG,
+        trailing: (num value) => Text("$value"),
+        min: STROKE_RATE_SMOOTHING_MIN,
+        max: STROKE_RATE_SMOOTHING_MAX,
       ),
       PrefTitle(title: Text(WORKAROUND_PREFERENCES)),
-      PrefLabel(title: Text(DATA_STREAM_GAP_WATCHDOG_DESCRIPTION, maxLines: 10)),
-      PrefText(
-        label: DATA_STREAM_GAP_WATCHDOG,
-        pref: DATA_STREAM_GAP_WATCHDOG_TAG,
-        validator: (str) {
-          if (str == null || !isInteger(str, 0, 50)) {
-            return "Invalid timeout (should be integer 0s <= time <= 50s)";
-          }
-
-          return null;
-        },
+      PrefSlider<int>(
+        title: Text(DATA_STREAM_GAP_WATCHDOG),
+        subtitle: Text(DATA_STREAM_GAP_WATCHDOG_DESCRIPTION),
+        pref: DATA_STREAM_GAP_WATCHDOG_INT_TAG,
+        trailing: (num value) => Text("$value s"),
+        min: DATA_STREAM_GAP_WATCHDOG_MIN,
+        max: DATA_STREAM_GAP_WATCHDOG_MAX,
       ),
       PrefLabel(
         title: Text(DATA_STREAM_GAP_SOUND_EFFECT),
@@ -77,16 +69,13 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
       ),
       PrefLabel(title: Divider(height: 1)),
-      PrefText(
-        label: AUDIO_VOLUME,
-        pref: AUDIO_VOLUME_TAG,
-        validator: (str) {
-          if (str == null || !isInteger(str, 0, 100)) {
-            return "Invalid, has to be: 0% <= volume <= 100%)";
-          }
-
-          return null;
-        },
+      PrefSlider<int>(
+        title: Text(AUDIO_VOLUME),
+        subtitle: Text(AUDIO_VOLUME_DESCRIPTION),
+        pref: AUDIO_VOLUME_INT_TAG,
+        trailing: (num value) => Text("$value %"),
+        min: AUDIO_VOLUME_MIN,
+        max: AUDIO_VOLUME_MAX,
       ),
       PrefCheckbox(
         title: Text(CADENCE_GAP_WORKAROUND),
@@ -110,17 +99,13 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         pref: HEART_RATE_GAP_WORKAROUND_TAG,
       ),
       PrefLabel(title: Divider(height: 1)),
-      PrefLabel(title: Text(HEART_RATE_UPPER_LIMIT_DESCRIPTION, maxLines: 10)),
-      PrefText(
-        label: HEART_RATE_UPPER_LIMIT,
-        pref: HEART_RATE_UPPER_LIMIT_TAG,
-        validator: (str) {
-          if (str == null || !isInteger(str, 0, 300)) {
-            return "Invalid heart rate limit (should be 0 <= size <= 300)";
-          }
-
-          return null;
-        },
+      PrefSlider<int>(
+        title: Text(HEART_RATE_UPPER_LIMIT),
+        subtitle: Text(HEART_RATE_UPPER_LIMIT_DESCRIPTION),
+        pref: HEART_RATE_UPPER_LIMIT_INT_TAG,
+        trailing: (num value) => Text("$value"),
+        min: HEART_RATE_UPPER_LIMIT_MIN,
+        max: HEART_RATE_UPPER_LIMIT_MAX,
       ),
       PrefLabel(title: Text(HEART_RATE_LIMITING_METHOD)),
       PrefRadio<String>(

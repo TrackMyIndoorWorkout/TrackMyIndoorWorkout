@@ -11,7 +11,6 @@ import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
-import '../../utils/preferences.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../bluetooth_device_ex.dart';
 import '../gatt_constants.dart';
@@ -32,7 +31,7 @@ class FitnessEquipment extends DeviceBase {
   late Record lastRecord;
   HeartRateMonitor? heartRateMonitor;
   String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
-  int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT_INT;
+  int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT;
   String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
   Activity? _activity;
   bool measuring = false;
@@ -53,12 +52,8 @@ class FitnessEquipment extends DeviceBase {
     uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _heartRateGapWorkaround =
         prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
-    _heartRateUpperLimit = getStringIntegerPreference(
-      HEART_RATE_UPPER_LIMIT_TAG,
-      HEART_RATE_UPPER_LIMIT_DEFAULT,
-      HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
-      prefService,
-    );
+    _heartRateUpperLimit =
+        prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
     _heartRateLimitingMethod =
         prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);

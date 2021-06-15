@@ -452,10 +452,13 @@ class PreferencesSpec {
 const PREFERENCES_PREFIX = "pref_";
 
 const PREFERENCES_VERSION_TAG = "version";
-const PREFERENCES_VERSION_DEFAULT = 1;
+const PREFERENCES_VERSION_DEFAULT = 2;
 const PREFERENCES_VERSION_SPORT_THRESHOLDS = 1;
 const PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT = 2;
+const PREFERENCES_VERSION_SPINNERS = 3;
 const PREFERENCES_VERSION_NEXT = PREFERENCES_VERSION_DEFAULT + 1;
+
+const INT_TAG_POSTFIX = "_int";
 
 const UX_PREFERENCES = "UI / UX Preferences";
 
@@ -471,11 +474,13 @@ const INSTANT_SCAN_DEFAULT = true;
 const INSTANT_SCAN_DESCRIPTION = "On: the app will automatically start "
     "scanning for equipment after application start.";
 
-const SCAN_DURATION = "Scan Duration";
+const SCAN_DURATION = "Scan Duration (s)";
 const SCAN_DURATION_TAG = "scan_duration";
+const SCAN_DURATION_MIN = 2;
 const SCAN_DURATION_DEFAULT = 3;
+const SCAN_DURATION_MAX = 15;
 const SCAN_DURATION_DESCRIPTION =
-    "Duration in seconds the app will spend looking Bluetooth Low Energy exercise equipment.";
+    "Duration in seconds the app will spend looking Bluetooth Low Energy equipment.";
 
 const AUTO_CONNECT = "Auto Connect";
 const AUTO_CONNECT_TAG = "auto_connect";
@@ -546,16 +551,20 @@ const EXTEND_TUNING_DESCRIPTION =
 
 const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
 const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
-const STROKE_RATE_SMOOTHING_DEFAULT_INT = 10;
-const STROKE_RATE_SMOOTHING_DEFAULT = "$STROKE_RATE_SMOOTHING_DEFAULT_INT";
+const STROKE_RATE_SMOOTHING_INT_TAG = STROKE_RATE_SMOOTHING_TAG + INT_TAG_POSTFIX;
+const STROKE_RATE_SMOOTHING_MIN = 1;
+const STROKE_RATE_SMOOTHING_DEFAULT = 10;
+const STROKE_RATE_SMOOTHING_MAX = 50;
 const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery data. Averaging " +
     "these over time soothes the data. This setting tells the window size by how many samples " +
     "could be in the smoothing queue. 1 means no smoothing.";
 
 const DATA_STREAM_GAP_WATCHDOG = "Data Stream Gap Watchdog Timer";
 const DATA_STREAM_GAP_WATCHDOG_TAG = "data_stream_gap_watchdog_timer";
-const DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT = 5;
-const DATA_STREAM_GAP_WATCHDOG_DEFAULT = "$DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT";
+const DATA_STREAM_GAP_WATCHDOG_INT_TAG = DATA_STREAM_GAP_WATCHDOG_TAG + INT_TAG_POSTFIX;
+const DATA_STREAM_GAP_WATCHDOG_MIN = 0;
+const DATA_STREAM_GAP_WATCHDOG_DEFAULT = 5;
+const DATA_STREAM_GAP_WATCHDOG_MAX = 50;
 const DATA_STREAM_GAP_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered " +
     "as a disconnection. A watchdog would finish the workout and can trigger sound warnings as well. " +
     "Zero means disabled";
@@ -601,8 +610,10 @@ const HEART_RATE_GAP_WORKAROUND_DEFAULT = DATA_GAP_WORKAROUND_LAST_POSITIVE_VALU
 
 const HEART_RATE_UPPER_LIMIT = "Heart Rate Upper Limit";
 const HEART_RATE_UPPER_LIMIT_TAG = "heart_rate_upper_limit";
-const HEART_RATE_UPPER_LIMIT_DEFAULT_INT = 0;
-const HEART_RATE_UPPER_LIMIT_DEFAULT = "$HEART_RATE_UPPER_LIMIT_DEFAULT_INT";
+const HEART_RATE_UPPER_LIMIT_INT_TAG = HEART_RATE_UPPER_LIMIT_TAG + INT_TAG_POSTFIX;
+const HEART_RATE_UPPER_LIMIT_MIN = 0;
+const HEART_RATE_UPPER_LIMIT_DEFAULT = 0;
+const HEART_RATE_UPPER_LIMIT_MAX = 300;
 const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is a heart rate upper bound where the methods " +
     "bellow would be applied. 0 means no upper limiting is performed.";
 
@@ -637,29 +648,33 @@ const TARGET_HEART_RATE_MODE_DEFAULT = TARGET_HEART_RATE_MODE_NONE;
 
 const TARGET_HEART_RATE_LOWER_BPM = "Target Heart Rate Lower BPM";
 const TARGET_HEART_RATE_LOWER_BPM_TAG = "target_heart_rate_bpm_lower";
-const TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT = 120;
-const TARGET_HEART_RATE_LOWER_BPM_DEFAULT = "$TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT";
+const TARGET_HEART_RATE_LOWER_BPM_INT_TAG = TARGET_HEART_RATE_LOWER_BPM_TAG + INT_TAG_POSTFIX;
+const TARGET_HEART_RATE_LOWER_BPM_MIN = 0;
+const TARGET_HEART_RATE_LOWER_BPM_DEFAULT = 120;
 const TARGET_HEART_RATE_LOWER_BPM_DESCRIPTION =
     "Lower bpm of the target heart rate (for bpm target mode).";
 
 const TARGET_HEART_RATE_UPPER_BPM = "Target Heart Rate Upper BPM";
 const TARGET_HEART_RATE_UPPER_BPM_TAG = "target_heart_rate_bpm_upper";
-const TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT = 140;
-const TARGET_HEART_RATE_UPPER_BPM_DEFAULT = "$TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT";
+const TARGET_HEART_RATE_UPPER_BPM_INT_TAG = TARGET_HEART_RATE_UPPER_BPM_TAG + INT_TAG_POSTFIX;
+const TARGET_HEART_RATE_UPPER_BPM_DEFAULT = 140;
+const TARGET_HEART_RATE_UPPER_BPM_MAX = 300;
 const TARGET_HEART_RATE_UPPER_BPM_DESCRIPTION =
     "Upper bpm of the target heart rate (for bpm target mode).";
 
 const TARGET_HEART_RATE_LOWER_ZONE = "Target Heart Rate Lower Zone";
 const TARGET_HEART_RATE_LOWER_ZONE_TAG = "target_heart_rate_zone_lower";
-const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT = 3;
-const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT = "$TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT";
+const TARGET_HEART_RATE_LOWER_ZONE_INT_TAG = TARGET_HEART_RATE_LOWER_ZONE_TAG + INT_TAG_POSTFIX;
+const TARGET_HEART_RATE_LOWER_ZONE_MIN = 0;
+const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT = 3;
 const TARGET_HEART_RATE_LOWER_ZONE_DESCRIPTION =
     "Lower zone of the target heart rate (for zone target mode).";
 
 const TARGET_HEART_RATE_UPPER_ZONE = "Target Heart Rate Upper Zone";
 const TARGET_HEART_RATE_UPPER_ZONE_TAG = "target_heart_rate_zone_upper";
-const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT = 3;
-const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT = "$TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT";
+const TARGET_HEART_RATE_UPPER_ZONE_INT_TAG = TARGET_HEART_RATE_UPPER_ZONE_TAG + INT_TAG_POSTFIX;
+const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT = 3;
+const TARGET_HEART_RATE_UPPER_ZONE_MAX = 7;
 const TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION =
     "Upper zone of the target heart rate (for zone target mode).";
 
@@ -670,8 +685,10 @@ const TARGET_HEART_RATE_AUDIO_DESCRIPTION = "Should a sound effect play when HR 
 
 const TARGET_HEART_RATE_AUDIO_PERIOD = "Target HR Audio Period (seconds)";
 const TARGET_HEART_RATE_AUDIO_PERIOD_TAG = "target_heart_rate_audio_period";
-const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT = 0;
-const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT = "$TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT";
+const TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG = TARGET_HEART_RATE_AUDIO_PERIOD_TAG + INT_TAG_POSTFIX;
+const TARGET_HEART_RATE_AUDIO_PERIOD_MIN = 0;
+const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT = 0;
+const TARGET_HEART_RATE_AUDIO_PERIOD_MAX = 10;
 const TARGET_HEART_RATE_AUDIO_PERIOD_DESCRIPTION =
     "0 or 1: no periodicity. Larger than 1 seconds: " +
         "the selected sound effect will play with the periodicity until the HR is back in range.";
@@ -684,8 +701,10 @@ const TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_TWO_TONE;
 
 const AUDIO_VOLUME = "Audio Volume (%)";
 const AUDIO_VOLUME_TAG = "audio_volume";
-const AUDIO_VOLUME_DEFAULT_INT = 50;
-const AUDIO_VOLUME_DEFAULT = "$AUDIO_VOLUME_DEFAULT_INT";
+const AUDIO_VOLUME_INT_TAG = AUDIO_VOLUME_TAG + INT_TAG_POSTFIX;
+const AUDIO_VOLUME_MIN = 0;
+const AUDIO_VOLUME_DEFAULT = 50;
+const AUDIO_VOLUME_MAX = 100;
 const AUDIO_VOLUME_DESCRIPTION = "Volume base of the audio effects.";
 
 const LEADERBOARD_FEATURE = "Leaderboard Feature";
@@ -778,8 +797,10 @@ const ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION =
 
 const ATHLETE_BODY_WEIGHT = "Body Weight (kg)";
 const ATHLETE_BODY_WEIGHT_TAG = "athlete_body_weight";
-const ATHLETE_BODY_WEIGHT_DEFAULT_INT = 60;
-const ATHLETE_BODY_WEIGHT_DEFAULT = "$ATHLETE_BODY_WEIGHT_DEFAULT_INT";
+const ATHLETE_BODY_WEIGHT_INT_TAG = ATHLETE_BODY_WEIGHT_TAG + INT_TAG_POSTFIX;
+const ATHLETE_BODY_WEIGHT_MIN = 1;
+const ATHLETE_BODY_WEIGHT_DEFAULT = 60;
+const ATHLETE_BODY_WEIGHT_MAX = 300;
 const ATHLETE_BODY_WEIGHT_DESCRIPTION =
     "This settings is optional. It is only used right now for spin-down capable devices to set " +
         "the initial value displayed in the weight input until the device sends the last inputted weight. " +

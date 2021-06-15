@@ -29,7 +29,6 @@ import '../track/track_painter.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
-import '../utils/preferences.dart';
 import '../utils/sound.dart';
 import '../utils/target_heart_rate.dart';
 import '../utils/theme_manager.dart';
@@ -101,7 +100,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _uxDebug = APP_DEBUG_MODE_DEFAULT;
 
   Timer? _dataGapWatchdog;
-  int _dataGapWatchdogTime = DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT;
+  int _dataGapWatchdogTime = DATA_STREAM_GAP_WATCHDOG_DEFAULT;
   String _dataGapSoundEffect = DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
   Timer? _dataGapBeeperTimer;
 
@@ -117,7 +116,7 @@ class RecordingState extends State<RecordingScreen> {
   Tuple2<double, double> _targetHrBounds = Tuple2(0, 0);
   int? _heartRate;
   Timer? _hrBeepPeriodTimer;
-  int _hrBeepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT;
+  int _hrBeepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT;
   bool _targetHrAudio = TARGET_HEART_RATE_AUDIO_DEFAULT;
   bool _targetHrAlerting = false;
   bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
@@ -423,12 +422,8 @@ class RecordingState extends State<RecordingScreen> {
           _isLight,
         ));
 
-    _dataGapWatchdogTime = getStringIntegerPreference(
-      DATA_STREAM_GAP_WATCHDOG_TAG,
-      DATA_STREAM_GAP_WATCHDOG_DEFAULT,
-      DATA_STREAM_GAP_WATCHDOG_DEFAULT_INT,
-      prefService,
-    );
+    _dataGapWatchdogTime =
+        prefService.get<int>(DATA_STREAM_GAP_WATCHDOG_INT_TAG) ?? DATA_STREAM_GAP_WATCHDOG_DEFAULT;
     _dataGapSoundEffect = prefService.get<String>(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
         DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
 
@@ -439,12 +434,8 @@ class RecordingState extends State<RecordingScreen> {
     _targetHrAudio =
         prefService.get<bool>(TARGET_HEART_RATE_AUDIO_TAG) ?? TARGET_HEART_RATE_AUDIO_DEFAULT;
     if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
-      _hrBeepPeriod = getStringIntegerPreference(
-        TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
-        TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
-        TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT_INT,
-        prefService,
-      );
+      _hrBeepPeriod = prefService.get<int>(TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG) ??
+          TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT;
     }
 
     if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||

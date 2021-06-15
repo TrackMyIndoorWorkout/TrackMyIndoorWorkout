@@ -35,6 +35,14 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(UNIT_SYSTEM_DESCRIPTION),
         pref: UNIT_SYSTEM_TAG,
       ),
+      PrefSlider<int>(
+        title: Text(SCAN_DURATION),
+        subtitle: Text(SCAN_DURATION_DESCRIPTION),
+        pref: SCAN_DURATION_TAG,
+        trailing: (num value) => Text("$value s"),
+        min: SCAN_DURATION_MIN,
+        max: SCAN_DURATION_MAX,
+      ),
       PrefCheckbox(
         title: Text(INSTANT_SCAN),
         subtitle: Text(INSTANT_SCAN_DESCRIPTION),

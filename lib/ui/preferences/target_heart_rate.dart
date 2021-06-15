@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
-import '../../utils/preferences.dart';
 import '../../utils/sound.dart';
 import 'preferences_base.dart';
 
@@ -33,72 +32,68 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         pref: TARGET_HEART_RATE_MODE_TAG,
       ),
       PrefLabel(title: Divider(height: 1)),
-      PrefText(
-        label: TARGET_HEART_RATE_LOWER_BPM,
-        pref: TARGET_HEART_RATE_LOWER_BPM_TAG,
-        validator: (str) {
-          final upperLimit = getStringIntegerPreference(
-            TARGET_HEART_RATE_UPPER_BPM_TAG,
-            TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
-            TARGET_HEART_RATE_UPPER_BPM_DEFAULT_INT,
-            null,
-          );
-          if (str == null || !isInteger(str, 0, upperLimit)) {
-            return "Invalid lower target HR (should be 0 <= size <= $upperLimit)";
+      PrefSlider<int>(
+        title: Text(TARGET_HEART_RATE_LOWER_BPM),
+        subtitle: Text(TARGET_HEART_RATE_LOWER_BPM_DESCRIPTION),
+        pref: TARGET_HEART_RATE_LOWER_BPM_INT_TAG,
+        trailing: (num value) => Text("$value"),
+        min: TARGET_HEART_RATE_LOWER_BPM_MIN,
+        max: TARGET_HEART_RATE_UPPER_BPM_MAX,
+        onChange: (num value) {
+          final upperLimit =
+              PrefService.of(context).get<int>(TARGET_HEART_RATE_UPPER_BPM_INT_TAG) ??
+                  TARGET_HEART_RATE_UPPER_BPM_DEFAULT;
+          if (value >= upperLimit) {
+            PrefService.of(context).set<int>(TARGET_HEART_RATE_LOWER_BPM_INT_TAG, upperLimit - 1);
           }
-
-          return null;
         },
       ),
-      PrefText(
-        label: TARGET_HEART_RATE_UPPER_BPM,
-        pref: TARGET_HEART_RATE_UPPER_BPM_TAG,
-        validator: (str) {
-          final lowerLimit = getStringIntegerPreference(
-            TARGET_HEART_RATE_LOWER_BPM_TAG,
-            TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
-            TARGET_HEART_RATE_LOWER_BPM_DEFAULT_INT,
-            null,
-          );
-          if (str == null || !isInteger(str, lowerLimit, 300)) {
-            return "Invalid heart rate limit (should be $lowerLimit <= size <= 300)";
+      PrefSlider<int>(
+        title: Text(TARGET_HEART_RATE_UPPER_BPM),
+        subtitle: Text(TARGET_HEART_RATE_UPPER_BPM_DESCRIPTION),
+        pref: TARGET_HEART_RATE_UPPER_BPM_INT_TAG,
+        trailing: (num value) => Text("$value"),
+        min: TARGET_HEART_RATE_LOWER_BPM_MIN,
+        max: TARGET_HEART_RATE_UPPER_BPM_MAX,
+        onChange: (num value) {
+          final lowerLimit =
+              PrefService.of(context).get<int>(TARGET_HEART_RATE_LOWER_BPM_INT_TAG) ??
+                  TARGET_HEART_RATE_LOWER_BPM_DEFAULT;
+          if (value <= lowerLimit) {
+            PrefService.of(context).set<int>(TARGET_HEART_RATE_UPPER_BPM_INT_TAG, lowerLimit + 1);
           }
-
-          return null;
         },
       ),
-      PrefText(
-        label: TARGET_HEART_RATE_LOWER_ZONE,
-        pref: TARGET_HEART_RATE_LOWER_ZONE_TAG,
-        validator: (str) {
-          final upperLimit = getStringIntegerPreference(
-            TARGET_HEART_RATE_UPPER_ZONE_TAG,
-            TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
-            TARGET_HEART_RATE_UPPER_ZONE_DEFAULT_INT,
-            null,
-          );
-          if (str == null || !isInteger(str, 0, upperLimit)) {
-            return "Invalid lower zone (should be 0 <= size <= $upperLimit)";
+      PrefSlider<int>(
+        title: Text(TARGET_HEART_RATE_LOWER_ZONE),
+        subtitle: Text(TARGET_HEART_RATE_LOWER_ZONE_DESCRIPTION),
+        pref: TARGET_HEART_RATE_LOWER_ZONE_INT_TAG,
+        trailing: (num value) => Text("$value"),
+        min: TARGET_HEART_RATE_LOWER_ZONE_MIN,
+        max: TARGET_HEART_RATE_UPPER_ZONE_MAX,
+        onChange: (num value) {
+          final upperLimit =
+              PrefService.of(context).get<int>(TARGET_HEART_RATE_UPPER_ZONE_INT_TAG) ??
+                  TARGET_HEART_RATE_UPPER_ZONE_DEFAULT;
+          if (value > upperLimit) {
+            PrefService.of(context).set<int>(TARGET_HEART_RATE_LOWER_ZONE_INT_TAG, upperLimit);
           }
-
-          return null;
         },
       ),
-      PrefText(
-        label: TARGET_HEART_RATE_UPPER_ZONE,
-        pref: TARGET_HEART_RATE_UPPER_ZONE_TAG,
-        validator: (str) {
-          final lowerLimit = getStringIntegerPreference(
-            TARGET_HEART_RATE_LOWER_ZONE_TAG,
-            TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
-            TARGET_HEART_RATE_LOWER_ZONE_DEFAULT_INT,
-            null,
-          );
-          if (str == null || !isInteger(str, lowerLimit, 7)) {
-            return "Invalid upper zone (should be $lowerLimit <= size <= 300)";
+      PrefSlider<int>(
+        title: Text(TARGET_HEART_RATE_UPPER_ZONE),
+        subtitle: Text(TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION),
+        pref: TARGET_HEART_RATE_UPPER_ZONE_INT_TAG,
+        trailing: (num value) => Text("$value"),
+        min: TARGET_HEART_RATE_LOWER_ZONE_MIN,
+        max: TARGET_HEART_RATE_UPPER_ZONE_MAX,
+        onChange: (num value) {
+          final lowerLimit =
+              PrefService.of(context).get<int>(TARGET_HEART_RATE_LOWER_ZONE_INT_TAG) ??
+                  TARGET_HEART_RATE_LOWER_ZONE_DEFAULT;
+          if (value < lowerLimit) {
+            PrefService.of(context).set<int>(TARGET_HEART_RATE_UPPER_ZONE_INT_TAG, lowerLimit);
           }
-
-          return null;
         },
       ),
       PrefCheckbox(
@@ -106,16 +101,13 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(TARGET_HEART_RATE_AUDIO_DESCRIPTION),
         pref: TARGET_HEART_RATE_AUDIO_TAG,
       ),
-      PrefText(
-        label: TARGET_HEART_RATE_AUDIO_PERIOD,
-        pref: TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
-        validator: (str) {
-          if (str == null || !isInteger(str, 0, 10)) {
-            return "Invalid periodicity: should be 0 <= period <= 10)";
-          }
-
-          return null;
-        },
+      PrefSlider<int>(
+        title: Text(TARGET_HEART_RATE_AUDIO_PERIOD),
+        subtitle: Text(TARGET_HEART_RATE_AUDIO_PERIOD_DESCRIPTION),
+        pref: TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG,
+        trailing: (num value) => Text("$value s"),
+        min: TARGET_HEART_RATE_AUDIO_PERIOD_MIN,
+        max: TARGET_HEART_RATE_AUDIO_PERIOD_MAX,
       ),
       PrefLabel(
         title: Text(TARGET_HEART_RATE_SOUND_EFFECT),
@@ -146,16 +138,13 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
       ),
       PrefLabel(title: Divider(height: 1)),
-      PrefText(
-        label: AUDIO_VOLUME,
-        pref: AUDIO_VOLUME_TAG,
-        validator: (str) {
-          if (str == null || !isInteger(str, 0, 100)) {
-            return "Invalid, has to be: 0% <= volume <= 100%)";
-          }
-
-          return null;
-        },
+      PrefSlider<int>(
+        title: Text(AUDIO_VOLUME),
+        subtitle: Text(AUDIO_VOLUME_DESCRIPTION),
+        pref: AUDIO_VOLUME_INT_TAG,
+        trailing: (num value) => Text("$value %"),
+        min: AUDIO_VOLUME_MIN,
+        max: AUDIO_VOLUME_MAX,
       ),
     ];
 

@@ -12,7 +12,6 @@ import '../persistence/preferences.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
-import '../utils/preferences.dart';
 import 'export_model.dart';
 import 'export_record.dart';
 
@@ -28,7 +27,7 @@ abstract class ActivityExport {
   bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
   int _lastPositiveHeartRate = 0;
   String heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
-  int heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT_INT;
+  int heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT;
   String heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
 
   ActivityExport({required this.nonCompressedFileExtension, required this.nonCompressedMimeType}) {
@@ -38,12 +37,8 @@ abstract class ActivityExport {
         prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
     heartRateGapWorkaround =
         prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
-    heartRateUpperLimit = getStringIntegerPreference(
-      HEART_RATE_UPPER_LIMIT_TAG,
-      HEART_RATE_UPPER_LIMIT_DEFAULT,
-      HEART_RATE_UPPER_LIMIT_DEFAULT_INT,
-      prefService,
-    );
+    heartRateUpperLimit =
+        prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
     heartRateLimitingMethod =
         prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
   }

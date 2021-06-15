@@ -1,8 +1,10 @@
 import 'dart:collection';
 
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
+
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
-import '../../utils/preferences.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../gatt_constants.dart';
@@ -13,7 +15,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   ShortMetricDescriptor? strokeCountMetric;
   ShortMetricDescriptor? paceMetric;
 
-  int _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT_INT;
+  int _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT;
   ListQueue<int> _strokeRates = ListQueue<int>();
   int _strokeRateSum = 0;
 
@@ -53,12 +55,9 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   @override
   void processFlag(int flag) {
     super.processFlag(flag);
-    _strokeRateWindowSize = getStringIntegerPreference(
-      STROKE_RATE_SMOOTHING_TAG,
-      STROKE_RATE_SMOOTHING_DEFAULT,
-      STROKE_RATE_SMOOTHING_DEFAULT_INT,
-      null,
-    );
+    final prefService = Get.find<BasePrefService>();
+    _strokeRateWindowSize =
+        prefService.get<int>(STROKE_RATE_SMOOTHING_INT_TAG) ?? STROKE_RATE_SMOOTHING_DEFAULT;
 
     // KayakPro Compact: two flag bytes
     // 44 00101100 (stroke rate, stroke count), total distance, instant pace, instant power
