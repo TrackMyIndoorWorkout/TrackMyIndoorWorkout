@@ -44,14 +44,14 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
           pref: prefSpec.thresholdTag(sport),
           validator: (str) {
             if (str == null || !isNumber(str, 0.1, -1)) {
-              return "Invalid threshold (should be integer >= 0.1)";
+              return "Invalid threshold (should be number >= 0.1)";
             }
 
             return null;
           },
         ),
         PrefText(
-          label: sport + " " + prefSpec.title + PreferencesSpec.ZONES_CAPITAL,
+          label: "$sport ${prefSpec.title}${PreferencesSpec.ZONES_CAPITAL}",
           pref: prefSpec.zonesTag(sport),
           validator: (str) {
             if (str == null || !isMonotoneIncreasingList(str)) {
