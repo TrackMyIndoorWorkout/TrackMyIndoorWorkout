@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
@@ -28,7 +29,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     super.dispose();
   }
 
-  void startScan() {
+  void _startScan() {
     setState(() {
       _scanResults.clear();
     });
@@ -43,7 +44,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      startScan();
+      _startScan();
     });
   }
 
@@ -53,67 +54,94 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
       body: RefreshIndicator(
         onRefresh: () async {
           WidgetsBinding.instance?.addPostFrameCallback((_) {
-            startScan();
+            _startScan();
           });
         },
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              StreamBuilder<List<BluetoothDevice>>(
-                stream: Stream.periodic(Duration(seconds: 2))
-                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
-                initialData: [],
-                builder: (c, snapshot) => snapshot.data == null
-                    ? Container()
-                    : Column(
-                        children: snapshot.data!
-                            .where((h) =>
-                                _scanResults.contains(h.id.id) ||
-                                (Get.isRegistered<HeartRateMonitor>() &&
-                                    Get.find<HeartRateMonitor>().device?.id.id == h.id.id))
-                            .map((d) {
-                          return ListTile(
-                            title: TextOneLine(
-                              d.name,
-                              overflow: TextOverflow.ellipsis,
-                              style: _themeManager.boldStyle(_captionStyle,
-                                  fontSizeFactor: FONT_SIZE_FACTOR),
-                            ),
-                            subtitle: Text(d.id.id, style: _subtitleStyle),
-                            trailing: StreamBuilder<BluetoothDeviceState>(
-                              stream: d.state,
-                              initialData: BluetoothDeviceState.disconnected,
-                              builder: (c, snapshot) {
-                                if (snapshot.data == BluetoothDeviceState.connected) {
-                                  return _themeManager.getGreenFab(Icons.favorite, () {
-                                    Get.snackbar("Info", "Already connected");
-                                  });
-                                } else {
-                                  return Text(snapshot.data.toString());
-                                }
-                              },
-                            ),
-                          );
-                        }).toList(growable: false),
-                      ),
-              ),
-              StreamBuilder<List<ScanResult>>(
-                stream: FlutterBlue.instance.scanResults,
-                initialData: [],
-                builder: (c, snapshot) => snapshot.data == null
-                    ? Container()
-                    : Column(
-                        children: snapshot.data!.where((d) => d.isWorthy()).map((r) {
-                        _scanResults.add(r.device.id.id);
-                        return HeartRateMonitorScanResultTile(result: r);
-                      }).toList(growable: false)),
-              ),
-            ],
-          ),
+        child: ListView(
+          physics: const BouncingScrollPhysics(parent: const AlwaysScrollableScrollPhysics()),
+          children: [
+            StreamBuilder<List<BluetoothDevice>>(
+              stream: Stream.periodic(Duration(seconds: 2))
+                  .asyncMap((_) => FlutterBlue.instance.connectedDevices),
+              initialData: [],
+              builder: (c, snapshot) => snapshot.data == null
+                  ? Container()
+                  : Column(
+                      children: snapshot.data!
+                          .where((h) =>
+                              _scanResults.contains(h.id.id) ||
+                              (Get.isRegistered<HeartRateMonitor>() &&
+                                  Get.find<HeartRateMonitor>().device?.id.id == h.id.id))
+                          .map((d) {
+                        return ListTile(
+                          title: TextOneLine(
+                            d.name,
+                            overflow: TextOverflow.ellipsis,
+                            style: _themeManager.boldStyle(_captionStyle,
+                                fontSizeFactor: FONT_SIZE_FACTOR),
+                          ),
+                          subtitle: Text(d.id.id, style: _subtitleStyle),
+                          trailing: StreamBuilder<BluetoothDeviceState>(
+                            stream: d.state,
+                            initialData: BluetoothDeviceState.disconnected,
+                            builder: (c, snapshot) {
+                              if (snapshot.data == BluetoothDeviceState.connected) {
+                                return _themeManager.getGreenFab(Icons.favorite, () {
+                                  Get.snackbar("Info", "Already connected");
+                                });
+                              } else {
+                                return Text(snapshot.data.toString());
+                              }
+                            },
+                          ),
+                        );
+                      }).toList(growable: false),
+                    ),
+            ),
+            Divider(),
+            StreamBuilder<List<ScanResult>>(
+              stream: FlutterBlue.instance.scanResults,
+              initialData: [],
+              builder: (c, snapshot) => snapshot.data == null ||
+                      snapshot.data!.where((d) => d.isWorthy()).length <= 0
+                  ? Text("Refresh for available monitors", textAlign: TextAlign.center, maxLines: 5)
+                  : Column(
+                      children: snapshot.data!.where((d) => d.isWorthy()).map((r) {
+                      _scanResults.add(r.device.id.id);
+                      return HeartRateMonitorScanResultTile(result: r);
+                    }).toList(growable: false)),
+            ),
+          ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.back(result: true)),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Container(
+        margin: EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueFab(Icons.clear, () => Get.back(result: true)),
+            StreamBuilder<bool>(
+              stream: FlutterBlue.instance.isScanning,
+              initialData: true,
+              builder: (c, snapshot) {
+                if (snapshot.data == null || snapshot.data!) {
+                  return JumpingDotsProgressIndicator(
+                    fontSize: 30.0,
+                    color: Colors.white,
+                  );
+                } else {
+                  return IconButton(
+                    icon: Icon(Icons.refresh),
+                    onPressed: () => _startScan(),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
