@@ -381,7 +381,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
               stream: Stream.periodic(Duration(seconds: 2))
                   .asyncMap((_) => FlutterBlue.instance.connectedDevices),
               initialData: [],
-              builder: (c, snapshot) => snapshot.data == null
+              builder: (c, snapshot) => snapshot.data == null ||
+                      snapshot.data!.where((d) => _advertisementCache.hasEntry(d.id.id)).length <= 0
                   ? Container()
                   : Column(
                       children: snapshot.data!
@@ -434,11 +435,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       }).toList(growable: false),
                     ),
             ),
+            Divider(),
             StreamBuilder<List<ScanResult>>(
               stream: FlutterBlue.instance.scanResults,
               initialData: [],
-              builder: (c, snapshot) => snapshot.data == null
-                  ? Container()
+              builder: (c, snapshot) => snapshot.data == null ||
+                      snapshot.data!.where((d) => d.isWorthy(_filterDevices)).length <= 0
+                  ? Text("Refresh for available devices", textAlign: TextAlign.center, maxLines: 5)
                   : Column(
                       children: snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
                         addScannedDevice(r);
