@@ -15,7 +15,7 @@ class CadenceSensor extends IntegerSensor {
   ShortMetricDescriptor? revolutionTime;
   ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
 
-  CadenceSensor(device) : super(CADENCE_SERVICE_ID, CADENCE_MEASUREMENT_ID, device);
+  CadenceSensor(device) : super(CYCLING_CADENCE_SERVICE_ID, CYCLING_CADENCE_MEASUREMENT_ID, device);
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
   @override
