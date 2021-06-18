@@ -121,10 +121,10 @@ abstract class DeviceBase {
     attached = true;
   }
 
-  Future<void> cancelSubscription() async {
+  void cancelSubscription() {
     if (uxDebug) return;
 
-    await subscription?.cancel();
+    subscription?.cancel();
     subscription = null;
   }
 
@@ -143,7 +143,7 @@ abstract class DeviceBase {
       }
       attached = false;
     }
-    await cancelSubscription();
+    cancelSubscription();
   }
 
   Future<void> disconnect() async {
