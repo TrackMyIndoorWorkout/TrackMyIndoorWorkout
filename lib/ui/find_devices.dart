@@ -79,8 +79,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
       _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
       _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
       _scannedDevices.clear();
+      FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
     });
-    FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
   }
 
   void addScannedDevice(ScanResult scanResult) {
@@ -381,8 +381,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               stream: Stream.periodic(Duration(seconds: 2))
                   .asyncMap((_) => FlutterBlue.instance.connectedDevices),
               initialData: [],
-              builder: (c, snapshot) => snapshot.data == null ||
-                      snapshot.data!.where((d) => _advertisementCache.hasEntry(d.id.id)).length <= 0
+              builder: (c, snapshot) => snapshot.data == null
                   ? Container()
                   : Column(
                       children: snapshot.data!
@@ -439,9 +438,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
             StreamBuilder<List<ScanResult>>(
               stream: FlutterBlue.instance.scanResults,
               initialData: [],
-              builder: (c, snapshot) => snapshot.data == null ||
-                      snapshot.data!.where((d) => d.isWorthy(_filterDevices)).length <= 0
-                  ? Text("Refresh for available devices", textAlign: TextAlign.center, maxLines: 5)
+              builder: (c, snapshot) => snapshot.data == null
+                  ? Container()
                   : Column(
                       children: snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
                         addScannedDevice(r);
