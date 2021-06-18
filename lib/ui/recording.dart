@@ -348,13 +348,13 @@ class RecordingState extends State<RecordingScreen> {
         if (_heartRateMonitor?.subscription != null) {
           _heartRateMonitor?.cancelSubscription();
         }
-        _heartRateMonitor?.pumpMetric((heartRate) async {
+        _heartRateMonitor?.pumpMetric((measurement) async {
           setState(() {
-            if (heartRate > 0 || _heartRate == null || _heartRate == 0) {
-              _heartRate = heartRate;
+            if (measurement > 0 || _heartRate == null || _heartRate == 0) {
+              _heartRate = measurement;
             }
-            _values[4] = heartRate.toString();
-            amendZoneToValue(3, heartRate);
+            _values[4] = measurement.toString();
+            amendZoneToValue(3, measurement);
           });
         });
       });

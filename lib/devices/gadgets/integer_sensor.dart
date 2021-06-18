@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'device_base.dart';
 
-typedef MetricProcessingFunction = Function(int heartRate);
+typedef IntegerMetricProcessingFunction = Function(int measurement);
 
 abstract class IntegerSensor extends DeviceBase {
   int featureFlag = -1;
@@ -31,7 +31,7 @@ abstract class IntegerSensor extends DeviceBase {
     }
   }
 
-  void pumpMetric(MetricProcessingFunction metricProcessingFunction) {
+  void pumpMetric(IntegerMetricProcessingFunction metricProcessingFunction) {
     subscription = _listenToMetric.listen((newValue) {
       metric = newValue;
       metricProcessingFunction(newValue);
