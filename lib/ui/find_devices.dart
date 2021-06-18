@@ -269,7 +269,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     if (shouldRegister) {
-      await Get.delete<FitnessEquipment>();
+      if (Get.isRegistered<FitnessEquipment>()) {
+        await Get.delete<FitnessEquipment>();
+      }
       Get.put<FitnessEquipment>(fitnessEquipment);
     }
 
@@ -503,7 +505,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             if (heartRateMonitor == null ||
                                 heartRateMonitor.device?.id.id != r.device.id.id) {
                               heartRateMonitor = new HeartRateMonitor(r.device);
-                              await Get.delete<HeartRateMonitor>();
+                              if (Get.isRegistered<HeartRateMonitor>()) {
+                                await Get.delete<HeartRateMonitor>();
+                              }
                               Get.put<HeartRateMonitor>(heartRateMonitor);
                               await heartRateMonitor.connect();
                               await heartRateMonitor.discover();

@@ -113,7 +113,9 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         }
         if (heartRateMonitor == null || heartRateMonitor!.device?.id.id != result.device.id.id) {
           heartRateMonitor = new HeartRateMonitor(result.device);
-          Get.delete<HeartRateMonitor>();
+          if (Get.isRegistered<HeartRateMonitor>()) {
+            Get.delete<HeartRateMonitor>();
+          }
           Get.put<HeartRateMonitor>(heartRateMonitor!);
           await heartRateMonitor!.connect();
           await heartRateMonitor!.discover();
