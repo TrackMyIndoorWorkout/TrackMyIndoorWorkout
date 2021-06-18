@@ -29,7 +29,7 @@ abstract class DeviceDescriptor {
   String? dataCharacteristicId;
   final bool antPlus;
 
-  int featuresFlag = 0;
+  int featuresFlag = -1;
   int byteCounter = 0;
 
   bool canMeasureHeartRate;

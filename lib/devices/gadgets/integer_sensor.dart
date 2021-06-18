@@ -6,7 +6,8 @@ import 'device_base.dart';
 typedef MetricProcessingFunction = Function(int heartRate);
 
 abstract class IntegerSensor extends DeviceBase {
-  int featureFlag = 0;
+  int featureFlag = -1;
+  int expectedLength = 0;
   int metric = 0;
 
   IntegerSensor(
