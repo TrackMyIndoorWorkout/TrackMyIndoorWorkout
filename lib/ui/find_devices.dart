@@ -44,7 +44,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
   List<BluetoothDevice> _scannedDevices = [];
   TextStyle _captionStyle = TextStyle();
   TextStyle _subtitleStyle = TextStyle();
-  int? _heartRate;
   AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   ThemeManager _themeManager = Get.find<ThemeManager>();
   double _ringDiameter = 1.0;
@@ -79,8 +78,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
       _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
       _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
       _scannedDevices.clear();
+      FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
     });
-    FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
   }
 
   void addScannedDevice(ScanResult scanResult) {
@@ -124,14 +123,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
     _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
     _ringWidth = _ringDiameter * 0.2;
-
-    var heartRateMonitor =
-        Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    heartRateMonitor?.pumpMetric((heartRate) {
-      setState(() {
-        _heartRate = heartRate;
-      });
-    });
   }
 
   Future<bool> goToRecording(BluetoothDevice device, BluetoothDeviceState initialState) async {
@@ -269,7 +260,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     if (shouldRegister) {
-      await Get.delete<FitnessEquipment>();
+      if (Get.isRegistered<FitnessEquipment>()) {
+        await Get.delete<FitnessEquipment>();
+      }
       Get.put<FitnessEquipment>(fitnessEquipment);
     }
 
@@ -381,8 +374,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               stream: Stream.periodic(Duration(seconds: 2))
                   .asyncMap((_) => FlutterBlue.instance.connectedDevices),
               initialData: [],
-              builder: (c, snapshot) => snapshot.data == null ||
-                      snapshot.data!.where((d) => _advertisementCache.hasEntry(d.id.id)).length <= 0
+              builder: (c, snapshot) => snapshot.data == null
                   ? Container()
                   : Column(
                       children: snapshot.data!
@@ -409,10 +401,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 return _themeManager.getGreenGenericFab(
                                   (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
                                           false)
-                                      ? ((Get.isRegistered<HeartRateMonitor>() &&
-                                              Get.find<HeartRateMonitor>().device?.id.id == d.id.id)
-                                          ? Text(_heartRate?.toString() ?? "--")
-                                          : Icon(Icons.favorite))
+                                      ? Icon(Icons.favorite)
                                       : Icon(Icons.open_in_new),
                                   () async {
                                     if (_advertisementCache
@@ -439,9 +428,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
             StreamBuilder<List<ScanResult>>(
               stream: FlutterBlue.instance.scanResults,
               initialData: [],
-              builder: (c, snapshot) => snapshot.data == null ||
-                      snapshot.data!.where((d) => d.isWorthy(_filterDevices)).length <= 0
-                  ? Text("Refresh for available devices", textAlign: TextAlign.center, maxLines: 5)
+              builder: (c, snapshot) => snapshot.data == null
+                  ? Container()
                   : Column(
                       children: snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
                         addScannedDevice(r);
@@ -505,18 +493,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             if (heartRateMonitor == null ||
                                 heartRateMonitor.device?.id.id != r.device.id.id) {
                               heartRateMonitor = new HeartRateMonitor(r.device);
-                              await Get.delete<HeartRateMonitor>();
+                              if (Get.isRegistered<HeartRateMonitor>()) {
+                                await Get.delete<HeartRateMonitor>();
+                              }
                               Get.put<HeartRateMonitor>(heartRateMonitor);
                               await heartRateMonitor.connect();
                               await heartRateMonitor.discover();
                             }
-
-                            await heartRateMonitor.attach();
-                            heartRateMonitor.pumpMetric((heartRate) {
-                              setState(() {
-                                _heartRate = heartRate;
-                              });
-                            });
                           },
                         );
                       }).toList(growable: false),

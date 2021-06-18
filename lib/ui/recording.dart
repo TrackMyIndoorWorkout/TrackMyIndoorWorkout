@@ -346,7 +346,7 @@ class RecordingState extends State<RecordingScreen> {
       }
       _heartRateMonitor?.attach().then((_) async {
         if (_heartRateMonitor?.subscription != null) {
-          await _heartRateMonitor?.cancelSubscription();
+          _heartRateMonitor?.cancelSubscription();
         }
         _heartRateMonitor?.pumpMetric((heartRate) async {
           setState(() {
@@ -566,7 +566,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     try {
-      await _heartRateMonitor?.cancelSubscription();
+      _heartRateMonitor?.cancelSubscription();
     } on PlatformException catch (e, stack) {
       debugPrint("HRM device got turned off?");
       debugPrint("$e");

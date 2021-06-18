@@ -32,8 +32,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   void _startScan() {
     setState(() {
       _scanResults.clear();
+      FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
     });
-    FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
   }
 
   @override
@@ -102,9 +102,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
             StreamBuilder<List<ScanResult>>(
               stream: FlutterBlue.instance.scanResults,
               initialData: [],
-              builder: (c, snapshot) => snapshot.data == null ||
-                      snapshot.data!.where((d) => d.isWorthy()).length <= 0
-                  ? Text("Refresh for available monitors", textAlign: TextAlign.center, maxLines: 5)
+              builder: (c, snapshot) => snapshot.data == null
+                  ? Container()
                   : Column(
                       children: snapshot.data!.where((d) => d.isWorthy()).map((r) {
                       _scanResults.add(r.device.id.id);

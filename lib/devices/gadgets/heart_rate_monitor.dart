@@ -15,10 +15,9 @@ class HeartRateMonitor extends IntegerSensor {
     if (data.length < 1) return false;
 
     var flag = data[0];
-    // 16 bit revolution and 16 bit time
-    if (featureFlag != flag && flag > 0) {
-      var expectedLength = 1; // The flag
-      // Has wheel revolution? (first bit)
+    if (featureFlag != flag) {
+      expectedLength = 1; // The flag
+      // Heart rate value format (first bit)
       if (flag % 2 == 0) {
         _byteHeartRateMetric = ByteMetricDescriptor(lsb: expectedLength);
         expectedLength += 1; // 8 bit HR
@@ -29,7 +28,7 @@ class HeartRateMonitor extends IntegerSensor {
       flag ~/= 2;
       // Sensor Contact Status Bit Pair
       flag ~/= 4;
-      // Energy Expanded Status
+      // Energy Expended Status
       if (flag % 2 == 1) {
         expectedLength += 2; // 16 bit, kJ
       }
@@ -39,11 +38,9 @@ class HeartRateMonitor extends IntegerSensor {
         expectedLength += 2; // 1/1024 sec
       }
       featureFlag = flag;
-
-      return data.length == expectedLength;
     }
 
-    return flag > 0;
+    return featureFlag >= 0 && data.length == expectedLength;
   }
 
   @override

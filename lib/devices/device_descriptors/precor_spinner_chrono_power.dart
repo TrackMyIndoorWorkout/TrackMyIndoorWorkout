@@ -32,8 +32,6 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
 
   @override
   bool canDataProcessed(List<int> data) {
-    if (data == null) return false;
-
     if (data.length != 19) return false;
 
     const measurementPrefix = [83, 89, 22];
