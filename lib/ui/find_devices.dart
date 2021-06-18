@@ -44,7 +44,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
   List<BluetoothDevice> _scannedDevices = [];
   TextStyle _captionStyle = TextStyle();
   TextStyle _subtitleStyle = TextStyle();
-  int? _heartRate;
   AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   ThemeManager _themeManager = Get.find<ThemeManager>();
   double _ringDiameter = 1.0;
@@ -124,14 +123,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
     _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
     _ringWidth = _ringDiameter * 0.2;
-
-    var heartRateMonitor =
-        Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    heartRateMonitor?.pumpMetric((heartRate) {
-      setState(() {
-        _heartRate = heartRate;
-      });
-    });
   }
 
   Future<bool> goToRecording(BluetoothDevice device, BluetoothDeviceState initialState) async {
@@ -410,10 +401,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 return _themeManager.getGreenGenericFab(
                                   (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
                                           false)
-                                      ? ((Get.isRegistered<HeartRateMonitor>() &&
-                                              Get.find<HeartRateMonitor>().device?.id.id == d.id.id)
-                                          ? Text(_heartRate?.toString() ?? "--")
-                                          : Icon(Icons.favorite))
+                                      ? Icon(Icons.favorite)
                                       : Icon(Icons.open_in_new),
                                   () async {
                                     if (_advertisementCache
@@ -512,13 +500,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               await heartRateMonitor.connect();
                               await heartRateMonitor.discover();
                             }
-
-                            await heartRateMonitor.attach();
-                            heartRateMonitor.pumpMetric((heartRate) {
-                              setState(() {
-                                _heartRate = heartRate;
-                              });
-                            });
                           },
                         );
                       }).toList(growable: false),
