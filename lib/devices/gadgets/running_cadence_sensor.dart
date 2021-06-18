@@ -21,7 +21,12 @@ class RunningCadenceSensor extends ComplexSensor {
   late bool extendTuning;
   late Random _random;
 
-  RunningCadenceSensor(device, double powerFactor) : super(RUNNING_CADENCE_SERVICE_ID, RUNNING_CADENCE_MEASUREMENT_ID, device) {
+  RunningCadenceSensor(device, double powerFactor)
+      : super(
+          RUNNING_CADENCE_SERVICE_ID,
+          RUNNING_CADENCE_MEASUREMENT_ID,
+          device,
+        ) {
     final prefService = Get.find<BasePrefService>();
     extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
     _random = Random();
@@ -38,7 +43,8 @@ class RunningCadenceSensor extends ComplexSensor {
     if (featureFlag != flag && flag >= 0) {
       var expectedLength = 1; // The flag itself + instant speed and cadence
       // UInt16, m/s with 1/256 resolution -> immediately convert it to km/h with the divider
-      speedMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1, divider: 256.0 / DeviceDescriptor.MS2KMH);
+      speedMetric = ShortMetricDescriptor(
+          lsb: expectedLength, msb: expectedLength + 1, divider: 256.0 / DeviceDescriptor.MS2KMH);
       expectedLength += 2;
       cadenceMetric = ByteMetricDescriptor(lsb: expectedLength);
       expectedLength += 1;
@@ -52,7 +58,8 @@ class RunningCadenceSensor extends ComplexSensor {
       // Has total distance? (second bit)
       if (flag % 2 == 1) {
         // UInt32, 1/10 m
-        distanceMetric = LongMetricDescriptor(lsb: expectedLength, msb: expectedLength + 3, divider: 10.0);
+        distanceMetric =
+            LongMetricDescriptor(lsb: expectedLength, msb: expectedLength + 3, divider: 10.0);
         expectedLength += 4;
       } else {
         return false;
@@ -67,7 +74,8 @@ class RunningCadenceSensor extends ComplexSensor {
 
   @override
   RecordWithSport processMeasurement(List<int> data) {
-    if (!canMeasurementProcessed(data)) return RecordWithSport.getBlank(ActivityType.Run, uxDebug, _random);
+    if (!canMeasurementProcessed(data))
+      return RecordWithSport.getBlank(ActivityType.Run, uxDebug, _random);
 
     return RecordWithSport(
       timeStamp: DateTime.now().millisecondsSinceEpoch,
