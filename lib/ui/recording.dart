@@ -1424,7 +1424,7 @@ class RecordingState extends State<RecordingScreen> {
                 Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
               } else {
                 final hasLeaderboardData = await _database.hasLeaderboardData();
-                await Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+                await Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
               }
             }),
             _themeManager.getBlueFab(Icons.battery_unknown, () async {

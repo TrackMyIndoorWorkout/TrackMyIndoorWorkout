@@ -282,13 +282,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
         await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
       }
 
-      Get.to(RecordingScreen(
-        device: device,
-        descriptor: descriptor,
-        initialState: initialState,
-        size: Get.mediaQuery.size,
-        sport: descriptor.defaultSport,
-      ));
+      Get.to(() => RecordingScreen(
+            device: device,
+            descriptor: descriptor!,
+            initialState: initialState,
+            size: Get.mediaQuery.size,
+            sport: descriptor.defaultSport,
+          ));
     }
 
     return true;
@@ -537,7 +537,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           _themeManager.getBlueFab(Icons.list_alt, () async {
             final database = Get.find<AppDatabase>();
             final hasLeaderboardData = await database.hasLeaderboardData();
-            Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+            Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
           }),
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
@@ -558,7 +558,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
               }
             },
           ),
-          _themeManager.getBlueFab(Icons.settings, () async => Get.to(PreferencesHubScreen())),
+          _themeManager.getBlueFab(
+              Icons.settings, () async => Get.to(() => PreferencesHubScreen())),
         ],
       ),
     );

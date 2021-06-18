@@ -200,7 +200,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         IconButton(
           icon: _themeManager.getActionIcon(Icons.chevron_right, size),
           onPressed: () async =>
-              await Get.to(RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
+              await Get.to(() => RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
         ),
       ],
     );
@@ -232,18 +232,18 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       _themeManager.getExitFab(),
       _themeManager.getHelpFab(),
       _themeManager.getBlueFab(Icons.file_upload, () async {
-        await Get.to(ImportForm())?.whenComplete(() => setState(() {
+        await Get.to(() => ImportForm())?.whenComplete(() => setState(() {
               _editCount++;
             }));
       }),
       _themeManager.getBlueFab(Icons.collections_bookmark, () async {
-        await Get.to(DeviceUsagesScreen());
+        await Get.to(() => DeviceUsagesScreen());
       }),
       _themeManager.getBlueFab(Icons.bolt, () async {
-        await Get.to(PowerTunesScreen());
+        await Get.to(() => PowerTunesScreen());
       }),
       _themeManager.getBlueFab(Icons.whatshot, () async {
-        await Get.to(CalorieTunesScreen());
+        await Get.to(() => CalorieTunesScreen());
       }),
     ];
 
@@ -316,7 +316,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               collapsed: Container(),
               expanded: ListTile(
                 onTap: () async =>
-                    await Get.to(RecordsScreen(activity: item, size: Get.mediaQuery.size)),
+                    await Get.to(() => RecordsScreen(activity: item, size: Get.mediaQuery.size)),
                 title: Column(
                   children: [
                     Row(

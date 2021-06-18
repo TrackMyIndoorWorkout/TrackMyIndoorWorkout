@@ -41,7 +41,7 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
                   padding: const EdgeInsets.all(5.0),
                   margin: const EdgeInsets.all(5.0),
                   child: ElevatedButton(
-                    onPressed: () => Get.to(SportLeaderboardScreen(sport: sport)),
+                    onPressed: () => Get.to(() => SportLeaderboardScreen(sport: sport)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
