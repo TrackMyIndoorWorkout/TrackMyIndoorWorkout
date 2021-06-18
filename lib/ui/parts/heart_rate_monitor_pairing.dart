@@ -32,8 +32,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   void _startScan() {
     setState(() {
       _scanResults.clear();
+      FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
     });
-    FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
   }
 
   @override
