@@ -6,7 +6,7 @@ import '../gatt_constants.dart';
 import 'cadence_data.dart';
 import 'integer_sensor.dart';
 
-class CadenceSensor extends IntegerSensor {
+class CyclingCadenceSensor extends IntegerSensor {
   static const int REVOLUTION_SLIDING_WINDOW = 10; // Seconds
   static const int EVENT_TIME_OVERFLOW = 64; // Overflows every 64 seconds
 
@@ -15,7 +15,7 @@ class CadenceSensor extends IntegerSensor {
   ShortMetricDescriptor? revolutionTime;
   ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
 
-  CadenceSensor(device) : super(CYCLING_CADENCE_SERVICE_ID, CYCLING_CADENCE_MEASUREMENT_ID, device);
+  CyclingCadenceSensor(device) : super(CYCLING_CADENCE_SERVICE_ID, CYCLING_CADENCE_MEASUREMENT_ID, device);
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
   @override
