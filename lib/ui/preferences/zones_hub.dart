@@ -38,7 +38,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
         padding: const EdgeInsets.all(5.0),
         margin: const EdgeInsets.all(5.0),
         child: ElevatedButton(
-          onPressed: () => Get.to(MeasurementZonesPreferencesScreen(sport)),
+          onPressed: () => Get.to(() => MeasurementZonesPreferencesScreen(sport)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -60,7 +60,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
       padding: const EdgeInsets.all(5.0),
       margin: const EdgeInsets.all(5.0),
       child: ElevatedButton(
-        onPressed: () => Get.to(ZoneIndexDisplayPreferencesScreen()),
+        onPressed: () => Get.to(() => ZoneIndexDisplayPreferencesScreen()),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,

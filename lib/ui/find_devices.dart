@@ -38,6 +38,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _instantScan = INSTANT_SCAN_DEFAULT;
   int _scanDuration = SCAN_DURATION_DEFAULT;
   bool _autoConnect = AUTO_CONNECT_DEFAULT;
+  bool _isScanning = false;
+  bool _goingToRecording = false;
   List<String> _lastEquipmentIds = [];
   bool _filterDevices = DEVICE_FILTERING_DEFAULT;
   BluetoothDevice? _openedDevice;
@@ -72,13 +74,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
   }
 
   void _startScan() {
+    if (_isScanning) {
+      return;
+    }
+
     final prefService = Get.find<BasePrefService>();
     setState(() {
       _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
       _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
       _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
       _scannedDevices.clear();
-      FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
+      _isScanning = true;
+      FlutterBlue.instance
+          .startScan(timeout: Duration(seconds: _scanDuration))
+          .whenComplete(() => {_isScanning = false});
     });
   }
 
@@ -130,6 +139,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
       return false;
     }
 
+    if (_goingToRecording) {
+      return false;
+    }
+
+    _goingToRecording = true;
+
     // Device determination logics
     // Step 1. Try to infer from the Bluetooth advertised name
     DeviceDescriptor? descriptor;
@@ -162,7 +177,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (deviceUsage == null) {
         // Determine FTMS sport by analyzing 0x1826 service's characteristics
         fitnessEquipment = FitnessEquipment(device: device);
-        success = await fitnessEquipment.connectOnDemand(initialState, identify: true);
+        success = await fitnessEquipment.connectOnDemand(identify: true);
         if (success && fitnessEquipment.characteristicsId != null) {
           final inferredSport = fitnessEquipment.inferSportFromCharacteristicsId();
           if (inferredSport == null) {
@@ -266,9 +281,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       Get.put<FitnessEquipment>(fitnessEquipment);
     }
 
-    success = await fitnessEquipment.connectOnDemand(initialState);
+    success = await fitnessEquipment.connectOnDemand();
     if (!success) {
-      Get.defaultDialog(
+      await Get.defaultDialog(
         middleText: 'Problem co-operating with ${descriptor.fullName}.',
         confirm: TextButton(
           child: Text("Ok"),
@@ -282,15 +297,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
         await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
       }
 
-      Get.to(RecordingScreen(
-        device: device,
-        descriptor: descriptor,
-        initialState: initialState,
-        size: Get.mediaQuery.size,
-        sport: descriptor.defaultSport,
-      ));
+      _goingToRecording = false;
+      Get.to(() => RecordingScreen(
+            device: device,
+            descriptor: descriptor!,
+            initialState: initialState,
+            size: Get.mediaQuery.size,
+            sport: descriptor.defaultSport,
+          ));
     }
 
+    _goingToRecording = false;
     return true;
   }
 
@@ -319,9 +336,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         _lastEquipmentIds.length > 0 &&
                         lasts.length > 0 &&
                         !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
-                  WidgetsBinding.instance?.addPostFrameCallback((_) {
-                    _startScan();
-                  });
+                  Get.snackbar("Request", "Please scan again");
                 } else if (_autoConnect) {
                   if (_openedDevice != null) {
                     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -537,7 +552,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           _themeManager.getBlueFab(Icons.list_alt, () async {
             final database = Get.find<AppDatabase>();
             final hasLeaderboardData = await database.hasLeaderboardData();
-            Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+            Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
           }),
           StreamBuilder<bool>(
             stream: FlutterBlue.instance.isScanning,
@@ -558,7 +573,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
               }
             },
           ),
-          _themeManager.getBlueFab(Icons.settings, () async => Get.to(PreferencesHubScreen())),
+          _themeManager.getBlueFab(
+              Icons.settings, () async => Get.to(() => PreferencesHubScreen())),
         ],
       ),
     );

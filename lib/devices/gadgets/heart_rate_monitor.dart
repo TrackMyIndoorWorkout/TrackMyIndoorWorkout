@@ -15,6 +15,8 @@ class HeartRateMonitor extends IntegerSensor {
     if (data.length < 1) return false;
 
     var flag = data[0];
+    // Clear out status bits so status change won't cause metric re-creation
+    flag &= 25; // 1 + 8 + 16 = 2^5 - 6
     if (featureFlag != flag) {
       expectedLength = 1; // The flag
       // Heart rate value format (first bit)

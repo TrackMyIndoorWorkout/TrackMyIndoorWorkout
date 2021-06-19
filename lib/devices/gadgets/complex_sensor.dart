@@ -1,16 +1,16 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
+import '../../persistence/models/record.dart';
 import 'device_base.dart';
 
-typedef IntegerMetricProcessingFunction = Function(int measurement);
+typedef ComplexMetricProcessingFunction = Function(RecordWithSport record);
 
-abstract class IntegerSensor extends DeviceBase {
-  int featureFlag = -1;
-  int expectedLength = 0;
-  int metric = 0;
+abstract class ComplexSensor extends DeviceBase {
+  int featureFlag = 0;
+  RecordWithSport? record;
 
-  IntegerSensor(
+  ComplexSensor(
     serviceId,
     characteristicsId,
     device,
@@ -20,27 +20,27 @@ abstract class IntegerSensor extends DeviceBase {
           device: device,
         );
 
-  Stream<int> get _listenToMetric async* {
+  Stream<RecordWithSport> get _listenToMetric async* {
     if (!attached || characteristic == null) return;
 
     await for (var byteString in characteristic!.value.throttleTime(Duration(milliseconds: 950))) {
       if (!canMeasurementProcessed(byteString)) continue;
 
-      metric = processMeasurement(byteString);
-      yield metric;
+      record = processMeasurement(byteString);
+      yield record!;
     }
   }
 
-  void pumpMetric(IntegerMetricProcessingFunction metricProcessingFunction) {
+  void pumpMetric(ComplexMetricProcessingFunction metricProcessingFunction) {
     subscription = _listenToMetric.listen((newValue) {
-      metric = newValue;
+      record = newValue;
       metricProcessingFunction(newValue);
     });
   }
 
   bool canMeasurementProcessed(List<int> data);
 
-  int processMeasurement(List<int> data);
+  RecordWithSport processMeasurement(List<int> data);
 
   void clearMetrics();
 }

@@ -53,9 +53,9 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
                   if (sports.length <= 0) {
                     Get.snackbar("Warning", "No sports found");
                   } else if (sports.length > 1) {
-                    Get.to(LeaderboardSportHubScreen(sports: sports));
+                    Get.to(() => LeaderboardSportHubScreen(sports: sports));
                   } else {
-                    Get.to(SportLeaderboardScreen(sport: sports.first));
+                    Get.to(() => SportLeaderboardScreen(sport: sports.first));
                   }
                 },
                 child: Row(
@@ -82,9 +82,9 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
                   if (devices.length <= 0) {
                     Get.snackbar("Warning", "No devices found");
                   } else if (devices.length > 1) {
-                    Get.to(LeaderboardDeviceHubScreen(devices: devices));
+                    Get.to(() => LeaderboardDeviceHubScreen(devices: devices));
                   } else {
-                    Get.to(DeviceLeaderboardScreen(device: devices.first));
+                    Get.to(() => DeviceLeaderboardScreen(device: devices.first));
                   }
                 },
                 child: Row(

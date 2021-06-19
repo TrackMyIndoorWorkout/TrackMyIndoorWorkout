@@ -47,7 +47,7 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
                   padding: const EdgeInsets.all(5.0),
                   margin: const EdgeInsets.all(5.0),
                   child: ElevatedButton(
-                    onPressed: () => Get.to(DeviceLeaderboardScreen(device: device)),
+                    onPressed: () => Get.to(() => DeviceLeaderboardScreen(device: device)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,

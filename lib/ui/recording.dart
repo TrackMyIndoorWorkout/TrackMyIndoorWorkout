@@ -144,8 +144,8 @@ class RecordingState extends State<RecordingScreen> {
   bool _isLight = true;
   bool _zoneIndexColoring = false;
 
-  Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
-    bool success = await _fitnessEquipment?.connectOnDemand(deviceState) ?? false;
+  Future<void> _connectOnDemand() async {
+    bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(INSTANT_MEASUREMENT_START_TAG) ??
@@ -348,13 +348,13 @@ class RecordingState extends State<RecordingScreen> {
         if (_heartRateMonitor?.subscription != null) {
           _heartRateMonitor?.cancelSubscription();
         }
-        _heartRateMonitor?.pumpMetric((heartRate) async {
+        _heartRateMonitor?.pumpMetric((measurement) async {
           setState(() {
-            if (heartRate > 0 || _heartRate == null || _heartRate == 0) {
-              _heartRate = heartRate;
+            if (measurement > 0 || _heartRate == null || _heartRate == 0) {
+              _heartRate = measurement;
             }
-            _values[4] = heartRate.toString();
-            amendZoneToValue(3, heartRate);
+            _values[4] = measurement.toString();
+            amendZoneToValue(3, measurement);
           });
         });
       });
@@ -552,7 +552,7 @@ class RecordingState extends State<RecordingScreen> {
         ZONE_INDEX_DISPLAY_COLORING_DEFAULT;
 
     _initializeHeartRateMonitor();
-    _connectOnDemand(widget.initialState);
+    _connectOnDemand();
     _database = Get.find<AppDatabase>();
   }
 
@@ -1424,7 +1424,7 @@ class RecordingState extends State<RecordingScreen> {
                 Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
               } else {
                 final hasLeaderboardData = await _database.hasLeaderboardData();
-                await Get.to(ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+                await Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
               }
             }),
             _themeManager.getBlueFab(Icons.battery_unknown, () async {
