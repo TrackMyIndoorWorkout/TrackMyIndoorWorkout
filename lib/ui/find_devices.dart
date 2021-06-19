@@ -177,7 +177,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (deviceUsage == null) {
         // Determine FTMS sport by analyzing 0x1826 service's characteristics
         fitnessEquipment = FitnessEquipment(device: device);
-        success = await fitnessEquipment.connectOnDemand(initialState, identify: true);
+        success = await fitnessEquipment.connectOnDemand(identify: true);
         if (success && fitnessEquipment.characteristicsId != null) {
           final inferredSport = fitnessEquipment.inferSportFromCharacteristicsId();
           if (inferredSport == null) {
@@ -281,7 +281,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       Get.put<FitnessEquipment>(fitnessEquipment);
     }
 
-    success = await fitnessEquipment.connectOnDemand(initialState);
+    success = await fitnessEquipment.connectOnDemand();
     if (!success) {
       await Get.defaultDialog(
         middleText: 'Problem co-operating with ${descriptor.fullName}.',

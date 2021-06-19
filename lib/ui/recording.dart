@@ -144,8 +144,8 @@ class RecordingState extends State<RecordingScreen> {
   bool _isLight = true;
   bool _zoneIndexColoring = false;
 
-  Future<void> _connectOnDemand(BluetoothDeviceState deviceState) async {
-    bool success = await _fitnessEquipment?.connectOnDemand(deviceState) ?? false;
+  Future<void> _connectOnDemand() async {
+    bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(INSTANT_MEASUREMENT_START_TAG) ??
@@ -552,7 +552,7 @@ class RecordingState extends State<RecordingScreen> {
         ZONE_INDEX_DISPLAY_COLORING_DEFAULT;
 
     _initializeHeartRateMonitor();
-    _connectOnDemand(widget.initialState);
+    _connectOnDemand();
     _database = Get.find<AppDatabase>();
   }
 

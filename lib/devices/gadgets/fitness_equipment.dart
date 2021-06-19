@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
@@ -107,17 +106,10 @@ class FitnessEquipment extends DeviceBase {
     uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }
 
-  Future<bool> connectOnDemand(BluetoothDeviceState deviceState, {identify = false}) async {
-    if (deviceState == BluetoothDeviceState.disconnected ||
-        deviceState == BluetoothDeviceState.disconnecting) {
-      await connect();
-    }
+  Future<bool> connectOnDemand({identify = false}) async {
+    await connect();
 
-    if (deviceState == BluetoothDeviceState.connected && !discovering || connected) {
-      return await discover(identify: identify);
-    }
-
-    return false;
+    return await discover(identify: identify);
   }
 
   Future<bool> discover({bool identify = false, bool retry = false}) async {
