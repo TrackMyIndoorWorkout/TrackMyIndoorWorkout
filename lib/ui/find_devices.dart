@@ -38,6 +38,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _instantScan = INSTANT_SCAN_DEFAULT;
   int _scanDuration = SCAN_DURATION_DEFAULT;
   bool _autoConnect = AUTO_CONNECT_DEFAULT;
+  bool _isScanning = false;
+  bool _goingToRecording = false;
   List<String> _lastEquipmentIds = [];
   bool _filterDevices = DEVICE_FILTERING_DEFAULT;
   BluetoothDevice? _openedDevice;
@@ -72,13 +74,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
   }
 
   void _startScan() {
+    if (_isScanning) {
+      return;
+    }
+
     final prefService = Get.find<BasePrefService>();
     setState(() {
       _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
       _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
       _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
       _scannedDevices.clear();
-      FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
+      _isScanning = true;
+      FlutterBlue.instance
+          .startScan(timeout: Duration(seconds: _scanDuration))
+          .whenComplete(() => {_isScanning = false});
     });
   }
 
@@ -129,6 +138,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (!_advertisementCache.hasEntry(device.id.id)) {
       return false;
     }
+
+    if (_goingToRecording) {
+      return false;
+    }
+
+    _goingToRecording = true;
 
     // Device determination logics
     // Step 1. Try to infer from the Bluetooth advertised name
@@ -268,7 +283,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     success = await fitnessEquipment.connectOnDemand(initialState);
     if (!success) {
-      Get.defaultDialog(
+      await Get.defaultDialog(
         middleText: 'Problem co-operating with ${descriptor.fullName}.',
         confirm: TextButton(
           child: Text("Ok"),
@@ -282,6 +297,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
       }
 
+      _goingToRecording = false;
       Get.to(() => RecordingScreen(
             device: device,
             descriptor: descriptor!,
@@ -291,6 +307,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           ));
     }
 
+    _goingToRecording = false;
     return true;
   }
 
