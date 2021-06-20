@@ -19,13 +19,25 @@ void main() async {
 
   Get.put<AdvertisementCache>(AdvertisementCache());
 
-  final blueOn = await FlutterBlue.instance.isAvailable && await FlutterBlue.instance.isOn;
+  var blueAvailable = await FlutterBlue.instance.isAvailable;
+  var blueOn = await FlutterBlue.instance.isOn;
+
+  await Future.delayed(Duration(milliseconds: 250));
+
   final bluetoothStateString = await BluetoothEnable.enableBluetooth;
+
+  await Future.delayed(Duration(milliseconds: 250));
+
   final permissionState = await Permission.locationWhenInUse.request();
+
+  await Future.delayed(Duration(milliseconds: 250));
+
+  blueAvailable = await FlutterBlue.instance.isAvailable;
+  blueOn = await FlutterBlue.instance.isOn;
 
   runApp(TrackMyIndoorExerciseApp(
     prefService: prefService,
-    blueOn: blueOn,
+    blueOn: blueAvailable && blueOn,
     bluetoothStateString: bluetoothStateString,
     permissionState: permissionState,
   ));
