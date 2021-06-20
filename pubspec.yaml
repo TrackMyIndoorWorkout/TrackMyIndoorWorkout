@@ -2,7 +2,7 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.60+60
+version: 1.1.61+61
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -12,7 +12,6 @@ dependencies:
   bluetooth_enable:
     git:
       url: https://github.com/CsabaConsulting/bluetooth_enable.git
-  charts_flutter: ^0.10.0
   datetime_picker_formfield: ^2.0.0
   device_info: ^2.0.2
   edit_distance: ^0.5.0-nullsafety.0
@@ -26,28 +25,28 @@ dependencies:
   get: ^4.1.4
   http: ^0.13.3
   http_parser: ^4.0.0
-  internet_connection_checker: ^0.0.1
+  internet_connection_checker: ^0.0.1+1
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
-  permission_handler: ^8.0.1
-  pref: ^2.2.0
+  permission_handler: ^8.1.1
+  pref: ^2.3.0
   progress_indicators: ^1.0.0
   rxdart: ^0.27.0
   share_files_and_screenshot_widgets:
     git:
       url: https://github.com/CsabaConsulting/Share-Files-And-Screenshot-Widgets-Flutter.git
-  shared_preferences: ^2.0.5
+  shared_preferences: ^2.0.6
   soundpool: ^2.1.0
   spinner_input:
     git:
       url: https://github.com/CsabaConsulting/spinner_input.git
   sqflite: ^2.0.0+3
-  syncfusion_flutter_charts: 19.1.67
+  syncfusion_flutter_charts: ^19.1.69+1
   tuple: ^2.0.0
   uni_links: ^0.5.1
-  url_launcher: ^6.0.3
-  wakelock: ^0.5.0+2
+  url_launcher: ^6.0.6
+  wakelock: ^0.5.2
   flutter:
     sdk: flutter
 

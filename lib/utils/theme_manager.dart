@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -132,29 +129,6 @@ class ThemeManager {
 
   FloatingActionButton getStravaFab(VoidCallback? onPressed) {
     return _getFabCore(Colors.white, getOrangeColor(), Icon(BrandIcons.strava), onPressed);
-  }
-
-  FloatingActionButton getExitFab() {
-    return getRedFab(Icons.exit_to_app, () async {
-      Get.defaultDialog(
-        title: 'Warning!!!',
-        middleText: 'Are you sure to exit the App?',
-        confirm: TextButton(
-          child: Text("Yes"),
-          onPressed: () async {
-            try {
-              Platform.isAndroid ? SystemNavigator.pop() : exit(0);
-            } catch (e) {
-              Platform.isAndroid ? exit(0) : SystemNavigator.pop();
-            }
-          },
-        ),
-        cancel: TextButton(
-          child: Text("No"),
-          onPressed: () => Get.close(1),
-        ),
-      );
-    });
   }
 
   FloatingActionButton getRankIcon(int rank) {
