@@ -6,6 +6,7 @@ const LB_TO_KG = 0.45359237;
 const KG_TO_LB = 1 / LB_TO_KG;
 const FT_TO_M = 0.3048;
 const NOT_AVAILABLE = "N/A";
+const EMPTY_MEASUREMENT = "--";
 const HTTPS_PORT = 443;
 const MAX_UINT8 = 256;
 const MAX_BYTE = 255;

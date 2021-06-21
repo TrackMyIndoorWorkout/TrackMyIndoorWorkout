@@ -523,7 +523,14 @@ class RecordingState extends State<RecordingScreen> {
 
     _uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _fitnessEquipment?.measuring = false;
-    _values = ["--", "--", "--", "--", "--", "--"];
+    _values = [
+      EMPTY_MEASUREMENT,
+      EMPTY_MEASUREMENT,
+      EMPTY_MEASUREMENT,
+      EMPTY_MEASUREMENT,
+      EMPTY_MEASUREMENT,
+      EMPTY_MEASUREMENT,
+    ];
     _zoneIndexes = [null, null, null, null];
 
     _leaderboardFeature =
@@ -826,7 +833,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getRankString(int? rank, List<WorkoutSummary> leaderboard) {
-    return rank == null ? "--" : rank.toString();
+    return rank == null ? EMPTY_MEASUREMENT : rank.toString();
   }
 
   int? _getDeviceRank() {
@@ -911,7 +918,7 @@ class RecordingState extends State<RecordingScreen> {
 
   String _getTargetHrText(TargetHrState hrState) {
     if (hrState == TargetHrState.Off) {
-      return "--";
+      return EMPTY_MEASUREMENT;
     }
 
     if (hrState == TargetHrState.Under) {
