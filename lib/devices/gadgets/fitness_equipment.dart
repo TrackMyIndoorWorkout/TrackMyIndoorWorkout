@@ -32,7 +32,12 @@ class FitnessEquipment extends DeviceBase {
   String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
   int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT;
   String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
-  bool _preferHrmBasedCalories = PREFER_HRM_BASED_CALORIES_DEFAULT;
+  bool _useHrmReportedCalories = USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT;
+  bool _useHrBasedCalorieCounting = USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+  int _weight = ATHLETE_BODY_WEIGHT_DEFAULT;
+  int _age = ATHLETE_AGE_DEFAULT;
+  bool _isMale = true;
+  int _vo2Max = ATHLETE_VO2MAX_DEFAULT;
   Activity? _activity;
   bool measuring = false;
   bool calibrating = false;
@@ -142,6 +147,23 @@ class FitnessEquipment extends DeviceBase {
     return manufacturerName == descriptor!.manufacturer || descriptor!.manufacturer == "Unknown";
   }
 
+  // Based on https://www.braydenwm.com/calburn.htm
+  double _caloriesPerMinute(int heartRate) {
+    if (_vo2Max > ATHLETE_VO2MAX_MIN) {
+      if (_isMale) {
+        return (-59.3954 + (-36.3781 + 0.271 * _age + 0.394 * _weight + 0.404 * _vo2Max + 0.634 * heartRate)) / 4.184;
+      } else {
+        return (-59.3954 + (0.274 * _age + 0.103 * _weight + 0.380 * _vo2Max + 0.450 * heartRate)) / 4.184;
+      }
+    } else {
+      if (_isMale) {
+        return (-55.0969 + 0.6309 * heartRate + 0.1988 * _weight + 0.2017 * _age) / 4.184;
+      } else {
+        return (-20.4022 + 0.4472 * heartRate - 0.1263 * _weight + 0.074 * _age) / 4.184;
+      }
+    }
+  }
+
   Record processRecord(Record stub) {
     final now = DateTime.now();
     int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
@@ -178,6 +200,30 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
+    if ((stub.heartRate == null || stub.heartRate == 0) &&
+        (heartRateMonitor?.record?.heartRate ?? 0) > 0) {
+      stub.heartRate = heartRateMonitor!.record!.heartRate;
+    }
+
+    // #93, #113
+    if ((stub.heartRate == null || stub.heartRate == 0) &&
+        lastRecord.heartRate != null &&
+        lastRecord.heartRate! > 0 &&
+        _heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
+      stub.heartRate = lastRecord.heartRate;
+    }
+
+    // #114
+    if (_heartRateUpperLimit > 0 &&
+        (stub.heartRate ?? 0) > _heartRateUpperLimit &&
+        _heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
+      if (_heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+        stub.heartRate = _heartRateUpperLimit;
+      } else {
+        stub.heartRate = 0;
+      }
+    }
+
     var calories1 = 0.0;
     if (stub.calories != null && stub.calories! > 0) {
       calories1 = stub.calories!.toDouble();
@@ -190,18 +236,35 @@ class FitnessEquipment extends DeviceBase {
     }
 
     var calories = 0.0;
-    if (calories1 > EPS && (!_preferHrmBasedCalories || calories2 < EPS)) {
+    if (calories1 > EPS && (!_useHrmReportedCalories || calories2 < EPS) && (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
       calories = calories1;
-    } else if (calories2 > EPS && (_preferHrmBasedCalories || calories1 < EPS)) {
+    } else if (calories2 > EPS && (_useHrmReportedCalories || calories1 < EPS) && (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
       calories = calories2;
     } else {
       var deltaCalories = 0.0;
-      if (stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
+      if (_useHrBasedCalorieCounting && stub.heartRate != null && stub.heartRate! > 0) {
+        stub.caloriesPerMinute = _caloriesPerMinute(stub.heartRate!) * calorieFactor / 60 * dT;
+      }
+
+      if (deltaCalories < EPS && stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
         deltaCalories = stub.caloriesPerHour! / (60 * 60) * dT;
       }
 
       if (deltaCalories < EPS && stub.caloriesPerMinute != null && stub.caloriesPerMinute! > EPS) {
         deltaCalories = stub.caloriesPerMinute! / 60 * dT;
+      }
+
+      // Supplement power from calories https://www.braydenwm.com/calburn.htm
+      if (stub.power == null || stub.power! < EPS) {
+        if (stub.caloriesPerMinute != null && stub.caloriesPerMinute! > EPS) {
+          stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
+        } else if (stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
+          stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
+        }
+
+        if (stub.power != null) {
+          stub.power = (stub.power! * powerFactor).round();
+        }
       }
 
       if (deltaCalories < EPS && stub.power != null && stub.power! > EPS) {
@@ -237,30 +300,6 @@ class FitnessEquipment extends DeviceBase {
 
     stub.calories = calories.floor();
 
-    if ((stub.heartRate == null || stub.heartRate == 0) &&
-        (heartRateMonitor?.record?.heartRate ?? 0) > 0) {
-      stub.heartRate = heartRateMonitor!.record!.heartRate;
-    }
-
-    // #93, #113
-    if ((stub.heartRate == null || stub.heartRate == 0) &&
-        lastRecord.heartRate != null &&
-        lastRecord.heartRate! > 0 &&
-        _heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
-      stub.heartRate = lastRecord.heartRate;
-    }
-
-    // #114
-    if (_heartRateUpperLimit > 0 &&
-        (stub.heartRate ?? 0) > _heartRateUpperLimit &&
-        _heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
-      if (_heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
-        stub.heartRate = _heartRateUpperLimit;
-      } else {
-        stub.heartRate = 0;
-      }
-    }
-
     stub.activityId = _activity?.id ?? 0;
     stub.sport = descriptor?.defaultSport ?? ActivityType.Ride;
     return stub;
@@ -277,8 +316,16 @@ class FitnessEquipment extends DeviceBase {
         prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
     _heartRateLimitingMethod =
         prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
-    _preferHrmBasedCalories =
-        prefService.get<bool>(PREFER_HRM_BASED_CALORIES_TAG) ?? PREFER_HRM_BASED_CALORIES_DEFAULT;
+    _useHrmReportedCalories = prefService.get<bool>(USE_HR_MONITOR_REPORTED_CALORIES_TAG) ??
+        USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT;
+    _useHrBasedCalorieCounting = prefService.get<bool>(USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG) ??
+        USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+    _weight = prefService.get<int>(ATHLETE_BODY_WEIGHT_INT_TAG) ?? ATHLETE_BODY_WEIGHT_DEFAULT;
+    _age = prefService.get<int>(ATHLETE_AGE_TAG) ?? ATHLETE_AGE_DEFAULT;
+    _isMale = (prefService.get<String>(ATHLETE_GENDER_TAG) ??
+        ATHLETE_GENDER_DEFAULT) == ATHLETE_GENDER_MALE;
+    _vo2Max = prefService.get<int>(ATHLETE_VO2MAX_TAG) ?? ATHLETE_VO2MAX_DEFAULT;
+    _useHrBasedCalorieCounting &= (_weight > ATHLETE_BODY_WEIGHT_MIN && _age > ATHLETE_AGE_MIN);
   }
 
   void startWorkout() {
