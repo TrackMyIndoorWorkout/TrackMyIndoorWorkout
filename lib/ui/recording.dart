@@ -344,17 +344,19 @@ class RecordingState extends State<RecordingScreen> {
           (_fitnessEquipment?.heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE)) {
         _fitnessEquipment?.setHeartRateMonitor(_heartRateMonitor!);
       }
+      _heartRateMonitor?.refreshFactors();
       _heartRateMonitor?.attach().then((_) async {
         if (_heartRateMonitor?.subscription != null) {
           _heartRateMonitor?.cancelSubscription();
         }
-        _heartRateMonitor?.pumpMetric((measurement) async {
+        _heartRateMonitor?.pumpMetric((record) async {
           setState(() {
-            if (measurement > 0 || _heartRate == null || _heartRate == 0) {
-              _heartRate = measurement;
+            if ((_heartRate == null || _heartRate == 0) &&
+                (record.heartRate != null && record.heartRate! > 0)) {
+              _heartRate = record.heartRate;
             }
-            _values[4] = measurement.toString();
-            amendZoneToValue(3, measurement);
+            _values[4] = record.heartRate?.toString() ?? EMPTY_MEASUREMENT;
+            amendZoneToValue(3, record.heartRate ?? 0);
           });
         });
       });

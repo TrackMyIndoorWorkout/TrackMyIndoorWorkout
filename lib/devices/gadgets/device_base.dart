@@ -25,6 +25,8 @@ abstract class DeviceBase {
   bool attached = false;
   bool discovering = false;
   bool discovered = false;
+
+  final prefService = Get.find<BasePrefService>();
   bool uxDebug = APP_DEBUG_MODE_DEFAULT;
 
   DeviceBase({
@@ -32,7 +34,6 @@ abstract class DeviceBase {
     this.characteristicsId,
     this.device,
   }) {
-    final prefService = Get.find<BasePrefService>();
     uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
   }
 

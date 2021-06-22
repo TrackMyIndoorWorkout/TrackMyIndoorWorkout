@@ -231,12 +231,13 @@ class FitnessEquipment extends DeviceBase {
 
     stub.calories = calories.floor();
 
-    if (stub.heartRate == 0 && (heartRateMonitor?.metric ?? 0) > 0) {
-      stub.heartRate = heartRateMonitor!.metric;
+    if ((stub.heartRate == null || stub.heartRate == 0) &&
+        (heartRateMonitor?.record?.heartRate ?? 0) > 0) {
+      stub.heartRate = heartRateMonitor!.record!.heartRate;
     }
 
     // #93, #113
-    if (stub.heartRate == 0 &&
+    if ((stub.heartRate == null || stub.heartRate == 0) &&
         lastRecord.heartRate != null &&
         lastRecord.heartRate! > 0 &&
         _heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {

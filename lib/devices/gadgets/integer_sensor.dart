@@ -1,24 +1,14 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'device_base.dart';
+import 'sensor_base.dart';
 
 typedef IntegerMetricProcessingFunction = Function(int measurement);
 
-abstract class IntegerSensor extends DeviceBase {
-  int featureFlag = -1;
-  int expectedLength = 0;
+abstract class IntegerSensor extends SensorBase {
   int metric = 0;
 
-  IntegerSensor(
-    serviceId,
-    characteristicsId,
-    device,
-  ) : super(
-          serviceId: serviceId,
-          characteristicsId: characteristicsId,
-          device: device,
-        );
+  IntegerSensor(serviceId, characteristicsId, device) : super(serviceId, characteristicsId, device);
 
   Stream<int> get _listenToMetric async* {
     if (!attached || characteristic == null) return;
@@ -38,9 +28,5 @@ abstract class IntegerSensor extends DeviceBase {
     });
   }
 
-  bool canMeasurementProcessed(List<int> data);
-
   int processMeasurement(List<int> data);
-
-  void clearMetrics();
 }

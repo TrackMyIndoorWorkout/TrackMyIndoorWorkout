@@ -1,24 +1,24 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:rxdart/rxdart.dart';
 import '../../persistence/models/record.dart';
-import 'device_base.dart';
+import '../../persistence/preferences.dart';
+import 'sensor_base.dart';
 
 typedef ComplexMetricProcessingFunction = Function(RecordWithSport record);
 
-abstract class ComplexSensor extends DeviceBase {
-  int featureFlag = 0;
+abstract class ComplexSensor extends SensorBase {
+  late double powerFactor;
+  late bool extendTuning;
+  late Random random;
   RecordWithSport? record;
 
-  ComplexSensor(
-    serviceId,
-    characteristicsId,
-    device,
-  ) : super(
-          serviceId: serviceId,
-          characteristicsId: characteristicsId,
-          device: device,
-        );
+  ComplexSensor(serviceId, characteristicsId, device)
+      : super(serviceId, characteristicsId, device) {
+    random = Random();
+    extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
+  }
 
   Stream<RecordWithSport> get _listenToMetric async* {
     if (!attached || characteristic == null) return;
@@ -38,9 +38,5 @@ abstract class ComplexSensor extends DeviceBase {
     });
   }
 
-  bool canMeasurementProcessed(List<int> data);
-
   RecordWithSport processMeasurement(List<int> data);
-
-  void clearMetrics();
 }
