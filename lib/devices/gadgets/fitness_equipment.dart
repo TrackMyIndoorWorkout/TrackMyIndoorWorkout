@@ -32,6 +32,7 @@ class FitnessEquipment extends DeviceBase {
   String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
   int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT;
   String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
+  bool _preferHrmBasedCalories = PREFER_HRM_BASED_CALORIES_DEFAULT;
   Activity? _activity;
   bool measuring = false;
   bool calibrating = false;
@@ -45,16 +46,7 @@ class FitnessEquipment extends DeviceBase {
           characteristicsId: descriptor?.dataCharacteristicId,
           device: device,
         ) {
-    final prefService = Get.find<BasePrefService>();
-    _cadenceGapWorkaround =
-        prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
-    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
-    _heartRateGapWorkaround =
-        prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
-    _heartRateUpperLimit =
-        prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
-    _heartRateLimitingMethod =
-        prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+    readConfiguration();
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 
@@ -102,8 +94,7 @@ class FitnessEquipment extends DeviceBase {
   void setActivity(Activity activity) {
     _activity = activity;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
-    final prefService = Get.find<BasePrefService>();
-    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    readConfiguration();
   }
 
   Future<bool> connectOnDemand({identify = false}) async {
@@ -160,9 +151,12 @@ class FitnessEquipment extends DeviceBase {
     // Therefore the FTMS elapsed time reading is kinda useless, causes problems.
     // With this fix the calorie zeroing bug is revealed. Calorie preserving workaround can be
     // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
-    hasTotalCalorieCounting =
-        hasTotalCalorieCounting || (stub.calories != null && stub.calories! > 0);
-    if (hasTotalCalorieCounting && stub.elapsed != null && stub.elapsed! > 0) {
+    hasTotalCalorieCounting = hasTotalCalorieCounting ||
+        (stub.calories != null && stub.calories! > 0) ||
+        (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0);
+    if (hasTotalCalorieCounting &&
+        ((stub.calories != null && stub.calories! > 0) ||
+            (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0))) {
       elapsed = stub.elapsed!.toDouble();
     }
 
@@ -184,10 +178,22 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    var calories = 0.0;
+    var calories1 = 0.0;
     if (stub.calories != null && stub.calories! > 0) {
-      calories = stub.calories!.toDouble();
+      calories1 = stub.calories!.toDouble();
       hasTotalCalorieCounting = true;
+    }
+    var calories2 = 0.0;
+    if (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0) {
+      calories2 = heartRateMonitor?.record?.calories?.toDouble() ?? 0.0;
+      hasTotalCalorieCounting = true;
+    }
+
+    var calories = 0.0;
+    if (calories1 > EPS && (!_preferHrmBasedCalories || calories2 < EPS)) {
+      calories = calories1;
+    } else if (calories2 > EPS && (_preferHrmBasedCalories || calories1 < EPS)) {
+      calories = calories2;
     } else {
       var deltaCalories = 0.0;
       if (stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
@@ -260,15 +266,30 @@ class FitnessEquipment extends DeviceBase {
     return stub;
   }
 
+  void readConfiguration() {
+    final prefService = Get.find<BasePrefService>();
+    _cadenceGapWorkaround =
+        prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
+    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    _heartRateGapWorkaround =
+        prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+    _heartRateUpperLimit =
+        prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+    _heartRateLimitingMethod =
+        prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+    _preferHrmBasedCalories =
+        prefService.get<bool>(PREFER_HRM_BASED_CALORIES_TAG) ?? PREFER_HRM_BASED_CALORIES_DEFAULT;
+  }
+
   void startWorkout() {
+    readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 
   void stopWorkout() {
-    final prefService = Get.find<BasePrefService>();
-    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();

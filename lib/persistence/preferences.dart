@@ -553,6 +553,14 @@ const EXTEND_TUNING_DESCRIPTION =
         "if they depend on each other like when calories or speed is calculated from power. " +
         "Also note when both calorie and power tuning applied then their effect may combine.";
 
+const PREFER_HRM_BASED_CALORIES = "Prefer HRM reported calories";
+const PREFER_HRM_BASED_CALORIES_TAG = "heart_rate_monitor_reported_calories";
+const PREFER_HRM_BASED_CALORIES_DEFAULT = false;
+const PREFER_HRM_BASED_CALORIES_DESCRIPTION =
+    "Only very enhanced heart rate monitors are capable reporting calories." +
+        "In such case should that calorie count take precedence over the value " +
+        "calculated by the fitness equipment (explicitly or deducted from the power reading).";
+
 const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
 const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
 const STROKE_RATE_SMOOTHING_INT_TAG = STROKE_RATE_SMOOTHING_TAG + INT_TAG_POSTFIX;
