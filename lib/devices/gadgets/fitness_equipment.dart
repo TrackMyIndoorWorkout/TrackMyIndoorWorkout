@@ -243,7 +243,7 @@ class FitnessEquipment extends DeviceBase {
     } else {
       var deltaCalories = 0.0;
       if (_useHrBasedCalorieCounting && stub.heartRate != null && stub.heartRate! > 0) {
-        stub.caloriesPerMinute = _caloriesPerMinute(stub.heartRate!) * calorieFactor / 60 * dT;
+        stub.caloriesPerMinute = _caloriesPerMinute(stub.heartRate!) * calorieFactor;
       }
 
       if (deltaCalories < EPS && stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
