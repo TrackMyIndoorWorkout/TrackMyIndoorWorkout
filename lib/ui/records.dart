@@ -12,6 +12,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../persistence/preferences_spec.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/statistics_accumulator.dart';

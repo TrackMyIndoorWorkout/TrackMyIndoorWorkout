@@ -1,6 +1,7 @@
 import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
 import '../persistence/preferences.dart';
+import '../persistence/preferences_spec.dart';
 
 // This can be eliminated once #107 takes care of integer preferences
 Tuple2<double, double> getTargetHeartRateBounds(

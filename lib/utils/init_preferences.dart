@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:pref/pref.dart';
 import '../persistence/preferences.dart';
+import '../persistence/preferences_spec.dart';
 import 'constants.dart';
 import 'preferences.dart';
 

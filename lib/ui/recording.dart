@@ -21,6 +21,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../persistence/preferences_spec.dart';
 import '../strava/strava_status_code.dart';
 import '../strava/strava_service.dart';
 import '../track/calculator.dart';
