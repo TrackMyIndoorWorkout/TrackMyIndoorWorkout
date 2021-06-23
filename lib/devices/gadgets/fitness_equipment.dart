@@ -180,6 +180,7 @@ class FitnessEquipment extends DeviceBase {
         (stub.calories != null && stub.calories! > 0) ||
         (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0);
     if (hasTotalCalorieCounting &&
+        stub.elapsed != null &&
         ((stub.calories != null && stub.calories! > 0) ||
             (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0))) {
       elapsed = stub.elapsed!.toDouble();
