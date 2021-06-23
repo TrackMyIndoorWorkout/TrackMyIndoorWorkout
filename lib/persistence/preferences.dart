@@ -15,7 +15,7 @@ final sevenLightBgPalette = [
   Colors.tealAccent.shade100.withAlpha(120),
   Colors.limeAccent.shade100.withAlpha(120),
   Colors.yellowAccent.shade100.withAlpha(120),
-  Colors.redAccent.shade50.withAlpha(120),
+  Colors.redAccent.shade100.withAlpha(120),
   Colors.pinkAccent.shade100.withAlpha(120),
 ];
 
@@ -54,7 +54,7 @@ final fiveLightBgPalette = [
   Colors.cyanAccent.shade100.withAlpha(120),
   Colors.lightGreenAccent.shade100.withAlpha(120),
   Colors.yellowAccent.shade100.withAlpha(120),
-  Colors.redAccent.shade50.withAlpha(120),
+  Colors.redAccent.shade100.withAlpha(120),
 ];
 
 final fiveDarkBgPalette = [
