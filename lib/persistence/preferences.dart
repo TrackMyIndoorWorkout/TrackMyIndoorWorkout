@@ -870,10 +870,6 @@ Future<bool> getSimplerUiDefault() async {
   return simplerUiDefault;
 }
 
-const KM2MI = 0.621371;
-const MI2KM = 1 / KM2MI;
-const M2MILE = KM2MI / 1000.0;
-
 extension DurationDisplay on Duration {
   String toDisplay() {
     return this.toString().split('.').first.padLeft(8, "0");
