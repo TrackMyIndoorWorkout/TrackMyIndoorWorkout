@@ -116,8 +116,8 @@ class RecordsScreenState extends State<RecordsScreen> {
 
       if (measurementCounter.hasPower) {
         _tiles.add("power");
-        _selectedTimes.add("--");
-        _selectedValues.add("--");
+        _selectedTimes.add(EMPTY_MEASUREMENT);
+        _selectedValues.add(EMPTY_MEASUREMENT);
         var prefSpec = _preferencesSpecs[0];
         var tileConfig = TileConfiguration(
           title: prefSpec.fullTitle,
@@ -142,8 +142,8 @@ class RecordsScreenState extends State<RecordsScreen> {
       }
       if (measurementCounter.hasSpeed) {
         _tiles.add("speed");
-        _selectedTimes.add("--");
-        _selectedValues.add("--");
+        _selectedTimes.add(EMPTY_MEASUREMENT);
+        _selectedValues.add(EMPTY_MEASUREMENT);
         var prefSpec = _preferencesSpecs[1];
         var tileConfig = TileConfiguration(
           title: prefSpec.fullTitle,
@@ -168,8 +168,8 @@ class RecordsScreenState extends State<RecordsScreen> {
       }
       if (measurementCounter.hasCadence) {
         _tiles.add("cadence");
-        _selectedTimes.add("--");
-        _selectedValues.add("--");
+        _selectedTimes.add(EMPTY_MEASUREMENT);
+        _selectedValues.add(EMPTY_MEASUREMENT);
         var prefSpec = _preferencesSpecs[2];
         var tileConfig = TileConfiguration(
           title: prefSpec.fullTitle,
@@ -194,8 +194,8 @@ class RecordsScreenState extends State<RecordsScreen> {
       }
       if (measurementCounter.hasHeartRate) {
         _tiles.add("hr");
-        _selectedTimes.add("--");
-        _selectedValues.add("--");
+        _selectedTimes.add(EMPTY_MEASUREMENT);
+        _selectedValues.add(EMPTY_MEASUREMENT);
         var prefSpec = _preferencesSpecs[3];
         var tileConfig = TileConfiguration(
           title: prefSpec.fullTitle,

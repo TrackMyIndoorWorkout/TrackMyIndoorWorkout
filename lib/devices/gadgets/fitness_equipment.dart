@@ -32,6 +32,12 @@ class FitnessEquipment extends DeviceBase {
   String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
   int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT;
   String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
+  bool _useHrmReportedCalories = USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT;
+  bool _useHrBasedCalorieCounting = USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+  int _weight = ATHLETE_BODY_WEIGHT_DEFAULT;
+  int _age = ATHLETE_AGE_DEFAULT;
+  bool _isMale = true;
+  int _vo2Max = ATHLETE_VO2MAX_DEFAULT;
   Activity? _activity;
   bool measuring = false;
   bool calibrating = false;
@@ -45,16 +51,7 @@ class FitnessEquipment extends DeviceBase {
           characteristicsId: descriptor?.dataCharacteristicId,
           device: device,
         ) {
-    final prefService = Get.find<BasePrefService>();
-    _cadenceGapWorkaround =
-        prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
-    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
-    _heartRateGapWorkaround =
-        prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
-    _heartRateUpperLimit =
-        prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
-    _heartRateLimitingMethod =
-        prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+    readConfiguration();
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 
@@ -102,8 +99,7 @@ class FitnessEquipment extends DeviceBase {
   void setActivity(Activity activity) {
     _activity = activity;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
-    final prefService = Get.find<BasePrefService>();
-    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    readConfiguration();
   }
 
   Future<bool> connectOnDemand({identify = false}) async {
@@ -151,6 +147,23 @@ class FitnessEquipment extends DeviceBase {
     return manufacturerName == descriptor!.manufacturer || descriptor!.manufacturer == "Unknown";
   }
 
+  // Based on https://www.braydenwm.com/calburn.htm
+  double _caloriesPerMinute(int heartRate) {
+    if (_vo2Max > ATHLETE_VO2MAX_MIN) {
+      if (_isMale) {
+        return (-59.3954 + (-36.3781 + 0.271 * _age + 0.394 * _weight + 0.404 * _vo2Max + 0.634 * heartRate)) / 4.184;
+      } else {
+        return (-59.3954 + (0.274 * _age + 0.103 * _weight + 0.380 * _vo2Max + 0.450 * heartRate)) / 4.184;
+      }
+    } else {
+      if (_isMale) {
+        return (-55.0969 + 0.6309 * heartRate + 0.1988 * _weight + 0.2017 * _age) / 4.184;
+      } else {
+        return (-20.4022 + 0.4472 * heartRate - 0.1263 * _weight + 0.074 * _age) / 4.184;
+      }
+    }
+  }
+
   Record processRecord(Record stub) {
     final now = DateTime.now();
     int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
@@ -160,9 +173,12 @@ class FitnessEquipment extends DeviceBase {
     // Therefore the FTMS elapsed time reading is kinda useless, causes problems.
     // With this fix the calorie zeroing bug is revealed. Calorie preserving workaround can be
     // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
-    hasTotalCalorieCounting =
-        hasTotalCalorieCounting || (stub.calories != null && stub.calories! > 0);
-    if (hasTotalCalorieCounting && stub.elapsed != null && stub.elapsed! > 0) {
+    hasTotalCalorieCounting = hasTotalCalorieCounting ||
+        (stub.calories != null && stub.calories! > 0) ||
+        (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0);
+    if (hasTotalCalorieCounting &&
+        ((stub.calories != null && stub.calories! > 0) ||
+            (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0))) {
       elapsed = stub.elapsed!.toDouble();
     }
 
@@ -184,18 +200,71 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    var calories = 0.0;
+    if ((stub.heartRate == null || stub.heartRate == 0) &&
+        (heartRateMonitor?.record?.heartRate ?? 0) > 0) {
+      stub.heartRate = heartRateMonitor!.record!.heartRate;
+    }
+
+    // #93, #113
+    if ((stub.heartRate == null || stub.heartRate == 0) &&
+        lastRecord.heartRate != null &&
+        lastRecord.heartRate! > 0 &&
+        _heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
+      stub.heartRate = lastRecord.heartRate;
+    }
+
+    // #114
+    if (_heartRateUpperLimit > 0 &&
+        (stub.heartRate ?? 0) > _heartRateUpperLimit &&
+        _heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
+      if (_heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+        stub.heartRate = _heartRateUpperLimit;
+      } else {
+        stub.heartRate = 0;
+      }
+    }
+
+    var calories1 = 0.0;
     if (stub.calories != null && stub.calories! > 0) {
-      calories = stub.calories!.toDouble();
+      calories1 = stub.calories!.toDouble();
       hasTotalCalorieCounting = true;
+    }
+    var calories2 = 0.0;
+    if (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0) {
+      calories2 = heartRateMonitor?.record?.calories?.toDouble() ?? 0.0;
+      hasTotalCalorieCounting = true;
+    }
+
+    var calories = 0.0;
+    if (calories1 > EPS && (!_useHrmReportedCalories || calories2 < EPS) && (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
+      calories = calories1;
+    } else if (calories2 > EPS && (_useHrmReportedCalories || calories1 < EPS) && (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
+      calories = calories2;
     } else {
       var deltaCalories = 0.0;
-      if (stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
+      if (_useHrBasedCalorieCounting && stub.heartRate != null && stub.heartRate! > 0) {
+        stub.caloriesPerMinute = _caloriesPerMinute(stub.heartRate!) * calorieFactor;
+      }
+
+      if (deltaCalories < EPS && stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
         deltaCalories = stub.caloriesPerHour! / (60 * 60) * dT;
       }
 
       if (deltaCalories < EPS && stub.caloriesPerMinute != null && stub.caloriesPerMinute! > EPS) {
         deltaCalories = stub.caloriesPerMinute! / 60 * dT;
+      }
+
+      // Supplement power from calories https://www.braydenwm.com/calburn.htm
+      if (stub.power == null || stub.power! < EPS) {
+        if (stub.caloriesPerMinute != null && stub.caloriesPerMinute! > EPS) {
+          stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
+        } else if (stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
+          stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
+        }
+
+        if (stub.power != null) {
+          stub.power = (stub.power! * powerFactor).round();
+        }
       }
 
       if (deltaCalories < EPS && stub.power != null && stub.power! > EPS) {
@@ -231,43 +300,43 @@ class FitnessEquipment extends DeviceBase {
 
     stub.calories = calories.floor();
 
-    if (stub.heartRate == 0 && (heartRateMonitor?.metric ?? 0) > 0) {
-      stub.heartRate = heartRateMonitor!.metric;
-    }
-
-    // #93, #113
-    if (stub.heartRate == 0 &&
-        lastRecord.heartRate != null &&
-        lastRecord.heartRate! > 0 &&
-        _heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
-      stub.heartRate = lastRecord.heartRate;
-    }
-
-    // #114
-    if (_heartRateUpperLimit > 0 &&
-        (stub.heartRate ?? 0) > _heartRateUpperLimit &&
-        _heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
-      if (_heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
-        stub.heartRate = _heartRateUpperLimit;
-      } else {
-        stub.heartRate = 0;
-      }
-    }
-
     stub.activityId = _activity?.id ?? 0;
     stub.sport = descriptor?.defaultSport ?? ActivityType.Ride;
     return stub;
   }
 
+  void readConfiguration() {
+    final prefService = Get.find<BasePrefService>();
+    _cadenceGapWorkaround =
+        prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
+    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    _heartRateGapWorkaround =
+        prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+    _heartRateUpperLimit =
+        prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+    _heartRateLimitingMethod =
+        prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+    _useHrmReportedCalories = prefService.get<bool>(USE_HR_MONITOR_REPORTED_CALORIES_TAG) ??
+        USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT;
+    _useHrBasedCalorieCounting = prefService.get<bool>(USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG) ??
+        USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+    _weight = prefService.get<int>(ATHLETE_BODY_WEIGHT_INT_TAG) ?? ATHLETE_BODY_WEIGHT_DEFAULT;
+    _age = prefService.get<int>(ATHLETE_AGE_TAG) ?? ATHLETE_AGE_DEFAULT;
+    _isMale = (prefService.get<String>(ATHLETE_GENDER_TAG) ??
+        ATHLETE_GENDER_DEFAULT) == ATHLETE_GENDER_MALE;
+    _vo2Max = prefService.get<int>(ATHLETE_VO2MAX_TAG) ?? ATHLETE_VO2MAX_DEFAULT;
+    _useHrBasedCalorieCounting &= (_weight > ATHLETE_BODY_WEIGHT_MIN && _age > ATHLETE_AGE_MIN);
+  }
+
   void startWorkout() {
+    readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 
   void stopWorkout() {
-    final prefService = Get.find<BasePrefService>();
-    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();

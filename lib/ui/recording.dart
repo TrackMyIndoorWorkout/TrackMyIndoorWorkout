@@ -344,17 +344,19 @@ class RecordingState extends State<RecordingScreen> {
           (_fitnessEquipment?.heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE)) {
         _fitnessEquipment?.setHeartRateMonitor(_heartRateMonitor!);
       }
+      _heartRateMonitor?.refreshFactors();
       _heartRateMonitor?.attach().then((_) async {
         if (_heartRateMonitor?.subscription != null) {
           _heartRateMonitor?.cancelSubscription();
         }
-        _heartRateMonitor?.pumpMetric((measurement) async {
+        _heartRateMonitor?.pumpMetric((record) async {
           setState(() {
-            if (measurement > 0 || _heartRate == null || _heartRate == 0) {
-              _heartRate = measurement;
+            if ((_heartRate == null || _heartRate == 0) &&
+                (record.heartRate != null && record.heartRate! > 0)) {
+              _heartRate = record.heartRate;
             }
-            _values[4] = measurement.toString();
-            amendZoneToValue(3, measurement);
+            _values[4] = record.heartRate?.toString() ?? EMPTY_MEASUREMENT;
+            amendZoneToValue(3, record.heartRate ?? 0);
           });
         });
       });
@@ -523,7 +525,14 @@ class RecordingState extends State<RecordingScreen> {
 
     _uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _fitnessEquipment?.measuring = false;
-    _values = ["--", "--", "--", "--", "--", "--"];
+    _values = [
+      EMPTY_MEASUREMENT,
+      EMPTY_MEASUREMENT,
+      EMPTY_MEASUREMENT,
+      EMPTY_MEASUREMENT,
+      EMPTY_MEASUREMENT,
+      EMPTY_MEASUREMENT,
+    ];
     _zoneIndexes = [null, null, null, null];
 
     _leaderboardFeature =
@@ -826,7 +835,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getRankString(int? rank, List<WorkoutSummary> leaderboard) {
-    return rank == null ? "--" : rank.toString();
+    return rank == null ? EMPTY_MEASUREMENT : rank.toString();
   }
 
   int? _getDeviceRank() {
@@ -911,7 +920,7 @@ class RecordingState extends State<RecordingScreen> {
 
   String _getTargetHrText(TargetHrState hrState) {
     if (hrState == TargetHrState.Off) {
-      return "--";
+      return EMPTY_MEASUREMENT;
     }
 
     if (hrState == TargetHrState.Under) {

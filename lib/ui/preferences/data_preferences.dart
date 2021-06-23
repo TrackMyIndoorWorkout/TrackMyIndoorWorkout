@@ -18,6 +18,16 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(EXTEND_TUNING_DESCRIPTION),
         pref: EXTEND_TUNING_TAG,
       ),
+      PrefCheckbox(
+        title: Text(USE_HR_MONITOR_REPORTED_CALORIES),
+        subtitle: Text(USE_HR_MONITOR_REPORTED_CALORIES_DESCRIPTION),
+        pref: USE_HR_MONITOR_REPORTED_CALORIES_TAG,
+      ),
+      PrefCheckbox(
+        title: Text(USE_HEART_RATE_BASED_CALORIE_COUNTING),
+        subtitle: Text(USE_HEART_RATE_BASED_CALORIE_COUNTING_DESCRIPTION),
+        pref: USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG,
+      ),
       PrefSlider<int>(
         title: Text(STROKE_RATE_SMOOTHING),
         subtitle: Text(STROKE_RATE_SMOOTHING_DESCRIPTION),

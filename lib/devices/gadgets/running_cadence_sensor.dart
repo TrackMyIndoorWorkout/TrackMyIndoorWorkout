@@ -1,9 +1,4 @@
-import 'dart:math';
-
-import 'package:get/get.dart';
-import 'package:pref/pref.dart';
 import '../../persistence/models/record.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../gatt_constants.dart';
@@ -17,20 +12,9 @@ class RunningCadenceSensor extends ComplexSensor {
   ShortMetricDescriptor? speedMetric;
   ByteMetricDescriptor? cadenceMetric;
   LongMetricDescriptor? distanceMetric;
-  late double powerFactor;
-  late bool extendTuning;
-  late Random _random;
 
-  RunningCadenceSensor(device, double powerFactor)
-      : super(
-          RUNNING_CADENCE_SERVICE_ID,
-          RUNNING_CADENCE_MEASUREMENT_ID,
-          device,
-        ) {
-    final prefService = Get.find<BasePrefService>();
-    extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
-    _random = Random();
-  }
+  RunningCadenceSensor(device, powerFactor)
+      : super(RUNNING_CADENCE_SERVICE_ID, RUNNING_CADENCE_MEASUREMENT_ID, device);
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml
   @override
@@ -74,8 +58,9 @@ class RunningCadenceSensor extends ComplexSensor {
 
   @override
   RecordWithSport processMeasurement(List<int> data) {
-    if (!canMeasurementProcessed(data))
-      return RecordWithSport.getBlank(ActivityType.Run, uxDebug, _random);
+    if (!canMeasurementProcessed(data)) {
+      return RecordWithSport.getBlank(ActivityType.Run, uxDebug, random);
+    }
 
     return RecordWithSport(
       timeStamp: DateTime.now().millisecondsSinceEpoch,

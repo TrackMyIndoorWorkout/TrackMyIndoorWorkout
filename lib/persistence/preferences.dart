@@ -553,6 +553,21 @@ const EXTEND_TUNING_DESCRIPTION =
         "if they depend on each other like when calories or speed is calculated from power. " +
         "Also note when both calorie and power tuning applied then their effect may combine.";
 
+const USE_HR_MONITOR_REPORTED_CALORIES = "Use heart rate monitor reported calories";
+const USE_HR_MONITOR_REPORTED_CALORIES_TAG = "use_heart_rate_monitor_reported_calories";
+const USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT = false;
+const USE_HR_MONITOR_REPORTED_CALORIES_DESCRIPTION =
+    "Only very enhanced heart rate monitors are capable reporting calories." +
+        "In such case should that calorie count take precedence over the value " +
+        "calculated by the fitness equipment (explicitly or deducted from the power reading).";
+
+const USE_HEART_RATE_BASED_CALORIE_COUNTING = "Use heart rate based calorie counting";
+const USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG = "heart_rate_based_calorie_counting";
+const USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT = false;
+const USE_HEART_RATE_BASED_CALORIE_COUNTING_DESCRIPTION =
+    "This method also requires configured athlete weight, age, and gender. " +
+        "Optional VO2max could make the calculation even more precise.";
+
 const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
 const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
 const STROKE_RATE_SMOOTHING_INT_TAG = STROKE_RATE_SMOOTHING_TAG + INT_TAG_POSTFIX;
@@ -806,7 +821,8 @@ const ATHLETE_BODY_WEIGHT_MIN = 1;
 const ATHLETE_BODY_WEIGHT_DEFAULT = 60;
 const ATHLETE_BODY_WEIGHT_MAX = 300;
 const ATHLETE_BODY_WEIGHT_DESCRIPTION =
-    "This settings is optional. It is only used right now for spin-down capable devices to set " +
+    "This settings is optional. It could be used either for heart rate based calorie counting equations " +
+        "or spin-down capable devices to set " +
         "the initial value displayed in the weight input until the device sends the last inputted weight. " +
         "As soon as the last inputted weight is received from the device it'll override the value in the input";
 
@@ -816,6 +832,31 @@ const REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT = true;
 const REMEMBER_ATHLETE_BODY_WEIGHT_DESCRIPTION =
     "On: The weight inputted at the beginning of a spin-down will override the weight above. " +
         "Off: The weight input adjusted at spin-down won't be stored back to the setting above.";
+
+const ATHLETE_AGE = "Age (years)";
+const ATHLETE_AGE_TAG = "athlete_age";
+const ATHLETE_AGE_MIN = 0;
+const ATHLETE_AGE_DEFAULT = 30;
+const ATHLETE_AGE_MAX = 120;
+const ATHLETE_AGE_DESCRIPTION = "Used for heart rate base calorie counting if that is preferred";
+
+const ATHLETE_GENDER = "Gender";
+const ATHLETE_GENDER_TAG = "athlete_gender";
+const ATHLETE_GENDER_DESCRIPTION =
+    "The gender classification for the purpose heart rate based calorie calculation equations.";
+const ATHLETE_GENDER_MALE = "male";
+const ATHLETE_GENDER_MALE_DESCRIPTION = "Male";
+const ATHLETE_GENDER_FEMALE = "female";
+const ATHLETE_GENDER_FEMALE_DESCRIPTION = "Female";
+const ATHLETE_GENDER_DEFAULT = ATHLETE_GENDER_MALE;
+
+const ATHLETE_VO2MAX = "VO2max (ml/kg/min)";
+const ATHLETE_VO2MAX_TAG = "athlete_vo2max";
+const ATHLETE_VO2MAX_MIN = 15;
+const ATHLETE_VO2MAX_DEFAULT = ATHLETE_VO2MAX_MIN;
+const ATHLETE_VO2MAX_MAX = 100;
+const ATHLETE_VO2MAX_DESCRIPTION = "Optional, but it could make the equation more precise. " +
+    "15 (minimum) means that the VO2max is ignored (not set).";
 
 Future<bool> getSimplerUiDefault() async {
   var simplerUiDefault = SIMPLER_UI_FAST_DEFAULT;
