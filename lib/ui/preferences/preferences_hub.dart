@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
-import 'about.dart';
 import 'athlete.dart';
 import 'data_preferences.dart';
 import 'expert.dart';
@@ -168,26 +167,6 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
                 onPressed: () => Get.to(() => ExpertPreferencesScreen()),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      ExpertPreferencesScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () => Get.to(() => AboutScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
