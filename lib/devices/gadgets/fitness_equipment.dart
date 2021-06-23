@@ -151,9 +151,12 @@ class FitnessEquipment extends DeviceBase {
   double _caloriesPerMinute(int heartRate) {
     if (_vo2Max > ATHLETE_VO2MAX_MIN) {
       if (_isMale) {
-        return (-59.3954 + (-36.3781 + 0.271 * _age + 0.394 * _weight + 0.404 * _vo2Max + 0.634 * heartRate)) / 4.184;
+        return (-59.3954 +
+                (-36.3781 + 0.271 * _age + 0.394 * _weight + 0.404 * _vo2Max + 0.634 * heartRate)) /
+            4.184;
       } else {
-        return (-59.3954 + (0.274 * _age + 0.103 * _weight + 0.380 * _vo2Max + 0.450 * heartRate)) / 4.184;
+        return (-59.3954 + (0.274 * _age + 0.103 * _weight + 0.380 * _vo2Max + 0.450 * heartRate)) /
+            4.184;
       }
     } else {
       if (_isMale) {
@@ -177,6 +180,7 @@ class FitnessEquipment extends DeviceBase {
         (stub.calories != null && stub.calories! > 0) ||
         (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0);
     if (hasTotalCalorieCounting &&
+        stub.elapsed != null &&
         ((stub.calories != null && stub.calories! > 0) ||
             (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0))) {
       elapsed = stub.elapsed!.toDouble();
@@ -236,9 +240,13 @@ class FitnessEquipment extends DeviceBase {
     }
 
     var calories = 0.0;
-    if (calories1 > EPS && (!_useHrmReportedCalories || calories2 < EPS) && (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
+    if (calories1 > EPS &&
+        (!_useHrmReportedCalories || calories2 < EPS) &&
+        (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
       calories = calories1;
-    } else if (calories2 > EPS && (_useHrmReportedCalories || calories1 < EPS) && (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
+    } else if (calories2 > EPS &&
+        (_useHrmReportedCalories || calories1 < EPS) &&
+        (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
       calories = calories2;
     } else {
       var deltaCalories = 0.0;
@@ -322,8 +330,8 @@ class FitnessEquipment extends DeviceBase {
         USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
     _weight = prefService.get<int>(ATHLETE_BODY_WEIGHT_INT_TAG) ?? ATHLETE_BODY_WEIGHT_DEFAULT;
     _age = prefService.get<int>(ATHLETE_AGE_TAG) ?? ATHLETE_AGE_DEFAULT;
-    _isMale = (prefService.get<String>(ATHLETE_GENDER_TAG) ??
-        ATHLETE_GENDER_DEFAULT) == ATHLETE_GENDER_MALE;
+    _isMale = (prefService.get<String>(ATHLETE_GENDER_TAG) ?? ATHLETE_GENDER_DEFAULT) ==
+        ATHLETE_GENDER_MALE;
     _vo2Max = prefService.get<int>(ATHLETE_VO2MAX_TAG) ?? ATHLETE_VO2MAX_DEFAULT;
     _useHrBasedCalorieCounting &= (_weight > ATHLETE_BODY_WEIGHT_MIN && _age > ATHLETE_AGE_MIN);
   }
