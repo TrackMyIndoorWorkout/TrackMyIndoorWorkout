@@ -29,6 +29,7 @@ dependencies:
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
+  package_info_plus: ^1.0.3
   permission_handler: ^8.1.1
   pref: ^2.3.0
   progress_indicators: ^1.0.0

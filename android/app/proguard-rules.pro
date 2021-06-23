@@ -32,6 +32,8 @@
 -keepclassmembernames class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keep class dev.flutter.plugins.integration_test.** { *; }
 -keepclassmembernames class dev.flutter.plugins.integration_test.** { *; }
+-keep class dev.fluttercommunity.plus.packageinfo.** { *; }
+-keepclassmembernames class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keep class io.flutter.plugins.pathprovider.** { *; }
 -keepclassmembernames class io.flutter.plugins.pathprovider.** { *; }
 -keep class com.baseflow.permissionhandler.** { *; }
