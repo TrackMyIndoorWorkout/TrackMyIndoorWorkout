@@ -534,7 +534,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         ringDiameter: _ringDiameter,
         ringWidth: _ringWidth,
         children: [
-          _themeManager.getHelpFab(),
+          _themeManager.getAboutFab(),
           _themeManager.getStravaFab(() async {
             StravaService stravaService;
             if (!Get.isRegistered<StravaService>()) {
