@@ -27,7 +27,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline3!;
+    _textStyle = Get.textTheme.headline4!;
     _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }

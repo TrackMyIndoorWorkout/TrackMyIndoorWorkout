@@ -26,7 +26,7 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
   void initState() {
     super.initState();
     _powerFactorPercent = widget.oldPowerFactor * 100.0;
-    _largerTextStyle = Get.textTheme.headline3!.apply(
+    _largerTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: FONT_FAMILY,
       color: _themeManager.getProtagonistColor(),
     );

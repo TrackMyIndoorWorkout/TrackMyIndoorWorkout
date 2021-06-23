@@ -28,7 +28,7 @@ class _ImportFormState extends State<ImportForm> {
   @override
   void initState() {
     super.initState();
-    _sizeDefault = Get.textTheme.headline1!.fontSize!;
+    _sizeDefault = Get.textTheme.headline2!.fontSize!;
   }
 
   void setProgress(double progress) {
