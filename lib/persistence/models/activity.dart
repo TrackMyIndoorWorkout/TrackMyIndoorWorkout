@@ -3,7 +3,7 @@ import '../../persistence/preferences.dart';
 import '../../utils/display.dart' as disp;
 import 'workout_summary.dart';
 
-const String ACTIVITIES_TABLE_NAME = 'activities';
+const ACTIVITIES_TABLE_NAME = 'activities';
 
 @Entity(
   tableName: ACTIVITIES_TABLE_NAME,

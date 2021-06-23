@@ -1,6 +1,6 @@
 import 'package:floor/floor.dart';
 
-const String POWER_TUNE_TABLE_NAME = 'power_tune';
+const POWER_TUNE_TABLE_NAME = 'power_tune';
 
 @Entity(
   tableName: POWER_TUNE_TABLE_NAME,

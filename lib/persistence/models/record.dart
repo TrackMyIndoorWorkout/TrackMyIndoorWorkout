@@ -6,7 +6,7 @@ import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import 'activity.dart';
 
-const String RECORDS_TABLE_NAME = 'records';
+const RECORDS_TABLE_NAME = 'records';
 
 @Entity(tableName: RECORDS_TABLE_NAME, foreignKeys: [
   ForeignKey(
