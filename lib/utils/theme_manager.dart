@@ -142,8 +142,11 @@ class ThemeManager {
   }
 
   FloatingActionButton getAboutFab() {
-    return _getFabCore(Colors.white, Colors.lightBlue, Icon(Icons.help), () =>
-      Get.to(() => AboutScreen())
+    return _getFabCore(
+      Colors.white,
+      Colors.lightBlue,
+      Icon(Icons.help),
+      () => Get.to(() => AboutScreen()),
     );
   }
 

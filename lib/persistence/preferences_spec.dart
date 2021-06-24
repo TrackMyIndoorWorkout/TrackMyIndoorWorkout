@@ -188,8 +188,8 @@ class PreferencesSpec {
 
   static String sport2Sport(String sport) {
     return sport == ActivityType.Kayaking ||
-        sport == ActivityType.Canoeing ||
-        sport == ActivityType.Rowing
+            sport == ActivityType.Canoeing ||
+            sport == ActivityType.Rowing
         ? PADDLE_SPORT
         : sport;
   }
@@ -260,7 +260,7 @@ class PreferencesSpec {
     plotBands.clear();
     plotBands.addAll(List.generate(
       binCount,
-          (i) => charts.PlotBand(
+      (i) => charts.PlotBand(
         isVisible: true,
         start: zoneLower[i],
         end: zoneUpper[i],
