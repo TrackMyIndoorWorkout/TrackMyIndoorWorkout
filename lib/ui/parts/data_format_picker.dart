@@ -20,7 +20,7 @@ class DataFormatPickerBottomSheetState extends State<DataFormatPickerBottomSheet
   void initState() {
     super.initState();
     _formatIndex = max(0, _formatChoices.indexOf("FIT"));
-    _largerTextStyle = Get.textTheme.headline3!;
+    _largerTextStyle = Get.textTheme.headline4!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
 

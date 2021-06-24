@@ -24,11 +24,11 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
   void initState() {
     super.initState();
     final themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline3!.apply(
+    _textStyle = Get.textTheme.headline4!.apply(
       fontFamily: FONT_FAMILY,
       color: Colors.white,
     );
-    _inverseTextStyle = Get.textTheme.headline3!.apply(
+    _inverseTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: FONT_FAMILY,
       color: themeManager.getProtagonistColor(),
     );

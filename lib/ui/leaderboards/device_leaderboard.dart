@@ -35,7 +35,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
   void initState() {
     super.initState();
     _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _textStyle = Get.textTheme.headline4!
+    _textStyle = Get.textTheme.headline5!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);

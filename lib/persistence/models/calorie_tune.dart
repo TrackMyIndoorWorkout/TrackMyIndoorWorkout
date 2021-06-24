@@ -1,6 +1,6 @@
 import 'package:floor/floor.dart';
 
-const String CALORIE_TUNE_TABLE_NAME = 'calorie_tune';
+const CALORIE_TUNE_TABLE_NAME = 'calorie_tune';
 
 @Entity(
   tableName: CALORIE_TUNE_TABLE_NAME,

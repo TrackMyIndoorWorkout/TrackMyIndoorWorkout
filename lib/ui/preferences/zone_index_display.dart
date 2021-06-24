@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
+import '../../persistence/preferences_spec.dart';
 import 'preferences_base.dart';
 
 class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {

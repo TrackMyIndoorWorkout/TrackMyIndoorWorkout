@@ -23,7 +23,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline4!.apply(
+    _textStyle = Get.textTheme.headline5!.apply(
       fontFamily: FONT_FAMILY,
       color: Colors.white,
     );

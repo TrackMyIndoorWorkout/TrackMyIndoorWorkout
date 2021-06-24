@@ -89,7 +89,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline2!.apply(
+    _textStyle = Get.textTheme.headline3!.apply(
       fontFamily: FONT_FAMILY,
       color: _themeManager.getProtagonistColor(),
     );

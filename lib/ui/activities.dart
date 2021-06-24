@@ -229,7 +229,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     }
 
     List<FloatingActionButton> floatingActionButtons = [
-      _themeManager.getHelpFab(),
+      _themeManager.getAboutFab(),
       _themeManager.getBlueFab(Icons.file_upload, () async {
         await Get.to(() => ImportForm())?.whenComplete(() => setState(() {
               _editCount++;

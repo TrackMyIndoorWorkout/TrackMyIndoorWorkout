@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:track_my_indoor_exercise/ui/about.dart';
 import '../persistence/preferences.dart';
 import '../ui/parts/flutter_brand_icons.dart';
 import '../utils/constants.dart';
@@ -141,14 +141,10 @@ class ThemeManager {
     );
   }
 
-  FloatingActionButton getHelpFab() {
-    return _getFabCore(Colors.white, Colors.lightBlue, Icon(Icons.help), () async {
-      if (await canLaunch(HELP_URL)) {
-        launch(HELP_URL);
-      } else {
-        Get.snackbar("Attention", "Cannot open URL");
-      }
-    });
+  FloatingActionButton getAboutFab() {
+    return _getFabCore(Colors.white, Colors.lightBlue, Icon(Icons.help), () =>
+      Get.to(() => AboutScreen())
+    );
   }
 
   TextStyle boldStyle(TextStyle style, {double fontSizeFactor = 1.0}) {

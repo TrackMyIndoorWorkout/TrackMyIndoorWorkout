@@ -3,7 +3,7 @@ import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/display.dart';
 
-const String WORKOUT_SUMMARIES_TABLE_NAME = 'workout_summary';
+const WORKOUT_SUMMARIES_TABLE_NAME = 'workout_summary';
 
 @Entity(
   tableName: WORKOUT_SUMMARIES_TABLE_NAME,

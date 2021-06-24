@@ -15,6 +15,7 @@ import '../devices/gatt_constants.dart';
 import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../persistence/preferences_spec.dart';
 import '../strava/strava_service.dart';
 import '../utils/constants.dart';
 import '../utils/scan_result_ex.dart';
@@ -533,7 +534,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         ringDiameter: _ringDiameter,
         ringWidth: _ringWidth,
         children: [
-          _themeManager.getHelpFab(),
+          _themeManager.getAboutFab(),
           _themeManager.getStravaFab(() async {
             StravaService stravaService;
             if (!Get.isRegistered<StravaService>()) {

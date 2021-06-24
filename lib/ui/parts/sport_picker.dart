@@ -47,7 +47,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
             ActivityType.Swim,
           ];
     _sportIndex = max(0, _sportChoices.indexOf(widget.initialSport));
-    _largerTextStyle = Get.textTheme.headline3!;
+    _largerTextStyle = Get.textTheme.headline4!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
 

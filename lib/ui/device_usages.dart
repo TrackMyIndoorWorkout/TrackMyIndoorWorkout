@@ -29,7 +29,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline4!
+    _textStyle = Get.textTheme.headline5!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
+import '../../persistence/preferences_spec.dart';
 import '../../utils/sound.dart';
 import 'preferences_base.dart';
 

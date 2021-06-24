@@ -1,6 +1,6 @@
 import 'package:floor/floor.dart';
 
-const String DEVICE_USAGE_TABLE_NAME = 'device_usage';
+const DEVICE_USAGE_TABLE_NAME = 'device_usage';
 
 @Entity(
   tableName: DEVICE_USAGE_TABLE_NAME,
