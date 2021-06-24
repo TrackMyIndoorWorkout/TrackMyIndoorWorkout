@@ -260,11 +260,11 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           _values = [
-            record.calories.toString(),
-            record.power.toString(),
+            record.calories?.toString() ?? EMPTY_MEASUREMENT,
+            record.power?.toString() ?? EMPTY_MEASUREMENT,
             record.speedOrPaceStringByUnit(_si, widget.descriptor.defaultSport),
-            record.cadence.toString(),
-            record.heartRate.toString(),
+            record.cadence?.toString() ?? EMPTY_MEASUREMENT,
+            record.heartRate?.toString() ?? EMPTY_MEASUREMENT,
             record.distanceStringByUnit(_si),
           ];
           amendZoneToValue(0, record.power ?? 0);
