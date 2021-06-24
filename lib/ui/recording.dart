@@ -350,7 +350,7 @@ class RecordingState extends State<RecordingScreen> {
         if (_heartRateMonitor?.subscription != null) {
           _heartRateMonitor?.cancelSubscription();
         }
-        _heartRateMonitor?.pumpMetric((record) async {
+        _heartRateMonitor?.pumpData((record) async {
           setState(() {
             if ((_heartRate == null || _heartRate == 0) &&
                 (record.heartRate != null && record.heartRate! > 0)) {

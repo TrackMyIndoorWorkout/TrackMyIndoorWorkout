@@ -31,7 +31,7 @@ abstract class ComplexSensor extends SensorBase {
     }
   }
 
-  void pumpMetric(ComplexMetricProcessingFunction metricProcessingFunction) {
+  void pumpData(ComplexMetricProcessingFunction metricProcessingFunction) {
     subscription = _listenToMetric.listen((newValue) {
       record = newValue;
       metricProcessingFunction(newValue);
