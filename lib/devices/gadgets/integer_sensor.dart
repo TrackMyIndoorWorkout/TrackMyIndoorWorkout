@@ -21,10 +21,12 @@ abstract class IntegerSensor extends SensorBase {
     }
   }
 
-  void pumpData(IntegerMetricProcessingFunction metricProcessingFunction) {
+  void pumpData(IntegerMetricProcessingFunction? metricProcessingFunction) {
     subscription = _listenToData.listen((newValue) {
       metric = newValue;
-      metricProcessingFunction(newValue);
+      if (metricProcessingFunction != null) {
+        metricProcessingFunction(newValue);
+      }
     });
   }
 

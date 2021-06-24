@@ -31,10 +31,12 @@ abstract class ComplexSensor extends SensorBase {
     }
   }
 
-  void pumpData(ComplexMetricProcessingFunction metricProcessingFunction) {
+  void pumpData(ComplexMetricProcessingFunction? metricProcessingFunction) {
     subscription = _listenToData.listen((newValue) {
       record = newValue;
-      metricProcessingFunction(newValue);
+      if (metricProcessingFunction != null) {
+        metricProcessingFunction(newValue);
+      }
     });
   }
 
