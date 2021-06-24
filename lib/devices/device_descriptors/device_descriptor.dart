@@ -13,8 +13,6 @@ import '../gatt_constants.dart';
 abstract class DeviceDescriptor {
   static const double MS2KMH = 3.6;
   static const double KMH2MS = 1 / MS2KMH;
-  static const double J2CAL = 0.2390057;
-  static const double J2KCAL = J2CAL / 1000.0;
 
   String defaultSport;
   final bool isMultiSport;

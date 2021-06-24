@@ -276,7 +276,7 @@ class FitnessEquipment extends DeviceBase {
       }
 
       if (deltaCalories < EPS && stub.power != null && stub.power! > EPS) {
-        deltaCalories = stub.power! * dT * DeviceDescriptor.J2KCAL * calorieFactor;
+        deltaCalories = stub.power! * dT * J_TO_KCAL * calorieFactor;
       }
 
       _residueCalories += deltaCalories;
