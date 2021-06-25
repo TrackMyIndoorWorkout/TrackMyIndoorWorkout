@@ -40,13 +40,13 @@ class CyclingCadenceSensor extends IntegerSensor {
       flag ~/= 2;
       // Has crank revolution? (second bit)
       if (flag % 2 == 1) {
-        expectedLength += 4; // 16 bit revolution and 16 bit time
-      } else {
-        return false;
+        revolutionsMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
+        expectedLength += 2; // 16 bit revolution
+        revolutionTime =
+            ShortMetricDescriptor(lsb: expectedLength + 2, msb: expectedLength + 3, divider: 1024.0);
+        expectedLength += 2; // 16 bit time
       }
-      revolutionsMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
-      revolutionTime =
-          ShortMetricDescriptor(lsb: expectedLength + 2, msb: expectedLength + 3, divider: 1024.0);
+
       featureFlag = flag;
 
       return data.length == expectedLength;
