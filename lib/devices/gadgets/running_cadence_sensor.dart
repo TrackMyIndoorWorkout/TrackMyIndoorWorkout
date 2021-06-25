@@ -38,6 +38,7 @@ class RunningCadenceSensor extends ComplexSensor {
         // Skip it, we are not interested in strode length
         expectedLength += 2; // 16 bit uint, 1/100 m
       }
+
       flag ~/= 2;
       // Has total distance? (second bit)
       if (flag % 2 == 1) {
@@ -76,6 +77,7 @@ class RunningCadenceSensor extends ComplexSensor {
     if (speed == null || !extendTuning) {
       return speed;
     }
+
     return speed * powerFactor;
   }
 
@@ -88,6 +90,7 @@ class RunningCadenceSensor extends ComplexSensor {
     if (distance == null || !extendTuning) {
       return distance;
     }
+
     return distance * powerFactor;
   }
 

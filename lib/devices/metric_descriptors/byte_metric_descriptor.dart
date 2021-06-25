@@ -12,6 +12,7 @@ class ByteMetricDescriptor extends MetricDescriptor {
     if (optional && data[lsb] == MAX_UINT8 - 1) {
       return null;
     }
+
     return data[lsb] / divider;
   }
 }

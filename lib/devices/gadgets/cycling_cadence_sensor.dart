@@ -36,6 +36,7 @@ class CyclingCadenceSensor extends IntegerSensor {
         // Skip it, we are not interested in wheel revolution
         expectedLength += 6; // 32 bit revolution and 16 bit time
       }
+
       flag ~/= 2;
       // Has crank revolution? (second bit)
       if (flag % 2 == 1) {

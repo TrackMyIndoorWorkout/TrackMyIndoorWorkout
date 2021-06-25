@@ -98,6 +98,7 @@ abstract class DeviceDescriptor {
         processFlag(flag);
       }
     }
+
     return null;
   }
 
@@ -114,6 +115,7 @@ abstract class DeviceDescriptor {
     if (speed == null || !extendTuning) {
       return speed;
     }
+
     return speed * powerFactor;
   }
 
@@ -126,6 +128,7 @@ abstract class DeviceDescriptor {
     if (distance == null || !extendTuning) {
       return distance;
     }
+
     return distance * powerFactor;
   }
 
@@ -134,6 +137,7 @@ abstract class DeviceDescriptor {
     if (power == null) {
       return power;
     }
+
     return power * powerFactor;
   }
 
@@ -142,6 +146,7 @@ abstract class DeviceDescriptor {
     if (calories == null || !extendTuning) {
       return calories;
     }
+
     return calories * calorieFactor;
   }
 
@@ -150,6 +155,7 @@ abstract class DeviceDescriptor {
     if (caloriesPerHour == null || !extendTuning) {
       return caloriesPerHour;
     }
+
     return caloriesPerHour * calorieFactor;
   }
 
@@ -158,6 +164,7 @@ abstract class DeviceDescriptor {
     if (caloriesPerMinute == null || !extendTuning) {
       return caloriesPerMinute;
     }
+
     return caloriesPerMinute * calorieFactor;
   }
 

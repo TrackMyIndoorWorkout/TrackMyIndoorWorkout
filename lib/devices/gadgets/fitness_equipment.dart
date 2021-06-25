@@ -233,6 +233,7 @@ class FitnessEquipment extends DeviceBase {
       calories1 = stub.calories!.toDouble();
       hasTotalCalorieCounting = true;
     }
+
     var calories2 = 0.0;
     if (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0) {
       calories2 = heartRateMonitor?.record?.calories?.toDouble() ?? 0.0;

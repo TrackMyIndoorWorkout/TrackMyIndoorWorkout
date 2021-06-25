@@ -12,6 +12,7 @@ class LongMetricDescriptor extends MetricDescriptor {
     if (optional && value == MAX_UINT32 - 1) {
       return null;
     }
+
     return value / divider;
   }
 }

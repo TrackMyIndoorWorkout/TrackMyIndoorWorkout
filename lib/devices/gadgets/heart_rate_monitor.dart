@@ -30,6 +30,7 @@ class HeartRateMonitor extends ComplexSensor {
         _shortHeartRateMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
         expectedLength += 2; // 16 bit HR
       }
+
       flag ~/= 2;
       // Sensor Contact Status Bit Pair
       flag ~/= 4;
@@ -39,11 +40,13 @@ class HeartRateMonitor extends ComplexSensor {
             ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1, divider: CAL_TO_J);
         expectedLength += 2; // 16 bit, kJ
       }
+
       flag ~/= 2;
       // RR Interval bit
       if (flag % 2 == 1) {
         expectedLength += 2; // 1/1024 sec
       }
+
       featureFlag = flag;
     }
 
@@ -79,6 +82,7 @@ class HeartRateMonitor extends ComplexSensor {
     if (calories == null || !extendTuning) {
       return calories;
     }
+
     return calories * calorieFactor;
   }
 
