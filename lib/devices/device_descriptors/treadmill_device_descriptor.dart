@@ -87,7 +87,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   @override
-  void stopWorkout() {}
+  Future<void> stopWorkout() async {}
 
   int processInclinationFlag(int flag) {
     if (flag % 2 == 1) {

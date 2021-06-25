@@ -81,7 +81,7 @@ abstract class DeviceDescriptor {
   double get lengthFactor => getDefaultTrack(defaultSport).lengthFactor;
   bool get isFitnessMachine => dataServiceId == FITNESS_MACHINE_ID;
 
-  void stopWorkout();
+  Future<void> stopWorkout();
 
   bool canDataProcessed(List<int> data);
 

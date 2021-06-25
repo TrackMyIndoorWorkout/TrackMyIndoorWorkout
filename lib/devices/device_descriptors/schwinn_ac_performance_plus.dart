@@ -27,7 +27,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   }
 
   @override
-  void stopWorkout() {
+  Future<void> stopWorkout() async {
     throw UnsupportedError("ANT+ only device => import only");
   }
 }

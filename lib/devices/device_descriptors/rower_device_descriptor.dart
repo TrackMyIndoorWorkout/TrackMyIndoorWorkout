@@ -120,7 +120,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   @override
-  void stopWorkout() {
+  Future<void> stopWorkout() async {
     clearStrokeRates();
   }
 

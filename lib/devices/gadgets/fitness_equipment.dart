@@ -344,11 +344,11 @@ class FitnessEquipment extends DeviceBase {
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 
-  void stopWorkout() {
+  Future<void> stopWorkout() async {
     readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();
-    descriptor?.stopWorkout();
+    await descriptor?.stopWorkout();
   }
 }

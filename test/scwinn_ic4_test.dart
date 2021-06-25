@@ -25,7 +25,7 @@ void main() {
     final lsb = 68;
     final msb = 2;
     final flag = MAX_UINT8 * msb + lsb;
-    bike.stopWorkout();
+    await bike.stopWorkout();
 
     bike.processFlag(flag);
 
@@ -157,7 +157,7 @@ void main() {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
         final bike = deviceMap["SIC4"]!;
-        bike.stopWorkout();
+        await bike.stopWorkout();
 
         final record = bike.stubRecord(testPair.data)!;
 

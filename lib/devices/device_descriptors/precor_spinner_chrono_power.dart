@@ -42,5 +42,5 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
   }
 
   @override
-  void stopWorkout() {}
+  Future<void> stopWorkout() async {}
 }

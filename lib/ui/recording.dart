@@ -705,7 +705,7 @@ class RecordingState extends State<RecordingScreen> {
       _fitnessEquipment?.lastRecord.elapsed,
       _fitnessEquipment?.lastRecord.calories,
     );
-    _fitnessEquipment?.stopWorkout();
+    await _fitnessEquipment?.stopWorkout();
 
     if (!_uxDebug) {
       if (_leaderboardFeature) {
