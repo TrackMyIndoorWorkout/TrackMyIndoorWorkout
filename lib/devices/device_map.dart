@@ -12,6 +12,7 @@ const PRECOR_SPINNER_CHRONO_POWER_FOURCC = "PSCP";
 const SCHWINN_IC_BIKE_FOURCC = "SIC4";
 const SCHWINN_AC_PERF_PLUS_FOURCC = "SAP+";
 const KAYAK_PRO_GENESIS_PORT_FOURCC = "KPro";
+const NPE_RUNN_FOURCC = "RUNN";
 const GENERIC_FTMS_BIKE_FOURCC = "GRid";
 const GENERIC_FTMS_TREADMILL_FOURCC = "GRun";
 const GENERIC_FTMS_KAYAK_FOURCC = "GKay";
@@ -42,6 +43,15 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturerFitId: NORTH_POLE_ENGINEERING_FIT_ID,
     model: "64",
     canMeasureHeartRate: false,
+  ),
+  NPE_RUNN_FOURCC: TreadmillDeviceDescriptor(
+    fourCC: NPE_RUNN_FOURCC,
+    vendorName: "North Pole Engineering Inc.",
+    modelName: "Generic Treadmill",
+    namePrefix: "RUNN",
+    manufacturer: "North Pole Engineering Inc.",
+    manufacturerFitId: NORTH_POLE_ENGINEERING_FIT_ID,
+    model: "77",
   ),
   GENERIC_FTMS_TREADMILL_FOURCC: TreadmillDeviceDescriptor(
     fourCC: GENERIC_FTMS_TREADMILL_FOURCC,
