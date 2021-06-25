@@ -42,8 +42,8 @@ class CyclingCadenceSensor extends IntegerSensor {
       if (flag % 2 == 1) {
         revolutionsMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
         expectedLength += 2; // 16 bit revolution
-        revolutionTime =
-            ShortMetricDescriptor(lsb: expectedLength + 2, msb: expectedLength + 3, divider: 1024.0);
+        revolutionTime = ShortMetricDescriptor(
+            lsb: expectedLength + 2, msb: expectedLength + 3, divider: 1024.0);
         expectedLength += 2; // 16 bit time
       }
 
