@@ -57,7 +57,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     FlutterBlue.instance.stopScan();
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    heartRateMonitor?.cancelSubscription();
+    heartRateMonitor?.detach();
     super.dispose();
   }
 

@@ -348,7 +348,7 @@ class RecordingState extends State<RecordingScreen> {
       _heartRateMonitor?.refreshFactors();
       _heartRateMonitor?.attach().then((_) async {
         if (_heartRateMonitor?.subscription != null) {
-          _heartRateMonitor?.cancelSubscription();
+          await _heartRateMonitor?.detach();
         }
         _heartRateMonitor?.pumpData((record) async {
           setState(() {
@@ -576,7 +576,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     try {
-      _heartRateMonitor?.cancelSubscription();
+      await _heartRateMonitor?.detach();
     } on PlatformException catch (e, stack) {
       debugPrint("HRM device got turned off?");
       debugPrint("$e");
@@ -698,7 +698,7 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
 
-    _fitnessEquipment?.detach();
+    await _fitnessEquipment?.detach();
 
     _activity!.finish(
       _fitnessEquipment?.lastRecord.distance,
