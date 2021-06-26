@@ -28,7 +28,7 @@ void main() {
     final msb = 9;
     final flag = MAX_UINT8 * msb + lsb;
     await initPrefServiceForTest();
-    await rower.stopWorkout();
+    rower.stopWorkout();
 
     rower.processFlag(flag);
 
@@ -212,7 +212,7 @@ void main() {
       test("$sum", () async {
         await initPrefServiceForTest();
         final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC]!;
-        await rower.stopWorkout();
+        rower.stopWorkout();
 
         final record = rower.stubRecord(testPair.data)!;
 

@@ -65,7 +65,7 @@ void main() {
 
         expect(equipment.lastPositiveCalories, closeTo(calories, EPS));
 
-        await equipment.stopWorkout();
+        equipment.stopWorkout();
 
         expect(equipment.residueCalories, closeTo(0.0, EPS));
         expect(equipment.lastPositiveCalories, closeTo(0.0, EPS));

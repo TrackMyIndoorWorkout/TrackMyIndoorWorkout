@@ -164,7 +164,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               Get.snackbar("Error", "Cannot tune calories of activity with 0 calories");
               return;
             }
-            await Get.bottomSheet(
+            Get.bottomSheet(
               CalorieOverrideBottomSheet(
                   deviceId: activity.deviceId, oldCalories: activity.calories.toDouble()),
               enableDrag: false,

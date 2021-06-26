@@ -101,9 +101,9 @@ class FitnessEquipment extends DeviceBase {
     this.heartRateMonitor = heartRateMonitor;
   }
 
-  void additionalSensorsOnDemand() async {
+  Future<void> additionalSensorsOnDemand() async {
     if (_runningCadenceSensor != null && _runningCadenceSensor?.device?.id.id != device?.id.id) {
-      await _runningCadenceSensor?.detach();
+      _runningCadenceSensor?.detach();
       _runningCadenceSensor = null;
     }
     if (sport == ActivityType.Run) {
@@ -387,17 +387,18 @@ class FitnessEquipment extends DeviceBase {
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 
-  Future<void> stopWorkout() async {
+  void stopWorkout() {
     readConfiguration();
-    await _runningCadenceSensor?.detach();
+    _runningCadenceSensor?.detach();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();
-    await descriptor?.stopWorkout();
+    descriptor?.stopWorkout();
   }
 
-  Future<void> detach() async {
-    await _runningCadenceSensor?.detach();
-    await super.detach();
+  @override
+  void detach() {
+    _runningCadenceSensor?.detach();
+    super.detach();
   }
 }

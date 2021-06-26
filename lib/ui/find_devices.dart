@@ -262,7 +262,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
         fitnessEquipment = currentEquipment;
         shouldRegister = false;
       } else {
-        currentEquipment.detach().whenComplete(() async => await currentEquipment.disconnect());
+        currentEquipment.detach();
+        currentEquipment.disconnect();
       }
     }
 
@@ -500,8 +501,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             }
 
                             if (heartRateMonitor != null) {
-                              await heartRateMonitor.detach();
-                              await heartRateMonitor.disconnect();
+                              heartRateMonitor.detach();
+                              heartRateMonitor.disconnect();
                               if (disconnectOnly) {
                                 return;
                               }

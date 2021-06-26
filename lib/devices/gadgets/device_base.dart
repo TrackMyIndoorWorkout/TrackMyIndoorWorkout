@@ -65,6 +65,7 @@ abstract class DeviceBase {
     _service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
 
     if (_service == null) {
+      characteristic = null;
       return false;
     }
 
@@ -137,7 +138,7 @@ abstract class DeviceBase {
     subscription = null;
   }
 
-  Future<void> detach() async {
+  void detach() {
     if (uxDebug) {
       attached = false;
       return;
@@ -145,7 +146,7 @@ abstract class DeviceBase {
 
     if (attached) {
       try {
-        await characteristic?.setNotifyValue(false);
+        characteristic?.setNotifyValue(false);
       } on PlatformException catch (e, stack) {
         debugPrint("$e");
         debugPrintStack(stackTrace: stack, label: "trace:");
@@ -155,13 +156,13 @@ abstract class DeviceBase {
     cancelSubscription();
   }
 
-  Future<void> disconnect() async {
+  void disconnect() {
     if (!uxDebug) {
-      await detach();
+      detach();
+      device?.disconnect();
       characteristic = null;
       services = [];
       _service = null;
-      await device?.disconnect();
     }
     connected = false;
     connecting = false;

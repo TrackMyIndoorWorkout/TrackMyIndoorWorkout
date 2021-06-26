@@ -148,7 +148,7 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _connectOnDemand() async {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
-      _fitnessEquipment?.additionalSensorsOnDemand();
+      await _fitnessEquipment?.additionalSensorsOnDemand();
 
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(INSTANT_MEASUREMENT_START_TAG) ??
@@ -350,7 +350,7 @@ class RecordingState extends State<RecordingScreen> {
       _heartRateMonitor?.refreshFactors();
       _heartRateMonitor?.attach().then((_) async {
         if (_heartRateMonitor?.subscription != null) {
-          await _heartRateMonitor?.detach();
+          _heartRateMonitor?.cancelSubscription();
         }
         _heartRateMonitor?.pumpData((record) async {
           setState(() {
@@ -578,7 +578,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     try {
-      await _heartRateMonitor?.detach();
+      _heartRateMonitor?.detach();
     } on PlatformException catch (e, stack) {
       debugPrint("HRM device got turned off?");
       debugPrint("$e");
@@ -586,7 +586,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     try {
-      await _fitnessEquipment?.detach();
+      _fitnessEquipment?.detach();
     } on PlatformException catch (e, stack) {
       debugPrint("Equipment got turned off?");
       debugPrint("$e");
@@ -621,8 +621,8 @@ class RecordingState extends State<RecordingScreen> {
     });
     _fitnessEquipment?.measuring = false;
     try {
-      await _fitnessEquipment?.detach();
-      await _fitnessEquipment?.disconnect();
+      _fitnessEquipment?.detach();
+      _fitnessEquipment?.disconnect();
     } on PlatformException catch (e, stack) {
       debugPrint("Equipment got turned off?");
       debugPrint("$e");
@@ -700,14 +700,14 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
 
-    await _fitnessEquipment?.detach();
+    _fitnessEquipment?.detach();
 
     _activity!.finish(
       _fitnessEquipment?.lastRecord.distance,
       _fitnessEquipment?.lastRecord.elapsed,
       _fitnessEquipment?.lastRecord.calories,
     );
-    await _fitnessEquipment?.stopWorkout();
+    _fitnessEquipment?.stopWorkout();
 
     if (!_uxDebug) {
       if (_leaderboardFeature) {
@@ -1319,14 +1319,14 @@ class RecordingState extends State<RecordingScreen> {
                 IconData icon;
                 switch (snapshot.data) {
                   case BluetoothDeviceState.connected:
-                    onPressed = () async {
-                      await _fitnessEquipment?.disconnect();
+                    onPressed = () {
+                      _fitnessEquipment?.disconnect();
                     };
                     icon = Icons.bluetooth_connected;
                     break;
                   case BluetoothDeviceState.disconnected:
-                    onPressed = () async {
-                      await _fitnessEquipment?.connect();
+                    onPressed = () {
+                      _fitnessEquipment?.connect();
                     };
                     icon = Icons.bluetooth_disabled;
                     break;

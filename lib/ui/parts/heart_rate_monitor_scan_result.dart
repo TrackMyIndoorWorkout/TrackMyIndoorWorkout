@@ -108,8 +108,8 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
           }
         }
         if (heartRateMonitor != null && heartRateMonitor!.device?.id.id != result.device.id.id) {
-          await heartRateMonitor!.detach();
-          await heartRateMonitor!.disconnect();
+          heartRateMonitor!.detach();
+          heartRateMonitor!.disconnect();
         }
         if (heartRateMonitor == null || heartRateMonitor!.device?.id.id != result.device.id.id) {
           heartRateMonitor = new HeartRateMonitor(result.device);

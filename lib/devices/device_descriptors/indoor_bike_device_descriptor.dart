@@ -75,5 +75,5 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   @override
-  Future<void> stopWorkout() async {}
+  void stopWorkout() {}
 }
