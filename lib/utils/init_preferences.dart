@@ -141,7 +141,11 @@ Future<BasePrefService> initPreferences() async {
         ATHLETE_BODY_WEIGHT_TAG, ATHLETE_BODY_WEIGHT_DEFAULT, prefService);
   }
 
-  await prefService.sharedPreferences.setInt(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);
+  if ((prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT) < SCAN_DURATION_DEFAULT) {
+    await prefService.set<int>(SCAN_DURATION_TAG, SCAN_DURATION_DEFAULT);
+  }
+
+  await prefService.set<int>(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);
 
   PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
     if (sport != ActivityType.Ride) {
