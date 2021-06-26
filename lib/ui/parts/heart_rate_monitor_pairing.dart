@@ -20,6 +20,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   int _scanDuration = 4;
   TextStyle _captionStyle = TextStyle();
   TextStyle _subtitleStyle = TextStyle();
+  bool _isScanning = false;
   List<String> _scanResults = [];
   ThemeManager _themeManager = Get.find<ThemeManager>();
 
@@ -32,7 +33,10 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   void _startScan() {
     setState(() {
       _scanResults.clear();
-      FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
+      _isScanning = true;
+      FlutterBlue.instance
+          .startScan(timeout: Duration(seconds: _scanDuration))
+          .whenComplete(() => {_isScanning = false});
     });
   }
 
@@ -43,6 +47,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
     _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
+    _isScanning = false;
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       _startScan();
     });
@@ -61,7 +66,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
           physics: const BouncingScrollPhysics(parent: const AlwaysScrollableScrollPhysics()),
           children: [
             StreamBuilder<List<BluetoothDevice>>(
-              stream: Stream.periodic(Duration(seconds: 2))
+              stream: Stream.periodic(
+                      Duration(seconds: RESCAN_PERIOD + (_isScanning ? _scanDuration : 0)))
                   .asyncMap((_) => FlutterBlue.instance.connectedDevices),
               initialData: [],
               builder: (c, snapshot) => snapshot.data == null

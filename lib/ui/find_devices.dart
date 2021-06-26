@@ -387,7 +387,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           physics: const BouncingScrollPhysics(parent: const AlwaysScrollableScrollPhysics()),
           children: [
             StreamBuilder<List<BluetoothDevice>>(
-              stream: Stream.periodic(Duration(seconds: 2))
+              stream: Stream.periodic(
+                      Duration(seconds: RESCAN_PERIOD + (_isScanning ? _scanDuration : 0)))
                   .asyncMap((_) => FlutterBlue.instance.connectedDevices),
               initialData: [],
               builder: (c, snapshot) => snapshot.data == null
