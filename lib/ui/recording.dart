@@ -574,7 +574,7 @@ class RecordingState extends State<RecordingScreen> {
     _dataGapBeeperTimer?.cancel();
     if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
         _dataGapSoundEffect != SOUND_EFFECT_NONE) {
-      await Get.find<SoundService>().stopAllSoundEffects();
+      Get.find<SoundService>().stopAllSoundEffects();
     }
 
     try {
@@ -1436,11 +1436,11 @@ class RecordingState extends State<RecordingScreen> {
                 Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
               } else {
                 final hasLeaderboardData = await _database.hasLeaderboardData();
-                await Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+                Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
               }
             }),
             _themeManager.getBlueFab(Icons.battery_unknown, () async {
-              await Get.bottomSheet(
+              Get.bottomSheet(
                 BatteryStatusBottomSheet(),
                 enableDrag: false,
               );
@@ -1451,7 +1451,7 @@ class RecordingState extends State<RecordingScreen> {
               } else if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
                 Get.snackbar("Error", "Not compatible with the calibration method");
               } else {
-                await Get.bottomSheet(
+                Get.bottomSheet(
                   SpinDownBottomSheet(),
                   isDismissible: false,
                   enableDrag: false,
