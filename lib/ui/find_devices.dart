@@ -40,11 +40,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
   int _scanDuration = SCAN_DURATION_DEFAULT;
   bool _autoConnect = AUTO_CONNECT_DEFAULT;
   bool _isScanning = false;
+  List<BluetoothDevice> _scannedDevices = [];
+  bool _isEnumerating = false;
+  List<BluetoothDevice> _connectedDevices = [];
   bool _goingToRecording = false;
   List<String> _lastEquipmentIds = [];
   bool _filterDevices = DEVICE_FILTERING_DEFAULT;
   BluetoothDevice? _openedDevice;
-  List<BluetoothDevice> _scannedDevices = [];
   TextStyle _captionStyle = TextStyle();
   TextStyle _subtitleStyle = TextStyle();
   AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
@@ -121,12 +123,18 @@ class FindDevicesState extends State<FindDevicesScreen> {
         _lastEquipmentIds.add(lastEquipmentId);
       }
     });
+
     _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
+    _isScanning = false;
+    _isEnumerating = false;
     if (_instantScan) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
-        _startScan();
+        Future.delayed(Duration(milliseconds: _isEnumerating ? ENUMERATION_DURATION : 0), () {
+          _startScan();
+        });
       });
     }
+
     _openDatabase();
 
     _captionStyle = Get.textTheme.headline6!;
@@ -381,67 +389,77 @@ class FindDevicesState extends State<FindDevicesScreen> {
       body: RefreshIndicator(
         onRefresh: () async {
           WidgetsBinding.instance?.addPostFrameCallback((_) {
-            _startScan();
+            Future.delayed(Duration(milliseconds: _isEnumerating ? ENUMERATION_DURATION : 0), () {
+              _startScan();
+            });
           });
         },
         child: ListView(
           physics: const BouncingScrollPhysics(parent: const AlwaysScrollableScrollPhysics()),
           children: [
             StreamBuilder<List<BluetoothDevice>>(
-              stream: Stream.periodic(
-                      Duration(seconds: RESCAN_PERIOD + (_isScanning ? _scanDuration : 0)))
-                  .asyncMap((_) => FlutterBlue.instance.connectedDevices),
-              initialData: [],
-              builder: (c, snapshot) => snapshot.data == null
-                  ? Container()
-                  : Column(
-                      children: snapshot.data!
-                          .where((d) => _advertisementCache.hasEntry(d.id.id))
-                          .map((d) {
-                        if (!(_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
-                            false)) {
-                          _openedDevice = d;
-                        }
+                stream: Stream.periodic(Duration(milliseconds: RESCAN_PERIOD)).asyncMap((_) =>
+                    _isScanning
+                        ? FlutterBlue.instance.connectedDevices
+                        : Future.value(_connectedDevices)),
+                initialData: [],
+                builder: (c, snapshot) {
+                  _isEnumerating = true;
+                  if (snapshot.data == null) {
+                    _connectedDevices = [];
+                    _isEnumerating = false;
+                    return Container();
+                  }
 
-                        return ListTile(
-                          title: TextOneLine(
-                            d.name,
-                            overflow: TextOverflow.ellipsis,
-                            style: _themeManager.boldStyle(_captionStyle,
-                                fontSizeFactor: FONT_SIZE_FACTOR),
-                          ),
-                          subtitle: Text(d.id.id, style: _subtitleStyle),
-                          trailing: StreamBuilder<BluetoothDeviceState>(
-                            stream: d.state,
-                            initialData: BluetoothDeviceState.disconnected,
-                            builder: (c, snapshot) {
-                              if (snapshot.data == BluetoothDeviceState.connected) {
-                                return _themeManager.getGreenGenericFab(
-                                  (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
-                                          false)
-                                      ? Icon(Icons.favorite)
-                                      : Icon(Icons.open_in_new),
-                                  () async {
-                                    if (_advertisementCache
-                                            .getEntry(d.id.id)
-                                            ?.isHeartRateMonitor() ??
-                                        false) {
-                                      return;
-                                    }
-                                    await FlutterBlue.instance.stopScan();
-                                    await Future.delayed(Duration(milliseconds: 100));
-                                    await goToRecording(d, snapshot.data!);
-                                  },
-                                );
-                              } else {
-                                return Icon(Icons.bluetooth_disabled);
-                              }
-                            },
-                          ),
-                        );
-                      }).toList(growable: false),
-                    ),
-            ),
+                  Future.delayed(Duration(milliseconds: ENUMERATION_DURATION), () {
+                    _isEnumerating = false;
+                  });
+                  _connectedDevices = snapshot.data!;
+                  return Column(
+                    children: _connectedDevices
+                        .where((d) => _advertisementCache.hasEntry(d.id.id))
+                        .map((d) {
+                      if (!(_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ?? false)) {
+                        _openedDevice = d;
+                      }
+
+                      return ListTile(
+                        title: TextOneLine(
+                          d.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: _themeManager.boldStyle(_captionStyle,
+                              fontSizeFactor: FONT_SIZE_FACTOR),
+                        ),
+                        subtitle: Text(d.id.id, style: _subtitleStyle),
+                        trailing: StreamBuilder<BluetoothDeviceState>(
+                          stream: d.state,
+                          initialData: BluetoothDeviceState.disconnected,
+                          builder: (c, snapshot) {
+                            if (snapshot.data == BluetoothDeviceState.connected) {
+                              return _themeManager.getGreenGenericFab(
+                                (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
+                                        false)
+                                    ? Icon(Icons.favorite)
+                                    : Icon(Icons.open_in_new),
+                                () async {
+                                  if (_advertisementCache.getEntry(d.id.id)?.isHeartRateMonitor() ??
+                                      false) {
+                                    return;
+                                  }
+                                  await FlutterBlue.instance.stopScan();
+                                  await Future.delayed(Duration(milliseconds: 100));
+                                  await goToRecording(d, snapshot.data!);
+                                },
+                              );
+                            } else {
+                              return Icon(Icons.bluetooth_disabled);
+                            }
+                          },
+                        ),
+                      );
+                    }).toList(growable: false),
+                  );
+                }),
             Divider(),
             StreamBuilder<List<ScanResult>>(
               stream: FlutterBlue.instance.scanResults,
