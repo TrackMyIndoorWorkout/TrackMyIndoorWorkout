@@ -96,7 +96,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                                   Get.snackbar("Info", "Already connected");
                                 });
                               } else {
-                                return Text(snapshot.data.toString());
+                                return Icon(Icons.bluetooth_disabled);
                               }
                             },
                           ),

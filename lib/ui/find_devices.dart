@@ -434,7 +434,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   },
                                 );
                               } else {
-                                return Text(snapshot.data.toString());
+                                return Icon(Icons.bluetooth_disabled);
                               }
                             },
                           ),
