@@ -34,8 +34,6 @@ const SCAN_DURATION_DEFAULT = 6;
 const SCAN_DURATION_MAX = 15;
 const SCAN_DURATION_DESCRIPTION =
     "Duration in seconds the app will spend looking Bluetooth Low Energy equipment.";
-const RESCAN_PERIOD = 2350;
-const ENUMERATION_DURATION = 500; // Just an estimate in milliseconds
 
 const AUTO_CONNECT = "Auto Connect";
 const AUTO_CONNECT_TAG = "auto_connect";

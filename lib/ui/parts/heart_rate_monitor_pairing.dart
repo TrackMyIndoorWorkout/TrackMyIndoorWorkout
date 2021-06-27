@@ -22,8 +22,6 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   TextStyle _subtitleStyle = TextStyle();
   bool _isScanning = false;
   List<String> _scanResults = [];
-  bool _isEnumerating = false;
-  List<BluetoothDevice> _connectedDevices = [];
   ThemeManager _themeManager = Get.find<ThemeManager>();
 
   @override
@@ -33,6 +31,10 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   }
 
   void _startScan() {
+    if (_isScanning) {
+      return;
+    }
+
     setState(() {
       _scanResults.clear();
       _isScanning = true;
@@ -50,11 +52,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
     _isScanning = false;
-    _isEnumerating = false;
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      Future.delayed(Duration(milliseconds: _isEnumerating ? ENUMERATION_DURATION : 0), () {
-        _startScan();
-      });
+      _startScan();
     });
   }
 
@@ -64,64 +63,41 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
       body: RefreshIndicator(
         onRefresh: () async {
           WidgetsBinding.instance?.addPostFrameCallback((_) {
-            Future.delayed(Duration(milliseconds: _isEnumerating ? ENUMERATION_DURATION : 0), () {
-              _startScan();
-            });
+            _startScan();
           });
         },
         child: ListView(
           physics: const BouncingScrollPhysics(parent: const AlwaysScrollableScrollPhysics()),
           children: [
-            StreamBuilder<List<BluetoothDevice>>(
-              stream: Stream.periodic(Duration(milliseconds: RESCAN_PERIOD)).asyncMap((_) =>
-                  _isScanning
-                      ? FlutterBlue.instance.connectedDevices
-                      : Future.value(_connectedDevices)),
-              initialData: [],
-              builder: (c, snapshot) {
-                _isEnumerating = true;
-                if (snapshot.data == null) {
-                  _connectedDevices = [];
-                  _isEnumerating = false;
-                  return Container();
-                }
-
-                Future.delayed(Duration(milliseconds: ENUMERATION_DURATION), () {
-                  _isEnumerating = false;
-                });
-                _connectedDevices = snapshot.data!;
-                return Column(
-                  children: _connectedDevices
-                      .where((h) =>
-                          _scanResults.contains(h.id.id) ||
-                          (Get.isRegistered<HeartRateMonitor>() &&
-                              Get.find<HeartRateMonitor>().device?.id.id == h.id.id))
-                      .map((d) {
-                    return ListTile(
-                      title: TextOneLine(
-                        d.name,
-                        overflow: TextOverflow.ellipsis,
-                        style: _themeManager.boldStyle(_captionStyle,
-                            fontSizeFactor: FONT_SIZE_FACTOR),
-                      ),
-                      subtitle: Text(d.id.id, style: _subtitleStyle),
-                      trailing: StreamBuilder<BluetoothDeviceState>(
-                        stream: d.state,
-                        initialData: BluetoothDeviceState.disconnected,
-                        builder: (c, snapshot) {
-                          if (snapshot.data == BluetoothDeviceState.connected) {
-                            return _themeManager.getGreenFab(Icons.favorite, () {
-                              Get.snackbar("Info", "Already connected");
-                            });
-                          } else {
-                            return Icon(Icons.bluetooth_disabled);
-                          }
-                        },
-                      ),
-                    );
-                  }).toList(growable: false),
-                );
-              },
+            Column(
+              children: [
+                Get.isRegistered<HeartRateMonitor>()
+                    ? ListTile(
+                        title: TextOneLine(
+                          Get.find<HeartRateMonitor>().device?.name ?? EMPTY_MEASUREMENT,
+                          overflow: TextOverflow.ellipsis,
+                          style: _themeManager.boldStyle(_captionStyle,
+                              fontSizeFactor: FONT_SIZE_FACTOR),
+                        ),
+                        subtitle: Text(
+                            Get.find<HeartRateMonitor>().device?.id.id ?? EMPTY_MEASUREMENT,
+                            style: _subtitleStyle),
+                        trailing: StreamBuilder<BluetoothDeviceState>(
+                          stream: Get.find<HeartRateMonitor>().device?.state,
+                          initialData: BluetoothDeviceState.disconnected,
+                          builder: (c, snapshot) {
+                            if (snapshot.data == BluetoothDeviceState.connected) {
+                              return _themeManager.getGreenFab(Icons.favorite, () {
+                                Get.snackbar("Info", "Already connected");
+                              });
+                            } else {
+                              return _themeManager.getGreenFab(Icons.bluetooth_disabled, null);
+                            }
+                          },
+                        ),
+                      )
+                    : Container(),
+              ],
             ),
             Divider(),
             StreamBuilder<List<ScanResult>>(
