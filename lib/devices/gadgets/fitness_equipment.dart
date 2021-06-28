@@ -389,7 +389,6 @@ class FitnessEquipment extends DeviceBase {
 
   void stopWorkout() {
     readConfiguration();
-    _runningCadenceSensor?.detach();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     _timer?.cancel();
