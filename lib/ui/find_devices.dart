@@ -418,7 +418,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 Get.snackbar("Info", "HRM Already connected");
                               });
                             } else {
-                              return _themeManager.getGreenFab(Icons.bluetooth_disabled, () {
+                              return _themeManager.getGreyFab(Icons.bluetooth, () {
                                 setState(() {
                                   _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                       ? Get.find<HeartRateMonitor>()

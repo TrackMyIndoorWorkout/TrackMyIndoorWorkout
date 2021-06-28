@@ -91,7 +91,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                                 Get.snackbar("Info", "Already connected");
                               });
                             } else {
-                              return _themeManager.getGreenFab(Icons.bluetooth_disabled, () {
+                              return _themeManager.getGreyFab(Icons.bluetooth, () {
                                 setState(() {
                                   _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                       ? Get.find<HeartRateMonitor>()
