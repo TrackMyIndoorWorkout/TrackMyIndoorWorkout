@@ -23,6 +23,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   bool _isScanning = false;
   List<String> _scanResults = [];
   ThemeManager _themeManager = Get.find<ThemeManager>();
+  HeartRateMonitor? _heartRateMonitor;
 
   @override
   void dispose() {
@@ -35,13 +36,12 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
       return;
     }
 
-    setState(() {
-      _scanResults.clear();
-      _isScanning = true;
-      FlutterBlue.instance
-          .startScan(timeout: Duration(seconds: _scanDuration))
-          .whenComplete(() => {_isScanning = false});
-    });
+    _scanResults.clear();
+    _isScanning = true;
+
+    FlutterBlue.instance
+        .startScan(timeout: Duration(seconds: _scanDuration))
+        .whenComplete(() => {_isScanning = false});
   }
 
   @override
@@ -52,9 +52,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
     _isScanning = false;
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      _startScan();
-    });
+    _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
+    _startScan();
   }
 
   @override
@@ -62,28 +61,29 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
-          WidgetsBinding.instance?.addPostFrameCallback((_) {
-            _startScan();
-          });
+          _startScan();
         },
         child: ListView(
           physics: const BouncingScrollPhysics(parent: const AlwaysScrollableScrollPhysics()),
           children: [
             Column(
               children: [
-                Get.isRegistered<HeartRateMonitor>()
+                _heartRateMonitor != null
                     ? ListTile(
                         title: TextOneLine(
-                          Get.find<HeartRateMonitor>().device?.name ?? EMPTY_MEASUREMENT,
+                          _heartRateMonitor?.device?.name ?? EMPTY_MEASUREMENT,
                           overflow: TextOverflow.ellipsis,
-                          style: _themeManager.boldStyle(_captionStyle,
-                              fontSizeFactor: FONT_SIZE_FACTOR),
+                          style: _themeManager.boldStyle(
+                            _captionStyle,
+                            fontSizeFactor: FONT_SIZE_FACTOR,
+                          ),
                         ),
                         subtitle: Text(
-                            Get.find<HeartRateMonitor>().device?.id.id ?? EMPTY_MEASUREMENT,
-                            style: _subtitleStyle),
+                          _heartRateMonitor?.device?.id.id ?? EMPTY_MEASUREMENT,
+                          style: _subtitleStyle,
+                        ),
                         trailing: StreamBuilder<BluetoothDeviceState>(
-                          stream: Get.find<HeartRateMonitor>().device?.state,
+                          stream: _heartRateMonitor?.device?.state,
                           initialData: BluetoothDeviceState.disconnected,
                           builder: (c, snapshot) {
                             if (snapshot.data == BluetoothDeviceState.connected) {
@@ -91,7 +91,13 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                                 Get.snackbar("Info", "Already connected");
                               });
                             } else {
-                              return _themeManager.getGreenFab(Icons.bluetooth_disabled, null);
+                              return _themeManager.getGreenFab(Icons.bluetooth_disabled, () {
+                                setState(() {
+                                  _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                      ? Get.find<HeartRateMonitor>()
+                                      : null;
+                                });
+                              });
                             }
                           },
                         ),
@@ -108,7 +114,70 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                   : Column(
                       children: snapshot.data!.where((d) => d.isWorthy()).map((r) {
                       _scanResults.add(r.device.id.id);
-                      return HeartRateMonitorScanResultTile(result: r);
+                      return HeartRateMonitorScanResultTile(
+                          result: r,
+                          onTap: () async {
+                            var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                ? Get.find<HeartRateMonitor>()
+                                : null;
+                            final existingId = heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
+                            final storedId = _heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
+                            if (existingId != NOT_AVAILABLE && existingId != r.device.id.id) {
+                              if (!(await showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text('You are connected to a HRM right now'),
+                                      content: Text(
+                                          'Disconnect from that HRM to connect the selected one?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Get.close(1),
+                                          child: Text('No'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(true);
+                                          },
+                                          child: Text('Yes'),
+                                        ),
+                                      ],
+                                    ),
+                                  ) ??
+                                  false)) {
+                                if (existingId != storedId) {
+                                  setState(() {
+                                    _heartRateMonitor = heartRateMonitor;
+                                  });
+                                }
+                                return;
+                              }
+                            }
+
+                            if (heartRateMonitor != null && existingId != r.device.id.id) {
+                              heartRateMonitor.detach();
+                              heartRateMonitor.disconnect();
+                            }
+
+                            if (heartRateMonitor == null || existingId != r.device.id.id) {
+                              heartRateMonitor = new HeartRateMonitor(r.device);
+                              if (Get.isRegistered<HeartRateMonitor>()) {
+                                Get.delete<HeartRateMonitor>();
+                              }
+
+                              Get.put<HeartRateMonitor>(heartRateMonitor);
+                              await heartRateMonitor.connect();
+                              await heartRateMonitor.discover();
+                              setState(() {
+                                _heartRateMonitor = heartRateMonitor;
+                              });
+                            } else if (existingId != storedId) {
+                              setState(() {
+                                _heartRateMonitor = heartRateMonitor;
+                              });
+                            }
+
+                            await heartRateMonitor.attach();
+                          });
                     }).toList(growable: false)),
             ),
           ],

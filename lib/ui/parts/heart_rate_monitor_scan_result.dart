@@ -37,9 +37,11 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   const HeartRateMonitorScanResultTile({
     Key? key,
     required this.result,
+    required this.onTap,
   }) : super(key: key);
 
   final ScanResult result;
+  final VoidCallback onTap;
 
   Widget _buildTitle(ThemeManager themeManager, TextStyle captionStyle, TextStyle dataStyle) {
     if (result.device.name.isNotEmpty) {
@@ -78,50 +80,12 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         style: captionStyle.apply(fontFamily: FONT_FAMILY),
       ),
       trailing: themeManager.getIconFab(
-          (heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE) == result.device.id.id
-              ? themeManager.getGreenColor()
-              : themeManager.getBlueColor(),
-          Icons.favorite, () async {
-        final existingId = heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
-        if (existingId != NOT_AVAILABLE && existingId != result.device.id.id) {
-          if (!(await showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('You are connected to a HRM right now'),
-                  content: Text('Disconnect from that HRM to connect the selected one?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Get.close(1),
-                      child: Text('No'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
-                      },
-                      child: Text('Yes'),
-                    ),
-                  ],
-                ),
-              ) ??
-              false)) {
-            return;
-          }
-        }
-        if (heartRateMonitor != null && heartRateMonitor!.device?.id.id != result.device.id.id) {
-          heartRateMonitor!.detach();
-          heartRateMonitor!.disconnect();
-        }
-        if (heartRateMonitor == null || heartRateMonitor!.device?.id.id != result.device.id.id) {
-          heartRateMonitor = new HeartRateMonitor(result.device);
-          if (Get.isRegistered<HeartRateMonitor>()) {
-            Get.delete<HeartRateMonitor>();
-          }
-          Get.put<HeartRateMonitor>(heartRateMonitor!);
-          await heartRateMonitor!.connect();
-          await heartRateMonitor!.discover();
-        }
-        await heartRateMonitor?.attach();
-      }),
+        (heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE) == result.device.id.id
+            ? themeManager.getGreenColor()
+            : themeManager.getBlueColor(),
+        Icons.favorite,
+        onTap,
+      ),
     );
   }
 }
