@@ -122,7 +122,7 @@ class Record {
   }
 
   String speedOrPaceStringByUnit(bool si, String sport) {
-    return speedOrPaceString(speed ?? 0.0, si, sport);
+    return speedOrPaceString(speed ?? 0.0, si, sport, limitSlowSpeed: true);
   }
 
   String distanceStringByUnit(bool si) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../persistence/preferences.dart';
+import '../persistence/preferences_spec.dart';
 import 'constants.dart';
 
 double speedByUnitCore(double speed, bool si) {
@@ -32,7 +32,7 @@ double speedOrPace(double speed, bool si, String sport) {
   }
 }
 
-String speedOrPaceString(double speed, bool si, String sport) {
+String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = false}) {
   final spd = speedOrPace(speed, si, sport);
   if (sport == ActivityType.Ride) {
     return spd.toStringAsFixed(2);
@@ -43,6 +43,14 @@ String speedOrPaceString(double speed, bool si, String sport) {
       sport == ActivityType.Swim ||
       sport == ActivityType.Elliptical) {
     if (speed.abs() < DISPLAY_EPS) return "0:00";
+
+    if (limitSlowSpeed) {
+      final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)]!;
+      if (speed < slowSpeed) {
+        return "0:00";
+      }
+    }
+
     var pace = 60.0 / speed;
     if (sport == ActivityType.Kayaking ||
         sport == ActivityType.Canoeing ||
@@ -113,8 +121,6 @@ String getCadenceUnit(String sport) {
 }
 
 String distanceString(double distance, bool si) {
-  if (distance == null) distance = 0.0;
-
   if (si) return distance.toStringAsFixed(0);
 
   return '${(distance * M2MILE).toStringAsFixed(2)}';
