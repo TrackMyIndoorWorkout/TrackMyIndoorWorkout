@@ -578,7 +578,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     try {
-      _heartRateMonitor?.detach();
+      await _heartRateMonitor?.detach();
     } on PlatformException catch (e, stack) {
       debugPrint("HRM device got turned off?");
       debugPrint("$e");
@@ -586,7 +586,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     try {
-      _fitnessEquipment?.detach();
+      await _fitnessEquipment?.detach();
     } on PlatformException catch (e, stack) {
       debugPrint("Equipment got turned off?");
       debugPrint("$e");
@@ -621,8 +621,8 @@ class RecordingState extends State<RecordingScreen> {
     });
     _fitnessEquipment?.measuring = false;
     try {
-      _fitnessEquipment?.detach();
-      _fitnessEquipment?.disconnect();
+      await _fitnessEquipment?.detach();
+      await _fitnessEquipment?.disconnect();
     } on PlatformException catch (e, stack) {
       debugPrint("Equipment got turned off?");
       debugPrint("$e");
@@ -700,7 +700,7 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
 
-    _fitnessEquipment?.detach();
+    await _fitnessEquipment?.detach();
 
     _activity!.finish(
       _fitnessEquipment?.lastRecord.distance,
@@ -1319,14 +1319,14 @@ class RecordingState extends State<RecordingScreen> {
                 IconData icon;
                 switch (snapshot.data) {
                   case BluetoothDeviceState.connected:
-                    onPressed = () {
-                      _fitnessEquipment?.disconnect();
+                    onPressed = () async {
+                      await _fitnessEquipment?.disconnect();
                     };
                     icon = Icons.bluetooth_connected;
                     break;
                   case BluetoothDeviceState.disconnected:
-                    onPressed = () {
-                      _fitnessEquipment?.connect();
+                    onPressed = () async {
+                      await _fitnessEquipment?.connect();
                     };
                     icon = Icons.bluetooth_disabled;
                     break;

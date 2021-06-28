@@ -263,8 +263,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
         fitnessEquipment = currentEquipment;
         shouldRegister = false;
       } else {
-        currentEquipment.detach();
-        currentEquipment.disconnect();
+        await currentEquipment.detach();
+        await currentEquipment.disconnect();
       }
     }
 
@@ -281,6 +281,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (Get.isRegistered<FitnessEquipment>()) {
         await Get.delete<FitnessEquipment>();
       }
+
       Get.put<FitnessEquipment>(fitnessEquipment);
       setState(() {
         _fitnessEquipment = fitnessEquipment;
@@ -537,14 +538,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             }
 
                             if (heartRateMonitor != null) {
-                              heartRateMonitor.detach();
-                              heartRateMonitor.disconnect();
+                              await heartRateMonitor.detach();
+                              await heartRateMonitor.disconnect();
                               if (disconnectOnly) {
                                 if (existingId != storedId) {
                                   setState(() {
                                     _heartRateMonitor = heartRateMonitor;
                                   });
                                 }
+
                                 return;
                               }
                             }
@@ -554,6 +556,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               if (Get.isRegistered<HeartRateMonitor>()) {
                                 await Get.delete<HeartRateMonitor>();
                               }
+
                               Get.put<HeartRateMonitor>(heartRateMonitor);
                               await heartRateMonitor.connect();
                               await heartRateMonitor.discover();

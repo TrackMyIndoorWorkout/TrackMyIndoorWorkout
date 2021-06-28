@@ -138,7 +138,7 @@ abstract class DeviceBase {
     subscription = null;
   }
 
-  void detach() {
+  Future<void> detach() async {
     if (uxDebug) {
       attached = false;
       return;
@@ -146,7 +146,7 @@ abstract class DeviceBase {
 
     if (attached) {
       try {
-        characteristic?.setNotifyValue(false);
+        await characteristic?.setNotifyValue(false);
       } on PlatformException catch (e, stack) {
         debugPrint("$e");
         debugPrintStack(stackTrace: stack, label: "trace:");
@@ -156,10 +156,10 @@ abstract class DeviceBase {
     cancelSubscription();
   }
 
-  void disconnect() {
+  Future<void> disconnect() async {
     if (!uxDebug) {
-      detach();
-      device?.disconnect();
+      await detach();
+      await device?.disconnect();
       characteristic = null;
       services = [];
       _service = null;

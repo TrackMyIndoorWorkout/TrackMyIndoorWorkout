@@ -103,7 +103,7 @@ class FitnessEquipment extends DeviceBase {
 
   Future<void> additionalSensorsOnDemand() async {
     if (_runningCadenceSensor != null && _runningCadenceSensor?.device?.id.id != device?.id.id) {
-      _runningCadenceSensor?.detach();
+      await _runningCadenceSensor?.detach();
       _runningCadenceSensor = null;
     }
     if (sport == ActivityType.Run) {
@@ -396,8 +396,8 @@ class FitnessEquipment extends DeviceBase {
   }
 
   @override
-  void detach() {
-    _runningCadenceSensor?.detach();
-    super.detach();
+  Future<void> detach() async {
+    await super.detach();
+    await _runningCadenceSensor?.detach();
   }
 }

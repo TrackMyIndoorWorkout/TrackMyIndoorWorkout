@@ -154,8 +154,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                             }
 
                             if (heartRateMonitor != null && existingId != r.device.id.id) {
-                              heartRateMonitor.detach();
-                              heartRateMonitor.disconnect();
+                              await heartRateMonitor.detach();
+                              await heartRateMonitor.disconnect();
                             }
 
                             if (heartRateMonitor == null || existingId != r.device.id.id) {

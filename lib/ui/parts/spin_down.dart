@@ -435,18 +435,31 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     });
   }
 
-  void _reset() {
-    _controlPoint?.setNotifyValue(false);
+  Future<void> _detachControlPoint() async {
+    await _controlPoint?.setNotifyValue(false);
     _controlPointSubscription?.cancel();
+  }
 
-    _weightData?.setNotifyValue(false);
+  Future<void> _detachWeightData() async {
+    await _weightData?.setNotifyValue(false);
     _weightDataSubscription?.cancel();
+  }
 
+  Future<void> _detachFitnessMachineStatus() async {
     _fitnessMachineStatus?.setNotifyValue(false);
     _statusSubscription?.cancel();
+  }
 
+  Future<void> _detachFitnessMachine() async {
     _fitnessEquipment?.calibrating = false;
-    _fitnessEquipment?.detach();
+    await _fitnessEquipment?.detach();
+  }
+
+  Future<void> _reset() async {
+    await _detachControlPoint();
+    await _detachWeightData();
+    await _detachFitnessMachineStatus();
+    await _detachFitnessMachine();
   }
 
   @override
