@@ -20,8 +20,10 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   int _scanDuration = 4;
   TextStyle _captionStyle = TextStyle();
   TextStyle _subtitleStyle = TextStyle();
+  bool _isScanning = false;
   List<String> _scanResults = [];
   ThemeManager _themeManager = Get.find<ThemeManager>();
+  HeartRateMonitor? _heartRateMonitor;
 
   @override
   void dispose() {
@@ -30,10 +32,16 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   }
 
   void _startScan() {
-    setState(() {
-      _scanResults.clear();
-      FlutterBlue.instance.startScan(timeout: Duration(seconds: _scanDuration));
-    });
+    if (_isScanning) {
+      return;
+    }
+
+    _scanResults.clear();
+    _isScanning = true;
+
+    FlutterBlue.instance
+        .startScan(timeout: Duration(seconds: _scanDuration))
+        .whenComplete(() => {_isScanning = false});
   }
 
   @override
@@ -43,9 +51,9 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
     _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      _startScan();
-    });
+    _isScanning = false;
+    _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
+    _startScan();
   }
 
   @override
@@ -53,50 +61,49 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
-          WidgetsBinding.instance?.addPostFrameCallback((_) {
-            _startScan();
-          });
+          _startScan();
         },
         child: ListView(
           physics: const BouncingScrollPhysics(parent: const AlwaysScrollableScrollPhysics()),
           children: [
-            StreamBuilder<List<BluetoothDevice>>(
-              stream: Stream.periodic(Duration(seconds: 2))
-                  .asyncMap((_) => FlutterBlue.instance.connectedDevices),
-              initialData: [],
-              builder: (c, snapshot) => snapshot.data == null
-                  ? Container()
-                  : Column(
-                      children: snapshot.data!
-                          .where((h) =>
-                              _scanResults.contains(h.id.id) ||
-                              (Get.isRegistered<HeartRateMonitor>() &&
-                                  Get.find<HeartRateMonitor>().device?.id.id == h.id.id))
-                          .map((d) {
-                        return ListTile(
-                          title: TextOneLine(
-                            d.name,
-                            overflow: TextOverflow.ellipsis,
-                            style: _themeManager.boldStyle(_captionStyle,
-                                fontSizeFactor: FONT_SIZE_FACTOR),
+            Column(
+              children: [
+                _heartRateMonitor != null
+                    ? ListTile(
+                        title: TextOneLine(
+                          _heartRateMonitor?.device?.name ?? EMPTY_MEASUREMENT,
+                          overflow: TextOverflow.ellipsis,
+                          style: _themeManager.boldStyle(
+                            _captionStyle,
+                            fontSizeFactor: FONT_SIZE_FACTOR,
                           ),
-                          subtitle: Text(d.id.id, style: _subtitleStyle),
-                          trailing: StreamBuilder<BluetoothDeviceState>(
-                            stream: d.state,
-                            initialData: BluetoothDeviceState.disconnected,
-                            builder: (c, snapshot) {
-                              if (snapshot.data == BluetoothDeviceState.connected) {
-                                return _themeManager.getGreenFab(Icons.favorite, () {
-                                  Get.snackbar("Info", "Already connected");
+                        ),
+                        subtitle: Text(
+                          _heartRateMonitor?.device?.id.id ?? EMPTY_MEASUREMENT,
+                          style: _subtitleStyle,
+                        ),
+                        trailing: StreamBuilder<BluetoothDeviceState>(
+                          stream: _heartRateMonitor?.device?.state,
+                          initialData: BluetoothDeviceState.disconnected,
+                          builder: (c, snapshot) {
+                            if (snapshot.data == BluetoothDeviceState.connected) {
+                              return _themeManager.getGreenFab(Icons.favorite, () {
+                                Get.snackbar("Info", "Already connected");
+                              });
+                            } else {
+                              return _themeManager.getGreyFab(Icons.bluetooth, () {
+                                setState(() {
+                                  _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                      ? Get.find<HeartRateMonitor>()
+                                      : null;
                                 });
-                              } else {
-                                return Text(snapshot.data.toString());
-                              }
-                            },
-                          ),
-                        );
-                      }).toList(growable: false),
-                    ),
+                              });
+                            }
+                          },
+                        ),
+                      )
+                    : Container(),
+              ],
             ),
             Divider(),
             StreamBuilder<List<ScanResult>>(
@@ -107,7 +114,70 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                   : Column(
                       children: snapshot.data!.where((d) => d.isWorthy()).map((r) {
                       _scanResults.add(r.device.id.id);
-                      return HeartRateMonitorScanResultTile(result: r);
+                      return HeartRateMonitorScanResultTile(
+                          result: r,
+                          onTap: () async {
+                            var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                ? Get.find<HeartRateMonitor>()
+                                : null;
+                            final existingId = heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
+                            final storedId = _heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
+                            if (existingId != NOT_AVAILABLE && existingId != r.device.id.id) {
+                              if (!(await showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text('You are connected to a HRM right now'),
+                                      content: Text(
+                                          'Disconnect from that HRM to connect the selected one?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Get.close(1),
+                                          child: Text('No'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(true);
+                                          },
+                                          child: Text('Yes'),
+                                        ),
+                                      ],
+                                    ),
+                                  ) ??
+                                  false)) {
+                                if (existingId != storedId) {
+                                  setState(() {
+                                    _heartRateMonitor = heartRateMonitor;
+                                  });
+                                }
+                                return;
+                              }
+                            }
+
+                            if (heartRateMonitor != null && existingId != r.device.id.id) {
+                              await heartRateMonitor.detach();
+                              await heartRateMonitor.disconnect();
+                            }
+
+                            if (heartRateMonitor == null || existingId != r.device.id.id) {
+                              heartRateMonitor = new HeartRateMonitor(r.device);
+                              if (Get.isRegistered<HeartRateMonitor>()) {
+                                Get.delete<HeartRateMonitor>();
+                              }
+
+                              Get.put<HeartRateMonitor>(heartRateMonitor);
+                              await heartRateMonitor.connect();
+                              await heartRateMonitor.discover();
+                              setState(() {
+                                _heartRateMonitor = heartRateMonitor;
+                              });
+                            } else if (existingId != storedId) {
+                              setState(() {
+                                _heartRateMonitor = heartRateMonitor;
+                              });
+                            }
+
+                            await heartRateMonitor.attach();
+                          });
                     }).toList(growable: false)),
             ),
           ],

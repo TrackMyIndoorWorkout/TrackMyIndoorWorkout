@@ -150,7 +150,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
               return;
             }
-            await Get.bottomSheet(
+            Get.bottomSheet(
               PowerFactorTuneBottomSheet(
                   deviceId: activity.deviceId, oldPowerFactor: activity.powerFactor),
               enableDrag: false,
@@ -164,7 +164,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               Get.snackbar("Error", "Cannot tune calories of activity with 0 calories");
               return;
             }
-            await Get.bottomSheet(
+            Get.bottomSheet(
               CalorieOverrideBottomSheet(
                   deviceId: activity.deviceId, oldCalories: activity.calories.toDouble()),
               enableDrag: false,
@@ -249,7 +249,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     if (_leaderboardFeature && widget.hasLeaderboardData) {
       floatingActionButtons.add(
         _themeManager.getBlueFab(Icons.leaderboard, () async {
-          await Get.bottomSheet(LeaderBoardTypeBottomSheet(), enableDrag: false);
+          Get.bottomSheet(LeaderBoardTypeBottomSheet(), enableDrag: false);
         }),
       );
     }

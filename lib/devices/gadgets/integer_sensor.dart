@@ -10,7 +10,7 @@ abstract class IntegerSensor extends SensorBase {
 
   IntegerSensor(serviceId, characteristicsId, device) : super(serviceId, characteristicsId, device);
 
-  Stream<int> get _listenToMetric async* {
+  Stream<int> get _listenToData async* {
     if (!attached || characteristic == null) return;
 
     await for (var byteString in characteristic!.value.throttleTime(Duration(milliseconds: 950))) {
@@ -21,10 +21,12 @@ abstract class IntegerSensor extends SensorBase {
     }
   }
 
-  void pumpMetric(IntegerMetricProcessingFunction metricProcessingFunction) {
-    subscription = _listenToMetric.listen((newValue) {
+  void pumpData(IntegerMetricProcessingFunction? metricProcessingFunction) {
+    subscription = _listenToData.listen((newValue) {
       metric = newValue;
-      metricProcessingFunction(newValue);
+      if (metricProcessingFunction != null) {
+        metricProcessingFunction(newValue);
+      }
     });
   }
 

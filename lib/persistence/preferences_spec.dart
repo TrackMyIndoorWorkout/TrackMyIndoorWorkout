@@ -41,10 +41,11 @@ class PreferencesSpec {
   static const ZONE_INDEX_DISPLAY_DEFAULT = false;
 
   static final slowSpeeds = {
-    ActivityType.Ride: 5.0,
-    ActivityType.Run: 3.0,
-    PADDLE_SPORT: 2.0,
-    ActivityType.Swim: 1.0,
+    ActivityType.Ride: 4.0,
+    ActivityType.Run: 2.0,
+    ActivityType.Elliptical: 1.0,
+    PADDLE_SPORT: 1.0,
+    ActivityType.Swim: 0.5,
   };
 
   static final _preferencesSpecsTemplate = [
@@ -188,8 +189,8 @@ class PreferencesSpec {
 
   static String sport2Sport(String sport) {
     return sport == ActivityType.Kayaking ||
-        sport == ActivityType.Canoeing ||
-        sport == ActivityType.Rowing
+            sport == ActivityType.Canoeing ||
+            sport == ActivityType.Rowing
         ? PADDLE_SPORT
         : sport;
   }
@@ -260,7 +261,7 @@ class PreferencesSpec {
     plotBands.clear();
     plotBands.addAll(List.generate(
       binCount,
-          (i) => charts.PlotBand(
+      (i) => charts.PlotBand(
         isVisible: true,
         start: zoneLower[i],
         end: zoneUpper[i],

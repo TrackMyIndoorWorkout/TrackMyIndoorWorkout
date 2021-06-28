@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -10,11 +11,13 @@ import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/guid_ex.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../bluetooth_device_ex.dart';
 import '../gatt_constants.dart';
 import 'device_base.dart';
 import 'heart_rate_monitor.dart';
+import 'running_cadence_sensor.dart';
 
 typedef RecordHandlerFunction = Function(Record data);
 
@@ -29,6 +32,7 @@ class FitnessEquipment extends DeviceBase {
   Timer? _timer;
   late Record lastRecord;
   HeartRateMonitor? heartRateMonitor;
+  RunningCadenceSensor? _runningCadenceSensor;
   String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
   int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT;
   String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
@@ -85,6 +89,7 @@ class FitnessEquipment extends DeviceBase {
         },
       );
     } else {
+      _runningCadenceSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
         final record = processRecord(recordStub);
         recordHandlerFunction(record);
@@ -94,6 +99,23 @@ class FitnessEquipment extends DeviceBase {
 
   void setHeartRateMonitor(HeartRateMonitor heartRateMonitor) {
     this.heartRateMonitor = heartRateMonitor;
+  }
+
+  Future<void> additionalSensorsOnDemand() async {
+    if (_runningCadenceSensor != null && _runningCadenceSensor?.device?.id.id != device?.id.id) {
+      await _runningCadenceSensor?.detach();
+      _runningCadenceSensor = null;
+    }
+    if (sport == ActivityType.Run) {
+      if (services.firstWhereOrNull(
+              (service) => service.uuid.uuidString() == RUNNING_CADENCE_SERVICE_ID) !=
+          null) {
+        _runningCadenceSensor = RunningCadenceSensor(device, powerFactor);
+        _runningCadenceSensor?.services = services;
+        _runningCadenceSensor?.discoverCore();
+        await _runningCadenceSensor?.attach();
+      }
+    }
   }
 
   void setActivity(Activity activity) {
@@ -194,6 +216,25 @@ class FitnessEquipment extends DeviceBase {
       stub.elapsedMillis = elapsedMillis;
     }
 
+    if (sport == ActivityType.Run &&
+        _runningCadenceSensor != null &&
+        (_runningCadenceSensor?.attached ?? false)) {
+      if ((stub.cadence == null || stub.cadence == 0) &&
+          (_runningCadenceSensor?.record?.cadence ?? 0) > 0) {
+        stub.cadence = _runningCadenceSensor!.record!.cadence;
+      }
+
+      if ((stub.speed == null || stub.speed == 0) &&
+          (_runningCadenceSensor?.record?.speed ?? 0.0) > EPS) {
+        stub.speed = _runningCadenceSensor!.record!.speed;
+      }
+
+      if ((stub.distance == null || stub.distance == 0) &&
+          (_runningCadenceSensor?.record?.distance ?? 0.0) > EPS) {
+        stub.distance = _runningCadenceSensor!.record!.distance;
+      }
+    }
+
     final dT = (elapsedMillis - lastRecord.elapsedMillis!) / 1000.0;
     if ((stub.distance ?? 0.0) < EPS) {
       stub.distance = (lastRecord.distance ?? 0);
@@ -233,6 +274,7 @@ class FitnessEquipment extends DeviceBase {
       calories1 = stub.calories!.toDouble();
       hasTotalCalorieCounting = true;
     }
+
     var calories2 = 0.0;
     if (heartRateMonitor != null && (heartRateMonitor?.record?.calories ?? 0) > 0) {
       calories2 = heartRateMonitor?.record?.calories?.toDouble() ?? 0.0;
@@ -276,7 +318,7 @@ class FitnessEquipment extends DeviceBase {
       }
 
       if (deltaCalories < EPS && stub.power != null && stub.power! > EPS) {
-        deltaCalories = stub.power! * dT * DeviceDescriptor.J2KCAL * calorieFactor;
+        deltaCalories = stub.power! * dT * J_TO_KCAL * calorieFactor;
       }
 
       _residueCalories += deltaCalories;
@@ -334,10 +376,12 @@ class FitnessEquipment extends DeviceBase {
         ATHLETE_GENDER_MALE;
     _vo2Max = prefService.get<int>(ATHLETE_VO2MAX_TAG) ?? ATHLETE_VO2MAX_DEFAULT;
     _useHrBasedCalorieCounting &= (_weight > ATHLETE_BODY_WEIGHT_MIN && _age > ATHLETE_AGE_MIN);
+    _runningCadenceSensor?.refreshFactors();
   }
 
   void startWorkout() {
     readConfiguration();
+    _runningCadenceSensor?.refreshFactors();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
@@ -349,5 +393,11 @@ class FitnessEquipment extends DeviceBase {
     _lastPositiveCalories = 0.0;
     _timer?.cancel();
     descriptor?.stopWorkout();
+  }
+
+  @override
+  Future<void> detach() async {
+    await super.detach();
+    await _runningCadenceSensor?.detach();
   }
 }

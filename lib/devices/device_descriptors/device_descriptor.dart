@@ -13,8 +13,6 @@ import '../gatt_constants.dart';
 abstract class DeviceDescriptor {
   static const double MS2KMH = 3.6;
   static const double KMH2MS = 1 / MS2KMH;
-  static const double J2CAL = 0.2390057;
-  static const double J2KCAL = J2CAL / 1000.0;
 
   String defaultSport;
   final bool isMultiSport;
@@ -100,6 +98,7 @@ abstract class DeviceDescriptor {
         processFlag(flag);
       }
     }
+
     return null;
   }
 
@@ -116,6 +115,7 @@ abstract class DeviceDescriptor {
     if (speed == null || !extendTuning) {
       return speed;
     }
+
     return speed * powerFactor;
   }
 
@@ -128,6 +128,7 @@ abstract class DeviceDescriptor {
     if (distance == null || !extendTuning) {
       return distance;
     }
+
     return distance * powerFactor;
   }
 
@@ -136,6 +137,7 @@ abstract class DeviceDescriptor {
     if (power == null) {
       return power;
     }
+
     return power * powerFactor;
   }
 
@@ -144,6 +146,7 @@ abstract class DeviceDescriptor {
     if (calories == null || !extendTuning) {
       return calories;
     }
+
     return calories * calorieFactor;
   }
 
@@ -152,6 +155,7 @@ abstract class DeviceDescriptor {
     if (caloriesPerHour == null || !extendTuning) {
       return caloriesPerHour;
     }
+
     return caloriesPerHour * calorieFactor;
   }
 
@@ -160,6 +164,7 @@ abstract class DeviceDescriptor {
     if (caloriesPerMinute == null || !extendTuning) {
       return caloriesPerMinute;
     }
+
     return caloriesPerMinute * calorieFactor;
   }
 

@@ -105,7 +105,7 @@ void main() {
       final descriptor = deviceMap["SIC4"]!;
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
-      final power = ((150 + pow) / DeviceDescriptor.J2KCAL).floor();
+      final power = ((150 + pow) / J_TO_KCAL).floor();
       test('$power', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));

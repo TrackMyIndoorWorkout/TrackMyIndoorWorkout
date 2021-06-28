@@ -301,8 +301,7 @@ class MPowerEchelon2Importer {
         );
 
         distance += dDistance;
-        final dEnergy =
-            power * milliSecondsPerRecord / 1000 * DeviceDescriptor.J2KCAL * device.calorieFactor;
+        final dEnergy = power * milliSecondsPerRecord / 1000 * J_TO_KCAL * device.calorieFactor;
         energy += dEnergy;
         await database.recordDao.insertRecord(record);
 

@@ -29,8 +29,8 @@ const INSTANT_SCAN_DESCRIPTION = "On: the app will automatically start "
 
 const SCAN_DURATION = "Scan Duration (s)";
 const SCAN_DURATION_TAG = "scan_duration";
-const SCAN_DURATION_MIN = 2;
-const SCAN_DURATION_DEFAULT = 3;
+const SCAN_DURATION_MIN = 6;
+const SCAN_DURATION_DEFAULT = 6;
 const SCAN_DURATION_MAX = 15;
 const SCAN_DURATION_DESCRIPTION =
     "Duration in seconds the app will spend looking Bluetooth Low Energy equipment.";

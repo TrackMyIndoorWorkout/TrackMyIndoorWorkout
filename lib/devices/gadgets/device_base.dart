@@ -59,6 +59,28 @@ abstract class DeviceBase {
     return connected;
   }
 
+  bool discoverCore() {
+    discovering = false;
+    discovered = true;
+    _service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
+
+    if (_service == null) {
+      characteristic = null;
+      return false;
+    }
+
+    if (characteristicsId != null) {
+      characteristic = _service!.characteristics
+          .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
+    } else {
+      characteristic = _service!.characteristics
+          .firstWhereOrNull((ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()));
+      characteristicsId = characteristic?.uuid.uuidString();
+    }
+
+    return characteristic != null;
+  }
+
   Future<bool> discover({bool retry = false}) async {
     if (!connected) {
       return false;
@@ -82,24 +104,7 @@ abstract class DeviceBase {
       await discover(retry: true);
     }
 
-    discovering = false;
-    discovered = true;
-    _service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
-
-    if (_service != null) {
-      if (characteristicsId != null) {
-        characteristic = _service!.characteristics
-            .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
-      } else {
-        characteristic = _service!.characteristics
-            .firstWhereOrNull((ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()));
-        characteristicsId = characteristic?.uuid.uuidString();
-      }
-    } else {
-      return false;
-    }
-
-    return characteristic != null;
+    return discoverCore();
   }
 
   String? inferSportFromCharacteristicsId() {
@@ -154,10 +159,10 @@ abstract class DeviceBase {
   Future<void> disconnect() async {
     if (!uxDebug) {
       await detach();
+      await device?.disconnect();
       characteristic = null;
       services = [];
       _service = null;
-      await device?.disconnect();
     }
     connected = false;
     connecting = false;

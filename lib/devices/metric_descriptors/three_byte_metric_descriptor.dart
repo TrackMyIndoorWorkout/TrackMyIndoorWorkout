@@ -11,6 +11,7 @@ class ThreeByteMetricDescriptor extends MetricDescriptor {
     if (optional && value == MAX_UINT24 - 1) {
       return null;
     }
+
     return value / divider;
   }
 }

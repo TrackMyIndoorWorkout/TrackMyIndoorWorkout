@@ -25,7 +25,7 @@ class RunningCadenceSensor extends ComplexSensor {
     // Clear out status bits so status change won't cause metric re-creation
     flag &= 3; // 1 + 2
     if (featureFlag != flag && flag >= 0) {
-      var expectedLength = 1; // The flag itself + instant speed and cadence
+      expectedLength = 1; // The flag itself + instant speed and cadence
       // UInt16, m/s with 1/256 resolution -> immediately convert it to km/h with the divider
       speedMetric = ShortMetricDescriptor(
           lsb: expectedLength, msb: expectedLength + 1, divider: 256.0 / DeviceDescriptor.MS2KMH);
@@ -38,6 +38,7 @@ class RunningCadenceSensor extends ComplexSensor {
         // Skip it, we are not interested in strode length
         expectedLength += 2; // 16 bit uint, 1/100 m
       }
+
       flag ~/= 2;
       // Has total distance? (second bit)
       if (flag % 2 == 1) {
@@ -45,15 +46,12 @@ class RunningCadenceSensor extends ComplexSensor {
         distanceMetric =
             LongMetricDescriptor(lsb: expectedLength, msb: expectedLength + 3, divider: 10.0);
         expectedLength += 4;
-      } else {
-        return false;
       }
-      featureFlag = flag;
 
-      return data.length == expectedLength;
+      featureFlag = flag;
     }
 
-    return flag > 0;
+    return featureFlag >= 0 && data.length == expectedLength;
   }
 
   @override
@@ -76,6 +74,7 @@ class RunningCadenceSensor extends ComplexSensor {
     if (speed == null || !extendTuning) {
       return speed;
     }
+
     return speed * powerFactor;
   }
 
@@ -88,6 +87,7 @@ class RunningCadenceSensor extends ComplexSensor {
     if (distance == null || !extendTuning) {
       return distance;
     }
+
     return distance * powerFactor;
   }
 

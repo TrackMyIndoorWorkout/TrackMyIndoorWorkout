@@ -131,6 +131,10 @@ class ThemeManager {
     return _getFabCore(Colors.white, getOrangeColor(), Icon(BrandIcons.strava), onPressed);
   }
 
+  FloatingActionButton getGreyFab(IconData icon, VoidCallback? onPressed) {
+    return getIconFab(getGreyColor(), icon, onPressed);
+  }
+
   FloatingActionButton getRankIcon(int rank) {
     final textStyle = Get.textTheme.headline4!.apply(fontFamily: FONT_FAMILY, color: Colors.black);
     return _getFabCore(
@@ -142,8 +146,11 @@ class ThemeManager {
   }
 
   FloatingActionButton getAboutFab() {
-    return _getFabCore(Colors.white, Colors.lightBlue, Icon(Icons.help), () =>
-      Get.to(() => AboutScreen())
+    return _getFabCore(
+      Colors.white,
+      Colors.lightBlue,
+      Icon(Icons.help),
+      () => Get.to(() => AboutScreen()),
     );
   }
 

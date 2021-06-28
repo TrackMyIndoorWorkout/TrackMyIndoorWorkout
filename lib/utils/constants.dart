@@ -6,6 +6,7 @@ const LB_TO_KG = 0.45359237;
 const KG_TO_LB = 1 / LB_TO_KG;
 const FT_TO_M = 0.3048;
 const J_TO_CAL = 0.239006;
+const J_TO_KCAL = J_TO_CAL / 1000.0;
 const CAL_TO_J = 1 / J_TO_CAL;
 const KM2MI = 0.621371;
 const MI2KM = 1 / KM2MI;

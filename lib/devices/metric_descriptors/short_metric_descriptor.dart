@@ -14,6 +14,7 @@ class ShortMetricDescriptor extends MetricDescriptor {
     if (optional && value == MAX_UINT16 - 1) {
       return null;
     }
+
     return value / divider;
   }
 }

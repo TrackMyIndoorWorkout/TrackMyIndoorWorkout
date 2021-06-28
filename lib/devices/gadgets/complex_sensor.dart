@@ -20,7 +20,7 @@ abstract class ComplexSensor extends SensorBase {
     extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
   }
 
-  Stream<RecordWithSport> get _listenToMetric async* {
+  Stream<RecordWithSport> get _listenToData async* {
     if (!attached || characteristic == null) return;
 
     await for (var byteString in characteristic!.value.throttleTime(Duration(milliseconds: 950))) {
@@ -31,10 +31,12 @@ abstract class ComplexSensor extends SensorBase {
     }
   }
 
-  void pumpMetric(ComplexMetricProcessingFunction metricProcessingFunction) {
-    subscription = _listenToMetric.listen((newValue) {
+  void pumpData(ComplexMetricProcessingFunction? metricProcessingFunction) {
+    subscription = _listenToData.listen((newValue) {
       record = newValue;
-      metricProcessingFunction(newValue);
+      if (metricProcessingFunction != null) {
+        metricProcessingFunction(newValue);
+      }
     });
   }
 

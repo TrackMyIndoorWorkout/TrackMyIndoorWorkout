@@ -94,22 +94,22 @@ class SoundService {
     return await playSpecificSoundEffect(soundEffectString);
   }
 
-  stopSoundEffect(SoundEffect soundEffect) async {
+  void stopSoundEffect(SoundEffect soundEffect) {
     final streamId = _streamIds[soundEffect] ?? 0;
     if (streamId > 0) {
-      await _soundPool?.stop(streamId);
+      _soundPool?.stop(streamId);
       _streamIds[soundEffect] = 0;
     }
   }
 
-  stopAllSoundEffects() async {
-    _soundIds.forEach((k, v) async {
-      await stopSoundEffect(k);
+  void stopAllSoundEffects() {
+    _soundIds.forEach((k, v) {
+      stopSoundEffect(k);
     });
   }
 
-  Future<void> updateVolume(newVolume) async {
-    _soundIds.forEach((k, v) async {
+  void updateVolume(newVolume) {
+    _soundIds.forEach((k, v) {
       _soundPool?.setVolume(soundId: v, volume: newVolume / 100.0);
     });
   }

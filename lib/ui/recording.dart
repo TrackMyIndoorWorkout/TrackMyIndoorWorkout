@@ -175,6 +175,8 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _startMeasurement() async {
+    await _fitnessEquipment?.additionalSensorsOnDemand();
+
     final now = DateTime.now();
     final powerFactor = await _database.powerFactor(widget.device.id.id);
     final calorieFactor = await _database.calorieFactor(widget.device.id.id, widget.descriptor);
@@ -260,11 +262,11 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           _values = [
-            record.calories.toString(),
-            record.power.toString(),
+            record.calories?.toString() ?? EMPTY_MEASUREMENT,
+            record.power?.toString() ?? EMPTY_MEASUREMENT,
             record.speedOrPaceStringByUnit(_si, widget.descriptor.defaultSport),
-            record.cadence.toString(),
-            record.heartRate.toString(),
+            record.cadence?.toString() ?? EMPTY_MEASUREMENT,
+            record.heartRate?.toString() ?? EMPTY_MEASUREMENT,
             record.distanceStringByUnit(_si),
           ];
           amendZoneToValue(0, record.power ?? 0);
@@ -350,7 +352,7 @@ class RecordingState extends State<RecordingScreen> {
         if (_heartRateMonitor?.subscription != null) {
           _heartRateMonitor?.cancelSubscription();
         }
-        _heartRateMonitor?.pumpMetric((record) async {
+        _heartRateMonitor?.pumpData((record) async {
           setState(() {
             if ((_heartRate == null || _heartRate == 0) &&
                 (record.heartRate != null && record.heartRate! > 0)) {
@@ -572,11 +574,11 @@ class RecordingState extends State<RecordingScreen> {
     _dataGapBeeperTimer?.cancel();
     if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
         _dataGapSoundEffect != SOUND_EFFECT_NONE) {
-      await Get.find<SoundService>().stopAllSoundEffects();
+      Get.find<SoundService>().stopAllSoundEffects();
     }
 
     try {
-      _heartRateMonitor?.cancelSubscription();
+      await _heartRateMonitor?.detach();
     } on PlatformException catch (e, stack) {
       debugPrint("HRM device got turned off?");
       debugPrint("$e");
@@ -698,7 +700,7 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
 
-    _fitnessEquipment?.detach();
+    await _fitnessEquipment?.detach();
 
     _activity!.finish(
       _fitnessEquipment?.lastRecord.distance,
@@ -1434,11 +1436,11 @@ class RecordingState extends State<RecordingScreen> {
                 Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
               } else {
                 final hasLeaderboardData = await _database.hasLeaderboardData();
-                await Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+                Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
               }
             }),
             _themeManager.getBlueFab(Icons.battery_unknown, () async {
-              await Get.bottomSheet(
+              Get.bottomSheet(
                 BatteryStatusBottomSheet(),
                 enableDrag: false,
               );
@@ -1449,7 +1451,7 @@ class RecordingState extends State<RecordingScreen> {
               } else if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
                 Get.snackbar("Error", "Not compatible with the calibration method");
               } else {
-                await Get.bottomSheet(
+                Get.bottomSheet(
                   SpinDownBottomSheet(),
                   isDismissible: false,
                   enableDrag: false,

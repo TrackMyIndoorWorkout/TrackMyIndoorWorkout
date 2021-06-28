@@ -41,7 +41,7 @@ void main() {
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
           expect(accu.maxCadence, MAX_INIT);
-          expect(accu.avgPower, sum / count);
+          expect(accu.avgPower, count > 0 ? sum / count : 0.0);
         });
       });
     });
@@ -120,7 +120,7 @@ void main() {
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
           expect(accu.maxCadence, MAX_INIT);
-          expect(accu.avgSpeed, sum / count);
+          expect(accu.avgSpeed, count > 0 ? sum / count : 0.0);
         });
       });
     });
@@ -406,10 +406,10 @@ void main() {
           expect(accu.cadenceSum, cadenceSum);
           expect(accu.cadenceCount, cadenceCount);
           expect(accu.maxCadence, cadenceCount > 0 ? maxCadence : MAX_INIT);
-          expect(accu.avgPower, powerSum / count);
-          expect(accu.avgSpeed, speedSum / count);
-          expect(accu.avgHeartRate, hrSum ~/ hrCount);
-          expect(accu.avgCadence, cadenceSum ~/ cadenceCount);
+          expect(accu.avgPower, count > 0 ? powerSum / count : 0.0);
+          expect(accu.avgSpeed, count > 0 ? speedSum / count : 0.0);
+          expect(accu.avgHeartRate, hrCount > 0 ? hrSum ~/ hrCount : 0);
+          expect(accu.avgCadence, cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0);
         });
       });
     });
