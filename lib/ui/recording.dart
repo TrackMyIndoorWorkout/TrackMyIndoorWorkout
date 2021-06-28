@@ -148,8 +148,6 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _connectOnDemand() async {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
-      await _fitnessEquipment?.additionalSensorsOnDemand();
-
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(INSTANT_MEASUREMENT_START_TAG) ??
           INSTANT_MEASUREMENT_START_DEFAULT) {
@@ -177,6 +175,8 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _startMeasurement() async {
+    await _fitnessEquipment?.additionalSensorsOnDemand();
+
     final now = DateTime.now();
     final powerFactor = await _database.powerFactor(widget.device.id.id);
     final calorieFactor = await _database.calorieFactor(widget.device.id.id, widget.descriptor);
