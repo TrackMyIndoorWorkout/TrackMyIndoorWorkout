@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'devices/company_registry.dart';
 import 'track_my_indoor_exercise_app.dart';
 import 'ui/models/advertisement_cache.dart';
+import 'utils/delays.dart';
 import 'utils/init_preferences.dart';
 
 void main() async {
@@ -22,15 +23,15 @@ void main() async {
   var blueAvailable = await FlutterBlue.instance.isAvailable;
   var blueOn = await FlutterBlue.instance.isOn;
 
-  await Future.delayed(Duration(milliseconds: 250));
+  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
 
   final bluetoothStateString = await BluetoothEnable.enableBluetooth;
 
-  await Future.delayed(Duration(milliseconds: 250));
+  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
 
   final permissionState = await Permission.locationWhenInUse.request();
 
-  await Future.delayed(Duration(milliseconds: 250));
+  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
 
   blueAvailable = await FlutterBlue.instance.isAvailable;
   blueOn = await FlutterBlue.instance.isOn;
