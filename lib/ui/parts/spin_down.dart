@@ -13,6 +13,7 @@ import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/delays.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
@@ -165,8 +166,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
-    _weightDataSubscription =
-        _weightData?.value.throttleTime(Duration(milliseconds: 500)).listen((response) async {
+    _weightDataSubscription = _weightData?.value
+        .throttleTime(Duration(milliseconds: SPIN_DOWN_THRESHOLD))
+        .listen((response) async {
       if (response.length == 1 && _calibrationState == CalibrationState.WeightSubmitting) {
         if (response[0] != WEIGHT_SUCCESS_OPCODE) {
           setState(() {
@@ -214,8 +216,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
-    _controlPointSubscription =
-        _controlPoint?.value.throttleTime(Duration(milliseconds: 500)).listen((data) async {
+    _controlPointSubscription = _controlPoint?.value
+        .throttleTime(Duration(milliseconds: SPIN_DOWN_THRESHOLD))
+        .listen((data) async {
       if (data.length == 1) {
         if (data[0] != SPIN_DOWN_OPCODE) {
           setState(() {
@@ -399,8 +402,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
-    _statusSubscription =
-        _fitnessMachineStatus?.value.throttleTime(Duration(milliseconds: 250)).listen((status) {
+    _statusSubscription = _fitnessMachineStatus?.value
+        .throttleTime(Duration(milliseconds: FTMS_STATUS_THRESHOLD))
+        .listen((status) {
       if (status.length == 2 && status[0] == SPIN_DOWN_STATUS) {
         if (status[1] == SPIN_DOWN_STATUS_SUCCESS) {
           _reset();

@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:rxdart/rxdart.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/delays.dart';
 import 'sensor_base.dart';
 
 typedef ComplexMetricProcessingFunction = Function(RecordWithSport record);
@@ -23,7 +24,8 @@ abstract class ComplexSensor extends SensorBase {
   Stream<RecordWithSport> get _listenToData async* {
     if (!attached || characteristic == null) return;
 
-    await for (var byteString in characteristic!.value.throttleTime(Duration(milliseconds: 950))) {
+    await for (var byteString
+        in characteristic!.value.throttleTime(Duration(milliseconds: SENSOR_DATA_THRESHOLD))) {
       if (!canMeasurementProcessed(byteString)) continue;
 
       record = processMeasurement(byteString);

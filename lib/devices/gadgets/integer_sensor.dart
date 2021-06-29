@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
+import '../../utils/delays.dart';
 import 'sensor_base.dart';
 
 typedef IntegerMetricProcessingFunction = Function(int measurement);
@@ -13,7 +14,8 @@ abstract class IntegerSensor extends SensorBase {
   Stream<int> get _listenToData async* {
     if (!attached || characteristic == null) return;
 
-    await for (var byteString in characteristic!.value.throttleTime(Duration(milliseconds: 950))) {
+    await for (var byteString
+        in characteristic!.value.throttleTime(Duration(milliseconds: SENSOR_DATA_THRESHOLD))) {
       if (!canMeasurementProcessed(byteString)) continue;
 
       metric = processMeasurement(byteString);

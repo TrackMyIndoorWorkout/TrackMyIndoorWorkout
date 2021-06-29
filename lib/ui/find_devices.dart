@@ -18,6 +18,7 @@ import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
 import '../strava/strava_service.dart';
 import '../utils/constants.dart';
+import '../utils/delays.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
@@ -453,7 +454,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 Icon(Icons.open_in_new),
                                 () async {
                                   await FlutterBlue.instance.stopScan();
-                                  await Future.delayed(Duration(milliseconds: 100));
+                                  await Future.delayed(
+                                      Duration(milliseconds: UI_INTERMITTENT_DELAY));
                                   await goToRecording(_fitnessEquipment!.device!, snapshot.data!);
                                 },
                               );
@@ -483,14 +485,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         addScannedDevice(r);
                         if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {
                           FlutterBlue.instance.stopScan().whenComplete(() async {
-                            await Future.delayed(Duration(milliseconds: 100));
+                            await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
                           });
                         }
                         return ScanResultTile(
                           result: r,
                           onEquipmentTap: () async {
                             await FlutterBlue.instance.stopScan();
-                            await Future.delayed(Duration(milliseconds: 100));
+                            await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
                             await goToRecording(r.device, BluetoothDeviceState.disconnected);
                           },
                           onHrmTap: () async {
@@ -615,7 +617,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               } else if (snapshot.data!) {
                 return _themeManager.getBlueFab(Icons.stop, () async {
                   await FlutterBlue.instance.stopScan();
-                  await Future.delayed(Duration(milliseconds: 100));
+                  await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
                 });
               } else {
                 return _themeManager.getGreenFab(
