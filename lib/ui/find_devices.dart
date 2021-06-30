@@ -22,6 +22,7 @@ import '../utils/delays.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
+import 'models/machine_type.dart';
 import 'parts/circular_menu.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
@@ -174,43 +175,23 @@ class FindDevicesState extends State<FindDevicesScreen> {
       deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.id.id).first;
     }
 
-    FitnessEquipment? fitnessEquipment;
-    bool success;
-
-    // Step 3. Try to infer if it's an FTMS
-    if (descriptor == null && advertisementDigest.serviceUuids.contains(FITNESS_MACHINE_ID)) {
-      var sport = ActivityType.Ride;
-      if (deviceUsage == null) {
-        // Determine FTMS sport by analyzing 0x1826 service's characteristics
-        fitnessEquipment = FitnessEquipment(device: device);
-        success = await fitnessEquipment.connectOnDemand(identify: true);
-        if (success && fitnessEquipment.characteristicsId != null) {
-          final inferredSport = fitnessEquipment.inferSportFromCharacteristicsId();
-          if (inferredSport == null) {
-            Get.snackbar("Error", "Could not infer sport of the device");
-            return false;
-          }
-
-          sport = inferredSport;
-        } else {
-          Get.snackbar("Error", "Device identification failed");
-          return false;
+    // Step 3. Try to infer from DeviceUsage or FTMS advertisement service data
+    if (descriptor == null) {
+      if (deviceUsage != null) {
+        descriptor = genericDescriptorForSport(deviceUsage.sport);
+      } else if (advertisementDigest.machineType != MachineType.NotFitnessMachine) {
+        final sport = advertisementDigest.fitnessMachineSport();
+        descriptor = genericDescriptorForSport(sport);
+        if (!descriptor.isMultiSport) {
+          deviceUsage = DeviceUsage(
+            sport: sport,
+            mac: device.id.id,
+            name: device.name,
+            manufacturer: advertisementDigest.manufacturer,
+            time: DateTime.now().millisecondsSinceEpoch,
+          );
+          await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
         }
-      } else {
-        sport = deviceUsage.sport;
-      }
-
-      descriptor = genericDescriptorForSport(sport);
-
-      if (deviceUsage == null) {
-        deviceUsage = DeviceUsage(
-          sport: sport,
-          mac: device.id.id,
-          name: device.name,
-          manufacturer: advertisementDigest.manufacturer,
-          time: DateTime.now().millisecondsSinceEpoch,
-        );
-        await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
       }
     }
 
@@ -268,16 +249,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
     }
 
-    final currentEquipment =
+    var fitnessEquipment =
         Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-    bool shouldRegister = true;
-    if (currentEquipment != null) {
-      if (currentEquipment.device?.id.id == device.id.id) {
-        fitnessEquipment = currentEquipment;
-        shouldRegister = false;
-      } else {
-        await currentEquipment.detach();
-        await currentEquipment.disconnect();
+    if (fitnessEquipment != null) {
+      if (fitnessEquipment.device?.id.id != device.id.id) {
+        await fitnessEquipment.detach();
+        await fitnessEquipment.disconnect();
+        Get.delete<FitnessEquipment>();
+        fitnessEquipment = null;
       }
     }
 
@@ -288,23 +267,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
         descriptor: descriptor,
         device: device,
       );
-    }
-
-    if (shouldRegister) {
-      if (Get.isRegistered<FitnessEquipment>()) {
-        await Get.delete<FitnessEquipment>();
-      }
-
       Get.put<FitnessEquipment>(fitnessEquipment);
-      setState(() {
-        _fitnessEquipment = fitnessEquipment;
-      });
     }
 
-    success = await fitnessEquipment.connectOnDemand();
+    setState(() {
+      _fitnessEquipment = fitnessEquipment;
+    });
+
+    final success = await fitnessEquipment.connectOnDemand();
     if (!success) {
       Get.defaultDialog(
-        middleText: 'Problem co-operating with ${descriptor.fullName}.',
+        middleText: 'Problem connecting to ${descriptor.fullName}.',
         confirm: TextButton(
           child: Text("Ok"),
           onPressed: () => Get.close(1),
@@ -328,12 +301,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
             size: Get.mediaQuery.size,
             sport: descriptor.defaultSport,
           ));
-    }
-
-    if (fitnessEquipment.device?.id.id != _fitnessEquipment?.device?.id.id) {
-      setState(() {
-        _fitnessEquipment = fitnessEquipment;
-      });
     }
 
     setState(() {
