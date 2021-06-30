@@ -198,7 +198,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                 if (snapshot.data == null || snapshot.data!) {
                   return JumpingDotsProgressIndicator(
                     fontSize: 30.0,
-                    color: Colors.white,
+                    color: _themeManager.getProtagonistColor(),
                   );
                 } else {
                   return IconButton(
