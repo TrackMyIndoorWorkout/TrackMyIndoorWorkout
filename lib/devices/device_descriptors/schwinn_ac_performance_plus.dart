@@ -11,7 +11,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           fourCC: SCHWINN_AC_PERF_PLUS_FOURCC,
           vendorName: "Schwinn",
           modelName: "AC Performance Plus",
-          namePrefix: "Schwinn AC Perf+",
+          namePrefixes: ["Schwinn AC Perf+"],
           manufacturer: "Schwinn",
           manufacturerFitId: FitBaseTypes.uint16Type.invalidValue,
           model: "Schwinn AC Perf+",

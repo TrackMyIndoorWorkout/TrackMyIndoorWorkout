@@ -195,7 +195,7 @@ class MPowerEchelon2Importer {
     DeviceDescriptor device = deviceMap[SCHWINN_AC_PERF_PLUS_FOURCC]!;
     device.refreshTuning(MPOWER_IMPORT_DEVICE_ID);
     var activity = Activity(
-      deviceName: device.namePrefix,
+      deviceName: device.namePrefixes[0],
       deviceId: MPOWER_IMPORT_DEVICE_ID,
       start: start.millisecondsSinceEpoch,
       end: start.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch,

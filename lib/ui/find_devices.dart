@@ -153,9 +153,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
     // Step 1. Try to infer from the Bluetooth advertised name
     DeviceDescriptor? descriptor;
     for (var dev in deviceMap.values) {
-      if (device.name.startsWith(dev.namePrefix)) {
-        descriptor = dev;
-        break;
+      for (var prefix in dev.namePrefixes) {
+        if (device.name.startsWith(prefix)) {
+          descriptor = dev;
+          break;
+        }
       }
     }
 

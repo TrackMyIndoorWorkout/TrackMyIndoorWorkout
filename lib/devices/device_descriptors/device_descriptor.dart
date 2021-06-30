@@ -19,7 +19,7 @@ abstract class DeviceDescriptor {
   final String fourCC;
   final String vendorName;
   final String modelName;
-  final String namePrefix;
+  final List<String> namePrefixes;
   final String manufacturer;
   final int manufacturerFitId;
   final String model;
@@ -57,7 +57,7 @@ abstract class DeviceDescriptor {
     required this.fourCC,
     required this.vendorName,
     required this.modelName,
-    required this.namePrefix,
+    required this.namePrefixes,
     required this.manufacturer, // TODO
     required this.manufacturerFitId, // TODO
     required this.model, // TODO

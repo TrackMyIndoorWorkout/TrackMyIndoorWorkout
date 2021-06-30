@@ -26,9 +26,12 @@ extension ScanResultEx on ScanResult {
     }
 
     for (var dev in deviceMap.values) {
-      if (device.name.startsWith(dev.namePrefix)) {
-        return true;
+      for (var prefix in dev.namePrefixes) {
+        if (device.name.startsWith(prefix)) {
+          return true;
+        }
       }
+
       if (advertisementData.serviceUuids.isNotEmpty) {
         final serviceUuids = advertisementData.uuids;
         if (serviceUuids.contains(FITNESS_MACHINE_ID) ||
