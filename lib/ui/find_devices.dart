@@ -43,6 +43,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _isScanning = false;
   List<BluetoothDevice> _scannedDevices = [];
   bool _goingToRecording = false;
+  bool _pairingHrm = false;
   List<String> _lastEquipmentIds = [];
   bool _filterDevices = DEVICE_FILTERING_DEFAULT;
   HeartRateMonitor? _heartRateMonitor;
@@ -216,7 +217,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT) {
         descriptor = deviceMap[GENERIC_FTMS_BIKE_FOURCC]!;
       } else {
+        setState(() {
+          _goingToRecording = false;
+        });
+
         Get.snackbar("Error", "Device identification failed");
+
         return false;
       }
     }
@@ -232,6 +238,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
           enableDrag: false,
         );
         if (sportPick == null) {
+          setState(() {
+            _goingToRecording = false;
+          });
+
           return false;
         }
 
@@ -305,7 +315,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
         await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
       }
 
-      _goingToRecording = false;
+      setState(() {
+        _goingToRecording = false;
+      });
+
       Get.to(() => RecordingScreen(
             device: device,
             descriptor: descriptor!,
@@ -321,7 +334,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
       });
     }
 
-    _goingToRecording = false;
+    setState(() {
+      _goingToRecording = false;
+    });
+
     return true;
   }
 
@@ -383,7 +399,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     }
                   }
                 }
-                return IconButton(icon: Icon(Icons.refresh), onPressed: () => _startScan());
+                if (_goingToRecording || _pairingHrm) {
+                  return HeartbeatProgressIndicator(
+                    child: IconButton(icon: Icon(Icons.hourglass_empty), onPressed: () => {}),
+                  );
+                } else {
+                  return IconButton(icon: Icon(Icons.refresh), onPressed: () => _startScan());
+                }
               }
             },
           ),
@@ -496,6 +518,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             await goToRecording(r.device, BluetoothDeviceState.disconnected);
                           },
                           onHrmTap: () async {
+                            setState(() {
+                              _pairingHrm = true;
+                            });
+
                             var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                 ? Get.find<HeartRateMonitor>()
                                 : null;
@@ -535,6 +561,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                     _heartRateMonitor = heartRateMonitor;
                                   });
                                 }
+
+                                setState(() {
+                                  _pairingHrm = false;
+                                });
                                 return;
                               }
                             }
@@ -547,8 +577,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   setState(() {
                                     _heartRateMonitor = heartRateMonitor;
                                   });
+                                } else {
+                                  await Get.delete<HeartRateMonitor>();
+                                  setState(() {
+                                    _heartRateMonitor = null;
+                                  });
                                 }
 
+                                setState(() {
+                                  _pairingHrm = false;
+                                });
                                 return;
                               }
                             }
@@ -570,6 +608,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 _heartRateMonitor = heartRateMonitor;
                               });
                             }
+
+                            setState(() {
+                              _pairingHrm = false;
+                            });
                           },
                         );
                       }).toList(growable: false),
