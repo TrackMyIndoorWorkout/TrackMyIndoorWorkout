@@ -18,9 +18,11 @@ import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
 import '../strava/strava_service.dart';
 import '../utils/constants.dart';
+import '../utils/delays.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
+import 'models/machine_type.dart';
 import 'parts/circular_menu.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
@@ -42,6 +44,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _isScanning = false;
   List<BluetoothDevice> _scannedDevices = [];
   bool _goingToRecording = false;
+  bool _pairingHrm = false;
   List<String> _lastEquipmentIds = [];
   bool _filterDevices = DEVICE_FILTERING_DEFAULT;
   HeartRateMonitor? _heartRateMonitor;
@@ -151,9 +154,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
     // Step 1. Try to infer from the Bluetooth advertised name
     DeviceDescriptor? descriptor;
     for (var dev in deviceMap.values) {
-      if (device.name.startsWith(dev.namePrefix)) {
-        descriptor = dev;
-        break;
+      for (var prefix in dev.namePrefixes) {
+        if (device.name.startsWith(prefix)) {
+          descriptor = dev;
+          break;
+        }
       }
     }
 
@@ -170,43 +175,23 @@ class FindDevicesState extends State<FindDevicesScreen> {
       deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.id.id).first;
     }
 
-    FitnessEquipment? fitnessEquipment;
-    bool success;
-
-    // Step 3. Try to infer if it's an FTMS
-    if (descriptor == null && advertisementDigest.serviceUuids.contains(FITNESS_MACHINE_ID)) {
-      var sport = ActivityType.Ride;
-      if (deviceUsage == null) {
-        // Determine FTMS sport by analyzing 0x1826 service's characteristics
-        fitnessEquipment = FitnessEquipment(device: device);
-        success = await fitnessEquipment.connectOnDemand(identify: true);
-        if (success && fitnessEquipment.characteristicsId != null) {
-          final inferredSport = fitnessEquipment.inferSportFromCharacteristicsId();
-          if (inferredSport == null) {
-            Get.snackbar("Error", "Could not infer sport of the device");
-            return false;
-          }
-
-          sport = inferredSport;
-        } else {
-          Get.snackbar("Error", "Device identification failed");
-          return false;
+    // Step 3. Try to infer from DeviceUsage or FTMS advertisement service data
+    if (descriptor == null) {
+      if (deviceUsage != null) {
+        descriptor = genericDescriptorForSport(deviceUsage.sport);
+      } else if (advertisementDigest.machineType != MachineType.NotFitnessMachine) {
+        final sport = advertisementDigest.fitnessMachineSport();
+        descriptor = genericDescriptorForSport(sport);
+        if (!descriptor.isMultiSport) {
+          deviceUsage = DeviceUsage(
+            sport: sport,
+            mac: device.id.id,
+            name: device.name,
+            manufacturer: advertisementDigest.manufacturer,
+            time: DateTime.now().millisecondsSinceEpoch,
+          );
+          await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
         }
-      } else {
-        sport = deviceUsage.sport;
-      }
-
-      descriptor = genericDescriptorForSport(sport);
-
-      if (deviceUsage == null) {
-        deviceUsage = DeviceUsage(
-          sport: sport,
-          mac: device.id.id,
-          name: device.name,
-          manufacturer: advertisementDigest.manufacturer,
-          time: DateTime.now().millisecondsSinceEpoch,
-        );
-        await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
       }
     }
 
@@ -215,7 +200,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT) {
         descriptor = deviceMap[GENERIC_FTMS_BIKE_FOURCC]!;
       } else {
+        setState(() {
+          _goingToRecording = false;
+        });
+
         Get.snackbar("Error", "Device identification failed");
+
         return false;
       }
     }
@@ -231,6 +221,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
           enableDrag: false,
         );
         if (sportPick == null) {
+          setState(() {
+            _goingToRecording = false;
+          });
+
           return false;
         }
 
@@ -255,16 +249,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
     }
 
-    final currentEquipment =
+    var fitnessEquipment =
         Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-    bool shouldRegister = true;
-    if (currentEquipment != null) {
-      if (currentEquipment.device?.id.id == device.id.id) {
-        fitnessEquipment = currentEquipment;
-        shouldRegister = false;
-      } else {
-        await currentEquipment.detach();
-        await currentEquipment.disconnect();
+    if (fitnessEquipment != null) {
+      if (fitnessEquipment.device?.id.id != device.id.id) {
+        await fitnessEquipment.detach();
+        await fitnessEquipment.disconnect();
+        Get.delete<FitnessEquipment>();
+        fitnessEquipment = null;
       }
     }
 
@@ -275,23 +267,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
         descriptor: descriptor,
         device: device,
       );
-    }
-
-    if (shouldRegister) {
-      if (Get.isRegistered<FitnessEquipment>()) {
-        await Get.delete<FitnessEquipment>();
-      }
-
       Get.put<FitnessEquipment>(fitnessEquipment);
-      setState(() {
-        _fitnessEquipment = fitnessEquipment;
-      });
     }
 
-    success = await fitnessEquipment.connectOnDemand();
+    setState(() {
+      _fitnessEquipment = fitnessEquipment;
+    });
+
+    final success = await fitnessEquipment.connectOnDemand();
     if (!success) {
       Get.defaultDialog(
-        middleText: 'Problem co-operating with ${descriptor.fullName}.',
+        middleText: 'Problem connecting to ${descriptor.fullName}.',
         confirm: TextButton(
           child: Text("Ok"),
           onPressed: () => Get.close(1),
@@ -304,7 +290,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
         await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
       }
 
-      _goingToRecording = false;
+      setState(() {
+        _goingToRecording = false;
+      });
+
       Get.to(() => RecordingScreen(
             device: device,
             descriptor: descriptor!,
@@ -314,13 +303,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
           ));
     }
 
-    if (fitnessEquipment.device?.id.id != _fitnessEquipment?.device?.id.id) {
-      setState(() {
-        _fitnessEquipment = fitnessEquipment;
-      });
-    }
+    setState(() {
+      _goingToRecording = false;
+    });
 
-    _goingToRecording = false;
     return true;
   }
 
@@ -382,7 +368,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     }
                   }
                 }
-                return IconButton(icon: Icon(Icons.refresh), onPressed: () => _startScan());
+                if (_goingToRecording || _pairingHrm) {
+                  return HeartbeatProgressIndicator(
+                    child: IconButton(icon: Icon(Icons.hourglass_empty), onPressed: () => {}),
+                  );
+                } else {
+                  return IconButton(icon: Icon(Icons.refresh), onPressed: () => _startScan());
+                }
               }
             },
           ),
@@ -453,7 +445,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 Icon(Icons.open_in_new),
                                 () async {
                                   await FlutterBlue.instance.stopScan();
-                                  await Future.delayed(Duration(milliseconds: 100));
+                                  await Future.delayed(
+                                      Duration(milliseconds: UI_INTERMITTENT_DELAY));
                                   await goToRecording(_fitnessEquipment!.device!, snapshot.data!);
                                 },
                               );
@@ -483,17 +476,21 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         addScannedDevice(r);
                         if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {
                           FlutterBlue.instance.stopScan().whenComplete(() async {
-                            await Future.delayed(Duration(milliseconds: 100));
+                            await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
                           });
                         }
                         return ScanResultTile(
                           result: r,
                           onEquipmentTap: () async {
                             await FlutterBlue.instance.stopScan();
-                            await Future.delayed(Duration(milliseconds: 100));
+                            await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
                             await goToRecording(r.device, BluetoothDeviceState.disconnected);
                           },
                           onHrmTap: () async {
+                            setState(() {
+                              _pairingHrm = true;
+                            });
+
                             var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                 ? Get.find<HeartRateMonitor>()
                                 : null;
@@ -533,6 +530,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                     _heartRateMonitor = heartRateMonitor;
                                   });
                                 }
+
+                                setState(() {
+                                  _pairingHrm = false;
+                                });
                                 return;
                               }
                             }
@@ -545,8 +546,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   setState(() {
                                     _heartRateMonitor = heartRateMonitor;
                                   });
+                                } else {
+                                  await Get.delete<HeartRateMonitor>();
+                                  setState(() {
+                                    _heartRateMonitor = null;
+                                  });
                                 }
 
+                                setState(() {
+                                  _pairingHrm = false;
+                                });
                                 return;
                               }
                             }
@@ -568,6 +577,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 _heartRateMonitor = heartRateMonitor;
                               });
                             }
+
+                            setState(() {
+                              _pairingHrm = false;
+                            });
                           },
                         );
                       }).toList(growable: false),
@@ -615,7 +628,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               } else if (snapshot.data!) {
                 return _themeManager.getBlueFab(Icons.stop, () async {
                   await FlutterBlue.instance.stopScan();
-                  await Future.delayed(Duration(milliseconds: 100));
+                  await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
                 });
               } else {
                 return _themeManager.getGreenFab(

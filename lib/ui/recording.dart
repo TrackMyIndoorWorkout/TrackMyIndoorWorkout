@@ -155,7 +155,7 @@ class RecordingState extends State<RecordingScreen> {
       }
     } else {
       Get.defaultDialog(
-        middleText: 'Problem co-operating with ${widget.descriptor.fullName}. Aborting...',
+        middleText: 'Problem connecting to ${widget.descriptor.fullName}. Aborting...',
         confirm: TextButton(
           child: Text("Ok"),
           onPressed: () => Get.close(1),

@@ -11,6 +11,7 @@ import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
+import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../bluetooth_device_ex.dart';
@@ -49,7 +50,7 @@ class FitnessEquipment extends DeviceBase {
   double? slowPace;
   bool equipmentDiscovery = false;
 
-  FitnessEquipment({this.descriptor, device})
+  FitnessEquipment({this.descriptor, required device})
       : super(
           serviceId: descriptor?.dataServiceId ?? FITNESS_MACHINE_ID,
           characteristicsId: descriptor?.dataCharacteristicId,
@@ -68,7 +69,8 @@ class FitnessEquipment extends DeviceBase {
   Stream<Record> get _listenToData async* {
     if (!attached || characteristic == null || descriptor == null) return;
 
-    await for (var byteString in characteristic!.value.throttleTime(Duration(milliseconds: 450))) {
+    await for (var byteString
+        in characteristic!.value.throttleTime(Duration(milliseconds: FTMS_DATA_THRESHOLD))) {
       if (!descriptor!.canDataProcessed(byteString)) continue;
       if (!measuring && !calibrating) continue;
 

@@ -21,6 +21,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   TextStyle _captionStyle = TextStyle();
   TextStyle _subtitleStyle = TextStyle();
   bool _isScanning = false;
+  bool _pairingHrm = false;
   List<String> _scanResults = [];
   ThemeManager _themeManager = Get.find<ThemeManager>();
   HeartRateMonitor? _heartRateMonitor;
@@ -117,6 +118,10 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                       return HeartRateMonitorScanResultTile(
                           result: r,
                           onTap: () async {
+                            setState(() {
+                              _pairingHrm = true;
+                            });
+
                             var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                 ? Get.find<HeartRateMonitor>()
                                 : null;
@@ -148,7 +153,16 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                                   setState(() {
                                     _heartRateMonitor = heartRateMonitor;
                                   });
+                                } else {
+                                  await Get.delete<HeartRateMonitor>();
+                                  setState(() {
+                                    _heartRateMonitor = null;
+                                  });
                                 }
+
+                                setState(() {
+                                  _pairingHrm = false;
+                                });
                                 return;
                               }
                             }
@@ -177,6 +191,9 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                             }
 
                             await heartRateMonitor.attach();
+                            setState(() {
+                              _pairingHrm = false;
+                            });
                           });
                     }).toList(growable: false)),
             ),
@@ -198,7 +215,11 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                 if (snapshot.data == null || snapshot.data!) {
                   return JumpingDotsProgressIndicator(
                     fontSize: 30.0,
-                    color: Colors.white,
+                    color: _themeManager.getProtagonistColor(),
+                  );
+                } else if (_pairingHrm) {
+                  return HeartbeatProgressIndicator(
+                    child: IconButton(icon: Icon(Icons.hourglass_empty), onPressed: () => {}),
                   );
                 } else {
                   return IconButton(
