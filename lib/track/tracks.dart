@@ -76,6 +76,8 @@ Map<String, String> defaultTrackMap = {
   ActivityType.VirtualRide: "Hoover",
   ActivityType.Run: "Marymoor",
   ActivityType.VirtualRun: "Marymoor",
+  ActivityType.Elliptical: "Marymoor",
+  ActivityType.StairStepper: "Marymoor",
   ActivityType.Kayaking: "SanJoaquinBluffPointe",
   ActivityType.Canoeing: "SanJoaquinBluffPointe",
   ActivityType.Rowing: "SanJoaquinBluffPointe",
