@@ -36,8 +36,8 @@ void main() {
     final canProcess = runnRsc.canMeasurementProcessed(SAMPLE_DATA);
 
     expect(canProcess, true);
-    expect(runnRsc.speedMetric != null, true);
-    expect(runnRsc.cadenceMetric != null, true);
+    expect(runnRsc.speedMetric, isNotNull);
+    expect(runnRsc.cadenceMetric, isNotNull);
     expect(runnRsc.distanceMetric, null);
   });
 

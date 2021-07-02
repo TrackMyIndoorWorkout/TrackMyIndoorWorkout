@@ -29,10 +29,10 @@ void main() {
 
     bike.processFlag(flag);
 
-    expect(bike.speedMetric != null, true);
-    expect(bike.cadenceMetric != null, true);
+    expect(bike.speedMetric, isNotNull);
+    expect(bike.cadenceMetric, isNotNull);
     expect(bike.distanceMetric, null);
-    expect(bike.powerMetric != null, true);
+    expect(bike.powerMetric, isNotNull);
     expect(bike.caloriesMetric, null);
     expect(bike.timeMetric, null);
     expect(bike.caloriesPerHourMetric, null);

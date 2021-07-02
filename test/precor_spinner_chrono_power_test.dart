@@ -26,12 +26,12 @@ void main() {
     expect(
         bike.canDataProcessed([83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), true);
 
-    expect(bike.speedMetric != null, true);
-    expect(bike.cadenceMetric != null, true);
-    expect(bike.distanceMetric != null, true);
-    expect(bike.powerMetric != null, true);
-    expect(bike.caloriesMetric != null, true);
-    expect(bike.timeMetric != null, true);
+    expect(bike.speedMetric, isNotNull);
+    expect(bike.cadenceMetric, isNotNull);
+    expect(bike.distanceMetric, isNotNull);
+    expect(bike.powerMetric, isNotNull);
+    expect(bike.caloriesMetric, isNotNull);
+    expect(bike.timeMetric, isNotNull);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
   });
