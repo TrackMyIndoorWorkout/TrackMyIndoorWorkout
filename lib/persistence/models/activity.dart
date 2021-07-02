@@ -28,7 +28,7 @@ class Activity {
   int stravaId;
   @ColumnInfo(name: 'four_cc')
   final String fourCC;
-  final String sport;
+  String sport;
   @ColumnInfo(name: 'power_factor')
   final double powerFactor;
   @ColumnInfo(name: 'calorie_factor')
