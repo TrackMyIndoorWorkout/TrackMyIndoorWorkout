@@ -33,6 +33,7 @@ void main() {
   group('processRecord recognizes total calorie counting capability 2', () {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 500, rnd).forEach((calorie) {
+      calorie++;
       test('$calorie', () async {
         await initPrefServiceForTest();
         final equipment =
