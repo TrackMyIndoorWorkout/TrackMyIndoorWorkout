@@ -21,6 +21,7 @@ class TrackDescriptor {
   double get radius => halfCircle / pi;
   double get gpsRadius => radius * horizontalMeter; // lon
   double get gpsLaneHalf => laneLength / 2.0 * horizontalMeter;
+  double get laneHalf => laneLength / 2.0;
 
   TrackDescriptor({
     required this.radiusBoost,

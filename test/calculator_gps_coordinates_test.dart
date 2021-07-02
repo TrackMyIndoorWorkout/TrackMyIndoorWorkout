@@ -55,7 +55,7 @@ void main() {
     });
   });
 
-  group('gpsCoordinates on the first (left) straight is placed proportionally', () {
+  group('gpsCoordinates on the first (left) straight are placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -84,7 +84,7 @@ void main() {
     });
   });
 
-  group('gpsCoordinates on the first (top) chicane is placed proportionally', () {
+  group('gpsCoordinates on the first (top) chicane are placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -119,7 +119,7 @@ void main() {
     });
   });
 
-  group('gpsCoordinates on the second (right) straight is placed proportionally', () {
+  group('gpsCoordinates on the second (right) straight are placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -149,7 +149,7 @@ void main() {
     });
   });
 
-  group('gpsCoordinates on the second (bottom) chicane is placed proportionally', () {
+  group('gpsCoordinates on the second (bottom) chicane are placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
       final track = TrackDescriptor(
@@ -181,6 +181,36 @@ void main() {
             closeTo(
                 track.center.dy + track.gpsLaneHalf + sin(rad) * track.radius * track.verticalMeter,
                 EPS));
+      });
+    });
+  });
+
+  group('gpsCoordinates continuity', () {
+    final rnd = Random();
+    getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
+      final track = TrackDescriptor(
+        center: Offset(rnd.nextDouble() * 360 * 10000 - 180, rnd.nextDouble() * 180 * 10000 - 90),
+        radiusBoost: 1 + rnd.nextDouble() / 3,
+        horizontalMeter: rnd.nextDouble(), // / 10000,
+        verticalMeter: rnd.nextDouble(), // / 10000,
+        lengthFactor: lengthFactor,
+      );
+      final d = track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
+      test("${track.radiusBoost} $lengthFactor $d", () async {
+        var maxD = 0.0;
+        1.to((TRACK_LENGTH * 2).round()).forEach((distance) {
+          final calculator = TrackCalculator(track: track);
+
+          final markerA = calculator.gpsCoordinates(distance.toDouble());
+          distance++;
+          final markerB = calculator.gpsCoordinates(distance.toDouble());
+          final dx = markerA.dx - markerB.dx;
+          final dy = markerA.dy - markerB.dy;
+
+          // expect(dx * dx + dy * dy, closeTo(d, EPS));
+          maxD = max(maxD, dx * dx + dy * dy);
+        });
+        expect(maxD, lessThanOrEqualTo(d));
       });
     });
   });
