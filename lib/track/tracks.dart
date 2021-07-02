@@ -38,8 +38,8 @@ Map<String, TrackDescriptor> trackMap = {
   "Marymoor": TrackDescriptor(
     center: Offset(-122.112045, 47.665821),
     radiusBoost: 1.2,
-    horizontalMeter: 0.000013356,
-    verticalMeter: 0.000008993,
+    horizontalMeter: 0.000013337,
+    verticalMeter: 0.000008985,
     altitude: 6.0,
     lengthFactor: 1.0,
   ),
