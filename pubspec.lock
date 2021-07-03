@@ -35,7 +35,7 @@ packages:
       name: assorted_layout_widgets
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.10"
+    version: "5.0.1"
   async:
     dependency: transitive
     description:
@@ -93,7 +93,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.4"
+    version: "2.0.5"
   build_runner_core:
     dependency: transitive
     description:
@@ -254,7 +254,7 @@ packages:
       name: file_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.2+2"
+    version: "3.0.3"
   fixnum:
     dependency: transitive
     description:
@@ -587,7 +587,7 @@ packages:
       name: permission_handler
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "8.1.1"
+    version: "8.1.2"
   permission_handler_platform_interface:
     dependency: transitive
     description:
@@ -862,14 +862,14 @@ packages:
       name: syncfusion_flutter_charts
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.1.69+1"
+    version: "19.2.44+1"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.1.69"
+    version: "19.2.44+1"
   synchronized:
     dependency: transitive
     description:
@@ -946,7 +946,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.6"
+    version: "6.0.8"
   url_launcher_linux:
     dependency: transitive
     description:
