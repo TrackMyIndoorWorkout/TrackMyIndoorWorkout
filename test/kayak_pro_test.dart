@@ -38,7 +38,7 @@ void main() {
     expect(rower.speedMetric, null);
     expect(rower.cadenceMetric, null);
     expect(rower.distanceMetric, isNotNull);
-    expect(rower.powerMetric,isNotNull);
+    expect(rower.powerMetric, isNotNull);
     expect(rower.caloriesMetric, isNotNull); // It's there but mute
     expect(rower.timeMetric, isNotNull);
     expect(rower.caloriesPerHourMetric, isNotNull);
