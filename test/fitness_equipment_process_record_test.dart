@@ -191,7 +191,7 @@ void main() {
 
         final record = equipment.processRecord(Record(speed: speed));
 
-        expect(record.distance, closeTo(10 + speed * DeviceDescriptor.KMH2MS, EPS));
+        expect(record.distance, closeTo(10 + speed * DeviceDescriptor.KMH2MS, DISPLAY_EPS));
       });
     });
   });
