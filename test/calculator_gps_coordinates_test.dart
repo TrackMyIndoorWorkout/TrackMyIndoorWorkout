@@ -11,9 +11,10 @@ void main() {
   group("gpsCoordinates start point is invariant", () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.3;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
-        radiusBoost: 1 + rnd.nextDouble() / 3,
+        radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: rnd.nextDouble() / 10000,
         verticalMeter: rnd.nextDouble() / 10000,
         lengthFactor: lengthFactor,
@@ -33,9 +34,10 @@ void main() {
   group('gpsCoordinates whole laps are at the start point', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.3;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
-        radiusBoost: 1 + rnd.nextDouble() / 3,
+        radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: rnd.nextDouble() / 10000,
         verticalMeter: rnd.nextDouble() / 10000,
         lengthFactor: lengthFactor,
@@ -58,9 +60,10 @@ void main() {
   group('gpsCoordinates on the first (left) straight are placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.3;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
-        radiusBoost: 1 + rnd.nextDouble() / 3,
+        radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: rnd.nextDouble() / 10000,
         verticalMeter: rnd.nextDouble() / 10000,
         lengthFactor: lengthFactor,
@@ -87,11 +90,12 @@ void main() {
   group('gpsCoordinates on the first (top) chicane are placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.3;
       final track = TrackDescriptor(
-        center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
-        radiusBoost: 1 + rnd.nextDouble() / 3,
-        horizontalMeter: rnd.nextDouble() / 10000,
-        verticalMeter: rnd.nextDouble() / 10000,
+        center: Offset(rnd.nextDouble() * 360 * 10000 - 180, rnd.nextDouble() * 180 * 10000 - 90),
+        radiusBoost: 0.65 + rnd.nextDouble(),
+        horizontalMeter: rnd.nextDouble(), // / 10000,
+        verticalMeter: rnd.nextDouble(), // / 10000,
         lengthFactor: lengthFactor,
       );
       final laps = rnd.nextInt(100);
@@ -122,9 +126,10 @@ void main() {
   group('gpsCoordinates on the second (right) straight are placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.3;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
-        radiusBoost: 1 + rnd.nextDouble() / 3,
+        radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: rnd.nextDouble() / 10000,
         verticalMeter: rnd.nextDouble() / 10000,
         lengthFactor: lengthFactor,
@@ -152,9 +157,10 @@ void main() {
   group('gpsCoordinates on the second (bottom) chicane are placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.3;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
-        radiusBoost: 1 + rnd.nextDouble() / 3,
+        radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: rnd.nextDouble() / 10000,
         verticalMeter: rnd.nextDouble() / 10000,
         lengthFactor: lengthFactor,
@@ -188,14 +194,16 @@ void main() {
   group('gpsCoordinates continuity', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.3;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 * 10000 - 180, rnd.nextDouble() * 180 * 10000 - 90),
-        radiusBoost: 1 + rnd.nextDouble() / 3,
+        radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: rnd.nextDouble(), // / 10000,
         verticalMeter: rnd.nextDouble(), // / 10000,
         lengthFactor: lengthFactor,
       );
-      final d = track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
+      final d =
+          track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
       test("${track.radiusBoost} $lengthFactor $d", () async {
         var maxD = 0.0;
         1.to((TRACK_LENGTH * 2).round()).forEach((distance) {
