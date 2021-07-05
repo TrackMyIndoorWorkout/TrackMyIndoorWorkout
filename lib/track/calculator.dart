@@ -20,13 +20,15 @@ class TrackCalculator {
   void calculateConstantsOnDemand(Size size) {
     if (trackSize == null || size.width != trackSize!.width || size.height != trackSize!.height) {
       trackSize = size;
-      final rX = (size.width - 2 * THICK) / (2 + pi * track.laneShrink);
+      final rX = (size.width - 2 * THICK) / (2 + pi / track.radiusBoost * track.laneShrink);
       final rY = (size.height - 2 * THICK) / 2;
       final r = min(rY, rX);
       trackRadius = r;
 
       final offset = Offset(
-        rX < rY ? 0 : (size.width - 2 * (THICK - 2) - pi * r * track.laneShrink) / 2,
+        rX < rY
+            ? 0
+            : (size.width - 2 * (THICK + r) - r * pi / track.radiusBoost * track.laneShrink) / 2,
         rX > rY ? 0 : (size.height - 2 * (THICK + r)) / 2,
       );
       trackOffset = offset;
@@ -72,7 +74,7 @@ class TrackCalculator {
     final d = (distance) % trackLength;
     if (d <= track.laneLength) {
       // bottom straight
-      final displacement = d * r / track.radius * track.radiusBoost;
+      final displacement = d * r / track.radius;
       return Offset(
         THICK + offset.dx + r + displacement,
         trackSize!.height - THICK - offset.dy,
@@ -86,7 +88,7 @@ class TrackCalculator {
       );
     } else if (d <= trackLength / 2 + track.laneLength) {
       // top straight
-      final displacement = (d - trackLength / 2) * r / track.radius * track.radiusBoost;
+      final displacement = (d - trackLength / 2) * r / track.radius;
       return Offset(
         trackSize!.width - (THICK + offset.dx + r) - displacement,
         THICK + offset.dy,

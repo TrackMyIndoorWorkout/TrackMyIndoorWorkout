@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/track/calculator.dart';
@@ -86,7 +85,7 @@ void main() {
       final distance = laps * trackLength + positionRatio * track.laneLength;
       final d = distance % trackLength;
       final r = calculator.trackRadius!;
-      final displacement = d * r / track.radius * track.radiusBoost;
+      final displacement = d * r / track.radius;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
         final marker = calculator.trackMarker(distance)!;
@@ -151,7 +150,7 @@ void main() {
       final distance = (laps + 0.5) * trackLength + positionRatio * track.laneLength;
       final d = distance % trackLength;
       final r = calculator.trackRadius!;
-      final displacement = (d - trackLength / 2) * r / track.radius * track.radiusBoost;
+      final displacement = (d - trackLength / 2) * r / track.radius;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
         final marker = calculator.trackMarker(distance)!;
@@ -250,8 +249,7 @@ void main() {
         final dx = markerA.dx - markerB.dx;
         final dy = markerA.dy - markerB.dy;
 
-        debugPrint("d $distance a $markerA b $markerB dx dy $dx $dy");
-        expect(dx * dx + dy * dy, closeTo(uDSquare, DISPLAY_EPS));
+        expect(dx * dx + dy * dy, closeTo(uDSquare, TRACK_LENGTH * DISPLAY_EPS));
       });
     });
   });
@@ -282,8 +280,7 @@ void main() {
         final dx = markerA.dx - markerB.dx;
         final dy = markerA.dy - markerB.dy;
 
-        debugPrint("d $distance a $markerA b $markerB dx dy $dx $dy");
-        expect(dx * dx + dy * dy, closeTo(uDSquare, DISPLAY_EPS));
+        expect(dx * dx + dy * dy, closeTo(uDSquare, TRACK_LENGTH * DISPLAY_EPS));
       });
     });
   });
@@ -308,19 +305,17 @@ void main() {
         final straightMarkerB = calculator.trackMarker((track.laneHalf + 0.1).toDouble())!;
         final sdx = (straightMarkerA.dx - straightMarkerB.dx).abs();
         final sdy = straightMarkerA.dy - straightMarkerB.dy;
-        debugPrint("sA $straightMarkerA sB $straightMarkerB");
         expect(sdy, closeTo(0.0, DISPLAY_EPS));
 
         final chicaneMarkerA =
-            calculator.trackMarker((track.laneHalf + track.halfCircle / 2 + 0.4).toDouble())!;
+            calculator.trackMarker((track.laneLength + track.halfCircle / 2 - 0.1).toDouble())!;
         final chicaneMarkerB =
-            calculator.trackMarker((track.laneHalf + track.halfCircle / 2 + 0.6).toDouble())!;
+            calculator.trackMarker((track.laneLength + track.halfCircle / 2 + 0.1).toDouble())!;
         final cdx = chicaneMarkerA.dx - chicaneMarkerB.dx;
         final cdy = (chicaneMarkerA.dy - chicaneMarkerB.dy).abs();
-        debugPrint("cA $chicaneMarkerA cB $chicaneMarkerB");
-        expect(cdx, closeTo(0.0, DISPLAY_EPS));
 
-        expect(sdx, closeTo(cdy, TRACK_LENGTH * DISPLAY_EPS));
+        expect(cdx, closeTo(0.0, DISPLAY_EPS));
+        expect(sdx, closeTo(cdy, DISPLAY_EPS));
       });
     });
   });
@@ -340,12 +335,7 @@ void main() {
       );
       calculator.calculateConstantsOnDemand(size);
 
-      // final unitDistance = calculator.trackRadius! / track.radius;
-      // final uDSquare = unitDistance * unitDistance;
-
-      final mA = calculator.trackMarker(0)!;
-      final mB = calculator.trackMarker(1)!;
-      final unitDistance = mB.dx - mA.dx;
+      final unitDistance = calculator.trackRadius! / track.radius;
       final uDSquare = unitDistance * unitDistance;
       test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
         1.to((TRACK_LENGTH * 2).round()).forEach((distance) {
@@ -354,7 +344,6 @@ void main() {
           final dx = markerA.dx - markerB.dx;
           final dy = markerA.dy - markerB.dy;
 
-          debugPrint("d $distance a $markerA b $markerB dx dy $dx $dy");
           expect(dx * dx + dy * dy, closeTo(uDSquare, TRACK_LENGTH * DISPLAY_EPS));
         });
       });
