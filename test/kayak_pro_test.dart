@@ -32,17 +32,17 @@ void main() {
 
     rower.processFlag(flag);
 
-    expect(rower.strokeRateMetric != null, true);
-    expect(rower.strokeCountMetric != null, true);
-    expect(rower.paceMetric != null, true);
+    expect(rower.strokeRateMetric, isNotNull);
+    expect(rower.strokeCountMetric, isNotNull);
+    expect(rower.paceMetric, isNotNull);
     expect(rower.speedMetric, null);
     expect(rower.cadenceMetric, null);
-    expect(rower.distanceMetric != null, true);
-    expect(rower.powerMetric != null, true);
-    expect(rower.caloriesMetric != null, true); // It's there but mute
-    expect(rower.timeMetric != null, true);
-    expect(rower.caloriesPerHourMetric != null, true);
-    expect(rower.caloriesPerMinuteMetric != null, true); // It's there but mute
+    expect(rower.distanceMetric, isNotNull);
+    expect(rower.powerMetric, isNotNull);
+    expect(rower.caloriesMetric, isNotNull); // It's there but mute
+    expect(rower.timeMetric, isNotNull);
+    expect(rower.caloriesPerHourMetric, isNotNull);
+    expect(rower.caloriesPerMinuteMetric, isNotNull); // It's there but mute
   });
 
   group('Rower Device interprets KayakPro data properly', () {

@@ -35,6 +35,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value"),
         min: STROKE_RATE_SMOOTHING_MIN,
         max: STROKE_RATE_SMOOTHING_MAX,
+        direction: Axis.vertical,
       ),
       PrefTitle(title: Text(WORKAROUND_PREFERENCES)),
       PrefSlider<int>(
@@ -44,6 +45,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value s"),
         min: DATA_STREAM_GAP_WATCHDOG_MIN,
         max: DATA_STREAM_GAP_WATCHDOG_MAX,
+        direction: Axis.vertical,
       ),
       PrefLabel(
         title: Text(DATA_STREAM_GAP_SOUND_EFFECT),
@@ -86,6 +88,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value %"),
         min: AUDIO_VOLUME_MIN,
         max: AUDIO_VOLUME_MAX,
+        direction: Axis.vertical,
       ),
       PrefCheckbox(
         title: Text(CADENCE_GAP_WORKAROUND),
@@ -116,6 +119,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value"),
         min: HEART_RATE_UPPER_LIMIT_MIN,
         max: HEART_RATE_UPPER_LIMIT_MAX,
+        direction: Axis.vertical,
       ),
       PrefLabel(title: Text(HEART_RATE_LIMITING_METHOD)),
       PrefRadio<String>(

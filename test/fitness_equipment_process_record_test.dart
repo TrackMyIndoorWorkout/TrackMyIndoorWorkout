@@ -33,6 +33,7 @@ void main() {
   group('processRecord recognizes total calorie counting capability 2', () {
     final rnd = Random();
     getRandomInts(SMALL_REPETITION, 500, rnd).forEach((calorie) {
+      calorie++;
       test('$calorie', () async {
         await initPrefServiceForTest();
         final equipment =
@@ -190,7 +191,7 @@ void main() {
 
         final record = equipment.processRecord(Record(speed: speed));
 
-        expect(record.distance, closeTo(10 + speed * DeviceDescriptor.KMH2MS, EPS));
+        expect(record.distance, closeTo(10 + speed * DeviceDescriptor.KMH2MS, DISPLAY_EPS));
       });
     });
   });

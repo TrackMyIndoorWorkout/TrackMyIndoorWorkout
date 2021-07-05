@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -31,6 +32,7 @@ import 'parts/circular_menu.dart';
 import 'parts/data_format_picker.dart';
 import 'parts/flutter_brand_icons.dart';
 import 'parts/power_factor_tune.dart';
+import 'parts/sport_picker.dart';
 import 'power_tunes.dart';
 import 'records.dart';
 
@@ -73,136 +75,161 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Widget _actionButtonRow(Activity activity, double size) {
+    final actionsRow = <Widget>[
+      IconButton(
+        icon: Icon(
+          BrandIcons.strava,
+          color: activity.uploaded ? _themeManager.getGreyColor() : _themeManager.getOrangeColor(),
+          size: size,
+        ),
+        onPressed: () async {
+          if (!await InternetConnectionChecker().hasConnection) {
+            Get.snackbar("Warning", "No data connection detected");
+            return;
+          }
+
+          StravaService stravaService;
+          if (!Get.isRegistered<StravaService>()) {
+            stravaService = Get.put<StravaService>(StravaService());
+          } else {
+            stravaService = Get.find<StravaService>();
+          }
+          final success = await stravaService.login();
+          if (!success) {
+            Get.snackbar("Warning", "Strava login unsuccessful");
+            return;
+          }
+
+          final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
+
+          final statusCode = await stravaService.upload(activity, records);
+          setState(() {
+            _editCount++;
+          });
+          Get.snackbar(
+              "Upload",
+              statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300
+                  ? "Activity ${activity.id} submitted successfully"
+                  : "Activity ${activity.id} upload failure");
+        },
+      ),
+      IconButton(
+        icon: _themeManager.getActionIcon(Icons.file_download, size),
+        onPressed: () async {
+          if (!await Permission.storage.request().isGranted) {
+            return;
+          }
+
+          final formatPick = await Get.bottomSheet(
+            DataFormatPickerBottomSheet(),
+            enableDrag: false,
+          );
+
+          if (formatPick == null) {
+            return;
+          }
+
+          final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
+          ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport();
+          final fileStream = await exporter.getExport(activity, records, false);
+          final persistenceValues = exporter.getPersistenceValues(activity, false);
+          ShareFilesAndScreenshotWidgets().shareFile(
+            persistenceValues['name'],
+            persistenceValues['fileName'],
+            Uint8List.fromList(fileStream),
+            exporter.mimeType(false),
+            text: 'Share a ride on ${activity.deviceName}',
+          );
+        },
+      ),
+      IconButton(
+        icon: _themeManager.getActionIcon(Icons.bolt, size),
+        onPressed: () async {
+          if (activity.powerFactor < EPS) {
+            Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
+            return;
+          }
+          Get.bottomSheet(
+            PowerFactorTuneBottomSheet(
+                deviceId: activity.deviceId, oldPowerFactor: activity.powerFactor),
+            enableDrag: false,
+          );
+        },
+      ),
+      IconButton(
+        icon: _themeManager.getActionIcon(Icons.whatshot, size),
+        onPressed: () async {
+          if (activity.calories == 0) {
+            Get.snackbar("Error", "Cannot tune calories of activity with 0 calories");
+            return;
+          }
+          Get.bottomSheet(
+            CalorieOverrideBottomSheet(
+                deviceId: activity.deviceId, oldCalories: activity.calories.toDouble()),
+            enableDrag: false,
+          );
+        },
+      ),
+    ];
+
+    if (kDebugMode) {
+      actionsRow.add(
+        IconButton(
+          icon: _themeManager.getActionIcon(Icons.edit, size),
+          onPressed: () async {
+            final sportPick = await Get.bottomSheet(
+              SportPickerBottomSheet(initialSport: activity.sport, allSports: true),
+              enableDrag: false,
+            );
+            if (sportPick != null) {
+              activity.sport = sportPick;
+              await _database.activityDao.updateActivity(activity);
+              setState(() {
+                _editCount++;
+              });
+            }
+          },
+        ),
+      );
+    }
+
+    actionsRow.addAll([
+      Spacer(),
+      IconButton(
+        icon: _themeManager.getDeleteIcon(size),
+        onPressed: () async {
+          Get.defaultDialog(
+            title: 'Warning!!!',
+            middleText: 'Are you sure to delete this Activity?',
+            confirm: TextButton(
+              child: Text("Yes"),
+              onPressed: () async {
+                await _database.recordDao.deleteAllActivityRecords(activity.id ?? 0);
+                await _database.activityDao.deleteActivity(activity);
+                setState(() {
+                  _editCount++;
+                });
+                Get.close(1);
+              },
+            ),
+            cancel: TextButton(
+              child: Text("No"),
+              onPressed: () => Get.close(1),
+            ),
+          );
+        },
+      ),
+      Spacer(),
+      IconButton(
+        icon: _themeManager.getActionIcon(Icons.chevron_right, size),
+        onPressed: () async =>
+            await Get.to(() => RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
+      ),
+    ]);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: Icon(
-            BrandIcons.strava,
-            color:
-                activity.uploaded ? _themeManager.getGreyColor() : _themeManager.getOrangeColor(),
-            size: size,
-          ),
-          onPressed: () async {
-            if (!await InternetConnectionChecker().hasConnection) {
-              Get.snackbar("Warning", "No data connection detected");
-              return;
-            }
-
-            StravaService stravaService;
-            if (!Get.isRegistered<StravaService>()) {
-              stravaService = Get.put<StravaService>(StravaService());
-            } else {
-              stravaService = Get.find<StravaService>();
-            }
-            final success = await stravaService.login();
-            if (!success) {
-              Get.snackbar("Warning", "Strava login unsuccessful");
-              return;
-            }
-
-            final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
-
-            final statusCode = await stravaService.upload(activity, records);
-            setState(() {
-              _editCount++;
-            });
-            Get.snackbar(
-                "Upload",
-                statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300
-                    ? "Activity ${activity.id} submitted successfully"
-                    : "Activity ${activity.id} upload failure");
-          },
-        ),
-        IconButton(
-          icon: _themeManager.getActionIcon(Icons.file_download, size),
-          onPressed: () async {
-            if (!await Permission.storage.request().isGranted) {
-              return;
-            }
-
-            final formatPick = await Get.bottomSheet(
-              DataFormatPickerBottomSheet(),
-              enableDrag: false,
-            );
-
-            if (formatPick == null) {
-              return;
-            }
-
-            final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
-            ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport();
-            final fileStream = await exporter.getExport(activity, records, false);
-            final persistenceValues = exporter.getPersistenceValues(activity, false);
-            ShareFilesAndScreenshotWidgets().shareFile(
-              persistenceValues['name'],
-              persistenceValues['fileName'],
-              Uint8List.fromList(fileStream),
-              exporter.mimeType(false),
-              text: 'Share a ride on ${activity.deviceName}',
-            );
-          },
-        ),
-        IconButton(
-          icon: _themeManager.getActionIcon(Icons.bolt, size),
-          onPressed: () async {
-            if (activity.powerFactor < EPS) {
-              Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
-              return;
-            }
-            Get.bottomSheet(
-              PowerFactorTuneBottomSheet(
-                  deviceId: activity.deviceId, oldPowerFactor: activity.powerFactor),
-              enableDrag: false,
-            );
-          },
-        ),
-        IconButton(
-          icon: _themeManager.getActionIcon(Icons.whatshot, size),
-          onPressed: () async {
-            if (activity.calories == 0) {
-              Get.snackbar("Error", "Cannot tune calories of activity with 0 calories");
-              return;
-            }
-            Get.bottomSheet(
-              CalorieOverrideBottomSheet(
-                  deviceId: activity.deviceId, oldCalories: activity.calories.toDouble()),
-              enableDrag: false,
-            );
-          },
-        ),
-        Spacer(),
-        IconButton(
-          icon: _themeManager.getDeleteIcon(size),
-          onPressed: () async {
-            Get.defaultDialog(
-              title: 'Warning!!!',
-              middleText: 'Are you sure to delete this Activity?',
-              confirm: TextButton(
-                child: Text("Yes"),
-                onPressed: () async {
-                  await _database.recordDao.deleteAllActivityRecords(activity.id ?? 0);
-                  await _database.activityDao.deleteActivity(activity);
-                  setState(() {
-                    _editCount++;
-                  });
-                  Get.close(1);
-                },
-              ),
-              cancel: TextButton(
-                child: Text("No"),
-                onPressed: () => Get.close(1),
-              ),
-            );
-          },
-        ),
-        Spacer(),
-        IconButton(
-          icon: _themeManager.getActionIcon(Icons.chevron_right, size),
-          onPressed: () async =>
-              await Get.to(() => RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
-        ),
-      ],
+      children: actionsRow,
     );
   }
 

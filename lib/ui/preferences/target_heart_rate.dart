@@ -40,6 +40,7 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value"),
         min: TARGET_HEART_RATE_LOWER_BPM_MIN,
         max: TARGET_HEART_RATE_UPPER_BPM_MAX,
+        direction: Axis.vertical,
         onChange: (num value) {
           final upperLimit =
               PrefService.of(context).get<int>(TARGET_HEART_RATE_UPPER_BPM_INT_TAG) ??
@@ -56,6 +57,7 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value"),
         min: TARGET_HEART_RATE_LOWER_BPM_MIN,
         max: TARGET_HEART_RATE_UPPER_BPM_MAX,
+        direction: Axis.vertical,
         onChange: (num value) {
           final lowerLimit =
               PrefService.of(context).get<int>(TARGET_HEART_RATE_LOWER_BPM_INT_TAG) ??
@@ -72,6 +74,7 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value"),
         min: TARGET_HEART_RATE_LOWER_ZONE_MIN,
         max: TARGET_HEART_RATE_UPPER_ZONE_MAX,
+        direction: Axis.vertical,
         onChange: (num value) {
           final upperLimit =
               PrefService.of(context).get<int>(TARGET_HEART_RATE_UPPER_ZONE_INT_TAG) ??
@@ -88,6 +91,7 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value"),
         min: TARGET_HEART_RATE_LOWER_ZONE_MIN,
         max: TARGET_HEART_RATE_UPPER_ZONE_MAX,
+        direction: Axis.vertical,
         onChange: (num value) {
           final lowerLimit =
               PrefService.of(context).get<int>(TARGET_HEART_RATE_LOWER_ZONE_INT_TAG) ??
@@ -109,6 +113,7 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value s"),
         min: TARGET_HEART_RATE_AUDIO_PERIOD_MIN,
         max: TARGET_HEART_RATE_AUDIO_PERIOD_MAX,
+        direction: Axis.vertical,
       ),
       PrefLabel(
         title: Text(TARGET_HEART_RATE_SOUND_EFFECT),
@@ -146,6 +151,7 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value %"),
         min: AUDIO_VOLUME_MIN,
         max: AUDIO_VOLUME_MAX,
+        direction: Axis.vertical,
       ),
     ];
 

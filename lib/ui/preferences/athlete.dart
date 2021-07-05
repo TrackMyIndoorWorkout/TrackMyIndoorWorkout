@@ -17,6 +17,7 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value kg"),
         min: ATHLETE_BODY_WEIGHT_MIN,
         max: ATHLETE_BODY_WEIGHT_MAX,
+        direction: Axis.vertical,
       ),
       PrefCheckbox(
         title: Text(REMEMBER_ATHLETE_BODY_WEIGHT),
@@ -35,6 +36,7 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value"),
         min: ATHLETE_AGE_MIN,
         max: ATHLETE_AGE_MAX,
+        direction: Axis.vertical,
       ),
       PrefLabel(
         title: Text(ATHLETE_GENDER),
@@ -58,6 +60,7 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value"),
         min: ATHLETE_VO2MAX_MIN,
         max: ATHLETE_VO2MAX_MAX,
+        direction: Axis.vertical,
       ),
     ];
 
