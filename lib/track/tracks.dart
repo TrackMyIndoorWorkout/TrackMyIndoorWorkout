@@ -44,7 +44,7 @@ Map<String, TrackDescriptor> trackMap = {
   ),
   "Lincoln": TrackDescriptor(
     center: Offset(-119.77381, 36.846039),
-    radiusBoost: 1.18,
+    radiusBoost: 1.15,
     horizontalMeter: 0.00001121,
     verticalMeter: 0.00000901,
     altitude: 108.0,
@@ -52,7 +52,7 @@ Map<String, TrackDescriptor> trackMap = {
   ),
   "Hoover": TrackDescriptor(
     center: Offset(-119.768433, 36.8195),
-    radiusBoost: 1.15,
+    radiusBoost: 1.1,
     horizontalMeter: 0.000011156,
     verticalMeter: 0.000009036,
     altitude: 100.0,
