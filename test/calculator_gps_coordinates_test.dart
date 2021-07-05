@@ -10,8 +10,8 @@ import 'utils.dart';
 void main() {
   group("gpsCoordinates start point is invariant", () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -33,8 +33,8 @@ void main() {
 
   group('gpsCoordinates whole laps are at the start point', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -59,8 +59,8 @@ void main() {
 
   group('gpsCoordinates on the first (left) straight are placed proportionally', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -81,15 +81,16 @@ void main() {
         final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx, closeTo(track.center.dx - track.radius * track.horizontalMeter, EPS));
-        expect(marker.dy, closeTo(track.center.dy + (track.laneLength / 2 - d) * track.verticalMeter, EPS));
+        expect(marker.dy,
+            closeTo(track.center.dy + (track.laneLength / 2 - d) * track.verticalMeter, EPS));
       });
     });
   });
 
   group('gpsCoordinates on the first (top) chicane are placed as expected', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -100,7 +101,7 @@ void main() {
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
       final distance =
-          laps * TRACK_LENGTH * lengthFactor + track.laneLength + positionRatio * track.laneLength;
+          laps * TRACK_LENGTH * lengthFactor + track.laneLength + positionRatio * track.halfCircle;
       final trackLength = TRACK_LENGTH * lengthFactor;
       final d = distance % trackLength;
       final rad = (d - track.laneLength) / track.halfCircle * pi;
@@ -111,12 +112,15 @@ void main() {
           () async {
         final marker = calculator.gpsCoordinates(distance);
 
-        expect(marker.dx,
-            closeTo(track.center.dx - cos(rad) * track.radius * track.horizontalMeter, EPS));
+        expect(
+            marker.dx,
+            closeTo(
+                track.center.dx - cos(rad) * track.radius * track.horizontalMeter, EPS));
         expect(
             marker.dy,
             closeTo(
-                track.center.dy - (track.laneLength / 2 + sin(rad) * track.radius) * track.verticalMeter,
+                track.center.dy -
+                    (track.laneLength / 2 + sin(rad) * track.radius) * track.verticalMeter,
                 EPS));
       });
     });
@@ -124,8 +128,8 @@ void main() {
 
   group('gpsCoordinates on the second (right) straight are placed proportionally', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -148,15 +152,18 @@ void main() {
         final marker = calculator.gpsCoordinates(distance);
 
         expect(marker.dx, closeTo(track.center.dx + track.radius * track.horizontalMeter, EPS));
-        expect(marker.dy, closeTo(track.center.dy + (displacement - track.laneLength / 2) * track.verticalMeter, EPS));
+        expect(
+            marker.dy,
+            closeTo(track.center.dy + (displacement - track.laneLength / 2) * track.verticalMeter,
+                EPS));
       });
     });
   });
 
   group('gpsCoordinates on the second (bottom) chicane are placed proportionally', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -184,39 +191,38 @@ void main() {
         expect(
             marker.dy,
             closeTo(
-                track.center.dy + (track.laneLength / 2 + sin(rad) * track.radius) * track.verticalMeter,
+                track.center.dy +
+                    (track.laneLength / 2 + sin(rad) * track.radius) * track.verticalMeter,
                 EPS));
       });
     });
   });
-/*
+
   group('gpsCoordinates left continuity', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
+        center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
+        horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
+        verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
         lengthFactor: lengthFactor,
       );
       final calculator = TrackCalculator(track: track);
-      final size = Size(
-        minPixel + rnd.nextDouble() * maxPixel,
-        minPixel + rnd.nextDouble() * maxPixel,
-      );
-      calculator.calculateConstantsOnDemand(size);
 
       final laps = rnd.nextInt(100);
       final trackLength = TRACK_LENGTH * lengthFactor;
       final distance = laps * trackLength + track.laneLength;
-      final unitDistance = calculator.trackRadius! / track.radius;
-      final uDSquare = unitDistance * unitDistance;
-      test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
-        final markerA = calculator.trackMarker((distance - 0.5).toDouble())!;
-        final markerB = calculator.trackMarker((distance + 0.5).toDouble())!;
+      final d =
+          track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
+      test("${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
+        final markerA = calculator.gpsCoordinates((distance - 0.5).toDouble());
+        final markerB = calculator.gpsCoordinates((distance + 0.5).toDouble());
         final dx = markerA.dx - markerB.dx;
         final dy = markerA.dy - markerB.dy;
 
-        expect(dx * dx + dy * dy, closeTo(uDSquare, TRACK_LENGTH * DISPLAY_EPS));
+        expect(dx * dx + dy * dy, closeTo(d, EPS));
       });
     });
   });
@@ -224,30 +230,28 @@ void main() {
   group('gpsCoordinates right continuity', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
+        center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
+        horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
+        verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
         lengthFactor: lengthFactor,
       );
       final calculator = TrackCalculator(track: track);
-      final size = Size(
-        minPixel + rnd.nextDouble() * maxPixel,
-        minPixel + rnd.nextDouble() * maxPixel,
-      );
-      calculator.calculateConstantsOnDemand(size);
 
       final laps = rnd.nextInt(100);
       final trackLength = TRACK_LENGTH * lengthFactor;
       final distance = (laps + 0.5) * trackLength + track.laneLength;
-      final unitDistance = calculator.trackRadius! / track.radius;
-      final uDSquare = unitDistance * unitDistance;
-      test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
-        final markerA = calculator.trackMarker((distance - 0.5).toDouble())!;
-        final markerB = calculator.trackMarker((distance + 0.5).toDouble())!;
+      final d =
+          track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
+      test("${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
+        final markerA = calculator.gpsCoordinates((distance - 0.5).toDouble());
+        final markerB = calculator.gpsCoordinates((distance + 0.5).toDouble());
         final dx = markerA.dx - markerB.dx;
         final dy = markerA.dy - markerB.dy;
 
-        expect(dx * dx + dy * dy, closeTo(uDSquare, TRACK_LENGTH * DISPLAY_EPS));
+        expect(dx * dx + dy * dy, closeTo(d, EPS));
       });
     });
   });
@@ -255,42 +259,40 @@ void main() {
   group('gpsCoordinates continuity straight vs chicane', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
+        center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
+        horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
+        verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
         lengthFactor: lengthFactor,
       );
       final calculator = TrackCalculator(track: track);
-      final size = Size(
-        minPixel + rnd.nextDouble() * maxPixel,
-        minPixel + rnd.nextDouble() * maxPixel,
-      );
-      calculator.calculateConstantsOnDemand(size);
 
-      test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
-        final straightMarkerA = calculator.trackMarker((track.laneHalf - 0.1).toDouble())!;
-        final straightMarkerB = calculator.trackMarker((track.laneHalf + 0.1).toDouble())!;
-        final sdx = (straightMarkerA.dx - straightMarkerB.dx).abs();
-        final sdy = straightMarkerA.dy - straightMarkerB.dy;
-        expect(sdy, closeTo(0.0, DISPLAY_EPS));
+      test("${track.radiusBoost} $lengthFactor", () async {
+        final straightMarkerA = calculator.gpsCoordinates((track.laneHalf - 0.1).toDouble());
+        final straightMarkerB = calculator.gpsCoordinates((track.laneHalf + 0.1).toDouble());
+        final sdx = straightMarkerA.dx - straightMarkerB.dx;
+        final sdy = (straightMarkerA.dy - straightMarkerB.dy).abs();
+        expect(sdx, closeTo(0.0, EPS));
 
         final chicaneMarkerA =
-        calculator.trackMarker((track.laneLength + track.halfCircle / 2 - 0.1).toDouble())!;
+            calculator.gpsCoordinates((track.laneLength + track.halfCircle / 2 - 0.1).toDouble());
         final chicaneMarkerB =
-        calculator.trackMarker((track.laneLength + track.halfCircle / 2 + 0.1).toDouble())!;
-        final cdx = chicaneMarkerA.dx - chicaneMarkerB.dx;
-        final cdy = (chicaneMarkerA.dy - chicaneMarkerB.dy).abs();
+            calculator.gpsCoordinates((track.laneLength + track.halfCircle / 2 + 0.1).toDouble());
+        final cdx = (chicaneMarkerA.dx - chicaneMarkerB.dx).abs();
+        final cdy = chicaneMarkerA.dy - chicaneMarkerB.dy;
 
-        expect(cdx, closeTo(0.0, DISPLAY_EPS));
-        expect(sdx, closeTo(cdy, DISPLAY_EPS));
+        expect(cdy, closeTo(0.0, EPS));
+        expect(sdy, closeTo(cdx, DISPLAY_EPS));
       });
     });
   });
-*/
+
   group('gpsCoordinates general continuity', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 2, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -301,20 +303,16 @@ void main() {
       final d =
           track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
       test("${track.radiusBoost} $lengthFactor $d", () async {
-        var maxD = 0.0;
         1.to((TRACK_LENGTH * 2).round()).forEach((distance) {
           final calculator = TrackCalculator(track: track);
 
           final markerA = calculator.gpsCoordinates(distance.toDouble());
-          distance++;
-          final markerB = calculator.gpsCoordinates(distance.toDouble());
+          final markerB = calculator.gpsCoordinates((distance + 1).toDouble());
           final dx = markerA.dx - markerB.dx;
           final dy = markerA.dy - markerB.dy;
 
           expect(dx * dx + dy * dy, closeTo(d, EPS));
-          maxD = max(maxD, dx * dx + dy * dy);
         });
-        expect(maxD, lessThanOrEqualTo(d));
       });
     });
   });

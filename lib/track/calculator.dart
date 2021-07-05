@@ -119,7 +119,7 @@ class TrackCalculator {
       final rad = (d - track.laneLength) / track.halfCircle * pi;
       c = Offset(
         -cos(rad) * track.radius,
-        -track.laneHalf - sin(rad) * track.radius
+        -track.laneHalf - sin(rad) * track.radius,
       );
     } else if (d <= trackLength / 2 + track.laneLength) {
       // right straight

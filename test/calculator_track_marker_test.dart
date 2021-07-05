@@ -15,7 +15,7 @@ void main() {
   group('trackMarker start point is invariant', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
@@ -40,7 +40,7 @@ void main() {
   group('trackMarker whole laps are at the start point', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
@@ -67,7 +67,7 @@ void main() {
   group('trackMarkers on the first (bottom) straight are placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
@@ -99,7 +99,7 @@ void main() {
   group('trackMarkers on the first (right) chicane are placed as expected', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
@@ -132,7 +132,7 @@ void main() {
   group('trackMarkers on the second (top) straight are placed proportionally', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
@@ -165,7 +165,7 @@ void main() {
   group('trackMarkers on the second (left) chicane are placed as expected', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
@@ -198,7 +198,7 @@ void main() {
   group('trackMarker always in bounds', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
@@ -226,7 +226,7 @@ void main() {
   group('trackMarker top continuity', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
@@ -257,7 +257,7 @@ void main() {
   group('trackMarker bottom continuity', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
@@ -288,7 +288,7 @@ void main() {
   group('trackMarker continuity straight vs chicane', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
@@ -323,7 +323,7 @@ void main() {
   group('trackMarker general continuity', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
-      lengthFactor += 0.3;
+      lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
         lengthFactor: lengthFactor,
