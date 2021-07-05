@@ -112,10 +112,8 @@ void main() {
           () async {
         final marker = calculator.gpsCoordinates(distance);
 
-        expect(
-            marker.dx,
-            closeTo(
-                track.center.dx - cos(rad) * track.radius * track.horizontalMeter, EPS));
+        expect(marker.dx,
+            closeTo(track.center.dx - cos(rad) * track.radius * track.horizontalMeter, EPS));
         expect(
             marker.dy,
             closeTo(
