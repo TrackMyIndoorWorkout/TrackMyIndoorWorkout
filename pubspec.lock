@@ -619,9 +619,11 @@ packages:
   pref:
     dependency: "direct main"
     description:
-      name: pref
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: pref
+      ref: HEAD
+      resolved-ref: "6fbf070e2e09577009c7d715f5fe7a2bb328a259"
+      url: "https://github.com/CsabaConsulting/flutter_pref.git"
+    source: git
     version: "2.3.0"
   process:
     dependency: transitive

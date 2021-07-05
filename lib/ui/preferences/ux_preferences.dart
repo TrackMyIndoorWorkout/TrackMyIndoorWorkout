@@ -42,6 +42,7 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value s"),
         min: SCAN_DURATION_MIN,
         max: SCAN_DURATION_MAX,
+        direction: Axis.vertical,
       ),
       PrefCheckbox(
         title: Text(INSTANT_SCAN),
