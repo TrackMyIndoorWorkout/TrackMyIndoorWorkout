@@ -96,7 +96,7 @@ void main() {
     });
   });
 
-  group('trackMarkers on the first (right) chicane are placed proportionally', () {
+  group('trackMarkers on the first (right) chicane are placed as expected', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
       lengthFactor += 0.3;
@@ -162,7 +162,7 @@ void main() {
     });
   });
 
-  group('trackMarkers on the second (left) chicane are placed proportionally', () {
+  group('trackMarkers on the second (left) chicane are placed as expected', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
       lengthFactor += 0.3;
@@ -320,7 +320,7 @@ void main() {
     });
   });
 
-  group('trackMarker long continuity', () {
+  group('trackMarker general continuity', () {
     final rnd = Random();
     getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
       lengthFactor += 0.3;

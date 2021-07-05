@@ -19,8 +19,6 @@ class TrackDescriptor {
   double get laneShrink => 2.0 - radiusBoost; // almost a reverse ratio
   double get laneLength => TRACK_QUARTER * lengthFactor * laneShrink; // the straight section
   double get radius => halfCircle / pi;
-  double get gpsRadius => radius * horizontalMeter; // lon
-  double get gpsLaneHalf => laneLength / 2.0 * horizontalMeter;
   double get laneHalf => laneLength / 2.0;
 
   TrackDescriptor({

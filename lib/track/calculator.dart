@@ -107,26 +107,39 @@ class TrackCalculator {
     final trackLength = TRACK_LENGTH * track.lengthFactor;
     final d = distance % trackLength;
 
+    var c = Offset(0, 0); // Relative to GPS track center, not GPS scaled
     if (d <= track.laneLength) {
       // left straight
-      final displacement = -d * track.verticalMeter;
-      return Offset(
-          track.center.dx - track.gpsRadius, track.center.dy + track.gpsLaneHalf + displacement);
+      c = Offset(
+        -track.radius,
+        track.laneHalf - d,
+      );
     } else if (d <= trackLength / 2) {
       // top half circle
       final rad = (d - track.laneLength) / track.halfCircle * pi;
-      return Offset(track.center.dx - cos(rad) * track.radius * track.horizontalMeter,
-          track.center.dy - track.gpsLaneHalf - sin(rad) * track.radius * track.verticalMeter);
+      c = Offset(
+        -cos(rad) * track.radius,
+        -track.laneHalf - sin(rad) * track.radius
+      );
     } else if (d <= trackLength / 2 + track.laneLength) {
       // right straight
-      final displacement = (d - trackLength / 2) * track.verticalMeter;
-      return Offset(
-          track.center.dx + track.gpsRadius, track.center.dy - track.gpsLaneHalf + displacement);
+      final displacement = (d - trackLength / 2);
+      c = Offset(
+        track.radius,
+        -track.laneHalf + displacement,
+      );
     } else {
       // bottom half circle
       final rad = (d - trackLength / 2 - track.laneLength) / track.halfCircle * pi;
-      return Offset(track.center.dx + cos(rad) * track.radius * track.horizontalMeter,
-          track.center.dy + track.gpsLaneHalf + sin(rad) * track.radius * track.verticalMeter);
+      c = Offset(
+        cos(rad) * track.radius,
+        track.laneHalf + sin(rad) * track.radius,
+      );
     }
+
+    return Offset(
+      track.center.dx + c.dx * track.horizontalMeter,
+      track.center.dy + c.dy * track.verticalMeter,
+    );
   }
 }
