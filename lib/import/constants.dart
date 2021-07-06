@@ -1,0 +1,13 @@
+const String RIDE_SUMMARY = "RIDE SUMMARY";
+const String TOTAL_TIME = "Total Time";
+const String TOTAL_DISTANCE = "Total Distance";
+const String MINUTES_UNIT = "Minutes";
+const String HOURS_UNIT = "Hours";
+const String MILE_UNIT = "MI";
+const String KM_UNIT = "KM";
+const String M_UNIT = "M";
+const String RIDE_DATA = "RIDE DATA";
+const String POWER_HEADER = "Power";
+const String RPM_HEADER = "RPM";
+const String HR_HEADER = "HR";
+const String DISTANCE_HEADER = "DISTANCE";

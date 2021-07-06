@@ -6,10 +6,11 @@ import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
 import '../ui/import_form.dart';
 import '../utils/constants.dart';
-import 'models/activity.dart';
-import 'models/record.dart';
-import 'database.dart';
-import 'preferences.dart';
+import '../persistence/models/activity.dart';
+import '../persistence/models/record.dart';
+import '../persistence/database.dart';
+import '../persistence/preferences.dart';
+import 'constants.dart';
 
 class WorkoutRow {
   int power;
@@ -133,61 +134,64 @@ class MPowerEchelon2Importer {
     }
 
     _linePointer = 0;
-    if (!_findLine("RIDE SUMMARY")) {
-      message = "Cannot locate ride summary";
+    if (!_findLine(RIDE_SUMMARY)) {
+      message = "Cannot locate $RIDE_SUMMARY";
       return null;
     }
 
     // Total Time
-    if (!_findLine("Total Time")) {
-      message = "Couldn't find total time";
+    if (!_findLine(TOTAL_TIME)) {
+      message = "Couldn't find $TOTAL_TIME";
       return null;
     }
 
     final timeLine = _lines[_linePointer].split(",");
     final timeValue = double.tryParse(timeLine[1]);
     if (timeValue == null) {
-      message = "Couldn't parse total time";
+      message = "Couldn't parse $TOTAL_TIME";
       return null;
     }
 
     int totalElapsed = 0;
-    if (timeLine[2] == " Minutes") {
+    if (timeLine[2].trim() == MINUTES_UNIT) {
       totalElapsed = (timeValue * 60).round();
-    } else if (timeLine[2] == " Hours") {
+    } else if (timeLine[2].trim() == HOURS_UNIT) {
       totalElapsed = (timeValue * 3600).round();
     }
 
     // Total Distance
-    if (!_findLine("Total Distance")) {
-      message = "Couldn't find total distance";
+    if (!_findLine(TOTAL_DISTANCE)) {
+      message = "Couldn't find $TOTAL_DISTANCE";
       return null;
     }
 
     final distanceLine = _lines[_linePointer].split(",");
     final distanceValue = double.tryParse(distanceLine[1]);
     if (distanceValue == null) {
-      message = "Couldn't parse total distance";
+      message = "Couldn't parse $TOTAL_DISTANCE";
       return null;
     }
 
     double totalDistance = 0.0;
-    if (distanceLine[2] == " MI") {
+    if (distanceLine[2].trim() == MILE_UNIT) {
       totalDistance = distanceValue * 1000 * MI2KM;
-    } else if (distanceLine[2] == " KM") {
+    } else if (distanceLine[2].trim() == KM_UNIT) {
       totalDistance = distanceValue * 1000;
-    } else if (distanceLine[2] == " M") {
+    } else if (distanceLine[2].trim() == M_UNIT) {
       totalDistance = distanceValue;
     }
 
-    if (!_findLine("RIDE DATA")) {
-      message = "Cannot locate ride data";
+    if (!_findLine(RIDE_DATA)) {
+      message = "Cannot locate $RIDE_DATA";
       return null;
     }
 
     _linePointer++;
 
-    if (_lines[_linePointer] != "Power, RPM, HR, DISTANCE,") {
+    if (_lines[_linePointer][0].trim() != POWER_HEADER ||
+        _lines[_linePointer][1].trim() != RPM_HEADER ||
+        _lines[_linePointer][2].trim() != HR_HEADER ||
+        _lines[_linePointer][3].trim() != DISTANCE_HEADER) {
       message = "Unexpected detailed ride data format";
       return null;
     }
