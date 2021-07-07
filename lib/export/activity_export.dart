@@ -5,9 +5,10 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
+import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
-import '../devices/device_map.dart';
 import '../persistence/preferences.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';
@@ -62,9 +63,15 @@ abstract class ActivityExport {
     if (record.distance == null) {
       record.distance = 0.0;
     }
+
     Offset gps = record.distance != null && !rawData
         ? calculator.gpsCoordinates(record.distance!)
         : Offset(0, 0);
+
+    if (!rawData && record.speed != null) {
+      record.speed = record.speed! * DeviceDescriptor.KMH2MS;
+    }
+
     return ExportRecord(record: record)
       ..longitude = gps.dx
       ..latitude = gps.dy
