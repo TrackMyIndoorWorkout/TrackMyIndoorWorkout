@@ -54,7 +54,7 @@ class TCXExport extends ActivityExport {
     final dateActivity = DateTime.fromMillisecondsSinceEpoch(exportModel.activity.start);
     _sb.writeln('        <Lap StartTime="${timeStampString(dateActivity)}">');
 
-    addElement('TotalTimeSeconds', exportModel.activity.elapsed.toString());
+    addElement('TotalTimeSeconds', exportModel.activity.elapsed.toStringAsFixed(1));
     // Add Total distance in meters
     addElement('DistanceMeters', exportModel.activity.distance.toStringAsFixed(2));
 
