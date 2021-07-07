@@ -17,9 +17,9 @@ class StatisticsAccumulator {
   bool calculateAvgHeartRate;
   bool calculateMaxHeartRate;
 
-  late double powerSum;
+  late int powerSum;
   late int powerCount;
-  late double maxPower;
+  late int maxPower;
   late double speedSum;
   late int speedCount;
   late double maxSpeed;
@@ -47,9 +47,9 @@ class StatisticsAccumulator {
     this.calculateAvgHeartRate = false,
     this.calculateMaxHeartRate = false,
   }) {
-    powerSum = 0.0;
+    powerSum = 0;
     powerCount = 0;
-    maxPower = MAX_INIT.toDouble();
+    maxPower = MAX_INIT;
     speedSum = 0.0;
     speedCount = 0;
     maxSpeed = MAX_INIT.toDouble();
@@ -62,46 +62,46 @@ class StatisticsAccumulator {
   }
 
   processExportRecord(ExportRecord exportRecord) {
-    if (exportRecord.power != null && exportRecord.power! > 0) {
+    if ((exportRecord.record.power ?? 0) > 0) {
       if (calculateAvgPower) {
-        powerSum += exportRecord.power!;
+        powerSum += exportRecord.record.power!;
         powerCount++;
       }
 
       if (calculateMaxPower) {
-        maxPower = max(maxPower, exportRecord.power!);
+        maxPower = max(maxPower, exportRecord.record.power!);
       }
     }
 
-    if (exportRecord.speed > 0) {
+    if ((exportRecord.record.speed ?? 0.0) > EPS) {
       if (calculateAvgSpeed) {
-        speedSum += exportRecord.speed;
+        speedSum += exportRecord.record.speed!;
         speedCount++;
       }
 
       if (calculateMaxSpeed) {
-        maxSpeed = max(maxSpeed, exportRecord.speed);
+        maxSpeed = max(maxSpeed, exportRecord.record.speed!);
       }
     }
 
-    if (exportRecord.heartRate != null && exportRecord.heartRate! > 0) {
+    if (exportRecord.record.heartRate != null && exportRecord.record.heartRate! > 0) {
       if (calculateAvgHeartRate) {
-        heartRateSum += exportRecord.heartRate!;
+        heartRateSum += exportRecord.record.heartRate!;
         heartRateCount++;
       }
 
       if (calculateMaxHeartRate) {
-        maxHeartRate = max(maxHeartRate, exportRecord.heartRate!);
+        maxHeartRate = max(maxHeartRate, exportRecord.record.heartRate!);
       }
     }
 
-    if (exportRecord.cadence != null && exportRecord.cadence! > 0) {
+    if ((exportRecord.record.cadence ?? 0) > 0) {
       if (calculateAvgCadence) {
-        cadenceSum += exportRecord.cadence!;
+        cadenceSum += exportRecord.record.cadence!;
         cadenceCount++;
       }
       if (calculateMaxCadence) {
-        maxCadence = max(maxCadence, exportRecord.cadence!);
+        maxCadence = max(maxCadence, exportRecord.record.cadence!);
       }
     }
   }
@@ -114,7 +114,7 @@ class StatisticsAccumulator {
       }
 
       if (calculateMaxPower) {
-        maxPower = max(maxPower, record.power!.toDouble());
+        maxPower = max(maxPower, record.power!);
       }
     }
 

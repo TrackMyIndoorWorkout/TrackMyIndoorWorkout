@@ -20,10 +20,7 @@ void main() {
       final globalMessageNumber = rnd.nextInt(MAX_UINT16);
       final text = deviceDescriptor.fullName;
       final deviceInfo = FitDeviceInfo(globalMessageNumber, text.length);
-      final exportModel = ExportModelForTests(
-        dateActivity: DateTime.now(),
-        descriptor: deviceDescriptor,
-      );
+      final exportModel = ExportModelForTests(descriptor: deviceDescriptor);
       final expected = deviceInfo.fields.fold<int>(0, (accu, field) => accu + field.size);
 
       test('$text(${text.length}) -> $expected', () async {

@@ -13,10 +13,10 @@ class AboutScreen extends StatefulWidget {
 }
 
 class AboutScreenState extends State<AboutScreen> {
-  String _appName = "...";
-  String _packageName = "...";
-  String _version = "...";
-  String _buildNumber = "...";
+  late String _appName;
+  late String _packageName;
+  late String _version;
+  late String _buildNumber;
   TextStyle _fieldStyle = TextStyle();
   TextStyle _valueStyle = TextStyle();
 
@@ -28,6 +28,12 @@ class AboutScreenState extends State<AboutScreen> {
       fontFamily: FONT_FAMILY,
       // color: Colors.white,
     );
+    final packageInfo = Get.find<PackageInfo>();
+    _appName = packageInfo.appName;
+    _packageName = packageInfo.packageName;
+    _version = packageInfo.version;
+    _buildNumber = packageInfo.buildNumber;
+
     if (!Get.isRegistered<SoundService>()) {
       Get.put<SoundService>(SoundService());
     }

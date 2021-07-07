@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
-import '../devices/device_descriptors/device_descriptor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../devices/device_map.dart';
@@ -22,6 +22,8 @@ abstract class ActivityExport {
   late String compressedFileExtension;
   final String nonCompressedMimeType;
   final String compressedMimeType = 'application/x-gzip';
+  late String version;
+  late String buildNumber;
 
   int _lastPositiveCadence = 0; // #101
   bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
@@ -41,6 +43,10 @@ abstract class ActivityExport {
         prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
     heartRateLimitingMethod =
         prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+
+    final packageInfo = Get.find<PackageInfo>();
+    version = packageInfo.version;
+    buildNumber = packageInfo.buildNumber;
   }
 
   String fileExtension(bool compressed) {
@@ -51,93 +57,82 @@ abstract class ActivityExport {
     return compressed ? compressedMimeType : nonCompressedMimeType;
   }
 
-  ExportRecord recordToExport(Record record, TrackCalculator calculator) {
+  ExportRecord recordToExport(Record record, TrackCalculator calculator, bool rawData) {
     final timeStamp = DateTime.fromMillisecondsSinceEpoch(record.timeStamp ?? 0);
     if (record.distance == null) {
       record.distance = 0.0;
     }
-    Offset gps =
-        record.distance != null ? calculator.gpsCoordinates(record.distance!) : Offset(0, 0);
-    return ExportRecord()
+    Offset gps = record.distance != null && !rawData
+        ? calculator.gpsCoordinates(record.distance!)
+        : Offset(0, 0);
+    return ExportRecord(record: record)
       ..longitude = gps.dx
       ..latitude = gps.dy
-      ..timeStampString = timeStampString(timeStamp)
-      ..timeStampInteger = timeStampInteger(timeStamp)
       ..altitude = calculator.track.altitude
-      ..speed = (record.speed ?? 0.0) * DeviceDescriptor.KMH2MS
-      ..distance = record.distance ?? 0.0
-      ..date = timeStamp
-      ..cadence = record.cadence ?? 0
-      ..power = record.power?.toDouble() ?? 0.0
-      ..heartRate = record.heartRate ?? 0;
+      ..timeStampString = timeStampString(timeStamp)
+      ..timeStampInteger = timeStampInteger(timeStamp);
   }
 
-  Future<List<int>> getExport(Activity activity, List<Record> records, bool compress) async {
-    final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
+  Future<List<int>> getExport(
+      Activity activity, List<Record> records, bool rawData, bool compress) async {
     final descriptor = deviceMap[activity.fourCC] ?? genericDescriptorForSport(activity.sport);
     final track = getDefaultTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     final exportRecords = records.map((r) {
-      final record = recordToExport(r, calculator);
+      final record = recordToExport(r, calculator, rawData);
 
-      if (record.speed > EPS) {
-        // #101, #122
-        if ((record.cadence == null || record.cadence == 0) &&
-            _lastPositiveCadence > 0 &&
-            _cadenceGapWorkaround) {
-          record.cadence = _lastPositiveCadence;
-        } else if (record.cadence != null && record.cadence! > 0) {
-          _lastPositiveCadence = record.cadence!;
+      if (!rawData) {
+        if ((record.record.speed ?? 0.0) > EPS) {
+          // #101, #122
+          if ((record.record.cadence == null || record.record.cadence == 0) &&
+              _lastPositiveCadence > 0 &&
+              _cadenceGapWorkaround) {
+            record.record.cadence = _lastPositiveCadence;
+          } else if (record.record.cadence != null && record.record.cadence! > 0) {
+            _lastPositiveCadence = record.record.cadence!;
+          }
         }
-      }
 
-      if (record.heartRate == null && heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
-        record.heartRate = 0;
-      }
-      // #93, #113
-      if ((record.heartRate == 0 || record.heartRate == null) &&
-          _lastPositiveHeartRate > 0 &&
-          heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
-        record.heartRate = _lastPositiveHeartRate;
-      } else if (record.heartRate != null && record.heartRate! > 0) {
-        _lastPositiveHeartRate = record.heartRate!;
-      }
-      // #114
-      if (heartRateUpperLimit > 0 &&
-          record.heartRate != null &&
-          record.heartRate! > heartRateUpperLimit &&
-          heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
-        if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
-          record.heartRate = heartRateUpperLimit;
-        } else {
-          record.heartRate = 0;
+        if (record.record.heartRate == null &&
+            heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
+          record.record.heartRate = 0;
+        }
+
+        // #93, #113
+        if ((record.record.heartRate == 0 || record.record.heartRate == null) &&
+            _lastPositiveHeartRate > 0 &&
+            heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
+          record.record.heartRate = _lastPositiveHeartRate;
+        } else if ((record.record.heartRate ?? 0) > 0) {
+          _lastPositiveHeartRate = record.record.heartRate!;
+        }
+
+        // #114
+        if (heartRateUpperLimit > 0 &&
+            record.record.heartRate != null &&
+            record.record.heartRate! > heartRateUpperLimit &&
+            heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
+          if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+            record.record.heartRate = heartRateUpperLimit;
+          } else {
+            record.record.heartRate = 0;
+          }
         }
       }
 
       return record;
     }).toList(growable: false);
+    final versionParts = version.split(".");
     ExportModel exportModel = ExportModel(
-      sport: activity.sport,
-      totalDistance: activity.distance,
-      totalTime: activity.elapsed.toDouble(),
-      calories: activity.calories,
-      dateActivity: startStamp,
-
-      // Related to device that generated the data
+      activity: activity,
+      rawData: rawData,
       descriptor: descriptor,
-      deviceId: activity.deviceId,
-      versionMajor: major,
-      versionMinor: minor,
-      buildMajor: major,
-      buildMinor: minor,
-
-      // Related to software used to generate the TCX file
       author: 'Csaba Consulting',
       name: 'Track My Indoor Exercise',
-      swVersionMajor: major,
-      swVersionMinor: minor,
-      buildVersionMajor: major,
-      buildVersionMinor: minor,
+      swVersionMajor: versionParts[0],
+      swVersionMinor: versionParts[1],
+      buildVersionMajor: versionParts[2],
+      buildVersionMinor: buildNumber,
       langID: 'en-US',
       partNumber: '0',
       records: exportRecords,

@@ -130,8 +130,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           }
 
           final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
-          ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport();
-          final fileStream = await exporter.getExport(activity, records, false);
+          ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport(); // TODO
+          final fileStream = await exporter.getExport(activity, records, false /* TODO */, false);
           final persistenceValues = exporter.getPersistenceValues(activity, false);
           ShareFilesAndScreenshotWidgets().shareFile(
             persistenceValues['name'],

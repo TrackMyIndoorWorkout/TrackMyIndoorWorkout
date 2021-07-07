@@ -2,6 +2,7 @@ import 'package:bluetooth_enable/bluetooth_enable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'devices/company_registry.dart';
 import 'track_my_indoor_exercise_app.dart';
@@ -22,6 +23,10 @@ void main() async {
 
   var blueAvailable = await FlutterBlue.instance.isAvailable;
   var blueOn = await FlutterBlue.instance.isOn;
+
+  PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+    Get.put<PackageInfo>(packageInfo);
+  });
 
   await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
 

@@ -56,9 +56,11 @@ class FitLap extends FitDefinitionMessage {
     data.addGpsCoordinate(first.longitude);
     data.addGpsCoordinate(last.latitude);
     data.addGpsCoordinate(last.longitude);
-    data.addLong((model.totalTime * 1000).ceil());
-    data.addLong((model.totalDistance * 100).ceil());
-    data.addShort(model.calories > 0 ? model.calories : FitBaseTypes.uint16Type.invalidValue);
+    data.addLong(model.activity.elapsed * 1000);
+    data.addLong((model.activity.distance * 100).ceil());
+    data.addShort(model.activity.calories > 0
+        ? model.activity.calories
+        : FitBaseTypes.uint16Type.invalidValue);
     data.addShort(model.averageSpeed > EPS
         ? (model.averageSpeed * 1000).round()
         : FitBaseTypes.uint16Type.invalidValue);
@@ -80,7 +82,7 @@ class FitLap extends FitDefinitionMessage {
         ? model.maximumPower.round()
         : FitBaseTypes.uint16Type.invalidValue);
     data.addByte(FitLapTrigger.SessionEnd);
-    final fitSport = toFitSport(model.sport);
+    final fitSport = toFitSport(model.activity.sport);
     data.addByte(fitSport.item1);
     data.addByte(fitSport.item2);
 

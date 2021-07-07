@@ -53,7 +53,7 @@ class WorkoutRow {
   }
 }
 
-class MPowerEchelon2Importer {
+class CSVImporter {
   static const PROGRESS_STEPS = 400;
   static const ENERGY_2_SPEED = 5.28768241564455E-05;
   static const TIME_RESOLUTION_FACTOR = 2;
@@ -69,14 +69,19 @@ class MPowerEchelon2Importer {
   static const FRONTAL_AREA = 4 * FT_TO_M * FT_TO_M; // ft * ft_2_m^2
   static const AIR_DENSITY = 0.076537 * LB_TO_KG / (FT_TO_M * FT_TO_M * FT_TO_M);
 
-  final DateTime start;
+  late DateTime? start;
+  bool mPower;
   String message = "";
 
   List<String> _lines = [];
   int _linePointer = 0;
   Map<int, double> _velocityForPowerDict = Map<int, double>();
 
-  MPowerEchelon2Importer({required this.start});
+  CSVImporter({this.mPower = true, this.start}) {
+    if (start == null) {
+      start = DateTime.now();
+    }
+  }
 
   bool _findLine(String lead) {
     while (_linePointer < _lines.length && !_lines[_linePointer].startsWith(lead)) {
@@ -177,7 +182,7 @@ class MPowerEchelon2Importer {
       totalDistance = distanceValue * 1000 * MI2KM;
     } else if (distanceLine[2].trim() == KM_UNIT) {
       totalDistance = distanceValue * 1000;
-    } else if (distanceLine[2].trim() == M_UNIT) {
+    } else if (distanceLine[2].trim() == METER_UNIT) {
       totalDistance = distanceValue;
     }
 
@@ -201,8 +206,8 @@ class MPowerEchelon2Importer {
     var activity = Activity(
       deviceName: device.namePrefixes[0],
       deviceId: MPOWER_IMPORT_DEVICE_ID,
-      start: start.millisecondsSinceEpoch,
-      end: start.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch,
+      start: start!.millisecondsSinceEpoch,
+      end: start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch,
       distance: totalDistance,
       elapsed: totalElapsed,
       calories: 0,
@@ -235,7 +240,7 @@ class MPowerEchelon2Importer {
     double elapsed = 0;
     WorkoutRow? nextRow;
     int lastHeartRate = 0;
-    int timeStamp = start.millisecondsSinceEpoch;
+    int timeStamp = start!.millisecondsSinceEpoch;
     String heartRateGapWorkaroundSetting =
         prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
     bool heartRateGapWorkaround =

@@ -12,7 +12,8 @@ void main() {
 
   test('FitActivity data has the expected length', () async {
     final activity = FitActivity(0);
-    final exportModel = ExportModelForTests(dateActivity: DateTime.now());
+    final exportModel = ExportModelForTests();
+    exportModel.activity.hydrate();
     final output = activity.serializeData(exportModel);
     final expected = activity.fields.fold<int>(0, (accu, field) => accu + field.size);
 

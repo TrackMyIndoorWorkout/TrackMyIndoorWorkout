@@ -6,7 +6,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import '../import/mpower_importer.dart';
+import '../import/csv_importer.dart';
 
 typedef void SetProgress(double progress);
 
@@ -150,7 +150,7 @@ class _ImportFormState extends State<ImportForm> {
                           try {
                             File file = File(_filePath!);
                             String contents = await file.readAsString();
-                            final importer = MPowerEchelon2Importer(start: _activityDateTime!);
+                            final importer = CSVImporter(start: _activityDateTime);
                             var activity = await importer.import(contents, setProgress);
                             setState(() {
                               _isLoading = false;

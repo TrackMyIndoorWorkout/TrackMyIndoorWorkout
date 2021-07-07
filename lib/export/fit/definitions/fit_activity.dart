@@ -25,7 +25,7 @@ class FitActivity extends FitDefinitionMessage {
 
     var dummy = FitData();
     dummy.output = [localMessageType];
-    dummy.addLong(FitSerializable.fitDateTime(model.dateActivity));
+    dummy.addLong(FitSerializable.fitDateTime(model.activity.startDateTime!));
     dummy.addShort(1);
     dummy.addByte(FitActivityEnum.Manual);
     dummy.addByte(FitEvent.Activity);
