@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/theme_manager.dart';
 
-class DataFormatPickerBottomSheet extends StatefulWidget {
+class ExportFormatPickerBottomSheet extends StatefulWidget {
   @override
-  DataFormatPickerBottomSheetState createState() => DataFormatPickerBottomSheetState();
+  ExportFormatPickerBottomSheetState createState() => ExportFormatPickerBottomSheetState();
 }
 
-class DataFormatPickerBottomSheetState extends State<DataFormatPickerBottomSheet> {
+class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomSheet> {
   int _formatIndex = 0;
   List<String> _formatChoices = ["FIT", "TCX", "CSV"];
   ThemeManager _themeManager = Get.find<ThemeManager>();

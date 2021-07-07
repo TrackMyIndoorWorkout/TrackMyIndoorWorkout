@@ -30,7 +30,7 @@ import 'import_form.dart';
 import 'leaderboards/leaderboard_type_picker.dart';
 import 'parts/calorie_override.dart';
 import 'parts/circular_menu.dart';
-import 'parts/data_format_picker.dart';
+import 'parts/export_format_picker.dart';
 import 'parts/flutter_brand_icons.dart';
 import 'parts/power_factor_tune.dart';
 import 'parts/sport_picker.dart';
@@ -122,7 +122,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           }
 
           final formatPick = await Get.bottomSheet(
-            DataFormatPickerBottomSheet(),
+            ExportFormatPickerBottomSheet(),
             enableDrag: false,
           );
 
