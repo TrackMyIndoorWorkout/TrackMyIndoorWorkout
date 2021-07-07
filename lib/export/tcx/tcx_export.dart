@@ -112,7 +112,11 @@ class TCXExport extends ActivityExport {
     }
 
     addExtensions(
-        'Speed', (record.record.speed ?? 0.0).toStringAsFixed(2), 'Watts', record.record.power);
+      'Speed',
+      (record.record.speed ?? 0.0).toStringAsFixed(2),
+      'Watts',
+      (record.record.power ?? 0).toStringAsFixed(1),
+    );
 
     if ((record.record.heartRate ?? 0) > 0 ||
         heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND ||
@@ -158,17 +162,18 @@ class TCXExport extends ActivityExport {
   ///  <Extensions>
   ///              <ns3:TPX>
   ///                <ns3:Speed>1.996999979019165</ns3:Speed>
+  ///                <ns3:Watts>87.0</ns3:Watts>
   ///              </ns3:TPX>
   ///            </Extensions>
   ///
   /// Does not handle multiple values like
   /// Speed AND Watts in the same extension
   ///
-  void addExtensions(String tag1, String value1, String tag2, int? value2) {
+  void addExtensions(String tag1, String value1, String tag2, String value2) {
     _sb.writeln("""    <Extensions>
       <ns3:TPX>
         <ns3:$tag1>$value1</ns3:$tag1>
-        <ns3:$tag2>${value2 ?? 0}</ns3:$tag2>
+        <ns3:$tag2>$value2</ns3:$tag2>
       </ns3:TPX>
     </Extensions>""");
   }
