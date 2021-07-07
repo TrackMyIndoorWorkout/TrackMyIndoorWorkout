@@ -75,6 +75,7 @@ abstract class ActivityExport {
 
   Future<List<int>> getExport(
       Activity activity, List<Record> records, bool rawData, bool compress) async {
+    activity.hydrate();
     final descriptor = deviceMap[activity.fourCC] ?? genericDescriptorForSport(activity.sport);
     final track = getDefaultTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
