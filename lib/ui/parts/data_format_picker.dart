@@ -11,7 +11,7 @@ class DataFormatPickerBottomSheet extends StatefulWidget {
 
 class DataFormatPickerBottomSheetState extends State<DataFormatPickerBottomSheet> {
   int _formatIndex = 0;
-  List<String> _formatChoices = ["FIT", "TCX"];
+  List<String> _formatChoices = ["FIT", "TCX", "CSV"];
   ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _largerTextStyle = TextStyle();
   TextStyle _selectedTextStyle = TextStyle();

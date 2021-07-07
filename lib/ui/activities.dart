@@ -13,6 +13,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../export/activity_export.dart';
+import '../export/csv/csv_export.dart';
 import '../export/fit/fit_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
@@ -130,8 +131,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           }
 
           final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
-          ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport(); // TODO
-          final fileStream = await exporter.getExport(activity, records, false /* TODO */, false);
+          ActivityExport exporter = formatPick == "CSV"
+              ? CSVExport()
+              : formatPick == "TCX"
+                  ? TCXExport()
+                  : FitExport();
+          final fileStream =
+              await exporter.getExport(activity, records, formatPick == "CSV", false);
           final persistenceValues = exporter.getPersistenceValues(activity, false);
           ShareFilesAndScreenshotWidgets().shareFile(
             persistenceValues['name'],
