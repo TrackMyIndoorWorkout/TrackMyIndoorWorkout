@@ -69,19 +69,15 @@ class CSVImporter {
   static const FRONTAL_AREA = 4 * FT_TO_M * FT_TO_M; // ft * ft_2_m^2
   static const AIR_DENSITY = 0.076537 * LB_TO_KG / (FT_TO_M * FT_TO_M * FT_TO_M);
 
-  late DateTime? start;
-  bool mPower;
+  DateTime? start;
+  final bool migration;
   String message = "";
 
   List<String> _lines = [];
   int _linePointer = 0;
   Map<int, double> _velocityForPowerDict = Map<int, double>();
 
-  CSVImporter({this.mPower = true, this.start}) {
-    if (start == null) {
-      start = DateTime.now();
-    }
-  }
+  CSVImporter(this.migration, this.start);
 
   bool _findLine(String lead) {
     while (_linePointer < _lines.length && !_lines[_linePointer].startsWith(lead)) {
@@ -186,6 +182,148 @@ class CSVImporter {
       totalDistance = distanceValue;
     }
 
+    var deviceName = "";
+    var deviceId = MPOWER_IMPORT_DEVICE_ID;
+    var startTime = 0;
+    var endTime = 0;
+    var calories = 0;
+    var uploaded = false;
+    var stravaId = 0;
+    var fourCC = "SAP+";
+    var sport = ActivityType.Ride;
+    var calorieFactor = 1.0;
+    var powerFactor = 1.0;
+    if (migration) {
+      _linePointer++;
+      final deviceNameLine = _lines[_linePointer].split(",");
+      if (deviceNameLine[0].trim() != DEVICE_NAME) {
+        message = "Couldn't parse $DEVICE_NAME";
+        return null;
+      }
+
+      deviceName = deviceNameLine[1].trim();
+
+      _linePointer++;
+
+      final deviceIdLine = _lines[_linePointer].split(",");
+      if (deviceIdLine[0].trim() != DEVICE_ID) {
+        message = "Couldn't parse $DEVICE_ID";
+        return null;
+      }
+
+      deviceId = deviceIdLine[1].trim();
+
+      _linePointer++;
+
+      final startTimeLine = _lines[_linePointer].split(",");
+      if (startTimeLine[0].trim() != START_TIME) {
+        message = "Couldn't parse $START_TIME";
+        return null;
+      }
+
+      startTime = int.tryParse(startTimeLine[1]) ?? 0;
+      if (startTime == 0) {
+        message = "Couldn't parse $START_TIME";
+        return null;
+      }
+
+      start = DateTime.fromMillisecondsSinceEpoch(startTime);
+
+      _linePointer++;
+
+      final endTimeLine = _lines[_linePointer].split(",");
+      if (endTimeLine[0].trim() != END_TIME) {
+        message = "Couldn't parse $END_TIME";
+        return null;
+      }
+
+      endTime = int.tryParse(endTimeLine[1]) ?? 0;
+      if (endTime == 0) {
+        message = "Couldn't parse $END_TIME";
+        return null;
+      }
+
+      _linePointer++;
+
+      final calorieLine = _lines[_linePointer].split(",");
+      if (calorieLine[0].trim() != CALORIES) {
+        message = "Couldn't parse $CALORIES";
+        return null;
+      }
+
+      calories = int.tryParse(calorieLine[1]) ?? 0;
+
+      _linePointer++;
+
+      final uploadedLine = _lines[_linePointer].split(",");
+      if (uploadedLine[0].trim() != UPLOADED_TAG) {
+        message = "Couldn't parse $UPLOADED_TAG";
+        return null;
+      }
+
+      uploaded = calorieLine[1].toLowerCase() == "true";
+
+      _linePointer++;
+
+      final stravaIdLine = _lines[_linePointer].split(",");
+      if (stravaIdLine[0].trim() != STRAVA_ID) {
+        message = "Couldn't parse $STRAVA_ID";
+        return null;
+      }
+
+      stravaId = int.tryParse(stravaIdLine[1]) ?? 0;
+
+      _linePointer++;
+
+      final fourCcLine = _lines[_linePointer].split(",");
+      if (fourCcLine[0].trim() != FOUR_CC) {
+        message = "Couldn't parse $FOUR_CC";
+        return null;
+      }
+
+      fourCC = fourCcLine[1];
+
+      _linePointer++;
+
+      final sportLine = _lines[_linePointer].split(",");
+      if (sportLine[0].trim() != SPORT_TAG) {
+        message = "Couldn't parse $SPORT_TAG";
+        return null;
+      }
+
+      sport = sportLine[1];
+
+      _linePointer++;
+
+      final powerFactorLine = _lines[_linePointer].split(",");
+      if (powerFactorLine[0].trim() != POWER_FACTOR) {
+        message = "Couldn't parse $POWER_FACTOR";
+        return null;
+      }
+
+      powerFactor = double.tryParse(powerFactorLine[1]) ?? 1.0;
+
+      _linePointer++;
+
+      final calorieFactorLine = _lines[_linePointer].split(",");
+      if (calorieFactorLine[0].trim() != CALORIE_FACTOR) {
+        message = "Couldn't parse $CALORIE_FACTOR";
+        return null;
+      }
+
+      calorieFactor = double.tryParse(calorieFactorLine[1]) ?? 1.0;
+    } else {
+      DeviceDescriptor device = deviceMap[SCHWINN_AC_PERF_PLUS_FOURCC]!;
+      device.refreshTuning(deviceId);
+      deviceName = device.namePrefixes[0];
+      fourCC = device.fourCC;
+      sport = device.defaultSport;
+      calorieFactor = device.calorieFactor;
+      powerFactor = device.powerFactor;
+      startTime = start!.millisecondsSinceEpoch;
+      endTime = start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch;
+    }
+
     if (!_findLine(RIDE_DATA)) {
       message = "Cannot locate $RIDE_DATA";
       return null;
@@ -200,23 +338,32 @@ class CSVImporter {
       message = "Unexpected detailed ride data format";
       return null;
     }
+    if (migration &&
+      (_lines[_linePointer][4].trim() != TIME_STAMP ||
+          _lines[_linePointer][5].trim() != ELAPSED ||
+          _lines[_linePointer][6].trim() != SPEED ||
+          _lines[_linePointer][7].trim() != CALORIES)) {
+      message = "Unexpected detailed ride data format";
+      return null;
+    }
 
-    DeviceDescriptor device = deviceMap[SCHWINN_AC_PERF_PLUS_FOURCC]!;
-    device.refreshTuning(MPOWER_IMPORT_DEVICE_ID);
     var activity = Activity(
-      deviceName: device.namePrefixes[0],
-      deviceId: MPOWER_IMPORT_DEVICE_ID,
-      start: start!.millisecondsSinceEpoch,
-      end: start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch,
+      deviceName: deviceName,
+      deviceId: deviceId,
+      start: startTime,
+      end: endTime,
       distance: totalDistance,
       elapsed: totalElapsed,
-      calories: 0,
+      calories: calories,
       startDateTime: start,
-      fourCC: device.fourCC,
-      sport: device.defaultSport,
-      calorieFactor: device.calorieFactor,
-      powerFactor: device.powerFactor,
+      uploaded: uploaded,
+      stravaId: stravaId,
+      fourCC: fourCC,
+      sport: sport,
+      calorieFactor: calorieFactor,
+      powerFactor: powerFactor,
     );
+
     final prefService = Get.find<BasePrefService>();
     final extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
     final database = Get.find<AppDatabase>();
@@ -225,112 +372,147 @@ class CSVImporter {
 
     final numRow = _lines.length - _linePointer;
     _linePointer++;
-    double secondsPerRow = totalElapsed / numRow;
-    int secondsPerRowInt = secondsPerRow.round();
-    int recordsPerRow = secondsPerRowInt * TIME_RESOLUTION_FACTOR;
-    double milliSecondsPerRecord = secondsPerRow * 1000 / recordsPerRow;
-    int milliSecondsPerRecordInt = milliSecondsPerRecord.round();
 
-    int recordCount = numRow * recordsPerRow;
-    int progressSteps = recordCount ~/ PROGRESS_STEPS;
-    int progressCounter = 0;
-    int recordCounter = 0;
-    double energy = 0;
-    double distance = 0;
-    double elapsed = 0;
-    WorkoutRow? nextRow;
-    int lastHeartRate = 0;
-    int timeStamp = start!.millisecondsSinceEpoch;
-    String heartRateGapWorkaroundSetting =
-        prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
-    bool heartRateGapWorkaround =
-        heartRateGapWorkaroundSetting == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
-    int heartRateUpperLimit =
-        prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
-    String heartRateLimitingMethod =
-        prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+    if (migration) {
+      int progressSteps = numRow ~/ PROGRESS_STEPS;
+      int progressCounter = 0;
+      int recordCounter = 0;
 
-    while (_linePointer < _lines.length) {
-      WorkoutRow row = nextRow ??
-          WorkoutRow(
-            rowString: _lines[_linePointer],
-            lastHeartRate: lastHeartRate,
-            heartRateGapWorkaround: heartRateGapWorkaround,
-            heartRateUpperLimit: heartRateUpperLimit,
-            heartRateLimitingMethod: heartRateLimitingMethod,
-            tuneRatio: device.powerFactor,
-            extendTuning: extendTuning,
-          );
-
-      if (_linePointer + 1 >= _lines.length) {
-        nextRow = WorkoutRow(
-          heartRateGapWorkaround: heartRateGapWorkaround,
-          heartRateUpperLimit: heartRateUpperLimit,
-          heartRateLimitingMethod: heartRateLimitingMethod,
-          tuneRatio: 1.0,
-          extendTuning: extendTuning,
-        );
-      } else {
-        nextRow = WorkoutRow(
-          rowString: _lines[_linePointer + 1],
-          lastHeartRate: lastHeartRate,
-          heartRateGapWorkaround: heartRateGapWorkaround,
-          heartRateUpperLimit: heartRateUpperLimit,
-          heartRateLimitingMethod: heartRateLimitingMethod,
-          tuneRatio: device.powerFactor,
-          extendTuning: extendTuning,
-        );
-      }
-
-      double dPower = (nextRow.power - row.power) / recordsPerRow;
-      double dCadence = (nextRow.cadence - row.cadence) / recordsPerRow;
-      double dHeartRate = (nextRow.heartRate - row.heartRate) / recordsPerRow;
-      double power = row.power.toDouble();
-      double cadence = row.cadence.toDouble();
-      double heartRate = row.heartRate.toDouble();
-      lastHeartRate = row.heartRate;
-
-      for (int i = 0; i < recordsPerRow; i++) {
-        final powerInt = power.round();
-        final speed = velocityForPower(powerInt);
-        final dDistance = speed * milliSecondsPerRecord / 1000;
-
-        final record = RecordWithSport(
+      while (_linePointer < _lines.length) {
+        final values = _lines[_linePointer].split(",");
+        final record = Record(
           activityId: activity.id,
-          timeStamp: timeStamp,
-          distance: distance,
-          elapsed: elapsed ~/ 1000,
-          calories: energy.round(),
-          power: powerInt,
-          speed: speed * DeviceDescriptor.MS2KMH,
-          cadence: cadence.round(),
-          heartRate: heartRate.round(),
-          elapsedMillis: elapsed.round(),
-          sport: activity.sport,
+          timeStamp: int.tryParse(values[4]),
+          distance: double.tryParse(values[3]),
+          elapsed: int.tryParse(values[5]),
+          calories: int.tryParse(values[7]),
+          power: int.tryParse(values[0]),
+          speed: double.tryParse(values[6]),
+          cadence: int.tryParse(values[1]),
+          heartRate: int.tryParse(values[2]),
         );
-
-        distance += dDistance;
-        final dEnergy = power * milliSecondsPerRecord / 1000 * J_TO_KCAL * device.calorieFactor;
-        energy += dEnergy;
         await database.recordDao.insertRecord(record);
 
-        timeStamp += milliSecondsPerRecordInt;
-        elapsed += milliSecondsPerRecord;
-        power += dPower;
-        cadence += dCadence;
-        heartRate += dHeartRate;
+        _linePointer++;
         recordCounter++;
         progressCounter++;
         if (progressCounter == progressSteps) {
           progressCounter = 0;
-          setProgress(recordCounter / recordCount);
+          setProgress(recordCounter / numRow);
         }
       }
-      _linePointer++;
+    } else {
+      double secondsPerRow = totalElapsed / numRow;
+      int secondsPerRowInt = secondsPerRow.round();
+      int recordsPerRow = secondsPerRowInt * TIME_RESOLUTION_FACTOR;
+      double milliSecondsPerRecord = secondsPerRow * 1000 / recordsPerRow;
+      int milliSecondsPerRecordInt = milliSecondsPerRecord.round();
+  
+      int recordCount = numRow * recordsPerRow;
+      int progressSteps = recordCount ~/ PROGRESS_STEPS;
+      int progressCounter = 0;
+      int recordCounter = 0;
+      double energy = 0;
+      double distance = 0;
+      double elapsed = 0;
+      WorkoutRow? nextRow;
+      int lastHeartRate = 0;
+      int timeStamp = start!.millisecondsSinceEpoch;
+      String heartRateGapWorkaroundSetting =
+          prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+      bool heartRateGapWorkaround =
+          heartRateGapWorkaroundSetting == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
+      int heartRateUpperLimit =
+          prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+      String heartRateLimitingMethod =
+          prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+  
+      while (_linePointer < _lines.length) {
+        WorkoutRow row = nextRow ??
+            WorkoutRow(
+              rowString: _lines[_linePointer],
+              lastHeartRate: lastHeartRate,
+              heartRateGapWorkaround: heartRateGapWorkaround,
+              heartRateUpperLimit: heartRateUpperLimit,
+              heartRateLimitingMethod: heartRateLimitingMethod,
+              tuneRatio: powerFactor,
+              extendTuning: extendTuning,
+            );
+  
+        if (_linePointer + 1 >= _lines.length) {
+          nextRow = WorkoutRow(
+            heartRateGapWorkaround: heartRateGapWorkaround,
+            heartRateUpperLimit: heartRateUpperLimit,
+            heartRateLimitingMethod: heartRateLimitingMethod,
+            tuneRatio: 1.0,
+            extendTuning: extendTuning,
+          );
+        } else {
+          nextRow = WorkoutRow(
+            rowString: _lines[_linePointer + 1],
+            lastHeartRate: lastHeartRate,
+            heartRateGapWorkaround: heartRateGapWorkaround,
+            heartRateUpperLimit: heartRateUpperLimit,
+            heartRateLimitingMethod: heartRateLimitingMethod,
+            tuneRatio: powerFactor,
+            extendTuning: extendTuning,
+          );
+        }
+  
+        double dPower = (nextRow.power - row.power) / recordsPerRow;
+        double dCadence = (nextRow.cadence - row.cadence) / recordsPerRow;
+        double dHeartRate = (nextRow.heartRate - row.heartRate) / recordsPerRow;
+        double power = row.power.toDouble();
+        double cadence = row.cadence.toDouble();
+        double heartRate = row.heartRate.toDouble();
+        lastHeartRate = row.heartRate;
+  
+        for (int i = 0; i < recordsPerRow; i++) {
+          final powerInt = power.round();
+          final speed = velocityForPower(powerInt);
+          final dDistance = speed * milliSecondsPerRecord / 1000;
+  
+          final record = RecordWithSport(
+            activityId: activity.id,
+            timeStamp: timeStamp,
+            distance: distance,
+            elapsed: elapsed ~/ 1000,
+            calories: energy.round(),
+            power: powerInt,
+            speed: speed * DeviceDescriptor.MS2KMH,
+            cadence: cadence.round(),
+            heartRate: heartRate.round(),
+            elapsedMillis: elapsed.round(),
+            sport: activity.sport,
+          );
+  
+          distance += dDistance;
+          final dEnergy = power * milliSecondsPerRecord / 1000 * J_TO_KCAL *
+              calorieFactor;
+          energy += dEnergy;
+          await database.recordDao.insertRecord(record);
+  
+          timeStamp += milliSecondsPerRecordInt;
+          elapsed += milliSecondsPerRecord;
+          power += dPower;
+          cadence += dCadence;
+          heartRate += dHeartRate;
+  
+          recordCounter++;
+          progressCounter++;
+          if (progressCounter == progressSteps) {
+            progressCounter = 0;
+            setProgress(recordCounter / recordCount);
+          }
+        }
+
+        _linePointer++;
+      }
+
+      activity.distance = distance;
+      activity.calories = energy.round();
     }
 
-    activity.distance = distance;
-    activity.calories = energy.round();
     await database.activityDao.updateActivity(activity);
 
     return activity;

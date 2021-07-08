@@ -32,6 +32,7 @@ import 'parts/calorie_override.dart';
 import 'parts/circular_menu.dart';
 import 'parts/export_format_picker.dart';
 import 'parts/flutter_brand_icons.dart';
+import 'parts/import_format_picker.dart';
 import 'parts/power_factor_tune.dart';
 import 'parts/sport_picker.dart';
 import 'power_tunes.dart';
@@ -264,9 +265,19 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     List<FloatingActionButton> floatingActionButtons = [
       _themeManager.getAboutFab(),
       _themeManager.getBlueFab(Icons.file_upload, () async {
-        await Get.to(() => ImportForm())?.whenComplete(() => setState(() {
-              _editCount++;
-            }));
+        final formatPick = await Get.bottomSheet(
+          ImportFormatPickerBottomSheet(),
+          enableDrag: false,
+        );
+
+        if (formatPick == null) {
+          return;
+        }
+
+        await Get.to(() => ImportForm(migration: formatPick == "Migration"))
+            ?.whenComplete(() => setState(() {
+                  _editCount++;
+                }));
       }),
       _themeManager.getBlueFab(Icons.collections_bookmark, () async {
         await Get.to(() => DeviceUsagesScreen());
