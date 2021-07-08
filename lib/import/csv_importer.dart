@@ -331,18 +331,19 @@ class CSVImporter {
 
     _linePointer++;
 
-    if (_lines[_linePointer][0].trim() != POWER_HEADER ||
-        _lines[_linePointer][1].trim() != RPM_HEADER ||
-        _lines[_linePointer][2].trim() != HR_HEADER ||
-        _lines[_linePointer][3].trim() != DISTANCE_HEADER) {
+    final rideDataHeader = _lines[_linePointer].split(",");
+    if (rideDataHeader[0].trim() != POWER_HEADER ||
+        rideDataHeader[1].trim() != RPM_HEADER ||
+        rideDataHeader[2].trim() != HR_HEADER ||
+        rideDataHeader[3].trim() != DISTANCE_HEADER) {
       message = "Unexpected detailed ride data format";
       return null;
     }
     if (migration &&
-        (_lines[_linePointer][4].trim() != TIME_STAMP ||
-            _lines[_linePointer][5].trim() != ELAPSED ||
-            _lines[_linePointer][6].trim() != SPEED ||
-            _lines[_linePointer][7].trim() != CALORIES)) {
+        (rideDataHeader[4].trim() != TIME_STAMP ||
+            rideDataHeader[5].trim() != ELAPSED ||
+            rideDataHeader[6].trim() != SPEED ||
+            rideDataHeader[7].trim() != CALORIES)) {
       message = "Unexpected detailed ride data format";
       return null;
     }
