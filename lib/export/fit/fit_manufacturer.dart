@@ -170,7 +170,7 @@ Map<int, String> fitManufacturer = {
 };
 
 int getFitManufacturer(String manufacturer) {
-  if (manufacturer == null) {
+  if (manufacturer.trim().isEmpty) {
     return FitBaseTypes.uint16Type.invalidValue;
   }
 
