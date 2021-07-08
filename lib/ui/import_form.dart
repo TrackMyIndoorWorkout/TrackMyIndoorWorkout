@@ -64,7 +64,7 @@ class _ImportFormState extends State<ImportForm> {
             children: [
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: '${widget.migration ? "Migration": "MPower Echelon"} CSV File URL',
+                  labelText: '${widget.migration ? "Migration" : "MPower Echelon"} CSV File URL',
                   hintText: 'Paste the CSV file URL',
                   suffixIcon: ElevatedButton(
                     child: Text(

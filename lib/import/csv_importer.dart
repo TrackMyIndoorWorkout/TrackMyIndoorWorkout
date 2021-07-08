@@ -339,10 +339,10 @@ class CSVImporter {
       return null;
     }
     if (migration &&
-      (_lines[_linePointer][4].trim() != TIME_STAMP ||
-          _lines[_linePointer][5].trim() != ELAPSED ||
-          _lines[_linePointer][6].trim() != SPEED ||
-          _lines[_linePointer][7].trim() != CALORIES)) {
+        (_lines[_linePointer][4].trim() != TIME_STAMP ||
+            _lines[_linePointer][5].trim() != ELAPSED ||
+            _lines[_linePointer][6].trim() != SPEED ||
+            _lines[_linePointer][7].trim() != CALORIES)) {
       message = "Unexpected detailed ride data format";
       return null;
     }
@@ -407,7 +407,7 @@ class CSVImporter {
       int recordsPerRow = secondsPerRowInt * TIME_RESOLUTION_FACTOR;
       double milliSecondsPerRecord = secondsPerRow * 1000 / recordsPerRow;
       int milliSecondsPerRecordInt = milliSecondsPerRecord.round();
-  
+
       int recordCount = numRow * recordsPerRow;
       int progressSteps = recordCount ~/ PROGRESS_STEPS;
       int progressCounter = 0;
@@ -419,14 +419,15 @@ class CSVImporter {
       int lastHeartRate = 0;
       int timeStamp = start!.millisecondsSinceEpoch;
       String heartRateGapWorkaroundSetting =
-          prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+          prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ??
+              HEART_RATE_GAP_WORKAROUND_DEFAULT;
       bool heartRateGapWorkaround =
           heartRateGapWorkaroundSetting == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
       int heartRateUpperLimit =
           prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
       String heartRateLimitingMethod =
           prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
-  
+
       while (_linePointer < _lines.length) {
         WorkoutRow row = nextRow ??
             WorkoutRow(
@@ -438,7 +439,7 @@ class CSVImporter {
               tuneRatio: powerFactor,
               extendTuning: extendTuning,
             );
-  
+
         if (_linePointer + 1 >= _lines.length) {
           nextRow = WorkoutRow(
             heartRateGapWorkaround: heartRateGapWorkaround,
@@ -458,7 +459,7 @@ class CSVImporter {
             extendTuning: extendTuning,
           );
         }
-  
+
         double dPower = (nextRow.power - row.power) / recordsPerRow;
         double dCadence = (nextRow.cadence - row.cadence) / recordsPerRow;
         double dHeartRate = (nextRow.heartRate - row.heartRate) / recordsPerRow;
@@ -466,12 +467,12 @@ class CSVImporter {
         double cadence = row.cadence.toDouble();
         double heartRate = row.heartRate.toDouble();
         lastHeartRate = row.heartRate;
-  
+
         for (int i = 0; i < recordsPerRow; i++) {
           final powerInt = power.round();
           final speed = velocityForPower(powerInt);
           final dDistance = speed * milliSecondsPerRecord / 1000;
-  
+
           final record = RecordWithSport(
             activityId: activity.id,
             timeStamp: timeStamp,
@@ -485,19 +486,18 @@ class CSVImporter {
             elapsedMillis: elapsed.round(),
             sport: activity.sport,
           );
-  
+
           distance += dDistance;
-          final dEnergy = power * milliSecondsPerRecord / 1000 * J_TO_KCAL *
-              calorieFactor;
+          final dEnergy = power * milliSecondsPerRecord / 1000 * J_TO_KCAL * calorieFactor;
           energy += dEnergy;
           await database.recordDao.insertRecord(record);
-  
+
           timeStamp += milliSecondsPerRecordInt;
           elapsed += milliSecondsPerRecord;
           power += dPower;
           cadence += dCadence;
           heartRate += dHeartRate;
-  
+
           recordCounter++;
           progressCounter++;
           if (progressCounter == progressSteps) {
