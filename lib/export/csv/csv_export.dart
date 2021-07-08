@@ -46,7 +46,8 @@ class CSVExport extends ActivityExport {
     _sb.write("$DISTANCE_HEADER,");
     _sb.write("$TIME_STAMP,");
     _sb.write("$ELAPSED,");
-    _sb.writeln("$SPEED,");
+    _sb.write("$SPEED,");
+    _sb.writeln("$CALORIES,");
 
     for (var record in exportModel.records) {
       _sb.write("${record.record.power},");
@@ -55,7 +56,8 @@ class CSVExport extends ActivityExport {
       _sb.write("${record.record.distance},");
       _sb.write("${record.record.timeStamp},");
       _sb.write("${record.record.elapsed},");
-      _sb.writeln("${record.record.speed},");
+      _sb.write("${record.record.speed},");
+      _sb.writeln("${record.record.calories},");
     }
   }
 
