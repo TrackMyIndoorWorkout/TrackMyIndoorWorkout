@@ -1,0 +1,6 @@
+include: package:flutter_lints/flutter.yaml
+
+# https://dart-lang.github.io/linter/lints/index.html
+# https://dart.dev/guides/language/analysis-options
+linter:
+  rules:
