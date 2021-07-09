@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
+import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/statistics_accumulator.dart';
 import 'utils.dart';
@@ -14,12 +15,16 @@ void main() {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgPower: true);
         final count = rnd.nextInt(99) + 1;
-        double sum = 0.0;
-        getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processExportRecord(ExportRecord()..power = number);
+        int sum = 0;
+        int actualCount = 0;
+        getRandomInts(count, 100, rnd).forEach((number) {
+          accu.processExportRecord(ExportRecord(record: Record(power: number)));
           sum += number;
+          if (number > 0) {
+            actualCount++;
+          }
         });
-        test("$sport, $count -> $sum", () async {
+        test("$sport, $count ($actualCount) -> $sum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, true);
           expect(accu.calculateMaxPower, false);
@@ -30,8 +35,8 @@ void main() {
           expect(accu.calculateAvgHeartRate, false);
           expect(accu.calculateMaxHeartRate, false);
           expect(accu.powerSum, sum);
-          expect(accu.powerCount, count);
-          expect(accu.maxPower, MAX_INIT.toDouble());
+          expect(accu.powerCount, actualCount);
+          expect(accu.maxPower, MAX_INIT);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
           expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -41,7 +46,7 @@ void main() {
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
           expect(accu.maxCadence, MAX_INIT);
-          expect(accu.avgPower, count > 0 ? sum / count : 0.0);
+          expect(accu.avgPower, actualCount > 0 ? sum / actualCount : 0.0);
         });
       });
     });
@@ -54,9 +59,9 @@ void main() {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxPower: true);
         final count = rnd.nextInt(99) + 1;
-        double maximum = MAX_INIT.toDouble();
-        getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processExportRecord(ExportRecord()..power = number);
+        int maximum = MAX_INIT;
+        getRandomInts(count, 100, rnd).forEach((number) {
+          accu.processExportRecord(ExportRecord(record: Record(power: number)));
           maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () async {
@@ -95,7 +100,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double sum = 0.0;
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processExportRecord(ExportRecord()..speed = number);
+          accu.processExportRecord(ExportRecord(record: Record(speed: number)));
           sum += number;
         });
         test("$sport, $count -> $sum", () async {
@@ -110,7 +115,7 @@ void main() {
           expect(accu.calculateMaxHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT.toDouble());
+          expect(accu.maxPower, MAX_INIT);
           expect(accu.speedSum, sum);
           expect(accu.speedCount, count);
           expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -135,7 +140,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double maximum = MAX_INIT.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processExportRecord(ExportRecord()..speed = number);
+          accu.processExportRecord(ExportRecord(record: Record(speed: number)));
           maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () async {
@@ -150,7 +155,7 @@ void main() {
           expect(accu.calculateMaxHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT.toDouble());
+          expect(accu.maxPower, MAX_INIT);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
           expect(accu.maxSpeed, maximum);
@@ -175,7 +180,7 @@ void main() {
         int sum = 0;
         int cnt = 0;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processExportRecord(ExportRecord()..heartRate = number);
+          accu.processExportRecord(ExportRecord(record: Record(heartRate: number)));
           sum += number;
           if (number > 0) {
             cnt++;
@@ -193,7 +198,7 @@ void main() {
           expect(accu.calculateMaxHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT.toDouble());
+          expect(accu.maxPower, MAX_INIT);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
           expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -218,7 +223,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         int maximum = MAX_INIT;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processExportRecord(ExportRecord()..heartRate = number);
+          accu.processExportRecord(ExportRecord(record: Record(heartRate: number)));
           maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () async {
@@ -233,7 +238,7 @@ void main() {
           expect(accu.calculateMaxHeartRate, true);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT.toDouble());
+          expect(accu.maxPower, MAX_INIT);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
           expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -258,7 +263,7 @@ void main() {
         int sum = 0;
         int cnt = 0;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processExportRecord(ExportRecord()..cadence = number);
+          accu.processExportRecord(ExportRecord(record: Record(cadence: number)));
           sum += number;
           if (number > 0) {
             cnt++;
@@ -276,7 +281,7 @@ void main() {
           expect(accu.calculateMaxHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT.toDouble());
+          expect(accu.maxPower, MAX_INIT);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
           expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -301,7 +306,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         int maximum = MAX_INIT;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processExportRecord(ExportRecord()..cadence = number);
+          accu.processExportRecord(ExportRecord(record: Record(cadence: number)));
           maximum = max(number, maximum);
         });
         test("$sport, $count -> $maximum", () async {
@@ -316,7 +321,7 @@ void main() {
           expect(accu.calculateMaxHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT.toDouble());
+          expect(accu.maxPower, MAX_INIT);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
           expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -348,9 +353,10 @@ void main() {
           calculateMaxHeartRate: true,
         );
         final count = rnd.nextInt(99) + 1;
-        double powerSum = 0.0;
-        double maxPower = MAX_INIT.toDouble();
-        final powers = getRandomDoubles(count, 100, rnd);
+        int powerSum = 0;
+        int powerCount = 0;
+        int maxPower = MAX_INIT;
+        final powers = getRandomInts(count, 100, rnd);
         double speedSum = 0.0;
         double maxSpeed = MAX_INIT.toDouble();
         final speeds = getRandomDoubles(count, 100, rnd);
@@ -363,12 +369,18 @@ void main() {
         int maxHr = MAX_INIT;
         final hrs = getRandomInts(count, 100, rnd);
         List<int>.generate(count, (index) {
-          accu.processExportRecord(ExportRecord()
-            ..power = powers[index]
-            ..speed = speeds[index]
-            ..cadence = cadences[index]
-            ..heartRate = hrs[index]);
+          accu.processExportRecord(ExportRecord(
+            record: Record(
+              power: powers[index],
+              speed: speeds[index],
+              cadence: cadences[index],
+              heartRate: hrs[index],
+            ),
+          ));
           powerSum += powers[index];
+          if (powers[index] > 0) {
+            powerCount++;
+          }
           maxPower = max(powers[index], maxPower);
           speedSum += speeds[index];
           maxSpeed = max(speeds[index], maxSpeed);
@@ -395,7 +407,7 @@ void main() {
           expect(accu.calculateAvgHeartRate, true);
           expect(accu.calculateMaxHeartRate, true);
           expect(accu.powerSum, powerSum);
-          expect(accu.powerCount, count);
+          expect(accu.powerCount, powerCount);
           expect(accu.maxPower, maxPower);
           expect(accu.speedSum, speedSum);
           expect(accu.speedCount, count);
@@ -406,7 +418,7 @@ void main() {
           expect(accu.cadenceSum, cadenceSum);
           expect(accu.cadenceCount, cadenceCount);
           expect(accu.maxCadence, cadenceCount > 0 ? maxCadence : MAX_INIT);
-          expect(accu.avgPower, count > 0 ? powerSum / count : 0.0);
+          expect(accu.avgPower, powerCount > 0 ? powerSum / powerCount : 0.0);
           expect(accu.avgSpeed, count > 0 ? speedSum / count : 0.0);
           expect(accu.avgHeartRate, hrCount > 0 ? hrSum ~/ hrCount : 0);
           expect(accu.avgCadence, cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0);

@@ -14,7 +14,7 @@ class TCXExport extends ActivityExport {
 
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     // The prolog of the TCX file
-    _sb.write("""<?xml version="1.0" encoding="UTF-8"?>
+    _sb.writeln("""<?xml version="1.0" encoding="UTF-8"?>
 <TrainingCenterDatabase
     xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"
     xmlns:ns5="http://www.garmin.com/xmlschemas/ActivityGoals/v1"
@@ -26,35 +26,37 @@ class TCXExport extends ActivityExport {
     addActivity(exportModel);
     addAuthor(exportModel);
 
-    _sb.write("</TrainingCenterDatabase>\n");
+    _sb.writeln("</TrainingCenterDatabase>");
 
     return utf8.encode(_sb.toString());
   }
 
   void addActivity(ExportModel exportModel) {
-    final activityType = tcxSport(exportModel.sport);
+    final activityType = tcxSport(exportModel.activity.sport);
     // Add Activity
     //-------------
-    _sb.write("""  <Activities>
-    <Activity Sport="$activityType">\n""");
+    _sb.writeln("""  <Activities>
+    <Activity Sport="$activityType">""");
 
     // Add ID
-    addElement('Id', timeStampString(exportModel.dateActivity));
+    final dateActivity = DateTime.fromMillisecondsSinceEpoch(exportModel.activity.start);
+    addElement('Id', timeStampString(dateActivity));
     addLap(exportModel);
     addCreator(exportModel);
 
-    _sb.write("    </Activity>\n");
-    _sb.write("  </Activities>\n");
+    _sb.writeln("    </Activity>");
+    _sb.writeln("  </Activities>");
   }
 
   void addLap(ExportModel exportModel) {
     // Add lap
     //---------
-    _sb.write('        <Lap StartTime="${timeStampString(exportModel.dateActivity)}">\n');
+    final dateActivity = DateTime.fromMillisecondsSinceEpoch(exportModel.activity.start);
+    _sb.writeln('        <Lap StartTime="${timeStampString(dateActivity)}">');
 
-    addElement('TotalTimeSeconds', exportModel.totalTime.toString());
+    addElement('TotalTimeSeconds', exportModel.activity.elapsed.toStringAsFixed(1));
     // Add Total distance in meters
-    addElement('DistanceMeters', exportModel.totalDistance.toStringAsFixed(2));
+    addElement('DistanceMeters', exportModel.activity.distance.toStringAsFixed(2));
 
     // Add Maximum speed in meter/second
     addElement('MaximumSpeed', exportModel.maximumSpeed.toStringAsFixed(2));
@@ -71,7 +73,7 @@ class TCXExport extends ActivityExport {
     }
 
     // Add calories
-    addElement('Calories', exportModel.calories.toString());
+    addElement('Calories', exportModel.activity.calories.toString());
     // Add intensity (what is the meaning?)
     addElement('Intensity', 'Active');
     // Add intensity (what is the meaning?)
@@ -79,18 +81,18 @@ class TCXExport extends ActivityExport {
 
     addTrack(exportModel);
 
-    _sb.write('        </Lap>\n');
+    _sb.writeln('        </Lap>');
   }
 
   void addTrack(ExportModel exportModel) {
-    _sb.write('          <Track>\n');
+    _sb.writeln('          <Track>');
 
     // Add track inside the lap
     for (var record in exportModel.records) {
       addTrackPoint(record);
     }
 
-    _sb.write('          </Track>\n');
+    _sb.writeln('          </Track>');
   }
 
   /// Generate a string that will include
@@ -99,56 +101,60 @@ class TCXExport extends ActivityExport {
   /// Extension handling is missing for the moment
   ///
   void addTrackPoint(ExportRecord record) {
-    _sb.write("<Trackpoint>\n");
+    _sb.writeln("<Trackpoint>");
     addElement('Time', record.timeStampString);
-    addPosition(record.latitude.toStringAsFixed(10), record.longitude.toStringAsFixed(10));
+    addPosition(record.latitude.toStringAsFixed(7), record.longitude.toStringAsFixed(7));
     addElement('AltitudeMeters', record.altitude.toString());
-    addElement('DistanceMeters', record.distance.toStringAsFixed(2));
-    if (record.cadence != null) {
-      final cadence = min(max(record.cadence!, 0), 254).toInt();
+    addElement('DistanceMeters', (record.record.distance ?? 0.0).toStringAsFixed(2));
+    if (record.record.cadence != null) {
+      final cadence = min(max(record.record.cadence!, 0), 254).toInt();
       addElement('Cadence', cadence.toString());
     }
 
-    addExtensions('Speed', record.speed.toStringAsFixed(2), 'Watts', record.power);
+    addExtensions(
+      'Speed',
+      (record.record.speed ?? 0.0).toStringAsFixed(2),
+      'Watts',
+      (record.record.power ?? 0).toStringAsFixed(1),
+    );
 
-    if (record.heartRate != null &&
-        (record.heartRate! > 0 ||
-            heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND ||
-            heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO)) {
-      addHeartRate(record.heartRate);
+    if ((record.record.heartRate ?? 0) > 0 ||
+        heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND ||
+        heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
+      addHeartRate(record.record.heartRate);
     }
 
-    _sb.write("</Trackpoint>\n");
+    _sb.writeln("</Trackpoint>");
   }
 
   void addCreator(ExportModel exportModel) {
-    _sb.write("""    <Creator xsi:type="Device_t">
+    _sb.writeln("""    <Creator xsi:type="Device_t">
       <Name>${exportModel.descriptor.fullName}</Name>
-      <UnitId>${exportModel.deviceId}</UnitId>
+      <UnitId>${exportModel.activity.deviceId}</UnitId>
       <ProductID>${exportModel.descriptor.modelName}</ProductID>
       <Version>
-        <VersionMajor>${exportModel.versionMajor}</VersionMajor>
-        <VersionMinor>${exportModel.versionMinor}</VersionMinor>
-        <BuildMajor>${exportModel.buildMajor}</BuildMajor>
-        <BuildMinor>${exportModel.buildMinor}</BuildMinor>
+        <VersionMajor>$major</VersionMajor>
+        <VersionMinor>$minor</VersionMinor>
+        <BuildMajor>$major</BuildMajor>
+        <BuildMinor>$minor</BuildMinor>
       </Version>
-    </Creator>\n""");
+    </Creator>""");
   }
 
   void addAuthor(ExportModel exportModel) {
-    _sb.write("""  <Author xsi:type="Application_t">
+    _sb.writeln("""  <Author xsi:type="Application_t">
     <Name>${exportModel.author}</Name>
     <Build>
       <Version>
-        <VersionMajor>${exportModel.versionMajor}</VersionMajor>
-        <VersionMinor>${exportModel.versionMinor}</VersionMinor>
-        <BuildMajor>${exportModel.buildMajor}</BuildMajor>
-        <BuildMinor>${exportModel.buildMinor}</BuildMinor>
+        <VersionMajor>${exportModel.swVersionMajor}</VersionMajor>
+        <VersionMinor>${exportModel.swVersionMinor}</VersionMinor>
+        <BuildMajor>${exportModel.buildVersionMajor}</BuildMajor>
+        <BuildMinor>${exportModel.buildVersionMinor}</BuildMinor>
       </Version>
     </Build>
     <LangID>${exportModel.langID}</LangID>
     <PartNumber>${exportModel.partNumber}</PartNumber>
-  </Author>\n""");
+  </Author>""");
   }
 
   /// Add extension of speed and watts
@@ -156,20 +162,20 @@ class TCXExport extends ActivityExport {
   ///  <Extensions>
   ///              <ns3:TPX>
   ///                <ns3:Speed>1.996999979019165</ns3:Speed>
+  ///                <ns3:Watts>87.0</ns3:Watts>
   ///              </ns3:TPX>
   ///            </Extensions>
   ///
   /// Does not handle multiple values like
   /// Speed AND Watts in the same extension
   ///
-  void addExtensions(String tag1, String value1, String tag2, double? value2) {
-    double _value = value2 ?? 0.0;
-    _sb.write("""    <Extensions>
+  void addExtensions(String tag1, String value1, String tag2, String value2) {
+    _sb.writeln("""    <Extensions>
       <ns3:TPX>
         <ns3:$tag1>$value1</ns3:$tag1>
-        <ns3:$tag2>${_value.toString()}</ns3:$tag2>
+        <ns3:$tag2>$value2</ns3:$tag2>
       </ns3:TPX>
-    </Extensions>\n""");
+    </Extensions>""");
   }
 
   /// Add heartRate in TCX file to look like
@@ -180,9 +186,9 @@ class TCXExport extends ActivityExport {
   ///
   void addHeartRate(int? heartRate) {
     int _heartRate = heartRate ?? 0;
-    _sb.write("""                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+    _sb.writeln("""                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
                 <Value>${_heartRate.toString()}</Value>
-              </HeartRateBpm>\n""");
+              </HeartRateBpm>""");
   }
 
   /// create a position something like
@@ -191,22 +197,22 @@ class TCXExport extends ActivityExport {
   ///   <LongitudeDegrees>5.771340150386095</LongitudeDegrees>
   /// </Position>
   void addPosition(String latitude, String longitude) {
-    _sb.write("""<Position>
+    _sb.writeln("""<Position>
      <LatitudeDegrees>$latitude</LatitudeDegrees>
      <LongitudeDegrees>$longitude</LongitudeDegrees>
-  </Position>\n""");
+  </Position>""");
   }
 
   /// create XML element
   /// from content string
   void addElement(String tag, String content) {
-    _sb.write('<$tag>$content</$tag>\n');
+    _sb.writeln('<$tag>$content</$tag>');
   }
 
   /// create XML attribute
   /// from content string
   void addAttribute(String tag, String attribute, String value, String content) {
-    _sb.write('<$tag $attribute="$value">\n$content</$tag>\n');
+    _sb.writeln('<$tag $attribute="$value">\n$content</$tag>');
   }
 
   /// Create timestamp for <Time> element in TCX file

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
+import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
 import 'package:track_my_indoor_exercise/persistence/preferences.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
@@ -40,17 +41,9 @@ String getRandomSport() {
 
 class ExportModelForTests extends ExportModel {
   ExportModelForTests({
-    sport,
-    totalDistance,
-    totalTime,
-    calories,
-    dateActivity,
+    activity,
+    rawData,
     descriptor,
-    deviceId,
-    versionMajor,
-    versionMinor,
-    buildMajor,
-    buildMinor,
     author,
     name,
     swVersionMajor,
@@ -61,23 +54,24 @@ class ExportModelForTests extends ExportModel {
     partNumber,
     records,
   }) : super(
-          sport: sport ?? ActivityType.Ride,
-          totalDistance: totalDistance ?? 0.0,
-          totalTime: totalTime ?? 0,
-          calories: calories ?? 0,
-          dateActivity: dateActivity ?? DateTime.now(),
+          activity: activity ??
+              Activity(
+                deviceName: "Test Dummy",
+                deviceId: "CAFEBAEBE",
+                start: 0,
+                fourCC: "SAP+",
+                sport: ActivityType.Ride,
+                powerFactor: 1.0,
+                calorieFactor: 1.0,
+              ),
+          rawData: rawData ?? false,
           descriptor: descriptor ?? deviceMap["SAP+"]!,
-          deviceId: deviceId ?? MPOWER_IMPORT_DEVICE_ID,
-          versionMajor: versionMajor ?? 1,
-          versionMinor: versionMinor ?? 0,
-          buildMajor: buildMajor ?? 1,
-          buildMinor: buildMinor ?? 0,
           author: author ?? 'Csaba Consulting',
           name: name ?? 'Track My Indoor Exercise',
-          swVersionMajor: swVersionMajor ?? 1,
-          swVersionMinor: swVersionMinor ?? 0,
-          buildVersionMajor: buildVersionMajor ?? 1,
-          buildVersionMinor: buildVersionMinor ?? 0,
+          swVersionMajor: swVersionMajor ?? "1",
+          swVersionMinor: swVersionMinor ?? "0",
+          buildVersionMajor: buildVersionMajor ?? "1",
+          buildVersionMinor: buildVersionMinor ?? "0",
           langID: langID ?? 'en-US',
           partNumber: partNumber ?? '0',
           records: records ?? [],

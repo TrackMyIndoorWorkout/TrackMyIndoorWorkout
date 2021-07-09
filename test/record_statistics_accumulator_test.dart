@@ -33,7 +33,7 @@ void main() {
         expect(accu.calculateMaxHeartRate, false);
         expect(accu.powerSum, sum);
         expect(accu.powerCount, count);
-        expect(accu.maxPower, MAX_INIT.toDouble());
+        expect(accu.maxPower, MAX_INIT);
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
         expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -112,7 +112,7 @@ void main() {
         expect(accu.calculateMaxHeartRate, false);
         expect(accu.powerSum, 0);
         expect(accu.powerCount, 0);
-        expect(accu.maxPower, MAX_INIT.toDouble());
+        expect(accu.maxPower, MAX_INIT);
         expect(accu.speedSum, sum);
         expect(accu.speedCount, count);
         expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -151,7 +151,7 @@ void main() {
         expect(accu.calculateMaxHeartRate, false);
         expect(accu.powerSum, 0);
         expect(accu.powerCount, 0);
-        expect(accu.maxPower, MAX_INIT.toDouble());
+        expect(accu.maxPower, MAX_INIT);
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
         expect(accu.maxSpeed, maximum);
@@ -197,7 +197,7 @@ void main() {
         expect(accu.calculateMaxHeartRate, false);
         expect(accu.powerSum, 0);
         expect(accu.powerCount, 0);
-        expect(accu.maxPower, MAX_INIT.toDouble());
+        expect(accu.maxPower, MAX_INIT);
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
         expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -236,7 +236,7 @@ void main() {
         expect(accu.calculateMaxHeartRate, true);
         expect(accu.powerSum, 0);
         expect(accu.powerCount, 0);
-        expect(accu.maxPower, MAX_INIT.toDouble());
+        expect(accu.maxPower, MAX_INIT);
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
         expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -278,7 +278,7 @@ void main() {
         expect(accu.calculateMaxHeartRate, false);
         expect(accu.powerSum, 0);
         expect(accu.powerCount, 0);
-        expect(accu.maxPower, MAX_INIT.toDouble());
+        expect(accu.maxPower, MAX_INIT);
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
         expect(accu.maxSpeed, MAX_INIT.toDouble());
@@ -317,7 +317,7 @@ void main() {
         expect(accu.calculateMaxHeartRate, false);
         expect(accu.powerSum, 0);
         expect(accu.powerCount, 0);
-        expect(accu.maxPower, MAX_INIT.toDouble());
+        expect(accu.maxPower, MAX_INIT);
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
         expect(accu.maxSpeed, MAX_INIT.toDouble());

@@ -23,7 +23,7 @@ class StravaService {
     }
 
     final exporter = FitExport();
-    final fileGzip = await exporter.getExport(activity, records, true);
+    final fileGzip = await exporter.getExport(activity, records, false, true);
     Fault fault = await _strava.uploadActivity(activity, fileGzip, exporter);
 
     return fault.statusCode;

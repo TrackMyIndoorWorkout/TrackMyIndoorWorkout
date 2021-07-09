@@ -1,54 +1,39 @@
 import '../devices/device_descriptors/device_descriptor.dart';
+import '../persistence/models/activity.dart';
 import '../utils/constants.dart';
 import '../utils/statistics_accumulator.dart';
 import 'export_record.dart';
 
 class ExportModel {
-  String sport;
-  double totalDistance = 0.0; // Total distance in meters
-  double totalTime; // in seconds
+  Activity activity;
+  bool rawData;
   double averageSpeed = 0.0; // in m/s
   double maximumSpeed = 0.0; // in m/s
-  int calories;
   int averageHeartRate = 0;
   int maximumHeartRate = 0;
   int averageCadence = 0;
   int maximumCadence = 0;
   double averagePower = 0.0;
-  double maximumPower = 0.0;
-  DateTime dateActivity; // Date of the activity
+  int maximumPower = 0;
   List<ExportRecord> records;
 
   // Related to device that generated the data
   DeviceDescriptor descriptor;
-  String deviceId;
-  int versionMajor;
-  int versionMinor;
-  int buildMajor;
-  int buildMinor;
 
   // Related to software used to generate the TCX file
   String author;
   String name;
-  int swVersionMajor;
-  int swVersionMinor;
-  int buildVersionMajor;
-  int buildVersionMinor;
+  String swVersionMajor;
+  String swVersionMinor;
+  String buildVersionMajor;
+  String buildVersionMinor;
   String langID;
   String partNumber;
 
   ExportModel({
-    required this.sport,
-    required this.totalDistance,
-    required this.totalTime,
-    required this.calories,
-    required this.dateActivity,
+    required this.activity,
+    required this.rawData,
     required this.descriptor,
-    required this.deviceId,
-    required this.versionMajor,
-    required this.versionMinor,
-    required this.buildMajor,
-    required this.buildMinor,
     required this.author,
     required this.name,
     required this.swVersionMajor,
@@ -63,41 +48,43 @@ class ExportModel {
     if (records.length > 0) {
       ExportRecord lastRecord = records.last;
       ExportRecord firstRecord = records.first;
-      if (totalTime == 0 && lastRecord.date != null && firstRecord.date != null) {
-        totalTime =
-            (lastRecord.date!.millisecondsSinceEpoch - firstRecord.date!.millisecondsSinceEpoch) /
-                1000;
+      if (activity.elapsed == 0 &&
+          (lastRecord.record.timeStamp ?? 0) > 0 &&
+          (firstRecord.record.timeStamp ?? 0) > 0) {
+        activity.elapsed = (lastRecord.record.timeStamp! - firstRecord.record.timeStamp!) ~/ 1000;
       }
 
-      if (totalDistance < EPS && lastRecord.distance > EPS) {
-        totalDistance = lastRecord.distance;
+      if (activity.distance < EPS && (lastRecord.record.distance ?? 0.0) > EPS) {
+        activity.distance = lastRecord.record.distance!;
       }
     }
 
-    var accu = StatisticsAccumulator(
-      si: true,
-      sport: ActivityType.Ride,
-      calculateAvgSpeed: true,
-      calculateMaxSpeed: true,
-      calculateAvgHeartRate: true,
-      calculateMaxHeartRate: true,
-      calculateAvgCadence: true,
-      calculateMaxCadence: true,
-      calculateAvgPower: true,
-      calculateMaxPower: true,
-    );
+    if (!rawData) {
+      var accu = StatisticsAccumulator(
+        si: true,
+        sport: ActivityType.Ride,
+        calculateAvgSpeed: true,
+        calculateMaxSpeed: true,
+        calculateAvgHeartRate: true,
+        calculateMaxHeartRate: true,
+        calculateAvgCadence: true,
+        calculateMaxCadence: true,
+        calculateAvgPower: true,
+        calculateMaxPower: true,
+      );
 
-    records.forEach((trackPoint) {
-      accu.processExportRecord(trackPoint);
-    });
+      records.forEach((trackPoint) {
+        accu.processExportRecord(trackPoint);
+      });
 
-    averageSpeed = accu.avgSpeed;
-    maximumSpeed = accu.maxSpeed;
-    averageHeartRate = accu.avgHeartRate;
-    maximumHeartRate = accu.maxHeartRate;
-    averageCadence = accu.avgCadence;
-    maximumCadence = accu.maxCadence;
-    averagePower = accu.avgPower;
-    maximumPower = accu.maxPower;
+      averageSpeed = accu.avgSpeed;
+      maximumSpeed = accu.maxSpeed;
+      averageHeartRate = accu.avgHeartRate;
+      maximumHeartRate = accu.maxHeartRate;
+      averageCadence = accu.avgCadence;
+      maximumCadence = accu.maxCadence;
+      averagePower = accu.avgPower;
+      maximumPower = accu.maxPower;
+    }
   }
 }

@@ -35,26 +35,29 @@ class FitDataRecord extends FitDefinitionMessage {
 
     var data = FitData();
     data.output = [localMessageType];
-    data.addLong(FitSerializable.fitDateTime(model.date ?? DateTime.now()));
+    final dateTime = model.record.timeStamp != null
+        ? DateTime.fromMillisecondsSinceEpoch(model.record.timeStamp!)
+        : DateTime.now();
+    data.addLong(FitSerializable.fitDateTime(dateTime));
     data.addGpsCoordinate(model.latitude);
     data.addGpsCoordinate(model.longitude);
 
-    if (model.heartRate != null) {
-      if (model.heartRate == 0 &&
+    if (model.record.heartRate != null) {
+      if (model.record.heartRate == 0 &&
           (heartRateGapWorkaround == DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS ||
               heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_NOTHING)) {
         // #93 #113 #114
-        model.heartRate = FitBaseTypes.uint8Type.invalidValue;
+        model.record.heartRate = FitBaseTypes.uint8Type.invalidValue;
       }
     } else {
-      model.heartRate = FitBaseTypes.uint8Type.invalidValue;
+      model.record.heartRate = FitBaseTypes.uint8Type.invalidValue;
     }
 
-    data.addByte(model.heartRate ?? FitBaseTypes.uint8Type.invalidValue);
-    data.addByte(model.cadence ?? FitBaseTypes.uint8Type.invalidValue);
-    data.addLong((model.distance * 100).round());
-    data.addShort((model.speed * 1000).round());
-    data.addShort(model.power?.round() ?? FitBaseTypes.uint16Type.invalidValue);
+    data.addByte(model.record.heartRate ?? FitBaseTypes.uint8Type.invalidValue);
+    data.addByte(model.record.cadence ?? FitBaseTypes.uint8Type.invalidValue);
+    data.addLong(((model.record.distance ?? 0.0) * 100).round());
+    data.addShort(((model.record.speed ?? 0.0) * 1000).round());
+    data.addShort(model.record.power?.round() ?? FitBaseTypes.uint16Type.invalidValue);
 
     return data.output;
   }

@@ -13,6 +13,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../export/activity_export.dart';
+import '../export/csv/csv_export.dart';
 import '../export/fit/fit_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
@@ -29,8 +30,9 @@ import 'import_form.dart';
 import 'leaderboards/leaderboard_type_picker.dart';
 import 'parts/calorie_override.dart';
 import 'parts/circular_menu.dart';
-import 'parts/data_format_picker.dart';
+import 'parts/export_format_picker.dart';
 import 'parts/flutter_brand_icons.dart';
+import 'parts/import_format_picker.dart';
 import 'parts/power_factor_tune.dart';
 import 'parts/sport_picker.dart';
 import 'power_tunes.dart';
@@ -121,7 +123,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           }
 
           final formatPick = await Get.bottomSheet(
-            DataFormatPickerBottomSheet(),
+            ExportFormatPickerBottomSheet(),
             enableDrag: false,
           );
 
@@ -130,8 +132,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           }
 
           final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
-          ActivityExport exporter = formatPick == "TCX" ? TCXExport() : FitExport();
-          final fileStream = await exporter.getExport(activity, records, false);
+          ActivityExport exporter = formatPick == "CSV"
+              ? CSVExport()
+              : formatPick == "TCX"
+                  ? TCXExport()
+                  : FitExport();
+          final fileStream =
+              await exporter.getExport(activity, records, formatPick == "CSV", false);
           final persistenceValues = exporter.getPersistenceValues(activity, false);
           ShareFilesAndScreenshotWidgets().shareFile(
             persistenceValues['name'],
@@ -258,9 +265,19 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     List<FloatingActionButton> floatingActionButtons = [
       _themeManager.getAboutFab(),
       _themeManager.getBlueFab(Icons.file_upload, () async {
-        await Get.to(() => ImportForm())?.whenComplete(() => setState(() {
-              _editCount++;
-            }));
+        final formatPick = await Get.bottomSheet(
+          ImportFormatPickerBottomSheet(),
+          enableDrag: false,
+        );
+
+        if (formatPick == null) {
+          return;
+        }
+
+        await Get.to(() => ImportForm(migration: formatPick == "Migration"))
+            ?.whenComplete(() => setState(() {
+                  _editCount++;
+                }));
       }),
       _themeManager.getBlueFab(Icons.collections_bookmark, () async {
         await Get.to(() => DeviceUsagesScreen());

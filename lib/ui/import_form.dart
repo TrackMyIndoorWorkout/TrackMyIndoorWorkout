@@ -6,11 +6,15 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import '../persistence/mpower_importer.dart';
+import '../import/csv_importer.dart';
 
 typedef void SetProgress(double progress);
 
 class ImportForm extends StatefulWidget {
+  final bool migration;
+
+  ImportForm({Key? key, required this.migration}) : super(key: key);
+
   @override
   _ImportFormState createState() => _ImportFormState();
 }
@@ -60,7 +64,7 @@ class _ImportFormState extends State<ImportForm> {
             children: [
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'MPower CSV File URL',
+                  labelText: '${widget.migration ? "Migration" : "MPower Echelon"} CSV File URL',
                   hintText: 'Paste the CSV file URL',
                   suffixIcon: ElevatedButton(
                     child: Text(
@@ -89,39 +93,46 @@ class _ImportFormState extends State<ImportForm> {
                   _filePath = value;
                 }),
               ),
-              SizedBox(height: 24),
-              DateTimeField(
-                format: dateTimeFormat,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.access_time),
-                  labelText: 'Workout Date & Time',
-                  hintText: 'Pick date & time',
-                ),
-                onShowPicker: (context, currentValue) async {
-                  final date = await showDatePicker(
+              Visibility(
+                child: SizedBox(height: 24),
+                visible: !widget.migration,
+              ),
+              Visibility(
+                child: DateTimeField(
+                  format: dateTimeFormat,
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.access_time),
+                    labelText: 'Workout Date & Time',
+                    hintText: 'Pick date & time',
+                  ),
+                  onShowPicker: (context, currentValue) async {
+                    final date = await showDatePicker(
                       context: context,
-                      firstDate: DateTime(1900),
+                      firstDate: DateTime(1920),
                       initialDate: currentValue ?? DateTime.now(),
-                      lastDate: DateTime(2100));
-                  if (date != null) {
-                    final time = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                      lastDate: DateTime(2030),
                     );
-                    return DateTimeField.combine(date, time);
-                  } else {
-                    return currentValue;
-                  }
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please pick a date and time';
-                  }
-                  return null;
-                },
-                onChanged: (value) => setState(() {
-                  _activityDateTime = value;
-                }),
+                    if (date != null) {
+                      final time = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                      );
+                      return DateTimeField.combine(date, time);
+                    } else {
+                      return currentValue;
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null && !widget.migration) {
+                      return 'Please pick a date and time';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) => setState(() {
+                    _activityDateTime = value;
+                  }),
+                ),
+                visible: !widget.migration,
               ),
               SizedBox(height: 24),
               Row(
@@ -138,7 +149,7 @@ class _ImportFormState extends State<ImportForm> {
                           Get.snackbar("Error", "Please pick a file");
                         }
 
-                        if (_activityDateTime == null) {
+                        if (_activityDateTime == null && !widget.migration) {
                           Get.snackbar("Error", "Please pick a date and time");
                         }
 
@@ -150,7 +161,7 @@ class _ImportFormState extends State<ImportForm> {
                           try {
                             File file = File(_filePath!);
                             String contents = await file.readAsString();
-                            final importer = MPowerEchelon2Importer(start: _activityDateTime!);
+                            final importer = CSVImporter(widget.migration, _activityDateTime);
                             var activity = await importer.import(contents, setProgress);
                             setState(() {
                               _isLoading = false;
