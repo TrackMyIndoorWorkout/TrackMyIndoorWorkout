@@ -261,7 +261,7 @@ class CSVImporter {
         return null;
       }
 
-      uploaded = calorieLine[1].toLowerCase() == "true";
+      uploaded = uploadedLine[1].trim().toLowerCase() == "true";
 
       _linePointer++;
 
@@ -281,7 +281,7 @@ class CSVImporter {
         return null;
       }
 
-      fourCC = fourCcLine[1];
+      fourCC = fourCcLine[1].trim();
 
       _linePointer++;
 
@@ -291,7 +291,7 @@ class CSVImporter {
         return null;
       }
 
-      sport = sportLine[1];
+      sport = sportLine[1].trim();
 
       _linePointer++;
 
