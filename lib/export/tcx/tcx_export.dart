@@ -103,7 +103,7 @@ class TCXExport extends ActivityExport {
   void addTrackPoint(ExportRecord record) {
     _sb.writeln("<Trackpoint>");
     addElement('Time', record.timeStampString);
-    addPosition(record.latitude.toStringAsFixed(10), record.longitude.toStringAsFixed(10));
+    addPosition(record.latitude.toStringAsFixed(7), record.longitude.toStringAsFixed(7));
     addElement('AltitudeMeters', record.altitude.toString());
     addElement('DistanceMeters', (record.record.distance ?? 0.0).toStringAsFixed(2));
     if (record.record.cadence != null) {
