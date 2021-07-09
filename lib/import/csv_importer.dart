@@ -153,7 +153,7 @@ class CSVImporter {
       return null;
     }
 
-    int totalElapsed = 0;
+    int totalElapsed = timeValue.round(); // Seconds by default
     if (timeLine[2].trim() == MINUTES_UNIT) {
       totalElapsed = (timeValue * 60).round();
     } else if (timeLine[2].trim() == HOURS_UNIT) {
