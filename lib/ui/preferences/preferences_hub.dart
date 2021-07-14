@@ -106,13 +106,13 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => LeaderboardPreferencesScreen()),
+                onPressed: () => Get.to(() => ZonesHubScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextOneLine(
-                      LeaderboardPreferencesScreen.shortTitle,
+                      ZonesHubScreen.shortTitle,
                       style: _textStyle,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
@@ -126,13 +126,13 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => ZonesHubScreen()),
+                onPressed: () => Get.to(() => LeaderboardPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextOneLine(
-                      ZonesHubScreen.shortTitle,
+                      LeaderboardPreferencesScreen.shortTitle,
                       style: _textStyle,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
