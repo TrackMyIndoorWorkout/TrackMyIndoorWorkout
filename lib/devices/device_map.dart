@@ -10,6 +10,7 @@ import 'device_descriptors/treadmill_device_descriptor.dart';
 const MPOWER_IMPORT_DEVICE_ID = "MPowerImport";
 const PRECOR_SPINNER_CHRONO_POWER_FOURCC = "PSCP";
 const SCHWINN_IC_BIKE_FOURCC = "SIC4";
+const SCHWINN_UPRIGHT_BIKE_FOURCC = "S130";
 const SCHWINN_AC_PERF_PLUS_FOURCC = "SAP+";
 const KAYAK_PRO_GENESIS_PORT_FOURCC = "KPro";
 const NPE_RUNN_FOURCC = "RUNN";
@@ -31,6 +32,16 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturerFitId: NAUTILUS_FIT_ID,
     model: "IC BIKE",
     calorieFactorDefault: 1.40,
+  ),
+  SCHWINN_UPRIGHT_BIKE_FOURCC: IndoorBikeDeviceDescriptor(
+    fourCC: SCHWINN_IC_BIKE_FOURCC,
+    vendorName: "Nautilus, Inc",
+    modelName: "Schwinn 130/170/510",
+    namePrefixes: ["SCH130", "SCH170"],
+    manufacturer: "Nautilus, Inc",
+    manufacturerFitId: NAUTILUS_FIT_ID,
+    model: "SCH 130 BIKE",
+    calorieFactorDefault: 1.00,
   ),
   SCHWINN_AC_PERF_PLUS_FOURCC: SchwinnACPerformancePlus(),
   KAYAK_PRO_GENESIS_PORT_FOURCC: RowerDeviceDescriptor(

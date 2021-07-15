@@ -31,6 +31,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     MEASUREMENT_PANELS_EXPANDED_TAG: MEASUREMENT_PANELS_EXPANDED_DEFAULT,
     MEASUREMENT_DETAIL_SIZE_TAG: MEASUREMENT_DETAIL_SIZE_DEFAULT,
     APP_DEBUG_MODE_TAG: APP_DEBUG_MODE_DEFAULT,
+    DATA_CONNECTION_ADDRESSES_TAG: DATA_CONNECTION_ADDRESSES_DEFAULT,
     EXTEND_TUNING_TAG: EXTEND_TUNING_DEFAULT,
     STROKE_RATE_SMOOTHING_INT_TAG: STROKE_RATE_SMOOTHING_DEFAULT,
     DATA_STREAM_GAP_WATCHDOG_INT_TAG: DATA_STREAM_GAP_WATCHDOG_DEFAULT,
@@ -152,7 +153,7 @@ Future<BasePrefService> initPreferences() async {
     }
   });
 
-  final addressesString = prefService.get<String>(DATA_CONNECTION_ADDRESSES) ?? "";
+  final addressesString = prefService.get<String>(DATA_CONNECTION_ADDRESSES_TAG) ?? "";
   if (addressesString.trim().isNotEmpty) {
     final addressTuples = parseIpAddresses(addressesString);
     if (addressTuples.length > 0) {

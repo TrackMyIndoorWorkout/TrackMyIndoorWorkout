@@ -167,10 +167,10 @@ const HEART_RATE_GAP_WORKAROUND_TAG = "heart_rate_gap_workaround";
 const HEART_RATE_GAP_WORKAROUND_SELECTION = "Heart Rate Data Gap Workaround Selection:";
 const DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE = "last_positive_value";
 const DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION =
-    "Persist the last known positive reading when a zero intermittent reading is encountered";
+    "Hold the last known positive reading when a zero intermittent reading is encountered";
 const DATA_GAP_WORKAROUND_NO_WORKAROUND = "no_workaround";
 const DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION =
-    "Persist any values (including zeros) just as they are read from the device";
+    "Record any values (including zeros) just as they are read from the device";
 const DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS = "do_not_write_zeros";
 const DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION =
     "Don't output any reading when zero data is recorded. Certain standards may not support that";
@@ -189,10 +189,10 @@ const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection:";
 const HEART_RATE_LIMITING_METHOD_TAG = "heart_rate_limiting_method";
 const HEART_RATE_LIMITING_WRITE_ZERO = "write_zero";
 const HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION =
-    "Persist zero when the heart rate limit is reached";
+    "Record zero when the heart rate limit is reached";
 const HEART_RATE_LIMITING_WRITE_NOTHING = "write_nothing";
 const HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION =
-    "Don't persist any heart rate when the limit is reached";
+    "Don't record any heart rate when the limit is reached";
 const HEART_RATE_LIMITING_CAP_AT_LIMIT = "cap_at_limit";
 const HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION = "Cap the value at the level configured bellow";
 const HEART_RATE_LIMITING_NO_LIMIT = "no_limit";
