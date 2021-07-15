@@ -1,6 +1,6 @@
 import '../../devices/gatt_constants.dart';
 import '../../utils/constants.dart';
-import 'machine_type.dart';
+import '../../utils/machine_type.dart';
 
 class AdvertisementDigest {
   final String id;

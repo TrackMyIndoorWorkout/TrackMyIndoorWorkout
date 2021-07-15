@@ -8,6 +8,8 @@ import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
 class ScanResultTile extends StatelessWidget {
+  static RegExp colonRegex = RegExp(r'\:');
+
   const ScanResultTile({
     Key? key,
     required this.result,
@@ -20,25 +22,19 @@ class ScanResultTile extends StatelessWidget {
   final VoidCallback onHrmTap;
 
   Widget _buildTitle(ThemeManager themeManger, TextStyle captionStyle, TextStyle dataStyle) {
-    if (result.device.name.isNotEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            result.device.name,
-            style: themeManger.boldStyle(captionStyle, fontSizeFactor: FONT_SIZE_FACTOR),
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            result.device.id.toString(),
-            style: dataStyle,
-          )
-        ],
-      );
-    } else {
-      return Text(result.device.id.toString());
-    }
+    final deviceIdString = result.device.id.toString().replaceAll(colonRegex, '');
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          result.device.name.isNotEmpty ? result.device.name : deviceIdString,
+          style: themeManger.boldStyle(captionStyle, fontSizeFactor: FONT_SIZE_FACTOR),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(deviceIdString, style: dataStyle),
+      ],
+    );
   }
 
   Widget _buildAdvRow(String title, String value, TextStyle captionStyle, TextStyle dataStyle) {
@@ -91,14 +87,16 @@ class ScanResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final captionStyle = Get.textTheme.headline6!;
+    final detailStyle = captionStyle.apply(fontSizeFactor: 1 / FONT_SIZE_FACTOR);
     final secondaryStyle = captionStyle.apply(fontFamily: FONT_FAMILY);
     final themeManager = Get.find<ThemeManager>();
 
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
-      leading: Text(
-        result.rssi.toString(),
-        style: captionStyle.apply(fontFamily: FONT_FAMILY),
+      leading: Icon(
+        result.getEquipmentIcon(),
+        size: captionStyle.fontSize! * 2.5,
+        color: themeManager.getProtagonistColor(),
       ),
       trailing: themeManager.getIconFab(
         result.advertisementData.connectable
@@ -111,36 +109,36 @@ class ScanResultTile extends StatelessWidget {
       ),
       children: [
         _buildAdvRow(
-          'Complete Local Name',
+          'Complete Name',
           result.advertisementData.localName,
-          captionStyle,
-          captionStyle,
+          detailStyle,
+          secondaryStyle,
         ),
         _buildAdvRow(
           'Tx Power Level',
           '${result.advertisementData.txPowerLevel ?? 'N/A'}',
-          captionStyle,
+          detailStyle,
           secondaryStyle,
         ),
         _buildAdvRow(
           'Manufacturer Data',
           getNiceManufacturerData(
               result.advertisementData.manufacturerData.keys.toList(growable: false)),
-          captionStyle,
+          detailStyle,
           secondaryStyle,
         ),
         _buildAdvRow(
           'Service UUIDs',
-          (result.advertisementData.serviceUuids.isNotEmpty)
+          result.advertisementData.serviceUuids.isNotEmpty
               ? result.serviceUuids.join(', ').toUpperCase()
               : 'N/A',
-          captionStyle,
+          detailStyle,
           secondaryStyle,
         ),
         _buildAdvRow(
           'Service Data',
           getNiceServiceData(result.advertisementData.serviceData),
-          captionStyle,
+          detailStyle,
           secondaryStyle,
         ),
       ],
