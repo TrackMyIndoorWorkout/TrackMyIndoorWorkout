@@ -100,12 +100,16 @@ IconData getIcon(String? sport) {
     return Icons.directions_bike;
   } else if (sport == ActivityType.Run) {
     return Icons.directions_run;
-  } else if (sport == ActivityType.Kayaking ||
-      sport == ActivityType.Canoeing ||
-      sport == ActivityType.Rowing) {
+  } else if (sport == ActivityType.Kayaking) {
+    return Icons.kayaking;
+  } else if (sport == ActivityType.Canoeing || sport == ActivityType.Rowing) {
     return Icons.rowing;
   } else if (sport == ActivityType.Swim) {
     return Icons.waves;
+  } else if (sport == ActivityType.Elliptical) {
+    return Icons.downhill_skiing;
+  } else if (sport == ActivityType.StairStepper) {
+    return Icons.stairs;
   }
   return Icons.directions_bike;
 }

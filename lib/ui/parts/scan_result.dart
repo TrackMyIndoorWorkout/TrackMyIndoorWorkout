@@ -93,7 +93,11 @@ class ScanResultTile extends StatelessWidget {
 
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
-      leading: Text(result.rssi.toString(), style: secondaryStyle),
+      leading: Icon(
+        result.getEquipmentIcon(),
+        size: captionStyle.fontSize! * 2.5,
+        color: themeManager.getProtagonistColor(),
+      ),
       trailing: themeManager.getIconFab(
         result.advertisementData.connectable
             ? themeManager.getBlueColor()

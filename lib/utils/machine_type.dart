@@ -6,6 +6,7 @@ enum MachineType {
   CrossTrainer,
   StepClimber,
   StairClimber,
+  HeartRateMonitor,
 }
 
 extension MachineTypeEx on MachineType {
