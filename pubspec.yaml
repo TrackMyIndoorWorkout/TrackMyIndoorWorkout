@@ -8,7 +8,7 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  assorted_layout_widgets: ^5.0.1
+  assorted_layout_widgets: ^5.0.2
   bluetooth_enable:
     git:
       url: https://github.com/CsabaConsulting/bluetooth_enable.git
@@ -29,7 +29,7 @@ dependencies:
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
-  package_info_plus: ^1.0.3
+  package_info_plus: ^1.0.4
   permission_handler: ^8.1.2
   pref: ^2.4.0
   progress_indicators: ^1.0.0
@@ -43,10 +43,10 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/spinner_input.git
   sqflite: ^2.0.0+3
-  syncfusion_flutter_charts: ^19.2.44+1
+  syncfusion_flutter_charts: ^19.2.47+1
   tuple: ^2.0.0
   uni_links: ^0.5.1
-  url_launcher: ^6.0.8
+  url_launcher: ^6.0.9
   wakelock: ^0.5.2
   flutter:
     sdk: flutter
