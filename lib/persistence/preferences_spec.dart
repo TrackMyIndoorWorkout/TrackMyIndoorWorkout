@@ -155,12 +155,6 @@ class PreferencesSpec {
   String sport = ActivityType.Ride;
 
   late List<charts.PlotBand> plotBands;
-  TextStyle _bandTextStyle = const TextStyle(
-    fontFamily: FONT_FAMILY,
-    fontWeight: FontWeight.bold,
-    fontSize: 14,
-    color: Colors.grey,
-  );
 
   PreferencesSpec({
     required this.metric,
@@ -256,6 +250,13 @@ class PreferencesSpec {
       maxVal = zoneMax * 1.2;
     }
 
+    final bandTextStyle = TextStyle(
+      fontFamily: FONT_FAMILY,
+      fontWeight: FontWeight.bold,
+      fontSize: 11,
+      color: isLight ? Colors.grey.shade700 : Colors.grey.shade200,
+    );
+
     zoneLower.insert(0, decimalRound(minVal));
     zoneUpper.add(decimalRound(maxVal));
     plotBands.clear();
@@ -267,7 +268,7 @@ class PreferencesSpec {
         end: zoneUpper[i],
         color: bgColorByBin(i, isLight),
         text: "${zoneLower[i]} - ${zoneUpper[i]}",
-        textStyle: _bandTextStyle,
+        textStyle: bandTextStyle,
         horizontalTextAlignment: charts.TextAnchor.start,
         verticalTextAlignment: charts.TextAnchor.end,
       ),

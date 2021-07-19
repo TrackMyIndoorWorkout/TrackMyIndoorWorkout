@@ -83,6 +83,10 @@ class RecordingState extends State<RecordingScreen> {
   TextStyle _measurementStyle = TextStyle();
   TextStyle _unitStyle = TextStyle();
   Color _chartTextColor = Colors.black;
+  TextStyle _chartLabelStyle = const TextStyle(
+    fontFamily: FONT_FAMILY,
+    fontSize: 11,
+  );
   TextStyle _markerStyle = TextStyle();
   ExpandableThemeData _expandableThemeData = ExpandableThemeData(
     hasIcon: !SIMPLER_UI_SLOW_DEFAULT,
@@ -458,6 +462,11 @@ class RecordingState extends State<RecordingScreen> {
     };
 
     _chartTextColor = _themeManager.getProtagonistColor();
+    _chartLabelStyle = TextStyle(
+      fontFamily: FONT_FAMILY,
+      fontSize: 11,
+      color: _chartTextColor,
+    );
     _expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
       iconColor: _themeManager.getProtagonistColor(),
@@ -1174,9 +1183,22 @@ class RecordingState extends State<RecordingScreen> {
           width: size.width,
           height: height,
           child: charts.SfCartesianChart(
-            primaryXAxis: charts.DateTimeAxis(),
+            primaryXAxis: charts.DateTimeAxis(
+              labelStyle: _chartLabelStyle,
+              axisLine: charts.AxisLine(color: _chartTextColor),
+              majorTickLines: charts.MajorTickLines(color: _chartTextColor),
+              minorTickLines: charts.MinorTickLines(color: _chartTextColor),
+              majorGridLines: charts.MajorGridLines(color: _chartTextColor),
+              minorGridLines: charts.MinorGridLines(color: _chartTextColor),
+            ),
             primaryYAxis: charts.NumericAxis(
               plotBands: entry.value.plotBands,
+              labelStyle: _chartLabelStyle,
+              axisLine: charts.AxisLine(color: _chartTextColor),
+              majorTickLines: charts.MajorTickLines(color: _chartTextColor),
+              minorTickLines: charts.MinorTickLines(color: _chartTextColor),
+              majorGridLines: charts.MajorGridLines(color: _chartTextColor),
+              minorGridLines: charts.MinorGridLines(color: _chartTextColor),
             ),
             margin: EdgeInsets.all(0),
             series: _metricToDataFn[entry.value.metric]!(),
