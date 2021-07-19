@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 
 final sevenLightBgPalette = [
-  Colors.lightBlueAccent.shade100.withAlpha(120),
-  Colors.cyanAccent.shade100.withAlpha(120),
-  Colors.tealAccent.shade100.withAlpha(120),
-  Colors.limeAccent.shade100.withAlpha(120),
-  Colors.yellowAccent.shade100.withAlpha(120),
-  Colors.redAccent.shade100.withAlpha(120),
-  Colors.pinkAccent.shade100.withAlpha(120),
+  Colors.lightBlueAccent.shade100,
+  Colors.cyanAccent.shade100,
+  Colors.tealAccent.shade100,
+  Colors.limeAccent.shade100,
+  Colors.yellowAccent.shade100,
+  Colors.redAccent.shade100,
+  Colors.pinkAccent.shade100,
 ];
 
 final sevenDarkBgPalette = [
-  Colors.indigo.shade900.withAlpha(120),
-  Colors.cyan.shade900.withAlpha(120),
-  Colors.teal.shade900.withAlpha(120),
-  Colors.green.shade900.withAlpha(120),
-  Colors.yellow.shade900.withAlpha(120),
-  Colors.red.shade900.withAlpha(120),
-  Colors.purple.shade900.withAlpha(120),
+  Colors.indigo.shade900,
+  Colors.cyan.shade900,
+  Colors.teal.shade900,
+  Colors.green.shade900,
+  Colors.yellow.shade900,
+  Colors.red.shade900,
+  Colors.purple.shade900,
 ];
 
 final sevenLightFgPalette = [
@@ -41,19 +41,19 @@ final sevenDarkFgPalette = [
 ];
 
 final fiveLightBgPalette = [
-  Colors.lightBlueAccent.shade100.withAlpha(120),
-  Colors.cyanAccent.shade100.withAlpha(120),
-  Colors.lightGreenAccent.shade100.withAlpha(120),
-  Colors.yellowAccent.shade100.withAlpha(120),
-  Colors.redAccent.shade100.withAlpha(120),
+  Colors.lightBlueAccent.shade100,
+  Colors.cyanAccent.shade100,
+  Colors.lightGreenAccent.shade100,
+  Colors.yellowAccent.shade100,
+  Colors.redAccent.shade100,
 ];
 
 final fiveDarkBgPalette = [
-  Colors.indigo.shade900.withAlpha(120),
-  Colors.cyan.shade900.withAlpha(120),
-  Colors.green.shade900.withAlpha(120),
-  Colors.yellow.shade900.withAlpha(120),
-  Colors.red.shade900.withAlpha(120),
+  Colors.indigo.shade900,
+  Colors.cyan.shade900,
+  Colors.green.shade900,
+  Colors.yellow.shade900,
+  Colors.red.shade900,
 ];
 
 final fiveLightFgPalette = [
@@ -71,41 +71,3 @@ final fiveDarkFgPalette = [
   Colors.yellowAccent,
   Colors.redAccent,
 ];
-
-/*
-final sevenLightPiePalette = [
-  Colors.blue,
-  Colors.teal,
-  Colors.cyan,
-  Colors.lime,
-  Colors.yellow,
-  Colors.red,
-  Colors.pink,
-];
-
-final fiveLightPiePalette = [
-  Colors.blue,
-  Colors.cyan,
-  Colors.lime,
-  Colors.yellow,
-  Colors.red,
-];
-
-final sevenDarkPiePalette = [
-  Colors.indigo,
-  Colors.teal,
-  Colors.cyan,
-  Colors.green,
-  Colors.deepOrange,
-  Colors.red,
-  Colors.purple,
-];
-
-final fiveDarkPiePalette = [
-  Colors.indigo,
-  Colors.teal,
-  Colors.green,
-  Colors.deepOrange,
-  Colors.red,
-];
-*/

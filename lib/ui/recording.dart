@@ -1466,6 +1466,13 @@ class RecordingState extends State<RecordingScreen> {
               );
               await _initializeHeartRateMonitor();
             }),
+            _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, () async {
+              if (_measuring) {
+                await _stopMeasurement(false);
+              } else {
+                await _startMeasurement();
+              }
+            }),
           ],
         ),
       ),

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter/material.dart';
@@ -53,8 +51,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
   TextStyle _subtitleStyle = TextStyle();
   AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   ThemeManager _themeManager = Get.find<ThemeManager>();
-  double _ringDiameter = 1.0;
-  double _ringWidth = 1.0;
 
   @override
   void dispose() {
@@ -132,8 +128,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     _captionStyle = Get.textTheme.headline6!;
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
-    _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
-    _ringWidth = _ringDiameter * 0.2;
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
@@ -596,8 +590,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
         fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
         fabCloseColor: _themeManager.getBlueColor(),
         ringColor: _themeManager.getBlueColorInverse(),
-        ringDiameter: _ringDiameter,
-        ringWidth: _ringWidth,
         children: [
           _themeManager.getAboutFab(),
           _themeManager.getStravaFab(() async {
