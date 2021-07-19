@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
@@ -21,6 +20,7 @@ import 'models/display_record.dart';
 import 'models/histogram_data.dart';
 import 'models/measurement_counter.dart';
 import 'models/tile_configuration.dart';
+import 'about.dart';
 
 class RecordsScreen extends StatefulWidget {
   final Activity activity;
@@ -452,13 +452,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.help),
-            onPressed: () async {
-              if (await canLaunch(HELP_URL)) {
-                launch(HELP_URL);
-              } else {
-                Get.snackbar("Attention", "Cannot open URL");
-              }
-            },
+            onPressed: () => Get.to(() => AboutScreen()),
           ),
         ],
       ),
