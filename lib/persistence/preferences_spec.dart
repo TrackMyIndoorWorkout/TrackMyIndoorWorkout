@@ -307,23 +307,6 @@ class PreferencesSpec {
     return isLight ? sevenLightFgPalette[bin] : sevenDarkFgPalette[bin];
   }
 
-  /*
-  Color fgColorByValue(num value, bool isLight) {
-    final bin = binIndex(value);
-    return fgColorByBin(bin, isLight);
-  }
-
-  Color pieBgColorByBin(int bin, bool isLight) {
-    if (zonePercents.length <= 5) {
-      bin = min(bin, 4);
-      return isLight ? fiveLightPiePalette[bin] : fiveDarkPiePalette[bin];
-    }
-
-    bin = min(bin, 6);
-    return isLight ? sevenLightPiePalette[bin] : sevenDarkPiePalette[bin];
-  }
-  */
-
   List<Color> getPiePalette(bool isLight) {
     if (zonePercents.length <= 5) {
       return isLight ? fiveDarkFgPalette : fiveLightFgPalette;
