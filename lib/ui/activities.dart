@@ -61,8 +61,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   TextStyle _unitStyle = TextStyle();
   ThemeManager _themeManager = Get.find<ThemeManager>();
   ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
-  double _ringDiameter = 1.0;
-  double _ringWidth = 1.0;
 
   @override
   void initState() {
@@ -72,8 +70,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _leaderboardFeature =
         prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
-    _ringDiameter = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 1.5;
-    _ringWidth = _ringDiameter * 0.2;
   }
 
   Widget _actionButtonRow(Activity activity, double size) {
@@ -427,8 +423,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
         fabCloseColor: _themeManager.getBlueColor(),
         ringColor: _themeManager.getBlueColorInverse(),
-        ringDiameter: _ringDiameter,
-        ringWidth: _ringWidth,
         children: floatingActionButtons,
       ),
     );

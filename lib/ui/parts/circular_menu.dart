@@ -225,8 +225,8 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
     _fabIconBorder = widget.fabIconBorder ?? CircleBorder();
     _screenWidth = MediaQuery.of(context).size.width;
     _screenHeight = MediaQuery.of(context).size.height;
-    _ringDiameter = widget.ringDiameter ?? min(_screenWidth, _screenHeight) * 1.25;
-    _ringWidth = widget.ringWidth ?? _ringDiameter! * 0.3;
+    _ringDiameter = widget.ringDiameter ?? min(_screenWidth, _screenHeight) * 1.5;
+    _ringWidth = widget.ringWidth ?? _ringDiameter! * 0.2;
     _marginH = (widget.fabMargin.right + widget.fabMargin.left) / 2;
     _marginV = (widget.fabMargin.top + widget.fabMargin.bottom) / 2;
     _directionX = widget.alignment.x == 0 ? 1 : 1 * widget.alignment.x.sign;
