@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
@@ -21,6 +20,7 @@ import 'models/display_record.dart';
 import 'models/histogram_data.dart';
 import 'models/measurement_counter.dart';
 import 'models/tile_configuration.dart';
+import 'about.dart';
 
 class RecordsScreen extends StatefulWidget {
   final Activity activity;
@@ -53,11 +53,20 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _measurementStyle = TextStyle();
   TextStyle _textStyle = TextStyle();
   TextStyle _unitStyle = TextStyle();
-  TextStyle _chartLabelStyle = const TextStyle(
+  TextStyle _pieChartLabelStyle = const TextStyle(
     fontFamily: FONT_FAMILY,
     fontWeight: FontWeight.bold,
     fontSize: 16,
   );
+  ThemeManager _themeManager = Get.find<ThemeManager>();
+  bool _isLight = true;
+  Color _chartTextColor = Colors.black;
+  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
+  TextStyle _chartLabelStyle = const TextStyle(
+    fontFamily: FONT_FAMILY,
+    fontSize: 11,
+  );
+
   charts.TooltipBehavior _tooltipBehavior = charts.TooltipBehavior(enable: true);
   charts.ZoomPanBehavior _zoomPanBehavior = charts.ZoomPanBehavior(
     enableDoubleTapZooming: true,
@@ -71,10 +80,6 @@ class RecordsScreenState extends State<RecordsScreen> {
     activationMode: charts.ActivationMode.singleTap,
     tooltipDisplayMode: charts.TrackballDisplayMode.nearestPoint,
   );
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  bool _isLight = true;
-  Color _chartTextColor = Colors.black;
-  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
 
   Future<void> extraInit() async {
     final database = Get.find<AppDatabase>();
@@ -295,6 +300,11 @@ class RecordsScreenState extends State<RecordsScreen> {
     widget.activity.hydrate();
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
+    _chartLabelStyle = TextStyle(
+      fontFamily: FONT_FAMILY,
+      fontSize: 11,
+      color: _chartTextColor,
+    );
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
     extraInit();
@@ -322,7 +332,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         dataLabelSettings: charts.DataLabelSettings(
           isVisible: true,
           showZeroValue: false,
-          textStyle: _chartLabelStyle,
+          textStyle: _pieChartLabelStyle,
         ),
         enableTooltip: true,
         animationDuration: 0,
@@ -352,7 +362,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         dataLabelSettings: charts.DataLabelSettings(
           isVisible: true,
           showZeroValue: false,
-          textStyle: _chartLabelStyle,
+          textStyle: _pieChartLabelStyle,
         ),
         enableTooltip: true,
         animationDuration: 0,
@@ -382,7 +392,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         dataLabelSettings: charts.DataLabelSettings(
           isVisible: true,
           showZeroValue: false,
-          textStyle: _chartLabelStyle,
+          textStyle: _pieChartLabelStyle,
         ),
         enableTooltip: true,
         animationDuration: 0,
@@ -412,7 +422,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         dataLabelSettings: charts.DataLabelSettings(
           isVisible: true,
           showZeroValue: false,
-          textStyle: _chartLabelStyle,
+          textStyle: _pieChartLabelStyle,
         ),
         enableTooltip: true,
         animationDuration: 0,
@@ -442,13 +452,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.help),
-            onPressed: () async {
-              if (await canLaunch(HELP_URL)) {
-                launch(HELP_URL);
-              } else {
-                Get.snackbar("Attention", "Cannot open URL");
-              }
-            },
+            onPressed: () => Get.to(() => AboutScreen()),
           ),
         ],
       ),
@@ -602,9 +606,22 @@ class RecordsScreenState extends State<RecordsScreen> {
                         width: widget.size.width,
                         height: widget.size.height / 2,
                         child: charts.SfCartesianChart(
-                          primaryXAxis: charts.DateTimeAxis(),
+                          primaryXAxis: charts.DateTimeAxis(
+                            labelStyle: _chartLabelStyle,
+                            axisLine: charts.AxisLine(color: _chartTextColor),
+                            majorTickLines: charts.MajorTickLines(color: _chartTextColor),
+                            minorTickLines: charts.MinorTickLines(color: _chartTextColor),
+                            majorGridLines: charts.MajorGridLines(color: _chartTextColor),
+                            minorGridLines: charts.MinorGridLines(color: _chartTextColor),
+                          ),
                           primaryYAxis: charts.NumericAxis(
                             plotBands: _preferencesSpecs[index].plotBands,
+                            labelStyle: _chartLabelStyle,
+                            axisLine: charts.AxisLine(color: _chartTextColor),
+                            majorTickLines: charts.MajorTickLines(color: _chartTextColor),
+                            minorTickLines: charts.MinorTickLines(color: _chartTextColor),
+                            majorGridLines: charts.MajorGridLines(color: _chartTextColor),
+                            minorGridLines: charts.MinorGridLines(color: _chartTextColor),
                           ),
                           margin: EdgeInsets.all(0),
                           series: _tileConfigurations[item]!.dataFn(),
@@ -622,7 +639,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         height: widget.size.height / 3,
                         child: charts.SfCircularChart(
                           margin: EdgeInsets.all(0),
-                          legend: charts.Legend(isVisible: true, textStyle: _chartLabelStyle),
+                          legend: charts.Legend(isVisible: true, textStyle: _pieChartLabelStyle),
                           series: _tileConfigurations[item]!.histogramFn!(),
                           palette: _preferencesSpecs[index].getPiePalette(_isLight),
                           tooltipBehavior: _tooltipBehavior,
