@@ -54,7 +54,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   @override
   void dispose() {
-    FlutterBlue.instance.stopScan();
+    if (_isScanning) {
+      FlutterBlue.instance.stopScan();
+    }
+
     _heartRateMonitor?.detach();
     super.dispose();
   }
@@ -434,9 +437,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               return _themeManager.getGreenGenericFab(
                                 Icon(Icons.open_in_new),
                                 () async {
-                                  await FlutterBlue.instance.stopScan();
-                                  await Future.delayed(
-                                      Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                                  if (_isScanning) {
+                                    await FlutterBlue.instance.stopScan();
+                                    await Future.delayed(
+                                        Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                                  }
+
                                   await goToRecording(_fitnessEquipment!.device!, snapshot.data!);
                                 },
                               );
@@ -465,15 +471,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       children: snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
                         addScannedDevice(r);
                         if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {
-                          FlutterBlue.instance.stopScan().whenComplete(() async {
-                            await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
-                          });
+                          if (_isScanning) {
+                            FlutterBlue.instance.stopScan().whenComplete(() async {
+                              await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                            });
+                          }
                         }
                         return ScanResultTile(
                           result: r,
                           onEquipmentTap: () async {
-                            await FlutterBlue.instance.stopScan();
-                            await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                            if (_isScanning) {
+                              await FlutterBlue.instance.stopScan();
+                              await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                            }
+
                             await goToRecording(r.device, BluetoothDeviceState.disconnected);
                           },
                           onHrmTap: () async {
@@ -615,14 +626,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 return Container();
               } else if (snapshot.data!) {
                 return _themeManager.getBlueFab(Icons.stop, () async {
-                  await FlutterBlue.instance.stopScan();
-                  await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                  if (_isScanning) {
+                    await FlutterBlue.instance.stopScan();
+                    await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                  }
                 });
               } else {
-                return _themeManager.getGreenFab(
-                  Icons.search,
-                  () => _startScan(),
-                );
+                return _themeManager.getGreenFab(Icons.search, () => _startScan());
               }
             },
           ),
