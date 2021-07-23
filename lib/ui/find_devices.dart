@@ -42,6 +42,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _isScanning = false;
   List<BluetoothDevice> _scannedDevices = [];
   bool _goingToRecording = false;
+  bool _autoConnectLatch = false;
   bool _pairingHrm = false;
   List<String> _lastEquipmentIds = [];
   bool _filterDevices = DEVICE_FILTERING_DEFAULT;
@@ -86,6 +87,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
     _scannedDevices.clear();
     _isScanning = true;
+    _autoConnectLatch = true;
     FlutterBlue.instance
         .startScan(timeout: Duration(seconds: _scanDuration))
         .whenComplete(() => {_isScanning = false});
@@ -132,16 +134,21 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
   }
 
-  Future<bool> goToRecording(BluetoothDevice device, BluetoothDeviceState initialState) async {
+  Future<bool> goToRecording(
+    BluetoothDevice device,
+    BluetoothDeviceState initialState,
+    bool manual,
+  ) async {
     if (!_advertisementCache.hasEntry(device.id.id)) {
       return false;
     }
 
-    if (_goingToRecording) {
+    if (_goingToRecording || _autoConnect && !manual && !_autoConnectLatch) {
       return false;
     }
 
     _goingToRecording = true;
+    _autoConnectLatch = false;
 
     // Device determination logics
     // Step 1. Try to infer from the Bluetooth advertised name
@@ -193,11 +200,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT) {
         descriptor = deviceMap[GENERIC_FTMS_BIKE_FOURCC]!;
       } else {
+        Get.snackbar("Error", "Device identification failed");
+
         setState(() {
           _goingToRecording = false;
         });
-
-        Get.snackbar("Error", "Device identification failed");
 
         return false;
       }
@@ -276,6 +283,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
           onPressed: () => Get.close(1),
         ),
       );
+
+      setState(() {
+        _goingToRecording = false;
+      });
     } else {
       if (deviceUsage != null) {
         deviceUsage.manufacturerName = fitnessEquipment.manufacturerName;
@@ -283,22 +294,18 @@ class FindDevicesState extends State<FindDevicesScreen> {
         await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
       }
 
-      setState(() {
-        _goingToRecording = false;
-      });
-
       Get.to(() => RecordingScreen(
             device: device,
             descriptor: descriptor!,
             initialState: initialState,
             size: Get.mediaQuery.size,
             sport: descriptor.defaultSport,
-          ));
+          ))?.then((_) {
+        setState(() {
+          _goingToRecording = false;
+        });
+      });
     }
-
-    setState(() {
-      _goingToRecording = false;
-    });
 
     return true;
   }
@@ -319,6 +326,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   color: Colors.white,
                 );
               } else {
+                _isScanning = false;
                 final lasts = _scannedDevices.where((d) => _lastEquipmentIds.contains(d.id.id));
                 if (_fitnessEquipment != null &&
                         !_advertisementCache
@@ -331,15 +339,23 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         lasts.length > 0 &&
                         !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
                   Get.snackbar("Request", "Please scan again");
-                } else if (_autoConnect) {
+                } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
                   if (_fitnessEquipment != null) {
                     WidgetsBinding.instance?.addPostFrameCallback((_) {
-                      goToRecording(_fitnessEquipment!.device!, BluetoothDeviceState.connected);
+                      goToRecording(
+                        _fitnessEquipment!.device!,
+                        BluetoothDeviceState.connected,
+                        false,
+                      );
                     });
                   } else {
                     if (_filterDevices && _scannedDevices.length == 1) {
                       WidgetsBinding.instance?.addPostFrameCallback((_) {
-                        goToRecording(_scannedDevices.first, BluetoothDeviceState.disconnected);
+                        goToRecording(
+                          _scannedDevices.first,
+                          BluetoothDeviceState.disconnected,
+                          false,
+                        );
                       });
                     } else if (_scannedDevices.length > 1 && _lastEquipmentIds.length > 0) {
                       final lasts = _scannedDevices
@@ -355,7 +371,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               .compareTo(_advertisementCache.getEntry(b.id.id)!.txPower);
                         });
                         WidgetsBinding.instance?.addPostFrameCallback((_) {
-                          goToRecording(lasts.last, BluetoothDeviceState.disconnected);
+                          goToRecording(lasts.last, BluetoothDeviceState.disconnected, false);
                         });
                       }
                     }
@@ -443,7 +459,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                         Duration(milliseconds: UI_INTERMITTENT_DELAY));
                                   }
 
-                                  await goToRecording(_fitnessEquipment!.device!, snapshot.data!);
+                                  await goToRecording(
+                                    _fitnessEquipment!.device!,
+                                    snapshot.data!,
+                                    true,
+                                  );
                                 },
                               );
                             } else {
@@ -485,7 +505,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
                             }
 
-                            await goToRecording(r.device, BluetoothDeviceState.disconnected);
+                            await goToRecording(r.device, BluetoothDeviceState.disconnected, true);
                           },
                           onHrmTap: () async {
                             setState(() {
