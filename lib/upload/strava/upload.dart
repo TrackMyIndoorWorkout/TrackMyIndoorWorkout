@@ -5,9 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import '../export/activity_export.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/database.dart';
+import '../../export/activity_export.dart';
+import '../../persistence/models/activity.dart';
+import '../../persistence/database.dart';
 
 import 'constants.dart';
 import 'strava_status_code.dart';
