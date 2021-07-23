@@ -120,11 +120,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
     _isScanning = false;
-    if (_instantScan) {
-      _startScan();
-    }
-
-    _openDatabase();
+    _openDatabase().then((value) => _instantScan ? _startScan() : {});
 
     _captionStyle = Get.textTheme.headline6!;
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
