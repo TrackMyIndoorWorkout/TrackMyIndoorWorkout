@@ -31,7 +31,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturer: "Nautilus, Inc",
     manufacturerFitId: NAUTILUS_FIT_ID,
     model: "IC BIKE",
-    calorieFactorDefault: 1.40,
+    calorieFactorDefault: 3.60,
   ),
   SCHWINN_UPRIGHT_BIKE_FOURCC: IndoorBikeDeviceDescriptor(
     fourCC: SCHWINN_IC_BIKE_FOURCC,
