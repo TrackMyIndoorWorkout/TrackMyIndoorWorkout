@@ -155,7 +155,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     DeviceDescriptor? descriptor;
     for (var dev in deviceMap.values) {
       for (var prefix in dev.namePrefixes) {
-        if (device.name.startsWith(prefix)) {
+        if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
           descriptor = dev;
           break;
         }

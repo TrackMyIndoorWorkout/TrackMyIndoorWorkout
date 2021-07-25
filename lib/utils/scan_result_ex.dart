@@ -30,7 +30,7 @@ extension ScanResultEx on ScanResult {
 
     for (var dev in deviceMap.values) {
       for (var prefix in dev.namePrefixes) {
-        if (device.name.startsWith(prefix)) {
+        if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
           return true;
         }
       }
