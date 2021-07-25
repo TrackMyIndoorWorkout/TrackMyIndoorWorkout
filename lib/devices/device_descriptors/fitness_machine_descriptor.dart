@@ -221,5 +221,4 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     flag ~/= 2;
     return flag;
   }
-
 }

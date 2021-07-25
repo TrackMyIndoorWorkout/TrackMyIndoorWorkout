@@ -114,6 +114,8 @@ abstract class DeviceBase {
       return ActivityType.Ride;
     } else if (characteristicsId == ROWER_DEVICE_ID) {
       return ActivityType.Rowing;
+    } else if (characteristicsId == CROSS_TRAINER_ID) {
+      return ActivityType.Elliptical;
     }
 
     return null;

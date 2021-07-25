@@ -28,6 +28,8 @@ class AdvertisementDigest {
       return ActivityType.Run;
     } else if (machineType == MachineType.Rower) {
       return ActivityType.Kayaking;
+    } else if (machineType == MachineType.CrossTrainer) {
+      return ActivityType.Elliptical;
     }
 
     return ActivityType.Ride;
