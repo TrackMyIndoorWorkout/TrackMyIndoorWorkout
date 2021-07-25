@@ -20,6 +20,7 @@ const GENERIC_FTMS_KAYAK_FOURCC = "GKay";
 const GENERIC_FTMS_CANOE_FOURCC = "GCan";
 const GENERIC_FTMS_ROWER_FOURCC = "GRow";
 const GENERIC_FTMS_SWIM_FOURCC = "GSwi";
+const GENERIC_FTMS_ELLIPTICAL_FOURCC = "GXtr";
 
 Map<String, DeviceDescriptor> deviceMap = {
   PRECOR_SPINNER_CHRONO_POWER_FOURCC: PrecorSpinnerChronoPower(),
@@ -126,6 +127,17 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturerFitId: STRAVA_FIT_ID,
     model: "Generic Swim Ergometer",
   ),
+  GENERIC_FTMS_ELLIPTICAL_FOURCC: RowerDeviceDescriptor(
+    defaultSport: ActivityType.Elliptical,
+    isMultiSport: false,
+    fourCC: GENERIC_FTMS_ELLIPTICAL_FOURCC,
+    vendorName: "Unknown",
+    modelName: "Generic Cross Trainer / Elliptical",
+    namePrefixes: ["FTMS Cross Trainer"],
+    manufacturer: "Unknown",
+    manufacturerFitId: STRAVA_FIT_ID,
+    model: "Generic Cross Trainer",
+  ),
 };
 
 DeviceDescriptor genericDescriptorForSport(String sport) {
@@ -141,6 +153,8 @@ DeviceDescriptor genericDescriptorForSport(String sport) {
     return deviceMap[GENERIC_FTMS_ROWER_FOURCC]!;
   } else if (sport == ActivityType.Swim) {
     return deviceMap[GENERIC_FTMS_SWIM_FOURCC]!;
+  } else if (sport == ActivityType.Elliptical) {
+    return deviceMap[GENERIC_FTMS_ELLIPTICAL_FOURCC]!;
   }
 
   return deviceMap[GENERIC_FTMS_BIKE_FOURCC]!;

@@ -86,7 +86,7 @@ class Record {
       if (pace!.abs() < DISPLAY_EPS) {
         speed = 0.0;
       } else {
-        if (sport == ActivityType.Run) {
+        if (sport == ActivityType.Run || sport == ActivityType.Elliptical) {
           // minutes / km pace
           speed = 60.0 / pace!;
         } else if (sport == ActivityType.Kayaking ||

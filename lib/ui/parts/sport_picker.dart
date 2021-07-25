@@ -35,6 +35,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
         ? [
             ActivityType.Ride,
             ActivityType.Run,
+            ActivityType.Elliptical,
             ActivityType.Kayaking,
             ActivityType.Canoeing,
             ActivityType.Rowing,

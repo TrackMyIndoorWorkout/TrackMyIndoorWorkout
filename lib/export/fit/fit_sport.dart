@@ -66,6 +66,8 @@ Tuple2 toFitSport(String sport) {
     sport = "TrackRun";
   } else if (sport == ActivityType.Ride) {
     sport = "TrackRide";
+  } else if (sport == ActivityType.Elliptical) {
+    sport = "Elliptical";
   }
 
   if (!fitSport.containsKey(sport)) {

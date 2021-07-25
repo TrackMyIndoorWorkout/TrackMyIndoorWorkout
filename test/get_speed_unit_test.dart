@@ -30,7 +30,7 @@ void main() {
   });
 
   test("getSpeedUnit for other (Elliptical):", () async {
-    expect(getSpeedUnit(true, ActivityType.Elliptical), "kmh");
-    expect(getSpeedUnit(false, ActivityType.Elliptical), "mph");
+    expect(getSpeedUnit(true, ActivityType.Elliptical), "min /km");
+    expect(getSpeedUnit(false, ActivityType.Elliptical), "min /mi");
   });
 }

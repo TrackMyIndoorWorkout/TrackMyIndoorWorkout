@@ -79,12 +79,20 @@ void main() {
     });
   });
 
-  group("speedOrPace for elliptical sports:", () {
+  group("speedOrPace for metric system and elliptical:", () {
     speeds.forEach((speed) {
-      test("$speed (Elliptical)", () async {
-        // There's no imperial for water sports, it's always 500m
-        expect(speedOrPace(speed, false, ActivityType.Elliptical), speed);
-        expect(speedOrPace(speed, true, ActivityType.Elliptical), speed);
+      final expected = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed;
+      test("$speed (Elliptical) -> $expected", () async {
+        expect(speedOrPace(speed, true, ActivityType.Elliptical), expected);
+      });
+    });
+  });
+
+  group("speedOrPace for imperial system and elliptical:", () {
+    speeds.forEach((speed) {
+      final expected = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed / KM2MI;
+      test("$speed (Elliptical) -> $expected", () async {
+        expect(speedOrPace(speed, false, ActivityType.Elliptical), expected);
       });
     });
   });

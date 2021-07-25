@@ -15,7 +15,7 @@ double speedOrPace(double speed, bool si, String sport) {
   } else {
     if (speed.abs() < DISPLAY_EPS) return 0.0;
 
-    if (sport == ActivityType.Run) {
+    if (sport == ActivityType.Run || sport == ActivityType.Elliptical) {
       final pace = 60.0 / speed;
 
       if (si) return pace;
@@ -79,7 +79,7 @@ String tcxSport(String sport) {
 String getSpeedUnit(bool si, String sport) {
   if (sport == ActivityType.Ride) {
     return si ? 'kmh' : 'mph';
-  } else if (sport == ActivityType.Run) {
+  } else if (sport == ActivityType.Run || sport == ActivityType.Elliptical) {
     return si ? 'min /km' : 'min /mi';
   } else if (sport == ActivityType.Kayaking ||
       sport == ActivityType.Canoeing ||
@@ -118,7 +118,8 @@ String getCadenceUnit(String sport) {
   if (sport == ActivityType.Kayaking ||
       sport == ActivityType.Canoeing ||
       sport == ActivityType.Rowing ||
-      sport == ActivityType.Swim) {
+      sport == ActivityType.Swim ||
+      sport == ActivityType.Elliptical) {
     return "spm";
   }
   return "rpm";
