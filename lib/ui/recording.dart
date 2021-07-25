@@ -977,7 +977,7 @@ class RecordingState extends State<RecordingScreen> {
       final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0x8800FF00, "${rank - 2}", false));
+        markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 2}", false));
       }
     }
 
@@ -986,7 +986,7 @@ class RecordingState extends State<RecordingScreen> {
       final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0x8800FF00, "${rank - 1}", false));
+        markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 1}", false));
       }
     }
 
@@ -995,7 +995,7 @@ class RecordingState extends State<RecordingScreen> {
       final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0x880000FF, "${rank + 1}", false));
+        markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 1}", false));
       }
     }
 
@@ -1004,7 +1004,7 @@ class RecordingState extends State<RecordingScreen> {
       final distance = leaderboard[rank].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0x880000FF, "${rank + 2}", false));
+        markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 2}", false));
       }
     }
 

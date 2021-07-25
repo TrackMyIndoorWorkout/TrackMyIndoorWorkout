@@ -34,7 +34,7 @@ class TrackCalculator {
       trackOffset = offset;
 
       trackStroke = Paint()
-        ..color = Color(0x88777777)
+        ..color = Color(0xff777777)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2 * THICK
         ..isAntiAlias = true;
