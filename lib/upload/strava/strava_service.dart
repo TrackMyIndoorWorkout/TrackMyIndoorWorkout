@@ -1,8 +1,8 @@
-import '../export/fit/fit_export.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
-import '../persistence/secret.dart';
-import '../strava/strava_status_code.dart';
+import '../../export/fit/fit_export.dart';
+import '../../persistence/models/activity.dart';
+import '../../persistence/models/record.dart';
+import '../../persistence/secret.dart';
+import 'strava_status_code.dart';
 import 'fault.dart';
 import 'strava.dart';
 

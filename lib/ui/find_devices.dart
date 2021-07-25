@@ -14,7 +14,7 @@ import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
-import '../strava/strava_service.dart';
+import '../upload/strava/strava_service.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/scan_result_ex.dart';
@@ -175,40 +175,55 @@ class FindDevicesState extends State<FindDevicesScreen> {
       deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.id.id).first;
     }
 
-    // Step 3. Try to infer from DeviceUsage or FTMS advertisement service data
+    FitnessEquipment? fitnessEquipment;
+
+    // Step 3. Try to infer from DeviceUsage, FTMS advertisement service data or characteristics
     if (descriptor == null) {
       if (deviceUsage != null) {
         descriptor = genericDescriptorForSport(deviceUsage.sport);
-      } else if (advertisementDigest.machineType != MachineType.NotFitnessMachine) {
-        final sport = advertisementDigest.fitnessMachineSport();
-        descriptor = genericDescriptorForSport(sport);
-        if (!descriptor.isMultiSport) {
-          deviceUsage = DeviceUsage(
-            sport: sport,
-            mac: device.id.id,
-            name: device.name,
-            manufacturer: advertisementDigest.manufacturer,
-            time: DateTime.now().millisecondsSinceEpoch,
-          );
-          await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
+      } else {
+        String? inferredSport;
+        if (advertisementDigest.machineType != MachineType.NotFitnessMachine) {
+          // Determine FTMS sport by Service Data bits
+          inferredSport = advertisementDigest.fitnessMachineSport();
+        } else if (advertisementDigest.serviceUuids.contains(FITNESS_MACHINE_ID)) {
+          // Determine FTMS sport by analyzing 0x1826 service's characteristics
+          setState(() {
+            _goingToRecording = true;
+          });
+
+          fitnessEquipment = FitnessEquipment(device: device);
+          final success = await fitnessEquipment.connectOnDemand(identify: true);
+          if (success && fitnessEquipment.characteristicsId != null) {
+            inferredSport = fitnessEquipment.inferSportFromCharacteristicsId();
+          }
+        }
+
+        if (inferredSport == null) {
+          Get.snackbar("Error", "Could not infer sport of the device");
+
+          setState(() {
+            _goingToRecording = false;
+          });
+
+          return false;
+        } else {
+          descriptor = genericDescriptorForSport(inferredSport);
+          if (!descriptor.isMultiSport) {
+            deviceUsage = DeviceUsage(
+              sport: inferredSport,
+              mac: device.id.id,
+              name: device.name,
+              manufacturer: advertisementDigest.manufacturer,
+              time: DateTime.now().millisecondsSinceEpoch,
+            );
+            await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
+          }
         }
       }
     }
 
     final prefService = Get.find<BasePrefService>();
-    if (descriptor == null) {
-      if (prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT) {
-        descriptor = deviceMap[GENERIC_FTMS_BIKE_FOURCC]!;
-      } else {
-        Get.snackbar("Error", "Device identification failed");
-
-        setState(() {
-          _goingToRecording = false;
-        });
-
-        return false;
-      }
-    }
 
     if (descriptor.isMultiSport) {
       final multiSportSupport = prefService.get<bool>(MULTI_SPORT_DEVICE_SUPPORT_TAG) ??
@@ -249,8 +264,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
     }
 
-    var fitnessEquipment =
-        Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
+    FitnessEquipment? ftmsWithoutServiceData = fitnessEquipment;
+    fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
+
     if (fitnessEquipment != null) {
       if (fitnessEquipment.device?.id.id != device.id.id) {
         await fitnessEquipment.detach();
@@ -258,10 +274,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
         Get.delete<FitnessEquipment>();
         fitnessEquipment = null;
       }
+    } else {
+      fitnessEquipment = ftmsWithoutServiceData;
     }
 
     if (fitnessEquipment != null) {
       fitnessEquipment.descriptor = descriptor;
+      if (ftmsWithoutServiceData != null) {
+        Get.put<FitnessEquipment>(fitnessEquipment);
+      }
     } else {
       fitnessEquipment = FitnessEquipment(
         descriptor: descriptor,

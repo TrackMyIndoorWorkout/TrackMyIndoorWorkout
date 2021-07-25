@@ -7,6 +7,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
+import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../gatt_constants.dart';
 
@@ -104,6 +105,18 @@ abstract class DeviceBase {
     }
 
     return discoverCore();
+  }
+
+  String? inferSportFromCharacteristicsId() {
+    if (characteristicsId == TREADMILL_ID) {
+      return ActivityType.Run;
+    } else if (characteristicsId == PRECOR_MEASUREMENT_ID || characteristicsId == INDOOR_BIKE_ID) {
+      return ActivityType.Ride;
+    } else if (characteristicsId == ROWER_DEVICE_ID) {
+      return ActivityType.Rowing;
+    }
+
+    return null;
   }
 
   Future<void> attach() async {
