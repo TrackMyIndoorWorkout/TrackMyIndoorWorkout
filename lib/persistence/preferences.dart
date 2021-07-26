@@ -21,6 +21,12 @@ const UNIT_SYSTEM_DEFAULT = false;
 const UNIT_SYSTEM_DESCRIPTION =
     "On: metric (km/h speed, meters distance), Off: imperial (mp/h speed, miles distance).";
 
+const DISTANCE_RESOLUTION = "Distance Resolution High/Low";
+const DISTANCE_RESOLUTION_TAG = "distance_resolution";
+const DISTANCE_RESOLUTION_DEFAULT = false;
+const DISTANCE_RESOLUTION_DESCRIPTION =
+    "On: high resolution - m or yd, Off: low resolution - km or mi.";
+
 const INSTANT_SCAN = "Instant Scanning";
 const INSTANT_SCAN_TAG = "instant_scan";
 const INSTANT_SCAN_DEFAULT = true;

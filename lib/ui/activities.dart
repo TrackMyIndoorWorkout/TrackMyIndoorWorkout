@@ -51,6 +51,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   bool _si = UNIT_SYSTEM_DEFAULT;
+  bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
   bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
@@ -67,6 +68,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     super.initState();
     final prefService = Get.find<BasePrefService>();
     _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ?? DISTANCE_RESOLUTION_DEFAULT;
     _leaderboardFeature =
         prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
@@ -388,10 +390,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       children: [
                         _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
                         Spacer(),
-                        Text(activity.distanceString(_si), style: _measurementStyle),
+                        Text(activity.distanceString(_si, _highRes), style: _measurementStyle),
                         SizedBox(
                           width: _sizeDefault,
-                          child: Text(_si ? 'm' : 'mi', style: _unitStyle),
+                          child: Text(distanceUnit(_si, _highRes), style: _unitStyle),
                         ),
                       ],
                     ),

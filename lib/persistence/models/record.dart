@@ -125,8 +125,8 @@ class Record {
     return speedOrPaceString(speed ?? 0.0, si, sport, limitSlowSpeed: true);
   }
 
-  String distanceStringByUnit(bool si) {
-    return distanceString(distance ?? 0.0, si);
+  String distanceStringByUnit(bool si, bool highRes) {
+    return distanceString(distance ?? 0.0, si, highRes);
   }
 
   DisplayRecord display() {

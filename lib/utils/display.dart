@@ -125,13 +125,32 @@ String getCadenceUnit(String sport) {
   return "rpm";
 }
 
-String distanceString(double distance, bool si) {
-  if (si) return distance.toStringAsFixed(0);
+String distanceString(double distance, bool si, bool highRes) {
+  if (si) {
+    if (highRes) {
+      return distance.toStringAsFixed(0);
+    } else {
+      return (distance / 1000).toStringAsFixed(2);
+    }
+  }
 
-  return '${(distance * M2MILE).toStringAsFixed(2)}';
+  if (highRes) {
+    return (distance * M2YARD).toStringAsFixed(0);
+  } else {
+    return (distance * M2MILE).toStringAsFixed(2);
+  }
 }
 
-String distanceByUnit(double distance, bool si) {
-  final distanceStr = distanceString(distance, si);
-  return '$distanceStr ${si ? "m" : "mi"}';
+String distanceUnit(bool si, bool highRes) {
+  if (si) {
+    return highRes ? "m" : "km";
+  } else {
+    return highRes ? "yd" : "mi";
+  }
+}
+
+String distanceByUnit(double distance, bool si, bool highRes) {
+  final distanceStr = distanceString(distance, si, highRes);
+  final unitStr = distanceUnit(si, highRes);
+  return '$distanceStr $unitStr';
 }

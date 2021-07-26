@@ -57,8 +57,8 @@ class WorkoutSummary {
     return '$speedString $speedUnit';
   }
 
-  String distanceStringWithUnit(bool si) {
-    return distanceByUnit(distance, si);
+  String distanceStringWithUnit(bool si, bool highRes) {
+    return distanceByUnit(distance, si, highRes);
   }
 
   double distanceAtTime(int elapsed) {

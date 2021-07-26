@@ -69,12 +69,12 @@ class Activity {
     this.stravaId = stravaId;
   }
 
-  String distanceString(bool si) {
-    return disp.distanceString(distance, si);
+  String distanceString(bool si, bool highRes) {
+    return disp.distanceString(distance, si, highRes);
   }
 
-  String distanceByUnit(bool si) {
-    return disp.distanceByUnit(distance, si);
+  String distanceByUnit(bool si, bool highRes) {
+    return disp.distanceByUnit(distance, si, highRes);
   }
 
   Activity hydrate() {
