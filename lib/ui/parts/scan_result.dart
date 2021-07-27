@@ -22,7 +22,7 @@ class ScanResultTile extends StatelessWidget {
   final VoidCallback onHrmTap;
 
   Widget _buildTitle(ThemeManager themeManger, TextStyle captionStyle, TextStyle dataStyle) {
-    final deviceIdString = result.device.id.toString().replaceAll(colonRegex, '');
+    final deviceIdString = result.device.id.id.replaceAll(colonRegex, '');
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
