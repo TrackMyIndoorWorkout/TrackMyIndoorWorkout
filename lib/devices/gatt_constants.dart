@@ -35,7 +35,14 @@ const WEIGHT_CHARACTERISTIC = '2a98';
 const WEIGHT_SUCCESS_OPCODE = 0x13;
 const FITNESS_MACHINE_STATUS = '2ada';
 const FITNESS_MACHINE_CONTROL_POINT = '2ad9';
-const SPIN_DOWN_OPCODE = 0x13;
+// Control opcodes: Table 4.15: Fitness Machine Control Point Procedure Requirements
+const REQUEST_CONTROL = 0x00;
+const RESET_CONTROL = 0x01;
+const SET_RESISTANCE_LEVEL_CONTROL = 0x04;
+const START_OR_RESUME_CONTROL = 0x07;
+const STOP_OR_PAUSE_CONTROL = 0x08;
+const SPIN_DOWN_CONTROL = 0x13;
+// More
 const SPIN_DOWN_STATUS = 0x14;
 const SPIN_DOWN_START_COMMAND = 0x01;
 const CONTROL_OPCODE = 0x80;

@@ -220,7 +220,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         .throttleTime(Duration(milliseconds: SPIN_DOWN_THRESHOLD))
         .listen((data) async {
       if (data.length == 1) {
-        if (data[0] != SPIN_DOWN_OPCODE) {
+        if (data[0] != SPIN_DOWN_CONTROL) {
           setState(() {
             _step = STEP_DONE;
             _calibrationState = CalibrationState.CalibrationFail;
@@ -230,7 +230,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
       if (data.length == 7) {
         if (data[0] != CONTROL_OPCODE ||
-            data[1] != SPIN_DOWN_OPCODE ||
+            data[1] != SPIN_DOWN_CONTROL ||
             data[2] != SUCCESS_RESPONSE) {
           setState(() {
             _step = STEP_DONE;
@@ -395,7 +395,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     });
 
     try {
-      await _controlPoint?.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
+      await _controlPoint?.write([SPIN_DOWN_CONTROL, SPIN_DOWN_START_COMMAND]);
       await _fitnessMachineStatus?.setNotifyValue(true);
     } on PlatformException catch (e, stack) {
       debugPrint("$e");

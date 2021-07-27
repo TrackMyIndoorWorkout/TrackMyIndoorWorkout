@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -13,8 +14,8 @@ import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
-import '../device_descriptors/device_descriptor.dart';
 import '../bluetooth_device_ex.dart';
+import '../device_descriptors/device_descriptor.dart';
 import '../gatt_constants.dart';
 import 'device_base.dart';
 import 'heart_rate_monitor.dart';
@@ -49,6 +50,8 @@ class FitnessEquipment extends DeviceBase {
   Random _random = Random();
   double? slowPace;
   bool equipmentDiscovery = false;
+  BluetoothCharacteristic? _controlPoint;
+  StreamSubscription? _controlPointSubscription;
 
   FitnessEquipment({this.descriptor, device})
       : super(
@@ -132,6 +135,29 @@ class FitnessEquipment extends DeviceBase {
     return await discover(identify: identify);
   }
 
+  Future<void> connectToControlPoint() async {
+    _controlPoint = BluetoothDeviceEx.filterCharacteristic(
+        service!.characteristics, FITNESS_MACHINE_CONTROL_POINT);
+
+    try {
+      await _controlPoint?.setNotifyValue(true); // Is this what needed for indication?
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+
+    _controlPointSubscription = _controlPoint?.value
+        .throttleTime(Duration(milliseconds: SPIN_DOWN_THRESHOLD))
+        .listen((data) async {
+          debugPrint("FTMS control point: $data");
+      if (data[0] != CONTROL_OPCODE ||
+          data[1] != SPIN_DOWN_CONTROL ||
+          data[2] != SUCCESS_RESPONSE) {
+        return;
+      }
+    });
+  }
+
   Future<bool> discover({bool identify = false, bool retry = false}) async {
     if (uxDebug) return true;
 
@@ -141,6 +167,9 @@ class FitnessEquipment extends DeviceBase {
     if (equipmentDiscovery || descriptor == null) return false;
 
     equipmentDiscovery = true;
+
+    await connectToControlPoint();
+
     // Check manufacturer name
     if (manufacturerName == null) {
       final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);

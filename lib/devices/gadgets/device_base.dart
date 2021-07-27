@@ -15,7 +15,7 @@ abstract class DeviceBase {
   final String serviceId;
   String? characteristicsId;
   BluetoothDevice? device;
-  BluetoothService? _service;
+  BluetoothService? service;
   List<BluetoothService> services = [];
   BluetoothCharacteristic? characteristic;
   StreamSubscription? subscription;
@@ -62,18 +62,18 @@ abstract class DeviceBase {
   bool discoverCore() {
     discovering = false;
     discovered = true;
-    _service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
+    service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
 
-    if (_service == null) {
+    if (service == null) {
       characteristic = null;
       return false;
     }
 
     if (characteristicsId != null) {
-      characteristic = _service!.characteristics
+      characteristic = service!.characteristics
           .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
     } else {
-      characteristic = _service!.characteristics
+      characteristic = service!.characteristics
           .firstWhereOrNull((ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()));
       characteristicsId = characteristic?.uuid.uuidString();
     }
@@ -164,7 +164,7 @@ abstract class DeviceBase {
       await device?.disconnect();
       characteristic = null;
       services = [];
-      _service = null;
+      service = null;
     }
     connected = false;
     connecting = false;
