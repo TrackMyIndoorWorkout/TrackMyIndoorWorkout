@@ -23,6 +23,7 @@ class SportLeaderboardScreen extends StatefulWidget {
 class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   AppDatabase _database = Get.find<AppDatabase>();
   bool _si = UNIT_SYSTEM_DEFAULT;
+  bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
   int _editCount = 0;
   double _sizeDefault = 10.0;
   TextStyle _textStyle = TextStyle();
@@ -34,6 +35,8 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   void initState() {
     super.initState();
     _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
+        DISTANCE_RESOLUTION_DEFAULT;
     _textStyle = Get.textTheme.headline5!
         .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
@@ -109,7 +112,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
           final dateString = DateFormat.yMd().format(timeStamp);
           final timeString = DateFormat.Hms().format(timeStamp);
           final speedString = workoutSummary.speedString(_si);
-          final distanceString = workoutSummary.distanceStringWithUnit(_si);
+          final distanceString = workoutSummary.distanceStringWithUnit(_si, _highRes);
           final timeDisplay = Duration(seconds: workoutSummary.elapsed).toDisplay();
           return Card(
             elevation: 6,

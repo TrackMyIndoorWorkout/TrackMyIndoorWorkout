@@ -23,6 +23,7 @@ void main() {
       TestPair(characteristicsId: PRECOR_MEASUREMENT_ID, sport: ActivityType.Ride),
       TestPair(characteristicsId: INDOOR_BIKE_ID, sport: ActivityType.Ride),
       TestPair(characteristicsId: ROWER_DEVICE_ID, sport: ActivityType.Rowing),
+      TestPair(characteristicsId: CROSS_TRAINER_ID, sport: ActivityType.Elliptical),
       TestPair(characteristicsId: HEART_RATE_MEASUREMENT_ID, sport: null)
     ].forEach((testPair) {
       test("${testPair.characteristicsId} -> ${testPair.sport}", () async {

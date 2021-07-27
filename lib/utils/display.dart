@@ -15,7 +15,7 @@ double speedOrPace(double speed, bool si, String sport) {
   } else {
     if (speed.abs() < DISPLAY_EPS) return 0.0;
 
-    if (sport == ActivityType.Run) {
+    if (sport == ActivityType.Run || sport == ActivityType.Elliptical) {
       final pace = 60.0 / speed;
 
       if (si) return pace;
@@ -79,7 +79,7 @@ String tcxSport(String sport) {
 String getSpeedUnit(bool si, String sport) {
   if (sport == ActivityType.Ride) {
     return si ? 'kmh' : 'mph';
-  } else if (sport == ActivityType.Run) {
+  } else if (sport == ActivityType.Run || sport == ActivityType.Elliptical) {
     return si ? 'min /km' : 'min /mi';
   } else if (sport == ActivityType.Kayaking ||
       sport == ActivityType.Canoeing ||
@@ -118,19 +118,39 @@ String getCadenceUnit(String sport) {
   if (sport == ActivityType.Kayaking ||
       sport == ActivityType.Canoeing ||
       sport == ActivityType.Rowing ||
-      sport == ActivityType.Swim) {
+      sport == ActivityType.Swim ||
+      sport == ActivityType.Elliptical) {
     return "spm";
   }
   return "rpm";
 }
 
-String distanceString(double distance, bool si) {
-  if (si) return distance.toStringAsFixed(0);
+String distanceString(double distance, bool si, bool highRes) {
+  if (si) {
+    if (highRes) {
+      return distance.toStringAsFixed(0);
+    } else {
+      return (distance / 1000).toStringAsFixed(2);
+    }
+  }
 
-  return '${(distance * M2MILE).toStringAsFixed(2)}';
+  if (highRes) {
+    return (distance * M2YARD).toStringAsFixed(0);
+  } else {
+    return (distance * M2MILE).toStringAsFixed(2);
+  }
 }
 
-String distanceByUnit(double distance, bool si) {
-  final distanceStr = distanceString(distance, si);
-  return '$distanceStr ${si ? "m" : "mi"}';
+String distanceUnit(bool si, bool highRes) {
+  if (si) {
+    return highRes ? "m" : "km";
+  } else {
+    return highRes ? "yd" : "mi";
+  }
+}
+
+String distanceByUnit(double distance, bool si, bool highRes) {
+  final distanceStr = distanceString(distance, si, highRes);
+  final unitStr = distanceUnit(si, highRes);
+  return '$distanceStr $unitStr';
 }

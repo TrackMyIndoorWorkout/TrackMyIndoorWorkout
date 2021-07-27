@@ -9,7 +9,8 @@ void main() {
       final expected = (sport == ActivityType.Kayaking ||
               sport == ActivityType.Canoeing ||
               sport == ActivityType.Rowing ||
-              sport == ActivityType.Swim)
+              sport == ActivityType.Swim ||
+              sport == ActivityType.Elliptical)
           ? "spm"
           : "rpm";
       test("$sport -> $expected", () {

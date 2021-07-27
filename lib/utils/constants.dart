@@ -11,6 +11,7 @@ const CAL_TO_J = 1 / J_TO_CAL;
 const KM2MI = 0.621371;
 const MI2KM = 1 / KM2MI;
 const M2MILE = KM2MI / 1000.0;
+const M2YARD = 1.09361;
 const NOT_AVAILABLE = "N/A";
 const EMPTY_MEASUREMENT = "--";
 const HTTPS_PORT = 443;

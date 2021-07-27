@@ -35,6 +35,12 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(UNIT_SYSTEM_DESCRIPTION),
         pref: UNIT_SYSTEM_TAG,
       ),
+      PrefCheckbox(
+        title: Text(DISTANCE_RESOLUTION),
+        subtitle: Text(DISTANCE_RESOLUTION_DESCRIPTION),
+        pref: DISTANCE_RESOLUTION_TAG,
+      ),
+      PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(
         title: Text(SCAN_DURATION),
         subtitle: Text(SCAN_DURATION_DESCRIPTION),

@@ -86,7 +86,7 @@ class Record {
       if (pace!.abs() < DISPLAY_EPS) {
         speed = 0.0;
       } else {
-        if (sport == ActivityType.Run) {
+        if (sport == ActivityType.Run || sport == ActivityType.Elliptical) {
           // minutes / km pace
           speed = 60.0 / pace!;
         } else if (sport == ActivityType.Kayaking ||
@@ -125,8 +125,8 @@ class Record {
     return speedOrPaceString(speed ?? 0.0, si, sport, limitSlowSpeed: true);
   }
 
-  String distanceStringByUnit(bool si) {
-    return distanceString(distance ?? 0.0, si);
+  String distanceStringByUnit(bool si, bool highRes) {
+    return distanceString(distance ?? 0.0, si, highRes);
   }
 
   DisplayRecord display() {

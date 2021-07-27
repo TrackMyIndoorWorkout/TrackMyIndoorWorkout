@@ -45,6 +45,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<String> _selectedTimes = [];
   List<String> _selectedValues = [];
   bool _si = UNIT_SYSTEM_DEFAULT;
+  bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
   List<PreferencesSpec> _preferencesSpecs = [];
 
   double? _mediaWidth;
@@ -296,6 +297,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     super.initState();
     final prefService = Get.find<BasePrefService>();
     _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
+        DISTANCE_RESOLUTION_DEFAULT;
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.activity.sport);
     widget.activity.hydrate();
     _isLight = !_themeManager.isDark();
@@ -500,13 +503,13 @@ class RecordsScreenState extends State<RecordsScreen> {
                         _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
                         Spacer(),
                         Text(
-                          widget.activity.distanceString(_si),
+                          widget.activity.distanceString(_si, _highRes),
                           style: _measurementStyle,
                         ),
                         SizedBox(
                           width: _sizeDefault,
                           child: Text(
-                            _si ? 'm' : 'mi',
+                            distanceUnit(_si, _highRes),
                             style: _unitStyle,
                           ),
                         ),

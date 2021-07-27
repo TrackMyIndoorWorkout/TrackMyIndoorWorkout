@@ -3,6 +3,7 @@ const FITNESS_MACHINE_ID = '1826';
 const TREADMILL_ID = '2acd';
 const INDOOR_BIKE_ID = '2ad2';
 const ROWER_DEVICE_ID = '2ad1';
+const CROSS_TRAINER_ID = '2ace';
 const DEVICE_NAME_ID = '2a00';
 const APPEARANCE_ID = '2a01';
 const MODEL_NUMBER_ID = '2a24';

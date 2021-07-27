@@ -100,6 +100,7 @@ class RecordingState extends State<RecordingScreen> {
   Activity? _activity;
   AppDatabase _database = Get.find<AppDatabase>();
   bool _si = UNIT_SYSTEM_DEFAULT;
+  bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
   bool _simplerUi = SIMPLER_UI_SLOW_DEFAULT;
   bool _instantUpload = INSTANT_UPLOAD_DEFAULT;
   bool _uxDebug = APP_DEBUG_MODE_DEFAULT;
@@ -271,7 +272,7 @@ class RecordingState extends State<RecordingScreen> {
             record.speedOrPaceStringByUnit(_si, widget.descriptor.defaultSport),
             record.cadence?.toString() ?? EMPTY_MEASUREMENT,
             record.heartRate?.toString() ?? EMPTY_MEASUREMENT,
-            record.distanceStringByUnit(_si),
+            record.distanceStringByUnit(_si, _highRes),
           ];
           amendZoneToValue(0, record.power ?? 0);
           amendZoneToValue(2, record.cadence ?? 0);
@@ -407,6 +408,8 @@ class RecordingState extends State<RecordingScreen> {
       ),
     );
     _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
+        DISTANCE_RESOLUTION_DEFAULT;
     _simplerUi = prefService.get<bool>(SIMPLER_UI_TAG) ?? SIMPLER_UI_SLOW_DEFAULT;
     _instantUpload = prefService.get<bool>(INSTANT_UPLOAD_TAG) ?? INSTANT_UPLOAD_DEFAULT;
     _pointCount = min(60, size.width ~/ 2);
@@ -499,7 +502,7 @@ class RecordingState extends State<RecordingScreen> {
       ),
       RowConfiguration(
         icon: Icons.add_road,
-        unit: _si ? 'm' : 'mi',
+        unit: distanceUnit(_si, _highRes),
         expandable: !_simplerUi,
       ),
     ];
@@ -977,7 +980,7 @@ class RecordingState extends State<RecordingScreen> {
       final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0x8800FF00, "${rank - 2}", false));
+        markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 2}", false));
       }
     }
 
@@ -986,7 +989,7 @@ class RecordingState extends State<RecordingScreen> {
       final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0x8800FF00, "${rank - 1}", false));
+        markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 1}", false));
       }
     }
 
@@ -995,7 +998,7 @@ class RecordingState extends State<RecordingScreen> {
       final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0x880000FF, "${rank + 1}", false));
+        markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 1}", false));
       }
     }
 
@@ -1004,7 +1007,7 @@ class RecordingState extends State<RecordingScreen> {
       final distance = leaderboard[rank].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0x880000FF, "${rank + 2}", false));
+        markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 2}", false));
       }
     }
 
@@ -1023,7 +1026,8 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Widget _getLeaderboardInfoText(int rank, double distance, bool lead) {
-    return _getLeaderboardInfoTextCore("#$rank ${distanceByUnit(distance - _distance, _si)}", lead);
+    final distanceString = distanceByUnit(distance - _distance, _si, _highRes);
+    return _getLeaderboardInfoTextCore("#$rank $distanceString", lead);
   }
 
   Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int? rank, String rankString) {

@@ -16,7 +16,8 @@ void main() {
       TestPair(machineType: MachineType.IndoorBike, sport: ActivityType.Ride),
       TestPair(machineType: MachineType.Treadmill, sport: ActivityType.Run),
       TestPair(machineType: MachineType.Rower, sport: ActivityType.Kayaking),
-      TestPair(machineType: MachineType.CrossTrainer, sport: ActivityType.Ride),
+      TestPair(machineType: MachineType.CrossTrainer, sport: ActivityType.Elliptical),
+      TestPair(machineType: MachineType.StepClimber, sport: ActivityType.Ride),
     ].forEach((testPair) {
       test("${testPair.machineType} -> ${testPair.sport}", () async {
         final advertisementDigest = AdvertisementDigest(

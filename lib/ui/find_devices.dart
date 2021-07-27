@@ -52,6 +52,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   TextStyle _subtitleStyle = TextStyle();
   AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   ThemeManager _themeManager = Get.find<ThemeManager>();
+  RegExp _colonRegex = RegExp(r'\:');
 
   @override
   void dispose() {
@@ -155,7 +156,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     DeviceDescriptor? descriptor;
     for (var dev in deviceMap.values) {
       for (var prefix in dev.namePrefixes) {
-        if (device.name.startsWith(prefix)) {
+        if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
           descriptor = dev;
           break;
         }
@@ -428,7 +429,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               fontSizeFactor: FONT_SIZE_FACTOR),
                         ),
                         subtitle: Text(
-                          _heartRateMonitor?.device?.id.id ?? EMPTY_MEASUREMENT,
+                          _heartRateMonitor?.device?.id.id.replaceAll(_colonRegex, '') ??
+                              EMPTY_MEASUREMENT,
                           style: _subtitleStyle,
                         ),
                         trailing: StreamBuilder<BluetoothDeviceState>(
