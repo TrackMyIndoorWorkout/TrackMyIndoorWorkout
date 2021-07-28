@@ -52,6 +52,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   TextStyle _subtitleStyle = TextStyle();
   AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   ThemeManager _themeManager = Get.find<ThemeManager>();
+  RegExp _colonRegex = RegExp(r'\:');
 
   @override
   void dispose() {
@@ -428,7 +429,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               fontSizeFactor: FONT_SIZE_FACTOR),
                         ),
                         subtitle: Text(
-                          _heartRateMonitor?.device?.id.id ?? EMPTY_MEASUREMENT,
+                          _heartRateMonitor?.device?.id.id.replaceAll(_colonRegex, '') ??
+                              EMPTY_MEASUREMENT,
                           style: _subtitleStyle,
                         ),
                         trailing: StreamBuilder<BluetoothDeviceState>(
