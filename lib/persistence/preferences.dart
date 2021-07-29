@@ -335,7 +335,7 @@ const APP_DEBUG_MODE_DESCRIPTION =
     "On: The Recording UI runs on simulated data, no equipment required. " +
         "Off: The recording works as it should in release.";
 
-const DATA_CONNECTION_ADDRESSES = "Data Connection Addresses";
+const DATA_CONNECTION_ADDRESSES = "Data Connection Check Endpoints";
 const DATA_CONNECTION_ADDRESSES_TAG = "data_connection_addresses";
 const DATA_CONNECTION_ADDRESSES_DEFAULT = "";
 const DATA_CONNECTION_ADDRESSES_OLD_DEFAULT =
