@@ -395,9 +395,11 @@ packages:
   internet_connection_checker:
     dependency: "direct main"
     description:
-      name: internet_connection_checker
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: ce65c5eccc1bfe307586ae0993e4b28abd670ac7
+      url: "https://github.com/CsabaConsulting/internet_connection_checker.git"
+    source: git
     version: "0.0.1+2"
   intl:
     dependency: "direct main"
