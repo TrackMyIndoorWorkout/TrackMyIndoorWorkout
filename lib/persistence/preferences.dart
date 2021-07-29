@@ -322,9 +322,9 @@ const RANK_INFO_ON_TRACK =
 const RANK_INFO_ON_TRACK_TAG = "rank_info_on_track";
 const RANK_INFO_ON_TRACK_DEFAULT = true;
 const RANK_INFO_ON_TRACK_DESCRIPTION =
-    "On: when rank position is enabled this switch will display extra information in the middle of the track: " +
-        "it'll list the preceding and following positions along with the distance compared to the athlete's current " +
-        "position";
+    "On: when rank position is enabled this switch will display extra information " +
+        "in the middle of the track: it'll list the preceding and following positions " +
+        "along with the distance compared to the athlete's current position";
 
 const EXPERT_PREFERENCES = "Expert Preferences";
 
@@ -342,10 +342,10 @@ const DATA_CONNECTION_ADDRESSES_OLD_DEFAULT =
     "52.44.84.95,54.160.234.139,52.87.57.116,3.93.102.29,54.157.131.119,3.226.9.14";
 
 const DATA_CONNECTION_ADDRESSES_DESCRIPTION =
-    "Following is a comma separated list of IP addresses with optional comma separated port " +
-        "numbers. Lack of a port number will mean 443 (HTTPS). " +
-        "The application will reach out to these endpoints to determine if there " +
-        "is really a data connection.";
+    "Following is a comma separated list of IP addresses with optional comma " +
+        "separated port numbers. Lack of a port number will mean 443 (HTTPS). " +
+        "The application will reach out to these endpoints to determine if " +
+        "there is really a data connection.";
 
 const ZONE_PREFERENCES = " Zone Preferences";
 
