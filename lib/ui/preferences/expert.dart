@@ -37,13 +37,18 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       ),
       PrefButton(
         onTap: () async {
+          String addressesString =
+              PrefService.of(context).get<String>(DATA_CONNECTION_ADDRESSES_TAG) ??
+                  DATA_CONNECTION_ADDRESSES_DEFAULT;
+          final addressTuples = parseIpAddresses(addressesString);
+          applyDataConnectionCheckConfiguration(addressTuples);
           if (await InternetConnectionChecker().hasConnection) {
             Get.snackbar("Info", "Data connection detected");
           } else {
             Get.snackbar("Warning", "No data connection detected");
           }
         },
-        child: Text("Test Connection Checker"),
+        child: Text("Apply Check Configuration and Test"),
       ),
       PrefCheckbox(
         title: Text(DEVICE_FILTERING),
