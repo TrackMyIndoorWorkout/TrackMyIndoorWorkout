@@ -20,12 +20,12 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         pref: DATA_CONNECTION_ADDRESSES_TAG,
         validator: (str) {
           if (str == null) {
-            return "Invalid or empty addresses, address won't be changed or default DNS servers will be used";
+            return null;
           }
 
           final addressTuples = parseIpAddresses(str);
           if (addressTuples.isEmpty) {
-            return "Invalid or empty addresses, address won't be changed or default DNS servers will be used";
+            return null;
           } else {
             if (str.split(",").length > addressTuples.length) {
               return "There's some malformed address(es) in the configuration";
