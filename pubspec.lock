@@ -220,6 +220,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.0-nullsafety.0"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.3"
   expandable:
     dependency: "direct main"
     description:
@@ -499,6 +506,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.0.12"
+  overlay_tutorial:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "9d809d51bcf55b9c8044d07d151c696bdb55abe6"
+      url: "https://github.com/CsabaConsulting/overlay_tutorial.git"
+    source: git
+    version: "2.0.4"
   package_config:
     dependency: transitive
     description:
