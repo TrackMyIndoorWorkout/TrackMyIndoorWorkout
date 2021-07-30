@@ -511,7 +511,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "9d809d51bcf55b9c8044d07d151c696bdb55abe6"
+      resolved-ref: "66eea9196f9da42e98a0b5d26b738d340b754678"
       url: "https://github.com/CsabaConsulting/overlay_tutorial.git"
     source: git
     version: "2.0.4"
