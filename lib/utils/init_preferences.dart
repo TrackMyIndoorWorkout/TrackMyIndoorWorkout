@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:get/get.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:pref/pref.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
@@ -141,6 +138,16 @@ Future<BasePrefService> initPreferences() async {
         ATHLETE_BODY_WEIGHT_TAG, ATHLETE_BODY_WEIGHT_DEFAULT, prefService);
   }
 
+  String addressesString =
+      prefService.get<String>(DATA_CONNECTION_ADDRESSES_TAG) ?? DATA_CONNECTION_ADDRESSES_DEFAULT;
+  if (prefVersion < PREFERENCES_VERSION_DEFAULTING_DATA_CONNECTION) {
+    if (addressesString == DATA_CONNECTION_ADDRESSES_OLD_DEFAULT) {
+      await prefService.set<String>(
+          DATA_CONNECTION_ADDRESSES_TAG, DATA_CONNECTION_ADDRESSES_DEFAULT);
+      addressesString = "";
+    }
+  }
+
   if ((prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT) < SCAN_DURATION_DEFAULT) {
     await prefService.set<int>(SCAN_DURATION_TAG, SCAN_DURATION_DEFAULT);
   }
@@ -154,17 +161,9 @@ Future<BasePrefService> initPreferences() async {
     }
   });
 
-  final addressesString = prefService.get<String>(DATA_CONNECTION_ADDRESSES_TAG) ?? "";
   if (addressesString.trim().isNotEmpty) {
     final addressTuples = parseIpAddresses(addressesString);
-    if (addressTuples.length > 0) {
-      InternetConnectionChecker().addresses = addressTuples
-          .map((addressTuple) => AddressCheckOptions(
-                InternetAddress(addressTuple.item1),
-                port: addressTuple.item2,
-              ))
-          .toList(growable: false);
-    }
+    applyDataConnectionCheckConfiguration(addressTuples);
   }
 
   return prefService;
