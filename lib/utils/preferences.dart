@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:tuple/tuple.dart';
 import 'constants.dart';
 
@@ -62,4 +65,15 @@ List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
     addresses.removeWhere((value) => value.item2 == 0);
   }
   return addresses;
+}
+
+void applyDataConnectionCheckConfiguration(List<Tuple2<String, int>> addressTuples) {
+  if (addressTuples.length > 0) {
+    InternetConnectionChecker().addresses = addressTuples
+        .map((addressTuple) => AddressCheckOptions(
+              InternetAddress(addressTuple.item1),
+              port: addressTuple.item2,
+            ))
+        .toList(growable: false);
+  }
 }

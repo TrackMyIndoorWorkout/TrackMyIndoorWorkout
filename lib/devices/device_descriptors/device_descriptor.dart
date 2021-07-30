@@ -20,7 +20,7 @@ abstract class DeviceDescriptor {
   final String vendorName;
   final String modelName;
   final List<String> namePrefixes;
-  final String manufacturer;
+  final String manufacturerPrefix;
   final int manufacturerFitId;
   final String model;
   String? dataServiceId;
@@ -58,9 +58,9 @@ abstract class DeviceDescriptor {
     required this.vendorName,
     required this.modelName,
     required this.namePrefixes,
-    required this.manufacturer, // TODO
-    required this.manufacturerFitId, // TODO
-    required this.model, // TODO
+    required this.manufacturerPrefix,
+    required this.manufacturerFitId,
+    required this.model, // Maybe eradicate?
     this.dataServiceId,
     this.dataCharacteristicId,
     this.antPlus = false,

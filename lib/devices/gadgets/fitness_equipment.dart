@@ -168,7 +168,8 @@ class FitnessEquipment extends DeviceBase {
     }
 
     equipmentDiscovery = false;
-    return manufacturerName == descriptor!.manufacturer || descriptor!.manufacturer == "Unknown";
+    return manufacturerName!.contains(descriptor!.manufacturerPrefix) ||
+        descriptor!.manufacturerPrefix == "Unknown";
   }
 
   // Based on https://www.braydenwm.com/calburn.htm
