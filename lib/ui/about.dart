@@ -17,6 +17,7 @@ class AboutScreenState extends State<AboutScreen> {
   static const QUICK_START_URL = "${HOST_URL}2020/09/25/quick-start.html";
   static const FAQ_URL = "${HOST_URL}2020/09/22/frequently-asked-questions.html";
   static const KNOWN_ISSUES_URL = "${HOST_URL}2020/09/26/known-issues.html";
+  static const CHANGE_LOG_URL = "${HOST_URL}changelog";
 
   late String _appName;
   late String _version;
@@ -146,6 +147,19 @@ class AboutScreenState extends State<AboutScreen> {
                 onPressed: () async {
                   if (await canLaunch(KNOWN_ISSUES_URL)) {
                     launch(KNOWN_ISSUES_URL);
+                  } else {
+                    Get.snackbar("Attention", "Cannot open URL");
+                  }
+                },
+              ),
+            ),
+            Center(
+              child: ElevatedButton.icon(
+                icon: Icon(Icons.open_in_new),
+                label: Text("Change Log"),
+                onPressed: () async {
+                  if (await canLaunch(CHANGE_LOG_URL)) {
+                    launch(CHANGE_LOG_URL);
                   } else {
                     Get.snackbar("Attention", "Cannot open URL");
                   }
