@@ -13,12 +13,13 @@ class TestData {
 void main() {
   group('getFitManufacturer test', () {
     deviceMap.forEach((fourCC, deviceDescriptor) {
-      test("$fourCC (${deviceDescriptor.manufacturer}) -> ${deviceDescriptor.manufacturerFitId}",
+      test(
+          "$fourCC (${deviceDescriptor.manufacturerPrefix}) -> ${deviceDescriptor.manufacturerFitId}",
           () async {
         final expected = deviceDescriptor.fourCC.startsWith("G")
             ? FitBaseTypes.uint16Type.invalidValue
             : deviceDescriptor.manufacturerFitId;
-        expect(getFitManufacturer(deviceDescriptor.manufacturer), expected);
+        expect(getFitManufacturer(deviceDescriptor.manufacturerPrefix), expected);
       });
     });
   });

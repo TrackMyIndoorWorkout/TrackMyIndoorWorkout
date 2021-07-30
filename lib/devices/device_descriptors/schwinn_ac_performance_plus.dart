@@ -12,7 +12,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           vendorName: "Schwinn",
           modelName: "AC Performance Plus",
           namePrefixes: ["Schwinn AC Perf+"],
-          manufacturer: "Schwinn",
+          manufacturerPrefix: "Schwinn",
           manufacturerFitId: FitBaseTypes.uint16Type.invalidValue,
           model: "Schwinn AC Perf+",
           dataServiceId: null,
