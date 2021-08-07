@@ -338,6 +338,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   Widget build(BuildContext context) {
     return OverlayTutorialScope(
       enabled: _tutorialOverlay,
+      ignorePointer: true,
       overlayColor: Colors.blueAccent.withOpacity(.6),
       child: Scaffold(
         appBar: AppBar(
