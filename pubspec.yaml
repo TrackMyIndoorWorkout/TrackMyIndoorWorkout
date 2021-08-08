@@ -22,7 +22,7 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/flutter_blue.git
   flutter_spinbox: ^0.5.2
-  get: ^4.3.0
+  get: ^4.3.4
   http: ^0.13.3
   http_parser: ^4.0.0
   internet_connection_checker:
@@ -46,11 +46,11 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/spinner_input.git
   sqflite: ^2.0.0+3
-  syncfusion_flutter_charts: ^19.2.49
+  syncfusion_flutter_charts: ^19.2.51
   tuple: ^2.0.0
   uni_links: ^0.5.1
   url_launcher: ^6.0.9
-  wakelock: ^0.5.2
+  wakelock: ^0.5.3+3
   flutter:
     sdk: flutter
 
