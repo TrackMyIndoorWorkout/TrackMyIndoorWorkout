@@ -62,6 +62,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   TextStyle _unitStyle = TextStyle();
   ThemeManager _themeManager = Get.find<ThemeManager>();
   ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
+  bool _tutorialVisible = false;
 
   @override
   void initState() {
@@ -261,9 +262,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
-    List<FloatingActionButton> floatingActionButtons = [
-      _themeManager.getAboutFab(),
-      _themeManager.getBlueFab(Icons.file_upload, () async {
+    List<Widget> floatingActionButtons = [
+      _themeManager.getAboutFab(_tutorialVisible),
+      _themeManager.getBlueFab(Icons.file_upload, true, _tutorialVisible, "Upload", () async {
         final formatPick = await Get.bottomSheet(
           ImportFormatPickerBottomSheet(),
           enableDrag: false,
@@ -278,20 +279,22 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                   _editCount++;
                 }));
       }),
-      _themeManager.getBlueFab(Icons.collections_bookmark, () async {
+      _themeManager.getBlueFab(Icons.collections_bookmark, true, _tutorialVisible, "Device Usages",
+          () async {
         await Get.to(() => DeviceUsagesScreen());
       }),
-      _themeManager.getBlueFab(Icons.bolt, () async {
+      _themeManager.getBlueFab(Icons.bolt, true, _tutorialVisible, "Power Tunes", () async {
         await Get.to(() => PowerTunesScreen());
       }),
-      _themeManager.getBlueFab(Icons.whatshot, () async {
+      _themeManager.getBlueFab(Icons.whatshot, true, _tutorialVisible, "Calorie Tunes", () async {
         await Get.to(() => CalorieTunesScreen());
       }),
     ];
 
     if (_leaderboardFeature && widget.hasLeaderboardData) {
       floatingActionButtons.add(
-        _themeManager.getBlueFab(Icons.leaderboard, () async {
+        _themeManager.getBlueFab(Icons.leaderboard, true, _tutorialVisible, "Leaderboards",
+            () async {
           Get.bottomSheet(LeaderBoardTypeBottomSheet(), enableDrag: false);
         }),
       );

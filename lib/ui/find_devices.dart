@@ -347,7 +347,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       child: OverlayTutorialScope(
         enabled: _tutorialVisible,
         absorbPointer: true,
-        overlayColor: Colors.blueAccent.withOpacity(.8),
+        overlayColor: Colors.green.withOpacity(.8),
         child: Scaffold(
           appBar: AppBar(
             title: Text(_filterDevices ? 'Supported Devices:' : 'Devices'),
@@ -359,7 +359,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   radius: const Radius.circular(16.0),
                   overlayTutorialHints: <OverlayTutorialWidgetHint>[
                     OverlayTutorialWidgetHint(
-                      position: (rect) => Offset(0, 0),
+                      position: (rect) => Offset(0, rect.bottom / 2),
                       builder: (context, rect, rRect) {
                         return SizedBox(
                           width: MediaQuery.of(context).size.width,
@@ -368,7 +368,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Scan for equipment',
-                                style: Get.textTheme.headline6  // .copyWith(color: tutorialColor),
+                                style:
+                                    Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
                               ),
                             ),
                           ),
@@ -531,7 +532,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                     },
                                   );
                                 } else {
-                                  return _themeManager.getGreenFab(Icons.bluetooth_disabled, () {
+                                  return _themeManager
+                                      .getGreenFab(Icons.bluetooth_disabled, false, false, "", () {
                                     setState(() {
                                       _fitnessEquipment = Get.isRegistered<FitnessEquipment>()
                                           ? Get.find<FitnessEquipment>()
@@ -686,13 +688,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
             fabCloseColor: _themeManager.getBlueColor(),
             ringColor: _themeManager.getBlueColorInverse(),
             children: [
-              _themeManager.getBlueFab(Icons.info_rounded, () async {
-                setState(() {
-                  _tutorialVisible = !_tutorialVisible;
-                });
-              }),
-              _themeManager.getAboutFab(),
-              _themeManager.getStravaFab(() async {
+              _themeManager.getTutorialFab(
+                _tutorialVisible,
+                () async {
+                  setState(() {
+                    _tutorialVisible = !_tutorialVisible;
+                  });
+                },
+              ),
+              _themeManager.getAboutFab(_tutorialVisible),
+              _themeManager.getStravaFab(_tutorialVisible, () async {
                 StravaService stravaService;
                 if (!Get.isRegistered<StravaService>()) {
                   stravaService = Get.put<StravaService>(StravaService());
@@ -706,7 +711,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   Get.snackbar("Warning", "Strava login unsuccessful");
                 }
               }),
-              _themeManager.getBlueFab(Icons.list_alt, () async {
+              _themeManager.getBlueFab(Icons.list_alt, true, _tutorialVisible, "Workout List",
+                  () async {
                 final database = Get.find<AppDatabase>();
                 final hasLeaderboardData = await database.hasLeaderboardData();
                 Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
@@ -718,19 +724,21 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   if (snapshot.data == null) {
                     return Container();
                   } else if (snapshot.data!) {
-                    return _themeManager.getBlueFab(Icons.stop, () async {
+                    return _themeManager.getBlueFab(Icons.stop, true, _tutorialVisible, "Stop Scan",
+                        () async {
                       if (_isScanning) {
                         await FlutterBlue.instance.stopScan();
                         await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
                       }
                     });
                   } else {
-                    return _themeManager.getGreenFab(Icons.search, () => _startScan());
+                    return _themeManager.getGreenFab(
+                        Icons.search, true, _tutorialVisible, "Start Scan", () => _startScan());
                   }
                 },
               ),
-              _themeManager.getBlueFab(
-                  Icons.settings, () async => Get.to(() => PreferencesHubScreen())),
+              _themeManager.getBlueFab(Icons.settings, true, _tutorialVisible, "Preferences",
+                  () async => Get.to(() => PreferencesHubScreen())),
             ],
           ),
         ),

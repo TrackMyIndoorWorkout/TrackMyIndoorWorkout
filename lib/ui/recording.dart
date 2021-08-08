@@ -149,6 +149,7 @@ class RecordingState extends State<RecordingScreen> {
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   bool _zoneIndexColoring = false;
+  bool _tutorialVisible = false;
 
   Future<void> _connectOnDemand() async {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
@@ -1449,7 +1450,7 @@ class RecordingState extends State<RecordingScreen> {
           fabCloseColor: _themeManager.getBlueColor(),
           ringColor: _themeManager.getBlueColorInverse(),
           children: [
-            _themeManager.getStravaFab(() async {
+            _themeManager.getStravaFab(_tutorialVisible, () async {
               if (_measuring) {
                 Get.snackbar("Warning", "Cannot upload while measurement is under progress");
                 return;
@@ -1457,7 +1458,8 @@ class RecordingState extends State<RecordingScreen> {
 
               await _stravaUpload(false);
             }),
-            _themeManager.getBlueFab(Icons.list_alt, () async {
+            _themeManager.getBlueFab(Icons.list_alt, true, _tutorialVisible, "Workout List",
+                () async {
               if (_measuring) {
                 Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
               } else {
@@ -1465,13 +1467,14 @@ class RecordingState extends State<RecordingScreen> {
                 Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
               }
             }),
-            _themeManager.getBlueFab(Icons.battery_unknown, () async {
+            _themeManager.getBlueFab(
+                Icons.battery_unknown, true, _tutorialVisible, "Battery & Extras", () async {
               Get.bottomSheet(
                 BatteryStatusBottomSheet(),
                 enableDrag: false,
               );
             }),
-            _themeManager.getBlueFab(Icons.build, () async {
+            _themeManager.getBlueFab(Icons.build, true, _tutorialVisible, "Calibration", () async {
               if (_measuring) {
                 Get.snackbar("Warning", "Cannot calibrate while measurement is under progress");
               } else if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
@@ -1484,7 +1487,8 @@ class RecordingState extends State<RecordingScreen> {
                 );
               }
             }),
-            _themeManager.getBlueFab(Icons.favorite, () async {
+            _themeManager.getBlueFab(Icons.favorite, true, _tutorialVisible, "HRM Pairing",
+                () async {
               await Get.bottomSheet(
                 HeartRateMonitorPairingBottomSheet(),
                 isDismissible: false,
@@ -1492,7 +1496,8 @@ class RecordingState extends State<RecordingScreen> {
               );
               await _initializeHeartRateMonitor();
             }),
-            _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, () async {
+            _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, true,
+                _tutorialVisible, _measuring ? "Stop Workout" : "Start Workout", () async {
               if (_measuring) {
                 await _stopMeasurement(false);
               } else {

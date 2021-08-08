@@ -52,7 +52,7 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(Icons.check, () async {
+      floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", () async {
         final database = Get.find<AppDatabase>();
         final powerFactor = _powerFactorPercent / 100.0;
         PowerTune? powerTune;

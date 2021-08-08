@@ -84,6 +84,9 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
             ? themeManager.getGreenColor()
             : themeManager.getBlueColor(),
         Icons.favorite,
+        false,
+        false,
+        "",
         onTap,
       ),
     );
