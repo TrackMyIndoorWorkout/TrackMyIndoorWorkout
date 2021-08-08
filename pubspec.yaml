@@ -31,9 +31,7 @@ dependencies:
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
-  overlay_tutorial:
-    git:
-      url: https://github.com/CsabaConsulting/overlay_tutorial.git
+  overlay_tutorial: ^2.0.4
   package_info_plus: ^1.0.4
   permission_handler: ^8.1.4+2
   pref: ^2.4.0

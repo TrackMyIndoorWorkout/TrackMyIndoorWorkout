@@ -509,11 +509,9 @@ packages:
   overlay_tutorial:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "9037d7c4fefede80b370e67f8b3415ce7ab5e84f"
-      url: "https://github.com/CsabaConsulting/overlay_tutorial.git"
-    source: git
+      name: overlay_tutorial
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "2.0.4"
   package_config:
     dependency: transitive
