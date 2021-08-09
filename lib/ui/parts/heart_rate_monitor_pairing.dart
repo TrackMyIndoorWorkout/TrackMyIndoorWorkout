@@ -17,6 +17,8 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
 }
 
 class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
+  static RegExp colonRegex = RegExp(r'\:');
+
   int _scanDuration = 4;
   TextStyle _captionStyle = TextStyle();
   TextStyle _subtitleStyle = TextStyle();
@@ -80,7 +82,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                           ),
                         ),
                         subtitle: Text(
-                          _heartRateMonitor?.device?.id.id ?? EMPTY_MEASUREMENT,
+                          _heartRateMonitor?.device?.id.id.replaceAll(colonRegex, '') ??
+                              EMPTY_MEASUREMENT,
                           style: _subtitleStyle,
                         ),
                         trailing: StreamBuilder<BluetoothDeviceState>(

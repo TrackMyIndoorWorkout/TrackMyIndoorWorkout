@@ -515,7 +515,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 ),
                               ),
                               subtitle: Text(
-                                _fitnessEquipment?.device?.id.id ?? EMPTY_MEASUREMENT,
+                                _fitnessEquipment?.device?.id.id.replaceAll(_colonRegex, '') ??
+                                    EMPTY_MEASUREMENT,
                                 style: _subtitleStyle,
                               ),
                               trailing: StreamBuilder<BluetoothDeviceState>(

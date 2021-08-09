@@ -34,6 +34,8 @@ extension HeartRateMonitorScanResult on ScanResult {
 }
 
 class HeartRateMonitorScanResultTile extends StatelessWidget {
+  static RegExp colonRegex = RegExp(r'\:');
+
   const HeartRateMonitorScanResultTile({
     Key? key,
     required this.result,
@@ -44,6 +46,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   final VoidCallback onTap;
 
   Widget _buildTitle(ThemeManager themeManager, TextStyle captionStyle, TextStyle dataStyle) {
+    final deviceIdString = result.device.id.id.replaceAll(colonRegex, '');
     if (result.device.name.isNotEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -54,14 +57,11 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
             style: themeManager.boldStyle(captionStyle, fontSizeFactor: FONT_SIZE_FACTOR),
             overflow: TextOverflow.ellipsis,
           ),
-          Text(
-            result.device.id.toString(),
-            style: dataStyle,
-          )
+          Text(deviceIdString, style: dataStyle)
         ],
       );
     } else {
-      return Text(result.device.id.toString());
+      return Text(deviceIdString);
     }
   }
 
