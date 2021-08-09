@@ -105,20 +105,24 @@ class ThemeManager {
         radius: const Radius.circular(16.0),
         overlayTutorialHints: <OverlayTutorialWidgetHint>[
           OverlayTutorialWidgetHint(
-            position: (rect) => Offset(0, rect.bottom / 2),
             builder: (context, rect, rRect) {
-              return SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      text,
-                      style: Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
-                    ),
-                  ),
-                ),
+              final annotation = Text(
+                text,
+                style: Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
               );
+              if (rRect.center.dx < Get.width / 2) {
+                return Positioned(
+                  top: rRect.top + 4.0,
+                  left: rRect.right + 4.0,
+                  child: annotation,
+                );
+              } else {
+                return Positioned(
+                  top: rRect.top + 4.0,
+                  right: Get.width - rRect.left + 4.0,
+                  child: annotation,
+                );
+              }
             },
           ),
         ],

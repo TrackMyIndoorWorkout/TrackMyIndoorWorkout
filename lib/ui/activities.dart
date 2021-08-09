@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
+import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
@@ -60,9 +61,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   TextStyle _textStyle = TextStyle();
   TextStyle _headerStyle = TextStyle();
   TextStyle _unitStyle = TextStyle();
+  TextStyle _overlayStyle = TextStyle();
   ThemeManager _themeManager = Get.find<ThemeManager>();
   ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
   bool _tutorialVisible = false;
+  final GlobalKey<CircularFabMenuState> circularFabKey = GlobalKey();
 
   @override
   void initState() {
@@ -74,6 +77,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _leaderboardFeature =
         prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
   }
 
   Widget _actionButtonRow(Activity activity, double size) {
@@ -300,136 +304,189 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(title: Text('Activities')),
-      body: CustomListView(
-        key: Key("CLV$_editCount"),
-        paginationMode: PaginationMode.page,
-        initialOffset: 0,
-        loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
-        adapter: ListAdapter(
-          fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.activityDao.findActivities(limit, offset);
-            return ListItems(data, reachedToEnd: data.length < limit);
-          },
-        ),
-        errorBuilder: (context, error, state) {
-          return Column(
-            children: [
-              Text(error.toString()),
-              ElevatedButton(
-                onPressed: () => state.loadMore(),
-                child: Text('Retry'),
-              ),
-            ],
-          );
-        },
-        empty: Center(
-          child: Text('No activities found'),
-        ),
-        itemBuilder: (context, _, item) {
-          final activity = item as Activity;
-          final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
-          final dateString = DateFormat.yMd().format(startStamp);
-          final timeString = DateFormat.Hms().format(startStamp);
-          return Card(
-            elevation: 6,
-            child: ExpandablePanel(
-              key: Key("${activity.id} ${activity.stravaId}"),
-              theme: _expandableThemeData,
-              header: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault2),
-                      Text(dateString, style: _headerStyle),
+    final circularFabMenu = CircularFabMenu(
+      key: circularFabKey,
+      fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+      fabOpenColor: _themeManager.getBlueColor(),
+      fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+      fabCloseColor: _themeManager.getBlueColor(),
+      ringColor: _themeManager.getBlueColorInverse(),
+      children: floatingActionButtons,
+    );
+
+    return GestureDetector(
+      onTap: _tutorialVisible
+          ? () {
+              setState(() {
+                _tutorialVisible = false;
+              });
+            }
+          : null,
+      child: OverlayTutorialScope(
+        enabled: _tutorialVisible,
+        overlayColor: Colors.green.withOpacity(.8),
+        child: AbsorbPointer(
+          absorbing: _tutorialVisible,
+          ignoringSemantics: true,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text('Activities'),
+              actions: [
+                OverlayTutorialHole(
+                  enabled: _tutorialVisible,
+                  overlayTutorialEntry: OverlayTutorialRectEntry(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    radius: const Radius.circular(16.0),
+                    overlayTutorialHints: <OverlayTutorialWidgetHint>[
+                      OverlayTutorialWidgetHint(
+                        builder: (context, rect, rRect) {
+                          return Positioned(
+                            top: rRect.top + 4.0,
+                            right: Get.width - rRect.left + 4.0,
+                            child: Text("Help Overlay", style: _overlayStyle),
+                          );
+                        },
+                      ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _themeManager.getBlueIcon(Icons.watch, _sizeDefault2),
-                      Text(timeString, style: _headerStyle),
-                    ],
-                  ),
-                ],
-              ),
-              collapsed: Container(),
-              expanded: ListTile(
-                onTap: () async =>
-                    await Get.to(() => RecordsScreen(activity: item, size: Get.mediaQuery.size)),
-                title: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(getIcon(activity.sport), _sizeDefault),
-                        Expanded(
-                          child: TextOneLine(
-                            activity.deviceName,
-                            style: _textStyle,
-                            textAlign: TextAlign.right,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-                        Spacer(),
-                        Text(activity.elapsedString, style: _measurementStyle),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-                        Spacer(),
-                        Text(activity.distanceString(_si, _highRes), style: _measurementStyle),
-                        SizedBox(
-                          width: _sizeDefault,
-                          child: Text(distanceUnit(_si, _highRes), style: _unitStyle),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-                        Spacer(),
-                        Text('${activity.calories}', style: _measurementStyle),
-                        SizedBox(
-                          width: _sizeDefault,
-                          child: Text('cal', style: _unitStyle),
-                        ),
-                      ],
-                    ),
-                    _actionButtonRow(activity, _sizeDefault2),
-                  ],
+                  child: IconButton(
+                      icon: Icon(Icons.info_rounded),
+                      onPressed: () {
+                        if (!(circularFabKey.currentState?.isOpen ?? true)) {
+                          circularFabKey.currentState?.open();
+                        }
+                        setState(() {
+                          _tutorialVisible = !_tutorialVisible;
+                        });
+                      }),
                 ),
-              ),
+              ],
             ),
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: CircularFabMenu(
-        fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
-        fabOpenColor: _themeManager.getBlueColor(),
-        fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-        fabCloseColor: _themeManager.getBlueColor(),
-        ringColor: _themeManager.getBlueColorInverse(),
-        children: floatingActionButtons,
+            body: CustomListView(
+              key: Key("CLV$_editCount"),
+              paginationMode: PaginationMode.page,
+              initialOffset: 0,
+              loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
+              adapter: ListAdapter(
+                fetchItems: (int page, int limit) async {
+                  final offset = page * limit;
+                  final data = await _database.activityDao.findActivities(limit, offset);
+                  return ListItems(data, reachedToEnd: data.length < limit);
+                },
+              ),
+              errorBuilder: (context, error, state) {
+                return Column(
+                  children: [
+                    Text(error.toString()),
+                    ElevatedButton(
+                      onPressed: () => state.loadMore(),
+                      child: Text('Retry'),
+                    ),
+                  ],
+                );
+              },
+              empty: Center(
+                child: Text('No activities found'),
+              ),
+              itemBuilder: (context, _, item) {
+                final activity = item as Activity;
+                final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
+                final dateString = DateFormat.yMd().format(startStamp);
+                final timeString = DateFormat.Hms().format(startStamp);
+                return Card(
+                  elevation: 6,
+                  child: ExpandablePanel(
+                    key: Key("${activity.id} ${activity.stravaId}"),
+                    theme: _expandableThemeData,
+                    header: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault2),
+                            Text(dateString, style: _headerStyle),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            _themeManager.getBlueIcon(Icons.watch, _sizeDefault2),
+                            Text(timeString, style: _headerStyle),
+                          ],
+                        ),
+                      ],
+                    ),
+                    collapsed: Container(),
+                    expanded: ListTile(
+                      onTap: () async => await Get.to(
+                          () => RecordsScreen(activity: item, size: Get.mediaQuery.size)),
+                      title: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _themeManager.getBlueIcon(getIcon(activity.sport), _sizeDefault),
+                              Expanded(
+                                child: TextOneLine(
+                                  activity.deviceName,
+                                  style: _textStyle,
+                                  textAlign: TextAlign.right,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+                              Spacer(),
+                              Text(activity.elapsedString, style: _measurementStyle),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
+                              Spacer(),
+                              Text(activity.distanceString(_si, _highRes),
+                                  style: _measurementStyle),
+                              SizedBox(
+                                width: _sizeDefault,
+                                child: Text(distanceUnit(_si, _highRes), style: _unitStyle),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
+                              Spacer(),
+                              Text('${activity.calories}', style: _measurementStyle),
+                              SizedBox(
+                                width: _sizeDefault,
+                                child: Text('cal', style: _unitStyle),
+                              ),
+                            ],
+                          ),
+                          _actionButtonRow(activity, _sizeDefault2),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: circularFabMenu,
+          ),
+        ),
       ),
     );
   }

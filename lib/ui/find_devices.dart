@@ -55,6 +55,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   ThemeManager _themeManager = Get.find<ThemeManager>();
   RegExp _colonRegex = RegExp(r'\:');
   bool _tutorialVisible = false;
+  TextStyle _overlayStyle = TextStyle();
 
   @override
   void dispose() {
@@ -132,6 +133,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     _captionStyle = Get.textTheme.headline6!;
     _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
+    _overlayStyle = _captionStyle.copyWith(color: Colors.yellowAccent);
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
@@ -361,19 +363,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     radius: const Radius.circular(16.0),
                     overlayTutorialHints: <OverlayTutorialWidgetHint>[
                       OverlayTutorialWidgetHint(
-                        position: (rect) => Offset(0, rect.bottom / 2),
                         builder: (context, rect, rRect) {
-                          return SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Scan for equipment',
-                                  style:
-                                      Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
-                                ),
-                              ),
+                          return Positioned(
+                            top: rRect.top + 4.0,
+                            right: Get.width - rRect.left + 4.0,
+                            child: Text(
+                              'Scan for equipment',
+                              style: _overlayStyle,
                             ),
                           );
                         },
