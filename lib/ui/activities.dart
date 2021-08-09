@@ -268,39 +268,72 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
     List<Widget> floatingActionButtons = [
       _themeManager.getAboutFab(_tutorialVisible),
-      _themeManager.getBlueFab(Icons.file_upload, true, _tutorialVisible, "Upload", () async {
-        final formatPick = await Get.bottomSheet(
-          ImportFormatPickerBottomSheet(),
-          enableDrag: false,
-        );
+      _themeManager.getBlueFab(
+        Icons.file_upload,
+        true,
+        _tutorialVisible,
+        "Upload",
+        0,
+        () async {
+          final formatPick = await Get.bottomSheet(
+            ImportFormatPickerBottomSheet(),
+            enableDrag: false,
+          );
 
-        if (formatPick == null) {
-          return;
-        }
+          if (formatPick == null) {
+            return;
+          }
 
-        await Get.to(() => ImportForm(migration: formatPick == "Migration"))
-            ?.whenComplete(() => setState(() {
-                  _editCount++;
-                }));
-      }),
-      _themeManager.getBlueFab(Icons.collections_bookmark, true, _tutorialVisible, "Device Usages",
-          () async {
-        await Get.to(() => DeviceUsagesScreen());
-      }),
-      _themeManager.getBlueFab(Icons.bolt, true, _tutorialVisible, "Power Tunes", () async {
-        await Get.to(() => PowerTunesScreen());
-      }),
-      _themeManager.getBlueFab(Icons.whatshot, true, _tutorialVisible, "Calorie Tunes", () async {
-        await Get.to(() => CalorieTunesScreen());
-      }),
+          await Get.to(() => ImportForm(migration: formatPick == "Migration"))
+              ?.whenComplete(() => setState(() {
+                    _editCount++;
+                  }));
+        },
+      ),
+      _themeManager.getBlueFab(
+        Icons.collections_bookmark,
+        true,
+        _tutorialVisible,
+        "Device Usages",
+        0,
+        () async {
+          await Get.to(() => DeviceUsagesScreen());
+        },
+      ),
+      _themeManager.getBlueFab(
+        Icons.bolt,
+        true,
+        _tutorialVisible,
+        "Power Tunes",
+        0,
+        () async {
+          await Get.to(() => PowerTunesScreen());
+        },
+      ),
+      _themeManager.getBlueFab(
+        Icons.whatshot,
+        true,
+        _tutorialVisible,
+        "Calorie Tunes",
+        -16,
+        () async {
+          await Get.to(() => CalorieTunesScreen());
+        },
+      ),
     ];
 
     if (_leaderboardFeature && widget.hasLeaderboardData) {
       floatingActionButtons.add(
-        _themeManager.getBlueFab(Icons.leaderboard, true, _tutorialVisible, "Leaderboards",
-            () async {
-          Get.bottomSheet(LeaderBoardTypeBottomSheet(), enableDrag: false);
-        }),
+        _themeManager.getBlueFab(
+          Icons.leaderboard,
+          true,
+          _tutorialVisible,
+          "Leaderboards",
+          -8,
+          () async {
+            Get.bottomSheet(LeaderBoardTypeBottomSheet(), enableDrag: false);
+          },
+        ),
       );
     }
 
@@ -341,7 +374,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                       OverlayTutorialWidgetHint(
                         builder: (context, rect, rRect) {
                           return Positioned(
-                            top: rRect.top + 4.0,
+                            top: rRect.top + 8.0,
                             right: Get.width - rRect.left + 4.0,
                             child: Text("Help Overlay", style: _overlayStyle),
                           );

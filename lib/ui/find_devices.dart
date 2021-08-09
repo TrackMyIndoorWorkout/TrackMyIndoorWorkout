@@ -481,10 +481,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 initialData: BluetoothDeviceState.disconnected,
                                 builder: (c, snapshot) {
                                   if (snapshot.data == BluetoothDeviceState.connected) {
-                                    return _themeManager.getGreenGenericFab(Icon(Icons.favorite),
-                                        () {
-                                      Get.snackbar("Info", "HRM Already connected");
-                                    });
+                                    return _themeManager.getGreenGenericFab(
+                                      Icon(Icons.favorite),
+                                      false,
+                                      _tutorialVisible,
+                                      "Paired HRM",
+                                      0,
+                                      () {
+                                        Get.snackbar("Info", "HRM Already connected");
+                                      },
+                                    );
                                   } else {
                                     return _themeManager.getGreyFab(Icons.bluetooth, () {
                                       setState(() {
@@ -519,6 +525,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   if (snapshot.data == BluetoothDeviceState.connected) {
                                     return _themeManager.getGreenGenericFab(
                                       Icon(Icons.open_in_new),
+                                      false,
+                                      _tutorialVisible,
+                                      "Start Workout",
+                                      0,
                                       () async {
                                         if (_isScanning) {
                                           await FlutterBlue.instance.stopScan();
@@ -535,13 +545,19 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                     );
                                   } else {
                                     return _themeManager.getGreenFab(
-                                        Icons.bluetooth_disabled, false, false, "", () {
-                                      setState(() {
-                                        _fitnessEquipment = Get.isRegistered<FitnessEquipment>()
-                                            ? Get.find<FitnessEquipment>()
-                                            : null;
-                                      });
-                                    });
+                                      Icons.bluetooth_disabled,
+                                      false,
+                                      _tutorialVisible,
+                                      "Disconnected",
+                                      0,
+                                      () {
+                                        setState(() {
+                                          _fitnessEquipment = Get.isRegistered<FitnessEquipment>()
+                                              ? Get.find<FitnessEquipment>()
+                                              : null;
+                                        });
+                                      },
+                                    );
                                   }
                                 },
                               ),
@@ -701,26 +717,35 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   },
                 ),
                 _themeManager.getAboutFab(_tutorialVisible),
-                _themeManager.getStravaFab(_tutorialVisible, () async {
-                  StravaService stravaService;
-                  if (!Get.isRegistered<StravaService>()) {
-                    stravaService = Get.put<StravaService>(StravaService());
-                  } else {
-                    stravaService = Get.find<StravaService>();
-                  }
-                  final success = await stravaService.login();
-                  if (success) {
-                    Get.snackbar("Success", "Successful Strava login");
-                  } else {
-                    Get.snackbar("Warning", "Strava login unsuccessful");
-                  }
-                }),
-                _themeManager.getBlueFab(Icons.list_alt, true, _tutorialVisible, "Workout List",
-                    () async {
-                  final database = Get.find<AppDatabase>();
-                  final hasLeaderboardData = await database.hasLeaderboardData();
-                  Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
-                }),
+                _themeManager.getStravaFab(
+                  _tutorialVisible,
+                  () async {
+                    StravaService stravaService;
+                    if (!Get.isRegistered<StravaService>()) {
+                      stravaService = Get.put<StravaService>(StravaService());
+                    } else {
+                      stravaService = Get.find<StravaService>();
+                    }
+                    final success = await stravaService.login();
+                    if (success) {
+                      Get.snackbar("Success", "Successful Strava login");
+                    } else {
+                      Get.snackbar("Warning", "Strava login unsuccessful");
+                    }
+                  },
+                ),
+                _themeManager.getBlueFab(
+                  Icons.list_alt,
+                  true,
+                  _tutorialVisible,
+                  "Workout List",
+                  0,
+                  () async {
+                    final database = Get.find<AppDatabase>();
+                    final hasLeaderboardData = await database.hasLeaderboardData();
+                    Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+                  },
+                ),
                 StreamBuilder<bool>(
                   stream: FlutterBlue.instance.isScanning,
                   initialData: _instantScan,
@@ -728,21 +753,39 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     if (snapshot.data == null) {
                       return Container();
                     } else if (snapshot.data!) {
-                      return _themeManager
-                          .getBlueFab(Icons.stop, true, _tutorialVisible, "Stop Scan", () async {
-                        if (_isScanning) {
-                          await FlutterBlue.instance.stopScan();
-                          await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
-                        }
-                      });
+                      return _themeManager.getBlueFab(
+                        Icons.stop,
+                        true,
+                        _tutorialVisible,
+                        "Start / Stop Scan",
+                        -8,
+                        () async {
+                          if (_isScanning) {
+                            await FlutterBlue.instance.stopScan();
+                            await Future.delayed(Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                          }
+                        },
+                      );
                     } else {
                       return _themeManager.getGreenFab(
-                          Icons.search, true, _tutorialVisible, "Start Scan", () => _startScan());
+                        Icons.search,
+                        true,
+                        _tutorialVisible,
+                        "Start / Stop Scan",
+                        -8,
+                        () => _startScan(),
+                      );
                     }
                   },
                 ),
-                _themeManager.getBlueFab(Icons.settings, true, _tutorialVisible, "Preferences",
-                    () async => Get.to(() => PreferencesHubScreen())),
+                _themeManager.getBlueFab(
+                  Icons.settings,
+                  true,
+                  _tutorialVisible,
+                  "Preferences",
+                  -16,
+                  () async => Get.to(() => PreferencesHubScreen()),
+                ),
               ],
             ),
           ),

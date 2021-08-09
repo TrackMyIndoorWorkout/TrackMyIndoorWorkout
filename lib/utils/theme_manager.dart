@@ -41,6 +41,45 @@ class ThemeManager {
     );
   }
 
+  OverlayTutorialHole _wrapInOverlayHole(
+    bool enabled,
+    String text,
+    int annotationYOffset,
+    Widget widget,
+  ) {
+    return OverlayTutorialHole(
+      enabled: enabled,
+      overlayTutorialEntry: OverlayTutorialRectEntry(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        radius: const Radius.circular(16.0),
+        overlayTutorialHints: <OverlayTutorialWidgetHint>[
+          OverlayTutorialWidgetHint(
+            builder: (context, rect, rRect) {
+              final annotation = Text(
+                text,
+                style: Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
+              );
+              if (rRect.center.dx < Get.width / 2) {
+                return Positioned(
+                  top: rRect.top + 4.0 + annotationYOffset,
+                  left: rRect.right + 4.0,
+                  child: annotation,
+                );
+              } else {
+                return Positioned(
+                  top: rRect.top + 4.0 + annotationYOffset,
+                  right: Get.width - rRect.left + 4.0,
+                  child: annotation,
+                );
+              }
+            },
+          ),
+        ],
+      ),
+      child: widget,
+    );
+  }
+
   Color getHeaderColor() {
     return isDark() ? Colors.indigo : Colors.lightBlue;
   }
@@ -85,50 +124,27 @@ class ThemeManager {
     return Icon(icon, color: getBlueColor(), size: size);
   }
 
+  OverlayTutorialHole getBlueIconWithHole(
+    IconData icon,
+    double size,
+    bool overlayEnabled,
+    String overlayText,
+    int annotationYOffset,
+  ) {
+    return _wrapInOverlayHole(
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      Icon(icon, color: getBlueColor(), size: size),
+    );
+  }
+
   Icon getActionIcon(IconData icon, double size) {
     return Icon(icon, color: getProtagonistColor(), size: size);
   }
 
   TextStyle getBlueTextStyle(double fontSize) {
     return TextStyle(fontFamily: FONT_FAMILY, fontSize: fontSize, color: getBlueColor());
-  }
-
-  OverlayTutorialHole wrapInOverlayHole(
-    bool enabled,
-    String text,
-    Widget widget,
-  ) {
-    return OverlayTutorialHole(
-      enabled: enabled,
-      overlayTutorialEntry: OverlayTutorialRectEntry(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        radius: const Radius.circular(16.0),
-        overlayTutorialHints: <OverlayTutorialWidgetHint>[
-          OverlayTutorialWidgetHint(
-            builder: (context, rect, rRect) {
-              final annotation = Text(
-                text,
-                style: Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
-              );
-              if (rRect.center.dx < Get.width / 2) {
-                return Positioned(
-                  top: rRect.top + 4.0,
-                  left: rRect.right + 4.0,
-                  child: annotation,
-                );
-              } else {
-                return Positioned(
-                  top: rRect.top + 4.0,
-                  right: Get.width - rRect.left + 4.0,
-                  child: annotation,
-                );
-              }
-            },
-          ),
-        ],
-      ),
-      child: widget,
-    );
   }
 
   Widget _getFabCore(
@@ -138,6 +154,7 @@ class ThemeManager {
     bool wrapInHole,
     bool overlayEnabled,
     String overlayText,
+    int annotationYOffset,
     VoidCallback? onPressed,
   ) {
     final fab = FloatingActionButton(
@@ -149,9 +166,10 @@ class ThemeManager {
     );
 
     return wrapInHole
-        ? wrapInOverlayHole(
+        ? _wrapInOverlayHole(
             overlayEnabled,
             overlayText,
+            annotationYOffset,
             fab,
           )
         : fab;
@@ -163,6 +181,7 @@ class ThemeManager {
     bool wrapInHole,
     bool overlayEnabled,
     String overlayText,
+    int annotationYOffset,
     VoidCallback? onPressed,
   ) {
     return _getFabCore(
@@ -172,6 +191,7 @@ class ThemeManager {
       wrapInHole,
       overlayEnabled,
       overlayText,
+      annotationYOffset,
       onPressed,
     );
   }
@@ -181,6 +201,7 @@ class ThemeManager {
     bool wrapInHole,
     bool overlayEnabled,
     String overlayText,
+    int annotationYOffset,
     VoidCallback? onPressed,
   ) {
     return getIconFab(
@@ -189,6 +210,7 @@ class ThemeManager {
       wrapInHole,
       overlayEnabled,
       overlayText,
+      annotationYOffset,
       onPressed,
     );
   }
@@ -198,13 +220,38 @@ class ThemeManager {
     bool wrapInHole,
     bool overlayEnabled,
     String overlayText,
+    int annotationYOffset,
     VoidCallback? onPressed,
   ) {
-    return getIconFab(getGreenColor(), icon, wrapInHole, overlayEnabled, overlayText, onPressed);
+    return getIconFab(
+      getGreenColor(),
+      icon,
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+    );
   }
 
-  Widget getGreenGenericFab(Widget widget, VoidCallback? onPressed) {
-    return _getFabCore(getAntagonistColor(), getGreenColor(), widget, false, false, "", onPressed);
+  Widget getGreenGenericFab(
+    Widget widget,
+    wrapInHole,
+    overlayEnabled,
+    overlayText,
+    annotationYOffset,
+    VoidCallback? onPressed,
+  ) {
+    return _getFabCore(
+      getAntagonistColor(),
+      getGreenColor(),
+      widget,
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+    );
   }
 
   Widget getStravaFab(bool overlayEnabled, VoidCallback? onPressed) {
@@ -215,12 +262,13 @@ class ThemeManager {
       true,
       overlayEnabled,
       "Strava Upload",
+      0,
       onPressed,
     );
   }
 
   Widget getGreyFab(IconData icon, VoidCallback? onPressed) {
-    return getIconFab(getGreyColor(), icon, false, false, "", onPressed);
+    return getIconFab(getGreyColor(), icon, false, false, "", 0, onPressed);
   }
 
   Widget getRankIcon(int rank) {
@@ -232,6 +280,7 @@ class ThemeManager {
       false,
       false,
       "",
+      0,
       () {},
     );
   }
@@ -240,6 +289,7 @@ class ThemeManager {
     IconData icon,
     bool overlayEnabled,
     String overlayText,
+    int annotationYOffset,
     VoidCallback? onPressed,
   ) {
     return _getFabCore(
@@ -249,6 +299,7 @@ class ThemeManager {
       true,
       overlayEnabled,
       overlayText,
+      annotationYOffset,
       onPressed,
     );
   }
@@ -258,12 +309,13 @@ class ThemeManager {
       Icons.help,
       overlayEnabled,
       "About & Help",
+      0,
       () => Get.to(() => AboutScreen()),
     );
   }
 
   Widget getTutorialFab(bool overlayEnabled, VoidCallback? onPressed) {
-    return getHelpFab(Icons.info_rounded, overlayEnabled, "Help Overlay", onPressed);
+    return getHelpFab(Icons.info_rounded, overlayEnabled, "Help Overlay", 0, onPressed);
   }
 
   TextStyle boldStyle(TextStyle style, {double fontSizeFactor = 1.0}) {

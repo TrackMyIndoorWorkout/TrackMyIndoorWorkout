@@ -97,7 +97,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: _themeManager.getGreenFab(
-          Icons.check, false, false, "", () => Get.back(result: _sportChoices[_sportIndex])),
+          Icons.check, false, false, "", 0, () => Get.back(result: _sportChoices[_sportIndex])),
     );
   }
 }

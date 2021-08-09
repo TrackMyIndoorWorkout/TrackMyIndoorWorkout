@@ -86,7 +86,8 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         Icons.favorite,
         false,
         false,
-        "",
+        "Pair or Disconnect",
+        0,
         onTap,
       ),
     );
