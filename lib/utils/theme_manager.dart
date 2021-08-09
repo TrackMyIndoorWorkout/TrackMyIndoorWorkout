@@ -50,7 +50,7 @@ class ThemeManager {
     return OverlayTutorialHole(
       enabled: enabled,
       overlayTutorialEntry: OverlayTutorialRectEntry(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
         radius: const Radius.circular(16.0),
         overlayTutorialHints: <OverlayTutorialWidgetHint>[
           OverlayTutorialWidgetHint(
@@ -262,7 +262,7 @@ class ThemeManager {
       true,
       overlayEnabled,
       "Strava Upload",
-      0,
+      8,
       onPressed,
     );
   }

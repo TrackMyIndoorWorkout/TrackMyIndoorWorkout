@@ -295,7 +295,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         true,
         _tutorialVisible,
         "Device Usages",
-        0,
+        8,
         () async {
           await Get.to(() => DeviceUsagesScreen());
         },
