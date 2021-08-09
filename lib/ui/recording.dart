@@ -1365,36 +1365,6 @@ class RecordingState extends State<RecordingScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 actions: [
-                  StreamBuilder<BluetoothDeviceState>(
-                    stream: widget.device.state,
-                    initialData: widget.initialState,
-                    builder: (c, snapshot) {
-                      VoidCallback? onPressed;
-                      IconData icon;
-                      switch (snapshot.data) {
-                        case BluetoothDeviceState.connected:
-                          onPressed = () async {
-                            await _fitnessEquipment?.disconnect();
-                          };
-                          icon = Icons.bluetooth_connected;
-                          break;
-                        case BluetoothDeviceState.disconnected:
-                          onPressed = () async {
-                            await _fitnessEquipment?.connect();
-                          };
-                          icon = Icons.bluetooth_disabled;
-                          break;
-                        default:
-                          onPressed = null;
-                          icon = Icons.bluetooth_searching;
-                          break;
-                      }
-                      return IconButton(
-                        icon: Icon(icon),
-                        onPressed: onPressed,
-                      );
-                    },
-                  ),
                   OverlayTutorialHole(
                     enabled: _tutorialVisible,
                     overlayTutorialEntry: OverlayTutorialRectEntry(
