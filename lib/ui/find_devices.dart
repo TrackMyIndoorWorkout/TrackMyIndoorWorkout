@@ -346,7 +346,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
           : null,
       child: OverlayTutorialScope(
         enabled: _tutorialVisible,
-        absorbPointer: true,
         overlayColor: Colors.green.withOpacity(.8),
         child: AbsorbPointer(
           absorbing: _tutorialVisible,
