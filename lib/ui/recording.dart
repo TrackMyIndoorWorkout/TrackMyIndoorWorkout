@@ -626,24 +626,16 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _dataGapTimeoutHandler() async {
     Get.snackbar("Warning", "Equipment might be disconnected!");
 
+    _fitnessEquipment?.measuring = false;
     _hrBeepPeriodTimer?.cancel();
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
-      Get.find<SoundService>().stopAllSoundEffects();
-    }
 
     if (_dataGapSoundEffect != SOUND_EFFECT_NONE) {
-      Get.find<SoundService>().playDataTimeoutSoundEffect();
-      if (_dataGapWatchdogTime >= 2) {
-        _dataGapBeeperTimer = Timer(Duration(seconds: _dataGapWatchdogTime), _dataTimeoutBeeper);
-      }
+      await _dataTimeoutBeeper();
     }
 
-    setState(() {
-      _measuring = false;
-    });
-    _fitnessEquipment?.measuring = false;
+    await _stopMeasurement(false);
+
     try {
-      await _fitnessEquipment?.detach();
       await _fitnessEquipment?.disconnect();
     } on PlatformException catch (e, stack) {
       debugPrint("Equipment got turned off?");
@@ -653,7 +645,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _dataTimeoutBeeper() async {
-    Get.find<SoundService>().playDataTimeoutSoundEffect();
+    await Get.find<SoundService>().playDataTimeoutSoundEffect();
     if (_measuring && _dataGapSoundEffect != SOUND_EFFECT_NONE && _dataGapWatchdogTime >= 2) {
       _dataGapBeeperTimer = Timer(Duration(seconds: _dataGapWatchdogTime), _dataTimeoutBeeper);
     }
@@ -722,7 +714,13 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
 
-    await _fitnessEquipment?.detach();
+    try {
+      await _fitnessEquipment?.detach();
+    } on PlatformException catch (e, stack) {
+      debugPrint("Equipment got turned off?");
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
 
     _activity!.finish(
       _fitnessEquipment?.lastRecord.distance,
