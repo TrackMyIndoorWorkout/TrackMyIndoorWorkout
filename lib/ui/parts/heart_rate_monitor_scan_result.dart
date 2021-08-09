@@ -84,6 +84,10 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
             ? themeManager.getGreenColor()
             : themeManager.getBlueColor(),
         Icons.favorite,
+        false,
+        false,
+        "Pair or Disconnect",
+        0,
         onTap,
       ),
     );

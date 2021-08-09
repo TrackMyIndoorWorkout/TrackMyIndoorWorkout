@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:expandable/expandable.dart';
@@ -88,6 +89,7 @@ class RecordingState extends State<RecordingScreen> {
     fontSize: 11,
   );
   TextStyle _markerStyle = TextStyle();
+  TextStyle _overlayStyle = TextStyle();
   ExpandableThemeData _expandableThemeData = ExpandableThemeData(
     hasIcon: !SIMPLER_UI_SLOW_DEFAULT,
     iconColor: Colors.black,
@@ -149,6 +151,7 @@ class RecordingState extends State<RecordingScreen> {
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   bool _zoneIndexColoring = false;
+  bool _tutorialVisible = false;
 
   Future<void> _connectOnDemand() async {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
@@ -387,6 +390,7 @@ class RecordingState extends State<RecordingScreen> {
       color: _themeManager.getBlueColor(),
     );
     _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 1.4);
+    _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     final prefService = Get.find<BasePrefService>();
     prefService.set<String>(
       LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(widget.sport),
@@ -476,31 +480,37 @@ class RecordingState extends State<RecordingScreen> {
     );
     _rowConfig = [
       RowConfiguration(
+        title: "Calories",
         icon: Icons.whatshot,
         unit: 'cal',
         expandable: false,
       ),
       RowConfiguration(
+        title: _preferencesSpecs[0].title,
         icon: _preferencesSpecs[0].icon,
         unit: _preferencesSpecs[0].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
+        title: _preferencesSpecs[1].title,
         icon: _preferencesSpecs[1].icon,
         unit: _preferencesSpecs[1].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
+        title: _preferencesSpecs[2].title,
         icon: _preferencesSpecs[2].icon,
         unit: _preferencesSpecs[2].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
+        title: _preferencesSpecs[3].title,
         icon: _preferencesSpecs[3].icon,
         unit: _preferencesSpecs[3].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
+        title: "Distance",
         icon: Icons.add_road,
         unit: distanceUnit(_si, _highRes),
         expandable: !_simplerUi,
@@ -1151,14 +1161,20 @@ class RecordingState extends State<RecordingScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIcon(_rowConfig[entry.key].icon, _sizeDefault),
+          _themeManager.getBlueIconWithHole(
+            entry.value.icon,
+            _sizeDefault,
+            _tutorialVisible,
+            entry.value.title,
+            0,
+          ),
           Spacer(),
           Text(_values[entry.key], style: measurementStyle),
           SizedBox(
             width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
             child: Center(
               child: Text(
-                _rowConfig[entry.key].unit,
+                entry.value.unit,
                 maxLines: 2,
                 style: _unitStyle,
               ),
@@ -1330,176 +1346,257 @@ class RecordingState extends State<RecordingScreen> {
 
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: Scaffold(
-        appBar: AppBar(
-          title: TextOneLine(
-            widget.device.name,
-            overflow: TextOverflow.ellipsis,
-          ),
-          actions: [
-            StreamBuilder<BluetoothDeviceState>(
-              stream: widget.device.state,
-              initialData: widget.initialState,
-              builder: (c, snapshot) {
-                VoidCallback? onPressed;
-                IconData icon;
-                switch (snapshot.data) {
-                  case BluetoothDeviceState.connected:
-                    onPressed = () async {
-                      await _fitnessEquipment?.disconnect();
-                    };
-                    icon = Icons.bluetooth_connected;
-                    break;
-                  case BluetoothDeviceState.disconnected:
-                    onPressed = () async {
-                      await _fitnessEquipment?.connect();
-                    };
-                    icon = Icons.bluetooth_disabled;
-                    break;
-                  default:
-                    onPressed = null;
-                    icon = Icons.bluetooth_searching;
-                    break;
-                }
-                return IconButton(
-                  icon: Icon(icon),
-                  onPressed: onPressed,
-                );
-              },
-            ),
-            IconButton(
-                icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-                onPressed: () async {
-                  if (_measuring) {
-                    await _stopMeasurement(false);
-                  } else {
-                    await _startMeasurement();
-                  }
-                }),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              rows[0],
-              Divider(height: separatorHeight),
-              rows[1],
-              Divider(height: separatorHeight),
-              ColoredBox(
-                color: _getZoneColor(metricIndex: 0, background: true),
-                child: ExpandablePanel(
-                  theme: _expandableThemeData,
-                  header: rows[2],
-                  collapsed: Container(),
-                  expanded: _simplerUi ? Container() : extras[0],
-                  controller: _rowControllers[0],
-                ),
-              ),
-              Divider(height: separatorHeight),
-              ColoredBox(
-                color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
-                child: ExpandablePanel(
-                  theme: _expandableThemeData,
-                  header: rows[3],
-                  collapsed: Container(),
-                  expanded: _simplerUi ? Container() : extras[1],
-                  controller: _rowControllers[1],
-                ),
-              ),
-              Divider(height: separatorHeight),
-              ColoredBox(
-                color: _getZoneColor(metricIndex: 2, background: true),
-                child: ExpandablePanel(
-                  theme: _expandableThemeData,
-                  header: rows[4],
-                  collapsed: Container(),
-                  expanded: _simplerUi ? Container() : extras[2],
-                  controller: _rowControllers[2],
-                ),
-              ),
-              Divider(height: separatorHeight),
-              ColoredBox(
-                color: _getTargetHrColor(targetHrState, true),
-                child: ExpandablePanel(
-                  theme: _expandableThemeData,
-                  header: rows[5],
-                  collapsed: Container(),
-                  expanded: _simplerUi ? Container() : extras[3],
-                  controller: _rowControllers[3],
-                ),
-              ),
-              Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[6],
-                collapsed: Container(),
-                expanded: _simplerUi ? Container() : extras[4],
-                controller: _rowControllers[4],
-              ),
-            ],
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: CircularFabMenu(
-          fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
-          fabOpenColor: _themeManager.getBlueColor(),
-          fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-          fabCloseColor: _themeManager.getBlueColor(),
-          ringColor: _themeManager.getBlueColorInverse(),
-          children: [
-            _themeManager.getStravaFab(() async {
-              if (_measuring) {
-                Get.snackbar("Warning", "Cannot upload while measurement is under progress");
-                return;
+      child: GestureDetector(
+        onTap: _tutorialVisible
+            ? () {
+                setState(() {
+                  _tutorialVisible = false;
+                });
               }
+            : null,
+        child: OverlayTutorialScope(
+          enabled: _tutorialVisible,
+          overlayColor: Colors.green.withOpacity(.8),
+          child: AbsorbPointer(
+            absorbing: _tutorialVisible,
+            ignoringSemantics: true,
+            child: Scaffold(
+              appBar: AppBar(
+                title: TextOneLine(
+                  widget.device.name,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                actions: [
+                  StreamBuilder<BluetoothDeviceState>(
+                    stream: widget.device.state,
+                    initialData: widget.initialState,
+                    builder: (c, snapshot) {
+                      VoidCallback? onPressed;
+                      IconData icon;
+                      switch (snapshot.data) {
+                        case BluetoothDeviceState.connected:
+                          onPressed = () async {
+                            await _fitnessEquipment?.disconnect();
+                          };
+                          icon = Icons.bluetooth_connected;
+                          break;
+                        case BluetoothDeviceState.disconnected:
+                          onPressed = () async {
+                            await _fitnessEquipment?.connect();
+                          };
+                          icon = Icons.bluetooth_disabled;
+                          break;
+                        default:
+                          onPressed = null;
+                          icon = Icons.bluetooth_searching;
+                          break;
+                      }
+                      return IconButton(
+                        icon: Icon(icon),
+                        onPressed: onPressed,
+                      );
+                    },
+                  ),
+                  OverlayTutorialHole(
+                    enabled: _tutorialVisible,
+                    overlayTutorialEntry: OverlayTutorialRectEntry(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      radius: const Radius.circular(16.0),
+                      overlayTutorialHints: <OverlayTutorialWidgetHint>[
+                        OverlayTutorialWidgetHint(
+                          builder: (context, rect, rRect) {
+                            return Positioned(
+                              top: rRect.top + 8.0,
+                              right: Get.width - rRect.left + 4.0,
+                              child: Text("Help Overlay", style: _overlayStyle),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+                      onPressed: () async {
+                        if (_measuring) {
+                          await _stopMeasurement(false);
+                        } else {
+                          await _startMeasurement();
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              body: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    rows[0],
+                    Divider(height: separatorHeight),
+                    rows[1],
+                    Divider(height: separatorHeight),
+                    ColoredBox(
+                      color: _getZoneColor(metricIndex: 0, background: true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[2],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[0],
+                        controller: _rowControllers[0],
+                      ),
+                    ),
+                    Divider(height: separatorHeight),
+                    ColoredBox(
+                      color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[3],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[1],
+                        controller: _rowControllers[1],
+                      ),
+                    ),
+                    Divider(height: separatorHeight),
+                    ColoredBox(
+                      color: _getZoneColor(metricIndex: 2, background: true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[4],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[2],
+                        controller: _rowControllers[2],
+                      ),
+                    ),
+                    Divider(height: separatorHeight),
+                    ColoredBox(
+                      color: _getTargetHrColor(targetHrState, true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[5],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[3],
+                        controller: _rowControllers[3],
+                      ),
+                    ),
+                    Divider(height: separatorHeight),
+                    ExpandablePanel(
+                      theme: _expandableThemeData,
+                      header: rows[6],
+                      collapsed: Container(),
+                      expanded: _simplerUi ? Container() : extras[4],
+                      controller: _rowControllers[4],
+                    ),
+                  ],
+                ),
+              ),
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+              floatingActionButton: CircularFabMenu(
+                fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+                fabOpenColor: _themeManager.getBlueColor(),
+                fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+                fabCloseColor: _themeManager.getBlueColor(),
+                ringColor: _themeManager.getBlueColorInverse(),
+                children: [
+                  _themeManager.getTutorialFab(
+                    _tutorialVisible,
+                    () async {
+                      setState(() {
+                        _tutorialVisible = !_tutorialVisible;
+                      });
+                    },
+                  ),
+                  _themeManager.getStravaFab(_tutorialVisible, () async {
+                    if (_measuring) {
+                      Get.snackbar("Warning", "Cannot upload while measurement is under progress");
+                      return;
+                    }
 
-              await _stravaUpload(false);
-            }),
-            _themeManager.getBlueFab(Icons.list_alt, () async {
-              if (_measuring) {
-                Get.snackbar("Warning", "Cannot navigate while measurement is under progress");
-              } else {
-                final hasLeaderboardData = await _database.hasLeaderboardData();
-                Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
-              }
-            }),
-            _themeManager.getBlueFab(Icons.battery_unknown, () async {
-              Get.bottomSheet(
-                BatteryStatusBottomSheet(),
-                enableDrag: false,
-              );
-            }),
-            _themeManager.getBlueFab(Icons.build, () async {
-              if (_measuring) {
-                Get.snackbar("Warning", "Cannot calibrate while measurement is under progress");
-              } else if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
-                Get.snackbar("Error", "Not compatible with the calibration method");
-              } else {
-                Get.bottomSheet(
-                  SpinDownBottomSheet(),
-                  isDismissible: false,
-                  enableDrag: false,
-                );
-              }
-            }),
-            _themeManager.getBlueFab(Icons.favorite, () async {
-              await Get.bottomSheet(
-                HeartRateMonitorPairingBottomSheet(),
-                isDismissible: false,
-                enableDrag: false,
-              );
-              await _initializeHeartRateMonitor();
-            }),
-            _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, () async {
-              if (_measuring) {
-                await _stopMeasurement(false);
-              } else {
-                await _startMeasurement();
-              }
-            }),
-          ],
+                    await _stravaUpload(false);
+                  }),
+                  _themeManager.getBlueFab(
+                    Icons.list_alt,
+                    true,
+                    _tutorialVisible,
+                    "Workout List",
+                    0,
+                    () async {
+                      if (_measuring) {
+                        Get.snackbar(
+                            "Warning", "Cannot navigate while measurement is under progress");
+                      } else {
+                        final hasLeaderboardData = await _database.hasLeaderboardData();
+                        Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+                      }
+                    },
+                  ),
+                  _themeManager.getBlueFab(
+                    Icons.battery_unknown,
+                    true,
+                    _tutorialVisible,
+                    "Battery & Extras",
+                    8,
+                    () async {
+                      Get.bottomSheet(
+                        BatteryStatusBottomSheet(),
+                        enableDrag: false,
+                      );
+                    },
+                  ),
+                  _themeManager.getBlueFab(
+                    Icons.build,
+                    true,
+                    _tutorialVisible,
+                    "Calibration",
+                    0,
+                    () async {
+                      if (_measuring) {
+                        Get.snackbar(
+                            "Warning", "Cannot calibrate while measurement is under progress");
+                      } else if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
+                        Get.snackbar("Error", "Not compatible with the calibration method");
+                      } else {
+                        Get.bottomSheet(
+                          SpinDownBottomSheet(),
+                          isDismissible: false,
+                          enableDrag: false,
+                        );
+                      }
+                    },
+                  ),
+                  _themeManager.getBlueFab(
+                    Icons.favorite,
+                    true,
+                    _tutorialVisible,
+                    "HRM Pairing",
+                    -10,
+                    () async {
+                      await Get.bottomSheet(
+                        HeartRateMonitorPairingBottomSheet(),
+                        isDismissible: false,
+                        enableDrag: false,
+                      );
+                      await _initializeHeartRateMonitor();
+                    },
+                  ),
+                  _themeManager.getBlueFab(
+                    _measuring ? Icons.stop : Icons.play_arrow,
+                    true,
+                    _tutorialVisible,
+                    "Start / Stop Workout",
+                    -20,
+                    () async {
+                      if (_measuring) {
+                        await _stopMeasurement(false);
+                      } else {
+                        await _startMeasurement();
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

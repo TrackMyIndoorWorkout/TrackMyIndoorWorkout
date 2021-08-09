@@ -52,7 +52,7 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(Icons.check, () async {
+      floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0, () async {
         final database = Get.find<AppDatabase>();
         final calorieFactor = _calorieFactorPercent / 100.0;
         CalorieTune? calorieTune;
