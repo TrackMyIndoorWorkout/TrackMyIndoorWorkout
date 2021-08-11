@@ -240,8 +240,8 @@ class FitnessEquipment extends DeviceBase {
     controlPoint = BluetoothDeviceEx.filterCharacteristic(
         service!.characteristics, FITNESS_MACHINE_CONTROL_POINT);
 
-    status = BluetoothDeviceEx.filterCharacteristic(
-        service!.characteristics, FITNESS_MACHINE_STATUS);
+    status =
+        BluetoothDeviceEx.filterCharacteristic(service!.characteristics, FITNESS_MACHINE_STATUS);
 
     try {
       await controlPoint?.setNotifyValue(true); // Is this what needed for indication?
