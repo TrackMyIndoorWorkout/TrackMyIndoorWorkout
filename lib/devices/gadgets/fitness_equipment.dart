@@ -20,6 +20,7 @@ import '../gatt_constants.dart';
 import 'device_base.dart';
 import 'heart_rate_monitor.dart';
 import 'running_cadence_sensor.dart';
+import 'write_support_parameters.dart';
 
 typedef RecordHandlerFunction = Function(Record data);
 
@@ -50,8 +51,18 @@ class FitnessEquipment extends DeviceBase {
   Random _random = Random();
   double? slowPace;
   bool equipmentDiscovery = false;
-  BluetoothCharacteristic? _controlPoint;
-  StreamSubscription? _controlPointSubscription;
+  int _readFeatures = 0;
+  int _writeFeatures = 0;
+  WriteSupportParameters? _speedLevels; // km/h
+  WriteSupportParameters? _inclinationLevels; // percent
+  WriteSupportParameters? _resistanceLevels;
+  WriteSupportParameters? _heartRateLevels;
+  WriteSupportParameters? _powerLevels;
+  bool supportsSpinDown = false;
+  BluetoothCharacteristic? controlPoint;
+  StreamSubscription? controlPointSubscription;
+  BluetoothCharacteristic? status;
+  StreamSubscription? statusSubscription;
 
   FitnessEquipment({this.descriptor, device})
       : super(
@@ -135,21 +146,114 @@ class FitnessEquipment extends DeviceBase {
     return await discover(identify: identify);
   }
 
-  Future<void> connectToControlPoint() async {
-    _controlPoint = BluetoothDeviceEx.filterCharacteristic(
-        service!.characteristics, FITNESS_MACHINE_CONTROL_POINT);
+  Future<WriteSupportParameters?> getWriteSupportParameters(
+    int writeFeaturesFlag,
+    int supportBit,
+    String supportCharacteristicsId,
+    String description,
+    int division, {
+    int numberBytes = 2,
+  }) async {
+    if (writeFeaturesFlag & supportBit > 0) {
+      final writeTargets = BluetoothDeviceEx.filterCharacteristic(
+          service!.characteristics, supportCharacteristicsId);
+      try {
+        final writeTargetValues = await writeTargets?.read();
+        if (writeTargetValues != null) {
+          final params = WriteSupportParameters(
+            writeTargetValues,
+            division: division,
+            numberBytes: numberBytes,
+          );
+          debugPrint("$description - ${params.minimum} / ${params.maximum} / ${params.increment}");
+          return params;
+        }
+      } on PlatformException catch (e, stack) {
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
+    }
+
+    return null;
+  }
+
+  int _getLongFromBytes(List<int> data, int index) {
+    return data[index] + 256 * (data[index + 1] + 256 * (data[index + 2] + 256 * data[index + 3]));
+  }
+
+  Future<void> _fitnessMachineFeature() async {
+    final machineFeatures =
+        BluetoothDeviceEx.filterCharacteristic(service!.characteristics, FITNESS_MACHINE_FEATURE);
 
     try {
-      await _controlPoint?.setNotifyValue(true); // Is this what needed for indication?
+      final featureValues = await machineFeatures?.read();
+      if (featureValues == null) {
+        return;
+      }
+
+      _readFeatures = _getLongFromBytes(featureValues, 0);
+      _writeFeatures = _getLongFromBytes(featureValues, 4);
+      _speedLevels = await getWriteSupportParameters(
+        _writeFeatures,
+        SPEED_TARGET_SETTING_SUPPORTED,
+        SUPPORTED_SPEED_RANGE,
+        WRITE_FEATURE_TEXTS[0],
+        100,
+      );
+      _inclinationLevels = await getWriteSupportParameters(
+        _writeFeatures,
+        INCLINATION_TARGET_SETTING_SUPPORTED,
+        SUPPORTED_INCLINATION_RANGE,
+        WRITE_FEATURE_TEXTS[1],
+        10,
+      );
+      _resistanceLevels = await getWriteSupportParameters(
+        _writeFeatures,
+        RESISTANCE_TARGET_SETTING_SUPPORTED,
+        SUPPORTED_RESISTANCE_LEVEL,
+        WRITE_FEATURE_TEXTS[2],
+        10,
+      );
+      _heartRateLevels = await getWriteSupportParameters(
+        _writeFeatures,
+        HEART_RATE_TARGET_SETTING_SUPPORTED,
+        SUPPORTED_HEART_RATE_RANGE,
+        WRITE_FEATURE_TEXTS[4],
+        1,
+        numberBytes: 1,
+      );
+      _powerLevels = await getWriteSupportParameters(
+        _writeFeatures,
+        POWER_TARGET_SETTING_SUPPORTED,
+        SUPPORTED_POWER_RANGE,
+        WRITE_FEATURE_TEXTS[3],
+        1,
+      );
+      supportsSpinDown = _writeFeatures & SPIN_DOWN_CONTROL_SUPPORTED > 0;
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+  }
+
+  Future<void> _connectToControlPoint() async {
+    controlPoint = BluetoothDeviceEx.filterCharacteristic(
+        service!.characteristics, FITNESS_MACHINE_CONTROL_POINT);
+
+    status = BluetoothDeviceEx.filterCharacteristic(
+        service!.characteristics, FITNESS_MACHINE_STATUS);
+
+    try {
+      await controlPoint?.setNotifyValue(true); // Is this what needed for indication?
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
-    _controlPointSubscription = _controlPoint?.value
+    controlPointSubscription = controlPoint?.value
         .throttleTime(Duration(milliseconds: SPIN_DOWN_THRESHOLD))
         .listen((data) async {
-          debugPrint("FTMS control point: $data");
+      debugPrint("FTMS control point: $data");
       if (data[0] != CONTROL_OPCODE ||
           data[1] != SPIN_DOWN_CONTROL ||
           data[2] != SUCCESS_RESPONSE) {
@@ -168,7 +272,8 @@ class FitnessEquipment extends DeviceBase {
 
     equipmentDiscovery = true;
 
-    await connectToControlPoint();
+    await _fitnessMachineFeature();
+    await _connectToControlPoint();
 
     // Check manufacturer name
     if (manufacturerName == null) {
