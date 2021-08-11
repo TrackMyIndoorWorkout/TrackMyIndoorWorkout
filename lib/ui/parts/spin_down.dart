@@ -594,7 +594,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.close(1)),
+      floatingActionButton:
+          _themeManager.getBlueFab(Icons.clear, false, false, "Close", 0, () => Get.close(1)),
     );
   }
 }

@@ -1,3 +1,8 @@
+## 1.1.81
+
+* Adding help overlay to scanning, workout recording, and activity list screens
+* Adding a changelog button to the About screen
+
 ## 1.1.80
 
 * Correcting Strava sync delay
