@@ -32,8 +32,7 @@ class FitnessEquipment extends DeviceBase {
   bool _startingValues = true; // #197
   double _startingCalories = 0.0;
   double _startingDistance = 0.0;
-  double _startingElapsed = 0.0;
-  int _startingElapsedMillis = 0;
+  int _startingElapsed = 0;
   bool hasTotalCalorieCounting = false;
   Timer? _timer;
   late Record lastRecord;
@@ -226,21 +225,12 @@ class FitnessEquipment extends DeviceBase {
 
     // #197
     if (_startingValues) {
-      if (elapsed > 2) {
-        _startingElapsed = elapsed;
-        _startingElapsedMillis = (elapsed * 1000).round();
-        elapsed = 0.0;
-        elapsedMillis = 0;
+      if (stub.elapsed! > 2) {
+        _startingElapsed = stub.elapsed!;
         stub.elapsed = 0;
-        stub.elapsedMillis = 0;
       }
-    } else {
-      if (_startingElapsed > 0) {
-        elapsed -= _startingElapsed;
-        elapsedMillis -= _startingElapsedMillis;
-        stub.elapsed = stub.elapsed! - _startingElapsed.round();
-        stub.elapsedMillis = stub.elapsedMillis! - _startingElapsedMillis;
-      }
+    } else if (_startingElapsed > 0) {
+      stub.elapsed = stub.elapsed! - _startingElapsed;
     }
 
     if (sport == ActivityType.Run &&
@@ -281,7 +271,7 @@ class FitnessEquipment extends DeviceBase {
         _startingDistance = stub.distance!;
         stub.distance = 0.0;
       }
-    } else {
+    } else if (_startingDistance > EPS) {
       stub.distance = stub.distance! - _startingDistance;
     }
 
@@ -394,7 +384,7 @@ class FitnessEquipment extends DeviceBase {
         _startingCalories = calories;
         calories = 0.0;
       }
-    } else {
+    } else if (_startingCalories > EPS) {
       calories -= _startingCalories;
     }
 
@@ -440,7 +430,7 @@ class FitnessEquipment extends DeviceBase {
     _startingValues = true;
     _startingCalories = 0.0;
     _startingDistance = 0.0;
-    _startingElapsed = 0.0;
+    _startingElapsed = 0;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 
