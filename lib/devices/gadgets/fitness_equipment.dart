@@ -29,6 +29,11 @@ class FitnessEquipment extends DeviceBase {
   int _lastPositiveCadence = 0; // #101
   bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
   double _lastPositiveCalories = 0.0; // #111
+  bool _startingValues = true; // #197
+  double _startingCalories = 0.0;
+  double _startingDistance = 0.0;
+  double _startingElapsed = 0.0;
+  int _startingElapsedMillis = 0;
   bool hasTotalCalorieCounting = false;
   Timer? _timer;
   late Record lastRecord;
@@ -219,6 +224,25 @@ class FitnessEquipment extends DeviceBase {
       stub.elapsedMillis = elapsedMillis;
     }
 
+    // #197
+    if (_startingValues) {
+      if (elapsed > 2) {
+        _startingElapsed = elapsed;
+        _startingElapsedMillis = (elapsed * 1000).round();
+        elapsed = 0.0;
+        elapsedMillis = 0;
+        stub.elapsed = 0;
+        stub.elapsedMillis = 0;
+      }
+    } else {
+      if (_startingElapsed > 0) {
+        elapsed -= _startingElapsed;
+        elapsedMillis -= _startingElapsedMillis;
+        stub.elapsed = stub.elapsed! - _startingElapsed.round();
+        stub.elapsedMillis = stub.elapsedMillis! - _startingElapsedMillis;
+      }
+    }
+
     if (sport == ActivityType.Run &&
         _runningCadenceSensor != null &&
         (_runningCadenceSensor?.attached ?? false)) {
@@ -246,6 +270,19 @@ class FitnessEquipment extends DeviceBase {
         double dD = (stub.speed ?? 0.0) * DeviceDescriptor.KMH2MS * dT;
         stub.distance = stub.distance! + dD;
       }
+    }
+
+    // #197
+    if (stub.distance == null) {
+      stub.distance = 0.0;
+    }
+    if (_startingValues) {
+      if (stub.distance! > 50.0) {
+        _startingDistance = stub.distance!;
+        stub.distance = 0.0;
+      }
+    } else {
+      stub.distance = stub.distance! - _startingDistance;
     }
 
     if ((stub.heartRate == null || stub.heartRate == 0) &&
@@ -351,10 +388,23 @@ class FitnessEquipment extends DeviceBase {
       _lastPositiveCalories = calories;
     }
 
+    // #197
+    if (_startingValues) {
+      if (calories >= 2.0) {
+        _startingCalories = calories;
+        calories = 0.0;
+      }
+    } else {
+      calories -= _startingCalories;
+    }
+
     stub.calories = calories.floor();
 
     stub.activityId = _activity?.id ?? 0;
     stub.sport = descriptor?.defaultSport ?? ActivityType.Ride;
+
+    _startingValues = false;
+
     return stub;
   }
 
@@ -387,6 +437,10 @@ class FitnessEquipment extends DeviceBase {
     _runningCadenceSensor?.refreshFactors();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
+    _startingValues = true;
+    _startingCalories = 0.0;
+    _startingDistance = 0.0;
+    _startingElapsed = 0.0;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 
