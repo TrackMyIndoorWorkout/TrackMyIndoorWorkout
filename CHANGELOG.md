@@ -1,3 +1,15 @@
+## 1.1.81
+
+* Adding help overlay to scanning, workout recording, and activity list screens
+* Adding a changelog button to the About screen
+
+## 1.1.80
+
+* Correcting Strava sync delay
+* Changing data connection check endpoints from Strava's Amazon AWS EC2 server IPs to default, which
+  means Google, CloudFlare, and OpenDNS DNS servers
+* Fixing Schwinn 510u support, making manufacturer check more lenient (less stringent)
+
 ## 1.1.79
 
 * Transforming some colors (on the graph and on the track visualization) opaque for possible
