@@ -37,6 +37,8 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   HeartRateMonitor? _heartRateMonitor;
   String _hrmBatteryLevel = NOT_AVAILABLE;
   String _batteryLevel = NOT_AVAILABLE;
+  String _readFeatures = "Features: $NOT_AVAILABLE";
+  String _writeFeatures = "Write Features: $NOT_AVAILABLE";
   ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
   TextStyle _textStyle = TextStyle();
@@ -86,6 +88,42 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     });
   }
 
+  Future<void> _readAndWriteFeatures() async {
+    List<String> readFeatures = [];
+    if ((_fitnessEquipment?.readFeatures ?? 0) > 0) {
+      int flagBit = 1;
+      READ_FEATURE_TEXTS.forEach((readFeatureText) {
+        if (_fitnessEquipment!.readFeatures & flagBit > 0) {
+          readFeatures.add(readFeatureText);
+        }
+
+        flagBit *= 2;
+      });
+    }
+
+    List<String> writeFeatures = [];
+    if ((_fitnessEquipment?.writeFeatures ?? 0) > 0) {
+      int flagBit = 1;
+      WRITE_FEATURE_TEXTS.forEach((writeFeatureText) {
+        if (_fitnessEquipment!.writeFeatures & flagBit > 0) {
+          writeFeatures.add(writeFeatureText);
+        }
+
+        flagBit *= 2;
+      });
+    }
+
+    setState(() {
+      if (readFeatures.length > 0) {
+        _readFeatures = "Features: " + readFeatures.join(", ");
+      }
+
+      if (writeFeatures.length > 0) {
+        _writeFeatures = "Write Features: " + writeFeatures.join(", ");
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -97,6 +135,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _readBatteryLevels();
+    _readAndWriteFeatures();
   }
 
   @override
@@ -125,6 +164,10 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
                 Text(_hrmBatteryLevel, style: _textStyle),
               ],
             ),
+            Divider(),
+            Text(_readFeatures),
+            Divider(),
+            Text(_writeFeatures),
           ],
         ),
       ),

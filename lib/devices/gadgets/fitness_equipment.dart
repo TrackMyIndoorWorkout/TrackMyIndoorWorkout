@@ -55,8 +55,8 @@ class FitnessEquipment extends DeviceBase {
   Random _random = Random();
   double? slowPace;
   bool equipmentDiscovery = false;
-  int _readFeatures = 0;
-  int _writeFeatures = 0;
+  int readFeatures = 0;
+  int writeFeatures = 0;
   WriteSupportParameters? _speedLevels; // km/h
   WriteSupportParameters? _inclinationLevels; // percent
   WriteSupportParameters? _resistanceLevels;
@@ -195,31 +195,31 @@ class FitnessEquipment extends DeviceBase {
         return;
       }
 
-      _readFeatures = _getLongFromBytes(featureValues, 0);
-      _writeFeatures = _getLongFromBytes(featureValues, 4);
+      readFeatures = _getLongFromBytes(featureValues, 0);
+      writeFeatures = _getLongFromBytes(featureValues, 4);
       _speedLevels = await getWriteSupportParameters(
-        _writeFeatures,
+        writeFeatures,
         SPEED_TARGET_SETTING_SUPPORTED,
         SUPPORTED_SPEED_RANGE,
         WRITE_FEATURE_TEXTS[0],
         100,
       );
       _inclinationLevels = await getWriteSupportParameters(
-        _writeFeatures,
+        writeFeatures,
         INCLINATION_TARGET_SETTING_SUPPORTED,
         SUPPORTED_INCLINATION_RANGE,
         WRITE_FEATURE_TEXTS[1],
         10,
       );
       _resistanceLevels = await getWriteSupportParameters(
-        _writeFeatures,
+        writeFeatures,
         RESISTANCE_TARGET_SETTING_SUPPORTED,
         SUPPORTED_RESISTANCE_LEVEL,
         WRITE_FEATURE_TEXTS[2],
         10,
       );
       _heartRateLevels = await getWriteSupportParameters(
-        _writeFeatures,
+        writeFeatures,
         HEART_RATE_TARGET_SETTING_SUPPORTED,
         SUPPORTED_HEART_RATE_RANGE,
         WRITE_FEATURE_TEXTS[4],
@@ -227,13 +227,13 @@ class FitnessEquipment extends DeviceBase {
         numberBytes: 1,
       );
       _powerLevels = await getWriteSupportParameters(
-        _writeFeatures,
+        writeFeatures,
         POWER_TARGET_SETTING_SUPPORTED,
         SUPPORTED_POWER_RANGE,
         WRITE_FEATURE_TEXTS[3],
         1,
       );
-      supportsSpinDown = _writeFeatures & SPIN_DOWN_CONTROL_SUPPORTED > 0;
+      supportsSpinDown = writeFeatures & SPIN_DOWN_CONTROL_SUPPORTED > 0;
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
