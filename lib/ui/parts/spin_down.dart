@@ -222,7 +222,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       }
 
       if (data.length == 7) {
-        if (data[0] != CONTROL_OPCODE ||
+        if (data[0] != RESPONSE_OPCODE ||
             data[1] != SPIN_DOWN_CONTROL ||
             data[2] != SUCCESS_RESPONSE) {
           setState(() {

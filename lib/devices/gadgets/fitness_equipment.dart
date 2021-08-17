@@ -65,6 +65,7 @@ class FitnessEquipment extends DeviceBase {
   bool supportsSpinDown = false;
   BluetoothCharacteristic? controlPoint;
   StreamSubscription? controlPointSubscription;
+  bool gotControl = false;
   BluetoothCharacteristic? status;
   StreamSubscription? statusSubscription;
 
@@ -240,30 +241,37 @@ class FitnessEquipment extends DeviceBase {
     }
   }
 
-  Future<void> _connectToControlPoint() async {
-    controlPoint = BluetoothDeviceEx.filterCharacteristic(
-        service!.characteristics, FITNESS_MACHINE_CONTROL_POINT);
-
-    status =
-        BluetoothDeviceEx.filterCharacteristic(service!.characteristics, FITNESS_MACHINE_STATUS);
-
-    try {
-      await controlPoint?.setNotifyValue(true); // Is this what needed for indication?
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+  Future<bool> _executeControlOperation(int opCode, {int? controlInfo = null}) async {
+    List<int> requestInfo = [opCode];
+    if (controlInfo != null) {
+      requestInfo.add(controlInfo);
     }
 
-    controlPointSubscription = controlPoint?.value
-        .throttleTime(Duration(milliseconds: SPIN_DOWN_THRESHOLD))
-        .listen((data) async {
-      debugPrint("FTMS control point: $data");
-      if (data[0] != CONTROL_OPCODE ||
-          data[1] != SPIN_DOWN_CONTROL ||
-          data[2] != SUCCESS_RESPONSE) {
-        return;
-      }
-    });
+    controlPoint?.write(requestInfo);
+    final controlResponse = await controlPoint?.read();
+
+    return controlResponse != null &&
+        controlResponse[0] == RESPONSE_OPCODE &&
+        controlResponse[1] == opCode &&
+        controlResponse[2] == SUCCESS_RESPONSE;
+  }
+
+  Future<void> _connectToControlPoint() async {
+    if (controlPoint == null) {
+      controlPoint = BluetoothDeviceEx.filterCharacteristic(
+        service!.characteristics,
+        FITNESS_MACHINE_CONTROL_POINT,
+      );
+
+      status = BluetoothDeviceEx.filterCharacteristic(
+        service!.characteristics,
+        FITNESS_MACHINE_STATUS,
+      );
+    }
+
+    if (!gotControl) {
+      gotControl = await _executeControlOperation(REQUEST_CONTROL);
+    }
   }
 
   Future<bool> discover({bool identify = false, bool retry = false}) async {
@@ -556,7 +564,7 @@ class FitnessEquipment extends DeviceBase {
     _runningCadenceSensor?.refreshFactors();
   }
 
-  void startWorkout() {
+  Future<bool> startWorkout() async {
     readConfiguration();
     _runningCadenceSensor?.refreshFactors();
     _residueCalories = 0.0;
@@ -566,9 +574,12 @@ class FitnessEquipment extends DeviceBase {
     _startingDistance = 0.0;
     _startingElapsed = 0;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
+
+    return await _executeControlOperation(START_OR_RESUME_CONTROL);
   }
 
   void stopWorkout() {
+    _executeControlOperation(STOP_OR_PAUSE_CONTROL, controlInfo: STOP_CONTROL_INFO);
     readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
