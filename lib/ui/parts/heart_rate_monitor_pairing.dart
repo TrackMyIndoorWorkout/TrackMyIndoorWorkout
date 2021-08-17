@@ -17,6 +17,8 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
 }
 
 class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
+  static RegExp colonRegex = RegExp(r'\:');
+
   int _scanDuration = 4;
   TextStyle _captionStyle = TextStyle();
   TextStyle _subtitleStyle = TextStyle();
@@ -80,7 +82,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                           ),
                         ),
                         subtitle: Text(
-                          _heartRateMonitor?.device?.id.id ?? EMPTY_MEASUREMENT,
+                          _heartRateMonitor?.device?.id.id.replaceAll(colonRegex, '') ??
+                              EMPTY_MEASUREMENT,
                           style: _subtitleStyle,
                         ),
                         trailing: StreamBuilder<BluetoothDeviceState>(
@@ -88,7 +91,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                           initialData: BluetoothDeviceState.disconnected,
                           builder: (c, snapshot) {
                             if (snapshot.data == BluetoothDeviceState.connected) {
-                              return _themeManager.getGreenFab(Icons.favorite, () {
+                              return _themeManager.getGreenFab(Icons.favorite, false, false, "", 0,
+                                  () {
                                 Get.snackbar("Info", "Already connected");
                               });
                             } else {
@@ -207,7 +211,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, () => Get.back(result: true)),
+            _themeManager.getBlueFab(
+                Icons.clear, false, false, "Close", 0, () => Get.back(result: true)),
             StreamBuilder<bool>(
               stream: FlutterBlue.instance.isScanning,
               initialData: true,

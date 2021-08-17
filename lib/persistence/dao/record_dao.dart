@@ -13,6 +13,10 @@ abstract class RecordDao {
       'SELECT * FROM `$RECORDS_TABLE_NAME` WHERE `activity_id` = :activityId ORDER BY `time_stamp`')
   Future<List<Record>> findAllActivityRecords(int activityId);
 
+  @Query(
+      'SELECT * FROM `$RECORDS_TABLE_NAME` WHERE `activity_id` = :activityId ORDER BY `time_stamp` DESC LIMIT 1')
+  Stream<Record?> findLastRecordOfActivity(int activityId);
+
   @insert
   Future<void> insertRecord(Record record);
 

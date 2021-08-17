@@ -406,6 +406,26 @@ class _$RecordDao extends RecordDao {
   }
 
   @override
+  Stream<Record?> findLastRecordOfActivity(int activityId) {
+    return _queryAdapter.queryStream(
+        'SELECT * FROM `records` WHERE `activity_id` = ?1 ORDER BY `time_stamp` DESC LIMIT 1',
+        mapper: (Map<String, Object?> row) => Record(
+            id: row['id'] as int?,
+            activityId: row['activity_id'] as int?,
+            timeStamp: row['time_stamp'] as int?,
+            distance: row['distance'] as double?,
+            elapsed: row['elapsed'] as int?,
+            calories: row['calories'] as int?,
+            power: row['power'] as int?,
+            speed: row['speed'] as double?,
+            cadence: row['cadence'] as int?,
+            heartRate: row['heart_rate'] as int?),
+        arguments: [activityId],
+        queryableName: 'records',
+        isView: false);
+  }
+
+  @override
   Future<List<Record>> deleteAllActivityRecords(int activityId) async {
     return _queryAdapter.queryList('DELETE FROM `records` WHERE `activity_id` = ?1',
         mapper: (Map<String, Object?> row) => Record(

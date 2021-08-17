@@ -1,3 +1,16 @@
+## 1.1.82
+
+* Adding compensation logic for (distance, calories, and elapsed time) consecutive workouts
+* Starting to introduce code for machine control features
+* Properly stopping workout automatically when Data Connection Watchdog is triggered
+* Trying to improve data connection for older Android devices. As a side effect the Bluetooth status
+  button is gone from the top right of the AppBar on the workout screen
+
+## 1.1.81
+
+* Adding help overlay to scanning, workout recording, and activity list screens
+* Adding a changelog button to the About screen
+
 ## 1.1.80
 
 * Correcting Strava sync delay
