@@ -52,10 +52,10 @@ abstract class Auth {
     String? scope,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString(ACCESS_TOKEN_TAG, token ?? '');
-    prefs.setString(REFRESH_TOKEN_TAG, refreshToken ?? '');
-    prefs.setInt(EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
-    prefs.setString(TOKEN_SCOPE_TAG, scope ?? '');
+    prefs.setString(STRAVA_ACCESS_TOKEN_TAG, token ?? '');
+    prefs.setString(STRAVA_REFRESH_TOKEN_TAG, refreshToken ?? '');
+    prefs.setInt(STRAVA_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
+    prefs.setString(STRAVA_TOKEN_SCOPE_TAG, scope ?? '');
     await registerToken(token, refreshToken, expire, scope);
     debugPrint('token saved!!!');
   }
@@ -71,11 +71,11 @@ abstract class Auth {
     debugPrint('Entering getStoredToken');
 
     try {
-      localToken.accessToken = prefs.getString(ACCESS_TOKEN_TAG)?.toString();
-      localToken.refreshToken = prefs.getString(REFRESH_TOKEN_TAG);
+      localToken.accessToken = prefs.getString(STRAVA_ACCESS_TOKEN_TAG)?.toString();
+      localToken.refreshToken = prefs.getString(STRAVA_REFRESH_TOKEN_TAG);
       // localToken.expiresAt = prefs.getInt('expire') * 1000; // To get in ms
-      localToken.expiresAt = prefs.getInt(EXPIRES_AT_TAG);
-      localToken.scope = prefs.getString(TOKEN_SCOPE_TAG);
+      localToken.expiresAt = prefs.getInt(STRAVA_EXPIRES_AT_TAG);
+      localToken.scope = prefs.getString(STRAVA_TOKEN_SCOPE_TAG);
 
       // load the data into Get
       await registerToken(
@@ -198,7 +198,7 @@ abstract class Auth {
 
   Future<bool> hasValidToken() async {
     final prefs = await SharedPreferences.getInstance();
-    String? accessToken = prefs.getString(ACCESS_TOKEN_TAG)?.toString();
+    String? accessToken = prefs.getString(STRAVA_ACCESS_TOKEN_TAG)?.toString();
     if (accessToken == null || accessToken.length == 0) {
       return false;
     }
@@ -220,7 +220,7 @@ abstract class Auth {
     String secret,
     String prompt,
   ) async {
-    debugPrint('Welcome to Oauth');
+    debugPrint('Welcome to Strava Oauth');
     bool isAuthOk = false;
     bool isExpired;
 

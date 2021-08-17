@@ -9,10 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'strava_status_code.dart';
 import 'constants.dart';
-import 'strava_token.dart';
-import 'fault.dart';
+import 'suunto_token.dart';
 
 ///===========================================
 /// Class related to Authorization process
@@ -24,22 +22,19 @@ abstract class Auth {
     String? token,
     String? refreshToken,
     int? expire,
-    String? scope,
   ) async {
-    if (Get.isRegistered<StravaToken>()) {
-      var stravaToken = Get.find<StravaToken>();
+    if (Get.isRegistered<SuuntoToken>()) {
+      var stravaToken = Get.find<SuuntoToken>();
       // Save also in Get
       stravaToken.accessToken = token;
       stravaToken.refreshToken = refreshToken;
       stravaToken.expiresAt = expire;
-      stravaToken.scope = scope;
     } else {
-      await Get.delete<StravaToken>();
-      Get.put<StravaToken>(StravaToken(
+      await Get.delete<SuuntoToken>();
+      Get.put<SuuntoToken>(SuuntoToken(
         accessToken: token,
         refreshToken: refreshToken,
         expiresAt: expire,
-        scope: scope,
       ));
     }
   }
@@ -52,39 +47,36 @@ abstract class Auth {
     String? scope,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString(ACCESS_TOKEN_TAG, token ?? '');
-    prefs.setString(REFRESH_TOKEN_TAG, refreshToken ?? '');
-    prefs.setInt(EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
-    prefs.setString(TOKEN_SCOPE_TAG, scope ?? '');
-    await registerToken(token, refreshToken, expire, scope);
+    prefs.setString(SUUNTO_ACCESS_TOKEN_TAG, token ?? '');
+    prefs.setString(SUUNTO_REFRESH_TOKEN_TAG, refreshToken ?? '');
+    prefs.setInt(SUUNTO_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
+    await registerToken(token, refreshToken, expire);
     debugPrint('token saved!!!');
   }
 
   /// Get the stored token and expiry date
   ///
   /// And refreshToken as well
-  /// Stored them in Get StravaToken
+  /// Stored them in Get SuuntoToken
   ///
-  Future<StravaToken> getStoredToken() async {
+  Future<SuuntoToken> getStoredToken() async {
     final prefs = await SharedPreferences.getInstance();
-    var localToken = StravaToken();
+    var localToken = SuuntoToken();
     debugPrint('Entering getStoredToken');
 
     try {
-      localToken.accessToken = prefs.getString(ACCESS_TOKEN_TAG)?.toString();
-      localToken.refreshToken = prefs.getString(REFRESH_TOKEN_TAG);
+      localToken.accessToken = prefs.getString(SUUNTO_ACCESS_TOKEN_TAG)?.toString();
+      localToken.refreshToken = prefs.getString(SUUNTO_REFRESH_TOKEN_TAG);
       // localToken.expiresAt = prefs.getInt('expire') * 1000; // To get in ms
-      localToken.expiresAt = prefs.getInt(EXPIRES_AT_TAG);
-      localToken.scope = prefs.getString(TOKEN_SCOPE_TAG);
+      localToken.expiresAt = prefs.getInt(SUUNTO_EXPIRES_AT_TAG);
 
       // load the data into Get
       await registerToken(
-          localToken.accessToken, localToken.refreshToken, localToken.expiresAt, localToken.scope);
+          localToken.accessToken, localToken.refreshToken, localToken.expiresAt);
     } catch (error) {
       debugPrint('Error while retrieving the token');
       localToken.accessToken = null;
       localToken.expiresAt = null;
-      localToken.scope = null;
     }
 
     if (localToken.expiresAt != null) {
@@ -92,21 +84,17 @@ abstract class Auth {
       final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
           '${dateExpired.hour.toString()} hours';
       debugPrint('stored token ${localToken.accessToken} ${localToken.expiresAt} ' +
-          '${localToken.scope} expires: $details');
+          'expires: $details');
     }
 
     return localToken;
   }
 
-  /// Get the code from Strava server
+  /// Get the code from SUUNTO server
   ///
-  Future<void> _getStravaCode(
-    String clientID,
-    String scope,
-    String prompt,
-  ) async {
-    debugPrint('Entering getStravaCode');
-    String redirectUrl = kIsWeb ? REDIRECT_URL_WEB : REDIRECT_URL_MOBILE;
+  Future<void> _getSuuntoCode(String clientID) async {
+    debugPrint('Entering getSuuntoCode');
+    String redirectUrl = REDIRECT_URL_MOBILE;
 
     final params = '?client_id=$clientID&redirect_uri=$redirectUrl' +
         '&response_type=code&approval_prompt=$prompt&scope=$scope';
@@ -123,104 +111,56 @@ abstract class Auth {
         enableJavaScript: true);
 
     //--------  NOT working yet on web
-    if (kIsWeb) {
-      debugPrint('Running in web ');
+    debugPrint('Running on iOS or Android');
 
-      // listening on http the answer from Strava
-      final server = await HttpServer.bind(InternetAddress.anyIPv4, 8080, shared: true);
-      await for (HttpRequest request in server) {
-        // Get the answer from Strava
-        // final uri = request.uri;
-        debugPrint('Get the answer from Strava to authenticate! ${request.uri}');
-      }
-    } else {
-      debugPrint('Running on iOS or Android');
-
-      // Attach a listener to the stream
-      sub = uriLinkStream.listen((Uri? uri) {
-        if (uri == null) {
-          debugPrint('Subscription was null');
-          sub?.cancel();
-        } else {
-          // Parse the link and warn the user, if it is not correct
-          debugPrint('Got a link!! $uri');
-          if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientID') != 0) {
-            debugPrint('This is not the good scheme ${uri.scheme}');
-          }
-          final code = uri.queryParameters["code"] ?? "N/A";
-          final error = uri.queryParameters["error"];
-
-          debugPrint('code $code, error $error');
-
-          closeWebView();
-          onCodeReceived.add(code);
-
-          debugPrint('Got the new code: $code');
-
-          sub?.cancel();
-        }
-      }, onError: (err) {
-        // Handle exception by warning the user their action did not succeed
-        debugPrint('Found an error $err');
+    // Attach a listener to the stream
+    sub = uriLinkStream.listen((Uri? uri) {
+      if (uri == null) {
+        debugPrint('Subscription was null');
         sub?.cancel();
-      });
-    }
-
-/****
-    if (Platform.isIOS) {
-      // Launch small http server to collect the answer from Strava
-      //------------------------------------------------------------
-      final server =
-          // await HttpServer.bind(InternetAddress.loopbackIPv4, 8080, shared: true);
-          await HttpServer.bind(InternetAddress.loopbackIPv4, 8080,
-              shared: true);
-      // server.listen((HttpRequest request) async {
-      await for (HttpRequest request in server) {
-        // Get the answer from Strava
-        final uri = request.uri;
-
-        code = uri.queryParameters["code"];
+      } else {
+        // Parse the link and warn the user, if it is not correct
+        debugPrint('Got a link!! $uri');
+        if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientID') != 0) {
+          debugPrint('This is not the good scheme ${uri.scheme}');
+        }
+        final code = uri.queryParameters["code"] ?? "N/A";
         final error = uri.queryParameters["error"];
-        request.response.close();
+
         debugPrint('code $code, error $error');
 
         closeWebView();
-        server.close(force: true);
-
         onCodeReceived.add(code);
 
-        debugPrint('iOS Got the new code: $code');
+        debugPrint('Got the new code: $code');
+
+        sub?.cancel();
       }
-    }
-    // });
-***/
+    }, onError: (err) {
+      // Handle exception by warning the user their action did not succeed
+      debugPrint('Found an error $err');
+      sub?.cancel();
+    });
   }
 
   Future<bool> hasValidToken() async {
     final prefs = await SharedPreferences.getInstance();
-    String? accessToken = prefs.getString(ACCESS_TOKEN_TAG)?.toString();
+    String? accessToken = prefs.getString(SUUNTO_ACCESS_TOKEN_TAG)?.toString();
     if (accessToken == null || accessToken.length == 0) {
       return false;
     }
-    final StravaToken tokenStored = await getStoredToken();
+    final SuuntoToken tokenStored = await getStoredToken();
     accessToken = tokenStored.accessToken;
     return (accessToken?.length ?? 0) > 0;
   }
 
-  /// Do Strava Authentication.
+  /// Do SUUNTO Authentication.
   ///
-  /// Do not do/show the Strava login if a token has been stored previously
-  /// and is not expired
-  ///
-  /// Do/show the Strava login if the scope has been changed since last storage of the token
-  /// return true if no problem in authentication has been found
   Future<bool> oauth(
     String clientID,
-    String scope,
     String secret,
-    String prompt,
   ) async {
-    debugPrint('Welcome to Oauth');
+    debugPrint('Welcome to SUUNTO Oauth');
     bool isAuthOk = false;
     bool isExpired;
 
@@ -250,7 +190,6 @@ abstract class Auth {
           _refreshAnswer.accessToken,
           _refreshAnswer.refreshToken,
           _refreshAnswer.expiresAt,
-          scope,
         );
       } else {
         debugPrint('Problem doing the refresh process');
@@ -259,10 +198,10 @@ abstract class Auth {
     }
 
     // Check if the scope has changed
-    if (tokenStored.scope != scope || token == "null" || token == null) {
+    if (token == "null" || token == null) {
       // Ask for a new authorization
       debugPrint('Doing a new authorization');
-      isAuthOk = await _newAuthorization(clientID, secret, scope, prompt);
+      isAuthOk = await _newAuthorization(clientID, secret);
     } else {
       isAuthOk = true;
     }
@@ -273,22 +212,20 @@ abstract class Auth {
   Future<bool> _newAuthorization(
     String clientID,
     String secret,
-    String scope,
-    String prompt,
   ) async {
     bool returnValue = false;
 
-    await _getStravaCode(clientID, scope, prompt);
+    await _getSuuntoCode(clientID);
 
     final stravaCode = await onCodeReceived.stream.first;
 
-    final answer = await _getStravaToken(clientID, secret, stravaCode);
+    final answer = await _getSuuntoToken(clientID, secret, stravaCode);
 
     debugPrint('answer ${answer.expiresAt}, ${answer.accessToken}');
 
     // Save the token information
     if (answer.accessToken != null && answer.expiresAt != null) {
-      await _saveToken(answer.accessToken, answer.refreshToken, answer.expiresAt, scope);
+      await _saveToken(answer.accessToken, answer.refreshToken, answer.expiresAt);
       returnValue = true;
     }
 
@@ -296,10 +233,10 @@ abstract class Auth {
   }
 
   /// _getNewAccessToken
-  /// Ask to Strava a new access token
+  /// Ask to Suunto a new access token
   /// Return
   ///   accessToken
-  ///   refreshToken (because Strava can change it
+  ///   refreshToken (because Suunto can change it
   ///     when asking for new access token)
   Future<RefreshAnswer> _getNewAccessToken(
     String clientID,
@@ -331,14 +268,14 @@ abstract class Auth {
     return returnToken;
   }
 
-  Future<StravaToken> _getStravaToken(
+  Future<SuuntoToken> _getSuuntoToken(
     String clientID,
     String secret,
     String code,
   ) async {
-    var answer = StravaToken();
+    var answer = SuuntoToken();
 
-    debugPrint('Entering getStravaToken!!');
+    debugPrint('Entering getSuuntoToken!!');
     // Put your own secret in secret.dart
     final urlToken = '$TOKEN_ENDPOINT?client_id=$clientID&client_secret=$secret' +
         '&code=$code&grant_type=authorization_code';
@@ -351,11 +288,11 @@ abstract class Auth {
 
     if (value.body.contains('message')) {
       // This is not the normal message
-      debugPrint('Error in getStravaToken');
+      debugPrint('Error in getSuuntoToken');
       // will return answer null
     } else {
       final Map<String, dynamic> tokenBody = json.decode(value.body);
-      final StravaToken body = StravaToken.fromJson(tokenBody);
+      final SuuntoToken body = SuuntoToken.fromJson(tokenBody);
       // var expiresAt = body.expiresAt * 1000; // To get the exp. date in ms
       answer.accessToken = body.accessToken;
       answer.refreshToken = body.refreshToken;
@@ -370,7 +307,7 @@ abstract class Auth {
   /// Otherwise return false
   ///
   /// including when there is no token yet
-  bool _isTokenExpired(StravaToken token) {
+  bool _isTokenExpired(SuuntoToken token) {
     debugPrint(' current time in ms ${DateTime.now().millisecondsSinceEpoch / 1000}' +
         ' exp. time: ${token.expiresAt}');
 
@@ -387,18 +324,18 @@ abstract class Auth {
   }
 
   /// To revoke the current token
-  /// Useful when doing test to force the Strava login
+  /// Useful when doing test to force the Suunto login
   ///
   /// scope needed: none
   ///
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
   Future<Fault> deAuthorize() async {
-    if (!Get.isRegistered<StravaToken>()) {
+    if (!Get.isRegistered<SuuntoToken>()) {
       debugPrint('Token not yet known');
       return Fault(StravaStatusCode.statusTokenNotKnownYet, 'Token not yet known');
     }
-    var stravaToken = Get.find<StravaToken>();
+    var stravaToken = Get.find<SuuntoToken>();
 
     if (stravaToken.accessToken == null) {
       // Token has not been yet stored in memory
