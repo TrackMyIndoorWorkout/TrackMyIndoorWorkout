@@ -208,6 +208,9 @@ abstract class Auth {
   }
 
   /// Do Strava Authentication.
+  /// clientID: ID of your Strava app
+  /// scope: Strava scope check https://developers.strava.com/docs/oauth-updates/
+  /// prompt: to choose to ask Strava always to authenticate or only when needed (with 'auto')
   ///
   /// Do not do/show the Strava login if a token has been stored previously
   /// and is not expired
@@ -215,7 +218,7 @@ abstract class Auth {
   /// Do/show the Strava login if the scope has been changed since last storage of the token
   /// return true if no problem in authentication has been found
   Future<bool> oauth(
-    String clientID,
+    String clientId,
     String scope,
     String secret,
     String prompt,
@@ -241,7 +244,7 @@ abstract class Auth {
     if (isExpired) {
       // token != null || token != "null"
       RefreshAnswer _refreshAnswer =
-          await _getNewAccessToken(clientID, secret, tokenStored.refreshToken ?? "0");
+          await _getNewAccessToken(clientId, secret, tokenStored.refreshToken ?? "0");
       // Update with new values if HTTP status code is 200
       if (_refreshAnswer.fault != null &&
           _refreshAnswer.fault!.statusCode >= 200 &&
@@ -262,7 +265,7 @@ abstract class Auth {
     if (tokenStored.scope != scope || token == "null" || token == null) {
       // Ask for a new authorization
       debugPrint('Doing a new authorization');
-      isAuthOk = await _newAuthorization(clientID, secret, scope, prompt);
+      isAuthOk = await _newAuthorization(clientId, secret, scope, prompt);
     } else {
       isAuthOk = true;
     }

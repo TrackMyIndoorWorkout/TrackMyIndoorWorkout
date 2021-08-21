@@ -7,10 +7,10 @@ import 'fault.dart';
 import 'strava.dart';
 
 class StravaService {
-  Strava _strava = Strava(STRAVA_SECRET);
+  Strava _strava = Strava(STRAVA_SECRET, STRAVA_SECRET);
 
   Future<bool> login() async {
-    return await _strava.oauth(STRAVA_CLIENT_ID, 'activity:write', STRAVA_SECRET, 'auto');
+    return await _strava.oauth(_strava.clientId, 'activity:write', _strava.secret, 'auto');
   }
 
   Future<bool> hasValidToken() async {
