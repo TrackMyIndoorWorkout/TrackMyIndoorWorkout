@@ -3,8 +3,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tuple/tuple.dart';
 import '../../utils/theme_manager.dart';
+
+class PortalChoiceDescriptor {
+  final String name;
+  final String assetName;
+  final Color color;
+
+  PortalChoiceDescriptor(this.name, this.assetName, this.color);
+}
+
 
 class UploadPortalPickerBottomSheet extends StatefulWidget {
   @override
@@ -17,17 +25,18 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     "Strava",
     "SUUNTO",
   ];
-  List<Tuple2<String, String>> _portalChoices = [
-    Tuple2<String, String>("Strava", "assets/strava.svg"),
-    Tuple2<String, String>("SUUNTO", "assets/suunto.svg"),
-  ];
   ThemeManager _themeManager = Get.find<ThemeManager>();
+  List<PortalChoiceDescriptor> _portalChoices = [];
   TextStyle _largerTextStyle = TextStyle();
   TextStyle _selectedTextStyle = TextStyle();
 
   @override
   void initState() {
     super.initState();
+    _portalChoices = [
+      PortalChoiceDescriptor(_portalNames[0], "assets/strava.svg", _themeManager.getOrangeColor()),
+      PortalChoiceDescriptor(_portalNames[1], "assets/suunto.svg", _themeManager.getSuuntoRedColor()),
+    ];
     _portalIndex = max(0, _portalNames.indexOf("Strava"));
     _largerTextStyle = Get.textTheme.headline4!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
@@ -60,17 +69,26 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                         },
                       ),
                     ),
-                    SvgPicture.asset(
-                      e.value.item2,
-                      semanticsLabel: '${e.value.item1} Logo',
-                    ),
+                    e.value.assetName.isNotEmpty ? GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _portalIndex = e.key;
+                        });
+                      },
+                      child: SvgPicture.asset(
+                        e.value.assetName,
+                        color: e.value.color,
+                        height: _largerTextStyle.fontSize,
+                        semanticsLabel: '${e.value.name} Logo',
+                      ),
+                    ) :
                     TextButton(
                       onPressed: () {
                         setState(() {
                           _portalIndex = e.key;
                         });
                       },
-                      child: Text(e.value.item1,
+                      child: Text(e.value.name,
                           style: _portalIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),
                   ],

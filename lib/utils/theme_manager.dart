@@ -107,6 +107,10 @@ class ThemeManager {
     return isDark() ? Colors.orange : Colors.deepOrangeAccent;
   }
 
+  Color getSuuntoRedColor() {
+    return isDark() ? Colors.redAccent : Colors.red;
+  }
+
   Color getGreyColor() {
     return isDark() ? Colors.grey.shade200 : Colors.grey.shade700;
   }
