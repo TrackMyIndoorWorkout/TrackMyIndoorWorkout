@@ -2,9 +2,10 @@ import '../../export/fit/fit_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/secret.dart';
+import '../upload_service.dart';
 import 'suunto.dart';
 
-class SuuntoService {
+class SuuntoService implements UploadService {
   Suunto _suunto = Suunto(SUUNTO_CLIENT_ID, SUUNTO_SECRET);
 
   Future<bool> login() async {

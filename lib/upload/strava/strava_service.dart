@@ -2,11 +2,12 @@ import '../../export/fit/fit_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/secret.dart';
+import '../upload_service.dart';
 import 'strava_status_code.dart';
 import 'fault.dart';
 import 'strava.dart';
 
-class StravaService {
+class StravaService implements UploadService {
   Strava _strava = Strava(STRAVA_CLIENT_ID, STRAVA_SECRET);
 
   Future<bool> login() async {
