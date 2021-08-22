@@ -98,11 +98,11 @@ abstract class Auth {
 
   /// Get the authorization code from SUUNTO server
   ///
-  Future<void> _getSuuntoCode(String clientId, String secret) async {
+  Future<void> _getSuuntoCode(String clientId) async {
     debugPrint('Entering getSuuntoCode');
 
     final oAuth2Url =
-        "$OAUTH_API_HOST/authorize?response_type=code&client_id=$clientId&redirect_uri=$secret";
+        "$OAUTH_API_HOST/authorize?response_type=code&client_id=$clientId&redirect_uri=$REDIRECT_URL_MOBILE";
     debugPrint(oAuth2Url);
     StreamSubscription? sub;
 
@@ -182,7 +182,7 @@ abstract class Auth {
   Future<bool> _newAuthorization(String clientId, String secret) async {
     bool returnValue = false;
 
-    await _getSuuntoCode(clientId, secret);
+    await _getSuuntoCode(clientId);
 
     final suuntoCode = await onCodeReceived.stream.first;
 
