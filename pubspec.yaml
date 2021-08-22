@@ -29,6 +29,9 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/internet_connection_checker.git
   intl: ^0.17.0
+  start_jwt:
+    git:
+      url: https://github.com/difference-engine/start_jwt.git
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
   overlay_tutorial: ^2.0.4
