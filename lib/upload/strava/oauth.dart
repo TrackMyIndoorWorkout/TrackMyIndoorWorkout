@@ -65,10 +65,10 @@ abstract class Auth {
   /// And refreshToken as well
   /// Stored them in Get StravaToken
   ///
-  Future<StravaToken> getStoredToken() async {
+  Future<StravaToken> _getStoredToken() async {
     final prefs = await SharedPreferences.getInstance();
     var localToken = StravaToken();
-    debugPrint('Entering getStoredToken');
+    debugPrint('Entering _getStoredToken');
 
     try {
       localToken.accessToken = prefs.getString(STRAVA_ACCESS_TOKEN_TAG)?.toString();
@@ -202,7 +202,7 @@ abstract class Auth {
     if (accessToken == null || accessToken.length == 0) {
       return false;
     }
-    final StravaToken tokenStored = await getStoredToken();
+    final StravaToken tokenStored = await _getStoredToken();
     accessToken = tokenStored.accessToken;
     return (accessToken?.length ?? 0) > 0;
   }
@@ -223,11 +223,11 @@ abstract class Auth {
     String secret,
     String prompt,
   ) async {
-    debugPrint('Welcome to Strava Oauth');
+    debugPrint('Welcome to Strava OAuth');
     bool isAuthOk = false;
     bool isExpired;
 
-    final tokenStored = await getStoredToken();
+    final tokenStored = await _getStoredToken();
     final token = tokenStored.accessToken;
 
     isExpired = _isTokenExpired(tokenStored);
@@ -392,8 +392,6 @@ abstract class Auth {
   /// To revoke the current token
   /// Useful when doing test to force the Strava login
   ///
-  /// scope needed: none
-  ///
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
   Future<Fault> deAuthorize() async {
@@ -405,7 +403,7 @@ abstract class Auth {
 
     if (stravaToken.accessToken == null) {
       // Token has not been yet stored in memory
-      stravaToken = await getStoredToken();
+      stravaToken = await _getStoredToken();
     }
 
     final header = stravaToken.getAuthorizationHeader();

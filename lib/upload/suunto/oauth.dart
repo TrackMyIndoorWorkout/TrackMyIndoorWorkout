@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
@@ -44,7 +43,6 @@ abstract class Auth {
     String? token,
     String? refreshToken,
     int? expire,
-    String? scope,
   ) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(SUUNTO_ACCESS_TOKEN_TAG, token ?? '');
@@ -59,10 +57,10 @@ abstract class Auth {
   /// And refreshToken as well
   /// Stored them in Get SuuntoToken
   ///
-  Future<SuuntoToken> getStoredToken() async {
+  Future<SuuntoToken> _getStoredToken() async {
     final prefs = await SharedPreferences.getInstance();
     var localToken = SuuntoToken();
-    debugPrint('Entering getStoredToken');
+    debugPrint('Entering _getStoredToken');
 
     try {
       localToken.accessToken = prefs.getString(SUUNTO_ACCESS_TOKEN_TAG)?.toString();
@@ -71,8 +69,7 @@ abstract class Auth {
       localToken.expiresAt = prefs.getInt(SUUNTO_EXPIRES_AT_TAG);
 
       // load the data into Get
-      await registerToken(
-          localToken.accessToken, localToken.refreshToken, localToken.expiresAt);
+      await registerToken(localToken.accessToken, localToken.refreshToken, localToken.expiresAt);
     } catch (error) {
       debugPrint('Error while retrieving the token');
       localToken.accessToken = null;
@@ -83,30 +80,34 @@ abstract class Auth {
       final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt!);
       final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
           '${dateExpired.hour.toString()} hours';
-      debugPrint('stored token ${localToken.accessToken} ${localToken.expiresAt} ' +
-          'expires: $details');
+      debugPrint(
+          'stored token ${localToken.accessToken} ${localToken.expiresAt} ' + 'expires: $details');
     }
 
     return localToken;
   }
 
-  /// Get the code from SUUNTO server
+  /// Generate the header to use with the token requests
+  Map<String, String> getBasicAuthorizationHeader(String clientId, String secret) {
+    var basicCredentialString = "$clientId:$secret";
+    var credentialBytes = utf8.encode(basicCredentialString);
+    var base64String = base64.encode(credentialBytes);
+
+    return {'Authorization': 'Basic: $base64String'};
+  }
+
+  /// Get the authorization code from SUUNTO server
   ///
-  Future<void> _getSuuntoCode(String clientID) async {
+  Future<void> _getSuuntoCode(String clientId, String secret) async {
     debugPrint('Entering getSuuntoCode');
-    String redirectUrl = REDIRECT_URL_MOBILE;
 
-    final params = '?client_id=$clientID&redirect_uri=$redirectUrl' +
-        '&response_type=code&approval_prompt=$prompt&scope=$scope';
-
-    final reqAuth = AUTHORIZATION_ENDPOINT + params;
-    debugPrint(reqAuth);
+    final oAuth2Url =
+        "$OAUTH_API_HOST/authorize?response_type=code&client_id=$clientId&redirect_uri=$secret";
+    debugPrint(oAuth2Url);
     StreamSubscription? sub;
 
-    // closeWebView();
-    launch(reqAuth,
+    launch(oAuth2Url,
         forceWebView: false,
-        // forceWebView: true,
         forceSafariVC: false,
         enableJavaScript: true);
 
@@ -121,7 +122,7 @@ abstract class Auth {
       } else {
         // Parse the link and warn the user, if it is not correct
         debugPrint('Got a link!! $uri');
-        if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientID') != 0) {
+        if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientId') != 0) {
           debugPrint('This is not the good scheme ${uri.scheme}');
         }
         final code = uri.queryParameters["code"] ?? "N/A";
@@ -149,77 +150,46 @@ abstract class Auth {
     if (accessToken == null || accessToken.length == 0) {
       return false;
     }
-    final SuuntoToken tokenStored = await getStoredToken();
+    final SuuntoToken tokenStored = await _getStoredToken();
     accessToken = tokenStored.accessToken;
     return (accessToken?.length ?? 0) > 0;
   }
 
   /// Do SUUNTO Authentication.
   ///
-  Future<bool> oauth(
-    String clientID,
-    String secret,
-  ) async {
-    debugPrint('Welcome to SUUNTO Oauth');
+  /// clientId: ID of your Suunto app
+  /// secret: Secret of your Suunto app
+  Future<bool> oauth(String clientId, String secret) async {
+    debugPrint('Welcome to SUUNTO OAuth');
     bool isAuthOk = false;
     bool isExpired;
 
-    final tokenStored = await getStoredToken();
+    final tokenStored = await _getStoredToken();
     final token = tokenStored.accessToken;
 
     isExpired = _isTokenExpired(tokenStored);
     debugPrint('is token expired? $isExpired');
 
-    // Check if the token is not expired
-    if (token != null) {
-      // && token != "null"
-      debugPrint('token has been stored before! ' +
-          '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
-    }
-
-    // Use the refresh token to get a new access token
-    if (isExpired) {
-      // token != null || token != "null"
-      RefreshAnswer _refreshAnswer =
-          await _getNewAccessToken(clientID, secret, tokenStored.refreshToken ?? "0");
-      // Update with new values if HTTP status code is 200
-      if (_refreshAnswer.fault != null &&
-          _refreshAnswer.fault!.statusCode >= 200 &&
-          _refreshAnswer.fault!.statusCode < 300) {
-        await _saveToken(
-          _refreshAnswer.accessToken,
-          _refreshAnswer.refreshToken,
-          _refreshAnswer.expiresAt,
-        );
-      } else {
-        debugPrint('Problem doing the refresh process');
-        isAuthOk = false;
-      }
-    }
-
-    // Check if the scope has changed
     if (token == "null" || token == null) {
-      // Ask for a new authorization
       debugPrint('Doing a new authorization');
-      isAuthOk = await _newAuthorization(clientID, secret);
+      isAuthOk = await _newAuthorization(clientId, secret);
     } else {
+      debugPrint('token has been stored before! ' +
+          '${tokenStored.accessToken} exp. ${tokenStored.expiresAt}');
       isAuthOk = true;
     }
 
     return isAuthOk;
   }
 
-  Future<bool> _newAuthorization(
-    String clientID,
-    String secret,
-  ) async {
+  Future<bool> _newAuthorization(String clientId, String secret) async {
     bool returnValue = false;
 
-    await _getSuuntoCode(clientID);
+    await _getSuuntoCode(clientId, secret);
 
-    final stravaCode = await onCodeReceived.stream.first;
+    final suuntoCode = await onCodeReceived.stream.first;
 
-    final answer = await _getSuuntoToken(clientID, secret, stravaCode);
+    final answer = await _getSuuntoToken(clientId, secret, suuntoCode);
 
     debugPrint('answer ${answer.expiresAt}, ${answer.accessToken}');
 
@@ -232,44 +202,8 @@ abstract class Auth {
     return returnValue;
   }
 
-  /// _getNewAccessToken
-  /// Ask to Suunto a new access token
-  /// Return
-  ///   accessToken
-  ///   refreshToken (because Suunto can change it
-  ///     when asking for new access token)
-  Future<RefreshAnswer> _getNewAccessToken(
-    String clientID,
-    String secret,
-    String refreshToken,
-  ) async {
-    var returnToken = RefreshAnswer();
-
-    final urlRefresh = TOKEN_ENDPOINT +
-        '?client_id=$clientID&client_secret=$secret' +
-        '&grant_type=refresh_token&refresh_token=$refreshToken';
-
-    debugPrint('Entering getNewAccessToken');
-    // debugPrint('urlRefresh $urlRefresh');
-
-    final resp = await http.post(Uri.parse(urlRefresh));
-
-    debugPrint('body ${resp.body}');
-    if (resp.statusCode >= 200 && resp.statusCode < 300) {
-      // resp.statusCode == 200
-      returnToken = RefreshAnswer.fromJson(json.decode(resp.body));
-
-      debugPrint('new exp. date: ${returnToken.expiresAt}');
-    } else {
-      debugPrint('Error while refreshing the token');
-    }
-
-    returnToken.fault = Fault(resp.statusCode, resp.reasonPhrase ?? "N/A");
-    return returnToken;
-  }
-
   Future<SuuntoToken> _getSuuntoToken(
-    String clientID,
+    String clientId,
     String secret,
     String code,
   ) async {
@@ -277,21 +211,26 @@ abstract class Auth {
 
     debugPrint('Entering getSuuntoToken!!');
     // Put your own secret in secret.dart
-    final urlToken = '$TOKEN_ENDPOINT?client_id=$clientID&client_secret=$secret' +
-        '&code=$code&grant_type=authorization_code';
 
-    debugPrint('urlToken $urlToken');
+    final tokenRequestUrl = "$OAUTH_API_HOST/token";
 
-    final value = await http.post(Uri.parse(urlToken));
+    debugPrint('urlToken $tokenRequestUrl');
 
-    debugPrint('body ${value.body}');
+    final header = getBasicAuthorizationHeader(clientId, secret);
+    final tokenResponse = await http.post(Uri.parse(tokenRequestUrl), headers: header, body: {
+      "grant_type": "authorization_code",
+      "code": code,
+      "redirect_uri": REDIRECT_URL_MOBILE,
+    });
 
-    if (value.body.contains('message')) {
+    debugPrint('body ${tokenResponse.body}');
+
+    if (tokenResponse.body.contains('message')) {
       // This is not the normal message
       debugPrint('Error in getSuuntoToken');
       // will return answer null
     } else {
-      final Map<String, dynamic> tokenBody = json.decode(value.body);
+      final Map<String, dynamic> tokenBody = json.decode(tokenResponse.body);
       final SuuntoToken body = SuuntoToken.fromJson(tokenBody);
       // var expiresAt = body.expiresAt * 1000; // To get the exp. date in ms
       answer.accessToken = body.accessToken;
@@ -326,47 +265,38 @@ abstract class Auth {
   /// To revoke the current token
   /// Useful when doing test to force the Suunto login
   ///
-  /// scope needed: none
-  ///
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
-  Future<Fault> deAuthorize() async {
+  Future<bool> deAuthorize(String clientId) async {
     if (!Get.isRegistered<SuuntoToken>()) {
       debugPrint('Token not yet known');
-      return Fault(StravaStatusCode.statusTokenNotKnownYet, 'Token not yet known');
+      return false;
     }
     var stravaToken = Get.find<SuuntoToken>();
 
     if (stravaToken.accessToken == null) {
       // Token has not been yet stored in memory
-      stravaToken = await getStoredToken();
+      stravaToken = await _getStoredToken();
     }
 
     final header = stravaToken.getAuthorizationHeader();
-    var fault = Fault(StravaStatusCode.statusUnknownError, "Unknown reason");
-    // If header is not "empty"
-    if (header.containsKey('88') == false) {
-      final requestDeAuthorize = DEAUTHORIZATION_ENDPOINT;
-      debugPrint('request $requestDeAuthorize');
-      final rep = await http.post(Uri.parse(requestDeAuthorize), headers: header);
-      if (rep.statusCode >= 200 && rep.statusCode < 300) {
-        debugPrint('DeAuthorize done');
-        debugPrint('response ${rep.body}');
-        await _saveToken(null, null, null, null);
-        fault.statusCode = StravaStatusCode.statusOk;
-        fault.message = 'DeAuthorize done';
-      } else {
-        await _saveToken(null, null, null, null);
-        debugPrint('Problem in deAuthorize request');
-        fault.statusCode = StravaStatusCode.statusDeAuthorizeError;
-      }
-    } else {
-      // No authorization has been done before
+    // If header is "empty"
+    if (header.containsKey('88')) {
       debugPrint('No Authentication has been done yet');
-      fault.statusCode = StravaStatusCode.statusNoAuthenticationYet;
-      fault.message = 'No Authentication has been done yet';
+      return true;
     }
 
-    return fault;
+    final deAuthorizeUrl = "$OAUTH_API_HOST/deauthorize?client_id=$clientId";
+
+    debugPrint('request $deAuthorizeUrl');
+    final rseponse = await http.post(Uri.parse(deAuthorizeUrl), headers: header);
+    if (rseponse.statusCode >= 200 && rseponse.statusCode < 300) {
+      debugPrint('DeAuthorize done');
+      debugPrint('response ${rseponse.body}');
+      await _saveToken(null, null, null);
+      return true;
+    }
+
+    return false;
   }
 }

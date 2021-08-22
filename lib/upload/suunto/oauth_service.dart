@@ -4,11 +4,11 @@ import '../../persistence/models/record.dart';
 import '../../persistence/secret.dart';
 import 'suunto.dart';
 
-class StravaService {
-  Suunto _suunto = Suunto(STRAVA_SECRET);
+class SuuntoService {
+  Suunto _suunto = Suunto(SUUNTO_CLIENT_ID, SUUNTO_SECRET);
 
   Future<bool> login() async {
-    return await _suunto.oauth(SUUNTO_CLIENT_ID, SUUNTO_SECRET);
+    return await _suunto.oauth(_suunto.clientId, _suunto.secret);
   }
 
   Future<bool> hasValidToken() async {

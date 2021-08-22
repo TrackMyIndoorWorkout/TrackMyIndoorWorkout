@@ -1,5 +1,4 @@
-/// List of statuscode used by Fault
-/// set in Strava API
+/// List of statuscode used by Fault set in Strava API
 class StravaStatusCode {
   static const int statusOk = 0;
   static const int statusInvalidToken = 1;
