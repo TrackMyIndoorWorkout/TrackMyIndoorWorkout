@@ -21,7 +21,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../upload/strava/strava_status_code.dart';
-import '../upload/strava/strava_service.dart';
+import '../upload/upload_service.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/theme_manager.dart';
@@ -32,10 +32,10 @@ import 'leaderboards/leaderboard_type_picker.dart';
 import 'parts/calorie_override.dart';
 import 'parts/circular_menu.dart';
 import 'parts/export_format_picker.dart';
-import 'parts/flutter_brand_icons.dart';
 import 'parts/import_format_picker.dart';
 import 'parts/power_factor_tune.dart';
 import 'parts/sport_picker.dart';
+import 'parts/upload_portal_picker.dart';
 import 'power_tunes.dart';
 import 'records.dart';
 
@@ -83,32 +83,33 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   Widget _actionButtonRow(Activity activity, double size) {
     final actionsRow = <Widget>[
       IconButton(
-        icon: Icon(
-          BrandIcons.strava,
-          color: activity.uploaded ? _themeManager.getGreyColor() : _themeManager.getOrangeColor(),
-          size: size,
-        ),
+        icon: _themeManager.getActionIcon(Icons.cloud_upload, size),
         onPressed: () async {
           if (!await InternetConnectionChecker().hasConnection) {
             Get.snackbar("Warning", "No data connection detected");
             return;
           }
 
-          StravaService stravaService;
-          if (!Get.isRegistered<StravaService>()) {
-            stravaService = Get.put<StravaService>(StravaService());
-          } else {
-            stravaService = Get.find<StravaService>();
+          final portalPick = await Get.bottomSheet(
+            UploadPortalPickerBottomSheet(),
+            enableDrag: false,
+          );
+
+          if (portalPick == null) {
+            return;
           }
-          final success = await stravaService.login();
+
+          UploadService uploadService = UploadService.getInstance(portalPick);
+
+          final success = await uploadService.login();
           if (!success) {
-            Get.snackbar("Warning", "Strava login unsuccessful");
+            Get.snackbar("Warning", "$portalPick login unsuccessful");
             return;
           }
 
           final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
 
-          final statusCode = await stravaService.upload(activity, records);
+          final statusCode = await uploadService.upload(activity, records);
           setState(() {
             _editCount++;
           });

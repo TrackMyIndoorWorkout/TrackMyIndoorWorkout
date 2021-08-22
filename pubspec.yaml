@@ -22,6 +22,7 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/flutter_blue.git
   flutter_spinbox: ^0.5.4
+  flutter_svg: ^0.22.0
   get: ^4.3.8
   http: ^0.13.3
   http_parser: ^4.0.0

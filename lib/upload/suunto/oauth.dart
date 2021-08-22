@@ -106,10 +106,7 @@ abstract class Auth {
     debugPrint(oAuth2Url);
     StreamSubscription? sub;
 
-    launch(oAuth2Url,
-        forceWebView: false,
-        forceSafariVC: false,
-        enableJavaScript: true);
+    launch(oAuth2Url, forceWebView: false, forceSafariVC: false, enableJavaScript: true);
 
     //--------  NOT working yet on web
     debugPrint('Running on iOS or Android');

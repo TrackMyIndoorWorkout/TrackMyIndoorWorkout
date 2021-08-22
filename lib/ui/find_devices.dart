@@ -2,10 +2,12 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
+import 'package:track_my_indoor_exercise/upload/upload_service.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
@@ -15,7 +17,6 @@ import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
-import '../upload/strava/strava_service.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/scan_result_ex.dart';
@@ -25,6 +26,7 @@ import 'models/advertisement_cache.dart';
 import 'parts/circular_menu.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
+import 'parts/upload_portal_picker.dart';
 import 'preferences/preferences_hub.dart';
 import 'activities.dart';
 import 'recording.dart';
@@ -718,20 +720,33 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   },
                 ),
                 _themeManager.getAboutFab(_tutorialVisible),
-                _themeManager.getStravaFab(
+                _themeManager.getBlueFab(
+                  Icons.cloud_upload,
+                  true,
                   _tutorialVisible,
+                  "Portal login",
+                  8,
                   () async {
-                    StravaService stravaService;
-                    if (!Get.isRegistered<StravaService>()) {
-                      stravaService = Get.put<StravaService>(StravaService());
-                    } else {
-                      stravaService = Get.find<StravaService>();
+                    if (!await InternetConnectionChecker().hasConnection) {
+                      Get.snackbar("Warning", "No data connection detected");
+                      return;
                     }
-                    final success = await stravaService.login();
+
+                    final portalPick = await Get.bottomSheet(
+                      UploadPortalPickerBottomSheet(),
+                      enableDrag: false,
+                    );
+
+                    if (portalPick == null) {
+                      return;
+                    }
+
+                    UploadService uploadService = UploadService.getInstance(portalPick);
+                    final success = await uploadService.login();
                     if (success) {
-                      Get.snackbar("Success", "Successful Strava login");
+                      Get.snackbar("Success", "Successful $portalPick login");
                     } else {
-                      Get.snackbar("Warning", "Strava login unsuccessful");
+                      Get.snackbar("Warning", "$portalPick login unsuccessful");
                     }
                   },
                 ),

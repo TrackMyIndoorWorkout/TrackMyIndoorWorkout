@@ -28,7 +28,7 @@ import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/tracks.dart';
 import '../upload/strava/strava_status_code.dart';
-import '../upload/strava/strava_service.dart';
+import '../upload/upload_service.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/sound.dart';
@@ -40,6 +40,7 @@ import 'parts/circular_menu.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
 import 'parts/spin_down.dart';
+import 'parts/upload_portal_picker.dart';
 import 'activities.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
@@ -664,17 +665,25 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  _stravaUpload(bool onlyWhenAuthenticated) async {
+  _workoutUpload(bool onlyWhenAuthenticated) async {
     if (_activity == null) return;
 
-    StravaService stravaService;
-    if (!Get.isRegistered<StravaService>()) {
-      stravaService = Get.put<StravaService>(StravaService());
-    } else {
-      stravaService = Get.find<StravaService>();
+    if (!await InternetConnectionChecker().hasConnection) {
+      Get.snackbar("Warning", "No data connection detected");
+      return;
     }
 
-    if (onlyWhenAuthenticated && !await stravaService.hasValidToken()) {
+    final portalPick = await Get.bottomSheet(
+      UploadPortalPickerBottomSheet(),
+      enableDrag: false,
+    );
+
+    if (portalPick == null) {
+      return;
+    }
+
+    UploadService uploadService = UploadService.getInstance(portalPick);
+    if (onlyWhenAuthenticated && !await uploadService.hasValidToken()) {
       return;
     }
 
@@ -683,14 +692,14 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
-    final success = await stravaService.login();
+    final success = await uploadService.login();
     if (!success) {
-      Get.snackbar("Warning", "Strava login unsuccessful");
+      Get.snackbar("Warning", "$portalPick login unsuccessful");
       return;
     }
 
     final records = await _database.recordDao.findAllActivityRecords(_activity?.id ?? 0);
-    final statusCode = await stravaService.upload(_activity!, records);
+    final statusCode = await uploadService.upload(_activity!, records);
     Get.snackbar(
         "Upload",
         statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300
@@ -742,7 +751,7 @@ class RecordingState extends State<RecordingScreen> {
       }
 
       if (_instantUpload && !quick) {
-        await _stravaUpload(true);
+        await _workoutUpload(true);
       }
     }
   }
@@ -1474,13 +1483,14 @@ class RecordingState extends State<RecordingScreen> {
                       });
                     },
                   ),
-                  _themeManager.getStravaFab(_tutorialVisible, () async {
+                  _themeManager.getBlueFab(
+                      Icons.cloud_upload, true, _tutorialVisible, "Upload Workout", 8, () async {
                     if (_measuring) {
                       Get.snackbar("Warning", "Cannot upload while measurement is under progress");
                       return;
                     }
 
-                    await _stravaUpload(false);
+                    await _workoutUpload(false);
                   }),
                   _themeManager.getBlueFab(
                     Icons.list_alt,
