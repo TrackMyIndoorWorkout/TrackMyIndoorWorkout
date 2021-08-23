@@ -18,6 +18,12 @@ class StravaService implements UploadService {
     return await _strava.hasValidToken();
   }
 
+  Future<int> deAuthorize() async {
+    Fault fault = await _strava.deAuthorize();
+
+    return fault.statusCode;
+  }
+
   Future<int> upload(Activity activity, List<Record> records) async {
     if (records.length <= 0) {
       return StravaStatusCode.statusJsonIsEmpty;

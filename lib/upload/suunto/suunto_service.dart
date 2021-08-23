@@ -16,6 +16,12 @@ class SuuntoService implements UploadService {
     return await _suunto.hasValidToken();
   }
 
+  Future<int> deAuthorize() async {
+    bool fault = await _suunto.deAuthorize(_suunto.clientId);
+
+    return fault ? 1 : 0;
+  }
+
   Future<int> upload(Activity activity, List<Record> records) async {
     if (records.length <= 0) {
       return 0;

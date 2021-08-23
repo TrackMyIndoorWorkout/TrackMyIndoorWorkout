@@ -10,6 +10,8 @@ abstract class UploadService {
 
   Future<bool> hasValidToken();
 
+  Future<int> deAuthorize();
+
   Future<int> upload(Activity activity, List<Record> records);
 
   static UploadService getInstance(String portalType) {
