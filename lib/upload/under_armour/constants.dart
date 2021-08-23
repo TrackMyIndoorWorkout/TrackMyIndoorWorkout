@@ -6,7 +6,7 @@ const DEAUTHORIZATION_ENDPOINT = AU_URL + "deauthorize";
 const UPLOADS_ENDPOINT = AU_URL + "api/v3/uploads";
 
 // To use with iOS or Android
-const REDIRECT_URL_SCHEME = "uaflutter";
+const REDIRECT_URL_SCHEME = "mapmyfitnessflutter";
 const REDIRECT_URL = "$REDIRECT_URL_SCHEME://redirect/";
 
 const UNDER_ARMOUR_ACCESS_TOKEN_TAG = "underArmour_accessToken";
