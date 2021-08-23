@@ -319,11 +319,14 @@ abstract class Auth {
     final tokenResponse = await http.post(
       Uri.parse(tokenRequestUrl),
       headers: {
+        "Accept": "application/json",
         "Api-Key": clientId,
       },
       body: {
         // "Content-Type": "application/x-www-form-urlencoded",
         "grant_type": "authorization_code",
+        "client_id": clientId,
+        "client_secret": secret,
         "code": code,
         "redirect_uri": REDIRECT_URL,
       },
