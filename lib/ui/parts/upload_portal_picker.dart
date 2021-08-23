@@ -23,6 +23,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   List<String> _portalNames = [
     "Strava",
     "SUUNTO",
+    "Under Armour",
   ];
   ThemeManager _themeManager = Get.find<ThemeManager>();
   List<PortalChoiceDescriptor> _portalChoices = [];
@@ -36,6 +37,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
       PortalChoiceDescriptor(_portalNames[0], "assets/strava.svg", _themeManager.getOrangeColor()),
       PortalChoiceDescriptor(
           _portalNames[1], "assets/suunto.svg", _themeManager.getSuuntoRedColor()),
+      PortalChoiceDescriptor(
+          _portalNames[2], "assets/under-armour.svg", _themeManager.getSuuntoRedColor()),
     ];
     _portalIndex = max(0, _portalNames.indexOf("Strava"));
     _largerTextStyle = Get.textTheme.headline4!;
@@ -83,16 +86,17 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                               semanticsLabel: '${e.value.name} Logo',
                             ),
                           )
-                        : TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _portalIndex = e.key;
-                              });
-                            },
-                            child: Text(e.value.name,
-                                style:
-                                    _portalIndex == e.key ? _selectedTextStyle : _largerTextStyle),
-                          ),
+                        : Container(),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _portalIndex = e.key;
+                        });
+                      },
+                      child: Text("/${e.value.name}",
+                          style:
+                          _portalIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+                    ),
                   ],
                 ),
               )

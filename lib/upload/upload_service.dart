@@ -4,6 +4,7 @@ import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import 'strava/strava_service.dart';
 import 'suunto/suunto_service.dart';
+import 'under_armour/under_armour_service.dart';
 
 abstract class UploadService {
   Future<bool> login();
@@ -21,6 +22,12 @@ abstract class UploadService {
           return Get.isRegistered<SuuntoService>()
               ? Get.find<SuuntoService>()
               : Get.put<SuuntoService>(SuuntoService());
+        }
+      case "under armour":
+        {
+          return Get.isRegistered<UnderArmourService>()
+              ? Get.find<UnderArmourService>()
+              : Get.put<UnderArmourService>(UnderArmourService());
         }
       case "strava":
       default:
