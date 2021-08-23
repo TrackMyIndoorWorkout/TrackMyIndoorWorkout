@@ -94,8 +94,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                         });
                       },
                       child: Text("/${e.value.name}",
-                          style:
-                          _portalIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+                          style: _portalIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),
                   ],
                 ),
