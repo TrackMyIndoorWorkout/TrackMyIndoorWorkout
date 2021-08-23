@@ -87,23 +87,16 @@ abstract class Auth {
     return localToken;
   }
 
-  /// Generate the header to use with the token requests
-  Map<String, String> getBasicAuthorizationHeader(String clientId, String secret) {
-    var basicCredentialString = "$clientId:$secret";
-    var credentialBytes = utf8.encode(basicCredentialString);
-    var base64String = base64.encode(credentialBytes);
-
-    return {'Authorization': 'Basic: $base64String'};
-  }
-
   /// Get the authorization code from SUUNTO server
   ///
   Future<void> _getSuuntoCode(String clientId) async {
     debugPrint('Entering getSuuntoCode');
 
-    final oAuth2Url =
-        "$OAUTH_API_HOST/authorize?response_type=code&client_id=$clientId&redirect_uri=$REDIRECT_URL_MOBILE";
+    final params = "?response_type=code&client_id=$clientId&redirect_uri=$REDIRECT_URL";
+    final oAuth2Url = AUTHORIZATION_ENDPOINT + params;
+
     debugPrint(oAuth2Url);
+
     StreamSubscription? sub;
 
     launch(oAuth2Url, forceWebView: false, forceSafariVC: false, enableJavaScript: true);
@@ -199,6 +192,15 @@ abstract class Auth {
     return returnValue;
   }
 
+  /// Generate the header to use with the token requests
+  Map<String, String> getBasicAuthorizationHeader(String clientId, String secret) {
+    var basicCredentialString = "$clientId:$secret";
+    var credentialBytes = utf8.encode(basicCredentialString);
+    var base64String = base64.encode(credentialBytes);
+
+    return {'Authorization': 'Basic: $base64String'};
+  }
+
   Future<SuuntoToken> _getSuuntoToken(
     String clientId,
     String secret,
@@ -209,15 +211,17 @@ abstract class Auth {
     debugPrint('Entering getSuuntoToken!!');
     // Put your own secret in secret.dart
 
-    final tokenRequestUrl = "$OAUTH_API_HOST/token";
+    final params = ""; // "?grant_type=authorization_code&code=$code&redirect_uri=$REDIRECT_URL";
+    final tokenRequestUrl = TOKEN_ENDPOINT + params;
 
     debugPrint('urlToken $tokenRequestUrl');
 
     final header = getBasicAuthorizationHeader(clientId, secret);
     final tokenResponse = await http.post(Uri.parse(tokenRequestUrl), headers: header, body: {
+      // "Content-Type": "application/x-www-form-urlencoded",
       "grant_type": "authorization_code",
       "code": code,
-      "redirect_uri": REDIRECT_URL_MOBILE,
+      "redirect_uri": REDIRECT_URL,
     });
 
     debugPrint('body ${tokenResponse.body}');
@@ -283,7 +287,7 @@ abstract class Auth {
       return true;
     }
 
-    final deAuthorizeUrl = "$OAUTH_API_HOST/deauthorize?client_id=$clientId";
+    final deAuthorizeUrl = "$DEAUTHORIZATION_ENDPOINT?client_id=$clientId";
 
     debugPrint('request $deAuthorizeUrl');
     final rseponse = await http.post(Uri.parse(deAuthorizeUrl), headers: header);
