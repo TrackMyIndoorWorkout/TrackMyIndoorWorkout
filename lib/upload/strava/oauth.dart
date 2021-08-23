@@ -311,9 +311,9 @@ abstract class Auth {
   ) async {
     var returnToken = RefreshAnswer();
 
-    final urlRefresh = TOKEN_ENDPOINT +
-        '?client_id=$clientID&client_secret=$secret' +
+    final params = '?client_id=$clientID&client_secret=$secret' +
         '&grant_type=refresh_token&refresh_token=$refreshToken';
+    final urlRefresh = TOKEN_ENDPOINT + params;
 
     debugPrint('Entering getNewAccessToken');
     // debugPrint('urlRefresh $urlRefresh');
@@ -343,8 +343,9 @@ abstract class Auth {
 
     debugPrint('Entering getStravaToken!!');
     // Put your own secret in secret.dart
-    final urlToken = '$TOKEN_ENDPOINT?client_id=$clientID&client_secret=$secret' +
-        '&code=$code&grant_type=authorization_code';
+    final params =
+        '?client_id=$clientID&client_secret=$secret' + '&code=$code&grant_type=authorization_code';
+    final urlToken = TOKEN_ENDPOINT + params;
 
     debugPrint('urlToken $urlToken');
 
