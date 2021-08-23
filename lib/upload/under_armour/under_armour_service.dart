@@ -11,8 +11,7 @@ class UnderArmourService implements UploadService {
   UnderArmour _underArmour = UnderArmour(UNDER_ARMOUR_KEY, UNDER_ARMOUR_SECRET);
 
   Future<bool> login() async {
-    return await _underArmour.oauth(
-        _underArmour.clientId, 'activity:write', _underArmour.secret, 'auto');
+    return await _underArmour.oauth(_underArmour.clientId, _underArmour.secret);
   }
 
   Future<bool> hasValidToken() async {

@@ -20,26 +20,19 @@ import 'fault.dart';
 abstract class Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
-  Future<void> registerToken(
-    String? token,
-    String? refreshToken,
-    int? expire,
-    String? scope,
-  ) async {
+  Future<void> registerToken(String? token, String? refreshToken, int? expire) async {
     if (Get.isRegistered<UnderArmourToken>()) {
       var underArmourToken = Get.find<UnderArmourToken>();
       // Save also in Get
       underArmourToken.accessToken = token;
       underArmourToken.refreshToken = refreshToken;
       underArmourToken.expiresAt = expire;
-      underArmourToken.scope = scope;
     } else {
       await Get.delete<UnderArmourToken>();
       Get.put<UnderArmourToken>(UnderArmourToken(
         accessToken: token,
         refreshToken: refreshToken,
         expiresAt: expire,
-        scope: scope,
       ));
     }
   }
@@ -49,14 +42,12 @@ abstract class Auth {
     String? token,
     String? refreshToken,
     int? expire,
-    String? scope,
   ) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(UNDER_ARMOUR_ACCESS_TOKEN_TAG, token ?? '');
     prefs.setString(UNDER_ARMOUR_REFRESH_TOKEN_TAG, refreshToken ?? '');
     prefs.setInt(UNDER_ARMOUR_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
-    prefs.setString(UNDER_ARMOUR_TOKEN_SCOPE_TAG, scope ?? '');
-    await registerToken(token, refreshToken, expire, scope);
+    await registerToken(token, refreshToken, expire);
     debugPrint('token saved!!!');
   }
 
@@ -75,24 +66,21 @@ abstract class Auth {
       localToken.refreshToken = prefs.getString(UNDER_ARMOUR_REFRESH_TOKEN_TAG);
       // localToken.expiresAt = prefs.getInt('expire') * 1000; // To get in ms
       localToken.expiresAt = prefs.getInt(UNDER_ARMOUR_EXPIRES_AT_TAG);
-      localToken.scope = prefs.getString(UNDER_ARMOUR_TOKEN_SCOPE_TAG);
 
       // load the data into Get
-      await registerToken(
-          localToken.accessToken, localToken.refreshToken, localToken.expiresAt, localToken.scope);
+      await registerToken(localToken.accessToken, localToken.refreshToken, localToken.expiresAt);
     } catch (error) {
       debugPrint('Error while retrieving the token');
       localToken.accessToken = null;
       localToken.expiresAt = null;
-      localToken.scope = null;
     }
 
     if (localToken.expiresAt != null) {
       final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt!);
       final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
           '${dateExpired.hour.toString()} hours';
-      debugPrint('stored token ${localToken.accessToken} ${localToken.expiresAt} ' +
-          '${localToken.scope} expires: $details');
+      debugPrint(
+          'stored token ${localToken.accessToken} ${localToken.expiresAt} ' + 'expires: $details');
     }
 
     return localToken;
@@ -100,11 +88,7 @@ abstract class Auth {
 
   /// Get the code from Under Armour server
   ///
-  Future<void> _getUnderArmourCode(
-    String clientId,
-    String scope,
-    String prompt,
-  ) async {
+  Future<void> _getUnderArmourCode(String clientId) async {
     debugPrint('Entering getUnderArmourCode');
 
     final params = '?client_id=$clientId&response_type=code&redirect_uri=$REDIRECT_URL';
@@ -113,56 +97,42 @@ abstract class Auth {
     debugPrint(reqAuth);
     StreamSubscription? sub;
 
-    // closeWebView();
     launch(reqAuth,
         forceWebView: false,
         // forceWebView: true,
         forceSafariVC: false,
         enableJavaScript: true);
 
-    //--------  NOT working yet on web
-    if (kIsWeb) {
-      debugPrint('Running in web ');
+    debugPrint('Running on iOS or Android');
 
-      // listening on http the answer from Under Armour
-      final server = await HttpServer.bind(InternetAddress.anyIPv4, 8080, shared: true);
-      await for (HttpRequest request in server) {
-        // Get the answer from Under Armour
-        // final uri = request.uri;
-        debugPrint('Get the answer from Under Armour to authenticate! ${request.uri}');
-      }
-    } else {
-      debugPrint('Running on iOS or Android');
-
-      // Attach a listener to the stream
-      sub = uriLinkStream.listen((Uri? uri) {
-        if (uri == null) {
-          debugPrint('Subscription was null');
-          sub?.cancel();
-        } else {
-          // Parse the link and warn the user, if it is not correct
-          debugPrint('Got a link!! $uri');
-          if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientId') != 0) {
-            debugPrint('This is not the good scheme ${uri.scheme}');
-          }
-          final code = uri.queryParameters["code"] ?? "N/A";
-          final error = uri.queryParameters["error"];
-
-          debugPrint('code $code, error $error');
-
-          closeWebView();
-          onCodeReceived.add(code);
-
-          debugPrint('Got the new code: $code');
-
-          sub?.cancel();
-        }
-      }, onError: (err) {
-        // Handle exception by warning the user their action did not succeed
-        debugPrint('Found an error $err');
+    // Attach a listener to the stream
+    sub = uriLinkStream.listen((Uri? uri) {
+      if (uri == null) {
+        debugPrint('Subscription was null');
         sub?.cancel();
-      });
-    }
+      } else {
+        // Parse the link and warn the user, if it is not correct
+        debugPrint('Got a link!! $uri');
+        if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientId') != 0) {
+          debugPrint('This is not the good scheme ${uri.scheme}');
+        }
+        final code = uri.queryParameters["code"] ?? "N/A";
+        final error = uri.queryParameters["error"];
+
+        debugPrint('code $code, error $error');
+
+        closeWebView();
+        onCodeReceived.add(code);
+
+        debugPrint('Got the new code: $code');
+
+        sub?.cancel();
+      }
+    }, onError: (err) {
+      // Handle exception by warning the user their action did not succeed
+      debugPrint('Found an error $err');
+      sub?.cancel();
+    });
   }
 
   Future<bool> hasValidToken() async {
@@ -178,20 +148,12 @@ abstract class Auth {
 
   /// Do Under Armour Authentication.
   /// clientId: ID of your Under Armour app
-  /// scope: Under Armour scope check https://developers.strava.com/docs/oauth-updates/
-  /// prompt: to choose to ask Under Armour always to authenticate or only when needed (with 'auto')
   ///
   /// Do not do/show the Under Armour login if a token has been stored previously
   /// and is not expired
   ///
-  /// Do/show the Under Armour login if the scope has been changed since last storage of the token
   /// return true if no problem in authentication has been found
-  Future<bool> oauth(
-    String clientId,
-    String scope,
-    String secret,
-    String prompt,
-  ) async {
+  Future<bool> oauth(String clientId, String secret) async {
     debugPrint('Welcome to Under Armour OAuth');
     bool isAuthOk = false;
     bool isExpired;
@@ -222,7 +184,6 @@ abstract class Auth {
           _refreshAnswer.accessToken,
           _refreshAnswer.refreshToken,
           _refreshAnswer.expiresAt,
-          scope,
         );
       } else {
         debugPrint('Problem doing the refresh process');
@@ -230,11 +191,11 @@ abstract class Auth {
       }
     }
 
-    // Check if the scope has changed
-    if (tokenStored.scope != scope || token == "null" || token == null) {
+    // Check token
+    if (token == "null" || token == null) {
       // Ask for a new authorization
       debugPrint('Doing a new authorization');
-      isAuthOk = await _newAuthorization(clientId, secret, scope, prompt);
+      isAuthOk = await _newAuthorization(clientId, secret);
     } else {
       isAuthOk = true;
     }
@@ -242,15 +203,10 @@ abstract class Auth {
     return isAuthOk;
   }
 
-  Future<bool> _newAuthorization(
-    String clientId,
-    String secret,
-    String scope,
-    String prompt,
-  ) async {
+  Future<bool> _newAuthorization(String clientId, String secret) async {
     bool returnValue = false;
 
-    await _getUnderArmourCode(clientId, scope, prompt);
+    await _getUnderArmourCode(clientId);
 
     final underArmourCode = await onCodeReceived.stream.first;
 
@@ -260,7 +216,7 @@ abstract class Auth {
 
     // Save the token information
     if (answer.accessToken != null && answer.expiresAt != null) {
-      await _saveToken(answer.accessToken, answer.refreshToken, answer.expiresAt, scope);
+      await _saveToken(answer.accessToken, answer.refreshToken, answer.expiresAt);
       returnValue = true;
     }
 
@@ -323,7 +279,6 @@ abstract class Auth {
         "Api-Key": clientId,
       },
       body: {
-        // "Content-Type": "application/x-www-form-urlencoded",
         "grant_type": "authorization_code",
         "client_id": clientId,
         "client_secret": secret,
@@ -398,11 +353,11 @@ abstract class Auth {
       if (rep.statusCode >= 200 && rep.statusCode < 300) {
         debugPrint('DeAuthorize done');
         debugPrint('response ${rep.body}');
-        await _saveToken(null, null, null, null);
+        await _saveToken(null, null, null);
         fault.statusCode = UnderArmourStatusCode.statusOk;
         fault.message = 'DeAuthorize done';
       } else {
-        await _saveToken(null, null, null, null);
+        await _saveToken(null, null, null);
         debugPrint('Problem in deAuthorize request');
         fault.statusCode = UnderArmourStatusCode.statusDeAuthorizeError;
       }
