@@ -138,7 +138,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
           final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
           ActivityExport exporter = formatPick == "CSV"
-              ? CSVExport()
+              ? CsvExport()
               : formatPick == "TCX"
                   ? TCXExport()
                   : FitExport();

@@ -4,10 +4,10 @@ import '../../import/constants.dart';
 import '../activity_export.dart';
 import '../export_model.dart';
 
-class CSVExport extends ActivityExport {
+class CsvExport extends ActivityExport {
   StringBuffer _sb = StringBuffer();
 
-  CSVExport() : super(nonCompressedFileExtension: 'csv', nonCompressedMimeType: 'text/csv');
+  CsvExport() : super(nonCompressedFileExtension: 'csv', nonCompressedMimeType: 'text/csv');
 
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     _sb.writeln("$CSV_MAGIC,$CSV_VERSION,");
