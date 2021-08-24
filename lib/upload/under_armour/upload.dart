@@ -49,11 +49,7 @@ abstract class Upload {
     final uploadResponse = await http.post(
       Uri.parse(UPLOADS_ENDPOINT),
       headers: headers,
-      body: {
-        "grant_type": "authorization_code",
-        "client_id": clientId,
-        "redirect_uri": REDIRECT_URL,
-      },
+      body: fileContent,
     );
 
     debugPrint('Response: ${uploadResponse.statusCode} ${uploadResponse.reasonPhrase}');
@@ -63,12 +59,12 @@ abstract class Upload {
       debugPrint('Error while uploading the activity');
     }
 
-    if (response.id > 0) {
-      final database = Get.find<AppDatabase>();
-      activity.markUploaded(response.id);
-      await database.activityDao.updateActivity(activity);
-      debugPrint('id ${response.id}');
-    }
+    // if (response.id > 0) {
+    //   final database = Get.find<AppDatabase>();
+    //   activity.markUploaded(response.id);
+    //   await database.activityDao.updateActivity(activity);
+    //   debugPrint('id ${response.id}');
+    // }
 
     return uploadResponse.statusCode;
   }
