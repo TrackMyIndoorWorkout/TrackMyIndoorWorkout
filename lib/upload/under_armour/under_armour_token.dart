@@ -21,7 +21,7 @@ class UnderArmourToken {
       'access_token': model.accessToken ?? 'Error',
       'token_type': model.tokenType ?? 'Error',
       'refresh_token': model.refreshToken ?? 'Error',
-      'expires_at': model.expiresAt ?? 'Error',
+      'expires_in': model.expiresAt ?? 'Error',
     };
   }
 
@@ -30,7 +30,7 @@ class UnderArmourToken {
       ..accessToken = map['access_token']
       ..refreshToken = map['refresh_token']
       ..tokenType = map['token_type']
-      ..expiresAt = map['expires_at'];
+      ..expiresAt = map['expires_in'];
   }
 
   /// Generate the header to use with http requests
@@ -63,7 +63,7 @@ class RefreshAnswer {
     RefreshAnswer model = RefreshAnswer()
       ..accessToken = map['access_token']
       ..refreshToken = map['refresh_token']
-      ..expiresAt = map['expires_at'];
+      ..expiresAt = map['expires_in'];
 
     return model;
   }
