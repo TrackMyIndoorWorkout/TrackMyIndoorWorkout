@@ -7,7 +7,11 @@ import '../export_model.dart';
 class JsonExport extends ActivityExport {
   StringBuffer _sb = StringBuffer();
 
-  JsonExport() : super(nonCompressedFileExtension: 'json', nonCompressedMimeType: 'application/json');
+  JsonExport()
+      : super(
+          nonCompressedFileExtension: 'json',
+          nonCompressedMimeType: 'application/json',
+        );
 
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     _sb.writeln("$CSV_MAGIC,$CSV_VERSION,");
