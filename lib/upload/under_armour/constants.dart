@@ -1,9 +1,10 @@
+const AU_API_URL_BASE = "https://api.ua.com/v7.1/";
 const AU_URL = "https://www.mapmyfitness.com/v7.1/oauth2/uacf/";
-const AU_API_URL = "https://api.ua.com/v7.1/oauth2/uacf/";
+const AU_API_URL = AU_API_URL_BASE + "oauth2/uacf/";
 const TOKEN_ENDPOINT = AU_API_URL + "access_token";
 const AUTHORIZATION_ENDPOINT = AU_URL + "authorize";
 const DEAUTHORIZATION_ENDPOINT = AU_URL + "deauthorize";
-const UPLOADS_ENDPOINT = AU_URL + "api/v3/uploads";
+const UPLOADS_ENDPOINT = AU_API_URL_BASE + "workout/";
 
 // To use with iOS or Android
 const REDIRECT_URL_SCHEME = "mapmyfitnessflutter";

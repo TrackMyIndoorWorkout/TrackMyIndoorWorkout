@@ -346,10 +346,10 @@ abstract class Auth {
     if (header.containsKey('88') == false) {
       final deAuthorizationUrl = DEAUTHORIZATION_ENDPOINT;
       debugPrint('request $deAuthorizationUrl');
-      final rep = await http.post(Uri.parse(deAuthorizationUrl), headers: header);
-      if (rep.statusCode >= 200 && rep.statusCode < 300) {
+      final authorizationResponse = await http.post(Uri.parse(deAuthorizationUrl), headers: header);
+      if (authorizationResponse.statusCode >= 200 && authorizationResponse.statusCode < 300) {
         debugPrint('DeAuthorize done');
-        debugPrint('response ${rep.body}');
+        debugPrint('response ${authorizationResponse.body}');
         await _saveToken(null, null, null);
         return 200;
       } else {
