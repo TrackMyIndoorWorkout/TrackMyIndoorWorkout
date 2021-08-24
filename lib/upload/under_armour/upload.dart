@@ -10,8 +10,6 @@ import '../../persistence/models/activity.dart';
 import '../../persistence/database.dart';
 
 import 'constants.dart';
-import 'under_armour_status_code.dart';
-import 'fault.dart';
 import 'under_armour_status_text.dart';
 import 'under_armour_token.dart';
 import 'upload_activity.dart';
@@ -26,7 +24,7 @@ abstract class Upload {
   /// 201 activity created
   /// 400 problem could be that activity already uploaded
   ///
-  Future<Fault> uploadActivity(
+  Future<int> uploadActivity(
     Activity activity,
     List<int> fileContent,
     ActivityExport exporter,
@@ -48,7 +46,7 @@ abstract class Upload {
 
     if (!Get.isRegistered<UnderArmourToken>()) {
       debugPrint('Token not yet known');
-      return Fault(UnderArmourStatusCode.statusTokenNotKnownYet, 'Token not yet known');
+      return 401;
     }
 
     final underArmourToken = Get.find<UnderArmourToken>();
@@ -56,7 +54,7 @@ abstract class Upload {
 
     if (header.containsKey('88') == true) {
       debugPrint('Token not yet known');
-      return Fault(UnderArmourStatusCode.statusTokenNotKnownYet, 'Token not yet known');
+      return 401;
     }
 
     request.headers.addAll(header);
@@ -145,6 +143,6 @@ abstract class Upload {
       });
     }
 
-    return Fault(response.statusCode, response.reasonPhrase ?? "Unknown reason");
+    return 500;
   }
 }

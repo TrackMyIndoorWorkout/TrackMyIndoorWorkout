@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
@@ -9,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'under_armour_status_code.dart';
 import 'constants.dart';
 import 'under_armour_token.dart';
 import 'fault.dart';
@@ -331,10 +329,10 @@ abstract class Auth {
   ///
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
-  Future<Fault> deAuthorize(String clientId) async {
+  Future<int> deAuthorize(String clientId) async {
     if (!Get.isRegistered<UnderArmourToken>()) {
       debugPrint('Token not yet known');
-      return Fault(UnderArmourStatusCode.statusTokenNotKnownYet, 'Token not yet known');
+      return 401;
     }
     var underArmourToken = Get.find<UnderArmourToken>();
 
@@ -344,7 +342,6 @@ abstract class Auth {
     }
 
     final header = underArmourToken.getAuthorizationHeader(clientId);
-    var fault = Fault(UnderArmourStatusCode.statusUnknownError, "Unknown reason");
     // If header is not "empty"
     if (header.containsKey('88') == false) {
       final deAuthorizationUrl = DEAUTHORIZATION_ENDPOINT;
@@ -354,20 +351,16 @@ abstract class Auth {
         debugPrint('DeAuthorize done');
         debugPrint('response ${rep.body}');
         await _saveToken(null, null, null);
-        fault.statusCode = UnderArmourStatusCode.statusOk;
-        fault.message = 'DeAuthorize done';
+        return 200;
       } else {
         await _saveToken(null, null, null);
         debugPrint('Problem in deAuthorize request');
-        fault.statusCode = UnderArmourStatusCode.statusDeAuthorizeError;
+        return 400;
       }
     } else {
       // No authorization has been done before
       debugPrint('No Authentication has been done yet');
-      fault.statusCode = UnderArmourStatusCode.statusNoAuthenticationYet;
-      fault.message = 'No Authentication has been done yet';
+      return 401;
     }
-
-    return fault;
   }
 }
