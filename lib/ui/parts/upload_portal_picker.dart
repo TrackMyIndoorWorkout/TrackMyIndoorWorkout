@@ -23,7 +23,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   List<String> _portalNames = [
     "Strava",
     "SUUNTO",
-    "Under Armour",
+    "MapMyFitness",
   ];
   ThemeManager _themeManager = Get.find<ThemeManager>();
   List<PortalChoiceDescriptor> _portalChoices = [];

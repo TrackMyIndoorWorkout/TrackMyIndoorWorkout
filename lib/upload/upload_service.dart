@@ -23,7 +23,7 @@ abstract class UploadService {
               ? Get.find<SuuntoService>()
               : Get.put<SuuntoService>(SuuntoService());
         }
-      case "under armour":
+      case "mapmyfitness":
         {
           return Get.isRegistered<UnderArmourService>()
               ? Get.find<UnderArmourService>()
