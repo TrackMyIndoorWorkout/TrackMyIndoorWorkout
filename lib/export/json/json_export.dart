@@ -13,6 +13,11 @@ class JsonExport extends ActivityExport {
           nonCompressedMimeType: 'application/json',
         );
 
+  static String underArmourSport(String sport) {
+    return "";
+    // return sport == ActivityType.Ride || sport == ActivityType.Run ? sport : "Other";
+  }
+
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     _sb.writeln("$CSV_MAGIC,$CSV_VERSION,");
     _sb.writeln("$RIDE_SUMMARY,");
