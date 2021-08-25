@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import '../../persistence/preferences.dart';
-import '../../utils/display.dart';
+import '../../utils/constants.dart';
 import '../activity_export.dart';
 import '../export_model.dart';
 import '../export_record.dart';
@@ -11,6 +11,10 @@ class TCXExport extends ActivityExport {
   StringBuffer _sb = StringBuffer();
 
   TCXExport() : super(nonCompressedFileExtension: 'tcx', nonCompressedMimeType: 'text/xml');
+
+  static String tcxSport(String sport) {
+    return sport == ActivityType.Ride || sport == ActivityType.Run ? sport : "Other";
+  }
 
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     // The prolog of the TCX file
