@@ -24,31 +24,31 @@ Map<String, int> underArmourSport = {
   ActivityType.RollerSki: 1255, // Skate skiing (roller skate / ski 101)
   ActivityType.Rowing: 128, // Not indoor
   ActivityType.Run: 16,
-  ActivityType.Sail: Tuple2(32, 0),
-  ActivityType.Skateboard: Tuple2(GENERIC_SPORT_ID, 0),
-  ActivityType.Snowboard: Tuple2(14, 0),
-  ActivityType.Snowshoe: Tuple2(35, 0),
-  ActivityType.Soccer: Tuple2(7, 0),
-  ActivityType.StairStepper: Tuple2(FITNESS_EQUIPMENT_SPORT_ID, 16),
-  ActivityType.StandUpPaddling: Tuple2(37, 0),
-  ActivityType.Surfing: Tuple2(38, 0),
-  ActivityType.Swim: Tuple2(SWIMMING_SPORT_ID, 0),
+  ActivityType.Sail: 29,
+  ActivityType.Skateboard: 95,
+  ActivityType.Snowboard: 107,
+  ActivityType.Snowshoe: 119,
+  ActivityType.Soccer: 176,
+  ActivityType.StairStepper: 730,
+  ActivityType.StandUpPaddling: 863,
+  ActivityType.Surfing: 127,
+  ActivityType.Swim: 15,
   "Treadmill": 208, // Treadmill running
   "TrackRide": 44,
   "TrackRun": 108,
-  ActivityType.Velomobile: Tuple2(GENERIC_SPORT_ID, 0),
-  ActivityType.VirtualRide: Tuple2(CYCLING_SPORT_ID, 6), // Cycling, Indoor Cycling
-  ActivityType.VirtualRun: Tuple2(RUNNING_SPORT_ID, 1), // Treadmill running
-  "VirtualRowing": Tuple2(PADDLING_SPORT_ID, 14), // Indoor Rowing
-  ActivityType.Walk: Tuple2(11, 0),
-  ActivityType.WeightTraining: Tuple2(TRAINING_SPORT_ID, 0), // Training
-  ActivityType.Wheelchair: Tuple2(GENERIC_SPORT_ID, 0),
-  ActivityType.Windsurf: Tuple2(43, 0),
-  ActivityType.Workout: Tuple2(GENERIC_SPORT_ID, 0),
-  ActivityType.Yoga: Tuple2(TRAINING_SPORT_ID, 43),
+  ActivityType.Velomobile: 1, // Generic
+  ActivityType.VirtualRide: 19, // Indoor Bike Ride
+  ActivityType.VirtualRun: 25, // Indoor Run / Jog
+  "VirtualRowing": 99, // Rowing Machine
+  ActivityType.Walk: 9,
+  ActivityType.WeightTraining: 18, // Weight Workout
+  ActivityType.Wheelchair: 1201,
+  ActivityType.Windsurf: 94,
+  ActivityType.Workout: 2,
+  ActivityType.Yoga: 78, // Yoga Class
 };
 
-int toFitSport(String sport) {
+int toUnderArmourSport(String sport) {
   if (sport == ActivityType.Swim) {
     sport = "OpenWaterSwim";
   } else if (sport == ActivityType.Canoeing) {
@@ -61,9 +61,9 @@ int toFitSport(String sport) {
     sport = "Elliptical";
   }
 
-  if (!fitSport.containsKey(sport)) {
+  if (!underArmourSport.containsKey(sport)) {
     sport = "Workout";
   }
 
-  return fitSport[sport] ?? fitSport["Workout"]!;
+  return underArmourSport[sport] ?? underArmourSport["Workout"]!;
 }

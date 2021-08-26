@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../../import/constants.dart';
 import '../activity_export.dart';
 import '../export_model.dart';
+import 'under_armour_sport.dart';
 
 class JsonExport extends ActivityExport {
   StringBuffer _sb = StringBuffer();
@@ -13,9 +14,8 @@ class JsonExport extends ActivityExport {
           nonCompressedMimeType: 'application/json',
         );
 
-  static String underArmourSport(String sport) {
-    return "";
-    // return sport == ActivityType.Ride || sport == ActivityType.Run ? sport : "Other";
+  static int underArmourSport(String sport) {
+    return toUnderArmourSport(sport);
   }
 
   Future<List<int>> getFileCore(ExportModel exportModel) async {
