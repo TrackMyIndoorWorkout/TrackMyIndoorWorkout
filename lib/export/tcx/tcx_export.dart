@@ -216,7 +216,7 @@ class TCXExport extends ActivityExport {
   /// create XML attribute
   /// from content string
   void addAttribute(String tag, String attribute, String value, String content) {
-    _sb.writeln('<$tag $attribute="$value">\n$content</$tag>');
+    _sb.writeln('<$tag $attribute="$value">$content</$tag>');
   }
 
   /// Create timestamp for <Time> element in TCX file
