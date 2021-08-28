@@ -62,7 +62,6 @@ abstract class Auth {
     try {
       localToken.accessToken = prefs.getString(UNDER_ARMOUR_ACCESS_TOKEN_TAG)?.toString();
       localToken.refreshToken = prefs.getString(UNDER_ARMOUR_REFRESH_TOKEN_TAG);
-      // localToken.expiresAt = prefs.getInt('expire') * 1000; // To get in ms
       localToken.expiresAt = prefs.getInt(UNDER_ARMOUR_EXPIRES_AT_TAG);
 
       // load the data into Get
@@ -74,11 +73,12 @@ abstract class Auth {
     }
 
     if (localToken.expiresAt != null) {
-      final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt!);
+      final dateExpired =
+          DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt! * 1000, isUtc: true);
       final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
           '${dateExpired.hour.toString()} hours';
       debugPrint(
-          'stored token ${localToken.accessToken} ${localToken.expiresAt} ' + 'expires: $details');
+          'stored token ${localToken.accessToken} ${localToken.expiresAt} expires: $details');
     }
 
     return localToken;
@@ -294,7 +294,6 @@ abstract class Auth {
     } else {
       final Map<String, dynamic> tokenBody = json.decode(tokenResponse.body);
       final UnderArmourToken body = UnderArmourToken.fromJson(tokenBody);
-      // var expiresAt = body.expiresAt * 1000; // To get the exp. date in ms
       answer.accessToken = body.accessToken;
       answer.refreshToken = body.refreshToken;
       answer.expiresAt = body.expiresAt;
@@ -309,7 +308,7 @@ abstract class Auth {
   ///
   /// including when there is no token yet
   bool _isTokenExpired(UnderArmourToken token) {
-    debugPrint(' current time in ms ${DateTime.now().millisecondsSinceEpoch / 1000}' +
+    debugPrint(' current Epoch time ${DateTime.now().millisecondsSinceEpoch / 1000}' +
         ' exp. time: ${token.expiresAt}');
 
     // when it is the first run or after a deAuthorize
@@ -317,7 +316,7 @@ abstract class Auth {
       return false;
     }
 
-    if (token.expiresAt! < DateTime.now().millisecondsSinceEpoch / 1000) {
+    if (token.expiresAt! * 1000 < DateTime.now().millisecondsSinceEpoch) {
       return true;
     } else {
       return false;

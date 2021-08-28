@@ -4,7 +4,7 @@ class UnderArmourToken {
   String? accessToken;
   String? refreshToken;
   String? tokenType;
-  int? expiresAt;
+  int? expiresAt; // in seconds
   String? scope;
 
   UnderArmourToken({this.accessToken, this.refreshToken, this.expiresAt, this.scope});
@@ -21,7 +21,9 @@ class UnderArmourToken {
       'access_token': model.accessToken ?? 'Error',
       'token_type': model.tokenType ?? 'Error',
       'refresh_token': model.refreshToken ?? 'Error',
-      'expires_in': model.expiresAt ?? 'Error',
+      'expires_in': model.expiresAt != null
+          ? (model.expiresAt! - DateTime.now().millisecondsSinceEpoch / 1000)
+          : 'Error',
     };
   }
 
@@ -30,7 +32,7 @@ class UnderArmourToken {
       ..accessToken = map['access_token']
       ..refreshToken = map['refresh_token']
       ..tokenType = map['token_type']
-      ..expiresAt = map['expires_in'];
+      ..expiresAt = map['expires_in'] + DateTime.now().millisecondsSinceEpoch / 1000;
   }
 
   /// Generate the header to use with http requests
@@ -53,7 +55,7 @@ class RefreshAnswer {
   Fault? fault;
   String? accessToken;
   String? refreshToken;
-  int? expiresAt;
+  int? expiresAt; // in seconds
 
   RefreshAnswer();
 
@@ -63,7 +65,7 @@ class RefreshAnswer {
     RefreshAnswer model = RefreshAnswer()
       ..accessToken = map['access_token']
       ..refreshToken = map['refresh_token']
-      ..expiresAt = map['expires_in'];
+      ..expiresAt = map['expires_in'] + DateTime.now().millisecondsSinceEpoch / 1000;
 
     return model;
   }
