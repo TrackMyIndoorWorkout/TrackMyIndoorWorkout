@@ -73,7 +73,6 @@ abstract class Auth {
     try {
       localToken.accessToken = prefs.getString(STRAVA_ACCESS_TOKEN_TAG)?.toString();
       localToken.refreshToken = prefs.getString(STRAVA_REFRESH_TOKEN_TAG);
-      // localToken.expiresAt = prefs.getInt('expire') * 1000; // To get in ms
       localToken.expiresAt = prefs.getInt(STRAVA_EXPIRES_AT_TAG);
       localToken.scope = prefs.getString(STRAVA_TOKEN_SCOPE_TAG);
 
@@ -88,7 +87,8 @@ abstract class Auth {
     }
 
     if (localToken.expiresAt != null) {
-      final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt!);
+      final dateExpired =
+          DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt! * 1000, isUtc: true);
       final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
           '${dateExpired.hour.toString()} hours';
       debugPrint('stored token ${localToken.accessToken} ${localToken.expiresAt} ' +
@@ -360,7 +360,6 @@ abstract class Auth {
     } else {
       final Map<String, dynamic> tokenBody = json.decode(value.body);
       final StravaToken body = StravaToken.fromJson(tokenBody);
-      // var expiresAt = body.expiresAt * 1000; // To get the exp. date in ms
       answer.accessToken = body.accessToken;
       answer.refreshToken = body.refreshToken;
       answer.expiresAt = body.expiresAt;
@@ -375,7 +374,7 @@ abstract class Auth {
   ///
   /// including when there is no token yet
   bool _isTokenExpired(StravaToken token) {
-    debugPrint(' current time in ms ${DateTime.now().millisecondsSinceEpoch / 1000}' +
+    debugPrint(' current Epoch time ${DateTime.now().millisecondsSinceEpoch / 1000}'
         ' exp. time: ${token.expiresAt}');
 
     // when it is the first run or after a deAuthorize
@@ -383,7 +382,7 @@ abstract class Auth {
       return false;
     }
 
-    if (token.expiresAt! < DateTime.now().millisecondsSinceEpoch / 1000) {
+    if (token.expiresAt! * 1000 < DateTime.now().millisecondsSinceEpoch) {
       return true;
     } else {
       return false;
