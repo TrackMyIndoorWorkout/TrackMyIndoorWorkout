@@ -21,6 +21,7 @@ dependencies:
   flutter_blue:
     git:
       url: https://github.com/CsabaConsulting/flutter_blue.git
+  flutter_native_timezone: ^2.0.0
   flutter_spinbox: ^0.5.4
   flutter_svg: ^0.22.0
   get: ^4.3.8

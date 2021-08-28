@@ -18,6 +18,7 @@ public final class GeneratedPluginRegistrant {
     flutterEngine.getPlugins().add(new io.flutter.plugins.deviceinfo.DeviceInfoPlugin());
     flutterEngine.getPlugins().add(new com.mr.flutter.plugin.filepicker.FilePickerPlugin());
     flutterEngine.getPlugins().add(new com.pauldemarco.flutter_blue.FlutterBluePlugin());
+    flutterEngine.getPlugins().add(new com.whelksoft.flutter_native_timezone.FlutterNativeTimezonePlugin());
     flutterEngine.getPlugins().add(new io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin());
     flutterEngine.getPlugins().add(new dev.flutter.plugins.integration_test.IntegrationTestPlugin());
     flutterEngine.getPlugins().add(new dev.fluttercommunity.plus.packageinfo.PackageInfoPlugin());
