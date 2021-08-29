@@ -135,7 +135,7 @@ abstract class Auth {
   Future<bool> hasValidToken() async {
     final prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(UNDER_ARMOUR_ACCESS_TOKEN_TAG)?.toString();
-    if (accessToken == null || accessToken.length == 0) {
+    if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
     final UnderArmourToken tokenStored = await _getStoredToken();
@@ -158,19 +158,18 @@ abstract class Auth {
     final tokenStored = await _getStoredToken();
     final token = tokenStored.accessToken;
 
+    // Check if the token is not expired
     isExpired = _isTokenExpired(tokenStored);
     debugPrint('is token expired? $isExpired');
 
-    // Check if the token is not expired
-    if (token != null) {
-      // && token != "null"
+    bool storedBefore = token != null && token.isNotEmpty && token != "null";
+    if (storedBefore) {
       debugPrint('token has been stored before! ' +
           '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
     }
 
     // Use the refresh token to get a new access token
-    if (isExpired) {
-      // token != null || token != "null"
+    if (isExpired && storedBefore) {
       RefreshAnswer _refreshAnswer =
           await _getNewAccessToken(clientId, secret, tokenStored.refreshToken ?? "0");
       // Update with new values if HTTP status code is 200
@@ -189,7 +188,7 @@ abstract class Auth {
     }
 
     // Check token
-    if (token == "null" || token == null) {
+    if (token == "null" || token == null || token.isEmpty) {
       // Ask for a new authorization
       debugPrint('Doing a new authorization');
       isAuthOk = await _newAuthorization(clientId, secret);
@@ -212,7 +211,7 @@ abstract class Auth {
     debugPrint('answer ${answer.expiresAt}, ${answer.accessToken}');
 
     // Save the token information
-    if (answer.accessToken != null && answer.expiresAt != null) {
+    if (answer.accessToken != null && answer.accessToken!.isNotEmpty && answer.expiresAt != null) {
       await _saveToken(answer.accessToken, answer.refreshToken, answer.expiresAt);
       returnValue = true;
     }
@@ -237,7 +236,7 @@ abstract class Auth {
 
     final tokenRefreshUrl = TOKEN_ENDPOINT;
 
-    debugPrint('urlRefresh $tokenRefreshUrl');
+    debugPrint('urlRefresh $tokenRefreshUrl $refreshToken');
 
     final refreshResponse = await http.post(
       Uri.parse(tokenRefreshUrl),
