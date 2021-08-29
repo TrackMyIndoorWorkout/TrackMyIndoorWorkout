@@ -339,21 +339,19 @@ abstract class Auth {
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
   Future<int> deAuthorize(String clientId) async {
-    if (!Get.isRegistered<UnderArmourToken>()) {
+    final tokenStored = await _getStoredToken();
+    final token = tokenStored.accessToken;
+
+    // Check if the token is not expired
+    if (token == null || token.isEmpty || token == "null") {
       debugPrint('Token not yet known');
       return 401;
     }
-    var underArmourToken = Get.find<UnderArmourToken>();
 
-    if (underArmourToken.accessToken == null) {
-      // Token has not been yet stored in memory
-      underArmourToken = await _getStoredToken();
-    }
-
-    final header = underArmourToken.getAuthorizationHeader(clientId);
+    final header = tokenStored.getAuthorizationHeader(clientId);
     // If header is not "empty"
     if (header.containsKey('88') == false) {
-      final deAuthorizationUrl = DEAUTHORIZATION_ENDPOINT;
+      final deAuthorizationUrl = TOKEN_ENDPOINT;
       debugPrint('request $deAuthorizationUrl');
       final authorizationResponse = await http.post(Uri.parse(deAuthorizationUrl), headers: header);
       if (authorizationResponse.statusCode >= 200 && authorizationResponse.statusCode < 300) {
