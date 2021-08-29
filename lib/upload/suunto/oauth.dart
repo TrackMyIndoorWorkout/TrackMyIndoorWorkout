@@ -248,7 +248,7 @@ abstract class Auth {
   ///
   /// including when there is no token yet
   bool _isTokenExpired(SuuntoToken token) {
-    debugPrint(' current time in ms ${DateTime.now().millisecondsSinceEpoch / 1000}' +
+    debugPrint(' current time in ms ${DateTime.now().millisecondsSinceEpoch ~/ 1000}' +
         ' exp. time: ${token.expiresAt}');
 
     // when it is the first run or after a deAuthorize

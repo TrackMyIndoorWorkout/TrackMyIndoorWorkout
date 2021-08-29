@@ -373,7 +373,7 @@ abstract class Auth {
   ///
   /// including when there is no token yet
   bool _isTokenExpired(StravaToken token) {
-    debugPrint(' current Epoch time ${DateTime.now().millisecondsSinceEpoch / 1000}'
+    debugPrint(' current Epoch time ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
         ' exp. time: ${token.expiresAt}');
 
     // when it is the first run or after a deAuthorize
