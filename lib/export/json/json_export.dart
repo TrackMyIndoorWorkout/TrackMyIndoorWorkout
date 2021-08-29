@@ -34,7 +34,7 @@ class JsonExport extends ActivityExport {
       exportModel.activity.startDateTime!,
       exportModel.name,
       jsonAggregates,
-      "", // exportModel.activity.timeZone, // TODO
+      exportModel.activity.timeZone,
       toUnderArmourSport(exportModel.activity.sport),
     );
 

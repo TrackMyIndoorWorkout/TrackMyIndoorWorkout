@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:floor/floor.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -19,7 +20,7 @@ import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 8, entities: [
+@Database(version: 9, entities: [
   Activity,
   Record,
   DeviceUsage,
@@ -174,4 +175,12 @@ final migration6to7 = Migration(6, 7, (database) async {
 final migration7to8 = Migration(7, 8, (database) async {
   await database
       .execute("UPDATE `$ACTIVITIES_TABLE_NAME` SET `strava_id`=0 WHERE `strava_id` IS NULL");
+});
+
+final migration8to9 = Migration(7, 8, (database) async {
+  await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `time_zone` TEXT");
+
+  final timeZone = await FlutterNativeTimezone.getLocalTimezone();
+  await database.execute(
+      "UPDATE `$ACTIVITIES_TABLE_NAME` SET `time_zone`='$timeZone' WHERE `time_zone` IS NULL");
 });

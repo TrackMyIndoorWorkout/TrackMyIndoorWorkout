@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -363,6 +364,7 @@ class CSVImporter {
       sport: sport,
       calorieFactor: calorieFactor,
       powerFactor: powerFactor,
+      timeZone: await FlutterNativeTimezone.getLocalTimezone(),
     );
 
     final prefService = Get.find<BasePrefService>();

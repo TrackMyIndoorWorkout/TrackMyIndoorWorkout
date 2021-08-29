@@ -85,6 +85,7 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
           calorieFactor: calorieFactor,
+          timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
@@ -119,6 +120,7 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
           calorieFactor: calorieFactor,
+          timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
@@ -151,6 +153,7 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
           calorieFactor: calorieFactor,
+          timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
@@ -183,6 +186,7 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
           calorieFactor: calorieFactor,
+          timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
@@ -214,6 +218,7 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
           calorieFactor: calorieFactor,
+          timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);

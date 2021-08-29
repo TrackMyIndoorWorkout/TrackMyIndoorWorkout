@@ -56,6 +56,7 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: 1.0,
           calorieFactor: 1.0,
+          timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);

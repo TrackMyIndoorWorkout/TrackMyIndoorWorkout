@@ -33,6 +33,8 @@ class Activity {
   final double powerFactor;
   @ColumnInfo(name: 'calorie_factor')
   final double calorieFactor;
+  @ColumnInfo(name: 'time_zone')
+  final String timeZone;
 
   @ignore
   DateTime? startDateTime;
@@ -55,6 +57,7 @@ class Activity {
     required this.sport,
     required this.powerFactor,
     required this.calorieFactor,
+    required this.timeZone,
   });
 
   void finish(double? distance, int? elapsed, int? calories) {

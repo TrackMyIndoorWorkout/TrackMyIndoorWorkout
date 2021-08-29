@@ -32,6 +32,7 @@ class JsonWorkout {
       ",",
     );
     sb.write('],');
+    // TODO: do we have power at all?
     sb.write('"power": [');
     sb.writeAll(
       exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.power}]"),

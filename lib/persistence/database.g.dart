@@ -71,7 +71,7 @@ class _$AppDatabase extends AppDatabase {
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 8,
+      version: 9,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -86,7 +86,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `uploaded` INTEGER NOT NULL, `strava_id` INTEGER NOT NULL, `four_cc` TEXT NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `uploaded` INTEGER NOT NULL, `strava_id` INTEGER NOT NULL, `four_cc` TEXT NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL, `time_zone` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `activity_id` INTEGER, `time_stamp` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `power` INTEGER, `speed` REAL, `cadence` INTEGER, `heart_rate` INTEGER, FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
@@ -166,7 +166,8 @@ class _$ActivityDao extends ActivityDao {
                   'four_cc': item.fourCC,
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
-                  'calorie_factor': item.calorieFactor
+                  'calorie_factor': item.calorieFactor,
+                  'time_zone': item.timeZone
                 },
             changeListener),
         _activityUpdateAdapter = UpdateAdapter(
@@ -187,7 +188,8 @@ class _$ActivityDao extends ActivityDao {
                   'four_cc': item.fourCC,
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
-                  'calorie_factor': item.calorieFactor
+                  'calorie_factor': item.calorieFactor,
+                  'time_zone': item.timeZone
                 },
             changeListener),
         _activityDeletionAdapter = DeletionAdapter(
@@ -208,7 +210,8 @@ class _$ActivityDao extends ActivityDao {
                   'four_cc': item.fourCC,
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
-                  'calorie_factor': item.calorieFactor
+                  'calorie_factor': item.calorieFactor,
+                  'time_zone': item.timeZone
                 },
             changeListener);
 
@@ -241,7 +244,8 @@ class _$ActivityDao extends ActivityDao {
             fourCC: row['four_cc'] as String,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double));
+            calorieFactor: row['calorie_factor'] as double,
+            timeZone: row['time_zone'] as String));
   }
 
   @override
@@ -261,7 +265,8 @@ class _$ActivityDao extends ActivityDao {
             fourCC: row['four_cc'] as String,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double),
+            calorieFactor: row['calorie_factor'] as double,
+            timeZone: row['time_zone'] as String),
         arguments: [id],
         queryableName: 'activities',
         isView: false);
@@ -285,7 +290,8 @@ class _$ActivityDao extends ActivityDao {
             fourCC: row['four_cc'] as String,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double),
+            calorieFactor: row['calorie_factor'] as double,
+            timeZone: row['time_zone'] as String),
         arguments: [limit, offset]);
   }
 

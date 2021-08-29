@@ -4,15 +4,16 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:overlay_tutorial/overlay_tutorial.dart';
-import 'package:syncfusion_flutter_charts/charts.dart' as charts;
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:pref/pref.dart';
+import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -198,6 +199,7 @@ class RecordingState extends State<RecordingScreen> {
       sport: widget.descriptor.defaultSport,
       powerFactor: powerFactor,
       calorieFactor: calorieFactor,
+      timeZone: await FlutterNativeTimezone.getLocalTimezone(),
     );
     if (!_uxDebug) {
       final id = await _database.activityDao.insertActivity(_activity!);
