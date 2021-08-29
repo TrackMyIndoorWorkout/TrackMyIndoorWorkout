@@ -13,6 +13,7 @@ import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
+import 'package:track_my_indoor_exercise/export/json/json_export.dart';
 import '../export/activity_export.dart';
 import '../export/csv/csv_export.dart';
 import '../export/fit/fit_export.dart';
@@ -80,6 +81,17 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
   }
 
+  ActivityExport getExporter(String format) {
+    switch(format.toUpperCase()) {
+      case "TCX": return TCXExport();
+      case "FIT": return FitExport();
+      case "JSON": return JsonExport();
+      case "CSV":
+      default:
+        return CsvExport();
+    }
+  }
+
   Widget _actionButtonRow(Activity activity, double size) {
     final actionsRow = <Widget>[
       IconButton(
@@ -137,11 +149,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           }
 
           final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
-          ActivityExport exporter = formatPick == "CSV"
-              ? CsvExport()
-              : formatPick == "TCX"
-                  ? TCXExport()
-                  : FitExport();
+          ActivityExport exporter = getExporter(formatPick);
           final fileStream =
               await exporter.getExport(activity, records, formatPick == "CSV", false);
           final persistenceValues = exporter.getPersistenceValues(activity, false);

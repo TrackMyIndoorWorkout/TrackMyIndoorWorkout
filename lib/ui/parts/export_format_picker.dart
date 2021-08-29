@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/theme_manager.dart';
@@ -19,6 +20,9 @@ class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomS
   @override
   void initState() {
     super.initState();
+    if (kDebugMode) {
+      _formatChoices.add("JSON");
+    }
     _formatIndex = max(0, _formatChoices.indexOf("FIT"));
     _largerTextStyle = Get.textTheme.headline4!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
