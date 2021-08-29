@@ -256,7 +256,7 @@ abstract class Auth {
       return false;
     }
 
-    if (token.expiresAt! < DateTime.now().millisecondsSinceEpoch / 1000) {
+    if (token.expiresAt! < DateTime.now().millisecondsSinceEpoch ~/ 1000) {
       return true;
     } else {
       return false;
