@@ -233,14 +233,25 @@ abstract class Auth {
   ) async {
     var returnToken = RefreshAnswer();
 
-    final tokenRefreshUrl = TOKEN_ENDPOINT +
-        '?client_id=$clientId&client_secret=$secret' +
-        '&grant_type=refresh_token&refresh_token=$refreshToken';
-
     debugPrint('Entering getNewAccessToken');
-    // debugPrint('urlRefresh $urlRefresh');
 
-    final refreshResponse = await http.post(Uri.parse(tokenRefreshUrl));
+    final tokenRefreshUrl = TOKEN_ENDPOINT;
+
+    debugPrint('urlRefresh $tokenRefreshUrl');
+
+    final refreshResponse = await http.post(
+      Uri.parse(tokenRefreshUrl),
+      headers: {
+        "Accept": "application/json",
+        "Api-Key": clientId,
+      },
+      body: {
+        "grant_type": "refresh_token",
+        "client_id": clientId,
+        "client_secret": secret,
+        "refresh_token": refreshToken,
+      },
+    );
 
     debugPrint('body ${refreshResponse.body}');
     if (refreshResponse.statusCode >= 200 && refreshResponse.statusCode < 300) {
