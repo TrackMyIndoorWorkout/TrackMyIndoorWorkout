@@ -338,35 +338,7 @@ abstract class Auth {
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
   Future<int> deAuthorize(String clientId) async {
-    final tokenStored = await _getStoredToken();
-    final token = tokenStored.accessToken;
-
-    // Check if the token is not expired
-    if (token == null || token.isEmpty || token == "null") {
-      debugPrint('Token not yet known');
-      return 401;
-    }
-
-    final header = tokenStored.getAuthorizationHeader(clientId);
-    // If header is not "empty"
-    if (header.containsKey('88') == false) {
-      final deAuthorizationUrl = TOKEN_ENDPOINT;
-      debugPrint('request $deAuthorizationUrl');
-      final authorizationResponse = await http.post(Uri.parse(deAuthorizationUrl), headers: header);
-      if (authorizationResponse.statusCode >= 200 && authorizationResponse.statusCode < 300) {
-        debugPrint('DeAuthorize done');
-        debugPrint('response ${authorizationResponse.body}');
-        await _saveToken(null, null, null);
-        return 200;
-      } else {
-        await _saveToken(null, null, null);
-        debugPrint('Problem in deAuthorize request');
-        return 400;
-      }
-    } else {
-      // No authorization has been done before
-      debugPrint('No Authentication has been done yet');
-      return 401;
-    }
+    await _saveToken(null, null, null);
+    return 200;
   }
 }
