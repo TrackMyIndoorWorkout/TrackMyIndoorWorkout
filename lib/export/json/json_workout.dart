@@ -1,4 +1,5 @@
 import '../../devices/device_descriptors/device_descriptor.dart';
+import '../../ui/models/measurement_counter.dart';
 import '../export_model.dart';
 import 'json_aggregates.dart';
 
@@ -18,10 +19,16 @@ class JsonWorkout {
   JsonAggregates aggregates;
 
   String timeSeries(ExportModel exportModel) {
+    final measurementCounter = MeasurementCounter(si: true, sport: exportModel.activity.sport);
+    exportModel.records.forEach((record) {
+      measurementCounter.processRecord(record.record);
+    });
+
     final sb = StringBuffer();
     sb.write('"distance": [');
     sb.writeAll(
-      exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${(r.record.distance ?? 0.0).toStringAsFixed(2)}]"),
+      exportModel.records.map((r) =>
+          "[${r.elapsed(exportModel.activity)}, ${(r.record.distance ?? 0.0).toStringAsFixed(2)}]"),
       ",",
     );
     sb.write('],');
@@ -32,31 +39,38 @@ class JsonWorkout {
       ",",
     );
     sb.write('],');
-    // TODO: do we have power at all?
-    sb.write('"power": [');
-    sb.writeAll(
-      exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.power}]"),
-      ",",
-    );
-    sb.write('],');
-    // TODO: do we have cadence at all?
-    sb.write('"cadence": [');
-    sb.writeAll(
-      exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.cadence}]"),
-      ",",
-    );
-    sb.write('],');
-    // TODO: do we have heart rate at all?
-    sb.write('"heartrate": [');
-    sb.writeAll(
-      exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.heartRate}]"),
-      ",",
-    );
-    sb.write('],');
+    if (measurementCounter.hasPower) {
+      sb.write('"power": [');
+      sb.writeAll(
+        exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.power}]"),
+        ",",
+      );
+      sb.write('],');
+    }
+    if (measurementCounter.hasCadence) {
+      sb.write('"cadence": [');
+      sb.writeAll(
+        exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.cadence}]"),
+        ",",
+      );
+      sb.write('],');
+    }
+    if (measurementCounter.hasHeartRate) {
+      sb.write('"heartrate": [');
+      sb.writeAll(
+        exportModel.records
+            .map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.heartRate}]"),
+        ",",
+      );
+      sb.write('],');
+    }
     sb.write('"position": [');
     sb.writeAll(
-      exportModel.records.map((r) =>
-          '[${r.elapsed(exportModel.activity)}, {"lat": ${r.latitude.toStringAsFixed(7)}, "lng": ${r.longitude.toStringAsFixed(7)}, "elevation": ${exportModel.altitude}}]'),
+      exportModel.records.map(
+        (r) =>
+            '[${r.elapsed(exportModel.activity)}, {"lat": ${r.latitude.toStringAsFixed(7)}, ' +
+            '"lng": ${r.longitude.toStringAsFixed(7)}, "elevation": ${exportModel.altitude}}]',
+      ),
       ",",
     );
     sb.write(']');

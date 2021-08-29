@@ -82,10 +82,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   ActivityExport getExporter(String format) {
-    switch(format.toUpperCase()) {
-      case "TCX": return TCXExport();
-      case "FIT": return FitExport();
-      case "JSON": return JsonExport();
+    switch (format.toUpperCase()) {
+      case "TCX":
+        return TCXExport();
+      case "FIT":
+        return FitExport();
+      case "JSON":
+        return JsonExport();
       case "CSV":
       default:
         return CsvExport();
