@@ -17,6 +17,6 @@ class ExportRecord {
   });
 
   double elapsed(Activity activity) {
-    return ((record.elapsed ?? 0) - activity.start) / 1000;
+    return ((record.timeStamp ?? 0) - activity.start) / 1000;
   }
 }
