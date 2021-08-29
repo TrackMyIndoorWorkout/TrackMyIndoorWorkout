@@ -59,7 +59,7 @@ class JsonWorkout {
           '[${r.elapsed(exportModel.activity)}, {"lat": ${r.latitude.toStringAsFixed(7)}, "lng": ${r.longitude.toStringAsFixed(7)}, "elevation": ${exportModel.altitude}}]'),
       ",",
     );
-    sb.write('],');
+    sb.write(']');
     return sb.toString();
   }
 
@@ -69,5 +69,5 @@ class JsonWorkout {
       '"start_datetime": "${startDatetime.toUtc().toIso8601String()}",' +
       '"start_locale_timezone": "$startLocaleTimezone",' +
       '"aggregates": ${aggregates.toJson()},' +
-      '"timeSeries": ${timeSeries(exportModel)}';
+      '"time_series": {${timeSeries(exportModel)}}';
 }
