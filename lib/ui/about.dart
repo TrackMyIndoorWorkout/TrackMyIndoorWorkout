@@ -21,7 +21,6 @@ class AboutScreenState extends State<AboutScreen> {
   static const KNOWN_ISSUES_URL = "${HOST_URL}2020/09/26/known-issues.html";
   static const CHANGE_LOG_URL = "${HOST_URL}changelog";
 
-  late String _appName;
   late String _version;
   late String _buildNumber;
   String _timeZone = "";
@@ -37,7 +36,6 @@ class AboutScreenState extends State<AboutScreen> {
       // color: Colors.white,
     );
     final packageInfo = Get.find<PackageInfo>();
-    _appName = packageInfo.appName;
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;
 
@@ -103,24 +101,6 @@ class AboutScreenState extends State<AboutScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Flexible(
-              child: Text(
-                'App Name:',
-                style: _fieldStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                _appName,
-                style: _valueStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
             Flexible(
               child: Text(
                 'Version:',
