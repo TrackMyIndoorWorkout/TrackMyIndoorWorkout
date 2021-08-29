@@ -43,8 +43,8 @@ abstract class Upload {
       "Accept-Encoding": "gzip",
       "Content-Type": "application/json",
       "Content-Encoding": "gzip",
+      "Content-Length": fileContent.length.toString()
     });
-    // TODO: Content-Length ???
 
     final uploadResponse = await http.post(
       Uri.parse(UPLOADS_ENDPOINT),
@@ -57,6 +57,8 @@ abstract class Upload {
     if (uploadResponse.statusCode < 200 || uploadResponse.statusCode >= 300) {
       // response.statusCode != 201
       debugPrint('Error while uploading the activity');
+    } else {
+      debugPrint('$uploadResponse');
     }
 
     // if (response.id > 0) {
