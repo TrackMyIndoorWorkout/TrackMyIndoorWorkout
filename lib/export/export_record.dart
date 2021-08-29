@@ -15,4 +15,8 @@ class ExportRecord {
     this.timeStampString = "0",
     this.timeStampInteger = 0,
   });
+
+  double elapsed(Activity activity) {
+    return ((record.elapsed ?? 0) - activity.start) / 1000;
+  }
 }
