@@ -21,7 +21,7 @@ class JsonWorkout {
     final sb = StringBuffer();
     sb.write('"distance": [');
     sb.writeAll(
-      exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.distance}]"),
+      exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${(r.record.distance ?? 0.0).toStringAsFixed(2)}]"),
       ",",
     );
     sb.write('],');
