@@ -1,3 +1,4 @@
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,7 +6,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/database.dart';
 import '../utils/constants.dart';
-import '../utils/sound.dart';
 
 class AboutScreen extends StatefulWidget {
   static String shortTitle = "About";
@@ -24,6 +24,7 @@ class AboutScreenState extends State<AboutScreen> {
   late String _appName;
   late String _version;
   late String _buildNumber;
+  String _timeZone = "";
   TextStyle _fieldStyle = TextStyle();
   TextStyle _valueStyle = TextStyle();
 
@@ -40,16 +41,8 @@ class AboutScreenState extends State<AboutScreen> {
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;
 
-    if (!Get.isRegistered<SoundService>()) {
-      Get.put<SoundService>(SoundService());
-    }
-
-    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-      setState(() {
-        _appName = packageInfo.appName;
-        _version = packageInfo.version;
-        _buildNumber = packageInfo.buildNumber;
-      });
+    FlutterNativeTimezone.getLocalTimezone().then((String timeZone) {
+      _timeZone = timeZone;
     });
   }
 
@@ -158,6 +151,24 @@ class AboutScreenState extends State<AboutScreen> {
             Flexible(
               child: Text(
                 _buildNumber,
+                style: _valueStyle,
+                maxLines: 10,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                'Time Zone:',
+                style: _fieldStyle,
+                maxLines: 10,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                _timeZone,
                 style: _valueStyle,
                 maxLines: 10,
                 overflow: TextOverflow.ellipsis,
