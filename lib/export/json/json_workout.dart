@@ -69,5 +69,5 @@ class JsonWorkout {
       '"start_datetime": "${startDatetime.toUtc().toIso8601String()}",' +
       '"start_locale_timezone": "$startLocaleTimezone",' +
       '"aggregates": ${aggregates.toJson()},' +
-      '"time_series": {${timeSeries(exportModel)}}';
+      '"time_series": {${timeSeries(exportModel)}}}';
 }
