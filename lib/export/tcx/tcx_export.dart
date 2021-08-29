@@ -93,7 +93,7 @@ class TCXExport extends ActivityExport {
 
     // Add track inside the lap
     for (var record in exportModel.records) {
-      addTrackPoint(record);
+      addTrackPoint(record, exportModel);
     }
 
     _sb.writeln('          </Track>');
@@ -104,11 +104,11 @@ class TCXExport extends ActivityExport {
   ///
   /// Extension handling is missing for the moment
   ///
-  void addTrackPoint(ExportRecord record) {
+  void addTrackPoint(ExportRecord record, ExportModel exportModel) {
     _sb.writeln("<Trackpoint>");
     addElement('Time', record.timeStampString);
     addPosition(record.latitude.toStringAsFixed(7), record.longitude.toStringAsFixed(7));
-    addElement('AltitudeMeters', record.altitude.toString());
+    addElement('AltitudeMeters', exportModel.altitude.toString());
     addElement('DistanceMeters', (record.record.distance ?? 0.0).toStringAsFixed(2));
     if (record.record.cadence != null) {
       final cadence = min(max(record.record.cadence!, 0), 254).toInt();

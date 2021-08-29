@@ -19,6 +19,7 @@ class ExportModel {
   double averagePower = 0.0;
   int maximumPower = 0;
   int minimumPower = 0;
+  double altitude = 0.0;
   List<ExportRecord> records;
 
   // Related to device that generated the data
@@ -46,6 +47,7 @@ class ExportModel {
     required this.buildVersionMinor,
     required this.langID,
     required this.partNumber,
+    required this.altitude,
     required this.records,
   }) {
     // Assuming that points are ordered by time stamp ascending

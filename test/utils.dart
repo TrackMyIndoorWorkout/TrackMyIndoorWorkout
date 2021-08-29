@@ -74,6 +74,7 @@ class ExportModelForTests extends ExportModel {
           buildVersionMinor: buildVersionMinor ?? "0",
           langID: langID ?? 'en-US',
           partNumber: partNumber ?? '0',
+          altitude: 0.0,
           records: records ?? [],
         );
 }
