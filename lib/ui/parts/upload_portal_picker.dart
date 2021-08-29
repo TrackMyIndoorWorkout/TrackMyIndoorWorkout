@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:track_my_indoor_exercise/upload/upload_service.dart';
 import '../../utils/theme_manager.dart';
 
 class PortalChoiceDescriptor {
@@ -47,59 +49,76 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> choiceRows = [];
+    choiceRows.addAll(_portalChoices
+          .asMap()
+          .entries
+          .map(
+            (e) => Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Transform.scale(
+              scale: 2,
+              child: Radio(
+                value: e.key,
+                groupValue: _portalIndex,
+                onChanged: (value) {
+                  setState(() {
+                    _portalIndex = value as int;
+                  });
+                },
+              ),
+            ),
+            e.value.assetName.isNotEmpty
+                ? GestureDetector(
+              onTap: () {
+                setState(() {
+                  _portalIndex = e.key;
+                });
+              },
+              child: SvgPicture.asset(
+                e.value.assetName,
+                color: e.value.color,
+                height: _largerTextStyle.fontSize,
+                semanticsLabel: '${e.value.name} Logo',
+              ),
+            )
+                : Container(),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _portalIndex = e.key;
+                });
+              },
+              child: Text("/${e.value.name}",
+                  style: _portalIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (kDebugMode) {
+      choiceRows.add(Divider());
+      choiceRows.add(ElevatedButton.icon(
+        icon: Icon(Icons.exit_to_app),
+        label: Text("Deauthorize"),
+        onPressed: () async {
+          UploadService uploadService = UploadService.getInstance(_portalNames[_portalIndex]);
+
+          final returnCode = await uploadService.deAuthorize();
+          Get.snackbar("Deauthorization", "Return code: $returnCode");
+        }),
+      );
+    }
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: _portalChoices
-              .asMap()
-              .entries
-              .map(
-                (e) => Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Transform.scale(
-                      scale: 2,
-                      child: Radio(
-                        value: e.key,
-                        groupValue: _portalIndex,
-                        onChanged: (value) {
-                          setState(() {
-                            _portalIndex = value as int;
-                          });
-                        },
-                      ),
-                    ),
-                    e.value.assetName.isNotEmpty
-                        ? GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _portalIndex = e.key;
-                              });
-                            },
-                            child: SvgPicture.asset(
-                              e.value.assetName,
-                              color: e.value.color,
-                              height: _largerTextStyle.fontSize,
-                              semanticsLabel: '${e.value.name} Logo',
-                            ),
-                          )
-                        : Container(),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _portalIndex = e.key;
-                        });
-                      },
-                      child: Text("/${e.value.name}",
-                          style: _portalIndex == e.key ? _selectedTextStyle : _largerTextStyle),
-                    ),
-                  ],
-                ),
-              )
-              .toList(growable: false),
+          children: choiceRows,
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
