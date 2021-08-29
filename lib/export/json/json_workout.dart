@@ -28,7 +28,7 @@ class JsonWorkout {
     sb.write('"speed": [');
     sb.writeAll(
       exportModel.records.map((r) =>
-          "[${r.elapsed(exportModel.activity)}, ${(r.record.speed ?? 0.0) * DeviceDescriptor.KMH2MS}]"),
+          "[${r.elapsed(exportModel.activity)}, ${((r.record.speed ?? 0.0) * DeviceDescriptor.KMH2MS).toStringAsFixed(2)}]"),
       ",",
     );
     sb.write('],');
@@ -56,7 +56,7 @@ class JsonWorkout {
     sb.write('"position": [');
     sb.writeAll(
       exportModel.records.map((r) =>
-          '[${r.elapsed(exportModel.activity)}, {"lat": ${r.latitude}, "lng": ${r.longitude}, "elevation": ${exportModel.altitude}}]'),
+          '[${r.elapsed(exportModel.activity)}, {"lat": ${r.latitude.toStringAsFixed(7)}, "lng": ${r.longitude.toStringAsFixed(7)}, "elevation": ${exportModel.altitude}}]'),
       ",",
     );
     sb.write('],');
