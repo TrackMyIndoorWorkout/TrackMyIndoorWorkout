@@ -177,7 +177,7 @@ final migration7to8 = Migration(7, 8, (database) async {
       .execute("UPDATE `$ACTIVITIES_TABLE_NAME` SET `strava_id`=0 WHERE `strava_id` IS NULL");
 });
 
-final migration8to9 = Migration(7, 8, (database) async {
+final migration8to9 = Migration(8, 9, (database) async {
   await database.execute("ALTER TABLE `$ACTIVITIES_TABLE_NAME` ADD COLUMN `time_zone` TEXT");
 
   final timeZone = await FlutterNativeTimezone.getLocalTimezone();
