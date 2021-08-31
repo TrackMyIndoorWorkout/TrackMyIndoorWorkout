@@ -10,7 +10,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'constants.dart';
 import 'under_armour_token.dart';
-import 'fault.dart';
 
 ///===========================================
 /// Class related to Authorization process
@@ -173,9 +172,9 @@ abstract class Auth {
       RefreshAnswer _refreshAnswer =
           await _getNewAccessToken(clientId, secret, tokenStored.refreshToken ?? "0");
       // Update with new values if HTTP status code is 200
-      if (_refreshAnswer.fault != null &&
-          _refreshAnswer.fault!.statusCode >= 200 &&
-          _refreshAnswer.fault!.statusCode < 300) {
+      if (_refreshAnswer.statusCode != null &&
+          _refreshAnswer.statusCode! >= 200 &&
+          _refreshAnswer.statusCode! < 300) {
         await _saveToken(
           _refreshAnswer.accessToken,
           _refreshAnswer.refreshToken,
@@ -262,7 +261,8 @@ abstract class Auth {
       debugPrint('Error while refreshing the token');
     }
 
-    returnToken.fault = Fault(refreshResponse.statusCode, refreshResponse.reasonPhrase ?? "N/A");
+    returnToken.statusCode = refreshResponse.statusCode;
+
     return returnToken;
   }
 

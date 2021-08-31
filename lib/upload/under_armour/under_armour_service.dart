@@ -26,7 +26,7 @@ class UnderArmourService implements UploadService {
     }
 
     final exporter = JsonExport();
-    final fileGzip = await exporter.getExport(activity, records, false, true);
+    final fileGzip = await exporter.getExport(activity, records, false, false);
     return await _underArmour.uploadActivity(
       activity,
       fileGzip,

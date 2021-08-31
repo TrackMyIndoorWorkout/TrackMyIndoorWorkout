@@ -1,5 +1,3 @@
-import 'fault.dart';
-
 class UnderArmourToken {
   String? accessToken;
   String? refreshToken;
@@ -52,7 +50,7 @@ class UnderArmourToken {
 }
 
 class RefreshAnswer {
-  Fault? fault;
+  int? statusCode;
   String? accessToken;
   String? refreshToken;
   int? expiresAt; // in seconds

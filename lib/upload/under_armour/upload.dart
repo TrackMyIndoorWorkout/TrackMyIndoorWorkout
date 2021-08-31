@@ -38,18 +38,19 @@ abstract class Upload {
       return 401;
     }
 
-    headers.addAll({
-      "Accept": "application/json",
-      "Accept-Encoding": "gzip",
-      "Content-Type": "application/json",
-      "Content-Encoding": "gzip",
-      "Content-Length": fileContent.length.toString()
-    });
+    // headers.addAll({
+    //   "Accept": "application/json",
+    //   "Accept-Encoding": "gzip",
+    //   "Content-Type": "application/json",
+    //   "Content-Encoding": "gzip",
+    //   "Content-Length": fileContent.length.toString()
+    // });
 
+    String contentString = utf8.decode(fileContent);
     final uploadResponse = await http.post(
       Uri.parse(UPLOADS_ENDPOINT),
       headers: headers,
-      body: fileContent,
+      body: contentString,
     );
 
     debugPrint('Response: ${uploadResponse.statusCode} ${uploadResponse.reasonPhrase}');
