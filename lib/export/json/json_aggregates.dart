@@ -33,13 +33,13 @@ class JsonAggregates {
 
   String toJson() =>
       '{"elapsed_time_total": $elapsedTimeTotal,' +
-      '"distance_total": $distanceTotal,' +
-      '"speed_min": $speedMin,' +
-      '"speed_max": $speedMax,' +
-      '"speed_avg": $speedAvg,' +
+      '"distance_total": ${distanceTotal.toStringAsFixed(2)},' +
+      '"speed_min": ${speedMin.toStringAsFixed(2)},' +
+      '"speed_max": ${speedMax.toStringAsFixed(2)},' +
+      '"speed_avg": ${speedAvg.toStringAsFixed(2)},' +
       '"power_min": $powerMin,' +
       '"power_max": $powerMax,' +
-      '"power_avg": $powerAvg,' +
+      '"power_avg": ${powerAvg.toStringAsFixed(2)},' +
       '"cadence_min": $cadenceMin,' +
       '"cadence_max": $cadenceMax,' +
       '"cadence_avg": $cadenceAvg,' +
