@@ -195,11 +195,11 @@ abstract class Auth {
 
   /// Generate the header to use with the token requests
   Map<String, String> getBasicAuthorizationHeader(String clientId, String secret) {
-    var basicCredentialString = "$clientId:$secret";
-    var credentialBytes = utf8.encode(basicCredentialString);
-    var base64String = base64.encode(credentialBytes);
+    final basicCredentialString = "$clientId:$secret";
+    final credentialBytes = utf8.encode(basicCredentialString);
+    final base64String = base64.encode(credentialBytes);
 
-    return {'Authorization': 'Basic: $base64String'};
+    return {"Authorization": "Basic: $base64String"};
   }
 
   Future<SuuntoToken> _getSuuntoToken(
