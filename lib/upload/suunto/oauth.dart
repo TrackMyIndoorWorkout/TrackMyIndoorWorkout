@@ -92,7 +92,8 @@ abstract class Auth {
   Future<void> _getSuuntoCode(String clientId) async {
     debugPrint('Entering getSuuntoCode');
 
-    final params = "?response_type=code&client_id=$clientId&redirect_uri=$REDIRECT_URL";
+    final encodedRedirectUrl = Uri.encodeQueryComponent(REDIRECT_URL);
+    final params = "?response_type=code&client_id=$clientId&redirect_uri=$encodedRedirectUrl";
     final oAuth2Url = AUTHORIZATION_ENDPOINT + params;
 
     debugPrint(oAuth2Url);
@@ -211,7 +212,8 @@ abstract class Auth {
     debugPrint('Entering getSuuntoToken!!');
     // Put your own secret in secret.dart
 
-    final params = ""; // "?grant_type=authorization_code&code=$code&redirect_uri=$REDIRECT_URL";
+    final encodedRedirectUrl = Uri.encodeQueryComponent(REDIRECT_URL);
+    final params = "?grant_type=authorization_code&code=$code&redirect_uri=$encodedRedirectUrl";
     final tokenRequestUrl = TOKEN_ENDPOINT + params;
 
     debugPrint('urlToken $tokenRequestUrl');
