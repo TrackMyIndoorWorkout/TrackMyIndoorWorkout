@@ -79,7 +79,7 @@ class JsonWorkout {
 
   String toJson(ExportModel exportModel) =>
       '{"name": "$name",' +
-      '"activity_type": "/v7.1/activity_type/$activityType",' +
+      '"activity_type": "/v7.1/activity_type/$activityType/",' +
       '"start_datetime": "${startDatetime.toUtc().toIso8601String()}",' +
       '"start_locale_timezone": "$startLocaleTimezone",' +
       '"aggregates": ${aggregates.toJson()},' +
