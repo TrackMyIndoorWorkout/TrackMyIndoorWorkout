@@ -3,10 +3,10 @@ import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/display.dart';
 
-const WORKOUT_SUMMARIES_TABLE_NAME = 'workout_summary';
+const workoutSummariesTableName = 'workout_summary';
 
 @Entity(
-  tableName: WORKOUT_SUMMARIES_TABLE_NAME,
+  tableName: workoutSummariesTableName,
   indices: [
     Index(value: ['sport']),
     Index(value: ['device_id']),

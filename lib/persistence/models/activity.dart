@@ -1,12 +1,12 @@
 import 'package:floor/floor.dart';
 import '../../persistence/preferences.dart';
-import '../../utils/display.dart' as disp;
+import '../../utils/display.dart' as display;
 import 'workout_summary.dart';
 
-const ACTIVITIES_TABLE_NAME = 'activities';
+const activitiesTableName = 'activities';
 
 @Entity(
-  tableName: ACTIVITIES_TABLE_NAME,
+  tableName: activitiesTableName,
   indices: [
     Index(value: ['start'])
   ],
@@ -46,12 +46,12 @@ class Activity {
     required this.deviceName,
     required this.deviceId,
     required this.start,
-    this.end: 0,
-    this.distance: 0.0,
-    this.elapsed: 0,
-    this.calories: 0,
-    this.uploaded: false,
-    this.stravaId: 0,
+    this.end = 0,
+    this.distance = 0.0,
+    this.elapsed = 0,
+    this.calories = 0,
+    this.uploaded = false,
+    this.stravaId = 0,
     this.startDateTime,
     required this.fourCC,
     required this.sport,
@@ -61,23 +61,23 @@ class Activity {
   });
 
   void finish(double? distance, int? elapsed, int? calories) {
-    this.end = DateTime.now().millisecondsSinceEpoch;
+    end = DateTime.now().millisecondsSinceEpoch;
     this.distance = distance ?? 0.0;
     this.elapsed = elapsed ?? 0;
     this.calories = calories ?? 0;
   }
 
   void markUploaded(int stravaId) {
-    this.uploaded = true;
+    uploaded = true;
     this.stravaId = stravaId;
   }
 
   String distanceString(bool si, bool highRes) {
-    return disp.distanceString(distance, si, highRes);
+    return display.distanceString(distance, si, highRes);
   }
 
   String distanceByUnit(bool si, bool highRes) {
-    return disp.distanceByUnit(distance, si, highRes);
+    return display.distanceByUnit(distance, si, highRes);
   }
 
   Activity hydrate() {

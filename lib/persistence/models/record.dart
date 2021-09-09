@@ -6,9 +6,9 @@ import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import 'activity.dart';
 
-const RECORDS_TABLE_NAME = 'records';
+const recordsTableName = 'records';
 
-@Entity(tableName: RECORDS_TABLE_NAME, foreignKeys: [
+@Entity(tableName: recordsTableName, foreignKeys: [
   ForeignKey(
     childColumns: ['activity_id'],
     parentColumns: ['id'],

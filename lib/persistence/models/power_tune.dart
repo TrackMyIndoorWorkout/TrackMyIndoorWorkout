@@ -1,9 +1,9 @@
 import 'package:floor/floor.dart';
 
-const POWER_TUNE_TABLE_NAME = 'power_tune';
+const powerTuneTableName = 'power_tune';
 
 @Entity(
-  tableName: POWER_TUNE_TABLE_NAME,
+  tableName: powerTuneTableName,
   indices: [
     Index(value: ['mac'])
   ],
