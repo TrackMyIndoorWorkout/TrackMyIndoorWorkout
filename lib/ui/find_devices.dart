@@ -444,8 +444,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         }
                         if (_goingToRecording || _pairingHrm) {
                           return HeartbeatProgressIndicator(
-                            child:
-                                IconButton(icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
+                            child: IconButton(
+                                icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
                           );
                         } else {
                           return IconButton(
@@ -779,7 +779,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         () async {
                           if (_isScanning) {
                             await FlutterBlue.instance.stopScan();
-                            await Future.delayed(const Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                            await Future.delayed(
+                                const Duration(milliseconds: UI_INTERMITTENT_DELAY));
                           }
                         },
                       );

@@ -437,11 +437,10 @@ class RecordingState extends State<RecordingScreen> {
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
     for (var prefSpec in _preferencesSpecs) {
       prefSpec.calculateBounds(
-            0,
-            decimalRound(
-                prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
-            _isLight,
-          );
+        0,
+        decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
+        _isLight,
+      );
     }
 
     _dataGapWatchdogTime =

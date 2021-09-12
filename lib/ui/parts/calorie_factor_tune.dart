@@ -10,7 +10,8 @@ class CalorieFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
   final double oldCalorieFactor;
 
-  const CalorieFactorTuneBottomSheet({Key? key, required this.deviceId, required this.oldCalorieFactor})
+  const CalorieFactorTuneBottomSheet(
+      {Key? key, required this.deviceId, required this.oldCalorieFactor})
       : super(key: key);
 
   @override

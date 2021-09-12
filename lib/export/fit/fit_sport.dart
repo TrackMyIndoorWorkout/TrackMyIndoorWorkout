@@ -15,7 +15,8 @@ Map<String, Tuple2<int, int>> fitSport = {
   ActivityType.Canoeing: const Tuple2(paddlingSportId, 0), // Paddling
   ActivityType.Crossfit: const Tuple2(trainingSportId, 0), // Training
   ActivityType.EBikeRide: const Tuple2(cyclingSportId, 28),
-  ActivityType.Elliptical: const Tuple2(fitnessEquipmentSportId, 15), // Fitness Equipment, Elliptical
+  ActivityType.Elliptical:
+      const Tuple2(fitnessEquipmentSportId, 15), // Fitness Equipment, Elliptical
   ActivityType.Golf: const Tuple2(25, 0),
   ActivityType.Handcycle: const Tuple2(genericSportId, 12),
   ActivityType.Hike: const Tuple2(17, 3), // Hiking, Trail

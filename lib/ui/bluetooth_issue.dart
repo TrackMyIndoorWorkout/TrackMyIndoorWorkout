@@ -46,8 +46,7 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
     return Scaffold(
       backgroundColor: _themeManager.getHeaderColor(),
       body: GestureDetector(
-        onLongPress: () => Get.snackbar(
-            "Warning",
+        onLongPress: () => Get.snackbar("Warning",
             "Make sure you turn on your Bluetooth Adapter and location permission is required for Bluetooth functionality!"),
         child: Center(
           child: Column(

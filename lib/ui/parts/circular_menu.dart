@@ -183,7 +183,8 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
               }
             },
             child: Center(
-              child: widget.fabChild ?? (_scaleAnimation!.value == 1.0 ? widget.fabCloseIcon : widget.fabOpenIcon),
+              child: widget.fabChild ??
+                  (_scaleAnimation!.value == 1.0 ? widget.fabCloseIcon : widget.fabOpenIcon),
             ),
           ),
         ),
