@@ -51,7 +51,7 @@ class ExportModel {
     required this.records,
   }) {
     // Assuming that points are ordered by time stamp ascending
-    if (records.length > 0) {
+    if (records.isNotEmpty) {
       ExportRecord lastRecord = records.last;
       ExportRecord firstRecord = records.first;
       if (activity.elapsed == 0 &&
@@ -83,9 +83,9 @@ class ExportModel {
         calculateMinPower: true,
       );
 
-      records.forEach((trackPoint) {
+      for (var trackPoint in records) {
         accu.processExportRecord(trackPoint);
-      });
+      }
 
       averageSpeed = accu.avgSpeed;
       maximumSpeed = accu.maxSpeed;

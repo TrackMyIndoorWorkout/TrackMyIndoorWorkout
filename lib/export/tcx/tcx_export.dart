@@ -8,7 +8,7 @@ import '../export_model.dart';
 import '../export_record.dart';
 
 class TCXExport extends ActivityExport {
-  StringBuffer _sb = StringBuffer();
+  final StringBuffer _sb = StringBuffer();
 
   TCXExport() : super(nonCompressedFileExtension: 'tcx', nonCompressedMimeType: 'text/xml');
 
@@ -16,6 +16,7 @@ class TCXExport extends ActivityExport {
     return sport == ActivityType.Ride || sport == ActivityType.Run ? sport : "Other";
   }
 
+  @override
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     // The prolog of the TCX file
     _sb.writeln("""<?xml version="1.0" encoding="UTF-8"?>
@@ -224,10 +225,12 @@ class TCXExport extends ActivityExport {
   /// To get 2019-03-03T11:43:46.000Z
   /// utc time
   /// Need to add T in the middle
+  @override
   String timeStampString(DateTime dateTime) {
     return dateTime.toUtc().toString().replaceFirst(' ', 'T');
   }
 
+  @override
   int timeStampInteger(DateTime dateTime) {
     return 0; // Not used for TCX
   }

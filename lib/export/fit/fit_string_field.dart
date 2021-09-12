@@ -6,6 +6,7 @@ class FitStringField extends FitField {
     size = length + 1;
   }
 
+  @override
   List<int> binarySerialize() {
     return [definitionNumber, size, baseType];
   }

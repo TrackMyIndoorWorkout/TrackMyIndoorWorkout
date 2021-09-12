@@ -65,16 +65,14 @@ abstract class ActivityExport {
     bool rawData,
   ) {
     final timeStamp = DateTime.fromMillisecondsSinceEpoch(record.timeStamp ?? 0);
-    if (record.distance == null) {
-      record.distance = 0.0;
-    }
+    record.distance ??= 0.0;
 
     Offset gps = record.distance != null && !rawData
         ? calculator.gpsCoordinates(record.distance!)
-        : Offset(0, 0);
+        : const Offset(0, 0);
 
     if (!rawData && record.speed != null) {
-      record.speed = record.speed! * DeviceDescriptor.KMH2MS;
+      record.speed = record.speed! * DeviceDescriptor.kmh2ms;
     }
 
     return ExportRecord(record: record)

@@ -10,7 +10,6 @@ import 'sensor_base.dart';
 typedef ComplexMetricProcessingFunction = Function(RecordWithSport record);
 
 abstract class ComplexSensor extends SensorBase {
-  late double powerFactor;
   late bool extendTuning;
   late Random random;
   RecordWithSport? record;
@@ -25,7 +24,7 @@ abstract class ComplexSensor extends SensorBase {
     if (!attached || characteristic == null) return;
 
     await for (var byteString
-        in characteristic!.value.throttleTime(Duration(milliseconds: SENSOR_DATA_THRESHOLD))) {
+        in characteristic!.value.throttleTime(const Duration(milliseconds: SENSOR_DATA_THRESHOLD))) {
       if (!canMeasurementProcessed(byteString)) continue;
 
       record = processMeasurement(byteString);

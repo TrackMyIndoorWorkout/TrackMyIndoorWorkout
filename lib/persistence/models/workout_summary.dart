@@ -48,7 +48,7 @@ class WorkoutSummary {
     required this.calorieFactor,
   }) {
     startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
-    speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.MS2KMH : 0.0;
+    speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.ms2kmh : 0.0;
   }
 
   String speedString(bool si) {
@@ -62,6 +62,6 @@ class WorkoutSummary {
   }
 
   double distanceAtTime(int elapsed) {
-    return speed * DeviceDescriptor.KMH2MS * elapsed;
+    return speed * DeviceDescriptor.kmh2ms * elapsed;
   }
 }

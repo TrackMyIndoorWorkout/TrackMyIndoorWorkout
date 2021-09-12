@@ -35,6 +35,14 @@ class Activity {
   final double calorieFactor;
   @ColumnInfo(name: 'time_zone')
   final String timeZone;
+  @ColumnInfo(name: 'suunto_uploaded')
+  bool suuntoUploaded;
+  @ColumnInfo(name: 'suunto_blob_url')
+  final String suuntoBlobUrl;
+  @ColumnInfo(name: 'under_armour_uploaded')
+  bool underArmourUploaded;
+  @ColumnInfo(name: 'training_peaks_uploaded')
+  bool trainingPeaksUploaded;
 
   @ignore
   DateTime? startDateTime;
@@ -51,6 +59,10 @@ class Activity {
     this.elapsed = 0,
     this.calories = 0,
     this.uploaded = false,
+    this.suuntoUploaded = false,
+    this.suuntoBlobUrl = "",
+    this.underArmourUploaded = false,
+    this.trainingPeaksUploaded = false,
     this.stravaId = 0,
     this.startDateTime,
     required this.fourCC,

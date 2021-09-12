@@ -13,6 +13,7 @@ class JsonExport extends ActivityExport {
           nonCompressedMimeType: 'application/json',
         );
 
+  @override
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     final jsonAggregates = JsonAggregates(
       exportModel.activity.elapsed,
@@ -41,10 +42,12 @@ class JsonExport extends ActivityExport {
     return utf8.encode(jsonWorkout.toJson(exportModel));
   }
 
+  @override
   String timeStampString(DateTime dateTime) {
     return ""; // Not used for CSV
   }
 
+  @override
   int timeStampInteger(DateTime dateTime) {
     return 0; // Not used for CSV
   }

@@ -50,7 +50,7 @@ class FitnessEquipment extends DeviceBase {
   Activity? _activity;
   bool measuring = false;
   bool calibrating = false;
-  Random _random = Random();
+  final Random _random = Random();
   double? slowPace;
   bool equipmentDiscovery = false;
 
@@ -74,7 +74,7 @@ class FitnessEquipment extends DeviceBase {
     if (!attached || characteristic == null || descriptor == null) return;
 
     await for (var byteString
-        in characteristic!.value.throttleTime(Duration(milliseconds: FTMS_DATA_THRESHOLD))) {
+        in characteristic!.value.throttleTime(const Duration(milliseconds: FTMS_DATA_THRESHOLD))) {
       if (!descriptor!.canDataProcessed(byteString)) continue;
       if (!measuring && !calibrating) continue;
 
@@ -87,7 +87,7 @@ class FitnessEquipment extends DeviceBase {
   void pumpData(RecordHandlerFunction recordHandlerFunction) {
     if (uxDebug) {
       _timer = Timer(
-        Duration(seconds: 1),
+        const Duration(seconds: 1),
         () {
           final record = processRecord(RecordWithSport.getRandom(sport, _random));
           recordHandlerFunction(record);
@@ -136,6 +136,7 @@ class FitnessEquipment extends DeviceBase {
     return await discover(identify: identify);
   }
 
+  @override
   Future<bool> discover({bool identify = false, bool retry = false}) async {
     if (uxDebug) return true;
 
@@ -257,15 +258,13 @@ class FitnessEquipment extends DeviceBase {
       stub.distance = (lastRecord.distance ?? 0);
       if ((stub.speed ?? 0.0) > 0 && dT > EPS) {
         // Speed possibly already has powerFactor effect
-        double dD = (stub.speed ?? 0.0) * DeviceDescriptor.KMH2MS * dT;
+        double dD = (stub.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
         stub.distance = stub.distance! + dD;
       }
     }
 
     // #197
-    if (stub.distance == null) {
-      stub.distance = 0.0;
-    }
+    stub.distance ??= 0.0;
     if (_startingValues) {
       if (stub.distance! > 50.0) {
         _startingDistance = stub.distance!;

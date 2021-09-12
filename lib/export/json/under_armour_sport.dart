@@ -2,7 +2,7 @@ import '../../utils/constants.dart';
 
 Map<String, int> underArmourSport = {
   ActivityType.AlpineSki: 74,
-  ActivityType.BackcountrySki: 397, // Crosscountry skiing
+  ActivityType.BackcountrySki: 397, // Cross country skiing
   ActivityType.Canoeing: 57,
   ActivityType.Crossfit: 704,
   ActivityType.EBikeRide: 1246,

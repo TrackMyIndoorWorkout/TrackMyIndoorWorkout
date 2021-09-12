@@ -28,7 +28,7 @@ class RunningCadenceSensor extends ComplexSensor {
       expectedLength = 1; // The flag itself + instant speed and cadence
       // UInt16, m/s with 1/256 resolution -> immediately convert it to km/h with the divider
       speedMetric = ShortMetricDescriptor(
-          lsb: expectedLength, msb: expectedLength + 1, divider: 256.0 / DeviceDescriptor.MS2KMH);
+          lsb: expectedLength, msb: expectedLength + 1, divider: 256.0 / DeviceDescriptor.ms2kmh);
       expectedLength += 2;
       cadenceMetric = ByteMetricDescriptor(lsb: expectedLength);
       expectedLength += 1;

@@ -11,6 +11,7 @@ class FitField extends FitSerializable {
     baseType = fitBaseType.id;
   }
 
+  @override
   List<int> binarySerialize() {
     return [definitionNumber, size, baseType];
   }

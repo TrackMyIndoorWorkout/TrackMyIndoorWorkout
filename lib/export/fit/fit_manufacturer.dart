@@ -1,10 +1,10 @@
 import 'package:edit_distance/edit_distance.dart';
 import 'fit_base_type.dart';
 
-const NAUTILUS_FIT_ID = 14;
-const NORTH_POLE_ENGINEERING_FIT_ID = 66;
-const PRECOR_FIT_ID = 266;
-const STRAVA_FIT_ID = 265;
+const nautilusFitId = 14;
+const northPoleEengineeringFitId = 66;
+const precorFitId = 266;
+const stravaFitId = 265;
 
 Map<int, String> fitManufacturer = {
   1: 'garmin',
@@ -20,7 +20,7 @@ Map<int, String> fitManufacturer = {
   11: 'tanita',
   12: 'echowell',
   13: 'dynastream oem',
-  NAUTILUS_FIT_ID: 'nautilus',
+  nautilusFitId: 'nautilus',
   15: 'dynastream',
   16: 'timex',
   17: 'metrigear',
@@ -71,7 +71,7 @@ Map<int, String> fitManufacturer = {
   63: 'specialized',
   64: 'wtek',
   65: 'physical enterprises',
-  NORTH_POLE_ENGINEERING_FIT_ID: 'north pole engineering',
+  northPoleEengineeringFitId: 'north pole engineering',
   67: 'bkool',
   68: 'cateye',
   69: 'stages cycling',
@@ -137,8 +137,8 @@ Map<int, String> fitManufacturer = {
   262: 'recon',
   263: 'favero electronics',
   264: 'dynovelo',
-  STRAVA_FIT_ID: 'strava',
-  PRECOR_FIT_ID: 'precor', // Amer Sports
+  stravaFitId: 'strava',
+  precorFitId: 'precor', // Amer Sports
   267: 'bryton',
   268: 'sram',
   269: 'navman', // MiTAC Global Corporation (Mio Technology)

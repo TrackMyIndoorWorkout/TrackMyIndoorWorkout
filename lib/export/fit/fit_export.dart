@@ -19,6 +19,7 @@ class FitExport extends ActivityExport {
           nonCompressedMimeType: 'application/octet-stream',
         );
 
+  @override
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     var body = FitData();
     final productNameLength = exportModel.descriptor.fullName.length;
@@ -47,9 +48,10 @@ class FitExport extends ActivityExport {
       heartRateLimitingMethod,
     );
     body.output.addAll(dataRecord.binarySerialize());
-    exportModel.records.forEach((record) {
+    for (var record in exportModel.records) {
       body.output.addAll(dataRecord.serializeData(record));
-    });
+    }
+
     localMessageType++;
 
     // 4. Sport
@@ -81,10 +83,12 @@ class FitExport extends ActivityExport {
     return headerBytes + bodyBytes;
   }
 
+  @override
   String timeStampString(DateTime dateTime) {
     return ""; // Not used for FIT
   }
 
+  @override
   int timeStampInteger(DateTime dateTime) {
     return FitSerializable.fitDateTime(dateTime);
   }

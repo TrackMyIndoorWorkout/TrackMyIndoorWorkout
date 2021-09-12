@@ -483,7 +483,7 @@ class CSVImporter {
             elapsed: elapsed ~/ 1000,
             calories: energy.round(),
             power: powerInt,
-            speed: speed * DeviceDescriptor.MS2KMH,
+            speed: speed * DeviceDescriptor.ms2kmh,
             cadence: cadence.round(),
             heartRate: heartRate.round(),
             elapsedMillis: elapsed.round(),

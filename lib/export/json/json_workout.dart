@@ -20,9 +20,9 @@ class JsonWorkout {
 
   String timeSeries(ExportModel exportModel) {
     final measurementCounter = MeasurementCounter(si: true, sport: exportModel.activity.sport);
-    exportModel.records.forEach((record) {
+    for (var record in exportModel.records) {
       measurementCounter.processRecord(record.record);
-    });
+    }
 
     final sb = StringBuffer();
     sb.write('"distance": [');
@@ -35,7 +35,7 @@ class JsonWorkout {
     sb.write('"speed": [');
     sb.writeAll(
       exportModel.records.map((r) =>
-          "[${r.elapsed(exportModel.activity)}, ${((r.record.speed ?? 0.0) * DeviceDescriptor.KMH2MS).toStringAsFixed(2)}]"),
+          "[${r.elapsed(exportModel.activity)}, ${((r.record.speed ?? 0.0) * DeviceDescriptor.kmh2ms).toStringAsFixed(2)}]"),
       ",",
     );
     sb.write('],');

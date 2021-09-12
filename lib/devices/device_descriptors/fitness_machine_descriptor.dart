@@ -44,11 +44,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
 
   int processSpeedFlag(int flag, bool negated) {
     if (flag % 2 == (negated ? 0 : 1)) {
-      if (speedMetric == null) {
-        // UInt16, km/h with 0.01 resolution
-        speedMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 100.0);
-      }
-
+      // UInt16, km/h with 0.01 resolution
+      speedMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 100.0);
       byteCounter += 2;
     }
 
@@ -59,10 +56,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int processCadenceFlag(int flag) {
     if (flag % 2 == 1) {
       // UInt16, revolutions / minute with 0.5 resolution
-      if (cadenceMetric == null) {
-        cadenceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
-      }
-
+      cadenceMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
       byteCounter += 2;
     }
 
@@ -93,11 +87,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
 
   int processPowerFlag(int flag) {
     if (flag % 2 == 1) {
-      if (powerMetric == null) {
-        // SInt16, Watts
-        powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
-      }
-
+      // SInt16, Watts
+      powerMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
 
@@ -176,9 +167,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int processStepMetricsFlag(int flag) {
     if (flag % 2 == 1) {
       // UInt16, step / minute
-      if (cadenceMetric == null) {
-        cadenceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
-      }
+      cadenceMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
       // UInt16 average step rate
       byteCounter += 2;
