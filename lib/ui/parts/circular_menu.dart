@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:vector_math/vector_math.dart' as vector;
 
 typedef DisplayChange = void Function(bool isOpen);
@@ -215,13 +216,13 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
   }
 
   void _calculateProps() {
-    _ringColor = widget.ringColor ?? Theme.of(context).accentColor;
-    _fabColor = widget.fabColor ?? Theme.of(context).primaryColor;
+    _ringColor = widget.ringColor ?? Get.theme.secondaryHeaderColor;
+    _fabColor = widget.fabColor ?? Get.theme.primaryColor;
     _fabOpenColor = widget.fabOpenColor ?? _fabColor;
     _fabCloseColor = widget.fabCloseColor ?? _fabColor;
     _fabIconBorder = widget.fabIconBorder ?? const CircleBorder();
-    _screenWidth = MediaQuery.of(context).size.width;
-    _screenHeight = MediaQuery.of(context).size.height;
+    _screenWidth = Get.mediaQuery.size.width;
+    _screenHeight = Get.mediaQuery.size.height;
     _ringDiameter = widget.ringDiameter ?? min(_screenWidth, _screenHeight) * 1.5;
     _ringWidth = widget.ringWidth ?? _ringDiameter! * 0.2;
     _marginH = (widget.fabMargin.right + widget.fabMargin.left) / 2;
