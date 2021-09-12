@@ -17,8 +17,7 @@ abstract class WorkoutSummaryDao {
       'SELECT * FROM `$workoutSummariesTableName` WHERE `device_id` = :deviceId ORDER BY `speed` DESC LIMIT :limit OFFSET :offset')
   Future<List<WorkoutSummary>> findWorkoutSummaryByDevice(String deviceId, int limit, int offset);
 
-  @Query(
-      'SELECT * FROM `$workoutSummariesTableName` WHERE `sport` = :sport ORDER BY `speed` DESC')
+  @Query('SELECT * FROM `$workoutSummariesTableName` WHERE `sport` = :sport ORDER BY `speed` DESC')
   Future<List<WorkoutSummary>> findAllWorkoutSummariesBySport(String sport);
 
   @Query(

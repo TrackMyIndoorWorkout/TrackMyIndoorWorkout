@@ -50,66 +50,65 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   @override
   Widget build(BuildContext context) {
     List<Widget> choiceRows = [];
-    choiceRows.addAll(_portalChoices
-          .asMap()
-          .entries
-          .map(
+    choiceRows.addAll(
+      _portalChoices.asMap().entries.map(
             (e) => Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Transform.scale(
-              scale: 2,
-              child: Radio(
-                value: e.key,
-                groupValue: _portalIndex,
-                onChanged: (value) {
-                  setState(() {
-                    _portalIndex = value as int;
-                  });
-                },
-              ),
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Transform.scale(
+                  scale: 2,
+                  child: Radio(
+                    value: e.key,
+                    groupValue: _portalIndex,
+                    onChanged: (value) {
+                      setState(() {
+                        _portalIndex = value as int;
+                      });
+                    },
+                  ),
+                ),
+                e.value.assetName.isNotEmpty
+                    ? GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _portalIndex = e.key;
+                          });
+                        },
+                        child: SvgPicture.asset(
+                          e.value.assetName,
+                          color: e.value.color,
+                          height: _largerTextStyle.fontSize,
+                          semanticsLabel: '${e.value.name} Logo',
+                        ),
+                      )
+                    : Container(),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _portalIndex = e.key;
+                    });
+                  },
+                  child: Text("/${e.value.name}",
+                      style: _portalIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+                ),
+              ],
             ),
-            e.value.assetName.isNotEmpty
-                ? GestureDetector(
-              onTap: () {
-                setState(() {
-                  _portalIndex = e.key;
-                });
-              },
-              child: SvgPicture.asset(
-                e.value.assetName,
-                color: e.value.color,
-                height: _largerTextStyle.fontSize,
-                semanticsLabel: '${e.value.name} Logo',
-              ),
-            )
-                : Container(),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _portalIndex = e.key;
-                });
-              },
-              child: Text("/${e.value.name}",
-                  style: _portalIndex == e.key ? _selectedTextStyle : _largerTextStyle),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
 
     if (kDebugMode) {
       choiceRows.add(Divider());
-      choiceRows.add(ElevatedButton.icon(
-        icon: Icon(Icons.exit_to_app),
-        label: Text("Deauthorize"),
-        onPressed: () async {
-          UploadService uploadService = UploadService.getInstance(_portalNames[_portalIndex]);
+      choiceRows.add(
+        ElevatedButton.icon(
+            icon: Icon(Icons.exit_to_app),
+            label: Text("Deauthorize"),
+            onPressed: () async {
+              UploadService uploadService = UploadService.getInstance(_portalNames[_portalIndex]);
 
-          final returnCode = await uploadService.deAuthorize();
-          Get.snackbar("Deauthorization", "Return code: $returnCode");
-        }),
+              final returnCode = await uploadService.deAuthorize();
+              Get.snackbar("Deauthorization", "Return code: $returnCode");
+            }),
       );
     }
 

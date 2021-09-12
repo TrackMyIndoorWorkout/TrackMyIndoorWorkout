@@ -7,7 +7,8 @@ class TrainingPeaksToken {
 
   TrainingPeaksToken({this.accessToken, this.refreshToken, this.expiresAt, this.scope});
 
-  factory TrainingPeaksToken.fromJson(Map<String, dynamic> json) => TrainingPeaksToken.fromMap(json);
+  factory TrainingPeaksToken.fromJson(Map<String, dynamic> json) =>
+      TrainingPeaksToken.fromMap(json);
 
   Map toMap() => TrainingPeaksToken.toJsonMap(this);
 

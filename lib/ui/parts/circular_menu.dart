@@ -244,9 +244,9 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
           ));
       _colorAnimation = ColorTween(begin: _fabCloseColor, end: _fabOpenColor)
           .animate(_colorCurve as Animation<double>)
-            ..addListener(() {
-              setState(() {});
-            });
+        ..addListener(() {
+          setState(() {});
+        });
     }
   }
 
