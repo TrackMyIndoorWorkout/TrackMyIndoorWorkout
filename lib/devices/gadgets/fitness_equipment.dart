@@ -29,7 +29,7 @@ class FitnessEquipment extends DeviceBase {
   int _lastPositiveCadence = 0; // #101
   bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
   double _lastPositiveCalories = 0.0; // #111
-  bool _startingValues = true; // #197
+  bool startingValues; // #197
   double _startingCalories = 0.0;
   double _startingDistance = 0.0;
   int _startingElapsed = 0;
@@ -54,7 +54,7 @@ class FitnessEquipment extends DeviceBase {
   double? slowPace;
   bool equipmentDiscovery = false;
 
-  FitnessEquipment({this.descriptor, device})
+  FitnessEquipment({this.descriptor, device, this.startingValues = true})
       : super(
           serviceId: descriptor?.dataServiceId ?? FITNESS_MACHINE_ID,
           characteristicsId: descriptor?.dataCharacteristicId,
@@ -225,7 +225,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #197
-    if (_startingValues) {
+    if (startingValues) {
       if (stub.elapsed! > 2) {
         _startingElapsed = stub.elapsed!;
         stub.elapsed = 0;
@@ -265,7 +265,7 @@ class FitnessEquipment extends DeviceBase {
 
     // #197
     stub.distance ??= 0.0;
-    if (_startingValues) {
+    if (startingValues) {
       if (stub.distance! > 50.0) {
         _startingDistance = stub.distance!;
         stub.distance = 0.0;
@@ -378,7 +378,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #197
-    if (_startingValues) {
+    if (startingValues) {
       if (calories >= 2.0) {
         _startingCalories = calories;
         calories = 0.0;
@@ -392,7 +392,7 @@ class FitnessEquipment extends DeviceBase {
     stub.activityId = _activity?.id ?? 0;
     stub.sport = descriptor?.defaultSport ?? ActivityType.Ride;
 
-    _startingValues = false;
+    startingValues = false;
 
     return stub;
   }
@@ -426,7 +426,7 @@ class FitnessEquipment extends DeviceBase {
     _runningCadenceSensor?.refreshFactors();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
-    _startingValues = true;
+    startingValues = true;
     _startingCalories = 0.0;
     _startingDistance = 0.0;
     _startingElapsed = 0;
