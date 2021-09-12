@@ -11,10 +11,12 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
   static String shortTitle = "Expert";
   static String title = "$shortTitle Preferences";
 
+  const ExpertPreferencesScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     List<Widget> expertPreferences = [
-      PrefLabel(title: Text(DATA_CONNECTION_ADDRESSES_DESCRIPTION, maxLines: 10)),
+      const PrefLabel(title: Text(DATA_CONNECTION_ADDRESSES_DESCRIPTION, maxLines: 10)),
       PrefText(
         label: DATA_CONNECTION_ADDRESSES,
         pref: DATA_CONNECTION_ADDRESSES_TAG,
@@ -48,9 +50,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
             Get.snackbar("Warning", "No data connection detected");
           }
         },
-        child: Text("Apply Check Configuration and Test"),
+        child: const Text("Apply Check Configuration and Test"),
       ),
-      PrefCheckbox(
+      const PrefCheckbox(
         title: Text(DEVICE_FILTERING),
         subtitle: Text(DEVICE_FILTERING_DESCRIPTION),
         pref: DEVICE_FILTERING_TAG,
@@ -58,7 +60,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
     ];
 
     if (kDebugMode) {
-      expertPreferences.add(PrefCheckbox(
+      expertPreferences.add(const PrefCheckbox(
         title: Text(APP_DEBUG_MODE),
         subtitle: Text(APP_DEBUG_MODE_DESCRIPTION),
         pref: APP_DEBUG_MODE_TAG,

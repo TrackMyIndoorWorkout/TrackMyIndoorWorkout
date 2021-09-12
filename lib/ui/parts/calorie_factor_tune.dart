@@ -10,7 +10,7 @@ class CalorieFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
   final double oldCalorieFactor;
 
-  CalorieFactorTuneBottomSheet({Key? key, required this.deviceId, required this.oldCalorieFactor})
+  const CalorieFactorTuneBottomSheet({Key? key, required this.deviceId, required this.oldCalorieFactor})
       : super(key: key);
 
   @override
@@ -19,8 +19,8 @@ class CalorieFactorTuneBottomSheet extends StatefulWidget {
 
 class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomSheet> {
   double _calorieFactorPercent = 100.0;
-  TextStyle _largerTextStyle = TextStyle();
-  ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = const TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {

@@ -12,13 +12,15 @@ import 'ux_preferences.dart';
 import 'zones_hub.dart';
 
 class PreferencesHubScreen extends StatefulWidget {
+  const PreferencesHubScreen({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => PreferencesHubScreenState();
 }
 
 class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
+  TextStyle _textStyle = const TextStyle();
 
   @override
   void initState() {
@@ -36,7 +38,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Preferences')),
+      appBar: AppBar(title: const Text('Preferences')),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -66,7 +68,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => DataPreferencesScreen()),
+                onPressed: () => Get.to(() => const DataPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -126,7 +128,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => LeaderboardPreferencesScreen()),
+                onPressed: () => Get.to(() => const LeaderboardPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -146,7 +148,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => AthletePreferencesScreen()),
+                onPressed: () => Get.to(() => const AthletePreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -166,7 +168,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => ExpertPreferencesScreen()),
+                onPressed: () => Get.to(() => const ExpertPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,

@@ -16,21 +16,23 @@ class PortalChoiceDescriptor {
 }
 
 class UploadPortalPickerBottomSheet extends StatefulWidget {
+  const UploadPortalPickerBottomSheet({Key? key}) : super(key: key);
+
   @override
   UploadPortalPickerBottomSheetState createState() => UploadPortalPickerBottomSheetState();
 }
 
 class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomSheet> {
   int _portalIndex = 0;
-  List<String> _portalNames = [
+  final List<String> _portalNames = [
     "Strava",
     "SUUNTO",
     "MapMyFitness",
   ];
-  ThemeManager _themeManager = Get.find<ThemeManager>();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
   List<PortalChoiceDescriptor> _portalChoices = [];
-  TextStyle _largerTextStyle = TextStyle();
-  TextStyle _selectedTextStyle = TextStyle();
+  TextStyle _largerTextStyle = const TextStyle();
+  TextStyle _selectedTextStyle = const TextStyle();
 
   @override
   void initState() {
@@ -98,11 +100,11 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     );
 
     if (kDebugMode) {
-      choiceRows.add(Divider());
+      choiceRows.add(const Divider());
       choiceRows.add(
         ElevatedButton.icon(
-            icon: Icon(Icons.exit_to_app),
-            label: Text("Deauthorize"),
+            icon: const Icon(Icons.exit_to_app),
+            label: const Text("Deauthorize"),
             onPressed: () async {
               UploadService uploadService = UploadService.getInstance(_portalNames[_portalIndex]);
 

@@ -39,12 +39,12 @@ class ScanResultTile extends StatelessWidget {
 
   Widget _buildAdvRow(String title, String value, TextStyle captionStyle, TextStyle dataStyle) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: captionStyle),
-          SizedBox(width: 12.0),
+          const SizedBox(width: 12.0),
           Expanded(child: Text(value, softWrap: true)),
         ],
       ),
@@ -64,9 +64,9 @@ class ScanResultTile extends StatelessWidget {
 
     final companyRegistry = Get.find<CompanyRegistry>();
     List<String> nameStrings = [];
-    companyIds.forEach((companyId) {
+    for (var companyId in companyIds) {
       nameStrings.add(companyRegistry.nameForId(companyId));
-    });
+    }
 
     return nameStrings.join(', ');
   }

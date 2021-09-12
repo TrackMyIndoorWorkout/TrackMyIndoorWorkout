@@ -11,7 +11,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
   static String title = "$shortTitle Preferences";
   final String sport;
 
-  MeasurementZonesPreferencesScreen(this.sport) {
+  MeasurementZonesPreferencesScreen(this.sport, {Key? key}) : super(key: key) {
     shortTitle = "$sport Zone";
     title = "$shortTitle Preferences";
   }
@@ -35,7 +35,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
   Widget build(BuildContext context) {
     List<Widget> zonePreferences = [];
 
-    PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+    for (var prefSpec in PreferencesSpec.preferencesSpecs) {
       zonePreferences.addAll([
         PrefText(
           label: sport +
@@ -55,15 +55,15 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
           pref: prefSpec.zonesTag(sport),
           validator: (str) {
             if (str == null || !isMonotoneIncreasingList(str)) {
-              return "Invalid zones (should be comma separated list of " +
-                  "monotonically increasing numbers)";
+              return "Invalid zones (should be comma separated list of monotonically increasing numbers)";
             }
 
             return null;
           },
         ),
       ]);
-    });
+    }
+
     if (sport != ActivityType.Ride) {
       zonePreferences.addAll([
         PrefText(

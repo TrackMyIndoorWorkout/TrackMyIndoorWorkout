@@ -6,16 +6,18 @@ import 'package:get/get.dart';
 import '../../utils/theme_manager.dart';
 
 class ExportFormatPickerBottomSheet extends StatefulWidget {
+  const ExportFormatPickerBottomSheet({Key? key}) : super(key: key);
+
   @override
   ExportFormatPickerBottomSheetState createState() => ExportFormatPickerBottomSheetState();
 }
 
 class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomSheet> {
   int _formatIndex = 0;
-  List<String> _formatChoices = ["FIT", "TCX", "CSV"];
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _largerTextStyle = TextStyle();
-  TextStyle _selectedTextStyle = TextStyle();
+  final List<String> _formatChoices = ["FIT", "TCX", "CSV"];
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = const TextStyle();
+  TextStyle _selectedTextStyle = const TextStyle();
 
   @override
   void initState() {

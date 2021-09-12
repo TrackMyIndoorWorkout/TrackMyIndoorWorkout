@@ -10,13 +10,15 @@ import 'zone_index_display.dart';
 class ZonesHubScreen extends StatefulWidget {
   static String shortTitle = "Zones";
 
+  const ZonesHubScreen({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => ZonesHubScreenState();
 }
 
 class ZonesHubScreenState extends State<ZonesHubScreen> {
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
+  TextStyle _textStyle = const TextStyle();
 
   @override
   void initState() {
@@ -60,7 +62,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
       padding: const EdgeInsets.all(5.0),
       margin: const EdgeInsets.all(5.0),
       child: ElevatedButton(
-        onPressed: () => Get.to(() => ZoneIndexDisplayPreferencesScreen()),
+        onPressed: () => Get.to(() => const ZoneIndexDisplayPreferencesScreen()),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -78,7 +80,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
     ));
 
     return Scaffold(
-      appBar: AppBar(title: Text('Zones Preferences')),
+      appBar: AppBar(title: const Text('Zones Preferences')),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

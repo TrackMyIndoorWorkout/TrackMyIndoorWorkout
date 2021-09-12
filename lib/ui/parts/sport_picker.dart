@@ -10,7 +10,7 @@ class SportPickerBottomSheet extends StatefulWidget {
   final String initialSport;
   final bool allSports;
 
-  SportPickerBottomSheet({
+  const SportPickerBottomSheet({
     Key? key,
     required this.initialSport,
     required this.allSports,
@@ -23,9 +23,9 @@ class SportPickerBottomSheet extends StatefulWidget {
 class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
   int _sportIndex = 0;
   List<String> _sportChoices = [];
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _largerTextStyle = TextStyle();
-  TextStyle _selectedTextStyle = TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = const TextStyle();
+  TextStyle _selectedTextStyle = const TextStyle();
 
   @override
   void initState() {
