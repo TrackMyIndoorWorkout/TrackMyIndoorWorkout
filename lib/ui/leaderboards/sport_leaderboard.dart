@@ -14,22 +14,22 @@ import '../../utils/theme_manager.dart';
 class SportLeaderboardScreen extends StatefulWidget {
   final String sport;
 
-  SportLeaderboardScreen({key, required this.sport}) : super(key: key);
+  const SportLeaderboardScreen({key, required this.sport}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => SportLeaderboardScreenState();
 }
 
 class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
-  AppDatabase _database = Get.find<AppDatabase>();
+  final AppDatabase _database = Get.find<AppDatabase>();
   bool _si = UNIT_SYSTEM_DEFAULT;
   bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
   int _editCount = 0;
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
-  TextStyle _textStyle2 = TextStyle();
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
+  TextStyle _textStyle = const TextStyle();
+  TextStyle _textStyle2 = const TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
@@ -55,7 +55,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
               title: 'Warning!!!',
               middleText: 'Are you sure to delete this entry?',
               confirm: TextButton(
-                child: Text("Yes"),
+                child: const Text("Yes"),
                 onPressed: () async {
                   await _database.workoutSummaryDao.deleteWorkoutSummary(workoutSummary);
                   setState(() {
@@ -65,7 +65,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
                 },
               ),
               cancel: TextButton(
-                child: Text("No"),
+                child: const Text("No"),
                 onPressed: () => Get.close(1),
               ),
             );
@@ -83,7 +83,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
         initialOffset: 0,
-        loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
+        loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
@@ -98,12 +98,12 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
               Text(error.toString()),
               ElevatedButton(
                 onPressed: () => state.loadMore(),
-                child: Text('Retry'),
+                child: const Text('Retry'),
               ),
             ],
           );
         },
-        empty: Center(
+        empty: const Center(
           child: Text('No entries found'),
         ),
         itemBuilder: (context, index, item) {

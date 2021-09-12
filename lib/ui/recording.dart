@@ -967,7 +967,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Widget _getTrackMarker(Offset markerPosition, int markerColor, String text, bool self) {
-    double radius = THICK;
+    double radius = thick;
     if (self) {
       radius -= 1;
     }

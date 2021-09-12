@@ -43,7 +43,7 @@ void main() {
         lengthFactor: lengthFactor,
       );
       final laps = rnd.nextInt(100);
-      final distance = laps * TRACK_LENGTH * lengthFactor;
+      final distance = laps * trackLength * lengthFactor;
       final calculator = TrackCalculator(track: track);
 
       test(
@@ -70,9 +70,9 @@ void main() {
       );
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final distance = laps * TRACK_LENGTH * lengthFactor + positionRatio * track.laneLength;
-      final trackLength = TRACK_LENGTH * track.lengthFactor;
-      final d = distance % trackLength;
+      final distance = laps * trackLength * lengthFactor + positionRatio * track.laneLength;
+      final trackLen = trackLength * track.lengthFactor;
+      final d = distance % trackLen;
       final calculator = TrackCalculator(track: track);
 
       test(
@@ -101,9 +101,9 @@ void main() {
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
       final distance =
-          laps * TRACK_LENGTH * lengthFactor + track.laneLength + positionRatio * track.halfCircle;
-      final trackLength = TRACK_LENGTH * lengthFactor;
-      final d = distance % trackLength;
+          laps * trackLength * lengthFactor + track.laneLength + positionRatio * track.halfCircle;
+      final trackLen = trackLength * lengthFactor;
+      final d = distance % trackLen;
       final rad = (d - track.laneLength) / track.halfCircle * pi;
       final calculator = TrackCalculator(track: track);
 
@@ -137,11 +137,10 @@ void main() {
       );
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final distance =
-          (laps + 0.5) * TRACK_LENGTH * lengthFactor + positionRatio * track.laneLength;
-      final trackLength = TRACK_LENGTH * lengthFactor;
-      final d = distance % trackLength;
-      final displacement = d - trackLength / 2;
+      final distance = (laps + 0.5) * trackLength * lengthFactor + positionRatio * track.laneLength;
+      final trackLen = trackLength * lengthFactor;
+      final d = distance % trackLen;
+      final displacement = d - trackLen / 2;
       final calculator = TrackCalculator(track: track);
 
       test(
@@ -171,12 +170,12 @@ void main() {
       );
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final distance = (laps + 0.5) * TRACK_LENGTH * lengthFactor +
+      final distance = (laps + 0.5) * trackLength * lengthFactor +
           track.laneLength +
           positionRatio * track.halfCircle;
-      final trackLength = TRACK_LENGTH * lengthFactor;
-      final d = distance % trackLength;
-      final rad = (d - trackLength / 2 - track.laneLength) / track.halfCircle * pi;
+      final trackLen = trackLength * lengthFactor;
+      final d = distance % trackLen;
+      final rad = (d - trackLen / 2 - track.laneLength) / track.halfCircle * pi;
       final calculator = TrackCalculator(track: track);
 
       test(
@@ -210,8 +209,8 @@ void main() {
       final calculator = TrackCalculator(track: track);
 
       final laps = rnd.nextInt(100);
-      final trackLength = TRACK_LENGTH * lengthFactor;
-      final distance = laps * trackLength + track.laneLength;
+      final trackLen = trackLength * lengthFactor;
+      final distance = laps * trackLen + track.laneLength;
       final d =
           track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
       test("${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
@@ -239,8 +238,8 @@ void main() {
       final calculator = TrackCalculator(track: track);
 
       final laps = rnd.nextInt(100);
-      final trackLength = TRACK_LENGTH * lengthFactor;
-      final distance = (laps + 0.5) * trackLength + track.laneLength;
+      final trackLen = trackLength * lengthFactor;
+      final distance = (laps + 0.5) * trackLen + track.laneLength;
       final d =
           track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
       test("${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
@@ -301,7 +300,7 @@ void main() {
       final d =
           track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
       test("${track.radiusBoost} $lengthFactor $d", () async {
-        1.to((TRACK_LENGTH * 2).round()).forEach((distance) {
+        1.to((trackLength * 2).round()).forEach((distance) {
           final calculator = TrackCalculator(track: track);
 
           final markerA = calculator.gpsCoordinates(distance.toDouble());

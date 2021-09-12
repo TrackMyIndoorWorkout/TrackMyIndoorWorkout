@@ -9,8 +9,8 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
-  final minPixel = 150;
-  final maxPixel = 400;
+  const minPixel = 150;
+  const maxPixel = 400;
 
   group('trackMarker start point is invariant', () {
     final rnd = Random();
@@ -31,8 +31,8 @@ void main() {
         final marker = calculator.trackMarker(0)!;
 
         expect(
-            marker.dx, closeTo(THICK + calculator.trackOffset!.dx + calculator.trackRadius!, EPS));
-        expect(marker.dy, closeTo(size.height - THICK - calculator.trackOffset!.dy, EPS));
+            marker.dx, closeTo(thick + calculator.trackOffset!.dx + calculator.trackRadius!, EPS));
+        expect(marker.dy, closeTo(size.height - thick - calculator.trackOffset!.dy, EPS));
       });
     });
   });
@@ -55,11 +55,11 @@ void main() {
       final laps = rnd.nextInt(100);
 
       test("${track.radiusBoost} $lengthFactor $laps", () async {
-        final marker = calculator.trackMarker(laps * TRACK_LENGTH * lengthFactor)!;
+        final marker = calculator.trackMarker(laps * trackLength * lengthFactor)!;
 
         expect(
-            marker.dx, closeTo(THICK + calculator.trackOffset!.dx + calculator.trackRadius!, EPS));
-        expect(marker.dy, closeTo(size.height - THICK - calculator.trackOffset!.dy, EPS));
+            marker.dx, closeTo(thick + calculator.trackOffset!.dx + calculator.trackRadius!, EPS));
+        expect(marker.dy, closeTo(size.height - thick - calculator.trackOffset!.dy, EPS));
       });
     });
   });
@@ -81,17 +81,17 @@ void main() {
 
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final trackLength = TRACK_LENGTH * lengthFactor;
-      final distance = laps * trackLength + positionRatio * track.laneLength;
-      final d = distance % trackLength;
+      final trackLen = trackLength * lengthFactor;
+      final distance = laps * trackLen + positionRatio * track.laneLength;
+      final d = distance % trackLen;
       final r = calculator.trackRadius!;
       final displacement = d * r / track.radius;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
         final marker = calculator.trackMarker(distance)!;
 
-        expect(marker.dx, closeTo(THICK + calculator.trackOffset!.dx + r + displacement, EPS));
-        expect(marker.dy, closeTo(size.height - THICK - calculator.trackOffset!.dy, EPS));
+        expect(marker.dx, closeTo(thick + calculator.trackOffset!.dx + r + displacement, EPS));
+        expect(marker.dy, closeTo(size.height - thick - calculator.trackOffset!.dy, EPS));
       });
     });
   });
@@ -113,9 +113,9 @@ void main() {
 
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final trackLength = TRACK_LENGTH * lengthFactor;
-      final distance = laps * trackLength + track.laneLength + positionRatio * track.halfCircle;
-      final d = distance % trackLength;
+      final trackLen = trackLength * lengthFactor;
+      final distance = laps * trackLen + track.laneLength + positionRatio * track.halfCircle;
+      final d = distance % trackLen;
       final rad = (d - track.laneLength) / track.halfCircle * pi;
       final r = calculator.trackRadius!;
 
@@ -123,8 +123,8 @@ void main() {
         final marker = calculator.trackMarker(distance)!;
 
         expect(marker.dx,
-            closeTo(size.width - (THICK + calculator.trackOffset!.dx + r) + sin(rad) * r, EPS));
-        expect(marker.dy, closeTo(r + THICK + calculator.trackOffset!.dy + cos(rad) * r, EPS));
+            closeTo(size.width - (thick + calculator.trackOffset!.dx + r) + sin(rad) * r, EPS));
+        expect(marker.dy, closeTo(r + thick + calculator.trackOffset!.dy + cos(rad) * r, EPS));
       });
     });
   });
@@ -146,18 +146,18 @@ void main() {
 
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final trackLength = TRACK_LENGTH * lengthFactor;
-      final distance = (laps + 0.5) * trackLength + positionRatio * track.laneLength;
-      final d = distance % trackLength;
+      final trackLen = trackLength * lengthFactor;
+      final distance = (laps + 0.5) * trackLen + positionRatio * track.laneLength;
+      final d = distance % trackLen;
       final r = calculator.trackRadius!;
-      final displacement = (d - trackLength / 2) * r / track.radius;
+      final displacement = (d - trackLen / 2) * r / track.radius;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
         final marker = calculator.trackMarker(distance)!;
 
         expect(marker.dx,
-            closeTo(size.width - (THICK + calculator.trackOffset!.dx + r) - displacement, EPS));
-        expect(marker.dy, closeTo(THICK + calculator.trackOffset!.dy, EPS));
+            closeTo(size.width - (thick + calculator.trackOffset!.dx + r) - displacement, EPS));
+        expect(marker.dy, closeTo(thick + calculator.trackOffset!.dy, EPS));
       });
     });
   });
@@ -179,18 +179,18 @@ void main() {
 
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final trackLength = TRACK_LENGTH * lengthFactor;
+      final trackLen = trackLength * lengthFactor;
       final distance =
-          (laps + 0.5) * trackLength + track.laneLength + positionRatio * track.halfCircle;
-      final d = distance % trackLength;
+          (laps + 0.5) * trackLen + track.laneLength + positionRatio * track.halfCircle;
+      final d = distance % trackLen;
       final r = calculator.trackRadius!;
-      final rad = (trackLength - d) / track.halfCircle * pi;
+      final rad = (trackLen - d) / track.halfCircle * pi;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
         final marker = calculator.trackMarker(distance)!;
 
-        expect(marker.dx, closeTo((1 - sin(rad)) * r + THICK + calculator.trackOffset!.dx, EPS));
-        expect(marker.dy, closeTo((cos(rad) + 1) * r + THICK + calculator.trackOffset!.dy, EPS));
+        expect(marker.dx, closeTo((1 - sin(rad)) * r + thick + calculator.trackOffset!.dx, EPS));
+        expect(marker.dy, closeTo((cos(rad) + 1) * r + thick + calculator.trackOffset!.dy, EPS));
       });
     });
   });
@@ -205,7 +205,7 @@ void main() {
       );
       final calculator = TrackCalculator(track: track);
       test("${track.radiusBoost} $lengthFactor", () async {
-        1.to((TRACK_LENGTH * 2).round()).forEach((distance) {
+        1.to((trackLength * 2).round()).forEach((distance) {
           final size = Size(
             minPixel + rnd.nextDouble() * maxPixel,
             minPixel + rnd.nextDouble() * maxPixel,
@@ -214,10 +214,10 @@ void main() {
 
           final marker = calculator.trackMarker(distance.toDouble())!;
 
-          expect(marker.dx, greaterThanOrEqualTo(THICK));
-          expect(marker.dx, lessThanOrEqualTo(size.width - THICK));
-          expect(marker.dy, greaterThanOrEqualTo(THICK));
-          expect(marker.dy, lessThanOrEqualTo(size.height - THICK));
+          expect(marker.dx, greaterThanOrEqualTo(thick));
+          expect(marker.dx, lessThanOrEqualTo(size.width - thick));
+          expect(marker.dy, greaterThanOrEqualTo(thick));
+          expect(marker.dy, lessThanOrEqualTo(size.height - thick));
         });
       });
     });
@@ -239,8 +239,8 @@ void main() {
       calculator.calculateConstantsOnDemand(size);
 
       final laps = rnd.nextInt(100);
-      final trackLength = TRACK_LENGTH * lengthFactor;
-      final distance = laps * trackLength + track.laneLength;
+      final trackLen = trackLength * lengthFactor;
+      final distance = laps * trackLen + track.laneLength;
       final unitDistance = calculator.trackRadius! / track.radius;
       final uDSquare = unitDistance * unitDistance;
       test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
@@ -249,7 +249,7 @@ void main() {
         final dx = markerA.dx - markerB.dx;
         final dy = markerA.dy - markerB.dy;
 
-        expect(dx * dx + dy * dy, closeTo(uDSquare, TRACK_LENGTH * DISPLAY_EPS));
+        expect(dx * dx + dy * dy, closeTo(uDSquare, trackLen * DISPLAY_EPS));
       });
     });
   });
@@ -270,8 +270,8 @@ void main() {
       calculator.calculateConstantsOnDemand(size);
 
       final laps = rnd.nextInt(100);
-      final trackLength = TRACK_LENGTH * lengthFactor;
-      final distance = (laps + 0.5) * trackLength + track.laneLength;
+      final trackLen = trackLength * lengthFactor;
+      final distance = (laps + 0.5) * trackLen + track.laneLength;
       final unitDistance = calculator.trackRadius! / track.radius;
       final uDSquare = unitDistance * unitDistance;
       test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
@@ -280,7 +280,7 @@ void main() {
         final dx = markerA.dx - markerB.dx;
         final dy = markerA.dy - markerB.dy;
 
-        expect(dx * dx + dy * dy, closeTo(uDSquare, TRACK_LENGTH * DISPLAY_EPS));
+        expect(dx * dx + dy * dy, closeTo(uDSquare, trackLen * DISPLAY_EPS));
       });
     });
   });
@@ -338,13 +338,13 @@ void main() {
       final unitDistance = calculator.trackRadius! / track.radius;
       final uDSquare = unitDistance * unitDistance;
       test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
-        1.to((TRACK_LENGTH * 2).round()).forEach((distance) {
+        1.to((trackLength * 2).round()).forEach((distance) {
           final markerA = calculator.trackMarker(distance.toDouble())!;
           final markerB = calculator.trackMarker((distance + 1).toDouble())!;
           final dx = markerA.dx - markerB.dx;
           final dy = markerA.dy - markerB.dy;
 
-          expect(dx * dx + dy * dy, closeTo(uDSquare, TRACK_LENGTH * DISPLAY_EPS));
+          expect(dx * dx + dy * dy, closeTo(uDSquare, trackLength * DISPLAY_EPS));
         });
       });
     });
