@@ -300,7 +300,7 @@ class ThemeManager {
       overlayEnabled,
       "About & Help",
       0,
-      () => Get.to(() => AboutScreen()),
+      () => Get.to(() => const AboutScreen()),
     );
   }
 

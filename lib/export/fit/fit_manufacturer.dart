@@ -178,16 +178,16 @@ int getFitManufacturer(String manufacturer) {
   var bestDistance = 1.0;
   JaroWinkler jaroWinkler = JaroWinkler();
   final manufacturerLower = manufacturer.toLowerCase();
-  fitManufacturer.forEach((id, text) {
-    final manufacturerCropped = manufacturerLower.length <= text.length
+  for (var manufacturerEntry in fitManufacturer.entries) {
+    final manufacturerCropped = manufacturerLower.length <= manufacturerEntry.value.length
         ? manufacturerLower
-        : manufacturerLower.substring(0, text.length - 1);
-    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, text);
+        : manufacturerLower.substring(0, manufacturerEntry.value.length - 1);
+    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, manufacturerEntry.value);
     if (distance < bestDistance) {
       bestDistance = distance;
-      bestId = id;
+      bestId = manufacturerEntry.key;
     }
-  });
+  }
 
   if (bestDistance > 0.1) {
     bestId = FitBaseTypes.uint16Type.invalidValue;

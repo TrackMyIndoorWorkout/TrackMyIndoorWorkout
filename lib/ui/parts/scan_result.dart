@@ -77,9 +77,9 @@ class ScanResultTile extends StatelessWidget {
     }
 
     List<String> res = [];
-    data.forEach((id, bytes) {
-      res.add('${id.uuidString()}: ${getNiceHexArray(bytes)}');
-    });
+    for (var entry in data.entries) {
+      res.add('${entry.key.uuidString()}: ${getNiceHexArray(entry.value)}');
+    }
 
     return res.join(', ');
   }

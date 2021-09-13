@@ -68,25 +68,27 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
 
 Future<BasePrefService> initPreferences() async {
   var prefDefaults = await getPrefDefaults();
-  PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
-    PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+  for (var sport in PreferencesSpec.SPORT_PREFIXES) {
+    for (var prefSpec in PreferencesSpec.preferencesSpecs) {
       prefDefaults.addAll({
         prefSpec.thresholdTag(sport): prefSpec.thresholdDefault(sport),
         prefSpec.zonesTag(sport): prefSpec.zonesDefault(sport),
       });
-    });
+    }
+
     prefDefaults.addAll({LAST_EQUIPMENT_ID_TAG_PREFIX + sport: LAST_EQUIPMENT_ID_DEFAULT});
     if (sport != ActivityType.Ride) {
       prefDefaults.addAll(
           {PreferencesSpec.slowSpeedTag(sport): PreferencesSpec.slowSpeeds[sport].toString()});
     }
-  });
-  PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+  }
+
+  for (var prefSpec in PreferencesSpec.preferencesSpecs) {
     prefDefaults.addAll({
       "${prefSpec.metric}_${PreferencesSpec.ZONE_INDEX_DISPLAY_TAG_POSTFIX}":
           prefSpec.indexDisplayDefault
     });
-  });
+  }
 
   final prefService =
       await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
@@ -94,48 +96,84 @@ Future<BasePrefService> initPreferences() async {
 
   final prefVersion = prefService.get<int>(PREFERENCES_VERSION_TAG) ?? PREFERENCES_VERSION_NEXT;
   if (prefVersion < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
-    PreferencesSpec.preferencesSpecs.forEach((prefSpec) async {
+    for (var prefSpec in PreferencesSpec.preferencesSpecs) {
       final thresholdTag = PreferencesSpec.THRESHOLD_PREFIX + prefSpec.metric;
       var thresholdString = prefService.get<String>(thresholdTag) ?? "";
       if (prefSpec.metric == "speed") {
         final threshold = double.tryParse(thresholdString) ?? EPS;
         thresholdString = decimalRound(threshold * MI2KM).toString();
       }
+
       await prefService.set<String>(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
       final zoneTag = prefSpec.metric + PreferencesSpec.ZONES_POSTFIX;
-      await prefService.set<String>(prefSpec.zonesTag(ActivityType.Ride),
-          prefService.get<String>(zoneTag) ?? "55,75,90,105,120,150");
-    });
+      await prefService.set<String>(
+        prefSpec.zonesTag(ActivityType.Ride),
+        prefService.get<String>(zoneTag) ?? "55,75,90,105,120,150",
+      );
+    }
   }
 
   if (prefVersion < PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT) {
     final lastEquipmentId = prefService.get<String>(LAST_EQUIPMENT_ID_TAG) ?? "";
-    if (lastEquipmentId.trim().length > 0) {
+    if (lastEquipmentId.trim().isNotEmpty) {
       await prefService.set<String>(
-          LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride, lastEquipmentId);
+        LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride,
+        lastEquipmentId,
+      );
     }
   }
 
   if (prefVersion < PREFERENCES_VERSION_SPINNERS) {
     migrateStringIntegerPreference(
-        STROKE_RATE_SMOOTHING_TAG, STROKE_RATE_SMOOTHING_DEFAULT, prefService);
+      STROKE_RATE_SMOOTHING_TAG,
+      STROKE_RATE_SMOOTHING_DEFAULT,
+      prefService,
+    );
     migrateStringIntegerPreference(
-        DATA_STREAM_GAP_WATCHDOG_TAG, DATA_STREAM_GAP_WATCHDOG_DEFAULT, prefService);
+      DATA_STREAM_GAP_WATCHDOG_TAG,
+      DATA_STREAM_GAP_WATCHDOG_DEFAULT,
+      prefService,
+    );
     migrateStringIntegerPreference(
-        HEART_RATE_UPPER_LIMIT_TAG, HEART_RATE_UPPER_LIMIT_DEFAULT, prefService);
+      HEART_RATE_UPPER_LIMIT_TAG,
+      HEART_RATE_UPPER_LIMIT_DEFAULT,
+      prefService,
+    );
     migrateStringIntegerPreference(
-        TARGET_HEART_RATE_LOWER_BPM_TAG, TARGET_HEART_RATE_LOWER_BPM_DEFAULT, prefService);
+      TARGET_HEART_RATE_LOWER_BPM_TAG,
+      TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
+      prefService,
+    );
     migrateStringIntegerPreference(
-        TARGET_HEART_RATE_UPPER_BPM_TAG, TARGET_HEART_RATE_UPPER_BPM_DEFAULT, prefService);
+      TARGET_HEART_RATE_UPPER_BPM_TAG,
+      TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
+      prefService,
+    );
     migrateStringIntegerPreference(
-        TARGET_HEART_RATE_LOWER_ZONE_TAG, TARGET_HEART_RATE_LOWER_ZONE_DEFAULT, prefService);
+      TARGET_HEART_RATE_LOWER_ZONE_TAG,
+      TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
+      prefService,
+    );
     migrateStringIntegerPreference(
-        TARGET_HEART_RATE_UPPER_ZONE_TAG, TARGET_HEART_RATE_UPPER_ZONE_DEFAULT, prefService);
+      TARGET_HEART_RATE_UPPER_ZONE_TAG,
+      TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
+      prefService,
+    );
     migrateStringIntegerPreference(
-        TARGET_HEART_RATE_AUDIO_PERIOD_TAG, TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT, prefService);
-    migrateStringIntegerPreference(AUDIO_VOLUME_TAG, AUDIO_VOLUME_DEFAULT, prefService);
+      TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
+      TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
+      prefService,
+    );
     migrateStringIntegerPreference(
-        ATHLETE_BODY_WEIGHT_TAG, ATHLETE_BODY_WEIGHT_DEFAULT, prefService);
+      AUDIO_VOLUME_TAG,
+      AUDIO_VOLUME_DEFAULT,
+      prefService,
+    );
+    migrateStringIntegerPreference(
+      ATHLETE_BODY_WEIGHT_TAG,
+      ATHLETE_BODY_WEIGHT_DEFAULT,
+      prefService,
+    );
   }
 
   String addressesString =
@@ -143,7 +181,9 @@ Future<BasePrefService> initPreferences() async {
   if (prefVersion < PREFERENCES_VERSION_DEFAULTING_DATA_CONNECTION) {
     if (addressesString == DATA_CONNECTION_ADDRESSES_OLD_DEFAULT) {
       await prefService.set<String>(
-          DATA_CONNECTION_ADDRESSES_TAG, DATA_CONNECTION_ADDRESSES_DEFAULT);
+        DATA_CONNECTION_ADDRESSES_TAG,
+        DATA_CONNECTION_ADDRESSES_DEFAULT,
+      );
       addressesString = "";
     }
   }
@@ -154,12 +194,12 @@ Future<BasePrefService> initPreferences() async {
 
   await prefService.set<int>(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);
 
-  PreferencesSpec.SPORT_PREFIXES.forEach((sport) {
+  for (var sport in PreferencesSpec.SPORT_PREFIXES) {
     if (sport != ActivityType.Ride) {
       final slowSpeedString = prefService.get<String>(PreferencesSpec.slowSpeedTag(sport)) ?? "";
       PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? EPS;
     }
-  });
+  }
 
   if (addressesString.trim().isNotEmpty) {
     final addressTuples = parseIpAddresses(addressesString);

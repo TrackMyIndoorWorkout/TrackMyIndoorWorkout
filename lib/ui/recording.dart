@@ -1152,7 +1152,7 @@ class RecordingState extends State<RecordingScreen> {
     final targetHrState = _getTargetHrState();
     final targetHrTextStyle = _getTargetHrTextStyle(targetHrState);
 
-    _rowConfig.asMap().entries.forEach((entry) {
+    for (var entry in _rowConfig.asMap().entries) {
       var measurementStyle = _measurementStyle;
 
       if (entry.key == 2 && (_rankingForDevice || _rankingForSport)) {
@@ -1194,11 +1194,11 @@ class RecordingState extends State<RecordingScreen> {
           ),
         ],
       ));
-    });
+    }
 
     var extras = [];
     if (!_simplerUi) {
-      _preferencesSpecs.asMap().entries.forEach((entry) {
+      for (var entry in _preferencesSpecs.asMap().entries) {
         var height = 0.0;
         switch (_expandedHeights[entry.key]) {
           case 0:
@@ -1266,6 +1266,7 @@ class RecordingState extends State<RecordingScreen> {
           if (widget.descriptor.defaultSport != ActivityType.Ride) {
             extraExtras.add(Text("Speed ${_si ? 'km' : 'mi'}/h"));
           }
+
           extraExtras.add(extra);
           extra = Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -1273,8 +1274,9 @@ class RecordingState extends State<RecordingScreen> {
             children: extraExtras,
           );
         }
+
         extras.add(extra);
-      });
+      }
 
       List<Widget> markers = [];
       final markerPosition = _trackCalculator?.trackMarker(_distance);

@@ -7,7 +7,7 @@ import '../persistence/preferences_spec.dart';
 Tuple2<double, double> getTargetHeartRateBounds(
     String targetMode, PreferencesSpec heartRatePreferences, BasePrefService prefService) {
   if (targetMode == TARGET_HEART_RATE_MODE_NONE) {
-    return Tuple2<double, double>(0, 0);
+    return const Tuple2<double, double>(0, 0);
   }
 
   var lowerBpm = 0.0;

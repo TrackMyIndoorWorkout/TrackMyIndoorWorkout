@@ -324,7 +324,10 @@ class PreferencesSpec {
     prefSpecs[1].title = speedTitle(sport);
     prefSpecs[2].icon = getIcon(sport);
     prefSpecs[2].unit = getCadenceUnit(sport);
-    prefSpecs.forEach((prefSpec) => prefSpec.calculateZones(si, sport));
+    for (var prefSpec in prefSpecs) {
+      prefSpec.calculateZones(si, sport);
+    }
+
     return prefSpecs;
   }
 }
