@@ -20,7 +20,7 @@ import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 9, entities: [
+@Database(version: 10, entities: [
   Activity,
   Record,
   DeviceUsage,
@@ -182,4 +182,15 @@ final migration8to9 = Migration(8, 9, (database) async {
   final timeZone = await FlutterNativeTimezone.getLocalTimezone();
   await database.execute(
       "UPDATE `$activitiesTableName` SET `time_zone`='$timeZone' WHERE `time_zone` IS NULL");
+});
+
+final migration9to10 = Migration(9, 10, (database) async {
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `suunto_uploaded` INTEGER NOT NULL DEFAULT 0");
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `suunto_blob_url` TEXT NOT NULL DEFAULT ''");
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `under_armour_uploaded` INTEGER NOT NULL DEFAULT 0");
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `training_peaks_uploaded` INTEGER NOT NULL DEFAULT 0");
 });
