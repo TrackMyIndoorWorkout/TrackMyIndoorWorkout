@@ -40,7 +40,7 @@ abstract class AppDatabase extends FloorDatabase {
     final result = await database
         .rawQuery("SELECT COUNT(`id`) AS cnt FROM `$tableName` WHERE `mac` = ?", [deviceId]);
 
-    if (result.length < 1) {
+    if (result.isEmpty) {
       return 0;
     }
 
@@ -83,7 +83,7 @@ abstract class AppDatabase extends FloorDatabase {
     final result =
         await database.rawQuery("SELECT COUNT(`id`) AS cnt FROM `$workoutSummariesTableName`");
 
-    if (result.length < 1) {
+    if (result.isEmpty) {
       return false;
     }
 
@@ -94,7 +94,7 @@ abstract class AppDatabase extends FloorDatabase {
     final result =
         await database.rawQuery("SELECT DISTINCT `sport` FROM `$workoutSummariesTableName`");
 
-    if (result.length < 1) {
+    if (result.isEmpty) {
       return [];
     }
 
@@ -102,10 +102,10 @@ abstract class AppDatabase extends FloorDatabase {
   }
 
   Future<List<Tuple2<String, String>>> findDistinctWorkoutSummaryDevices() async {
-    final result = await database.rawQuery(
-        "SELECT DISTINCT `device_id`, `device_name` FROM `$workoutSummariesTableName`");
+    final result = await database
+        .rawQuery("SELECT DISTINCT `device_id`, `device_name` FROM `$workoutSummariesTableName`");
 
-    if (result.length < 1) {
+    if (result.isEmpty) {
       return [];
     }
 
@@ -131,8 +131,7 @@ final migration3to4 = Migration(3, 4, (database) async {
   await database.execute("ALTER TABLE `$activitiesTableName` ADD COLUMN `sport` TEXT");
   await database.execute(
       "UPDATE `$activitiesTableName` SET `sport`='Kayaking' WHERE `four_cc`='$KAYAK_PRO_GENESIS_PORT_FOURCC'");
-  await database
-      .execute("UPDATE `$activitiesTableName` SET `sport`='Ride' WHERE `sport` IS NULL");
+  await database.execute("UPDATE `$activitiesTableName` SET `sport`='Ride' WHERE `sport` IS NULL");
 });
 
 final migration4to5 = Migration(4, 5, (database) async {
