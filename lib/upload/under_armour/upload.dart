@@ -38,13 +38,13 @@ abstract class Upload {
       return 401;
     }
 
-    // headers.addAll({
-    //   "Accept": "application/json",
-    //   "Accept-Encoding": "gzip",
-    //   "Content-Type": "application/json",
-    //   "Content-Encoding": "gzip",
-    //   "Content-Length": fileContent.length.toString()
-    // });
+    headers.addAll({
+      "Accept": "application/json",
+      "Accept-Encoding": "gzip",
+      "Content-Type": "application/json",
+      // "Content-Encoding": "gzip",
+      // "Content-Length": fileContent.length.toString()
+    });
 
     String contentString = utf8.decode(fileContent);
     final uploadResponse = await http.post(
@@ -56,18 +56,14 @@ abstract class Upload {
     debugPrint('Response: ${uploadResponse.statusCode} ${uploadResponse.reasonPhrase}');
 
     if (uploadResponse.statusCode < 200 || uploadResponse.statusCode >= 300) {
-      // response.statusCode != 201
       debugPrint('Error while uploading the activity');
     } else {
       debugPrint('$uploadResponse');
     }
 
-    // if (response.id > 0) {
-    //   final database = Get.find<AppDatabase>();
-    //   activity.markUploaded(response.id);
-    //   await database.activityDao.updateActivity(activity);
-    //   debugPrint('id ${response.id}');
-    // }
+    final database = Get.find<AppDatabase>();
+    activity.markSuuntoUploaded();
+    await database.activityDao.updateActivity(activity);
 
     return uploadResponse.statusCode;
   }

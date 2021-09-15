@@ -84,6 +84,10 @@ class Activity {
     this.stravaId = stravaId;
   }
 
+  void markSuuntoUploaded() {
+    suuntoUploaded = true;
+  }
+
   String distanceString(bool si, bool highRes) {
     return display.distanceString(distance, si, highRes);
   }
