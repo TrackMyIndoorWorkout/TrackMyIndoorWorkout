@@ -61,7 +61,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       PrefDropdown<String>(
         title: const Text(ENFORCED_TIME_ZONE),
         subtitle: const Text(ENFORCED_TIME_ZONE_DESCRIPTION),
-        pref: DEVICE_FILTERING_TAG,
+        pref: ENFORCED_TIME_ZONE_TAG,
         items: timeZoneChoices
             .map((timeZone) => DropdownMenuItem(value: timeZone, child: Text(timeZone)))
             .toList(growable: false),

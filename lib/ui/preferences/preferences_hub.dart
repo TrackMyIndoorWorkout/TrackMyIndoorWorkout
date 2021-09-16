@@ -171,8 +171,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
                 onPressed: () async {
-                  final timeZoneChoices = await FlutterNativeTimezone.getAvailableTimezones();
-                  timeZoneChoices.add(ENFORCED_TIME_ZONE_DEFAULT);
+                  final timeZoneChoicesFixed = await FlutterNativeTimezone.getAvailableTimezones();
+                  List<String> timeZoneChoices = [];
+                  timeZoneChoices.addAll(timeZoneChoicesFixed);
+                  timeZoneChoices.sort();
+                  timeZoneChoices.insert(0, ENFORCED_TIME_ZONE_DEFAULT);
                   Get.to(() => ExpertPreferencesScreen(timeZoneChoices: timeZoneChoices));
                 },
                 child: Row(
