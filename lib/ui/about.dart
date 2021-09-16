@@ -3,8 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/database.dart';
+import '../persistence/preferences.dart';
 import '../utils/constants.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -25,7 +27,8 @@ class AboutScreenState extends State<AboutScreen> {
 
   late String _version;
   late String _buildNumber;
-  String _timeZone = "";
+  String _detectedTimeZone = "";
+  String _enforcedTimeZone = "";
   TextStyle _fieldStyle = const TextStyle();
   TextStyle _valueStyle = const TextStyle();
 
@@ -40,9 +43,12 @@ class AboutScreenState extends State<AboutScreen> {
 
     FlutterNativeTimezone.getLocalTimezone().then((String timeZone) {
       setState(() {
-        _timeZone = timeZone;
+        _detectedTimeZone = timeZone;
       });
     });
+
+    final prefService = Get.find<BasePrefService>();
+    _enforcedTimeZone = prefService.get<String>(ENFORCED_TIME_ZONE_TAG) ?? ENFORCED_TIME_ZONE_DEFAULT;
   }
 
   @override
@@ -140,7 +146,7 @@ class AboutScreenState extends State<AboutScreen> {
             ),
             Flexible(
               child: Text(
-                'Time Zone:',
+                'Detected Time Zone:',
                 style: _fieldStyle,
                 maxLines: 10,
                 overflow: TextOverflow.ellipsis,
@@ -149,7 +155,25 @@ class AboutScreenState extends State<AboutScreen> {
             ),
             Flexible(
               child: Text(
-                _timeZone,
+                _detectedTimeZone,
+                style: _valueStyle,
+                maxLines: 10,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                'Enforced Time Zone:',
+                style: _fieldStyle,
+                maxLines: 10,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                _enforcedTimeZone,
                 style: _valueStyle,
                 maxLines: 10,
                 overflow: TextOverflow.ellipsis,

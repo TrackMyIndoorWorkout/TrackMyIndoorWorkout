@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -11,6 +10,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../utils/time_zone.dart';
 import 'constants.dart';
 
 class WorkoutRow {
@@ -349,7 +349,6 @@ class CSVImporter {
       return null;
     }
 
-    final timeZone = await FlutterNativeTimezone.getLocalTimezone();
     var activity = Activity(
       deviceName: deviceName,
       deviceId: deviceId,
@@ -365,7 +364,7 @@ class CSVImporter {
       sport: sport,
       calorieFactor: calorieFactor,
       powerFactor: powerFactor,
-      timeZone: timeZone,
+      timeZone: await getTimeZone(),
     );
 
     final prefService = Get.find<BasePrefService>();

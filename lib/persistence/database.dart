@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:floor/floor.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
+import '../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
 import 'dao/calorie_tune_dao.dart';
 import 'dao/device_usage_dao.dart';
@@ -179,7 +179,7 @@ final migration7to8 = Migration(7, 8, (database) async {
 final migration8to9 = Migration(8, 9, (database) async {
   await database.execute("ALTER TABLE `$activitiesTableName` ADD COLUMN `time_zone` TEXT");
 
-  final timeZone = await FlutterNativeTimezone.getLocalTimezone();
+  final timeZone = await getTimeZone();
   await database.execute(
       "UPDATE `$activitiesTableName` SET `time_zone`='$timeZone' WHERE `time_zone` IS NULL");
 });

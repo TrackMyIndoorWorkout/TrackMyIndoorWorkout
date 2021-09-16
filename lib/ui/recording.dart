@@ -8,7 +8,6 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
@@ -35,6 +34,7 @@ import '../utils/display.dart';
 import '../utils/sound.dart';
 import '../utils/target_heart_rate.dart';
 import '../utils/theme_manager.dart';
+import '../utils/time_zone.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
 import 'parts/circular_menu.dart';
@@ -190,7 +190,6 @@ class RecordingState extends State<RecordingScreen> {
     final now = DateTime.now();
     final powerFactor = await _database.powerFactor(widget.device.id.id);
     final calorieFactor = await _database.calorieFactor(widget.device.id.id, widget.descriptor);
-    final timeZone = await FlutterNativeTimezone.getLocalTimezone();
     _activity = Activity(
       fourCC: widget.descriptor.fourCC,
       deviceName: widget.device.name,
@@ -200,7 +199,7 @@ class RecordingState extends State<RecordingScreen> {
       sport: widget.descriptor.defaultSport,
       powerFactor: powerFactor,
       calorieFactor: calorieFactor,
-      timeZone: timeZone,
+      timeZone: await getTimeZone(),
     );
     if (!_uxDebug) {
       final id = await _database.activityDao.insertActivity(_activity!);
