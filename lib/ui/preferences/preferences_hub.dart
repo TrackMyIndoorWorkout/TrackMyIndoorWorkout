@@ -50,7 +50,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => UXPreferencesScreen()),
+                onPressed: () => Get.to(() => const UXPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,7 +90,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => TargetHrPreferencesScreen()),
+                onPressed: () => Get.to(() => const TargetHrPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -110,7 +110,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => ZonesHubScreen()),
+                onPressed: () => Get.to(() => const ZonesHubScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
