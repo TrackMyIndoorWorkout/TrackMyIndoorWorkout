@@ -80,6 +80,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       migration7to8,
       migration8to9,
       migration9to10,
+      migration10to11,
     ]).build();
     Get.put<AppDatabase>(database);
   }

@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import '../../export/activity_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/database.dart';
@@ -59,11 +58,24 @@ abstract class Upload {
       debugPrint('Error while uploading the activity');
     } else {
       debugPrint('$uploadResponse');
+      final responseBody = uploadResponse.body;
+      const workoutUrl = "/v7.1/workout/";
+      final matchBeginningIndex = responseBody.indexOf(workoutUrl);
+      if (matchBeginningIndex > 0) {
+        final idBeginningIndex = matchBeginningIndex + workoutUrl.length;
+        final idEndIndex = responseBody.indexOf("/", idBeginningIndex);
+        if (idEndIndex > 0) {
+          final idString = responseBody.substring(idBeginningIndex, idEndIndex);
+          final workoutId = int.tryParse(idString) ?? 0;
+          if (workoutId > 0) {
+            debugPrint('workoutId: $workoutId');
+            final database = Get.find<AppDatabase>();
+            activity.markSuuntoUploaded(workoutId);
+            await database.activityDao.updateActivity(activity);
+          }
+        }
+      }
     }
-
-    final database = Get.find<AppDatabase>();
-    activity.markSuuntoUploaded();
-    await database.activityDao.updateActivity(activity);
 
     return uploadResponse.statusCode;
   }

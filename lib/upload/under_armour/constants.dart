@@ -4,7 +4,7 @@ const AU_URL = AU_URL_BASE + "oauth2/uacf/";
 const AU_API_URL = AU_API_URL_BASE + "oauth2/uacf/";
 const TOKEN_ENDPOINT = AU_API_URL + "access_token";
 const AUTHORIZATION_ENDPOINT = AU_URL + "authorize";
-const UPLOADS_ENDPOINT = AU_URL_BASE + "workout/";
+const UPLOADS_ENDPOINT = AU_API_URL_BASE + "workout/";
 
 // To use with iOS or Android
 const REDIRECT_URL_SCHEME = "mapmyfitnessflutter";

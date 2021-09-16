@@ -43,6 +43,8 @@ class Activity {
   bool underArmourUploaded;
   @ColumnInfo(name: 'training_peaks_uploaded')
   bool trainingPeaksUploaded;
+  @ColumnInfo(name: 'ua_workout_id')
+  int uaWorkoutId;
 
   @ignore
   DateTime? startDateTime;
@@ -64,6 +66,7 @@ class Activity {
     this.underArmourUploaded = false,
     this.trainingPeaksUploaded = false,
     this.stravaId = 0,
+    this.uaWorkoutId = 0,
     this.startDateTime,
     required this.fourCC,
     required this.sport,
@@ -84,8 +87,9 @@ class Activity {
     this.stravaId = stravaId;
   }
 
-  void markSuuntoUploaded() {
+  void markSuuntoUploaded(int workoutId) {
     suuntoUploaded = true;
+    uaWorkoutId = workoutId;
   }
 
   String distanceString(bool si, bool highRes) {
