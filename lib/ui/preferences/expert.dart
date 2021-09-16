@@ -10,8 +10,9 @@ import 'preferences_base.dart';
 class ExpertPreferencesScreen extends PreferencesScreenBase {
   static String shortTitle = "Expert";
   static String title = "$shortTitle Preferences";
+  final List<String> timeZoneChoices;
 
-  const ExpertPreferencesScreen({Key? key}) : super(key: key);
+  const ExpertPreferencesScreen({Key? key, required this.timeZoneChoices}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +57,15 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         title: Text(DEVICE_FILTERING),
         subtitle: Text(DEVICE_FILTERING_DESCRIPTION),
         pref: DEVICE_FILTERING_TAG,
-      )
+      ),
+      PrefDropdown<String>(
+        title: const Text(ENFORCED_TIME_ZONE),
+        subtitle: const Text(ENFORCED_TIME_ZONE_DESCRIPTION),
+        pref: DEVICE_FILTERING_TAG,
+        items: timeZoneChoices
+            .map((timeZone) => DropdownMenuItem(value: timeZone, child: Text(timeZone)))
+            .toList(growable: false),
+      ),
     ];
 
     if (kDebugMode) {

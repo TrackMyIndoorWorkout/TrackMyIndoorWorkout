@@ -410,6 +410,15 @@ const ATHLETE_VO2MAX_MAX = 100;
 const ATHLETE_VO2MAX_DESCRIPTION = "Optional, but it could make the equation more precise. "
     "15 (minimum) means that the VO2max is ignored (not set).";
 
+const ENFORCED_TIME_ZONE = "Enforced Time Zone";
+const ENFORCED_TIME_ZONE_TAG = "enforced_time_zone";
+const ENFORCED_TIME_ZONE_DEFAULT = "Auto Detected";
+const ENFORCED_TIME_ZONE_DESCRIPTION = "The supposed time-zone of a workout. "
+    "If not set the app will auto detect the device's time zone, "
+    "you can see the auto detected time zone on About screen."
+    "Right now only Training Peaks has time zone information, and all GPS "
+    "data is at the US Pacific Coast.";
+
 Future<bool> getSimplerUiDefault() async {
   var simplerUiDefault = SIMPLER_UI_FAST_DEFAULT;
   if (Platform.isAndroid) {
