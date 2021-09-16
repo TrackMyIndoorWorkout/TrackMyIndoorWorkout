@@ -42,7 +42,9 @@ class AboutScreenState extends State<AboutScreen> {
     _buildNumber = packageInfo.buildNumber;
 
     FlutterNativeTimezone.getLocalTimezone().then((String timeZone) {
-      _timeZone = timeZone;
+      setState(() {
+        _timeZone = timeZone;
+      });
     });
   }
 
