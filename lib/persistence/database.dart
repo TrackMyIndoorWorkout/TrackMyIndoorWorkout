@@ -135,25 +135,25 @@ final migration3to4 = Migration(3, 4, (database) async {
 });
 
 final migration4to5 = Migration(4, 5, (database) async {
-  await database.execute("CREATE TABLE IF NOT EXISTS `$deviceUsageTableName` " +
-      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT NOT NULL, `mac` TEXT NOT NULL, " +
-      "`name` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `manufacturer_name` TEXT, " +
+  await database.execute("CREATE TABLE IF NOT EXISTS `$deviceUsageTableName` "
+      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT NOT NULL, `mac` TEXT NOT NULL, "
+      "`name` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `manufacturer_name` TEXT, "
       "`time` INTEGER NOT NULL)");
 });
 
 final migration5to6 = Migration(5, 6, (database) async {
-  await database.execute("CREATE TABLE IF NOT EXISTS `$calorieTuneTableName` " +
-      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, " +
+  await database.execute("CREATE TABLE IF NOT EXISTS `$calorieTuneTableName` "
+      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, "
       "`calorie_factor` REAL NOT NULL, `time` INTEGER NOT NULL)");
-  await database.execute("CREATE TABLE IF NOT EXISTS `$powerTuneTableName` " +
-      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, " +
+  await database.execute("CREATE TABLE IF NOT EXISTS `$powerTuneTableName` "
+      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, "
       "`power_factor` REAL NOT NULL, `time` INTEGER NOT NULL)");
 
   // Cannot add a non null column
   await database.execute("ALTER TABLE `$activitiesTableName` ADD COLUMN `power_factor` FLOAT");
   await database.execute("ALTER TABLE `$activitiesTableName` ADD COLUMN `calorie_factor` FLOAT");
 
-  await database.execute("UPDATE `$activitiesTableName` " +
+  await database.execute("UPDATE `$activitiesTableName` "
       "SET device_id='$MPOWER_IMPORT_DEVICE_ID' WHERE `device_id`=''");
   await database.execute("UPDATE `$activitiesTableName` SET `power_factor`=1.0");
   await database.execute("UPDATE `$activitiesTableName` SET `calorie_factor`=1.0");
@@ -164,10 +164,10 @@ final migration5to6 = Migration(5, 6, (database) async {
 });
 
 final migration6to7 = Migration(6, 7, (database) async {
-  await database.execute("CREATE TABLE IF NOT EXISTS `$workoutSummariesTableName` " +
-      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, " +
-      "`device_id` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `start` INTEGER NOT NULL, " +
-      "`distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `speed` REAL NOT NULL, " +
+  await database.execute("CREATE TABLE IF NOT EXISTS `$workoutSummariesTableName` "
+      "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, "
+      "`device_id` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `start` INTEGER NOT NULL, "
+      "`distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `speed` REAL NOT NULL, "
       "`sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL)");
 });
 

@@ -35,9 +35,9 @@ class PreferencesSpec {
   static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 = "Display the Zone Index Next to the ";
   static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART2 = " Measurement Value";
   static const ZONE_INDEX_DISPLAY_EXTRA_NOTE =
-      "These Zone settings apply for the fixed panel sections. " +
-          "For extra HR zone display feature check out '$TARGET_HR_SHORT_TITLE' configuration " +
-          "in the upstream settings selection. For extra speed feedback check out leaderboard rank settings.";
+      "These Zone settings apply for the fixed panel sections. "
+      "For extra HR zone display feature check out '$TARGET_HR_SHORT_TITLE' configuration "
+      "in the upstream settings selection. For extra speed feedback check out leaderboard rank settings.";
   static const ZONE_INDEX_DISPLAY_DEFAULT = false;
 
   static final slowSpeeds = {

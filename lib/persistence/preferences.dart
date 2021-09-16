@@ -45,9 +45,9 @@ const SCAN_DURATION_DESCRIPTION =
 const AUTO_CONNECT = "Auto Connect";
 const AUTO_CONNECT_TAG = "auto_connect";
 const AUTO_CONNECT_DEFAULT = false;
-const AUTO_CONNECT_DESCRIPTION = "On: if there's only a single " +
-    "equipment after scan, or one of the devices match the " +
-    "last exercise machine the app will automatically move to the " +
+const AUTO_CONNECT_DESCRIPTION = "On: if there's only a single "
+    "equipment after scan, or one of the devices match the "
+    "last exercise machine the app will automatically move to the "
     "measurement screen to start recording.";
 
 const LAST_EQUIPMENT_ID_TAG = "last_equipment";
@@ -57,39 +57,39 @@ const LAST_EQUIPMENT_ID_DEFAULT = "";
 const INSTANT_MEASUREMENT_START = "Instant Measurement Start";
 const INSTANT_MEASUREMENT_START_TAG = "instant_measurement_start";
 const INSTANT_MEASUREMENT_START_DEFAULT = true;
-const INSTANT_MEASUREMENT_START_DESCRIPTION = "On: when navigating to the measurement screen the " +
-    "workout recording will start immediately. Off: the workout has to be started manually by " +
+const INSTANT_MEASUREMENT_START_DESCRIPTION = "On: when navigating to the measurement screen the "
+    "workout recording will start immediately. Off: the workout has to be started manually by "
     "pressing the play button.";
 
 const INSTANT_UPLOAD = "Instant Upload";
 const INSTANT_UPLOAD_TAG = "instant_upload";
 const INSTANT_UPLOAD_DEFAULT = false;
-const INSTANT_UPLOAD_DESCRIPTION = "On: when Strava is authenticated and " +
-    "the device is connected then activity upload is automatically " +
+const INSTANT_UPLOAD_DESCRIPTION = "On: when Strava is authenticated and "
+    "the device is connected then activity upload is automatically "
     "attempted at the end of workout";
 
 const SIMPLER_UI = "Simplify Measurement UI";
 const SIMPLER_UI_TAG = "simpler_ui";
 const SIMPLER_UI_FAST_DEFAULT = false;
 const SIMPLER_UI_SLOW_DEFAULT = true;
-const SIMPLER_UI_DESCRIPTION = "On: the track visualization and the real-time" +
-    " graphs won't be featured at the bottom of the measurement " +
+const SIMPLER_UI_DESCRIPTION = "On: the track visualization and the real-time"
+    " graphs won't be featured at the bottom of the measurement "
     "screen. This can help old / slow phones.";
 
 const DEVICE_FILTERING = "Device Filtering";
 const DEVICE_FILTERING_TAG = "device_filtering";
 const DEVICE_FILTERING_DEFAULT = true;
 const DEVICE_FILTERING_DESCRIPTION =
-    "Off: the app won't filter the list of Bluetooth device while scanning. " +
-        "If your device is not listed while filtering is on then most probably it's not compatible.";
+    "Off: the app won't filter the list of Bluetooth device while scanning. "
+    "If your device is not listed while filtering is on then most probably it's not compatible.";
 
 const MULTI_SPORT_DEVICE_SUPPORT = "Multi-Sport Device Support";
 const MULTI_SPORT_DEVICE_SUPPORT_TAG = "multi_sport_device_support";
 const MULTI_SPORT_DEVICE_SUPPORT_DEFAULT = false;
 const MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION =
-    "Turn this on only if you use a device (like Genesis Port) with multiple equipment of " +
-        "different sport (like Kayaking, Canoeing, Rowing, and Swimming). In that case you'll " +
-        "be prompted to select a sport before every workout.";
+    "Turn this on only if you use a device (like Genesis Port) with multiple equipment of "
+    "different sport (like Kayaking, Canoeing, Rowing, and Swimming). In that case you'll "
+    "be prompted to select a sport before every workout.";
 
 const TUNING_PREFERENCES = "Tuning";
 const WORKAROUND_PREFERENCES = "Workarounds";
@@ -104,25 +104,25 @@ const EXTEND_TUNING = "Extend Power Tuning If Applicable";
 const EXTEND_TUNING_TAG = "extend_tuning";
 const EXTEND_TUNING_DEFAULT = false;
 const EXTEND_TUNING_DESCRIPTION =
-    "Apply power tuning to other attributes (speed, distance) as well when applicable. " +
-        "Note that depending on the equipment the tuning might already affect multiple attributes " +
-        "if they depend on each other like when calories or speed is calculated from power. " +
-        "Also note when both calorie and power tuning applied then their effect may combine.";
+    "Apply power tuning to other attributes (speed, distance) as well when applicable. "
+    "Note that depending on the equipment the tuning might already affect multiple attributes "
+    "if they depend on each other like when calories or speed is calculated from power. "
+    "Also note when both calorie and power tuning applied then their effect may combine.";
 
 const USE_HR_MONITOR_REPORTED_CALORIES = "Use heart rate monitor reported calories";
 const USE_HR_MONITOR_REPORTED_CALORIES_TAG = "use_heart_rate_monitor_reported_calories";
 const USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT = false;
 const USE_HR_MONITOR_REPORTED_CALORIES_DESCRIPTION =
-    "Only very enhanced heart rate monitors are capable reporting calories." +
-        "In such case should that calorie count take precedence over the value " +
-        "calculated by the fitness equipment (explicitly or deducted from the power reading).";
+    "Only very enhanced heart rate monitors are capable reporting calories."
+    "In such case should that calorie count take precedence over the value "
+    "calculated by the fitness equipment (explicitly or deducted from the power reading).";
 
 const USE_HEART_RATE_BASED_CALORIE_COUNTING = "Use heart rate based calorie counting";
 const USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG = "heart_rate_based_calorie_counting";
 const USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT = false;
 const USE_HEART_RATE_BASED_CALORIE_COUNTING_DESCRIPTION =
-    "This method also requires configured athlete weight, age, and gender. " +
-        "Optional VO2max could make the calculation even more precise.";
+    "This method also requires configured athlete weight, age, and gender. "
+    "Optional VO2max could make the calculation even more precise.";
 
 const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
 const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
@@ -130,8 +130,8 @@ const STROKE_RATE_SMOOTHING_INT_TAG = STROKE_RATE_SMOOTHING_TAG + INT_TAG_POSTFI
 const STROKE_RATE_SMOOTHING_MIN = 1;
 const STROKE_RATE_SMOOTHING_DEFAULT = 10;
 const STROKE_RATE_SMOOTHING_MAX = 50;
-const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery data. Averaging " +
-    "these over time soothes the data. This setting tells the window size by how many samples " +
+const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery data. Averaging "
+    "these over time soothes the data. This setting tells the window size by how many samples "
     "could be in the smoothing queue. 1 means no smoothing.";
 
 const DATA_STREAM_GAP_WATCHDOG = "Data Stream Gap Watchdog Timer";
@@ -140,8 +140,8 @@ const DATA_STREAM_GAP_WATCHDOG_INT_TAG = DATA_STREAM_GAP_WATCHDOG_TAG + INT_TAG_
 const DATA_STREAM_GAP_WATCHDOG_MIN = 0;
 const DATA_STREAM_GAP_WATCHDOG_DEFAULT = 5;
 const DATA_STREAM_GAP_WATCHDOG_MAX = 50;
-const DATA_STREAM_GAP_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered " +
-    "as a disconnection. A watchdog would finish the workout and can trigger sound warnings as well. " +
+const DATA_STREAM_GAP_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered "
+    "as a disconnection. A watchdog would finish the workout and can trigger sound warnings as well. "
     "Zero means disabled";
 
 const SOUND_EFFECT_NONE = "none";
@@ -164,9 +164,9 @@ const DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_THREE_TONE;
 const CADENCE_GAP_WORKAROUND = "Cadence Data Gap Workaround:";
 const CADENCE_GAP_WORKAROUND_TAG = "cadence_data_gap_workaround";
 const CADENCE_GAP_WORKAROUND_DEFAULT = true;
-const CADENCE_GAP_WORKAROUND_DESCRIPTION = "On: When speed / pace is non zero but the " +
-    "cadence / stroke rate is zero the application will substitute the zero with the last " +
-    "positive cadence reading. " +
+const CADENCE_GAP_WORKAROUND_DESCRIPTION = "On: When speed / pace is non zero but the "
+    "cadence / stroke rate is zero the application will substitute the zero with the last "
+    "positive cadence reading. "
     "Off: Zero cadence will be recorded without modification.";
 
 const HEART_RATE_GAP_WORKAROUND = "Heart Rate Data Gap Workaround";
@@ -189,7 +189,7 @@ const HEART_RATE_UPPER_LIMIT_INT_TAG = HEART_RATE_UPPER_LIMIT_TAG + INT_TAG_POST
 const HEART_RATE_UPPER_LIMIT_MIN = 0;
 const HEART_RATE_UPPER_LIMIT_DEFAULT = 0;
 const HEART_RATE_UPPER_LIMIT_MAX = 300;
-const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is a heart rate upper bound where the methods " +
+const HEART_RATE_UPPER_LIMIT_DESCRIPTION = "This is a heart rate upper bound where the methods "
     "bellow would be applied. 0 means no upper limiting is performed.";
 
 const HEART_RATE_LIMITING_METHOD = "Heart Rate Limiting Method Selection:";
@@ -209,9 +209,9 @@ const HEART_RATE_LIMITING_METHOD_DEFAULT = HEART_RATE_LIMITING_NO_LIMIT;
 const TARGET_HEART_RATE_MODE = "Target Heart Rate Mode:";
 const TARGET_HEART_RATE_MODE_TAG = "target_heart_rate_mode";
 const TARGET_HEART_RATE_MODE_DESCRIPTION =
-    "You can configure target heart rate BPM range or zone range. " +
-        "The app will alert visually (and optionally audio as well) when you are outside of the range. " +
-        "The lower and upper zone can be the same if you want to target just one zone.";
+    "You can configure target heart rate BPM range or zone range. "
+    "The app will alert visually (and optionally audio as well) when you are outside of the range. "
+    "The lower and upper zone can be the same if you want to target just one zone.";
 const TARGET_HEART_RATE_MODE_NONE = "none";
 const TARGET_HEART_RATE_MODE_NONE_DESCRIPTION = "Target heart rate alert is turned off";
 const TARGET_HEART_RATE_MODE_BPM = "bpm";
@@ -264,9 +264,8 @@ const TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG = TARGET_HEART_RATE_AUDIO_PERIOD_TA
 const TARGET_HEART_RATE_AUDIO_PERIOD_MIN = 0;
 const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT = 0;
 const TARGET_HEART_RATE_AUDIO_PERIOD_MAX = 10;
-const TARGET_HEART_RATE_AUDIO_PERIOD_DESCRIPTION =
-    "0 or 1: no periodicity. Larger than 1 seconds: " +
-        "the selected sound effect will play with the periodicity until the HR is back in range.";
+const TARGET_HEART_RATE_AUDIO_PERIOD_DESCRIPTION = "0 or 1: no periodicity. Larger than 1 seconds: "
+    "the selected sound effect will play with the periodicity until the HR is back in range.";
 
 const TARGET_HEART_RATE_SOUND_EFFECT = "Target Heart Rate Out of Range Sound Effect:";
 const TARGET_HEART_RATE_SOUND_EFFECT_TAG = "target_heart_rate_sound_effect";
@@ -292,39 +291,38 @@ const RANK_RIBBON_VISUALIZATION = "Display Rank Ribbons Above the Speed Graph";
 const RANK_RIBBON_VISUALIZATION_TAG = "rank_ribbon_visualization";
 const RANK_RIBBON_VISUALIZATION_DEFAULT = false;
 const RANK_RIBBON_VISUALIZATION_DESCRIPTION =
-    "Should the app provide UI feedback by ribbons above the speed graph. " +
-        "Blue color means behind the top leaderboard, green marks record pace.";
+    "Should the app provide UI feedback by ribbons above the speed graph. "
+    "Blue color means behind the top leaderboard, green marks record pace.";
 
 const RANKING_FOR_DEVICE = "Ranking Based on the Actual Device";
 const RANKING_FOR_DEVICE_TAG = "ranking_for_device";
 const RANKING_FOR_DEVICE_DEFAULT = false;
-const RANKING_FOR_DEVICE_DESCRIPTION =
-    "Should the app display ranking for the particular device. " +
-        "This affects both the ribbon type and the track visualization.";
+const RANKING_FOR_DEVICE_DESCRIPTION = "Should the app display ranking for the particular device. "
+    "This affects both the ribbon type and the track visualization.";
 
 const RANKING_FOR_SPORT = "Ranking Based on the Whole Sport";
 const RANKING_FOR_SPORT_TAG = "ranking_for_sport";
 const RANKING_FOR_SPORT_DEFAULT = false;
 const RANKING_FOR_SPORT_DESCRIPTION =
-    "Should the app display ranking for all devices for the sport. " +
-        "This affects both the ribbon type and the track visualization.";
+    "Should the app display ranking for all devices for the sport. "
+    "This affects both the ribbon type and the track visualization.";
 
 const RANK_TRACK_VISUALIZATION = "Visualize Rank Positions on the Track";
 const RANK_TRACK_VISUALIZATION_TAG = "rank_track_visualization";
 const RANK_TRACK_VISUALIZATION_DEFAULT = false;
 const RANK_TRACK_VISUALIZATION_DESCRIPTION =
-    "For performance reasons only the position right ahead (green color) and right behind " +
-        "(blue color) of the current effort is displayed. Both positions have a the rank " +
-        "number inside their dot.";
+    "For performance reasons only the position right ahead (green color) and right behind "
+    "(blue color) of the current effort is displayed. Both positions have a the rank "
+    "number inside their dot.";
 
 const RANK_INFO_ON_TRACK =
     "Display rank information at the center of the track (on top of positions)";
 const RANK_INFO_ON_TRACK_TAG = "rank_info_on_track";
 const RANK_INFO_ON_TRACK_DEFAULT = true;
 const RANK_INFO_ON_TRACK_DESCRIPTION =
-    "On: when rank position is enabled this switch will display extra information " +
-        "in the middle of the track: it'll list the preceding and following positions " +
-        "along with the distance compared to the athlete's current position";
+    "On: when rank position is enabled this switch will display extra information "
+    "in the middle of the track: it'll list the preceding and following positions "
+    "along with the distance compared to the athlete's current position";
 
 const EXPERT_PREFERENCES = "Expert Preferences";
 
@@ -332,8 +330,8 @@ const APP_DEBUG_MODE = "Application Debug Mode";
 const APP_DEBUG_MODE_TAG = "app_debug_mode";
 const APP_DEBUG_MODE_DEFAULT = false;
 const APP_DEBUG_MODE_DESCRIPTION =
-    "On: The Recording UI runs on simulated data, no equipment required. " +
-        "Off: The recording works as it should in release.";
+    "On: The Recording UI runs on simulated data, no equipment required. "
+    "Off: The recording works as it should in release.";
 
 const DATA_CONNECTION_ADDRESSES = "Data Connection Check Endpoints";
 const DATA_CONNECTION_ADDRESSES_TAG = "data_connection_addresses";
@@ -342,10 +340,10 @@ const DATA_CONNECTION_ADDRESSES_OLD_DEFAULT =
     "52.44.84.95,54.160.234.139,52.87.57.116,3.93.102.29,54.157.131.119,3.226.9.14";
 
 const DATA_CONNECTION_ADDRESSES_DESCRIPTION =
-    "Following is a comma separated list of IP addresses with optional comma " +
-        "separated port numbers. Lack of a port number will mean 443 (HTTPS). " +
-        "The application will reach out to these endpoints to determine if " +
-        "there is really a data connection.";
+    "Following is a comma separated list of IP addresses with optional comma "
+    "separated port numbers. Lack of a port number will mean 443 (HTTPS). "
+    "The application will reach out to these endpoints to determine if "
+    "there is really a data connection.";
 
 const ZONE_PREFERENCES = " Zone Preferences";
 
@@ -365,8 +363,8 @@ const ZONE_INDEX_DISPLAY_COLORING = "Color the measurement based on zones";
 const ZONE_INDEX_DISPLAY_COLORING_TAG = "zone_index_display_coloring";
 const ZONE_INDEX_DISPLAY_COLORING_DEFAULT = true;
 const ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION =
-    "On: The measurement font and background is color modified to reflect the zone value. " +
-        "Off: The zone is displayed without any re-coloring, this is less performance intensive.";
+    "On: The measurement font and background is color modified to reflect the zone value. "
+    "Off: The zone is displayed without any re-coloring, this is less performance intensive.";
 
 const ATHLETE_BODY_WEIGHT = "Body Weight (kg)";
 const ATHLETE_BODY_WEIGHT_TAG = "athlete_body_weight";
@@ -375,17 +373,17 @@ const ATHLETE_BODY_WEIGHT_MIN = 1;
 const ATHLETE_BODY_WEIGHT_DEFAULT = 60;
 const ATHLETE_BODY_WEIGHT_MAX = 300;
 const ATHLETE_BODY_WEIGHT_DESCRIPTION =
-    "This settings is optional. It could be used either for heart rate based calorie counting equations " +
-        "or spin-down capable devices to set " +
-        "the initial value displayed in the weight input until the device sends the last inputted weight. " +
-        "As soon as the last inputted weight is received from the device it'll override the value in the input";
+    "This settings is optional. It could be used either for heart rate based calorie counting equations "
+    "or spin-down capable devices to set "
+    "the initial value displayed in the weight input until the device sends the last inputted weight. "
+    "As soon as the last inputted weight is received from the device it'll override the value in the input";
 
 const REMEMBER_ATHLETE_BODY_WEIGHT = "Remember last inputted weight at spin-down";
 const REMEMBER_ATHLETE_BODY_WEIGHT_TAG = "remember_athlete_body_weight";
 const REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT = true;
 const REMEMBER_ATHLETE_BODY_WEIGHT_DESCRIPTION =
-    "On: The weight inputted at the beginning of a spin-down will override the weight above. " +
-        "Off: The weight input adjusted at spin-down won't be stored back to the setting above.";
+    "On: The weight inputted at the beginning of a spin-down will override the weight above. "
+    "Off: The weight input adjusted at spin-down won't be stored back to the setting above.";
 
 const ATHLETE_AGE = "Age (years)";
 const ATHLETE_AGE_TAG = "athlete_age";
@@ -409,7 +407,7 @@ const ATHLETE_VO2MAX_TAG = "athlete_vo2max";
 const ATHLETE_VO2MAX_MIN = 15;
 const ATHLETE_VO2MAX_DEFAULT = ATHLETE_VO2MAX_MIN;
 const ATHLETE_VO2MAX_MAX = 100;
-const ATHLETE_VO2MAX_DESCRIPTION = "Optional, but it could make the equation more precise. " +
+const ATHLETE_VO2MAX_DESCRIPTION = "Optional, but it could make the equation more precise. "
     "15 (minimum) means that the VO2max is ignored (not set).";
 
 Future<bool> getSimplerUiDefault() async {
