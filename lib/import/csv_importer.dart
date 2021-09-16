@@ -349,6 +349,7 @@ class CSVImporter {
       return null;
     }
 
+    final timeZone = await FlutterNativeTimezone.getLocalTimezone();
     var activity = Activity(
       deviceName: deviceName,
       deviceId: deviceId,
@@ -364,7 +365,7 @@ class CSVImporter {
       sport: sport,
       calorieFactor: calorieFactor,
       powerFactor: powerFactor,
-      timeZone: await FlutterNativeTimezone.getLocalTimezone(),
+      timeZone: timeZone,
     );
 
     final prefService = Get.find<BasePrefService>();

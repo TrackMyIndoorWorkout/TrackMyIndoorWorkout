@@ -190,6 +190,7 @@ class RecordingState extends State<RecordingScreen> {
     final now = DateTime.now();
     final powerFactor = await _database.powerFactor(widget.device.id.id);
     final calorieFactor = await _database.calorieFactor(widget.device.id.id, widget.descriptor);
+    final timeZone = await FlutterNativeTimezone.getLocalTimezone();
     _activity = Activity(
       fourCC: widget.descriptor.fourCC,
       deviceName: widget.device.name,
@@ -199,7 +200,7 @@ class RecordingState extends State<RecordingScreen> {
       sport: widget.descriptor.defaultSport,
       powerFactor: powerFactor,
       calorieFactor: calorieFactor,
-      timeZone: await FlutterNativeTimezone.getLocalTimezone(),
+      timeZone: timeZone,
     );
     if (!_uxDebug) {
       final id = await _database.activityDao.insertActivity(_activity!);
