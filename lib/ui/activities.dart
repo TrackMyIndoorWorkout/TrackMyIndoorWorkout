@@ -466,8 +466,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     ),
                     collapsed: Container(),
                     expanded: ListTile(
-                      onTap: () async => await Get.to(
-                          () => RecordsScreen(activity: item, size: Get.mediaQuery.size)),
+                      onTap: () =>
+                          Get.to(() => RecordsScreen(activity: item, size: Get.mediaQuery.size)),
                       title: Column(
                         children: [
                           Row(
