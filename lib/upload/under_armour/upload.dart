@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -41,15 +40,14 @@ abstract class Upload {
       "Accept": "application/json",
       "Accept-Encoding": "gzip",
       "Content-Type": "application/json",
-      // "Content-Encoding": "gzip",
-      // "Content-Length": fileContent.length.toString()
+      "Content-Encoding": "gzip",
+      "Content-Length": fileContent.length.toString()
     });
 
-    String contentString = utf8.decode(fileContent);
     final uploadResponse = await http.post(
       Uri.parse(UPLOADS_ENDPOINT),
       headers: headers,
-      body: contentString,
+      body: fileContent,
     );
 
     debugPrint('Response: ${uploadResponse.statusCode} ${uploadResponse.reasonPhrase}');
