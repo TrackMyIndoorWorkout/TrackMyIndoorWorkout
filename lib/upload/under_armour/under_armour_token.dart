@@ -3,9 +3,8 @@ class UnderArmourToken {
   String? refreshToken;
   String? tokenType;
   int? expiresAt; // in seconds
-  String? scope;
 
-  UnderArmourToken({this.accessToken, this.refreshToken, this.expiresAt, this.scope});
+  UnderArmourToken({this.accessToken, this.refreshToken, this.expiresAt});
 
   factory UnderArmourToken.fromJson(Map<String, dynamic> json) => UnderArmourToken.fromMap(json);
 
@@ -38,7 +37,7 @@ class UnderArmourToken {
   /// return {null, null} if there is not token yet
   /// stored in globals
   Map<String, String> getAuthorizationHeader(String clientId) {
-    if (accessToken != null && accessToken!.length > 0 && accessToken != "Error") {
+    if (accessToken != null && accessToken!.isNotEmpty && accessToken != "Error") {
       return {
         'Authorization': 'Bearer $accessToken',
         'Api-Key': clientId,
