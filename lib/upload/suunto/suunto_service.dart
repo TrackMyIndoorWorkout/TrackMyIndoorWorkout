@@ -6,24 +6,28 @@ import '../upload_service.dart';
 import 'suunto.dart';
 
 class SuuntoService implements UploadService {
-  Suunto _suunto = Suunto(SUUNTO_CLIENT_ID, SUUNTO_SECRET);
+  final Suunto _suunto = Suunto(SUUNTO_CLIENT_ID, SUUNTO_SECRET);
 
+  @override
   Future<bool> login() async {
     return await _suunto.oauth(_suunto.clientId, _suunto.secret);
   }
 
+  @override
   Future<bool> hasValidToken() async {
     return await _suunto.hasValidToken();
   }
 
+  @override
   Future<int> deAuthorize() async {
     bool fault = await _suunto.deAuthorize(_suunto.clientId);
 
     return fault ? 1 : 0;
   }
 
+  @override
   Future<int> upload(Activity activity, List<Record> records) async {
-    if (records.length <= 0) {
+    if (records.isEmpty) {
       return 0;
     }
 
