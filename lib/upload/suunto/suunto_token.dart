@@ -2,7 +2,7 @@ class SuuntoToken {
   String? accessToken;
   String? refreshToken;
   String? tokenType;
-  int? expiresAt;
+  int? expiresAt; // in seconds
 
   SuuntoToken({this.accessToken, this.refreshToken, this.expiresAt});
 
@@ -18,7 +18,9 @@ class SuuntoToken {
       'access_token': model.accessToken ?? 'Error',
       'token_type': model.tokenType ?? 'Error',
       'refresh_token': model.refreshToken ?? 'Error',
-      'expires_at': model.expiresAt ?? 'Error',
+      'expires_in': model.expiresAt != null
+          ? (model.expiresAt! - DateTime.now().millisecondsSinceEpoch ~/ 1000)
+          : 'Error',
     };
   }
 
@@ -27,16 +29,19 @@ class SuuntoToken {
       ..accessToken = map['access_token']
       ..refreshToken = map['refresh_token']
       ..tokenType = map['token_type']
-      ..expiresAt = map['expires_at'];
+      ..expiresAt = map['expires_in'] + DateTime.now().millisecondsSinceEpoch ~/ 1000;
   }
 
   /// Generate the header to use with http requests
   ///
   /// return {null, null} if there is not token yet
   /// stored in globals
-  Map<String, String> getAuthorizationHeader() {
-    if (accessToken != null && accessToken!.length > 0 && accessToken != "Error") {
-      return {'Authorization': 'Bearer $accessToken'};
+  Map<String, String> getAuthorizationHeader(String subscriptionKey) {
+    if (accessToken != null && accessToken!.isNotEmpty && accessToken != "Error") {
+      return {
+        'Authorization': 'Bearer $accessToken',
+        'Ocp-Apim-Subscription-Key': subscriptionKey,
+      };
     } else {
       return {'88': '00'};
     }
@@ -46,7 +51,7 @@ class SuuntoToken {
 class RefreshAnswer {
   String? accessToken;
   String? refreshToken;
-  int? expiresAt;
+  int? expiresAt; // in seconds
 
   RefreshAnswer();
 
@@ -56,7 +61,7 @@ class RefreshAnswer {
     RefreshAnswer model = RefreshAnswer()
       ..accessToken = map['access_token']
       ..refreshToken = map['refresh_token']
-      ..expiresAt = map['expires_at'];
+      ..expiresAt = map['expires_in'] + DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
     return model;
   }
