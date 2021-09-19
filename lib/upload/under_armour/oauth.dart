@@ -73,7 +73,7 @@ abstract class Auth {
 
     if (localToken.expiresAt != null) {
       final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt! * 1000);
-      final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
+      final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} '
           '${dateExpired.hour.toString()} hours';
       debugPrint(
           'stored token ${localToken.accessToken} ${localToken.expiresAt} expires: $details');
@@ -163,7 +163,7 @@ abstract class Auth {
 
     bool storedBefore = token != null && token.isNotEmpty && token != "null";
     if (storedBefore) {
-      debugPrint('token has been stored before! ' +
+      debugPrint('token has been stored before! '
           '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
     }
 
@@ -317,7 +317,7 @@ abstract class Auth {
   ///
   /// including when there is no token yet
   bool _isTokenExpired(UnderArmourToken token) {
-    debugPrint(' current Epoch time ${DateTime.now().millisecondsSinceEpoch ~/ 1000}' +
+    debugPrint(' current Epoch time ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
         ' exp. time: ${token.expiresAt}');
 
     // when it is the first run or after a deAuthorize
