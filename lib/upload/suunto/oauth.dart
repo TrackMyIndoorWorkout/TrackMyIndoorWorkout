@@ -199,7 +199,7 @@ abstract class Auth {
     final credentialBytes = utf8.encode(basicCredentialString);
     final base64String = base64.encode(credentialBytes);
 
-    return {"Authorization": "Basic: $base64String"};
+    return {"Authorization": "Basic $base64String"};
   }
 
   Future<SuuntoToken> _getSuuntoToken(
@@ -210,21 +210,20 @@ abstract class Auth {
     var answer = SuuntoToken();
 
     debugPrint('Entering getSuuntoToken!!');
-    // Put your own secret in secret.dart
 
-    final encodedRedirectUrl = Uri.encodeQueryComponent(REDIRECT_URL);
-    final params = "?grant_type=authorization_code&code=$code&redirect_uri=$encodedRedirectUrl";
-    final tokenRequestUrl = TOKEN_ENDPOINT + params;
+    final tokenRequestUrl = TOKEN_ENDPOINT;
 
     debugPrint('urlToken $tokenRequestUrl');
 
-    final header = getBasicAuthorizationHeader(clientId, secret);
-    final tokenResponse = await http.post(Uri.parse(tokenRequestUrl), headers: header, body: {
-      // "Content-Type": "application/x-www-form-urlencoded",
-      "grant_type": "authorization_code",
-      "code": code,
-      "redirect_uri": REDIRECT_URL,
-    });
+    final headers = getBasicAuthorizationHeader(clientId, secret);
+    final tokenResponse = await http.post(
+      Uri.parse(tokenRequestUrl), headers: headers,
+      body: {
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": REDIRECT_URL,
+      }
+    );
 
     debugPrint('body ${tokenResponse.body}');
 
