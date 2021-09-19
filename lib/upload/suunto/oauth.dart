@@ -78,10 +78,10 @@ abstract class Auth {
 
     if (localToken.expiresAt != null) {
       final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt!);
-      final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
+      final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} '
           '${dateExpired.hour.toString()} hours';
       debugPrint(
-          'stored token ${localToken.accessToken} ${localToken.expiresAt} ' + 'expires: $details');
+          'stored token ${localToken.accessToken} ${localToken.expiresAt} expires: $details');
     }
 
     return localToken;
@@ -138,7 +138,7 @@ abstract class Auth {
   Future<bool> hasValidToken() async {
     final prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(SUUNTO_ACCESS_TOKEN_TAG)?.toString();
-    if (accessToken == null || accessToken.length == 0) {
+    if (accessToken == null || accessToken.isEmpty) {
       return false;
     }
     final SuuntoToken tokenStored = await _getStoredToken();
@@ -165,7 +165,7 @@ abstract class Auth {
       debugPrint('Doing a new authorization');
       isAuthOk = await _newAuthorization(clientId, secret);
     } else {
-      debugPrint('token has been stored before! ' +
+      debugPrint('token has been stored before! '
           '${tokenStored.accessToken} exp. ${tokenStored.expiresAt}');
       isAuthOk = true;
     }
@@ -211,18 +211,19 @@ abstract class Auth {
 
     debugPrint('Entering getSuuntoToken!!');
 
-    final tokenRequestUrl = TOKEN_ENDPOINT;
+    const tokenRequestUrl = TOKEN_ENDPOINT;
 
     debugPrint('urlToken $tokenRequestUrl');
 
     final headers = getBasicAuthorizationHeader(clientId, secret);
     final tokenResponse = await http.post(
-      Uri.parse(tokenRequestUrl), headers: headers,
+      Uri.parse(tokenRequestUrl),
+      headers: headers,
       body: {
         "grant_type": "authorization_code",
         "code": code,
         "redirect_uri": REDIRECT_URL,
-      }
+      },
     );
 
     debugPrint('body ${tokenResponse.body}');
@@ -249,7 +250,7 @@ abstract class Auth {
   ///
   /// including when there is no token yet
   bool _isTokenExpired(SuuntoToken token) {
-    debugPrint(' current time in ms ${DateTime.now().millisecondsSinceEpoch ~/ 1000}' +
+    debugPrint(' current time in ms ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
         ' exp. time: ${token.expiresAt}');
 
     // when it is the first run or after a deAuthorize
@@ -257,7 +258,7 @@ abstract class Auth {
       return false;
     }
 
-    if (token.expiresAt! < DateTime.now().millisecondsSinceEpoch ~/ 1000) {
+    if (token.expiresAt! * 1000 < DateTime.now().millisecondsSinceEpoch) {
       return true;
     } else {
       return false;
@@ -269,19 +270,19 @@ abstract class Auth {
   ///
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
-  Future<bool> deAuthorize(String clientId) async {
+  Future<bool> deAuthorize(String clientId, String subscriptionKey) async {
     if (!Get.isRegistered<SuuntoToken>()) {
       debugPrint('Token not yet known');
       return false;
     }
-    var stravaToken = Get.find<SuuntoToken>();
+    var suuntoToken = Get.find<SuuntoToken>();
 
-    if (stravaToken.accessToken == null) {
+    if (suuntoToken.accessToken == null) {
       // Token has not been yet stored in memory
-      stravaToken = await _getStoredToken();
+      suuntoToken = await _getStoredToken();
     }
 
-    final header = stravaToken.getAuthorizationHeader();
+    final header = suuntoToken.getAuthorizationHeader(subscriptionKey);
     // If header is "empty"
     if (header.containsKey('88')) {
       debugPrint('No Authentication has been done yet');
@@ -291,10 +292,10 @@ abstract class Auth {
     final deAuthorizeUrl = "$DEAUTHORIZATION_ENDPOINT?client_id=$clientId";
 
     debugPrint('request $deAuthorizeUrl');
-    final rseponse = await http.post(Uri.parse(deAuthorizeUrl), headers: header);
-    if (rseponse.statusCode >= 200 && rseponse.statusCode < 300) {
+    final response = await http.post(Uri.parse(deAuthorizeUrl), headers: header);
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       debugPrint('DeAuthorize done');
-      debugPrint('response ${rseponse.body}');
+      debugPrint('response ${response.body}');
       await _saveToken(null, null, null);
       return true;
     }

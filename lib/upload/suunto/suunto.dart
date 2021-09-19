@@ -7,8 +7,9 @@ import 'upload.dart';
 class Suunto with Upload, Auth {
   final String secret;
   final String clientId;
+  final String subscriptionKey;
 
-  Suunto(this.clientId, this.secret);
+  Suunto(this.clientId, this.secret, this.subscriptionKey);
 
   void dispose() {
     onCodeReceived.close();
