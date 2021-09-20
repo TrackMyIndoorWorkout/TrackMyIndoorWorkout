@@ -88,9 +88,9 @@ abstract class Auth {
 
     if (localToken.expiresAt != null) {
       final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt! * 1000);
-      final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} ' +
+      final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} '
           '${dateExpired.hour.toString()} hours';
-      debugPrint('stored token ${localToken.accessToken} ${localToken.expiresAt} ' +
+      debugPrint('stored token ${localToken.accessToken} ${localToken.expiresAt} '
           '${localToken.scope} expires: $details');
     }
 
@@ -107,7 +107,7 @@ abstract class Auth {
     debugPrint('Entering getStravaCode');
     String redirectUrl = kIsWeb ? REDIRECT_URL_WEB : REDIRECT_URL_MOBILE;
 
-    final params = '?client_id=$clientID&redirect_uri=$redirectUrl' +
+    final params = '?client_id=$clientID&redirect_uri=$redirectUrl'
         '&response_type=code&approval_prompt=$prompt&scope=$scope';
 
     final reqAuth = AUTHORIZATION_ENDPOINT + params;
@@ -224,18 +224,17 @@ abstract class Auth {
   ) async {
     debugPrint('Welcome to Strava OAuth');
     bool isAuthOk = false;
-    bool isExpired;
 
     final tokenStored = await _getStoredToken();
     final token = tokenStored.accessToken;
 
     // Check if the token is not expired
-    isExpired = _isTokenExpired(tokenStored);
+    bool isExpired = _isTokenExpired(tokenStored);
     debugPrint('is token expired? $isExpired');
 
     bool storedBefore = token != null && token.isNotEmpty && token != "null";
     if (storedBefore) {
-      debugPrint('token has been stored before! ' +
+      debugPrint('token has been stored before! '
           '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
     }
 
@@ -310,7 +309,7 @@ abstract class Auth {
   ) async {
     var returnToken = RefreshAnswer();
 
-    final params = '?client_id=$clientID&client_secret=$secret' +
+    final params = '?client_id=$clientID&client_secret=$secret'
         '&grant_type=refresh_token&refresh_token=$refreshToken';
     final urlRefresh = TOKEN_ENDPOINT + params;
 
@@ -343,7 +342,7 @@ abstract class Auth {
     debugPrint('Entering getStravaToken!!');
     // Put your own secret in secret.dart
     final params =
-        '?client_id=$clientID&client_secret=$secret' + '&code=$code&grant_type=authorization_code';
+        '?client_id=$clientID&client_secret=$secret&code=$code&grant_type=authorization_code';
     final urlToken = TOKEN_ENDPOINT + params;
 
     debugPrint('urlToken $urlToken');
