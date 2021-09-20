@@ -9,12 +9,12 @@ class SuuntoService implements UploadService {
   final Suunto _suunto = Suunto(
     SUUNTO_CLIENT_ID,
     SUUNTO_SECRET,
-    DEVELOPER_SUBSCRIPTION_PRIMARY_KEY,
+    SUUNTO_SUBSCRIPTION_PRIMARY_KEY,
   );
 
   @override
   Future<bool> login() async {
-    return await _suunto.oauth(_suunto.clientId, _suunto.secret);
+    return await _suunto.oauth(_suunto.clientId, _suunto.secret, _suunto.subscriptionKey);
   }
 
   @override

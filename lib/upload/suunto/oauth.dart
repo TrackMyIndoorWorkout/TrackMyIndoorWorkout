@@ -150,17 +150,46 @@ abstract class Auth {
   ///
   /// clientId: ID of your Suunto app
   /// secret: Secret of your Suunto app
-  Future<bool> oauth(String clientId, String secret) async {
+  Future<bool> oauth(String clientId, String secret, String subscriptionKey) async {
     debugPrint('Welcome to SUUNTO OAuth');
     bool isAuthOk = false;
-    bool isExpired;
 
     final tokenStored = await _getStoredToken();
     final token = tokenStored.accessToken;
 
-    isExpired = _isTokenExpired(tokenStored);
+    final isExpired = _isTokenExpired(tokenStored);
     debugPrint('is token expired? $isExpired');
 
+    bool storedBefore = token != null && token.isNotEmpty && token != "null";
+    if (storedBefore) {
+      debugPrint('token has been stored before! '
+          '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
+    }
+
+    // Use the refresh token to get a new access token
+    if (/*isExpired &&*/ storedBefore) {
+      RefreshAnswer _refreshAnswer = await _getNewAccessToken(
+        clientId,
+        secret,
+        tokenStored,
+        subscriptionKey,
+      );
+      // Update with new values if HTTP status code is 200
+      if (_refreshAnswer.statusCode != null &&
+          _refreshAnswer.statusCode! >= 200 &&
+          _refreshAnswer.statusCode! < 300) {
+        await _saveToken(
+          _refreshAnswer.accessToken,
+          _refreshAnswer.refreshToken,
+          _refreshAnswer.expiresAt,
+        );
+      } else {
+        debugPrint('Problem doing the refresh process');
+        isAuthOk = false;
+      }
+    }
+
+    // Check token
     if (token == "null" || token == null) {
       debugPrint('Doing a new authorization');
       isAuthOk = await _newAuthorization(clientId, secret);
@@ -191,6 +220,53 @@ abstract class Auth {
     }
 
     return returnValue;
+  }
+
+  /// _getNewAccessToken
+  /// Ask to SUUNTO a new access token
+  /// Return
+  ///   accessToken
+  ///   refreshToken (because SUUNTO can change it when asking for new access token)
+  Future<RefreshAnswer> _getNewAccessToken(
+    String clientId,
+    String secret,
+    SuuntoToken suuntoToken,
+    String subscriptionKey,
+  ) async {
+    var returnToken = RefreshAnswer();
+
+    debugPrint('Entering getNewAccessToken');
+
+    final params = "?grant_type=refresh_token&refresh_token=${suuntoToken.refreshToken}";
+    final tokenRefreshUrl = TOKEN_ENDPOINT + params;
+
+    debugPrint('urlRefresh $tokenRefreshUrl ${suuntoToken.refreshToken}');
+
+    final header = suuntoToken.getAuthorizationHeader(subscriptionKey);
+    // If header is "empty"
+    if (header.containsKey('88')) {
+      debugPrint('No Authentication has been done yet');
+      return returnToken;
+    }
+
+    final refreshResponse = await http.post(
+      Uri.parse(tokenRefreshUrl),
+      // headers: header,
+    );
+
+    debugPrint('body ${refreshResponse.body}');
+    if (refreshResponse.statusCode >= 200 && refreshResponse.statusCode < 300) {
+      // resp.statusCode == 200
+      returnToken = RefreshAnswer.fromJson(json.decode(refreshResponse.body));
+
+      debugPrint('new exp. date: ${returnToken.expiresAt}');
+    } else {
+      debugPrint('Error while refreshing the token');
+    }
+
+    returnToken.statusCode = refreshResponse.statusCode;
+
+    return returnToken;
   }
 
   /// Generate the header to use with the token requests

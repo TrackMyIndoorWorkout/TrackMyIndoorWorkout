@@ -49,6 +49,7 @@ class SuuntoToken {
 }
 
 class RefreshAnswer {
+  int? statusCode;
   String? accessToken;
   String? refreshToken;
   int? expiresAt; // in seconds
