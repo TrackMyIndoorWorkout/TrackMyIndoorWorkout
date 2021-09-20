@@ -152,13 +152,12 @@ abstract class Auth {
   Future<bool> oauth(String clientId, String secret) async {
     debugPrint('Welcome to Under Armour OAuth');
     bool isAuthOk = false;
-    bool isExpired;
 
     final tokenStored = await _getStoredToken();
     final token = tokenStored.accessToken;
 
     // Check if the token is not expired
-    isExpired = _isTokenExpired(tokenStored);
+    bool isExpired = _isTokenExpired(tokenStored);
     debugPrint('is token expired? $isExpired');
 
     bool storedBefore = token != null && token.isNotEmpty && token != "null";
@@ -192,6 +191,8 @@ abstract class Auth {
       debugPrint('Doing a new authorization');
       isAuthOk = await _newAuthorization(clientId, secret);
     } else {
+      debugPrint('token has been stored before! '
+          '${tokenStored.accessToken} exp. ${tokenStored.expiresAt}');
       isAuthOk = true;
     }
 
@@ -222,8 +223,7 @@ abstract class Auth {
   /// Ask to Under Armour a new access token
   /// Return
   ///   accessToken
-  ///   refreshToken (because Under Armour can change it
-  ///     when asking for new access token)
+  ///   refreshToken (because Under Armour can change it when asking for new access token)
   Future<RefreshAnswer> _getNewAccessToken(
     String clientId,
     String secret,
