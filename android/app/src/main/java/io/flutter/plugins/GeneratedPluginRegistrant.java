@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import io.flutter.Log;
 
 import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 
 /**
  * Generated file. Do not edit.
@@ -16,7 +15,11 @@ import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 public final class GeneratedPluginRegistrant {
   private static final String TAG = "GeneratedPluginRegistrant";
   public static void registerWith(@NonNull FlutterEngine flutterEngine) {
-    ShimPluginRegistry shimPluginRegistry = new ShimPluginRegistry(flutterEngine);
+    try {
+      flutterEngine.getPlugins().add(new com.hui.bluetooth_enable.BluetoothEnablePlugin());
+    } catch(Exception e) {
+      Log.e(TAG, "Error registering plugin bluetooth_enable, com.hui.bluetooth_enable.BluetoothEnablePlugin", e);
+    }
     try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.deviceinfo.DeviceInfoPlugin());
     } catch(Exception e) {
@@ -63,6 +66,11 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin permission_handler, com.baseflow.permissionhandler.PermissionHandlerPlugin", e);
     }
     try {
+      flutterEngine.getPlugins().add(new com.twwm.share_files_and_screenshot_widgets.ShareFilesAndScreenshotWidgetsPlugin());
+    } catch(Exception e) {
+      Log.e(TAG, "Error registering plugin share_files_and_screenshot_widgets, com.twwm.share_files_and_screenshot_widgets.ShareFilesAndScreenshotWidgetsPlugin", e);
+    }
+    try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin());
     } catch(Exception e) {
       Log.e(TAG, "Error registering plugin shared_preferences, io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin", e);
@@ -91,16 +99,6 @@ public final class GeneratedPluginRegistrant {
       flutterEngine.getPlugins().add(new creativemaybeno.wakelock.WakelockPlugin());
     } catch(Exception e) {
       Log.e(TAG, "Error registering plugin wakelock, creativemaybeno.wakelock.WakelockPlugin", e);
-    }
-    try {
-      com.hui.bluetooth_enable.BluetoothEnablePlugin.registerWith(shimPluginRegistry.registrarFor("com.hui.bluetooth_enable.BluetoothEnablePlugin"));
-    } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin bluetooth_enable, com.hui.bluetooth_enable.BluetoothEnablePlugin", e);
-    }
-    try {
-      com.twwm.share_files_and_screenshot_widgets.ShareFilesAndScreenshotWidgetsPlugin.registerWith(shimPluginRegistry.registrarFor("com.twwm.share_files_and_screenshot_widgets.ShareFilesAndScreenshotWidgetsPlugin"));
-    } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin share_files_and_screenshot_widgets, com.twwm.share_files_and_screenshot_widgets.ShareFilesAndScreenshotWidgetsPlugin", e);
     }
   }
 }

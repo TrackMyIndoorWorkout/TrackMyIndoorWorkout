@@ -749,7 +749,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "56703dbf3fcb83c0ff2ef5d3a8f8420bf93a4970"
+      resolved-ref: "3dde16f81c322d6ecc6ed9c675f0c362de38ad4c"
       url: "https://github.com/CsabaConsulting/Share-Files-And-Screenshot-Widgets-Flutter.git"
     source: git
     version: "1.0.5"
