@@ -73,8 +73,8 @@ class _ImportFormState extends State<ImportForm> {
                     ),
                     onPressed: () async {
                       FilePickerResult? result = await FilePicker.platform.pickFiles();
-                      if (result != null) {
-                        _textController.text = result.files.single.path;
+                      if (result != null && result.files.single.path != null) {
+                        _textController.text = result.files.single.path!;
                         setState(() {
                           _filePath = result.files.single.path;
                         });
