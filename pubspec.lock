@@ -48,10 +48,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "6b12d416d5b213f8b5f1117a7758ca0e5b46aed0"
+      resolved-ref: e85f2747b7212c8e38b826c952a4d05267e81b9e
       url: "https://github.com/CsabaConsulting/bluetooth_enable.git"
     source: git
-    version: "0.1.2"
+    version: "0.1.3"
   boolean_selector:
     dependency: transitive
     description:
