@@ -167,7 +167,7 @@ abstract class Auth {
     }
 
     // Use the refresh token to get a new access token
-    if (/*isExpired &&*/ storedBefore) {
+    if (isExpired && storedBefore) {
       RefreshAnswer _refreshAnswer = await _getNewAccessToken(
         clientId,
         secret,
@@ -242,16 +242,10 @@ abstract class Auth {
 
     debugPrint('urlRefresh $tokenRefreshUrl ${suuntoToken.refreshToken}');
 
-    final header = suuntoToken.getAuthorizationHeader(subscriptionKey);
-    // If header is "empty"
-    if (header.containsKey('88')) {
-      debugPrint('No Authentication has been done yet');
-      return returnToken;
-    }
-
+    final headers = getBasicAuthorizationHeader(clientId, secret);
     final refreshResponse = await http.post(
       Uri.parse(tokenRefreshUrl),
-      // headers: header,
+      headers: headers,
     );
 
     debugPrint('body ${refreshResponse.body}');
