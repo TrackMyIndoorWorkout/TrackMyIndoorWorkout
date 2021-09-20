@@ -35,7 +35,7 @@ packages:
       name: assorted_layout_widgets
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.1.1"
+    version: "5.1.3"
   async:
     dependency: transitive
     description:
@@ -178,13 +178,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
-  cryptoutils:
-    dependency: transitive
-    description:
-      name: cryptoutils
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.0"
   cupertino_icons:
     dependency: transitive
     description:
@@ -268,7 +261,7 @@ packages:
       name: file_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.2"
+    version: "4.0.3"
   fixnum:
     dependency: transitive
     description:
@@ -533,7 +526,7 @@ packages:
       name: mockito
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.15"
+    version: "5.0.16"
   overlay_tutorial:
     dependency: "direct main"
     description:
@@ -766,7 +759,7 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.7"
+    version: "2.0.8"
   shared_preferences_linux:
     dependency: transitive
     description:
@@ -907,15 +900,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0"
-  start_jwt:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "4e4bb2a82c86323d8f781615c226d9313662626c"
-      url: "https://github.com/difference-engine/start_jwt.git"
-    source: git
-    version: "0.2.0"
   stream_channel:
     dependency: transitive
     description:
@@ -1041,7 +1025,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.10"
+    version: "6.0.11"
   url_launcher_linux:
     dependency: transitive
     description:
@@ -1176,5 +1160,5 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.13.0 <3.0.0"
-  flutter: ">=2.0.0"
+  dart: ">=2.14.0 <3.0.0"
+  flutter: ">=2.5.0"

@@ -8,7 +8,7 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  assorted_layout_widgets: ^5.1.1
+  assorted_layout_widgets: ^5.1.3
   bluetooth_enable:
     git:
       url: https://github.com/CsabaConsulting/bluetooth_enable.git
@@ -16,7 +16,7 @@ dependencies:
   device_info: ^2.0.2
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^4.0.2
+  file_picker: ^4.0.3
   floor: ^1.2.0
   flutter_blue:
     git:
@@ -42,19 +42,16 @@ dependencies:
   share_files_and_screenshot_widgets:
     git:
       url: https://github.com/CsabaConsulting/Share-Files-And-Screenshot-Widgets-Flutter.git
-  shared_preferences: ^2.0.7
+  shared_preferences: ^2.0.8
   soundpool: ^2.2.0
   spinner_input:
     git:
       url: https://github.com/CsabaConsulting/spinner_input.git
   sqflite: ^2.0.0+4
-  start_jwt:
-    git:
-      url: https://github.com/difference-engine/start_jwt.git
   syncfusion_flutter_charts: ^19.2.62
   tuple: ^2.0.0
   uni_links: ^0.5.1
-  url_launcher: ^6.0.10
+  url_launcher: ^6.0.11
   wakelock: ^0.5.6
   flutter:
     sdk: flutter
@@ -69,7 +66,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  mockito: ^5.0.15
+  mockito: ^5.0.16
   mock_data: ^2.0.0
 
 flutter:
