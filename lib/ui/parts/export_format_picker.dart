@@ -1,24 +1,30 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/theme_manager.dart';
 
 class ExportFormatPickerBottomSheet extends StatefulWidget {
+  const ExportFormatPickerBottomSheet({Key? key}) : super(key: key);
+
   @override
   ExportFormatPickerBottomSheetState createState() => ExportFormatPickerBottomSheetState();
 }
 
 class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomSheet> {
   int _formatIndex = 0;
-  List<String> _formatChoices = ["FIT", "TCX", "CSV"];
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _largerTextStyle = TextStyle();
-  TextStyle _selectedTextStyle = TextStyle();
+  final List<String> _formatChoices = ["FIT", "TCX", "CSV"];
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = const TextStyle();
+  TextStyle _selectedTextStyle = const TextStyle();
 
   @override
   void initState() {
     super.initState();
+    if (kDebugMode) {
+      _formatChoices.add("JSON");
+    }
     _formatIndex = max(0, _formatChoices.indexOf("FIT"));
     _largerTextStyle = Get.textTheme.headline4!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());

@@ -72,10 +72,6 @@ String paceString(double pace) {
   return "$minutes:" + seconds.toString().padLeft(2, "0");
 }
 
-String tcxSport(String sport) {
-  return sport == ActivityType.Ride || sport == ActivityType.Run ? sport : "Other";
-}
-
 String getSpeedUnit(bool si, String sport) {
   if (sport == ActivityType.Ride) {
     return si ? 'kmh' : 'mph';

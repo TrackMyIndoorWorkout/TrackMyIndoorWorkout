@@ -30,7 +30,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Schwinn IC4/IC8",
     namePrefixes: ["IC Bike"],
     manufacturerPrefix: "Nautilus",
-    manufacturerFitId: NAUTILUS_FIT_ID,
+    manufacturerFitId: nautilusFitId,
     model: "IC BIKE",
     calorieFactorDefault: 3.60,
   ),
@@ -40,7 +40,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Schwinn 130/170/510",
     namePrefixes: ["SCH130", "SCH170"],
     manufacturerPrefix: "Nautilus",
-    manufacturerFitId: NAUTILUS_FIT_ID,
+    manufacturerFitId: nautilusFitId,
     model: "SCH 130 BIKE",
     calorieFactorDefault: 1.00,
   ),
@@ -52,7 +52,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "KayakPro Compact",
     namePrefixes: ["KayakPro", "KP"],
     manufacturerPrefix: "North Pole Engineering",
-    manufacturerFitId: NORTH_POLE_ENGINEERING_FIT_ID,
+    manufacturerFitId: northPoleEengineeringFitId,
     model: "64",
     canMeasureHeartRate: false,
   ),
@@ -62,7 +62,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Generic Treadmill",
     namePrefixes: ["RUNN"],
     manufacturerPrefix: "North Pole Engineering",
-    manufacturerFitId: NORTH_POLE_ENGINEERING_FIT_ID,
+    manufacturerFitId: northPoleEengineeringFitId,
     model: "77",
   ),
   GENERIC_FTMS_TREADMILL_FOURCC: TreadmillDeviceDescriptor(
@@ -71,7 +71,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Generic Treadmill",
     namePrefixes: ["FTMS Treadmill"],
     manufacturerPrefix: "Unknown",
-    manufacturerFitId: STRAVA_FIT_ID,
+    manufacturerFitId: stravaFitId,
     model: "Generic Treadmill",
   ),
   GENERIC_FTMS_BIKE_FOURCC: IndoorBikeDeviceDescriptor(
@@ -80,7 +80,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Generic Indoor Bike",
     namePrefixes: ["FTMS Bike"],
     manufacturerPrefix: "Unknown",
-    manufacturerFitId: STRAVA_FIT_ID,
+    manufacturerFitId: stravaFitId,
     model: "Generic Indoor Bike",
   ),
   GENERIC_FTMS_KAYAK_FOURCC: RowerDeviceDescriptor(
@@ -91,7 +91,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Generic Kayak Ergometer",
     namePrefixes: ["FTMS Kayak"],
     manufacturerPrefix: "Unknown",
-    manufacturerFitId: STRAVA_FIT_ID,
+    manufacturerFitId: stravaFitId,
     model: "Generic Kayak Ergometer",
   ),
   GENERIC_FTMS_CANOE_FOURCC: RowerDeviceDescriptor(
@@ -102,7 +102,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Generic Canoe Ergometer",
     namePrefixes: ["FTMS Canoe"],
     manufacturerPrefix: "Unknown",
-    manufacturerFitId: STRAVA_FIT_ID,
+    manufacturerFitId: stravaFitId,
     model: "Generic Canoe Ergometer",
   ),
   GENERIC_FTMS_ROWER_FOURCC: RowerDeviceDescriptor(
@@ -113,7 +113,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Generic Rower Ergometer",
     namePrefixes: ["FTMS Rower"],
     manufacturerPrefix: "Unknown",
-    manufacturerFitId: STRAVA_FIT_ID,
+    manufacturerFitId: stravaFitId,
     model: "Generic Rower Ergometer",
   ),
   GENERIC_FTMS_SWIM_FOURCC: RowerDeviceDescriptor(
@@ -124,7 +124,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Generic Swim Ergometer",
     namePrefixes: ["FTMS Swim"],
     manufacturerPrefix: "Unknown",
-    manufacturerFitId: STRAVA_FIT_ID,
+    manufacturerFitId: stravaFitId,
     model: "Generic Swim Ergometer",
   ),
   GENERIC_FTMS_ELLIPTICAL_FOURCC: RowerDeviceDescriptor(
@@ -135,7 +135,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Generic Cross Trainer / Elliptical",
     namePrefixes: ["FTMS Cross Trainer"],
     manufacturerPrefix: "Unknown",
-    manufacturerFitId: STRAVA_FIT_ID,
+    manufacturerFitId: stravaFitId,
     model: "Generic Cross Trainer",
   ),
 };

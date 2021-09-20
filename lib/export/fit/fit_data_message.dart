@@ -9,6 +9,7 @@ class FitDataMessage extends FitRecord {
           globalMessageNumber: globalMessageNumber,
         );
 
+  @override
   List<int> binarySerialize() {
     super.binarySerialize();
     output.addAll(data);

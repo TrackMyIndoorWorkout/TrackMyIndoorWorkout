@@ -10,11 +10,14 @@ import 'preferences_base.dart';
 class ExpertPreferencesScreen extends PreferencesScreenBase {
   static String shortTitle = "Expert";
   static String title = "$shortTitle Preferences";
+  final List<String> timeZoneChoices;
+
+  const ExpertPreferencesScreen({Key? key, required this.timeZoneChoices}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<Widget> expertPreferences = [
-      PrefLabel(title: Text(DATA_CONNECTION_ADDRESSES_DESCRIPTION, maxLines: 10)),
+      const PrefLabel(title: Text(DATA_CONNECTION_ADDRESSES_DESCRIPTION, maxLines: 10)),
       PrefText(
         label: DATA_CONNECTION_ADDRESSES,
         pref: DATA_CONNECTION_ADDRESSES_TAG,
@@ -48,17 +51,25 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
             Get.snackbar("Warning", "No data connection detected");
           }
         },
-        child: Text("Apply Check Configuration and Test"),
+        child: const Text("Apply Check Configuration and Test"),
       ),
-      PrefCheckbox(
+      const PrefCheckbox(
         title: Text(DEVICE_FILTERING),
         subtitle: Text(DEVICE_FILTERING_DESCRIPTION),
         pref: DEVICE_FILTERING_TAG,
-      )
+      ),
+      PrefDropdown<String>(
+        title: const Text(ENFORCED_TIME_ZONE),
+        subtitle: const Text(ENFORCED_TIME_ZONE_DESCRIPTION),
+        pref: ENFORCED_TIME_ZONE_TAG,
+        items: timeZoneChoices
+            .map((timeZone) => DropdownMenuItem(value: timeZone, child: Text(timeZone)))
+            .toList(growable: false),
+      ),
     ];
 
     if (kDebugMode) {
-      expertPreferences.add(PrefCheckbox(
+      expertPreferences.add(const PrefCheckbox(
         title: Text(APP_DEBUG_MODE),
         subtitle: Text(APP_DEBUG_MODE_DESCRIPTION),
         pref: APP_DEBUG_MODE_TAG,

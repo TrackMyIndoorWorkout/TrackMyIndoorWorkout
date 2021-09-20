@@ -12,19 +12,19 @@ import '../utils/theme_manager.dart';
 import 'parts/sport_picker.dart';
 
 class DeviceUsagesScreen extends StatefulWidget {
-  DeviceUsagesScreen({key}) : super(key: key);
+  const DeviceUsagesScreen({key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => DeviceUsagesScreenState();
 }
 
 class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
-  AppDatabase _database = Get.find<AppDatabase>();
+  final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
-  ThemeManager _themeManager = Get.find<ThemeManager>();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
-  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
+  TextStyle _textStyle = const TextStyle();
+  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
             }
           },
         ),
-        Spacer(),
+        const Spacer(),
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
@@ -64,7 +64,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
               title: 'Warning!!!',
               middleText: 'Are you sure to delete this Usage?',
               confirm: TextButton(
-                child: Text("Yes"),
+                child: const Text("Yes"),
                 onPressed: () async {
                   await _database.deviceUsageDao.deleteDeviceUsage(deviceUsage);
                   setState(() {
@@ -74,7 +74,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                 },
               ),
               cancel: TextButton(
-                child: Text("No"),
+                child: const Text("No"),
                 onPressed: () => Get.close(1),
               ),
             );
@@ -87,12 +87,12 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Device Usages')),
+      appBar: AppBar(title: const Text('Device Usages')),
       body: CustomListView(
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
         initialOffset: 0,
-        loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
+        loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
@@ -106,12 +106,12 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
               Text(error.toString()),
               ElevatedButton(
                 onPressed: () => state.loadMore(),
-                child: Text('Retry'),
+                child: const Text('Retry'),
               ),
             ],
           );
         },
-        empty: Center(
+        empty: const Center(
           child: Text('No usages found'),
         ),
         itemBuilder: (context, _, item) {

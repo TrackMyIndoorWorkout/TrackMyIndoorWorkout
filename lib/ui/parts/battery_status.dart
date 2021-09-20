@@ -13,23 +13,10 @@ import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
 class BatteryStatusBottomSheet extends StatefulWidget {
+  const BatteryStatusBottomSheet({Key? key}) : super(key: key);
+
   @override
   _BatteryStatusBottomSheetState createState() => _BatteryStatusBottomSheetState();
-}
-
-enum CalibrationState {
-  PreInit,
-  Initializing,
-  ReadyToWeighIn,
-  WeightSubmitting,
-  WeighInProblem,
-  WeighInSuccess,
-  ReadyToCalibrate,
-  CalibrationStarting,
-  CalibrationInProgress,
-  CalibrationSuccess,
-  CalibrationFail,
-  NotSupported,
 }
 
 class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
@@ -37,9 +24,9 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   HeartRateMonitor? _heartRateMonitor;
   String _hrmBatteryLevel = NOT_AVAILABLE;
   String _batteryLevel = NOT_AVAILABLE;
-  ThemeManager _themeManager = Get.find<ThemeManager>();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
+  TextStyle _textStyle = const TextStyle();
 
   Future<String> _readBatteryLevelCore(List<BluetoothService> services) async {
     final batteryService = BluetoothDeviceEx.filterService(services, BATTERY_SERVICE_ID);

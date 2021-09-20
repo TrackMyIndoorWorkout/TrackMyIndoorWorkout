@@ -62,7 +62,7 @@ void main() {
       final shortMsb = short ~/ MAX_UINT8;
       final localMessageType = rnd.nextInt(8);
       final expected = [
-        FitDefinitionMessage.FORTY_RECORD + localMessageType,
+        FitDefinitionMessage.fourtyRecord + localMessageType,
         0,
         bigEndian ? 1 : 0,
         shortLsb,
@@ -120,7 +120,7 @@ void main() {
         final shortLsb = globalMessageNumber % MAX_UINT8;
         final shortMsb = globalMessageNumber ~/ MAX_UINT8;
         final expected = [
-          FitDefinitionMessage.FORTY_RECORD + localMessageType,
+          FitDefinitionMessage.fourtyRecord + localMessageType,
           0,
           0,
           shortLsb,

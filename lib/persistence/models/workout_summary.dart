@@ -3,10 +3,10 @@ import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/display.dart';
 
-const WORKOUT_SUMMARIES_TABLE_NAME = 'workout_summary';
+const workoutSummariesTableName = 'workout_summary';
 
 @Entity(
-  tableName: WORKOUT_SUMMARIES_TABLE_NAME,
+  tableName: workoutSummariesTableName,
   indices: [
     Index(value: ['sport']),
     Index(value: ['device_id']),
@@ -48,7 +48,7 @@ class WorkoutSummary {
     required this.calorieFactor,
   }) {
     startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
-    speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.MS2KMH : 0.0;
+    speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.ms2kmh : 0.0;
   }
 
   String speedString(bool si) {
@@ -62,6 +62,6 @@ class WorkoutSummary {
   }
 
   double distanceAtTime(int elapsed) {
-    return speed * DeviceDescriptor.KMH2MS * elapsed;
+    return speed * DeviceDescriptor.kmh2ms * elapsed;
   }
 }

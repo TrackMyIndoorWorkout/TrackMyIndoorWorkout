@@ -17,7 +17,7 @@ class TestPair {
   TestPair({required this.data, required this.record});
 }
 
-const SAMPLE_DATA = [0, 145, 1, 187];
+const sampleData = [0, 145, 1, 187];
 
 @GenerateMocks([BluetoothDevice])
 void main() {
@@ -33,7 +33,7 @@ void main() {
     await initPrefServiceForTest();
     final runnRsc = RunningCadenceSensor(MockBluetoothDevice(), 1.0);
 
-    final canProcess = runnRsc.canMeasurementProcessed(SAMPLE_DATA);
+    final canProcess = runnRsc.canMeasurementProcessed(sampleData);
 
     expect(canProcess, true);
     expect(runnRsc.speedMetric, isNotNull);
@@ -44,14 +44,14 @@ void main() {
   group('Rower Device interprets KayakPro data properly', () {
     [
       TestPair(
-        data: SAMPLE_DATA,
+        data: sampleData,
         record: RecordWithSport(
           distance: null,
           elapsed: null,
           calories: null,
           power: null,
-          speed: (SAMPLE_DATA[2] * 256 + SAMPLE_DATA[1]) / 256.0 * DeviceDescriptor.MS2KMH,
-          cadence: SAMPLE_DATA[3],
+          speed: (sampleData[2] * 256 + sampleData[1]) / 256.0 * DeviceDescriptor.ms2kmh,
+          cadence: sampleData[3],
           heartRate: null,
           pace: null,
           sport: ActivityType.Run,

@@ -4,7 +4,7 @@ import '../../utils/scan_result_ex.dart';
 import 'advertisement_digest.dart';
 
 class AdvertisementCache {
-  Map<String, AdvertisementDigest> _advertisementMap = Map<String, AdvertisementDigest>();
+  final Map<String, AdvertisementDigest> _advertisementMap = {};
 
   void addEntry(ScanResult scanResult) {
     final id = scanResult.device.id.id;

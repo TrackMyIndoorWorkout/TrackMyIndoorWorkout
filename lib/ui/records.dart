@@ -25,7 +25,7 @@ import 'about.dart';
 class RecordsScreen extends StatefulWidget {
   final Activity activity;
   final Size size;
-  RecordsScreen({
+  const RecordsScreen({
     Key? key,
     required this.activity,
     required this.size,
@@ -39,11 +39,11 @@ class RecordsScreenState extends State<RecordsScreen> {
   int _pointCount = 0;
   List<Record> _allRecords = [];
   List<DisplayRecord> _sampledRecords = [];
-  Map<String, TileConfiguration> _tileConfigurations = {};
-  List<String> _tiles = [];
+  final Map<String, TileConfiguration> _tileConfigurations = {};
+  final List<String> _tiles = [];
   bool _initialized = false;
-  List<String> _selectedTimes = [];
-  List<String> _selectedValues = [];
+  final List<String> _selectedTimes = [];
+  final List<String> _selectedValues = [];
   bool _si = UNIT_SYSTEM_DEFAULT;
   bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
   List<PreferencesSpec> _preferencesSpecs = [];
@@ -51,32 +51,32 @@ class RecordsScreenState extends State<RecordsScreen> {
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeDefault2 = 10.0;
-  TextStyle _measurementStyle = TextStyle();
-  TextStyle _textStyle = TextStyle();
-  TextStyle _unitStyle = TextStyle();
-  TextStyle _pieChartLabelStyle = const TextStyle(
+  TextStyle _measurementStyle = const TextStyle();
+  TextStyle _textStyle = const TextStyle();
+  TextStyle _unitStyle = const TextStyle();
+  final TextStyle _pieChartLabelStyle = const TextStyle(
     fontFamily: FONT_FAMILY,
     fontWeight: FontWeight.bold,
     fontSize: 16,
   );
-  ThemeManager _themeManager = Get.find<ThemeManager>();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   Color _chartTextColor = Colors.black;
-  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
+  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
   TextStyle _chartLabelStyle = const TextStyle(
     fontFamily: FONT_FAMILY,
     fontSize: 11,
   );
 
-  charts.TooltipBehavior _tooltipBehavior = charts.TooltipBehavior(enable: true);
-  charts.ZoomPanBehavior _zoomPanBehavior = charts.ZoomPanBehavior(
+  final charts.TooltipBehavior _tooltipBehavior = charts.TooltipBehavior(enable: true);
+  final charts.ZoomPanBehavior _zoomPanBehavior = charts.ZoomPanBehavior(
     enableDoubleTapZooming: true,
     enablePinching: true,
     enableSelectionZooming: true,
     zoomMode: charts.ZoomMode.x,
     enablePanning: true,
   );
-  charts.TrackballBehavior _trackballBehavior = charts.TrackballBehavior(
+  final charts.TrackballBehavior _trackballBehavior = charts.TrackballBehavior(
     enable: true,
     activationMode: charts.ActivationMode.singleTap,
     tooltipDisplayMode: charts.TrackballDisplayMode.nearestPoint,
@@ -101,9 +101,9 @@ class RecordsScreenState extends State<RecordsScreen> {
         );
       }
       final measurementCounter = MeasurementCounter(si: _si, sport: widget.activity.sport);
-      _allRecords.forEach((record) {
+      for (var record in _allRecords) {
         measurementCounter.processRecord(record);
-      });
+      }
 
       var accu = StatisticsAccumulator(
         si: _si,
@@ -117,9 +117,9 @@ class RecordsScreenState extends State<RecordsScreen> {
         calculateAvgHeartRate: measurementCounter.hasHeartRate,
         calculateMaxHeartRate: measurementCounter.hasHeartRate,
       );
-      _allRecords.forEach((record) {
+      for (var record in _allRecords) {
         accu.processRecord(record);
-      });
+      }
 
       if (measurementCounter.hasPower) {
         _tiles.add("power");
@@ -147,6 +147,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             .toList(growable: false);
         _tileConfigurations["power"] = tileConfig;
       }
+
       if (measurementCounter.hasSpeed) {
         _tiles.add("speed");
         _selectedTimes.add(EMPTY_MEASUREMENT);
@@ -173,6 +174,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             .toList(growable: false);
         _tileConfigurations["speed"] = tileConfig;
       }
+
       if (measurementCounter.hasCadence) {
         _tiles.add("cadence");
         _selectedTimes.add(EMPTY_MEASUREMENT);
@@ -199,6 +201,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             .toList(growable: false);
         _tileConfigurations["cadence"] = tileConfig;
       }
+
       if (measurementCounter.hasHeartRate) {
         _tiles.add("hr");
         _selectedTimes.add(EMPTY_MEASUREMENT);
@@ -225,7 +228,8 @@ class RecordsScreenState extends State<RecordsScreen> {
             .toList(growable: false);
         _tileConfigurations["hr"] = tileConfig;
       }
-      _allRecords.forEach((record) {
+
+      for (var record in _allRecords) {
         if (measurementCounter.hasPower) {
           if (record.power != null && record.power! > 0) {
             var tileConfig = _tileConfigurations["power"]!;
@@ -234,6 +238,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             tileConfig.histogram[binIndex].increment();
           }
         }
+
         if (measurementCounter.hasSpeed) {
           if (record.speed != null && record.speed! > 0) {
             var tileConfig = _tileConfigurations["speed"]!;
@@ -242,6 +247,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             tileConfig.histogram[binIndex].increment();
           }
         }
+
         if (measurementCounter.hasCadence) {
           if (record.cadence != null && record.cadence! > 0) {
             var tileConfig = _tileConfigurations["cadence"]!;
@@ -250,6 +256,7 @@ class RecordsScreenState extends State<RecordsScreen> {
             tileConfig.histogram[binIndex].increment();
           }
         }
+
         if (measurementCounter.hasHeartRate) {
           if (record.heartRate != null && record.heartRate! > 0) {
             var tileConfig = _tileConfigurations["hr"]!;
@@ -258,35 +265,44 @@ class RecordsScreenState extends State<RecordsScreen> {
             tileConfig.histogram[binIndex].increment();
           }
         }
-      });
+      }
+
       if (measurementCounter.hasPower) {
         var tileConfig = _tileConfigurations["power"]!;
-        tileConfig.histogram.forEach((h) {
+        for (final h in tileConfig.histogram) {
           h.calculatePercent(tileConfig.count);
-        });
+        }
+
         tileConfig.histogramFn = _getPowerHistogram;
       }
+
       if (measurementCounter.hasSpeed) {
         var tileConfig = _tileConfigurations["speed"]!;
-        tileConfig.histogram.forEach((h) {
+        for (var h in tileConfig.histogram) {
           h.calculatePercent(tileConfig.count);
-        });
+        }
+
         tileConfig.histogramFn = _getSpeedHistogram;
       }
+
       if (measurementCounter.hasCadence) {
         var tileConfig = _tileConfigurations["cadence"]!;
-        tileConfig.histogram.forEach((h) {
+        for (var h in tileConfig.histogram) {
           h.calculatePercent(tileConfig.count);
-        });
+        }
+
         tileConfig.histogramFn = _getCadenceHistogram;
       }
+
       if (measurementCounter.hasHeartRate) {
         var tileConfig = _tileConfigurations["hr"]!;
-        tileConfig.histogram.forEach((h) {
+        for (var h in tileConfig.histogram) {
           h.calculatePercent(tileConfig.count);
-        });
+        }
+
         tileConfig.histogramFn = _getHrHistogram;
       }
+
       _allRecords = [];
       _initialized = true;
     });
@@ -433,6 +449,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     ];
   }
 
+  @override
   Widget build(BuildContext context) {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > EPS) {
@@ -451,16 +468,16 @@ class RecordsScreenState extends State<RecordsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Activities'),
+        title: const Text('Activities'),
         actions: [
           IconButton(
-            icon: Icon(Icons.help),
-            onPressed: () => Get.to(() => AboutScreen()),
+            icon: const Icon(Icons.help),
+            onPressed: () => Get.to(() => const AboutScreen()),
           ),
         ],
       ),
       body: !_initialized
-          ? Text('Initializing...')
+          ? const Text('Initializing...')
           : CustomListView(
               paginationMode: PaginationMode.offset,
               initialOffset: 0,
@@ -489,7 +506,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-                        Spacer(),
+                        const Spacer(),
                         Text(
                           widget.activity.elapsedString,
                           style: _measurementStyle,
@@ -501,7 +518,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-                        Spacer(),
+                        const Spacer(),
                         Text(
                           widget.activity.distanceString(_si, _highRes),
                           style: _measurementStyle,
@@ -520,7 +537,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-                        Spacer(),
+                        const Spacer(),
                         Text(
                           '${widget.activity.calories}',
                           style: _measurementStyle,
@@ -561,12 +578,12 @@ class RecordsScreenState extends State<RecordsScreen> {
                           children: [
                             _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
                             Text("MAX", style: _unitStyle),
-                            Spacer(),
+                            const Spacer(),
                             Text(
                               _tileConfigurations[item]!.maxString,
                               style: _measurementStyle,
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Text(
                               _preferencesSpecs[index].multiLineUnit,
                               textAlign: TextAlign.left,
@@ -581,12 +598,12 @@ class RecordsScreenState extends State<RecordsScreen> {
                           children: [
                             _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
                             Text("AVG", style: _unitStyle),
-                            Spacer(),
+                            const Spacer(),
                             Text(
                               _tileConfigurations[item]!.avgString,
                               style: _measurementStyle,
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Text(
                               _preferencesSpecs[index].multiLineUnit,
                               textAlign: TextAlign.left,
@@ -626,13 +643,13 @@ class RecordsScreenState extends State<RecordsScreen> {
                             majorGridLines: charts.MajorGridLines(color: _chartTextColor),
                             minorGridLines: charts.MinorGridLines(color: _chartTextColor),
                           ),
-                          margin: EdgeInsets.all(0),
+                          margin: const EdgeInsets.all(0),
                           series: _tileConfigurations[item]!.dataFn(),
                           zoomPanBehavior: _zoomPanBehavior,
                           trackballBehavior: _trackballBehavior,
                         ),
                       ),
-                      Divider(height: 20, thickness: 2),
+                      const Divider(height: 20, thickness: 2),
                       Text(
                         _tileConfigurations[item]!.histogramTitle,
                         style: _textStyle,
@@ -641,7 +658,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                         width: widget.size.width,
                         height: widget.size.height / 3,
                         child: charts.SfCircularChart(
-                          margin: EdgeInsets.all(0),
+                          margin: const EdgeInsets.all(0),
                           legend: charts.Legend(isVisible: true, textStyle: _pieChartLabelStyle),
                           series: _tileConfigurations[item]!.histogramFn!(),
                           palette: _preferencesSpecs[index].getPiePalette(_isLight),

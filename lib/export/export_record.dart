@@ -1,3 +1,4 @@
+import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 
 class ExportRecord {
@@ -6,7 +7,6 @@ class ExportRecord {
   double longitude;
   String timeStampString;
   int timeStampInteger;
-  double altitude; // in meters
 
   ExportRecord({
     required this.record,
@@ -14,6 +14,9 @@ class ExportRecord {
     this.longitude = 0.0,
     this.timeStampString = "0",
     this.timeStampInteger = 0,
-    this.altitude = 0.0,
   });
+
+  double elapsed(Activity activity) {
+    return ((record.timeStamp ?? 0) - activity.start) / 1000;
+  }
 }

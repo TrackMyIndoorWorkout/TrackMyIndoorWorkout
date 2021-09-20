@@ -58,24 +58,26 @@ abstract class ActivityExport {
     return compressed ? compressedMimeType : nonCompressedMimeType;
   }
 
-  ExportRecord recordToExport(Record record, TrackCalculator calculator, bool rawData) {
+  ExportRecord recordToExport(
+    Record record,
+    Activity activity,
+    TrackCalculator calculator,
+    bool rawData,
+  ) {
     final timeStamp = DateTime.fromMillisecondsSinceEpoch(record.timeStamp ?? 0);
-    if (record.distance == null) {
-      record.distance = 0.0;
-    }
+    record.distance ??= 0.0;
 
     Offset gps = record.distance != null && !rawData
         ? calculator.gpsCoordinates(record.distance!)
-        : Offset(0, 0);
+        : const Offset(0, 0);
 
     if (!rawData && record.speed != null) {
-      record.speed = record.speed! * DeviceDescriptor.KMH2MS;
+      record.speed = record.speed! * DeviceDescriptor.kmh2ms;
     }
 
     return ExportRecord(record: record)
       ..longitude = gps.dx
       ..latitude = gps.dy
-      ..altitude = calculator.track.altitude
       ..timeStampString = timeStampString(timeStamp)
       ..timeStampInteger = timeStampInteger(timeStamp);
   }
@@ -87,7 +89,7 @@ abstract class ActivityExport {
     final track = getDefaultTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     final exportRecords = records.map((r) {
-      final record = recordToExport(r, calculator, rawData);
+      final record = recordToExport(r, activity, calculator, rawData);
 
       if (!rawData) {
         if ((record.record.speed ?? 0.0) > EPS) {
@@ -143,6 +145,7 @@ abstract class ActivityExport {
       buildVersionMinor: buildNumber,
       langID: 'en-US',
       partNumber: '0',
+      altitude: calculator.track.altitude,
       records: exportRecords,
     );
 

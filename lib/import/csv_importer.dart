@@ -10,6 +10,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../utils/time_zone.dart';
 import 'constants.dart';
 
 class WorkoutRow {
@@ -363,6 +364,7 @@ class CSVImporter {
       sport: sport,
       calorieFactor: calorieFactor,
       powerFactor: powerFactor,
+      timeZone: await getTimeZone(),
     );
 
     final prefService = Get.find<BasePrefService>();
@@ -481,7 +483,7 @@ class CSVImporter {
             elapsed: elapsed ~/ 1000,
             calories: energy.round(),
             power: powerInt,
-            speed: speed * DeviceDescriptor.MS2KMH,
+            speed: speed * DeviceDescriptor.ms2kmh,
             cadence: cadence.round(),
             heartRate: heartRate.round(),
             elapsedMillis: elapsed.round(),

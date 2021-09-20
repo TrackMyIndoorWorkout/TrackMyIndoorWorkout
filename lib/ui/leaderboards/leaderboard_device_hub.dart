@@ -8,7 +8,7 @@ import 'device_leaderboard.dart';
 class LeaderboardDeviceHubScreen extends StatefulWidget {
   final List<Tuple2<String, String>> devices;
 
-  LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
+  const LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => LeaderboardDeviceHubScreenState();
@@ -16,8 +16,8 @@ class LeaderboardDeviceHubScreen extends StatefulWidget {
 
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
-  TextStyle _subTextStyle = TextStyle();
+  TextStyle _textStyle = const TextStyle();
+  TextStyle _subTextStyle = const TextStyle();
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Leaderboard Devices')),
+      appBar: AppBar(title: const Text('Leaderboard Devices')),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

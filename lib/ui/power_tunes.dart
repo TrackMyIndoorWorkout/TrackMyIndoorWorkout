@@ -10,19 +10,19 @@ import '../utils/theme_manager.dart';
 import 'parts/power_factor_tune.dart';
 
 class PowerTunesScreen extends StatefulWidget {
-  PowerTunesScreen({key}) : super(key: key);
+  const PowerTunesScreen({key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => PowerTunesScreenState();
 }
 
 class PowerTunesScreenState extends State<PowerTunesScreen> {
-  AppDatabase _database = Get.find<AppDatabase>();
+  final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
+  TextStyle _textStyle = const TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
@@ -53,7 +53,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
             }
           },
         ),
-        Spacer(),
+        const Spacer(),
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
@@ -61,7 +61,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
               title: 'Warning!!!',
               middleText: 'Are you sure to delete this Tune?',
               confirm: TextButton(
-                child: Text("Yes"),
+                child: const Text("Yes"),
                 onPressed: () async {
                   await _database.powerTuneDao.deletePowerTune(powerTune);
                   setState(() {
@@ -71,7 +71,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
                 },
               ),
               cancel: TextButton(
-                child: Text("No"),
+                child: const Text("No"),
                 onPressed: () => Get.close(1),
               ),
             );
@@ -84,12 +84,12 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Power Tunes')),
+      appBar: AppBar(title: const Text('Power Tunes')),
       body: CustomListView(
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
         initialOffset: 0,
-        loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
+        loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
@@ -103,12 +103,12 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
               Text(error.toString()),
               ElevatedButton(
                 onPressed: () => state.loadMore(),
-                child: Text('Retry'),
+                child: const Text('Retry'),
               ),
             ],
           );
         },
-        empty: Center(
+        empty: const Center(
           child: Text('No tunes found'),
         ),
         itemBuilder: (context, _, item) {

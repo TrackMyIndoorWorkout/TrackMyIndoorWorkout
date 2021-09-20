@@ -4,7 +4,6 @@ import 'package:pref/pref.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:track_my_indoor_exercise/ui/about.dart';
 import '../persistence/preferences.dart';
-import '../ui/parts/flutter_brand_icons.dart';
 import '../utils/constants.dart';
 
 class ThemeManager {
@@ -106,6 +105,10 @@ class ThemeManager {
 
   Color getOrangeColor() {
     return isDark() ? Colors.orange : Colors.deepOrangeAccent;
+  }
+
+  Color getSuuntoRedColor() {
+    return isDark() ? Colors.redAccent : Colors.red;
   }
 
   Color getGreyColor() {
@@ -254,19 +257,6 @@ class ThemeManager {
     );
   }
 
-  Widget getStravaFab(bool overlayEnabled, VoidCallback? onPressed) {
-    return _getFabCore(
-      Colors.white,
-      getOrangeColor(),
-      Icon(BrandIcons.strava),
-      true,
-      overlayEnabled,
-      "Strava Upload",
-      8,
-      onPressed,
-    );
-  }
-
   Widget getGreyFab(IconData icon, VoidCallback? onPressed) {
     return getIconFab(getGreyColor(), icon, false, false, "", 0, onPressed);
   }
@@ -310,7 +300,7 @@ class ThemeManager {
       overlayEnabled,
       "About & Help",
       0,
-      () => Get.to(() => AboutScreen()),
+      () => Get.to(() => const AboutScreen()),
     );
   }
 

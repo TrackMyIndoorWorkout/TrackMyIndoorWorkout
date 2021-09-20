@@ -1,4 +1,4 @@
-const List<int> CRC_TABLE = [
+const List<int> crcTable = [
   0x0000,
   0xCC01,
   0xD801,
@@ -21,14 +21,14 @@ int crcByte(int crc, int byte) {
   int tmp;
 
   // compute checksum of lower four bits of byte
-  tmp = CRC_TABLE[crc & 0xF];
+  tmp = crcTable[crc & 0xF];
   crc = (crc >> 4) & 0x0FFF;
-  crc = crc ^ tmp ^ CRC_TABLE[byte & 0xF];
+  crc = crc ^ tmp ^ crcTable[byte & 0xF];
 
   // now compute checksum of upper four bits of byte
-  tmp = CRC_TABLE[crc & 0xF];
+  tmp = crcTable[crc & 0xF];
   crc = (crc >> 4) & 0x0FFF;
-  crc = crc ^ tmp ^ CRC_TABLE[(byte >> 4) & 0xF];
+  crc = crc ^ tmp ^ crcTable[(byte >> 4) & 0xF];
 
   return crc;
 }

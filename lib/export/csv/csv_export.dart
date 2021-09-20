@@ -4,11 +4,12 @@ import '../../import/constants.dart';
 import '../activity_export.dart';
 import '../export_model.dart';
 
-class CSVExport extends ActivityExport {
-  StringBuffer _sb = StringBuffer();
+class CsvExport extends ActivityExport {
+  final StringBuffer _sb = StringBuffer();
 
-  CSVExport() : super(nonCompressedFileExtension: 'csv', nonCompressedMimeType: 'text/csv');
+  CsvExport() : super(nonCompressedFileExtension: 'csv', nonCompressedMimeType: 'text/csv');
 
+  @override
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     _sb.writeln("$CSV_MAGIC,$CSV_VERSION,");
     _sb.writeln("$RIDE_SUMMARY,");
@@ -39,7 +40,7 @@ class CSVExport extends ActivityExport {
   }
 
   void addRideData(ExportModel exportModel) {
-    _sb.writeln("$RIDE_DATA");
+    _sb.writeln(RIDE_DATA);
     _sb.write("$POWER_HEADER,");
     _sb.write("$RPM_HEADER,");
     _sb.write("$HR_HEADER,");
@@ -61,10 +62,12 @@ class CSVExport extends ActivityExport {
     }
   }
 
+  @override
   String timeStampString(DateTime dateTime) {
     return ""; // Not used for CSV
   }
 
+  @override
   int timeStampInteger(DateTime dateTime) {
     return 0; // Not used for CSV
   }

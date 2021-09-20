@@ -63,6 +63,7 @@ class ExportModelForTests extends ExportModel {
                 sport: ActivityType.Ride,
                 powerFactor: 1.0,
                 calorieFactor: 1.0,
+                timeZone: "America/Los_Angeles",
               ),
           rawData: rawData ?? false,
           descriptor: descriptor ?? deviceMap["SAP+"]!,
@@ -74,6 +75,7 @@ class ExportModelForTests extends ExportModel {
           buildVersionMinor: buildVersionMinor ?? "0",
           langID: langID ?? 'en-US',
           partNumber: partNumber ?? '0',
+          altitude: 0.0,
           records: records ?? [],
         );
 }

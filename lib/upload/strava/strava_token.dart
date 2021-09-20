@@ -4,7 +4,7 @@ class StravaToken {
   String? accessToken;
   String? refreshToken;
   String? tokenType;
-  int? expiresAt;
+  int? expiresAt; // in seconds
   String? scope;
 
   StravaToken({this.accessToken, this.refreshToken, this.expiresAt, this.scope});
@@ -50,7 +50,7 @@ class RefreshAnswer {
   Fault? fault;
   String? accessToken;
   String? refreshToken;
-  int? expiresAt;
+  int? expiresAt; // in seconds
 
   RefreshAnswer();
 

@@ -1,6 +1,8 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
+import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import 'athlete.dart';
@@ -12,13 +14,15 @@ import 'ux_preferences.dart';
 import 'zones_hub.dart';
 
 class PreferencesHubScreen extends StatefulWidget {
+  const PreferencesHubScreen({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => PreferencesHubScreenState();
 }
 
 class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
+  TextStyle _textStyle = const TextStyle();
 
   @override
   void initState() {
@@ -36,7 +40,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Preferences')),
+      appBar: AppBar(title: const Text('Preferences')),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -46,7 +50,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => UXPreferencesScreen()),
+                onPressed: () => Get.to(() => const UXPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,7 +70,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => DataPreferencesScreen()),
+                onPressed: () => Get.to(() => const DataPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,7 +90,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => TargetHrPreferencesScreen()),
+                onPressed: () => Get.to(() => const TargetHrPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -106,7 +110,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => ZonesHubScreen()),
+                onPressed: () => Get.to(() => const ZonesHubScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -126,7 +130,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => LeaderboardPreferencesScreen()),
+                onPressed: () => Get.to(() => const LeaderboardPreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -146,7 +150,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => AthletePreferencesScreen()),
+                onPressed: () => Get.to(() => const AthletePreferencesScreen()),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -166,7 +170,14 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
               padding: const EdgeInsets.all(5.0),
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => Get.to(() => ExpertPreferencesScreen()),
+                onPressed: () async {
+                  final timeZoneChoicesFixed = await FlutterNativeTimezone.getAvailableTimezones();
+                  List<String> timeZoneChoices = [];
+                  timeZoneChoices.addAll(timeZoneChoicesFixed);
+                  timeZoneChoices.sort();
+                  timeZoneChoices.insert(0, ENFORCED_TIME_ZONE_DEFAULT);
+                  Get.to(() => ExpertPreferencesScreen(timeZoneChoices: timeZoneChoices));
+                },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,

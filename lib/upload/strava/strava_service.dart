@@ -2,19 +2,26 @@ import '../../export/fit/fit_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/secret.dart';
+import '../upload_service.dart';
 import 'strava_status_code.dart';
 import 'fault.dart';
 import 'strava.dart';
 
-class StravaService {
-  Strava _strava = Strava(STRAVA_SECRET);
+class StravaService implements UploadService {
+  Strava _strava = Strava(STRAVA_CLIENT_ID, STRAVA_SECRET);
 
   Future<bool> login() async {
-    return await _strava.oauth(STRAVA_CLIENT_ID, 'activity:write', STRAVA_SECRET, 'auto');
+    return await _strava.oauth(_strava.clientId, 'activity:write', _strava.secret, 'auto');
   }
 
   Future<bool> hasValidToken() async {
     return await _strava.hasValidToken();
+  }
+
+  Future<int> deAuthorize() async {
+    Fault fault = await _strava.deAuthorize();
+
+    return fault.statusCode;
   }
 
   Future<int> upload(Activity activity, List<Record> records) async {

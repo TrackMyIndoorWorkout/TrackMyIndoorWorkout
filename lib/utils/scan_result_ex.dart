@@ -65,9 +65,9 @@ extension ScanResultEx on ScanResult {
     }
 
     List<String> nameStrings = [];
-    companyIds.forEach((companyId) {
+    for (var companyId in companyIds) {
       nameStrings.add(companyRegistry.nameForId(companyId));
-    });
+    }
 
     return nameStrings.join(', ');
   }
