@@ -8,24 +8,28 @@ import 'fault.dart';
 import 'strava.dart';
 
 class StravaService implements UploadService {
-  Strava _strava = Strava(STRAVA_CLIENT_ID, STRAVA_SECRET);
+  final Strava _strava = Strava(STRAVA_CLIENT_ID, STRAVA_SECRET);
 
+  @override
   Future<bool> login() async {
     return await _strava.oauth(_strava.clientId, 'activity:write', _strava.secret, 'auto');
   }
 
+  @override
   Future<bool> hasValidToken() async {
     return await _strava.hasValidToken();
   }
 
+  @override
   Future<int> deAuthorize() async {
     Fault fault = await _strava.deAuthorize();
 
     return fault.statusCode;
   }
 
+  @override
   Future<int> upload(Activity activity, List<Record> records) async {
-    if (records.length <= 0) {
+    if (records.isEmpty) {
       return StravaStatusCode.statusJsonIsEmpty;
     }
 
