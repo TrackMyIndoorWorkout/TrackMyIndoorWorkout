@@ -6,7 +6,8 @@ import '../upload_service.dart';
 import 'training_peaks.dart';
 
 class TrainingPeaksService implements UploadService {
-  final TrainingPeaks _trainingPeaks = TrainingPeaks(TRAINING_PEAKS_CLIENT_ID, TRAINING_PEAKS_SECRET);
+  final TrainingPeaks _trainingPeaks =
+      TrainingPeaks(TRAINING_PEAKS_CLIENT_ID, TRAINING_PEAKS_SECRET);
 
   @override
   Future<bool> login() async {
