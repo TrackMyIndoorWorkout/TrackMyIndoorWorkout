@@ -42,8 +42,6 @@ abstract class Upload {
       "Accept": "application/json",
       "Accept-Encoding": "gzip",
       "Content-Type": "application/json",
-      // "Content-Encoding": "gzip",
-      // "Content-Length": fileContent.length.toString()
     });
 
     String contentString = utf8.decode(fileContent);
