@@ -38,13 +38,17 @@ class Activity {
   @ColumnInfo(name: 'suunto_uploaded')
   bool suuntoUploaded;
   @ColumnInfo(name: 'suunto_blob_url')
-  final String suuntoBlobUrl;
+  String suuntoBlobUrl;
   @ColumnInfo(name: 'under_armour_uploaded')
   bool underArmourUploaded;
   @ColumnInfo(name: 'training_peaks_uploaded')
   bool trainingPeaksUploaded;
   @ColumnInfo(name: 'ua_workout_id')
   int uaWorkoutId;
+  @ColumnInfo(name: 'suunto_upload_id')
+  int suuntoUploadId;
+  @ColumnInfo(name: 'suunto_workout_url')
+  String suuntoWorkoutUrl;
 
   @ignore
   DateTime? startDateTime;
@@ -67,6 +71,8 @@ class Activity {
     this.trainingPeaksUploaded = false,
     this.stravaId = 0,
     this.uaWorkoutId = 0,
+    this.suuntoUploadId = 0,
+    this.suuntoWorkoutUrl = "",
     this.startDateTime,
     required this.fourCC,
     required this.sport,
@@ -87,9 +93,19 @@ class Activity {
     this.stravaId = stravaId;
   }
 
-  void markSuuntoUploaded(int workoutId) {
-    suuntoUploaded = true;
+  void markUnderArmourUploaded(int workoutId) {
+    underArmourUploaded = true;
     uaWorkoutId = workoutId;
+  }
+
+  void suuntoUploadInitiated(int uploadId, String blobUrl) {
+    suuntoUploadId = uploadId;
+    suuntoBlobUrl = blobUrl;
+  }
+
+  void markSuuntoUploaded(String workoutUrl) {
+    suuntoWorkoutUrl = workoutUrl;
+    suuntoUploaded = true;
   }
 
   String distanceString(bool si, bool highRes) {

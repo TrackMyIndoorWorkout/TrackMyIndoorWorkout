@@ -20,7 +20,7 @@ import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 11, entities: [
+@Database(version: 12, entities: [
   Activity,
   Record,
   DeviceUsage,
@@ -198,4 +198,11 @@ final migration9to10 = Migration(9, 10, (database) async {
 final migration10to11 = Migration(10, 11, (database) async {
   await database.execute(
       "ALTER TABLE `$activitiesTableName` ADD COLUMN `ua_workout_id` INTEGER NOT NULL DEFAULT 0");
+});
+
+final migration11to12 = Migration(11, 12, (database) async {
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `suunto_upload_id` INTEGER NOT NULL DEFAULT 0");
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `suunto_workout_url` TEXT NOT NULL DEFAULT ''");
 });
