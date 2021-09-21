@@ -68,7 +68,7 @@ abstract class Upload {
           if (workoutId > 0) {
             debugPrint('workoutId: $workoutId');
             final database = Get.find<AppDatabase>();
-            activity.markSuuntoUploaded(workoutId);
+            activity.markUnderArmourUploaded(workoutId);
             await database.activityDao.updateActivity(activity);
           }
         }
