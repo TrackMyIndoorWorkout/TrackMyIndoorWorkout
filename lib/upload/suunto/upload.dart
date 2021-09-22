@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import '../../export/activity_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/database.dart';
@@ -12,7 +10,6 @@ import '../../persistence/secret.dart';
 
 import 'constants.dart';
 import 'suunto_token.dart';
-// import 'upload_activity.dart';
 
 abstract class Upload {
   /// Tested with gpx and tcx
@@ -42,7 +39,7 @@ abstract class Upload {
       return 0;
     }
 
-    final headers = suuntoToken.getAuthorizationHeader(SUUNTO_SUBSCRIPTION_PRIMARY_KEY);
+    var headers = suuntoToken.getAuthorizationHeader(SUUNTO_SUBSCRIPTION_PRIMARY_KEY);
     if (headers.containsKey('88') == true) {
       debugPrint('Token not yet known');
       return 0;
@@ -99,101 +96,45 @@ abstract class Upload {
     activity.suuntoUploadInitiated(uploadId, blobUrl);
     await database.activityDao.updateActivity(activity);
 
-    StreamController<int> onUploadPending = StreamController();
-
-    final putUri = Uri.parse(blobUrl);
-    var request = http.MultipartRequest("PUT", putUri);
-
     headers["Content-Type"] = "application/vnd.ant.fit";
-    request.headers.addAll(headers);
+    final putUri = Uri.parse(blobUrl);
 
-    request.files.add(http.MultipartFile.fromBytes('file', fileContent,
-        filename: persistenceValues["fileName"],
-        contentType: MediaType("application", "vnd.ant.fit")));
-    debugPrint(request.toString());
+    final uploadBlobResponse = await http.put(
+      putUri,
+      headers: headers,
+      body: fileContent,
+    );
 
-    final response = await request.send();
+    if (uploadBlobResponse.statusCode < 200 || uploadBlobResponse.statusCode >= 300) {
+      debugPrint('Error while uploading the workout');
+    } else {
+      debugPrint('$uploadBlobResponse');
 
-    debugPrint('Response: ${response.statusCode} ${response.reasonPhrase}');
+      final statusUri = Uri.parse(UPLOADS_ENDPOINT + "/$uploadId");
 
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      // response.statusCode != 201
-      debugPrint('Error while uploading the activity');
-      debugPrint('${response.statusCode} - ${response.reasonPhrase}');
-    }
+      headers["Content-Type"] = "application/json";
 
-    int idUpload;
+      final uploadStatusResponse = await http.post(
+        statusUri,
+        headers: headers,
+      );
 
-    /*
-    // Upload is processed by the server
-    // now wait for the upload to be finished
-    //----------------------------------------
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      // response.statusCode == 201
-      debugPrint('Activity successfully created');
-      response.stream.transform(utf8.decoder).listen((value) async {
-        debugPrint(value);
-        final Map<String, dynamic> _body = json.decode(value);
-        final response = ResponseUploadActivity.fromJson(_body);
-
-        if (response.id > 0) {
-          final database = Get.find<AppDatabase>();
-          activity.markUploaded(response.id);
+      const workoutUrl = '"webUrl": "';
+      final statusBody = uploadStatusResponse.body;
+      matchBeginningIndex = statusBody.indexOf(workoutUrl);
+      if (matchBeginningIndex > 0) {
+        final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
+        final urlEndIndex = statusBody.indexOf('"', urlBeginningIndex);
+        if (urlEndIndex > 0) {
+          final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
+          activity.markSuuntoUploaded(webUrl);
           await database.activityDao.updateActivity(activity);
-          debugPrint('id ${response.id}');
-          idUpload = response.id;
-          onUploadPending.add(idUpload);
         }
-      });
+      }
 
-      String reqCheckUpgrade = '$UPLOADS_ENDPOINT/';
-      onUploadPending.stream.listen((id) async {
-        reqCheckUpgrade = reqCheckUpgrade + id.toString();
-        final resp = await http.get(Uri.parse(reqCheckUpgrade), headers: header);
-        debugPrint('check status ${resp.reasonPhrase}  ${resp.statusCode}');
-
-        // Everything is fine the file has been loaded
-        if (resp.statusCode >= 200 && resp.statusCode < 300) {
-          // resp.statusCode == 200
-          debugPrint('${resp.statusCode} ${resp.reasonPhrase}');
-        }
-
-        // 404 the temp id does not exist anymore
-        // Activity has been probably already loaded
-        if (resp.statusCode == 404) {
-          debugPrint('---> 404 activity already loaded  ${resp.reasonPhrase}');
-        }
-
-        if (resp.reasonPhrase != null) {
-          if (resp.reasonPhrase!.compareTo(StravaStatusText.ready) == 0) {
-            debugPrint('---> Activity successfully uploaded');
-            onUploadPending.close();
-          }
-
-          if ((resp.reasonPhrase!.compareTo(StravaStatusText.notFound) == 0) ||
-              (resp.reasonPhrase!.compareTo(StravaStatusText.errorMsg) == 0)) {
-            debugPrint('---> Error while checking status upload');
-            onUploadPending.close();
-          }
-
-          if (resp.reasonPhrase!.compareTo(StravaStatusText.deleted) == 0) {
-            debugPrint('---> Activity deleted');
-            onUploadPending.close();
-          }
-
-          if (resp.reasonPhrase!.compareTo(StravaStatusText.processed) == 0) {
-            debugPrint('---> try another time');
-            // wait 2 sec before checking again status
-            Timer(Duration(seconds: 2), () => onUploadPending.add(id));
-          }
-        } else {
-          debugPrint('---> Unknown error');
-          onUploadPending.close();
-        }
-      });
+      return uploadStatusResponse.statusCode;
     }
 
-    return Fault(response.statusCode, response.reasonPhrase ?? "Unknown reason");*/
-    return 0;
+    return uploadBlobResponse.statusCode;
   }
 }
