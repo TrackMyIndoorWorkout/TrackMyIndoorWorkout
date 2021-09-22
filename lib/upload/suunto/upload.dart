@@ -61,7 +61,8 @@ abstract class Upload {
 
     // https://apizone.suunto.com/how-to-workout-upload
     final initResponse = uploadInitResponse.body;
-    int uploadId = 0;
+    debugPrint('initResponse: $initResponse');
+    String uploadId = "";
     String blobUrl = "";
     const idPrefixPart = '"id":"';
     int matchBeginningIndex = initResponse.indexOf(idPrefixPart);
@@ -70,11 +71,8 @@ abstract class Upload {
       final idBeginningIndex = matchBeginningIndex + idPrefixPart.length;
       idEndIndex = initResponse.indexOf('"', idBeginningIndex);
       if (idEndIndex > 0) {
-        final idString = initResponse.substring(idBeginningIndex, idEndIndex);
-        uploadId = int.tryParse(idString) ?? 0;
-        if (uploadId > 0) {
-          debugPrint('uploadId: $uploadId');
-        }
+        uploadId = initResponse.substring(idBeginningIndex, idEndIndex);
+        debugPrint('uploadId: $uploadId');
       }
     }
 
@@ -85,10 +83,11 @@ abstract class Upload {
       final blobEndIndex = initResponse.indexOf('"', blobBeginningIndex);
       if (blobEndIndex > 0) {
         blobUrl = initResponse.substring(blobBeginningIndex, blobEndIndex);
+        debugPrint('blobUrl: $blobUrl');
       }
     }
 
-    if (uploadId <= 0 || blobUrl.isEmpty) {
+    if (uploadId.isEmpty || blobUrl.isEmpty) {
       return 0;
     }
 
@@ -96,12 +95,16 @@ abstract class Upload {
     activity.suuntoUploadInitiated(uploadId, blobUrl);
     await database.activityDao.updateActivity(activity);
 
-    headers["Content-Type"] = "application/vnd.ant.fit";
+    // headers["Content-Type"] = "application/vnd.ant.fit";
+    // headers["Content-Length"] = fileContent.length.toString();
+    // headers["x-ms-blob-type"] = "BlockBlob";
     final putUri = Uri.parse(blobUrl);
 
     final uploadBlobResponse = await http.put(
       putUri,
-      headers: headers,
+      headers: {
+        "x-ms-blob-type": "BlockBlob"
+      },
       body: fileContent,
     );
 
@@ -112,7 +115,7 @@ abstract class Upload {
 
       final statusUri = Uri.parse(UPLOADS_ENDPOINT + "/$uploadId");
 
-      headers["Content-Type"] = "application/json";
+      // headers["Content-Type"] = "application/json";
 
       final uploadStatusResponse = await http.post(
         statusUri,
