@@ -47,6 +47,8 @@ class Activity {
   int uaWorkoutId;
   @ColumnInfo(name: 'suunto_upload_id')
   int suuntoUploadId;
+  @ColumnInfo(name: 'suunto_upload_identifier')
+  String suuntoUploadIdentifier;
   @ColumnInfo(name: 'suunto_workout_url')
   String suuntoWorkoutUrl;
 
@@ -72,6 +74,7 @@ class Activity {
     this.stravaId = 0,
     this.uaWorkoutId = 0,
     this.suuntoUploadId = 0,
+    this.suuntoUploadIdentifier = "",
     this.suuntoWorkoutUrl = "",
     this.startDateTime,
     required this.fourCC,
@@ -98,8 +101,8 @@ class Activity {
     uaWorkoutId = workoutId;
   }
 
-  void suuntoUploadInitiated(int uploadId, String blobUrl) {
-    suuntoUploadId = uploadId;
+  void suuntoUploadInitiated(String uploadId, String blobUrl) {
+    suuntoUploadIdentifier = uploadId;
     suuntoBlobUrl = blobUrl;
   }
 
