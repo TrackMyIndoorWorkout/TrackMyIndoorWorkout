@@ -58,13 +58,46 @@ abstract class Upload {
     final uploadInitResponse = await http.post(
       postUri,
       headers: headers,
-      body:
-          '{"description": "${persistenceValues["description"]}", "comment": "${persistenceValues["name"]}"}',
+      body: '{"description": "${persistenceValues["description"]}", '
+          '"comment": "${persistenceValues["name"]}"}',
     );
 
     // https://apizone.suunto.com/how-to-workout-upload
-    // TODO: extract upload id and blob URL, persist
-    final blobUrl = "";
+    final initResponse = uploadInitResponse.body;
+    int uploadId = 0;
+    String blobUrl = "";
+    const idPrefixPart = '"id":"';
+    int matchBeginningIndex = initResponse.indexOf(idPrefixPart);
+    int idEndIndex = -1;
+    if (matchBeginningIndex > 0) {
+      final idBeginningIndex = matchBeginningIndex + idPrefixPart.length;
+      idEndIndex = initResponse.indexOf('"', idBeginningIndex);
+      if (idEndIndex > 0) {
+        final idString = initResponse.substring(idBeginningIndex, idEndIndex);
+        uploadId = int.tryParse(idString) ?? 0;
+        if (uploadId > 0) {
+          debugPrint('uploadId: $uploadId');
+        }
+      }
+    }
+
+    const blobPrefixPart = '"url":"';
+    matchBeginningIndex = initResponse.indexOf(blobPrefixPart, idEndIndex);
+    if (matchBeginningIndex > 0) {
+      final blobBeginningIndex = matchBeginningIndex + blobPrefixPart.length;
+      final blobEndIndex = initResponse.indexOf('"', blobBeginningIndex);
+      if (blobEndIndex > 0) {
+        blobUrl = initResponse.substring(blobBeginningIndex, blobEndIndex);
+      }
+    }
+
+    if (uploadId <= 0 || blobUrl.isEmpty) {
+      return 0;
+    }
+
+    final database = Get.find<AppDatabase>();
+    activity.suuntoUploadInitiated(uploadId, blobUrl);
+    await database.activityDao.updateActivity(activity);
 
     StreamController<int> onUploadPending = StreamController();
 
