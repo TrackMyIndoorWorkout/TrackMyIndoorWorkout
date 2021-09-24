@@ -50,28 +50,7 @@ abstract class Upload {
     });
 
     if (activity.suuntoBlobUrl.isNotEmpty && activity.suuntoUploadIdentifier.isNotEmpty) {
-      final statusUri = Uri.parse(UPLOADS_ENDPOINT + "/${activity.suuntoUploadIdentifier}");
-
-      final uploadStatusResponse = await http.get(
-        statusUri,
-        headers: headers,
-      );
-
-      const workoutUrl = '"webUrl":"';
-      final statusBody = uploadStatusResponse.body;
-      int matchBeginningIndex = statusBody.indexOf(workoutUrl);
-      if (matchBeginningIndex > 0) {
-        final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
-        final urlEndIndex = statusBody.indexOf('"', urlBeginningIndex);
-        if (urlEndIndex > 0) {
-          final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
-          activity.markSuuntoUploaded(webUrl);
-          final database = Get.find<AppDatabase>();
-          await database.activityDao.updateActivity(activity);
-        }
-      }
-
-      return uploadStatusResponse.statusCode;
+      return await checkStatus(headers, activity, Get.find<AppDatabase>());
     }
 
     Map<String, dynamic> persistenceValues = exporter.getPersistenceValues(activity, false);
@@ -123,9 +102,7 @@ abstract class Upload {
 
     final uploadBlobResponse = await http.put(
       putUri,
-      headers: {
-        "x-ms-blob-type": "BlockBlob"
-      },
+      headers: {"x-ms-blob-type": "BlockBlob"},
       body: fileContent,
     );
 
@@ -134,29 +111,37 @@ abstract class Upload {
     } else {
       debugPrint('$uploadBlobResponse');
 
-      final statusUri = Uri.parse(UPLOADS_ENDPOINT + "/$uploadId");
-
-      final uploadStatusResponse = await http.get(
-        statusUri,
-        headers: headers,
-      );
-
-      const workoutUrl = '"webUrl":"';
-      final statusBody = uploadStatusResponse.body;
-      matchBeginningIndex = statusBody.indexOf(workoutUrl);
-      if (matchBeginningIndex > 0) {
-        final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
-        final urlEndIndex = statusBody.indexOf('"', urlBeginningIndex);
-        if (urlEndIndex > 0) {
-          final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
-          activity.markSuuntoUploaded(webUrl);
-          await database.activityDao.updateActivity(activity);
-        }
-      }
-
-      return uploadStatusResponse.statusCode;
+      return await checkStatus(headers, activity, database);
     }
 
     return uploadBlobResponse.statusCode;
+  }
+
+  Future<int> checkStatus(
+    Map<String, String> headers,
+    Activity activity,
+    AppDatabase database,
+  ) async {
+    final statusUri = Uri.parse(UPLOADS_ENDPOINT + "/${activity.suuntoUploadIdentifier}");
+
+    final uploadStatusResponse = await http.get(
+      statusUri,
+      headers: headers,
+    );
+
+    const workoutUrl = '"webUrl":"';
+    final statusBody = uploadStatusResponse.body;
+    int matchBeginningIndex = statusBody.indexOf(workoutUrl);
+    if (matchBeginningIndex > 0) {
+      final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
+      final urlEndIndex = statusBody.indexOf('"', urlBeginningIndex);
+      if (urlEndIndex > 0) {
+        final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
+        activity.markSuuntoUploaded(webUrl);
+        await database.activityDao.updateActivity(activity);
+      }
+    }
+
+    return uploadStatusResponse.statusCode;
   }
 }
