@@ -47,8 +47,32 @@ abstract class Upload {
 
     headers.addAll({
       "Accept": "application/json",
-      "Content-Type": "application/json",
     });
+
+    if (activity.suuntoBlobUrl.isNotEmpty && activity.suuntoUploadIdentifier.isNotEmpty) {
+      final statusUri = Uri.parse(UPLOADS_ENDPOINT + "/${activity.suuntoUploadIdentifier}");
+
+      final uploadStatusResponse = await http.get(
+        statusUri,
+        headers: headers,
+      );
+
+      const workoutUrl = '"webUrl":"';
+      final statusBody = uploadStatusResponse.body;
+      int matchBeginningIndex = statusBody.indexOf(workoutUrl);
+      if (matchBeginningIndex > 0) {
+        final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
+        final urlEndIndex = statusBody.indexOf('"', urlBeginningIndex);
+        if (urlEndIndex > 0) {
+          final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
+          activity.markSuuntoUploaded(webUrl);
+          final database = Get.find<AppDatabase>();
+          await database.activityDao.updateActivity(activity);
+        }
+      }
+
+      return uploadStatusResponse.statusCode;
+    }
 
     Map<String, dynamic> persistenceValues = exporter.getPersistenceValues(activity, false);
     final postUri = Uri.parse(UPLOADS_ENDPOINT);
@@ -95,9 +119,6 @@ abstract class Upload {
     activity.suuntoUploadInitiated(uploadId, blobUrl);
     await database.activityDao.updateActivity(activity);
 
-    // headers["Content-Type"] = "application/vnd.ant.fit";
-    // headers["Content-Length"] = fileContent.length.toString();
-    // headers["x-ms-blob-type"] = "BlockBlob";
     final putUri = Uri.parse(blobUrl);
 
     final uploadBlobResponse = await http.put(
@@ -115,14 +136,12 @@ abstract class Upload {
 
       final statusUri = Uri.parse(UPLOADS_ENDPOINT + "/$uploadId");
 
-      // headers["Content-Type"] = "application/json";
-
-      final uploadStatusResponse = await http.post(
+      final uploadStatusResponse = await http.get(
         statusUri,
         headers: headers,
       );
 
-      const workoutUrl = '"webUrl": "';
+      const workoutUrl = '"webUrl":"';
       final statusBody = uploadStatusResponse.body;
       matchBeginningIndex = statusBody.indexOf(workoutUrl);
       if (matchBeginningIndex > 0) {
