@@ -50,13 +50,13 @@ Map<String, int> underArmourSport = {
 
 int toUnderArmourSport(String sport) {
   if (sport == ActivityType.Swim) {
-    sport = "OpenWaterSwim";
+    sport = "Swim";
   } else if (sport == ActivityType.Canoeing) {
     sport = ActivityType.Kayaking;
   } else if (sport == ActivityType.Run) {
-    sport = "TrackRun";
+    sport = "Run";
   } else if (sport == ActivityType.Ride) {
-    sport = "TrackRide";
+    sport = "Ride";
   } else if (sport == ActivityType.Elliptical) {
     sport = "Elliptical";
   }
