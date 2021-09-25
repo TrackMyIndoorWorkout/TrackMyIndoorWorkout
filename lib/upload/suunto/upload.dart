@@ -47,6 +47,7 @@ abstract class Upload {
 
     headers.addAll({
       "Accept": "application/json",
+      "Content-Type": "application/json",
     });
 
     if (activity.suuntoBlobUrl.isNotEmpty && activity.suuntoUploadIdentifier.isNotEmpty) {
