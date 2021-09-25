@@ -67,31 +67,37 @@ abstract class Upload {
     debugPrint('initResponse: $initResponse');
     String uploadId = "";
     String blobUrl = "";
-    const idPrefixPart = '"id":"';
-    int matchBeginningIndex = initResponse.indexOf(idPrefixPart);
-    int idEndIndex = -1;
-    if (matchBeginningIndex > 0) {
-      final idBeginningIndex = matchBeginningIndex + idPrefixPart.length;
-      idEndIndex = initResponse.indexOf('"', idBeginningIndex);
-      if (idEndIndex > 0) {
-        uploadId = initResponse.substring(idBeginningIndex, idEndIndex);
-        debugPrint('uploadId: $uploadId');
-      }
-    }
 
-    const blobPrefixPart = '"url":"';
-    matchBeginningIndex = initResponse.indexOf(blobPrefixPart, idEndIndex);
-    if (matchBeginningIndex > 0) {
-      final blobBeginningIndex = matchBeginningIndex + blobPrefixPart.length;
-      final blobEndIndex = initResponse.indexOf('"', blobBeginningIndex);
-      if (blobEndIndex > 0) {
-        blobUrl = initResponse.substring(blobBeginningIndex, blobEndIndex);
-        debugPrint('blobUrl: $blobUrl');
+    if (uploadInitResponse.statusCode < 200 || uploadInitResponse.statusCode >= 300) {
+      debugPrint('Error while initializing upload');
+      return uploadInitResponse.statusCode;
+    } else {
+      const idPrefixPart = '"id":"';
+      int matchBeginningIndex = initResponse.indexOf(idPrefixPart);
+      int idEndIndex = -1;
+      if (matchBeginningIndex > 0) {
+        final idBeginningIndex = matchBeginningIndex + idPrefixPart.length;
+        idEndIndex = initResponse.indexOf('"', idBeginningIndex);
+        if (idEndIndex > 0) {
+          uploadId = initResponse.substring(idBeginningIndex, idEndIndex);
+          debugPrint('uploadId: $uploadId');
+        }
       }
-    }
 
-    if (uploadId.isEmpty || blobUrl.isEmpty) {
-      return 0;
+      const blobPrefixPart = '"url":"';
+      matchBeginningIndex = initResponse.indexOf(blobPrefixPart, idEndIndex);
+      if (matchBeginningIndex > 0) {
+        final blobBeginningIndex = matchBeginningIndex + blobPrefixPart.length;
+        final blobEndIndex = initResponse.indexOf('"', blobBeginningIndex);
+        if (blobEndIndex > 0) {
+          blobUrl = initResponse.substring(blobBeginningIndex, blobEndIndex);
+          debugPrint('blobUrl: $blobUrl');
+        }
+      }
+
+      if (uploadId.isEmpty || blobUrl.isEmpty) {
+        return 0;
+      }
     }
 
     final database = Get.find<AppDatabase>();
@@ -122,6 +128,12 @@ abstract class Upload {
     Activity activity,
     AppDatabase database,
   ) async {
+    if (activity.suuntoWorkoutUrl.isNotEmpty) {
+      debugPrint("uploadId ${activity.suuntoUploadIdentifier}");
+      debugPrint("blobUrl ${activity.suuntoBlobUrl}");
+      return 200;
+    }
+
     final statusUri = Uri.parse(UPLOADS_ENDPOINT + "/${activity.suuntoUploadIdentifier}");
 
     final uploadStatusResponse = await http.get(
@@ -129,16 +141,20 @@ abstract class Upload {
       headers: headers,
     );
 
-    const workoutUrl = '"webUrl":"';
-    final statusBody = uploadStatusResponse.body;
-    int matchBeginningIndex = statusBody.indexOf(workoutUrl);
-    if (matchBeginningIndex > 0) {
-      final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
-      final urlEndIndex = statusBody.indexOf('"', urlBeginningIndex);
-      if (urlEndIndex > 0) {
-        final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
-        activity.markSuuntoUploaded(webUrl);
-        await database.activityDao.updateActivity(activity);
+    if (uploadStatusResponse.statusCode < 200 || uploadStatusResponse.statusCode >= 300) {
+      debugPrint('Error while getting upload status');
+    } else {
+      const workoutUrl = '"webUrl":"';
+      final statusBody = uploadStatusResponse.body;
+      int matchBeginningIndex = statusBody.indexOf(workoutUrl);
+      if (matchBeginningIndex > 0) {
+        final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
+        final urlEndIndex = statusBody.indexOf('"', urlBeginningIndex);
+        if (urlEndIndex > 0) {
+          final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
+          activity.markSuuntoUploaded(webUrl);
+          await database.activityDao.updateActivity(activity);
+        }
       }
     }
 
