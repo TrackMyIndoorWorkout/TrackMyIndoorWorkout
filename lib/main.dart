@@ -28,15 +28,15 @@ void main() async {
     Get.put<PackageInfo>(packageInfo);
   });
 
-  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
+  await Future.delayed(const Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
 
   final bluetoothStateString = await BluetoothEnable.enableBluetooth;
 
-  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
+  await Future.delayed(const Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
 
   final permissionState = await Permission.locationWhenInUse.request();
 
-  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
+  await Future.delayed(const Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
 
   blueAvailable = await FlutterBlue.instance.isAvailable;
   blueOn = await FlutterBlue.instance.isOn;
