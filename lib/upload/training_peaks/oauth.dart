@@ -26,11 +26,14 @@ abstract class Auth {
       trainingPeaksToken.expiresAt = expire;
     } else {
       await Get.delete<TrainingPeaksToken>();
-      Get.put<TrainingPeaksToken>(TrainingPeaksToken(
-        accessToken: token,
-        refreshToken: refreshToken,
-        expiresAt: expire,
-      ));
+      Get.put<TrainingPeaksToken>(
+        TrainingPeaksToken(
+          accessToken: token,
+          refreshToken: refreshToken,
+          expiresAt: expire,
+        ),
+        permanent: true,
+      );
     }
   }
 

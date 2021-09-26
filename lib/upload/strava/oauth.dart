@@ -35,12 +35,15 @@ abstract class Auth {
       stravaToken.scope = scope;
     } else {
       await Get.delete<StravaToken>();
-      Get.put<StravaToken>(StravaToken(
-        accessToken: token,
-        refreshToken: refreshToken,
-        expiresAt: expire,
-        scope: scope,
-      ));
+      Get.put<StravaToken>(
+        StravaToken(
+          accessToken: token,
+          refreshToken: refreshToken,
+          expiresAt: expire,
+          scope: scope,
+        ),
+        permanent: true,
+      );
     }
   }
 

@@ -32,7 +32,7 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
   @override
   void initState() {
     super.initState();
-    _themeManager = Get.put<ThemeManager>(ThemeManager());
+    _themeManager = Get.put<ThemeManager>(ThemeManager(), permanent: true);
     permissionFuture = Permission.locationWhenInUse.request();
   }
 

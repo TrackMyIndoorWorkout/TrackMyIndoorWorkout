@@ -33,7 +33,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
     );
     _sizeDefault = _textStyle.fontSize! * 2;
     if (!Get.isRegistered<SoundService>()) {
-      Get.put<SoundService>(SoundService());
+      Get.put<SoundService>(SoundService(), permanent: true);
     }
   }
 

@@ -93,7 +93,7 @@ Future<BasePrefService> initPreferences() async {
 
   final prefService =
       await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
-  Get.put<BasePrefService>(prefService);
+  Get.put<BasePrefService>(prefService, permanent: true);
 
   final prefVersion = prefService.get<int>(PREFERENCES_VERSION_TAG) ?? PREFERENCES_VERSION_NEXT;
   if (prefVersion < PREFERENCES_VERSION_SPORT_THRESHOLDS) {

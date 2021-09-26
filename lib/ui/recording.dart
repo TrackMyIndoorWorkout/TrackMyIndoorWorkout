@@ -405,7 +405,9 @@ class RecordingState extends State<RecordingScreen> {
       _fitnessEquipment?.descriptor = widget.descriptor;
     } else {
       _fitnessEquipment = Get.put<FitnessEquipment>(
-          FitnessEquipment(descriptor: widget.descriptor, device: widget.device));
+        FitnessEquipment(descriptor: widget.descriptor, device: widget.device),
+        permanent: true,
+      );
     }
 
     _trackCalculator = TrackCalculator(
@@ -462,7 +464,7 @@ class RecordingState extends State<RecordingScreen> {
     if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
         _dataGapSoundEffect != SOUND_EFFECT_NONE) {
       if (!Get.isRegistered<SoundService>()) {
-        Get.put<SoundService>(SoundService());
+        Get.put<SoundService>(SoundService(), permanent: true);
       }
     }
 

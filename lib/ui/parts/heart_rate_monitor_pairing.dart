@@ -184,7 +184,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                                 Get.delete<HeartRateMonitor>();
                               }
 
-                              Get.put<HeartRateMonitor>(heartRateMonitor);
+                              Get.put<HeartRateMonitor>(heartRateMonitor, permanent: true);
                               await heartRateMonitor.connect();
                               await heartRateMonitor.discover();
                               setState(() {

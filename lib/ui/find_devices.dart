@@ -84,7 +84,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       migration11to12,
       migration12to13,
     ]).build();
-    Get.put<AppDatabase>(database);
+    Get.put<AppDatabase>(database, permanent: true);
   }
 
   void _startScan() {
@@ -293,14 +293,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (fitnessEquipment != null) {
       fitnessEquipment.descriptor = descriptor;
       if (ftmsWithoutServiceData != null) {
-        Get.put<FitnessEquipment>(fitnessEquipment);
+        Get.put<FitnessEquipment>(fitnessEquipment, permanent: true);
       }
     } else {
       fitnessEquipment = FitnessEquipment(
         descriptor: descriptor,
         device: device,
       );
-      Get.put<FitnessEquipment>(fitnessEquipment);
+      Get.put<FitnessEquipment>(fitnessEquipment, permanent: true);
     }
 
     setState(() {
@@ -685,7 +685,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       await Get.delete<HeartRateMonitor>();
                                     }
 
-                                    Get.put<HeartRateMonitor>(heartRateMonitor);
+                                    Get.put<HeartRateMonitor>(heartRateMonitor, permanent: true);
                                     await heartRateMonitor.connect();
                                     await heartRateMonitor.discover();
                                     setState(() {

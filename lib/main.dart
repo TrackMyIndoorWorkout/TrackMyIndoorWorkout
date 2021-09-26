@@ -17,15 +17,15 @@ void main() async {
 
   final companyRegistry = CompanyRegistry();
   await companyRegistry.loadCompanyIdentifiers();
-  Get.put<CompanyRegistry>(companyRegistry);
+  Get.put<CompanyRegistry>(companyRegistry, permanent: true);
 
-  Get.put<AdvertisementCache>(AdvertisementCache());
+  Get.put<AdvertisementCache>(AdvertisementCache(), permanent: true);
 
   var blueAvailable = await FlutterBlue.instance.isAvailable;
   var blueOn = await FlutterBlue.instance.isOn;
 
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-    Get.put<PackageInfo>(packageInfo);
+    Get.put<PackageInfo>(packageInfo, permanent: true);
   });
 
   await Future.delayed(const Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));

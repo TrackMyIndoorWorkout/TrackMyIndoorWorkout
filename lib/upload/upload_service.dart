@@ -21,20 +21,20 @@ abstract class UploadService {
         {
           return Get.isRegistered<SuuntoService>()
               ? Get.find<SuuntoService>()
-              : Get.put<SuuntoService>(SuuntoService());
+              : Get.put<SuuntoService>(SuuntoService(), permanent: true);
         }
       case "mapmyfitness":
         {
           return Get.isRegistered<UnderArmourService>()
               ? Get.find<UnderArmourService>()
-              : Get.put<UnderArmourService>(UnderArmourService());
+              : Get.put<UnderArmourService>(UnderArmourService(), permanent: true);
         }
       case "strava":
       default:
         {
           return Get.isRegistered<StravaService>()
               ? Get.find<StravaService>()
-              : Get.put<StravaService>(StravaService());
+              : Get.put<StravaService>(StravaService(), permanent: true);
         }
     }
   }

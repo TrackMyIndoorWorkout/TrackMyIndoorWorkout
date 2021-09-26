@@ -30,11 +30,14 @@ abstract class Auth {
       stravaToken.expiresAt = expire;
     } else {
       await Get.delete<SuuntoToken>();
-      Get.put<SuuntoToken>(SuuntoToken(
-        accessToken: token,
-        refreshToken: refreshToken,
-        expiresAt: expire,
-      ));
+      Get.put<SuuntoToken>(
+        SuuntoToken(
+          accessToken: token,
+          refreshToken: refreshToken,
+          expiresAt: expire,
+        ),
+        permanent: true,
+      );
     }
   }
 

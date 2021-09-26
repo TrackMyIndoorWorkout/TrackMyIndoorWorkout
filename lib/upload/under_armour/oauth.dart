@@ -26,11 +26,14 @@ abstract class Auth {
       underArmourToken.expiresAt = expire;
     } else {
       await Get.delete<UnderArmourToken>();
-      Get.put<UnderArmourToken>(UnderArmourToken(
-        accessToken: token,
-        refreshToken: refreshToken,
-        expiresAt: expire,
-      ));
+      Get.put<UnderArmourToken>(
+        UnderArmourToken(
+          accessToken: token,
+          refreshToken: refreshToken,
+          expiresAt: expire,
+        ),
+        permanent: true,
+      );
     }
   }
 
