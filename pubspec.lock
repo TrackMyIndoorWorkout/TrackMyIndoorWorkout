@@ -747,12 +747,10 @@ packages:
   share_files_and_screenshot_widgets:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "3dde16f81c322d6ecc6ed9c675f0c362de38ad4c"
-      url: "https://github.com/CsabaConsulting/Share-Files-And-Screenshot-Widgets-Flutter.git"
-    source: git
-    version: "1.0.5"
+      name: share_files_and_screenshot_widgets
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
   shared_preferences:
     dependency: "direct main"
     description:
