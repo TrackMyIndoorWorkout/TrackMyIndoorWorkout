@@ -30,6 +30,7 @@ class FitDataRecord extends FitDefinitionMessage {
     ];
   }
 
+  @override
   List<int> serializeData(dynamic parameter) {
     ExportRecord model = parameter;
 

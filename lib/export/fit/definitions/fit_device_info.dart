@@ -24,6 +24,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
     ];
   }
 
+  @override
   List<int> serializeData(dynamic parameter) {
     ExportModel model = parameter;
 

@@ -12,6 +12,7 @@ class FitSport extends FitDefinitionMessage {
     ];
   }
 
+  @override
   List<int> serializeData(dynamic parameter) {
     final fitSport = toFitSport(parameter);
     return [localMessageType, fitSport.item1, fitSport.item2];
