@@ -8,12 +8,14 @@ import '../fit_message.dart';
 import '../fit_serializable.dart';
 
 class FitDataRecord extends FitDefinitionMessage {
+  final double altitude;
   final String heartRateGapWorkaround;
   final int heartRateUpperLimit;
   final String heartRateLimitingMethod;
 
   FitDataRecord(
     localMessageType,
+    this.altitude,
     this.heartRateGapWorkaround,
     this.heartRateUpperLimit,
     this.heartRateLimitingMethod,
@@ -22,6 +24,7 @@ class FitDataRecord extends FitDefinitionMessage {
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
       FitField(0, FitBaseTypes.sint32Type), // PositionLat
       FitField(1, FitBaseTypes.sint32Type), // PositionLong
+      FitField(2, FitBaseTypes.uint16Type), // Altitude
       FitField(3, FitBaseTypes.uint8Type), // HeartRate (bpm)
       FitField(4, FitBaseTypes.uint8Type), // Cadence (rpm or spm?)
       FitField(5, FitBaseTypes.uint32Type), // Distance (1/100 m)
@@ -42,6 +45,7 @@ class FitDataRecord extends FitDefinitionMessage {
     data.addLong(FitSerializable.fitDateTime(dateTime));
     data.addGpsCoordinate(model.latitude);
     data.addGpsCoordinate(model.longitude);
+    data.addShort(((altitude + 500) * 5).round());
 
     if (model.record.heartRate != null) {
       if (model.record.heartRate == 0 &&
