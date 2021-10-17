@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/preferences.dart';
@@ -40,12 +39,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       ),
       PrefButton(
         onTap: () async {
-          String addressesString =
-              PrefService.of(context).get<String>(DATA_CONNECTION_ADDRESSES_TAG) ??
-                  DATA_CONNECTION_ADDRESSES_DEFAULT;
-          final addressTuples = parseIpAddresses(addressesString);
-          applyDataConnectionCheckConfiguration(addressTuples);
-          if (await InternetConnectionChecker().hasConnection) {
+          if (await hasInternetConnection()) {
             Get.snackbar("Info", "Data connection detected");
           } else {
             Get.snackbar("Warning", "No data connection detected");

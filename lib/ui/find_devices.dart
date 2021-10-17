@@ -2,12 +2,10 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
-import 'package:track_my_indoor_exercise/upload/upload_service.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
@@ -17,8 +15,10 @@ import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
+import '../upload/upload_service.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
+import '../utils/preferences.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/machine_type.dart';
 import '../utils/theme_manager.dart';
@@ -732,7 +732,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   "Portal login",
                   8,
                   () async {
-                    if (!await InternetConnectionChecker().hasConnection) {
+                    if (!await hasInternetConnection()) {
                       Get.snackbar("Warning", "No data connection detected");
                       return;
                     }

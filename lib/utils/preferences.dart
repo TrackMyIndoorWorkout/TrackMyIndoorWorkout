@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
+import '../persistence/preferences.dart';
 import 'constants.dart';
 
 bool isBoundedInteger(String integerString, int minValue, int maxValue) {
@@ -67,13 +70,20 @@ List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
   return addresses;
 }
 
-void applyDataConnectionCheckConfiguration(List<Tuple2<String, int>> addressTuples) {
-  if (addressTuples.length > 0) {
-    InternetConnectionChecker().addresses = addressTuples
+Future<bool> hasInternetConnection() async {
+  final connectionChecker = InternetConnectionChecker();
+  final prefService = Get.find<BasePrefService>();
+  String addressesString =
+      prefService.get<String>(DATA_CONNECTION_ADDRESSES_TAG) ?? DATA_CONNECTION_ADDRESSES_DEFAULT;
+  if (addressesString.isNotEmpty) {
+    final addressTuples = parseIpAddresses(addressesString);
+    connectionChecker.addresses = addressTuples
         .map((addressTuple) => AddressCheckOptions(
               InternetAddress(addressTuple.item1),
               port: addressTuple.item2,
             ))
         .toList(growable: false);
   }
+
+  return await connectionChecker.hasConnection;
 }

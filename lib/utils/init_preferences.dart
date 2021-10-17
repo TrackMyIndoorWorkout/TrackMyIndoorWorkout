@@ -3,7 +3,6 @@ import 'package:pref/pref.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
 import 'constants.dart';
-import 'preferences.dart';
 
 void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService prefService) {
   final valueString = prefService.get<String>(tag) ?? "$defaultInt";
@@ -200,11 +199,6 @@ Future<BasePrefService> initPreferences() async {
       final slowSpeedString = prefService.get<String>(PreferencesSpec.slowSpeedTag(sport)) ?? "";
       PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? EPS;
     }
-  }
-
-  if (addressesString.trim().isNotEmpty) {
-    final addressTuples = parseIpAddresses(addressesString);
-    applyDataConnectionCheckConfiguration(addressTuples);
   }
 
   return prefService;

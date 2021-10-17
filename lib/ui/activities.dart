@@ -6,17 +6,16 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
-import 'package:track_my_indoor_exercise/export/json/json_export.dart';
 import '../export/activity_export.dart';
 import '../export/csv/csv_export.dart';
 import '../export/fit/fit_export.dart';
+import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
@@ -25,6 +24,7 @@ import '../upload/strava/strava_status_code.dart';
 import '../upload/upload_service.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import '../utils/preferences.dart';
 import '../utils/theme_manager.dart';
 import 'calorie_tunes.dart';
 import 'device_usages.dart';
@@ -100,7 +100,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       IconButton(
         icon: _themeManager.getActionIcon(Icons.cloud_upload, size),
         onPressed: () async {
-          if (!await InternetConnectionChecker().hasConnection) {
+          if (!await hasInternetConnection()) {
             Get.snackbar("Warning", "No data connection detected");
             return;
           }

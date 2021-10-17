@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
@@ -31,6 +30,7 @@ import '../upload/strava/strava_status_code.dart';
 import '../upload/upload_service.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import '../utils/preferences.dart';
 import '../utils/sound.dart';
 import '../utils/target_heart_rate.dart';
 import '../utils/theme_manager.dart';
@@ -675,7 +675,7 @@ class RecordingState extends State<RecordingScreen> {
   _workoutUpload(bool onlyWhenAuthenticated) async {
     if (_activity == null) return;
 
-    if (!await InternetConnectionChecker().hasConnection) {
+    if (!await hasInternetConnection()) {
       Get.snackbar("Warning", "No data connection detected");
       return;
     }
@@ -694,7 +694,7 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
-    if (!await InternetConnectionChecker().hasConnection) {
+    if (!await hasInternetConnection()) {
       Get.snackbar("Warning", "No data connection detected");
       return;
     }
