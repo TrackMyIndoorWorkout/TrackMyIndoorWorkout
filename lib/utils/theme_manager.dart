@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
-import 'package:track_my_indoor_exercise/ui/about.dart';
+import '../ui/about.dart';
 import '../persistence/preferences.dart';
 import '../utils/constants.dart';
 
