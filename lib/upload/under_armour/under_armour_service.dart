@@ -1,3 +1,4 @@
+import '../../export/export_target.dart';
 import '../../export/json/json_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
@@ -30,7 +31,13 @@ class UnderArmourService implements UploadService {
     }
 
     final exporter = JsonExport();
-    final fileGzip = await exporter.getExport(activity, records, false, true);
+    final fileGzip = await exporter.getExport(
+      activity,
+      records,
+      false,
+      true,
+      ExportTarget.regular,
+    );
     return await _underArmour.uploadActivity(
       activity,
       fileGzip,

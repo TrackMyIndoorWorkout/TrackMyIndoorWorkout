@@ -1,4 +1,5 @@
 import '../../export_model.dart';
+import '../../export_target.dart';
 import '../enums/fit_activity.dart';
 import '../enums/fit_event.dart';
 import '../enums/fit_event_type.dart';
@@ -10,14 +11,20 @@ import '../fit_message.dart';
 import '../fit_serializable.dart';
 
 class FitActivity extends FitDefinitionMessage {
-  FitActivity(localMessageType) : super(localMessageType, FitMessage.Activity) {
+  int exportTarget;
+
+  FitActivity(localMessageType, this.exportTarget) : super(localMessageType, FitMessage.Activity) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
-      FitField(1, FitBaseTypes.uint16Type), // NumSessions: 1
-      FitField(2, FitBaseTypes.enumType), // Activity (Manual)
-      FitField(3, FitBaseTypes.enumType), // Event (Activity)
-      FitField(4, FitBaseTypes.enumType), // EventType (Stop)
     ];
+    if (exportTarget == ExportTarget.regular) {
+      fields.addAll([
+        FitField(1, FitBaseTypes.uint16Type), // NumSessions: 1
+        FitField(2, FitBaseTypes.enumType), // Activity (Manual)
+        FitField(3, FitBaseTypes.enumType), // Event (Activity)
+        FitField(4, FitBaseTypes.enumType), // EventType (Stop)
+      ]);
+    }
   }
 
   @override
@@ -27,10 +34,12 @@ class FitActivity extends FitDefinitionMessage {
     var dummy = FitData();
     dummy.output = [localMessageType];
     dummy.addLong(FitSerializable.fitDateTime(model.activity.startDateTime!));
-    dummy.addShort(1);
-    dummy.addByte(FitActivityEnum.Manual);
-    dummy.addByte(FitEvent.Activity);
-    dummy.addByte(FitEventType.Stop);
+    if (exportTarget == ExportTarget.regular) {
+      dummy.addShort(1);
+      dummy.addByte(FitActivityEnum.Manual);
+      dummy.addByte(FitEvent.Activity);
+      dummy.addByte(FitEventType.Stop);
+    }
 
     return dummy.output;
   }

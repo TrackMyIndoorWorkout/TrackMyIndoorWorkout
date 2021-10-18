@@ -1,3 +1,4 @@
+import '../../export/export_target.dart';
 import '../../export/fit/fit_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
@@ -34,7 +35,13 @@ class StravaService implements UploadService {
     }
 
     final exporter = FitExport();
-    final fileGzip = await exporter.getExport(activity, records, false, true);
+    final fileGzip = await exporter.getExport(
+      activity,
+      records,
+      false,
+      true,
+      ExportTarget.regular,
+    );
     Fault fault = await _strava.uploadActivity(activity, fileGzip, exporter);
 
     return fault.statusCode;

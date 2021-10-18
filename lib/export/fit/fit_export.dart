@@ -1,11 +1,11 @@
 import '../activity_export.dart';
 import '../export_model.dart';
+import '../export_target.dart';
 import 'definitions/fit_activity.dart';
 import 'definitions/fit_data_record.dart';
 import 'definitions/fit_device_info.dart';
 import 'definitions/fit_file_creator.dart';
 import 'definitions/fit_file_id.dart';
-import 'definitions/fit_lap.dart';
 import 'definitions/fit_session.dart';
 import 'definitions/fit_sport.dart';
 import 'fit_data.dart';
@@ -24,26 +24,40 @@ class FitExport extends ActivityExport {
     var body = FitData();
     final productNameLength = exportModel.descriptor.fullName.length;
 
-    // 0. File ID
     var localMessageType = 0;
-    final fileId = FitFileId(localMessageType, productNameLength);
-    body.output.addAll(fileId.binarySerialize());
-    body.output.addAll(fileId.serializeData(exportModel));
+    if (exportModel.exportTarget == ExportTarget.regular) {
+      // 0. File ID
+      final fileId = FitFileId(localMessageType, productNameLength);
+      body.output.addAll(fileId.binarySerialize());
+      body.output.addAll(fileId.serializeData(exportModel));
+      localMessageType++;
+
+      // 1. File Creator
+      final fileCreator = FitFileCreator(localMessageType);
+      body.output.addAll(fileCreator.binarySerialize());
+      body.output.addAll(fileCreator.serializeData(exportModel));
+      localMessageType++;
+
+      // 2. Device Info
+      final deviceInfo = FitDeviceInfo(localMessageType, productNameLength);
+      body.output.addAll(deviceInfo.binarySerialize());
+      body.output.addAll(deviceInfo.serializeData(exportModel));
+      localMessageType++;
+    }
+
+    // 3. Activity
+    final activity = FitActivity(localMessageType, exportModel.exportTarget);
+    body.output.addAll(activity.binarySerialize());
+    body.output.addAll(activity.serializeData(exportModel));
     localMessageType++;
 
-    // 1. File Creator
-    final fileCreator = FitFileCreator(localMessageType);
-    body.output.addAll(fileCreator.binarySerialize());
-    body.output.addAll(fileCreator.serializeData(exportModel));
+    // 4. Session
+    final session = FitSession(localMessageType, exportModel.exportTarget);
+    body.output.addAll(session.binarySerialize());
+    body.output.addAll(session.serializeData(exportModel));
     localMessageType++;
 
-    // 2. Device Info
-    final deviceInfo = FitDeviceInfo(localMessageType, productNameLength);
-    body.output.addAll(deviceInfo.binarySerialize());
-    body.output.addAll(deviceInfo.serializeData(exportModel));
-    localMessageType++;
-
-    // 3. Data Records
+    // 5. Data Records
     final dataRecord = FitDataRecord(
       localMessageType,
       exportModel.altitude,
@@ -58,26 +72,16 @@ class FitExport extends ActivityExport {
 
     localMessageType++;
 
-    // 4. Sport
-    final fitSport = FitSport(localMessageType);
-    body.output.addAll(fitSport.binarySerialize());
-    body.output.addAll(fitSport.serializeData(exportModel.activity.sport));
-    localMessageType++;
+    if (exportModel.exportTarget == ExportTarget.regular) {
+      // 6. Sport
+      final fitSport = FitSport(localMessageType);
+      body.output.addAll(fitSport.binarySerialize());
+      body.output.addAll(fitSport.serializeData(exportModel.activity.sport));
+      localMessageType++;
+    }
 
-    // 5. Session
-    final session = FitSession(localMessageType);
-    body.output.addAll(session.binarySerialize());
-    body.output.addAll(session.serializeData(exportModel));
-    localMessageType++;
-
-    // 6. Activity
-    final activity = FitActivity(localMessageType);
-    body.output.addAll(activity.binarySerialize());
-    body.output.addAll(activity.serializeData(exportModel));
-    localMessageType++;
     final dataSize = body.output.length;
     List<int> bodyBytes = body.binarySerialize();
-
     final header = FitHeader(dataSize: dataSize);
     List<int> headerBytes = header.binarySerialize();
 

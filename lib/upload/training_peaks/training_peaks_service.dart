@@ -1,3 +1,4 @@
+import '../../export/export_target.dart';
 import '../../export/json/json_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
@@ -31,7 +32,13 @@ class TrainingPeaksService implements UploadService {
     }
 
     final exporter = JsonExport();
-    final fileGzip = await exporter.getExport(activity, records, false, false);
+    final fileGzip = await exporter.getExport(
+      activity,
+      records,
+      false,
+      false,
+      ExportTarget.regular,
+    );
     return await _trainingPeaks.uploadActivity(
       activity,
       fileGzip,

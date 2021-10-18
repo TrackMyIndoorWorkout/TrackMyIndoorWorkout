@@ -14,6 +14,7 @@ import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../export/activity_export.dart';
 import '../export/csv/csv_export.dart';
+import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
 import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
@@ -153,8 +154,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
 
           final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
           ActivityExport exporter = getExporter(formatPick);
-          final fileStream =
-              await exporter.getExport(activity, records, formatPick == "CSV", false);
+          final fileStream = await exporter.getExport(
+            activity,
+            records,
+            formatPick == "CSV",
+            false,
+            ExportTarget.regular,
+          );
           final persistenceValues = exporter.getPersistenceValues(activity, false);
           ShareFilesAndScreenshotWidgets().shareFile(
             persistenceValues['name'],

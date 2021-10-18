@@ -158,6 +158,7 @@ abstract class Upload {
         if (urlEndIndex > 0) {
           final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
           activity.markSuuntoUploaded(webUrl);
+          debugPrint("SUUNTO workout URL: $webUrl");
           await database.activityDao.updateActivity(activity);
         }
       }

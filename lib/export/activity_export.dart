@@ -82,8 +82,8 @@ abstract class ActivityExport {
       ..timeStampInteger = timeStampInteger(timeStamp);
   }
 
-  Future<List<int>> getExport(
-      Activity activity, List<Record> records, bool rawData, bool compress) async {
+  Future<List<int>> getExport(Activity activity, List<Record> records, bool rawData, bool compress,
+      int exportTarget,) async {
     activity.hydrate();
     final descriptor = deviceMap[activity.fourCC] ?? genericDescriptorForSport(activity.sport);
     final track = getDefaultTrack(activity.sport);
@@ -146,6 +146,7 @@ abstract class ActivityExport {
       langID: 'en-US',
       partNumber: '0',
       altitude: calculator.track.altitude,
+      exportTarget: exportTarget,
       records: exportRecords,
     );
 

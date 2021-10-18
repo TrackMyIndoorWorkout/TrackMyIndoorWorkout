@@ -1,3 +1,4 @@
+import '../../export/export_target.dart';
 import '../../export/fit/fit_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
@@ -36,7 +37,13 @@ class SuuntoService implements UploadService {
     }
 
     final exporter = FitExport();
-    final file = await exporter.getExport(activity, records, false, false);
+    final file = await exporter.getExport(
+      activity,
+      records,
+      false,
+      false,
+      ExportTarget.suunto,
+    );
     final statusCode = await _suunto.uploadActivity(activity, file, exporter);
 
     return statusCode;
