@@ -34,7 +34,6 @@ class FitSession extends FitDefinitionMessage {
       FitField(19, FitBaseTypes.uint8Type), // MaxCadence (rpm or spm)
       FitField(20, FitBaseTypes.uint16Type), // AvgPower (Watts)
       FitField(21, FitBaseTypes.uint16Type), // MaxPower (Watts)
-      FitField(26, FitBaseTypes.uint16Type), // NumLaps: 1
       FitField(28, FitBaseTypes.enumType), // Trigger (Activity End)
     ];
   }
@@ -82,7 +81,6 @@ class FitSession extends FitDefinitionMessage {
     data.addShort(model.maximumPower > EPS
         ? model.maximumPower.round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(1);
     data.addByte(FitSessionTrigger.ActivityEnd);
 
     return data.output;
