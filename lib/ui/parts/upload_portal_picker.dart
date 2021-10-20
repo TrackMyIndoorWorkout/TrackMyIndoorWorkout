@@ -28,6 +28,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     "Strava",
     "SUUNTO",
     "MapMyFitness",
+    "TrainingPeaks",
   ];
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   List<PortalChoiceDescriptor> _portalChoices = [];
@@ -43,6 +44,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
           _portalNames[1], "assets/suunto.svg", _themeManager.getSuuntoRedColor()),
       PortalChoiceDescriptor(
           _portalNames[2], "assets/under-armour.svg", _themeManager.getSuuntoRedColor()),
+      PortalChoiceDescriptor(
+          _portalNames[3], "assets/under-armour.svg", _themeManager.getBlueColor()),
     ];
     _portalIndex = max(0, _portalNames.indexOf("Strava"));
     _largerTextStyle = Get.textTheme.headline4!;

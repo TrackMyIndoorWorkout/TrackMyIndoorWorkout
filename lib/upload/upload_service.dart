@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:track_my_indoor_exercise/upload/training_peaks/training_peaks_service.dart';
 
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
@@ -28,6 +29,12 @@ abstract class UploadService {
           return Get.isRegistered<UnderArmourService>()
               ? Get.find<UnderArmourService>()
               : Get.put<UnderArmourService>(UnderArmourService(), permanent: true);
+        }
+      case "trainingpeaks":
+        {
+          return Get.isRegistered<TrainingPeaksService>()
+              ? Get.find<TrainingPeaksService>()
+              : Get.put<TrainingPeaksService>(TrainingPeaksService(), permanent: true);
         }
       case "strava":
       default:
