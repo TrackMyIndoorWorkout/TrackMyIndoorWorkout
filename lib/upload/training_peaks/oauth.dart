@@ -17,13 +17,27 @@ import 'training_peaks_token.dart';
 abstract class Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
-  Future<void> registerToken(String? token, String? refreshToken, int? expire) async {
+  String getUrlBase(bool oAuthOrApi) {
+    if (oAuthOrApi) {
+      return kDebugMode ? TP_SANDBOX_OAUTH_URL_BASE : TP_PRODUCTION_OAUTH_URL_BASE;
+    }
+
+    return kDebugMode ? TP_SANDBOX_API_URL_BASE : TP_PRODUCTION_API_URL_BASE;
+  }
+
+  Future<void> registerToken(
+    String? token,
+    String? refreshToken,
+    int? expire,
+    String? scope,
+  ) async {
     if (Get.isRegistered<TrainingPeaksToken>()) {
       var trainingPeaksToken = Get.find<TrainingPeaksToken>();
       // Save also in Get
       trainingPeaksToken.accessToken = token;
       trainingPeaksToken.refreshToken = refreshToken;
       trainingPeaksToken.expiresAt = expire;
+      trainingPeaksToken.scope = scope;
     } else {
       await Get.delete<TrainingPeaksToken>();
       Get.put<TrainingPeaksToken>(
@@ -31,6 +45,7 @@ abstract class Auth {
           accessToken: token,
           refreshToken: refreshToken,
           expiresAt: expire,
+          scope: scope,
         ),
         permanent: true,
       );
@@ -42,12 +57,14 @@ abstract class Auth {
     String? token,
     String? refreshToken,
     int? expire,
+    String? scope,
   ) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(TRAINING_PEAKS_ACCESS_TOKEN_TAG, token ?? '');
     prefs.setString(TRAINING_PEAKS_REFRESH_TOKEN_TAG, refreshToken ?? '');
     prefs.setInt(TRAINING_PEAKS_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
-    await registerToken(token, refreshToken, expire);
+    prefs.setString(TRAINING_PEAKS_TOKEN_SCOPE_TAG, scope ?? '');
+    await registerToken(token, refreshToken, expire, scope);
     debugPrint('token saved!!!');
   }
 
@@ -65,21 +82,24 @@ abstract class Auth {
       localToken.accessToken = prefs.getString(TRAINING_PEAKS_ACCESS_TOKEN_TAG)?.toString();
       localToken.refreshToken = prefs.getString(TRAINING_PEAKS_REFRESH_TOKEN_TAG);
       localToken.expiresAt = prefs.getInt(TRAINING_PEAKS_EXPIRES_AT_TAG);
+      localToken.scope = prefs.getString(TRAINING_PEAKS_TOKEN_SCOPE_TAG);
 
       // load the data into Get
-      await registerToken(localToken.accessToken, localToken.refreshToken, localToken.expiresAt);
+      await registerToken(
+          localToken.accessToken, localToken.refreshToken, localToken.expiresAt, localToken.scope);
     } catch (error) {
       debugPrint('Error while retrieving the token');
       localToken.accessToken = null;
       localToken.expiresAt = null;
+      localToken.scope = null;
     }
 
     if (localToken.expiresAt != null) {
       final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt! * 1000);
       final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} '
           '${dateExpired.hour.toString()} hours';
-      debugPrint(
-          'stored token ${localToken.accessToken} ${localToken.expiresAt} expires: $details');
+      debugPrint('stored token ${localToken.accessToken} ${localToken.expiresAt} '
+          '${localToken.scope} expires: $details');
     }
 
     return localToken;
@@ -87,12 +107,13 @@ abstract class Auth {
 
   /// Get the code from Training Peaks server
   ///
-  Future<void> _getTrainingPeaksCode(String clientId) async {
+  Future<void> _getTrainingPeaksCode(String clientId, String scope) async {
     debugPrint('Entering getTrainingPeaksCode');
 
-    final params = '?client_id=$clientId&response_type=code&redirect_uri=$REDIRECT_URL';
+    final params =
+        '?response_type=code&client_id=$clientId&scope=$scope&redirect_uri=$REDIRECT_URL';
 
-    final reqAuth = TP_SANDBOX_OAUTH_URL_BASE + AUTHORIZATION_PATH + params;
+    final reqAuth = getUrlBase(true) + AUTHORIZATION_PATH + params;
     debugPrint(reqAuth);
     StreamSubscription? sub;
 
@@ -152,7 +173,7 @@ abstract class Auth {
   /// and is not expired
   ///
   /// return true if no problem in authentication has been found
-  Future<bool> oauth(String clientId, String secret) async {
+  Future<bool> oauth(String clientId, String secret, String scope) async {
     debugPrint('Welcome to Training Peaks OAuth');
     bool isAuthOk = false;
     bool isExpired;
@@ -182,6 +203,7 @@ abstract class Auth {
           _refreshAnswer.accessToken,
           _refreshAnswer.refreshToken,
           _refreshAnswer.expiresAt,
+          scope,
         );
       } else {
         debugPrint('Problem doing the refresh process');
@@ -189,11 +211,11 @@ abstract class Auth {
       }
     }
 
-    // Check token
-    if (token == "null" || token == null || token.isEmpty) {
+    // Check if the scope has changed
+    if (tokenStored.scope != scope || token == "null" || token == null || token.isEmpty) {
       // Ask for a new authorization
       debugPrint('Doing a new authorization');
-      isAuthOk = await _newAuthorization(clientId, secret);
+      isAuthOk = await _newAuthorization(clientId, secret, scope);
     } else {
       isAuthOk = true;
     }
@@ -201,10 +223,10 @@ abstract class Auth {
     return isAuthOk;
   }
 
-  Future<bool> _newAuthorization(String clientId, String secret) async {
+  Future<bool> _newAuthorization(String clientId, String secret, String scope) async {
     bool returnValue = false;
 
-    await _getTrainingPeaksCode(clientId);
+    await _getTrainingPeaksCode(clientId, scope);
 
     final trainingPeaksCode = await onCodeReceived.stream.first;
 
@@ -214,7 +236,7 @@ abstract class Auth {
 
     // Save the token information
     if (answer.accessToken != null && answer.accessToken!.isNotEmpty && answer.expiresAt != null) {
-      await _saveToken(answer.accessToken, answer.refreshToken, answer.expiresAt);
+      await _saveToken(answer.accessToken, answer.refreshToken, answer.expiresAt, scope);
       returnValue = true;
     }
 
@@ -236,7 +258,7 @@ abstract class Auth {
 
     debugPrint('Entering getNewAccessToken');
 
-    final tokenRefreshUrl = TP_SANDBOX_OAUTH_URL_BASE + TOKEN_PATH;
+    final tokenRefreshUrl = getUrlBase(true) + TOKEN_PATH;
 
     debugPrint('urlRefresh $tokenRefreshUrl $refreshToken');
 
@@ -278,7 +300,7 @@ abstract class Auth {
 
     debugPrint('Entering getTrainingPeaksToken!!');
 
-    final tokenRequestUrl = TP_SANDBOX_OAUTH_URL_BASE + TOKEN_PATH;
+    final tokenRequestUrl = getUrlBase(true) + TOKEN_PATH;
 
     debugPrint('urlToken $tokenRequestUrl');
 
@@ -340,8 +362,36 @@ abstract class Auth {
   ///
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
-  Future<int> deAuthorize(String clientId) async {
-    await _saveToken(null, null, null);
-    return 200;
+  Future<bool> deAuthorize() async {
+    if (!Get.isRegistered<TrainingPeaksToken>()) {
+      debugPrint('Token not yet known');
+      return false;
+    }
+    var trainingPeaksToken = Get.find<TrainingPeaksToken>();
+
+    if (trainingPeaksToken.accessToken == null) {
+      // Token has not been yet stored in memory
+      trainingPeaksToken = await _getStoredToken();
+    }
+
+    final header = trainingPeaksToken.getAuthorizationHeader();
+    // If header is "empty"
+    if (header.containsKey('88')) {
+      debugPrint('No Authentication has been done yet');
+      return true;
+    }
+
+    final deAuthorizeUrl = getUrlBase(true) + DEAUTHORIZATION_PATH;
+
+    debugPrint('request $deAuthorizeUrl');
+    final response = await http.post(Uri.parse(deAuthorizeUrl), headers: header);
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      debugPrint('DeAuthorize done');
+      debugPrint('response ${response.body}');
+      await _saveToken(null, null, null, null);
+      return true;
+    }
+
+    return false;
   }
 }

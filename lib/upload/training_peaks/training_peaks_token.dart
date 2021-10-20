@@ -38,12 +38,9 @@ class TrainingPeaksToken {
   ///
   /// return {null, null} if there is not token yet
   /// stored in globals
-  Map<String, String> getAuthorizationHeader(String clientId) {
+  Map<String, String> getAuthorizationHeader() {
     if (accessToken != null && accessToken!.isNotEmpty && accessToken != "Error") {
-      return {
-        'Authorization': 'Bearer $accessToken',
-        'Api-Key': clientId,
-      };
+      return {'Authorization': 'Bearer $accessToken'};
     } else {
       return {'88': '00'};
     }

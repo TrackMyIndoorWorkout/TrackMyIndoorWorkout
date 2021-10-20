@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import '../../export/activity_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/database.dart';
+import '../../utils/constants.dart';
 
 import 'constants.dart';
 import 'training_peaks_token.dart';
@@ -31,7 +31,7 @@ abstract class Upload {
     }
 
     final trainingPeaksToken = Get.find<TrainingPeaksToken>();
-    final headers = trainingPeaksToken.getAuthorizationHeader(clientId);
+    final headers = trainingPeaksToken.getAuthorizationHeader();
 
     if (headers.containsKey('88') == true) {
       debugPrint('Token not yet known');
@@ -42,30 +42,61 @@ abstract class Upload {
       "Accept": "application/json",
       "Accept-Encoding": "gzip",
       "Content-Type": "application/json",
+      "User-Agent": "$clientId/1.0",
     });
 
-    String contentString = utf8.decode(fileContent);
+    final persistenceValues = exporter.getPersistenceValues(activity, true);
+    String fileContentString = base64.encode(fileContent);
+    String contentString = '{"UploadClient": "$APP_NAME",'
+        '"Filename": "${persistenceValues["fileName"]}",'
+        '"Data": "$fileContentString",'
+        '"Title": "${persistenceValues["name"]}",'
+        '"Comment": "${persistenceValues["description"]}"}';
+    final uploadUrlBase = kDebugMode ? TP_SANDBOX_API_URL_BASE : TP_PRODUCTION_API_URL_BASE;
+    final uploadUrl = uploadUrlBase + UPLOAD_PATH;
     final uploadResponse = await http.post(
-      Uri.parse(TP_SANDBOX_OAUTH_URL_BASE + UPLOAD_PATH),
+      Uri.parse(uploadUrl),
       headers: headers,
       body: contentString,
     );
 
     debugPrint('Response: ${uploadResponse.statusCode} ${uploadResponse.reasonPhrase}');
 
+    final uploadBody = uploadResponse.body;
+    debugPrint("status body: $uploadBody");
     if (uploadResponse.statusCode < 200 || uploadResponse.statusCode >= 300) {
       // response.statusCode != 201
       debugPrint('Error while uploading the activity');
     } else {
-      debugPrint('$uploadResponse');
-    }
+      const workoutId = '"Id":"';
+      int idBeginningIndex = uploadBody.indexOf(workoutId);
+      if (idBeginningIndex > 0) {
+        final beginningIndex = idBeginningIndex + workoutId.length;
+        final idEndIndex = uploadBody.indexOf('"', beginningIndex);
+        if (idEndIndex > 0) {
+          final id = uploadBody.substring(beginningIndex, idEndIndex);
 
-    // if (response.id > 0) {
-    //   final database = Get.find<AppDatabase>();
-    //   activity.markUploaded(response.id);
-    //   await database.activityDao.updateActivity(activity);
-    //   debugPrint('id ${response.id}');
-    // }
+          String url = "";
+          const workoutUrl = '"Url":"';
+          int matchBeginningIndex = uploadBody.indexOf(workoutUrl);
+          if (matchBeginningIndex > 0) {
+            final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
+            final urlEndIndex = uploadBody.indexOf('"', urlBeginningIndex);
+            if (urlEndIndex > 0) {
+              url = uploadBody.substring(urlBeginningIndex, urlEndIndex);
+            }
+          }
+
+          // TODO: persist id
+          // if (id > 0) {
+          //   final database = Get.find<AppDatabase>();
+          //   activity.markTrainingPeaksUploaded(id, url);
+          //   await database.activityDao.updateActivity(activity);
+          //   debugPrint('id ${id}');
+          // }
+        }
+      }
+    }
 
     return uploadResponse.statusCode;
   }

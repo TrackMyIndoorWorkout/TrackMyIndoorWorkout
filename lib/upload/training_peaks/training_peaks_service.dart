@@ -12,7 +12,7 @@ class TrainingPeaksService implements UploadService {
 
   @override
   Future<bool> login() async {
-    return await _trainingPeaks.oauth(_trainingPeaks.clientId, _trainingPeaks.secret);
+    return await _trainingPeaks.oauth(_trainingPeaks.clientId, _trainingPeaks.secret, 'file:write');
   }
 
   @override
@@ -22,7 +22,9 @@ class TrainingPeaksService implements UploadService {
 
   @override
   Future<int> deAuthorize() async {
-    return await _trainingPeaks.deAuthorize(_trainingPeaks.clientId);
+    bool fault = await _trainingPeaks.deAuthorize();
+
+    return fault ? 1 : 0;
   }
 
   @override
@@ -36,7 +38,7 @@ class TrainingPeaksService implements UploadService {
       activity,
       records,
       false,
-      false,
+      true,
       ExportTarget.regular,
     );
     return await _trainingPeaks.uploadActivity(
