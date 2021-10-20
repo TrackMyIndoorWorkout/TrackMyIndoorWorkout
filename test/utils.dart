@@ -68,7 +68,7 @@ class ExportModelForTests extends ExportModel {
           rawData: rawData ?? false,
           descriptor: descriptor ?? deviceMap["SAP+"]!,
           author: author ?? 'Csaba Consulting',
-          name: name ?? 'Track My Indoor Exercise',
+          name: name ?? APP_NAME,
           swVersionMajor: swVersionMajor ?? "1",
           swVersionMinor: swVersionMinor ?? "0",
           buildVersionMajor: buildVersionMajor ?? "1",

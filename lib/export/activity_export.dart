@@ -82,8 +82,13 @@ abstract class ActivityExport {
       ..timeStampInteger = timeStampInteger(timeStamp);
   }
 
-  Future<List<int>> getExport(Activity activity, List<Record> records, bool rawData, bool compress,
-      int exportTarget,) async {
+  Future<List<int>> getExport(
+    Activity activity,
+    List<Record> records,
+    bool rawData,
+    bool compress,
+    int exportTarget,
+  ) async {
     activity.hydrate();
     final descriptor = deviceMap[activity.fourCC] ?? genericDescriptorForSport(activity.sport);
     final track = getDefaultTrack(activity.sport);
@@ -138,7 +143,7 @@ abstract class ActivityExport {
       rawData: rawData,
       descriptor: descriptor,
       author: 'Csaba Consulting',
-      name: 'Track My Indoor Exercise',
+      name: APP_NAME,
       swVersionMajor: versionParts[0],
       swVersionMinor: versionParts[1],
       buildVersionMajor: versionParts[2],
