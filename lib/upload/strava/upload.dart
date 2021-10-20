@@ -135,7 +135,7 @@ abstract class Upload {
           if (resp.reasonPhrase!.compareTo(StravaStatusText.processed) == 0) {
             debugPrint('---> try another time');
             // wait 2 sec before checking again status
-            Timer(Duration(seconds: 2), () => onUploadPending.add(id));
+            Timer(const Duration(seconds: 2), () => onUploadPending.add(id));
           }
         } else {
           debugPrint('---> Unknown error');

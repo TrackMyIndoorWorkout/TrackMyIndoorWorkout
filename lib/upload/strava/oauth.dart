@@ -81,7 +81,11 @@ abstract class Auth {
 
       // load the data into Get
       await registerToken(
-          localToken.accessToken, localToken.refreshToken, localToken.expiresAt, localToken.scope);
+        localToken.accessToken,
+        localToken.refreshToken,
+        localToken.expiresAt,
+        localToken.scope,
+      );
     } catch (error) {
       debugPrint('Error while retrieving the token');
       localToken.accessToken = null;

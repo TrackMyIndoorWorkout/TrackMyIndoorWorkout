@@ -342,7 +342,7 @@ abstract class Auth {
   /// Useful when doing test to force the Suunto login
   ///
   ///return codes:
-  /// statusOK or statusNoAuthenticationYet
+  /// true or false
   Future<bool> deAuthorize(String clientId, String subscriptionKey) async {
     if (!Get.isRegistered<SuuntoToken>()) {
       debugPrint('Token not yet known');

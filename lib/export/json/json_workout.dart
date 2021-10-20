@@ -67,8 +67,7 @@ class JsonWorkout {
     sb.write('"position": [');
     sb.writeAll(
       exportModel.records.map(
-        (r) =>
-            '[${r.elapsed(exportModel.activity)}, {"lat": ${r.latitude.toStringAsFixed(7)}, ' +
+        (r) => '[${r.elapsed(exportModel.activity)}, {"lat": ${r.latitude.toStringAsFixed(7)}, '
             '"lng": ${r.longitude.toStringAsFixed(7)}, "elevation": ${exportModel.altitude}}]',
       ),
       ",",
@@ -77,11 +76,10 @@ class JsonWorkout {
     return sb.toString();
   }
 
-  String toJson(ExportModel exportModel) =>
-      '{"name": "$name",' +
-      '"activity_type": "/v7.1/activity_type/$activityType/",' +
-      '"start_datetime": "${startDatetime.toUtc().toIso8601String()}",' +
-      '"start_locale_timezone": "$startLocaleTimezone",' +
-      '"aggregates": ${aggregates.toJson()},' +
+  String toJson(ExportModel exportModel) => '{"name": "$name",'
+      '"activity_type": "/v7.1/activity_type/$activityType/",'
+      '"start_datetime": "${startDatetime.toUtc().toIso8601String()}",'
+      '"start_locale_timezone": "$startLocaleTimezone",'
+      '"aggregates": ${aggregates.toJson()},'
       '"time_series": {${timeSeries(exportModel)}}}';
 }
