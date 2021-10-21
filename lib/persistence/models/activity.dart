@@ -51,6 +51,10 @@ class Activity {
   String suuntoUploadIdentifier;
   @ColumnInfo(name: 'suunto_workout_url')
   String suuntoWorkoutUrl;
+  @ColumnInfo(name: 'training_peaks_workout_id')
+  int trainingPeaksWorkoutId;
+  @ColumnInfo(name: 'training_peaks_athlete_id')
+  int trainingPeaksAthleteId;
 
   @ignore
   DateTime? startDateTime;
@@ -76,6 +80,8 @@ class Activity {
     this.suuntoUploadId = 0,
     this.suuntoUploadIdentifier = "",
     this.suuntoWorkoutUrl = "",
+    this.trainingPeaksAthleteId = 0,
+    this.trainingPeaksWorkoutId = 0,
     this.startDateTime,
     required this.fourCC,
     required this.sport,
@@ -109,6 +115,12 @@ class Activity {
   void markSuuntoUploaded(String workoutUrl) {
     suuntoWorkoutUrl = workoutUrl;
     suuntoUploaded = true;
+  }
+
+  void markTrainingPeaksUploaded(int athleteId, int workoutId) {
+    trainingPeaksAthleteId = athleteId;
+    trainingPeaksWorkoutId = workoutId;
+    trainingPeaksUploaded = true;
   }
 
   String distanceString(bool si, bool highRes) {

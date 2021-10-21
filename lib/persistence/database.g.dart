@@ -72,7 +72,7 @@ class _$AppDatabase extends AppDatabase {
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 13,
+      version: 14,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -87,7 +87,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `uploaded` INTEGER NOT NULL, `strava_id` INTEGER NOT NULL, `four_cc` TEXT NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL, `time_zone` TEXT NOT NULL, `suunto_uploaded` INTEGER NOT NULL, `suunto_blob_url` TEXT NOT NULL, `under_armour_uploaded` INTEGER NOT NULL, `training_peaks_uploaded` INTEGER NOT NULL, `ua_workout_id` INTEGER NOT NULL, `suunto_upload_id` INTEGER NOT NULL, `suunto_upload_identifier` TEXT NOT NULL, `suunto_workout_url` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `uploaded` INTEGER NOT NULL, `strava_id` INTEGER NOT NULL, `four_cc` TEXT NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL, `time_zone` TEXT NOT NULL, `suunto_uploaded` INTEGER NOT NULL, `suunto_blob_url` TEXT NOT NULL, `under_armour_uploaded` INTEGER NOT NULL, `training_peaks_uploaded` INTEGER NOT NULL, `ua_workout_id` INTEGER NOT NULL, `suunto_upload_id` INTEGER NOT NULL, `suunto_upload_identifier` TEXT NOT NULL, `suunto_workout_url` TEXT NOT NULL, `training_peaks_workout_id` INTEGER NOT NULL, `training_peaks_athlete_id` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `activity_id` INTEGER, `time_stamp` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `power` INTEGER, `speed` REAL, `cadence` INTEGER, `heart_rate` INTEGER, FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
@@ -176,7 +176,9 @@ class _$ActivityDao extends ActivityDao {
                   'ua_workout_id': item.uaWorkoutId,
                   'suunto_upload_id': item.suuntoUploadId,
                   'suunto_upload_identifier': item.suuntoUploadIdentifier,
-                  'suunto_workout_url': item.suuntoWorkoutUrl
+                  'suunto_workout_url': item.suuntoWorkoutUrl,
+                  'training_peaks_workout_id': item.trainingPeaksWorkoutId,
+                  'training_peaks_athlete_id': item.trainingPeaksAthleteId
                 },
             changeListener),
         _activityUpdateAdapter = UpdateAdapter(
@@ -206,7 +208,9 @@ class _$ActivityDao extends ActivityDao {
                   'ua_workout_id': item.uaWorkoutId,
                   'suunto_upload_id': item.suuntoUploadId,
                   'suunto_upload_identifier': item.suuntoUploadIdentifier,
-                  'suunto_workout_url': item.suuntoWorkoutUrl
+                  'suunto_workout_url': item.suuntoWorkoutUrl,
+                  'training_peaks_workout_id': item.trainingPeaksWorkoutId,
+                  'training_peaks_athlete_id': item.trainingPeaksAthleteId
                 },
             changeListener),
         _activityDeletionAdapter = DeletionAdapter(
@@ -236,7 +240,9 @@ class _$ActivityDao extends ActivityDao {
                   'ua_workout_id': item.uaWorkoutId,
                   'suunto_upload_id': item.suuntoUploadId,
                   'suunto_upload_identifier': item.suuntoUploadIdentifier,
-                  'suunto_workout_url': item.suuntoWorkoutUrl
+                  'suunto_workout_url': item.suuntoWorkoutUrl,
+                  'training_peaks_workout_id': item.trainingPeaksWorkoutId,
+                  'training_peaks_athlete_id': item.trainingPeaksAthleteId
                 },
             changeListener);
 
@@ -274,6 +280,8 @@ class _$ActivityDao extends ActivityDao {
             suuntoUploadId: row['suunto_upload_id'] as int,
             suuntoUploadIdentifier: row['suunto_upload_identifier'] as String,
             suuntoWorkoutUrl: row['suunto_workout_url'] as String,
+            trainingPeaksAthleteId: row['training_peaks_athlete_id'] as int,
+            trainingPeaksWorkoutId: row['training_peaks_workout_id'] as int,
             fourCC: row['four_cc'] as String,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
@@ -303,6 +311,8 @@ class _$ActivityDao extends ActivityDao {
             suuntoUploadId: row['suunto_upload_id'] as int,
             suuntoUploadIdentifier: row['suunto_upload_identifier'] as String,
             suuntoWorkoutUrl: row['suunto_workout_url'] as String,
+            trainingPeaksAthleteId: row['training_peaks_athlete_id'] as int,
+            trainingPeaksWorkoutId: row['training_peaks_workout_id'] as int,
             fourCC: row['four_cc'] as String,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
@@ -336,6 +346,8 @@ class _$ActivityDao extends ActivityDao {
             suuntoUploadId: row['suunto_upload_id'] as int,
             suuntoUploadIdentifier: row['suunto_upload_identifier'] as String,
             suuntoWorkoutUrl: row['suunto_workout_url'] as String,
+            trainingPeaksAthleteId: row['training_peaks_athlete_id'] as int,
+            trainingPeaksWorkoutId: row['training_peaks_workout_id'] as int,
             fourCC: row['four_cc'] as String,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
