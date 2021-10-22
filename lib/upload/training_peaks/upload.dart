@@ -70,9 +70,9 @@ abstract class Upload {
         '"Filename": "${persistenceValues["fileName"]}",'
         '"Data": "$fileContentString",'
         '"Title": "${persistenceValues["name"]}",'
-        '"Comment": "${persistenceValues["description"]}"'
-        '"WorkoutDay": ${DateFormat('yyyy-MM-dd').format(activity.startDateTime!)}'
-        '"StartTime": ${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.startDateTime!)}'
+        '"Comment": "${persistenceValues["description"]}",'
+        '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.startDateTime!)}",'
+        '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.startDateTime!)}",'
         '"Type": "${trainingPeaksSport(activity.sport)}"}';
     final uploadUrlBase = kDebugMode ? TP_SANDBOX_API_URL_BASE : TP_PRODUCTION_API_URL_BASE;
     final uploadUrl = uploadUrlBase + UPLOAD_PATH;
