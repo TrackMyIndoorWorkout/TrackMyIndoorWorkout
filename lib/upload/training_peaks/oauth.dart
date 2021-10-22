@@ -385,7 +385,10 @@ abstract class Auth {
 
     debugPrint('request $deAuthorizeUrl');
     final response = await http.post(Uri.parse(deAuthorizeUrl), headers: header);
-    if (response.statusCode >= 200 && response.statusCode < 300) {
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      // response.statusCode != 201
+      debugPrint('Error while deauthorizing');
+    } else {
       debugPrint('DeAuthorize done');
       debugPrint('response ${response.body}');
       await _saveToken(null, null, null, null);
