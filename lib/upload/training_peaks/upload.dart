@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import '../../export/activity_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/database.dart';
@@ -13,6 +14,24 @@ import 'constants.dart';
 import 'training_peaks_token.dart';
 
 abstract class Upload {
+  String trainingPeaksSport(String sport) {
+    if (sport == ActivityType.Swim) {
+      sport = "swim";
+    } else if (sport == ActivityType.Canoeing ||
+        sport == ActivityType.Kayaking ||
+        sport == ActivityType.Rowing) {
+      sport = "rowing";
+    } else if (sport == ActivityType.Run) {
+      sport = "run";
+    } else if (sport == ActivityType.Ride) {
+      sport = "bike";
+    } else if (sport == ActivityType.Elliptical) {
+      sport = "x-train";
+    }
+
+    return "other";
+  }
+
   /// statusCode:
   /// 201 activity created
   /// 400 problem could be that activity already uploaded
@@ -51,7 +70,10 @@ abstract class Upload {
         '"Filename": "${persistenceValues["fileName"]}",'
         '"Data": "$fileContentString",'
         '"Title": "${persistenceValues["name"]}",'
-        '"Comment": "${persistenceValues["description"]}"}';
+        '"Comment": "${persistenceValues["description"]}"'
+        '"WorkoutDay": ${DateFormat('yyyy-MM-dd').format(activity.startDateTime!)}'
+        '"StartTime": ${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.startDateTime!)}'
+        '"Type": "${trainingPeaksSport(activity.sport)}"}';
     final uploadUrlBase = kDebugMode ? TP_SANDBOX_API_URL_BASE : TP_PRODUCTION_API_URL_BASE;
     final uploadUrl = uploadUrlBase + UPLOAD_PATH;
     final uploadResponse = await http.post(
