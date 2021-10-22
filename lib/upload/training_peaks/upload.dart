@@ -90,32 +90,33 @@ abstract class Upload {
       // response.statusCode != 201
       debugPrint('Error while uploading the activity');
     } else {
-      const workoutId = '"Id":"';
-      int idBeginningIndex = uploadBody.indexOf(workoutId);
+      const workoutIdTag = '"Id":"';
+      int idBeginningIndex = uploadBody.indexOf(workoutIdTag);
       if (idBeginningIndex > 0) {
-        final beginningIndex = idBeginningIndex + workoutId.length;
-        final idEndIndex = uploadBody.indexOf('"', beginningIndex);
+        int beginningIndex = idBeginningIndex + workoutIdTag.length;
+        int idEndIndex = uploadBody.indexOf('"', beginningIndex);
         if (idEndIndex > 0) {
-          final id = uploadBody.substring(beginningIndex, idEndIndex);
+          final workoutIdString = uploadBody.substring(beginningIndex, idEndIndex);
+          final workoutId = int.tryParse(workoutIdString) ?? 0;
 
-          String url = "";
-          const workoutUrl = '"Url":"';
-          int matchBeginningIndex = uploadBody.indexOf(workoutUrl);
+          const athleteIdTag = '"AthleteId":"';
+          int athleteId = 0;
+          int matchBeginningIndex = uploadBody.indexOf(athleteIdTag);
           if (matchBeginningIndex > 0) {
-            final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
-            final urlEndIndex = uploadBody.indexOf('"', urlBeginningIndex);
-            if (urlEndIndex > 0) {
-              url = uploadBody.substring(urlBeginningIndex, urlEndIndex);
+            final beginningIndex = matchBeginningIndex + athleteIdTag.length;
+            final idEndIndex = uploadBody.indexOf('"', matchBeginningIndex);
+            if (idEndIndex > 0) {
+              final athleteIdString = uploadBody.substring(beginningIndex, idEndIndex);
+              athleteId = int.tryParse(athleteIdString) ?? 0;
             }
           }
 
-          // TODO: persist id
-          // if (id > 0) {
-          //   final database = Get.find<AppDatabase>();
-          //   activity.markTrainingPeaksUploaded(id, url);
-          //   await database.activityDao.updateActivity(activity);
-          //   debugPrint('id ${id}');
-          // }
+          debugPrint('id $workoutId athlete $athleteId');
+          if (workoutId > 0 || athleteId > 0) {
+            final database = Get.find<AppDatabase>();
+            activity.markTrainingPeaksUploaded(athleteId, workoutId);
+            await database.activityDao.updateActivity(activity);
+          }
         }
       }
     }
