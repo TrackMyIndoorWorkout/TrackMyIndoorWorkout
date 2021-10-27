@@ -1,5 +1,5 @@
 import '../../export/export_target.dart';
-import '../../export/json/json_export.dart';
+import '../../export/fit/fit_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/secret.dart';
@@ -33,7 +33,7 @@ class TrainingPeaksService implements UploadService {
       return 404;
     }
 
-    final exporter = JsonExport();
+    final exporter = FitExport();
     final fileGzip = await exporter.getExport(
       activity,
       records,
