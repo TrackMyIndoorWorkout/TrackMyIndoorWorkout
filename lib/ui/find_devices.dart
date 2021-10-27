@@ -15,10 +15,8 @@ import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
-import '../upload/upload_service.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
-import '../utils/preferences.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/machine_type.dart';
 import '../utils/theme_manager.dart';
@@ -26,7 +24,6 @@ import 'models/advertisement_cache.dart';
 import 'parts/circular_menu.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
-import 'parts/upload_portal_picker.dart';
 import 'preferences/preferences_hub.dart';
 import 'activities.dart';
 import 'recording.dart';
@@ -726,36 +723,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   },
                 ),
                 _themeManager.getAboutFab(_tutorialVisible),
-                _themeManager.getBlueFab(
-                  Icons.cloud_upload,
-                  true,
-                  _tutorialVisible,
-                  "Portal login",
-                  8,
-                  () async {
-                    if (!await hasInternetConnection()) {
-                      Get.snackbar("Warning", "No data connection detected");
-                      return;
-                    }
-
-                    final portalPick = await Get.bottomSheet(
-                      const UploadPortalPickerBottomSheet(),
-                      enableDrag: false,
-                    );
-
-                    if (portalPick == null) {
-                      return;
-                    }
-
-                    UploadService uploadService = UploadService.getInstance(portalPick);
-                    final success = await uploadService.login();
-                    if (success) {
-                      Get.snackbar("Success", "Successful $portalPick login");
-                    } else {
-                      Get.snackbar("Warning", "$portalPick login unsuccessful");
-                    }
-                  },
-                ),
                 _themeManager.getBlueFab(
                   Icons.list_alt,
                   true,
