@@ -21,7 +21,7 @@ class TrainingPeaksService implements UploadService {
   }
 
   @override
-  Future<int> deAuthorize() async {
+  Future<int> logout() async {
     bool fault = await _trainingPeaks.deAuthorize();
 
     return fault ? 1 : 0;

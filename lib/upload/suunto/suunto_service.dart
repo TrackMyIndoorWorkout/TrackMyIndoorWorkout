@@ -24,7 +24,7 @@ class SuuntoService implements UploadService {
   }
 
   @override
-  Future<int> deAuthorize() async {
+  Future<int> logout() async {
     bool fault = await _suunto.deAuthorize(_suunto.clientId, _suunto.subscriptionKey);
 
     return fault ? 1 : 0;

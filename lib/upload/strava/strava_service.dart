@@ -22,7 +22,7 @@ class StravaService implements UploadService {
   }
 
   @override
-  Future<int> deAuthorize() async {
+  Future<int> logout() async {
     Fault fault = await _strava.deAuthorize();
 
     return fault.statusCode;

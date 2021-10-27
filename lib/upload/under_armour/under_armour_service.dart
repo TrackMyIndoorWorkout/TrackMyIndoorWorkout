@@ -20,7 +20,7 @@ class UnderArmourService implements UploadService {
   }
 
   @override
-  Future<int> deAuthorize() async {
+  Future<int> logout() async {
     return await _underArmour.deAuthorize(_underArmour.clientId);
   }
 

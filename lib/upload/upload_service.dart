@@ -1,47 +1,76 @@
 import 'package:get/get.dart';
-import 'package:track_my_indoor_exercise/upload/training_peaks/training_peaks_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
+import 'strava/constants.dart';
 import 'strava/strava_service.dart';
+import 'suunto/constants.dart';
 import 'suunto/suunto_service.dart';
+import 'training_peaks/constants.dart';
+import 'training_peaks/training_peaks_service.dart';
+import 'under_armour/constants.dart';
 import 'under_armour/under_armour_service.dart';
+import 'constants.dart';
 
 abstract class UploadService {
   Future<bool> login();
 
   Future<bool> hasValidToken();
 
-  Future<int> deAuthorize();
+  Future<int> logout();
 
   Future<int> upload(Activity activity, List<Record> records);
 
   static UploadService getInstance(String portalType) {
-    switch (portalType.toLowerCase()) {
-      case "suunto":
+    switch (portalType) {
+      case suuntoChoice:
         {
           return Get.isRegistered<SuuntoService>()
               ? Get.find<SuuntoService>()
               : Get.put<SuuntoService>(SuuntoService(), permanent: true);
         }
-      case "mapmyfitness":
+      case underArmourChoice:
         {
           return Get.isRegistered<UnderArmourService>()
               ? Get.find<UnderArmourService>()
               : Get.put<UnderArmourService>(UnderArmourService(), permanent: true);
         }
-      case "trainingpeaks":
+      case trainingPeaksChoice:
         {
           return Get.isRegistered<TrainingPeaksService>()
               ? Get.find<TrainingPeaksService>()
               : Get.put<TrainingPeaksService>(TrainingPeaksService(), permanent: true);
         }
-      case "strava":
+      case stravaChoice:
       default:
         {
           return Get.isRegistered<StravaService>()
               ? Get.find<StravaService>()
               : Get.put<StravaService>(StravaService(), permanent: true);
+        }
+    }
+  }
+
+  static Future<bool> isIntegrationEnabled(String portalType) async {
+    final prefs = await SharedPreferences.getInstance();
+    switch (portalType) {
+      case suuntoChoice:
+        {
+          return prefs.getString(SUUNTO_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+        }
+      case underArmourChoice:
+        {
+          return prefs.getString(UNDER_ARMOUR_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+        }
+      case trainingPeaksChoice:
+        {
+          return prefs.getString(TRAINING_PEAKS_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+        }
+      case stravaChoice:
+      default:
+        {
+          return prefs.getString(STRAVA_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
         }
     }
   }
