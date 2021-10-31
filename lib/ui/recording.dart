@@ -676,7 +676,7 @@ class RecordingState extends State<RecordingScreen> {
     if (_activity == null) return;
 
     if (!await hasInternetConnection()) {
-      Get.snackbar("Warning", "No data connection detected");
+      Get.snackbar("Warning", "No data connection detected, try again later!");
       return;
     }
 
@@ -695,7 +695,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (!await hasInternetConnection()) {
-      Get.snackbar("Warning", "No data connection detected");
+      Get.snackbar("Warning", "No data connection detected, try again later!");
       return;
     }
 

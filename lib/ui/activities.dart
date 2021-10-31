@@ -102,7 +102,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         icon: _themeManager.getActionIcon(Icons.cloud_upload, size),
         onPressed: () async {
           if (!await hasInternetConnection()) {
-            Get.snackbar("Warning", "No data connection detected");
+            Get.snackbar("Warning", "No data connection detected, try again later!");
             return;
           }
 
