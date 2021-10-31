@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pref/pref.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -54,11 +54,11 @@ abstract class Auth {
     int? expire,
     String? scope,
   ) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(STRAVA_ACCESS_TOKEN_TAG, token ?? '');
-    prefs.setString(STRAVA_REFRESH_TOKEN_TAG, refreshToken ?? '');
-    prefs.setInt(STRAVA_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
-    prefs.setString(STRAVA_TOKEN_SCOPE_TAG, scope ?? '');
+    final prefService = Get.find<BasePrefService>();
+    await prefService.set<String>(STRAVA_ACCESS_TOKEN_TAG, token ?? '');
+    await prefService.set<String>(STRAVA_REFRESH_TOKEN_TAG, refreshToken ?? '');
+    await prefService.set<int>(STRAVA_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
+    await prefService.set<String>(STRAVA_TOKEN_SCOPE_TAG, scope ?? '');
     await registerToken(token, refreshToken, expire, scope);
     debugPrint('token saved!!!');
   }
@@ -69,15 +69,15 @@ abstract class Auth {
   /// Stored them in Get StravaToken
   ///
   Future<StravaToken> _getStoredToken() async {
-    final prefs = await SharedPreferences.getInstance();
     var localToken = StravaToken();
     debugPrint('Entering _getStoredToken');
 
     try {
-      localToken.accessToken = prefs.getString(STRAVA_ACCESS_TOKEN_TAG)?.toString();
-      localToken.refreshToken = prefs.getString(STRAVA_REFRESH_TOKEN_TAG);
-      localToken.expiresAt = prefs.getInt(STRAVA_EXPIRES_AT_TAG);
-      localToken.scope = prefs.getString(STRAVA_TOKEN_SCOPE_TAG);
+      final prefService = Get.find<BasePrefService>();
+      localToken.accessToken = prefService.get<String>(STRAVA_ACCESS_TOKEN_TAG);
+      localToken.refreshToken = prefService.get<String>(STRAVA_REFRESH_TOKEN_TAG);
+      localToken.expiresAt = prefService.get<int>(STRAVA_EXPIRES_AT_TAG);
+      localToken.scope = prefService.get<String>(STRAVA_TOKEN_SCOPE_TAG);
 
       // load the data into Get
       await registerToken(
@@ -203,8 +203,8 @@ abstract class Auth {
   }
 
   Future<bool> hasValidToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? accessToken = prefs.getString(STRAVA_ACCESS_TOKEN_TAG)?.toString();
+    final prefService = Get.find<BasePrefService>();
+    String? accessToken = prefService.get<String>(STRAVA_ACCESS_TOKEN_TAG);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }

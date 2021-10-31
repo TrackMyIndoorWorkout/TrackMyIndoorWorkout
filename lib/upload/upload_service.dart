@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pref/pref.dart';
 
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
@@ -53,24 +53,24 @@ abstract class UploadService {
   }
 
   static Future<bool> isIntegrationEnabled(String portalType) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefService = Get.find<BasePrefService>();
     switch (portalType) {
       case suuntoChoice:
         {
-          return prefs.getString(SUUNTO_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+          return prefService.get<String>(SUUNTO_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
         }
       case underArmourChoice:
         {
-          return prefs.getString(UNDER_ARMOUR_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+          return prefService.get<String>(UNDER_ARMOUR_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
         }
       case trainingPeaksChoice:
         {
-          return prefs.getString(TRAINING_PEAKS_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+          return prefService.get<String>(TRAINING_PEAKS_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
         }
       case stravaChoice:
       default:
         {
-          return prefs.getString(STRAVA_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+          return prefService.get<String>(STRAVA_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
         }
     }
   }

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pref/pref.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -47,10 +47,10 @@ abstract class Auth {
     String? refreshToken,
     int? expire,
   ) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(SUUNTO_ACCESS_TOKEN_TAG, token ?? '');
-    prefs.setString(SUUNTO_REFRESH_TOKEN_TAG, refreshToken ?? '');
-    prefs.setInt(SUUNTO_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
+    final prefService = Get.find<BasePrefService>();
+    await prefService.set<String>(SUUNTO_ACCESS_TOKEN_TAG, token ?? '');
+    await prefService.set<String>(SUUNTO_REFRESH_TOKEN_TAG, refreshToken ?? '');
+    await prefService.set<int>(SUUNTO_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
     await registerToken(token, refreshToken, expire);
     debugPrint('token saved!!!');
   }
@@ -61,15 +61,15 @@ abstract class Auth {
   /// Stored them in Get SuuntoToken
   ///
   Future<SuuntoToken> _getStoredToken() async {
-    final prefs = await SharedPreferences.getInstance();
     var localToken = SuuntoToken();
     debugPrint('Entering _getStoredToken');
 
     try {
-      localToken.accessToken = prefs.getString(SUUNTO_ACCESS_TOKEN_TAG)?.toString();
-      localToken.refreshToken = prefs.getString(SUUNTO_REFRESH_TOKEN_TAG);
-      // localToken.expiresAt = prefs.getInt('expire') * 1000; // To get in ms
-      localToken.expiresAt = prefs.getInt(SUUNTO_EXPIRES_AT_TAG);
+      final prefService = Get.find<BasePrefService>();
+      localToken.accessToken = prefService.get<String>(SUUNTO_ACCESS_TOKEN_TAG);
+      localToken.refreshToken = prefService.get<String>(SUUNTO_REFRESH_TOKEN_TAG);
+      // localToken.expiresAt = prefService.get<int>('expire') * 1000; // To get in ms
+      localToken.expiresAt = prefService.get<int>(SUUNTO_EXPIRES_AT_TAG);
 
       // load the data into Get
       await registerToken(localToken.accessToken, localToken.refreshToken, localToken.expiresAt);
@@ -139,8 +139,8 @@ abstract class Auth {
   }
 
   Future<bool> hasValidToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? accessToken = prefs.getString(SUUNTO_ACCESS_TOKEN_TAG)?.toString();
+    final prefService = Get.find<BasePrefService>();
+    String? accessToken = prefService.get<String>(SUUNTO_ACCESS_TOKEN_TAG);
     if (accessToken == null || accessToken.isEmpty) {
       return false;
     }
