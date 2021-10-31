@@ -52,7 +52,7 @@ abstract class UploadService {
     }
   }
 
-  static Future<bool> isIntegrationEnabled(String portalType) async {
+  static bool isIntegrationEnabled(String portalType) {
     final prefService = Get.find<BasePrefService>();
     switch (portalType) {
       case suuntoChoice:
