@@ -90,21 +90,21 @@ abstract class Upload {
       // response.statusCode != 201
       debugPrint('Error while uploading the activity');
     } else {
-      const workoutIdTag = '"Id":"';
+      const workoutIdTag = '"Id":';
       int idBeginningIndex = uploadBody.indexOf(workoutIdTag);
       if (idBeginningIndex > 0) {
         int beginningIndex = idBeginningIndex + workoutIdTag.length;
-        int idEndIndex = uploadBody.indexOf('"', beginningIndex);
+        int idEndIndex = uploadBody.indexOf(',', beginningIndex);
         if (idEndIndex > 0) {
           final workoutIdString = uploadBody.substring(beginningIndex, idEndIndex);
           final workoutId = int.tryParse(workoutIdString) ?? 0;
 
-          const athleteIdTag = '"AthleteId":"';
+          const athleteIdTag = '"AthleteId":';
           int athleteId = 0;
           int matchBeginningIndex = uploadBody.indexOf(athleteIdTag);
           if (matchBeginningIndex > 0) {
             final beginningIndex = matchBeginningIndex + athleteIdTag.length;
-            final idEndIndex = uploadBody.indexOf('"', matchBeginningIndex);
+            final idEndIndex = uploadBody.indexOf(',', matchBeginningIndex);
             if (idEndIndex > 0) {
               final athleteIdString = uploadBody.substring(beginningIndex, idEndIndex);
               athleteId = int.tryParse(athleteIdString) ?? 0;
