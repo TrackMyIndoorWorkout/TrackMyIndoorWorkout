@@ -26,8 +26,6 @@ import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/tracks.dart';
-import '../upload/strava/strava_status_code.dart';
-import '../upload/upload_service.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/preferences.dart';
@@ -680,38 +678,10 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
-    final portalPick = await Get.bottomSheet(
-      const UploadPortalPickerBottomSheet(),
+    Get.bottomSheet(
+      UploadPortalPickerBottomSheet(activity: _activity!),
       enableDrag: false,
     );
-
-    if (portalPick == null) {
-      return;
-    }
-
-    UploadService uploadService = UploadService.getInstance(portalPick);
-    if (onlyWhenAuthenticated && !await uploadService.hasValidToken()) {
-      return;
-    }
-
-    if (!await hasInternetConnection()) {
-      Get.snackbar("Warning", "No data connection detected, try again later!");
-      return;
-    }
-
-    final success = await uploadService.login();
-    if (!success) {
-      Get.snackbar("Warning", "$portalPick login unsuccessful");
-      return;
-    }
-
-    final records = await _database.recordDao.findAllActivityRecords(_activity?.id ?? 0);
-    final statusCode = await uploadService.upload(_activity!, records);
-    Get.snackbar(
-        "Upload",
-        statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300
-            ? "Activity ${_activity!.id} submitted successfully"
-            : "Activity ${_activity!.id} upload failure");
   }
 
   _stopMeasurement(bool quick) async {

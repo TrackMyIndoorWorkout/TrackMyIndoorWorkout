@@ -21,8 +21,6 @@ import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
-import '../upload/strava/strava_status_code.dart';
-import '../upload/upload_service.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/preferences.dart';
@@ -106,34 +104,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             return;
           }
 
-          final portalPick = await Get.bottomSheet(
-            const UploadPortalPickerBottomSheet(),
+          Get.bottomSheet(
+            UploadPortalPickerBottomSheet(activity: activity),
             enableDrag: false,
           );
-
-          if (portalPick == null) {
-            return;
-          }
-
-          UploadService uploadService = UploadService.getInstance(portalPick);
-
-          final success = await uploadService.login();
-          if (!success) {
-            Get.snackbar("Warning", "$portalPick login unsuccessful");
-            return;
-          }
-
-          final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
-
-          final statusCode = await uploadService.upload(activity, records);
-          setState(() {
-            _editCount++;
-          });
-          Get.snackbar(
-              "Upload",
-              statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300
-                  ? "Activity ${activity.id} submitted successfully"
-                  : "Activity ${activity.id} upload failure");
         },
       ),
       IconButton(

@@ -35,25 +35,25 @@ List<PortalChoiceDescriptor> getPortalChoices(ThemeManager themeManager) {
       portalNames[0],
       "assets/${portalLogos[0]}",
       themeManager.getOrangeColor(),
-      1.5,
+      1.0,
     ),
     PortalChoiceDescriptor(
       portalNames[1],
       "assets/${portalLogos[1]}",
       themeManager.getSuuntoRedColor(),
-      2.0,
+      1.5,
     ),
     PortalChoiceDescriptor(
       portalNames[2],
       "assets/${portalLogos[2]}",
       themeManager.getSuuntoRedColor(),
-      2.0,
+      1.5,
     ),
     PortalChoiceDescriptor(
       portalNames[3],
       "assets/${portalLogos[3]}",
       themeManager.getBlueColor(),
-      2.0,
+      1.5,
     ),
   ];
 }

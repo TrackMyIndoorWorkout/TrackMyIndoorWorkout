@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
 import '../../persistence/preferences.dart';
+import '../../upload/constants.dart';
+import '../../upload/upload_service.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import 'athlete.dart';
 import 'data_preferences.dart';
 import 'expert.dart';
+import 'integrations.dart';
 import 'leaderboard.dart';
 import 'target_heart_rate.dart';
 import 'ux_preferences.dart';
@@ -39,6 +42,8 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final integrationsKey =
+        "integrations${portalNames.asMap().entries.map((e) => UploadService.isIntegrationEnabled(e.value) ? "1" : "0").toList().join("_")}";
     return Scaffold(
       appBar: AppBar(title: const Text('Preferences')),
       body: SingleChildScrollView(
@@ -157,6 +162,27 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                   children: [
                     TextOneLine(
                       AthletePreferencesScreen.shortTitle,
+                      style: _textStyle,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(5.0),
+              margin: const EdgeInsets.all(5.0),
+              child: ElevatedButton(
+                onPressed: () =>
+                    Get.to(() => IntegrationPreferencesScreen(key: Key(integrationsKey))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextOneLine(
+                      IntegrationPreferencesScreen.shortTitle,
                       style: _textStyle,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,

@@ -1,117 +1,139 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:track_my_indoor_exercise/upload/upload_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../persistence/database.dart';
+import '../../persistence/models/activity.dart';
+import '../../upload/constants.dart';
+import '../../upload/strava/strava_status_code.dart';
+import '../../upload/upload_service.dart';
 import '../../utils/theme_manager.dart';
 
-class PortalChoiceDescriptor {
-  final String name;
-  final String assetName;
-  final Color color;
-  final double heightMultiplier;
-
-  PortalChoiceDescriptor(this.name, this.assetName, this.color, this.heightMultiplier);
-}
-
 class UploadPortalPickerBottomSheet extends StatefulWidget {
-  const UploadPortalPickerBottomSheet({Key? key}) : super(key: key);
+  final Activity activity;
+
+  const UploadPortalPickerBottomSheet({Key? key, required this.activity}) : super(key: key);
 
   @override
   UploadPortalPickerBottomSheetState createState() => UploadPortalPickerBottomSheetState();
 }
 
 class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomSheet> {
-  int _portalIndex = 0;
-  final List<String> _portalNames = [
-    "Strava",
-    "SUUNTO",
-    "MapMyFitness",
-    "TrainingPeaks",
-  ];
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  List<PortalChoiceDescriptor> _portalChoices = [];
   TextStyle _largerTextStyle = const TextStyle();
+  Map<String, bool> uploadStates = {};
 
   @override
   void initState() {
     super.initState();
-    _portalChoices = [
-      PortalChoiceDescriptor(
-          _portalNames[0], "assets/strava.svg", _themeManager.getOrangeColor(), 1.5),
-      PortalChoiceDescriptor(
-          _portalNames[1], "assets/suunto.svg", _themeManager.getSuuntoRedColor(), 2.0),
-      PortalChoiceDescriptor(
-          _portalNames[2], "assets/under-armour-2line.svg", _themeManager.getSuuntoRedColor(), 2.0),
-      PortalChoiceDescriptor(
-          _portalNames[3], "assets/training-peaks-2line.svg", _themeManager.getBlueColor(), 2.0),
-    ];
-    _portalIndex = max(0, _portalNames.indexOf("Strava"));
     _largerTextStyle = Get.textTheme.headline4!;
+    for (final portalName in portalNames) {
+      uploadStates[portalName] = widget.activity.isUploaded(portalName);
+    }
+  }
+
+  Future<bool> uploadActivity(String portalName) async {
+    UploadService uploadService = UploadService.getInstance(portalName);
+
+    final success = await uploadService.login();
+    if (!success) {
+      Get.snackbar("Warning", "$portalName login unsuccessful");
+      return false;
+    }
+
+    final AppDatabase _database = Get.find<AppDatabase>();
+    final records = await _database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
+
+    final statusCode = await uploadService.upload(widget.activity, records);
+    final finalResult =
+        statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300;
+    final resultMessage = finalResult
+        ? "Activity ${widget.activity.id} submitted successfully"
+        : "Activity ${widget.activity.id} upload failure";
+    Get.snackbar("Upload", resultMessage);
+
+    if (finalResult) {
+      setState(() {
+        for (final portalName in portalNames) {
+          uploadStates[portalName] = widget.activity.isUploaded(portalName);
+        }
+      });
+    }
+
+    return finalResult;
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> choiceRows = [];
+    List<Widget> choiceRows = [
+      Text(
+        "Integrations:",
+        style: _largerTextStyle,
+        textAlign: TextAlign.center,
+      ),
+    ];
     choiceRows.addAll(
-      _portalChoices.asMap().entries.map(
+      getPortalChoices(_themeManager).asMap().entries.map(
             (e) => Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Transform.scale(
-                      scale: 2,
-                      child: Radio(
-                        value: e.key,
-                        groupValue: _portalIndex,
-                        onChanged: (value) {
-                          setState(() {
-                            _portalIndex = value as int;
-                          });
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: _largerTextStyle.fontSize! / 3,
+                    horizontal: 0.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          uploadActivity(e.value.name);
                         },
-                      ),
-                    ),
-                    e.value.assetName.isNotEmpty
-                        ? GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _portalIndex = e.key;
-                              });
-                            },
-                            child: SvgPicture.asset(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              (uploadStates[e.value.name] ?? false) ? Icons.check : Icons.upload,
+                              size: _largerTextStyle.fontSize! * 1.5,
+                              color: (uploadStates[e.value.name] ?? false)
+                                  ? _themeManager.getGreenColor()
+                                  : _themeManager.getProtagonistColor(),
+                            ),
+                            SvgPicture.asset(
                               e.value.assetName,
                               color: e.value.color,
                               height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
                               semanticsLabel: '${e.value.name} Logo',
                             ),
-                          )
-                        : Container(),
-                  ],
+                          ],
+                        ),
+                      ),
+                      widget.activity.hasWorkoutUrl(e.value.name) ?
+                      IconButton(
+                        icon: Icon(
+                          Icons.open_in_new,
+                          size: _largerTextStyle.fontSize! * 1.5,
+                          color: _themeManager.getProtagonistColor(),
+                        ),
+                        onPressed: () async {
+                          final workoutUrl = widget.activity.workoutUrl(e.value.name);
+                          debugPrint("Workout URL: $workoutUrl");
+                          if (await canLaunch(workoutUrl)) {
+                            launch(workoutUrl);
+                          } else {
+                            Get.snackbar("Attention", "Cannot open URL");
+                          }
+                        },
+                      ) : Container(),
+                    ],
+                  ),
                 ),
-                Divider(height: _largerTextStyle.fontSize! / 2),
               ],
             ),
           ),
     );
-
-    if (kDebugMode) {
-      choiceRows.add(const Divider());
-      choiceRows.add(
-        ElevatedButton.icon(
-            icon: const Icon(Icons.exit_to_app),
-            label: const Text("Deauthorize"),
-            onPressed: () async {
-              UploadService uploadService = UploadService.getInstance(_portalNames[_portalIndex]);
-
-              final returnCode = await uploadService.deAuthorize();
-              Get.snackbar("Deauthorization", "Return code: $returnCode");
-            }),
-      );
-    }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -121,9 +143,6 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
           children: choiceRows,
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(
-          Icons.check, false, false, "", 0, () => Get.back(result: _portalNames[_portalIndex])),
     );
   }
 }

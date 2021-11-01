@@ -1,5 +1,6 @@
 import 'package:floor/floor.dart';
 import '../../persistence/preferences.dart';
+import '../../upload/constants.dart';
 import '../../utils/display.dart' as display;
 import 'workout_summary.dart';
 
@@ -121,6 +122,48 @@ class Activity {
     trainingPeaksAthleteId = athleteId;
     trainingPeaksWorkoutId = workoutId;
     trainingPeaksUploaded = true;
+  }
+
+  bool isUploaded(String portalName) {
+    switch (portalName) {
+      case suuntoChoice:
+        return suuntoUploaded;
+      case underArmourChoice:
+        return underArmourUploaded;
+      case trainingPeaksChoice:
+        return trainingPeaksUploaded;
+      case stravaChoice:
+      default:
+        return uploaded;
+    }
+  }
+
+  bool hasWorkoutUrl(String portalName) {
+    switch (portalName) {
+      case suuntoChoice:
+        return suuntoWorkoutUrl.isNotEmpty && suuntoUploadIdentifier.isNotEmpty;
+      case underArmourChoice:
+        return uaWorkoutId > 0;
+      case trainingPeaksChoice:
+        return false;
+      case stravaChoice:
+      default:
+        return false;
+    }
+  }
+
+  String workoutUrl(String portalName) {
+    switch (portalName) {
+      case suuntoChoice:
+        return "$suuntoWorkoutUrl$suuntoUploadIdentifier";
+      case underArmourChoice:
+        return "https://www.mapmyrun.com/workout/$uaWorkoutId";
+      case trainingPeaksChoice:
+        return "";
+      case stravaChoice:
+      default:
+        return "";
+    }
   }
 
   String distanceString(bool si, bool highRes) {
