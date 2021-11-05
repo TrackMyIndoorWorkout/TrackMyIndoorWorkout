@@ -13,7 +13,7 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/bluetooth_enable.git
   datetime_picker_formfield: ^2.0.0
-  device_info: ^2.0.2
+  device_info: ^2.0.3
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
   file_picker: ^4.2.0
@@ -43,7 +43,7 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/spinner_input.git
   sqflite: ^2.0.0+4
-  syncfusion_flutter_charts: ^19.3.47
+  syncfusion_flutter_charts: ^19.3.48
   tuple: ^2.0.0
   uni_links: ^0.5.1
   url_launcher: ^6.0.12
