@@ -28,6 +28,8 @@
 -keepclassmembernames class com.mr.flutter.plugin.filepicker.** { *; }
 -keep class com.pauldemarco.flutter_blue.** { *; }
 -keepclassmembernames class com.pauldemarco.flutter_blue.* { *; }
+-keep class com.whelksoft.flutter_native_timezone.** { *; }
+-keepclassmembernames class com.whelksoft.flutter_native_timezone.* { *; }
 -keep class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keepclassmembernames class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keep class dev.flutter.plugins.integration_test.** { *; }

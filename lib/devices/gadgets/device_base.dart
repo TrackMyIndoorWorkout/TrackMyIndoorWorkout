@@ -50,7 +50,7 @@ abstract class DeviceBase {
       await device?.connect();
     } on Exception catch (e) {
       if (e is PlatformException && e.code != 'already_connected') {
-        throw e;
+        rethrow;
       }
     } finally {
       connecting = false;

@@ -7,12 +7,14 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
   static String shortTitle = "Leaderboard";
   static String title = "$shortTitle Preferences";
 
+  const LeaderboardPreferencesScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     List<Widget> leaderboardPreferences = [
       PrefCheckbox(
-        title: Text(LEADERBOARD_FEATURE),
-        subtitle: Text(LEADERBOARD_FEATURE_DESCRIPTION),
+        title: const Text(LEADERBOARD_FEATURE),
+        subtitle: const Text(LEADERBOARD_FEATURE_DESCRIPTION),
         pref: LEADERBOARD_FEATURE_TAG,
         onChange: (value) {
           if (!value) {
@@ -24,8 +26,8 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         },
       ),
       PrefCheckbox(
-        title: Text(RANK_RIBBON_VISUALIZATION),
-        subtitle: Text(RANK_RIBBON_VISUALIZATION_DESCRIPTION),
+        title: const Text(RANK_RIBBON_VISUALIZATION),
+        subtitle: const Text(RANK_RIBBON_VISUALIZATION_DESCRIPTION),
         pref: RANK_RIBBON_VISUALIZATION_TAG,
         onChange: (value) {
           if (value) {
@@ -34,8 +36,8 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         },
       ),
       PrefCheckbox(
-        title: Text(RANK_TRACK_VISUALIZATION),
-        subtitle: Text(RANK_TRACK_VISUALIZATION_DESCRIPTION),
+        title: const Text(RANK_TRACK_VISUALIZATION),
+        subtitle: const Text(RANK_TRACK_VISUALIZATION_DESCRIPTION),
         pref: RANK_TRACK_VISUALIZATION_TAG,
         onChange: (value) {
           if (value) {
@@ -44,8 +46,8 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         },
       ),
       PrefCheckbox(
-        title: Text(RANK_INFO_ON_TRACK),
-        subtitle: Text(RANK_INFO_ON_TRACK_DESCRIPTION),
+        title: const Text(RANK_INFO_ON_TRACK),
+        subtitle: const Text(RANK_INFO_ON_TRACK_DESCRIPTION),
         pref: RANK_INFO_ON_TRACK_TAG,
         onChange: (value) {
           if (value) {
@@ -55,8 +57,8 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         },
       ),
       PrefCheckbox(
-        title: Text(RANKING_FOR_DEVICE),
-        subtitle: Text(RANKING_FOR_DEVICE_DESCRIPTION),
+        title: const Text(RANKING_FOR_DEVICE),
+        subtitle: const Text(RANKING_FOR_DEVICE_DESCRIPTION),
         pref: RANKING_FOR_DEVICE_TAG,
         onChange: (value) {
           if (value) {
@@ -65,8 +67,8 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         },
       ),
       PrefCheckbox(
-        title: Text(RANKING_FOR_SPORT),
-        subtitle: Text(RANKING_FOR_SPORT_DESCRIPTION),
+        title: const Text(RANKING_FOR_SPORT),
+        subtitle: const Text(RANKING_FOR_SPORT_DESCRIPTION),
         pref: RANKING_FOR_SPORT_TAG,
         onChange: (value) {
           if (value) {

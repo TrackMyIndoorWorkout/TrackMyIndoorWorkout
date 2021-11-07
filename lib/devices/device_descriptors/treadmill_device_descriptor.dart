@@ -64,9 +64,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
 
     double? speed = getSpeed(data);
     double? pace = getPace(data); // km / minute
-    if (speed == null) {
-      speed = (pace ?? 0.0) * 60.0; // km / h
-    }
+    speed ??= (pace ?? 0.0) * 60.0; // km / h
 
     if (pace != null && pace > 0) {
       pace = 1 / pace; // now minutes / km
@@ -110,9 +108,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   int processPaceFlag(int flag) {
     if (flag % 2 == 1) {
       // UInt16, km/min with 0.1 resolution
-      if (paceMetric == null) {
-        paceMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 10.0);
-      }
+      paceMetric ??= ByteMetricDescriptor(lsb: byteCounter, divider: 10.0);
       byteCounter += 1;
     }
     flag ~/= 2;
@@ -122,10 +118,8 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   int processForceAndPowerFlag(int flag) {
     if (flag % 2 == 1) {
       byteCounter += 2; // Skip force on belt: SInt16, Newton
-      if (powerMetric == null) {
-        // SInt16, Watts
-        powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
-      }
+      // SInt16, Watts
+      powerMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
     flag ~/= 2;

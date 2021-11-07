@@ -3,16 +3,16 @@ import '../models/power_tune.dart';
 
 @dao
 abstract class PowerTuneDao {
-  @Query('SELECT * FROM `$POWER_TUNE_TABLE_NAME` ORDER BY `time` DESC')
+  @Query('SELECT * FROM `$powerTuneTableName` ORDER BY `time` DESC')
   Future<List<PowerTune>> findAllPowerTunes();
 
-  @Query('SELECT * FROM `$POWER_TUNE_TABLE_NAME` WHERE `id` = :id')
+  @Query('SELECT * FROM `$powerTuneTableName` WHERE `id` = :id')
   Stream<PowerTune?> findPowerTuneById(int id);
 
-  @Query('SELECT * FROM `$POWER_TUNE_TABLE_NAME` WHERE `mac` = :mac ORDER BY `time` DESC LIMIT 1')
+  @Query('SELECT * FROM `$powerTuneTableName` WHERE `mac` = :mac ORDER BY `time` DESC LIMIT 1')
   Stream<PowerTune?> findPowerTuneByMac(String mac);
 
-  @Query('SELECT * FROM `$POWER_TUNE_TABLE_NAME` ORDER BY `time` DESC LIMIT :limit OFFSET :offset')
+  @Query('SELECT * FROM `$powerTuneTableName` ORDER BY `time` DESC LIMIT :limit OFFSET :offset')
   Future<List<PowerTune>> findPowerTunes(int limit, int offset);
 
   @insert

@@ -15,7 +15,7 @@ class HeartRateMonitor extends ComplexSensor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.heart_rate_measurement.xml
   @override
   bool canMeasurementProcessed(List<int> data) {
-    if (data.length < 1) return false;
+    if (data.isEmpty) return false;
 
     var flag = data[0];
     // Clear out status bits so status change won't cause metric re-creation

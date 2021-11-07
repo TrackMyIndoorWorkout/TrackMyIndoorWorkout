@@ -12,6 +12,7 @@ void main() {
   test('FitDataRecord has the expected global message number', () async {
     final dataRecord = FitDataRecord(
       0,
+      0,
       HEART_RATE_GAP_WORKAROUND_DEFAULT,
       HEART_RATE_UPPER_LIMIT_DEFAULT,
       HEART_RATE_LIMITING_NO_LIMIT,
@@ -23,6 +24,7 @@ void main() {
   test('FitDataRecord data has the expected length', () async {
     final rng = Random();
     final dataRecord = FitDataRecord(
+      0,
       0,
       HEART_RATE_GAP_WORKAROUND_DEFAULT,
       HEART_RATE_UPPER_LIMIT_DEFAULT,

@@ -1,5 +1,6 @@
 import '../../../utils/constants.dart';
 import '../../export_model.dart';
+import '../../export_target.dart';
 import '../enums/fit_event.dart';
 import '../enums/fit_event_type.dart';
 import '../enums/fit_session_trigger.dart';
@@ -12,18 +13,42 @@ import '../fit_serializable.dart';
 import '../fit_sport.dart';
 
 class FitSession extends FitDefinitionMessage {
-  FitSession(localMessageType) : super(localMessageType, FitMessage.Session) {
+  int exportTarget;
+
+  FitSession(localMessageType, this.exportTarget) : super(localMessageType, FitMessage.Session) {
     fields = [
       FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
-      FitField(253, FitBaseTypes.uint32Type), // Session end time
-      FitField(0, FitBaseTypes.enumType), // Event
-      FitField(1, FitBaseTypes.enumType), // EventType
+    ];
+    if (exportTarget == ExportTarget.regular) {
+      fields.addAll([
+        FitField(253, FitBaseTypes.uint32Type), // Session end time
+        FitField(0, FitBaseTypes.enumType), // Event
+        FitField(1, FitBaseTypes.enumType), // EventType
+      ]);
+    }
+
+    fields.add(
       FitField(2, FitBaseTypes.uint32Type), // StartTime
-      FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
-      FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
+    );
+    if (exportTarget == ExportTarget.regular) {
+      fields.addAll([
+        FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
+        FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
+      ]);
+    }
+
+    fields.addAll([
       FitField(5, FitBaseTypes.enumType), // Sport
       FitField(6, FitBaseTypes.enumType), // Sub-Sport
-      FitField(7, FitBaseTypes.uint32Type), // TotalElapsedTime (1/1000s)
+    ]);
+    if (exportTarget == ExportTarget.regular) {
+      fields.add(
+        FitField(7, FitBaseTypes.uint32Type), // TotalElapsedTime (1/1000s)
+      );
+    }
+
+    fields.addAll([
+      FitField(8, FitBaseTypes.uint32Type), // TotalTimerTime (1/1000s)
       FitField(9, FitBaseTypes.uint32Type), // TotalDistance (1/100 m)
       FitField(11, FitBaseTypes.uint16Type), // TotalCalories (1/100 m)
       FitField(14, FitBaseTypes.uint16Type), // AvgSpeed (1/1000 m/s)
@@ -34,11 +59,15 @@ class FitSession extends FitDefinitionMessage {
       FitField(19, FitBaseTypes.uint8Type), // MaxCadence (rpm or spm)
       FitField(20, FitBaseTypes.uint16Type), // AvgPower (Watts)
       FitField(21, FitBaseTypes.uint16Type), // MaxPower (Watts)
-      FitField(26, FitBaseTypes.uint16Type), // NumLaps: 1
-      FitField(28, FitBaseTypes.enumType), // Trigger (Activity End)
-    ];
+    ]);
+    if (exportTarget == ExportTarget.regular) {
+      fields.add(
+        FitField(28, FitBaseTypes.enumType), // Trigger (Activity End)
+      );
+    }
   }
 
+  @override
   List<int> serializeData(dynamic parameter) {
     ExportModel model = parameter;
 
@@ -47,16 +76,26 @@ class FitSession extends FitDefinitionMessage {
     var data = FitData();
     data.output = [localMessageType];
     data.addShort(0);
-    data.addLong(FitSerializable.fitTimeStamp(last.timeStampInteger));
-    data.addByte(FitEvent.Lap);
-    data.addByte(FitEventType.Stop);
+    if (exportTarget == ExportTarget.regular) {
+      data.addLong(FitSerializable.fitTimeStamp(last.timeStampInteger));
+      data.addByte(FitEvent.Lap);
+      data.addByte(FitEventType.Stop);
+    }
+
     data.addLong(FitSerializable.fitTimeStamp(first.timeStampInteger));
-    data.addGpsCoordinate(first.latitude);
-    data.addGpsCoordinate(first.longitude);
+    if (exportTarget == ExportTarget.regular) {
+      data.addGpsCoordinate(first.latitude);
+      data.addGpsCoordinate(first.longitude);
+    }
+
     final fitSport = toFitSport(model.activity.sport);
     data.addByte(fitSport.item1);
     data.addByte(fitSport.item2);
     data.addLong(model.activity.elapsed * 1000);
+    if (exportTarget == ExportTarget.regular) {
+      data.addLong(model.activity.elapsed * 1000);
+    }
+
     data.addLong((model.activity.distance * 100).ceil());
     data.addShort(model.activity.calories > 0
         ? model.activity.calories
@@ -81,8 +120,9 @@ class FitSession extends FitDefinitionMessage {
     data.addShort(model.maximumPower > EPS
         ? model.maximumPower.round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(1);
-    data.addByte(FitSessionTrigger.ActivityEnd);
+    if (exportTarget == ExportTarget.regular) {
+      data.addByte(FitSessionTrigger.ActivityEnd);
+    }
 
     return data.output;
   }

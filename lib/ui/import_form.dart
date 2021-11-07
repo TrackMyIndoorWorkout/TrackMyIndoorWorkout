@@ -8,12 +8,12 @@ import 'package:intl/intl.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import '../import/csv_importer.dart';
 
-typedef void SetProgress(double progress);
+typedef SetProgress = void Function(double progress);
 
 class ImportForm extends StatefulWidget {
   final bool migration;
 
-  ImportForm({Key? key, required this.migration}) : super(key: key);
+  const ImportForm({Key? key, required this.migration}) : super(key: key);
 
   @override
   _ImportFormState createState() => _ImportFormState();
@@ -21,13 +21,13 @@ class ImportForm extends StatefulWidget {
 
 class _ImportFormState extends State<ImportForm> {
   final dateTimeFormat = DateFormat("yyyy-MM-dd HH:mm");
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _filePath;
   DateTime? _activityDateTime;
   bool _isLoading = false;
   double _progressValue = 0.0;
   double _sizeDefault = 10.0;
-  TextEditingController _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _ImportFormState extends State<ImportForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('MPower Workout Import'),
+        title: const Text('MPower Workout Import'),
       ),
       body: LoadingOverlay(
         isLoading: _isLoading,
@@ -67,7 +67,7 @@ class _ImportFormState extends State<ImportForm> {
                   labelText: '${widget.migration ? "Migration" : "MPower Echelon"} CSV File URL',
                   hintText: 'Paste the CSV file URL',
                   suffixIcon: ElevatedButton(
-                    child: Text(
+                    child: const Text(
                       '⋯',
                       style: TextStyle(fontSize: 30),
                     ),
@@ -76,7 +76,7 @@ class _ImportFormState extends State<ImportForm> {
                       if (result != null && result.files.single.path != null) {
                         _textController.text = result.files.single.path!;
                         setState(() {
-                          _filePath = result.files.single.path!;
+                          _filePath = result.files.single.path;
                         });
                       }
                     },
@@ -94,7 +94,7 @@ class _ImportFormState extends State<ImportForm> {
                 }),
               ),
               Visibility(
-                child: SizedBox(height: 24),
+                child: const SizedBox(height: 24),
                 visible: !widget.migration,
               ),
               Visibility(
@@ -134,7 +134,7 @@ class _ImportFormState extends State<ImportForm> {
                 ),
                 visible: !widget.migration,
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Padding(
@@ -183,12 +183,12 @@ class _ImportFormState extends State<ImportForm> {
                           Get.snackbar("Error", "Please correct form fields");
                         }
                       },
-                      child: Text('Import'),
+                      child: const Text('Import'),
                     ),
                   ),
                   Expanded(child: Container()),
                   ElevatedButton(
-                    child: Text('Reset'),
+                    child: const Text('Reset'),
                     onPressed: () => _formKey.currentState?.reset(),
                   ),
                 ],

@@ -13,7 +13,7 @@ class TrackMyIndoorExerciseApp extends StatefulWidget {
   final String bluetoothStateString;
   final PermissionStatus permissionState;
 
-  TrackMyIndoorExerciseApp({
+  const TrackMyIndoorExerciseApp({
     key,
     required this.prefService,
     required this.blueOn,
@@ -32,7 +32,7 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
   @override
   void initState() {
     super.initState();
-    _themeManager = Get.put<ThemeManager>(ThemeManager());
+    _themeManager = Get.put<ThemeManager>(ThemeManager(), permanent: true);
     permissionFuture = Permission.locationWhenInUse.request();
   }
 
@@ -57,7 +57,7 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
                 final locationState = futureSnapshot.data ?? widget.permissionState;
                 if (bluetoothState == BluetoothState.on &&
                     locationState == PermissionStatus.granted) {
-                  return FindDevicesScreen();
+                  return const FindDevicesScreen();
                 } else {
                   return BluetoothIssueScreen(
                     bluetoothState: bluetoothState,

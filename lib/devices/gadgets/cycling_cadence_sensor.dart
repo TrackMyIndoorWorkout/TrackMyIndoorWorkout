@@ -7,8 +7,8 @@ import 'cadence_data.dart';
 import 'integer_sensor.dart';
 
 class CyclingCadenceSensor extends IntegerSensor {
-  static const int REVOLUTION_SLIDING_WINDOW = 10; // Seconds
-  static const int EVENT_TIME_OVERFLOW = 64; // Overflows every 64 seconds
+  static const int revolutionSlidingWindow = 10; // Seconds
+  static const int eventTimeOverflow = 64; // Overflows every 64 seconds
 
   // Secondary (Crank cadence) metrics
   ShortMetricDescriptor? revolutionsMetric;
@@ -25,7 +25,7 @@ class CyclingCadenceSensor extends IntegerSensor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
   @override
   bool canMeasurementProcessed(List<int> data) {
-    if (data.length < 1) return false;
+    if (data.isEmpty) return false;
 
     var flag = data[0];
     // 16 bit revolution and 16 bit time
@@ -78,15 +78,15 @@ class CyclingCadenceSensor extends IntegerSensor {
     var secondsDiff = lastData.seconds - firstData.seconds;
     // Check overflow
     if (secondsDiff < 0) {
-      secondsDiff += EVENT_TIME_OVERFLOW;
+      secondsDiff += eventTimeOverflow;
     }
 
-    while (secondsDiff > REVOLUTION_SLIDING_WINDOW && cadenceData.length > 2) {
+    while (secondsDiff > revolutionSlidingWindow && cadenceData.length > 2) {
       cadenceData.removeFirst();
       secondsDiff = cadenceData.last.seconds - cadenceData.first.seconds;
       // Check overflow
       if (secondsDiff < 0) {
-        secondsDiff += EVENT_TIME_OVERFLOW;
+        secondsDiff += eventTimeOverflow;
       }
     }
 

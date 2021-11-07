@@ -20,8 +20,8 @@ class BluetoothIssueScreen extends StatefulWidget {
 
 class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
   late PermissionStatus locationState = PermissionStatus.denied;
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _textStyle = TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _textStyle = const TextStyle();
 
   @override
   void initState() {
@@ -46,23 +46,20 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
     return Scaffold(
       backgroundColor: _themeManager.getHeaderColor(),
       body: GestureDetector(
-        onLongPress: () => Get.snackbar(
-            "Warning",
-            "Make sure you turn on your Bluetooth Adapter and " +
-                "location permission is required for Bluetooth functionality!"),
+        onLongPress: () => Get.snackbar("Warning",
+            "Make sure you turn on your Bluetooth Adapter and location permission is required for Bluetooth functionality!"),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
+              const Icon(
                 Icons.bluetooth_disabled,
                 size: 200.0,
                 color: Colors.white,
               ),
               Flexible(
                 child: Text(
-                  'Bluetooth Adapter is $bluetoothDisplay.\n' +
-                      'Location permission is $locationDisplay',
+                  'Bluetooth Adapter is $bluetoothDisplay.\nLocation permission is $locationDisplay',
                   style: _textStyle,
                   maxLines: 10,
                   overflow: TextOverflow.ellipsis,

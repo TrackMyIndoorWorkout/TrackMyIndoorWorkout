@@ -1,56 +1,55 @@
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../persistence/database.dart';
+import '../persistence/preferences.dart';
 import '../utils/constants.dart';
-import '../utils/sound.dart';
 
 class AboutScreen extends StatefulWidget {
   static String shortTitle = "About";
+
+  const AboutScreen({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => AboutScreenState();
 }
 
 class AboutScreenState extends State<AboutScreen> {
-  static const HOST_URL = "https://trackmyindoorworkout.github.io/";
-  static const QUICK_START_URL = "${HOST_URL}2020/09/25/quick-start.html";
-  static const FAQ_URL = "${HOST_URL}2020/09/22/frequently-asked-questions.html";
-  static const KNOWN_ISSUES_URL = "${HOST_URL}2020/09/26/known-issues.html";
-  static const CHANGE_LOG_URL = "${HOST_URL}changelog";
+  static const hostUrl = "https://trackmyindoorworkout.github.io/";
+  static const quickStartUrl = "${hostUrl}2020/09/25/quick-start.html";
+  static const faqUrl = "${hostUrl}2020/09/22/frequently-asked-questions.html";
+  static const knownIssuesUrl = "${hostUrl}2020/09/26/known-issues.html";
+  static const changeLogUrl = "${hostUrl}changelog";
 
-  late String _appName;
   late String _version;
   late String _buildNumber;
-  TextStyle _fieldStyle = TextStyle();
-  TextStyle _valueStyle = TextStyle();
+  String _detectedTimeZone = "";
+  String _enforcedTimeZone = "";
+  TextStyle _fieldStyle = const TextStyle();
+  TextStyle _valueStyle = const TextStyle();
 
   @override
   void initState() {
     super.initState();
     _fieldStyle = Get.textTheme.headline5!;
-    _valueStyle = Get.textTheme.headline6!.apply(
-      fontFamily: FONT_FAMILY,
-      // color: Colors.white,
-    );
+    _valueStyle = Get.textTheme.headline6!.apply(fontFamily: FONT_FAMILY);
     final packageInfo = Get.find<PackageInfo>();
-    _appName = packageInfo.appName;
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;
 
-    if (!Get.isRegistered<SoundService>()) {
-      Get.put<SoundService>(SoundService());
-    }
-
-    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+    FlutterNativeTimezone.getLocalTimezone().then((String timeZone) {
       setState(() {
-        _appName = packageInfo.appName;
-        _version = packageInfo.version;
-        _buildNumber = packageInfo.buildNumber;
+        _detectedTimeZone = timeZone;
       });
     });
+
+    final prefService = Get.find<BasePrefService>();
+    _enforcedTimeZone =
+        prefService.get<String>(ENFORCED_TIME_ZONE_TAG) ?? ENFORCED_TIME_ZONE_DEFAULT;
   }
 
   @override
@@ -58,11 +57,11 @@ class AboutScreenState extends State<AboutScreen> {
     final List<Widget> actions = [];
     if (kDebugMode) {
       actions.add(IconButton(
-        icon: Icon(Icons.build),
+        icon: const Icon(Icons.build),
         onPressed: () async {
           final database = Get.find<AppDatabase>();
           final activities = await database.activityDao.findAllActivities();
-          activities.forEach((activity) async {
+          for (var activity in activities) {
             final lastRecord =
                 await database.recordDao.findLastRecordOfActivity(activity.id!).first;
             if (lastRecord != null) {
@@ -93,10 +92,10 @@ class AboutScreenState extends State<AboutScreen> {
 
               if (updated > 0) {
                 database.activityDao.updateActivity(activity);
-                Get.snackbar("Activity ${activity.id}", "Updated ${updated} fields");
+                Get.snackbar("Activity ${activity.id}", "Updated $updated fields");
               }
             }
-          });
+          }
         },
       ));
     }
@@ -110,24 +109,6 @@ class AboutScreenState extends State<AboutScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Flexible(
-              child: Text(
-                'App Name:',
-                style: _fieldStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                _appName,
-                style: _valueStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
             Flexible(
               child: Text(
                 'Version:',
@@ -164,14 +145,50 @@ class AboutScreenState extends State<AboutScreen> {
                 textAlign: TextAlign.center,
               ),
             ),
-            Divider(),
+            Flexible(
+              child: Text(
+                'Detected Time Zone:',
+                style: _fieldStyle,
+                maxLines: 10,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                _detectedTimeZone,
+                style: _valueStyle,
+                maxLines: 10,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                'Enforced Time Zone:',
+                style: _fieldStyle,
+                maxLines: 10,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                _enforcedTimeZone,
+                style: _valueStyle,
+                maxLines: 10,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const Divider(),
             Center(
               child: ElevatedButton.icon(
-                icon: Icon(Icons.open_in_new),
-                label: Text("Quick Start"),
+                icon: const Icon(Icons.open_in_new),
+                label: const Text("Quick Start"),
                 onPressed: () async {
-                  if (await canLaunch(QUICK_START_URL)) {
-                    launch(QUICK_START_URL);
+                  if (await canLaunch(quickStartUrl)) {
+                    launch(quickStartUrl);
                   } else {
                     Get.snackbar("Attention", "Cannot open URL");
                   }
@@ -180,11 +197,11 @@ class AboutScreenState extends State<AboutScreen> {
             ),
             Center(
               child: ElevatedButton.icon(
-                icon: Icon(Icons.open_in_new),
-                label: Text("Frequently Asked Questions"),
+                icon: const Icon(Icons.open_in_new),
+                label: const Text("Frequently Asked Questions"),
                 onPressed: () async {
-                  if (await canLaunch(FAQ_URL)) {
-                    launch(FAQ_URL);
+                  if (await canLaunch(faqUrl)) {
+                    launch(faqUrl);
                   } else {
                     Get.snackbar("Attention", "Cannot open URL");
                   }
@@ -193,11 +210,11 @@ class AboutScreenState extends State<AboutScreen> {
             ),
             Center(
               child: ElevatedButton.icon(
-                icon: Icon(Icons.open_in_new),
-                label: Text("Known Issues"),
+                icon: const Icon(Icons.open_in_new),
+                label: const Text("Known Issues"),
                 onPressed: () async {
-                  if (await canLaunch(KNOWN_ISSUES_URL)) {
-                    launch(KNOWN_ISSUES_URL);
+                  if (await canLaunch(knownIssuesUrl)) {
+                    launch(knownIssuesUrl);
                   } else {
                     Get.snackbar("Attention", "Cannot open URL");
                   }
@@ -206,11 +223,11 @@ class AboutScreenState extends State<AboutScreen> {
             ),
             Center(
               child: ElevatedButton.icon(
-                icon: Icon(Icons.open_in_new),
-                label: Text("Change Log"),
+                icon: const Icon(Icons.open_in_new),
+                label: const Text("Change Log"),
                 onPressed: () async {
-                  if (await canLaunch(CHANGE_LOG_URL)) {
-                    launch(CHANGE_LOG_URL);
+                  if (await canLaunch(changeLogUrl)) {
+                    launch(changeLogUrl);
                   } else {
                     Get.snackbar("Attention", "Cannot open URL");
                   }

@@ -9,8 +9,8 @@ class BrandIconData extends IconData {
 }
 
 class BrandIcons {
-  static const IconData fitbit = const BrandIconData(0xe9c7);
-  static const IconData flutter = const BrandIconData(0xe9cc);
-  static const IconData garmin = const BrandIconData(0xe9d4);
-  static const IconData strava = const BrandIconData(0xeb20);
+  static const IconData fitbit = BrandIconData(0xe9c7);
+  static const IconData flutter = BrandIconData(0xe9cc);
+  static const IconData garmin = BrandIconData(0xe9d4);
+  static const IconData strava = BrandIconData(0xeb20);
 }

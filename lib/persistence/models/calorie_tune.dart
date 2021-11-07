@@ -1,9 +1,9 @@
 import 'package:floor/floor.dart';
 
-const CALORIE_TUNE_TABLE_NAME = 'calorie_tune';
+const calorieTuneTableName = 'calorie_tune';
 
 @Entity(
-  tableName: CALORIE_TUNE_TABLE_NAME,
+  tableName: calorieTuneTableName,
   indices: [
     Index(value: ['mac'])
   ],

@@ -17,26 +17,26 @@ void main() async {
 
   final companyRegistry = CompanyRegistry();
   await companyRegistry.loadCompanyIdentifiers();
-  Get.put<CompanyRegistry>(companyRegistry);
+  Get.put<CompanyRegistry>(companyRegistry, permanent: true);
 
-  Get.put<AdvertisementCache>(AdvertisementCache());
+  Get.put<AdvertisementCache>(AdvertisementCache(), permanent: true);
 
   var blueAvailable = await FlutterBlue.instance.isAvailable;
   var blueOn = await FlutterBlue.instance.isOn;
 
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-    Get.put<PackageInfo>(packageInfo);
+    Get.put<PackageInfo>(packageInfo, permanent: true);
   });
 
-  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
+  await Future.delayed(const Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
 
   final bluetoothStateString = await BluetoothEnable.enableBluetooth;
 
-  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
+  await Future.delayed(const Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
 
   final permissionState = await Permission.locationWhenInUse.request();
 
-  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
+  await Future.delayed(const Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
 
   blueAvailable = await FlutterBlue.instance.isAvailable;
   blueOn = await FlutterBlue.instance.isOn;

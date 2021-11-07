@@ -5,19 +5,21 @@ import 'package:get/get.dart';
 import '../../utils/theme_manager.dart';
 
 class ImportFormatPickerBottomSheet extends StatefulWidget {
+  const ImportFormatPickerBottomSheet({Key? key}) : super(key: key);
+
   @override
   ImportFormatPickerBottomSheetState createState() => ImportFormatPickerBottomSheetState();
 }
 
 class ImportFormatPickerBottomSheetState extends State<ImportFormatPickerBottomSheet> {
   int _formatIndex = 0;
-  List<String> _formatChoices = [
+  final List<String> _formatChoices = [
     "MPower Echelon",
     "Migration",
   ];
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _largerTextStyle = TextStyle();
-  TextStyle _selectedTextStyle = TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = const TextStyle();
+  TextStyle _selectedTextStyle = const TextStyle();
 
   @override
   void initState() {

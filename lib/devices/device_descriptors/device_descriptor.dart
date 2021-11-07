@@ -11,8 +11,8 @@ import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import '../gatt_constants.dart';
 
 abstract class DeviceDescriptor {
-  static const double MS2KMH = 3.6;
-  static const double KMH2MS = 1 / MS2KMH;
+  static const double ms2kmh = 3.6;
+  static const double kmh2ms = 1 / ms2kmh;
 
   String defaultSport;
   final bool isMultiSport;

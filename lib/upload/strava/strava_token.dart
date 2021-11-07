@@ -4,7 +4,7 @@ class StravaToken {
   String? accessToken;
   String? refreshToken;
   String? tokenType;
-  int? expiresAt;
+  int? expiresAt; // in seconds
   String? scope;
 
   StravaToken({this.accessToken, this.refreshToken, this.expiresAt, this.scope});
@@ -38,7 +38,7 @@ class StravaToken {
   /// return {null, null} if there is not token yet
   /// stored in globals
   Map<String, String> getAuthorizationHeader() {
-    if (accessToken != null && accessToken!.length > 0 && accessToken != "Error") {
+    if (accessToken != null && accessToken!.isNotEmpty && accessToken != "Error") {
       return {'Authorization': 'Bearer $accessToken'};
     } else {
       return {'88': '00'};
@@ -50,7 +50,7 @@ class RefreshAnswer {
   Fault? fault;
   String? accessToken;
   String? refreshToken;
-  int? expiresAt;
+  int? expiresAt; // in seconds
 
   RefreshAnswer();
 

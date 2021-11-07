@@ -11,6 +11,7 @@ class FitFileCreator extends FitDefinitionMessage {
     ];
   }
 
+  @override
   List<int> serializeData(dynamic parameter) {
     var data = FitData();
     data.output = [localMessageType];

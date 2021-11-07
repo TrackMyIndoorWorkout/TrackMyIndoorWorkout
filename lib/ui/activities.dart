@@ -6,7 +6,6 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
@@ -15,15 +14,16 @@ import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../export/activity_export.dart';
 import '../export/csv/csv_export.dart';
+import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
+import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
-import '../upload/strava/strava_status_code.dart';
-import '../upload/strava/strava_service.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import '../utils/preferences.dart';
 import '../utils/theme_manager.dart';
 import 'calorie_tunes.dart';
 import 'device_usages.dart';
@@ -32,24 +32,24 @@ import 'leaderboards/leaderboard_type_picker.dart';
 import 'parts/calorie_override.dart';
 import 'parts/circular_menu.dart';
 import 'parts/export_format_picker.dart';
-import 'parts/flutter_brand_icons.dart';
 import 'parts/import_format_picker.dart';
 import 'parts/power_factor_tune.dart';
 import 'parts/sport_picker.dart';
+import 'parts/upload_portal_picker.dart';
 import 'power_tunes.dart';
 import 'records.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   final bool hasLeaderboardData;
 
-  ActivitiesScreen({key, required this.hasLeaderboardData}) : super(key: key);
+  const ActivitiesScreen({key, required this.hasLeaderboardData}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => ActivitiesScreenState();
 }
 
 class ActivitiesScreenState extends State<ActivitiesScreen> {
-  AppDatabase _database = Get.find<AppDatabase>();
+  final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   bool _si = UNIT_SYSTEM_DEFAULT;
   bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
@@ -57,13 +57,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeDefault2 = 10.0;
-  TextStyle _measurementStyle = TextStyle();
-  TextStyle _textStyle = TextStyle();
-  TextStyle _headerStyle = TextStyle();
-  TextStyle _unitStyle = TextStyle();
-  TextStyle _overlayStyle = TextStyle();
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
+  TextStyle _measurementStyle = const TextStyle();
+  TextStyle _textStyle = const TextStyle();
+  TextStyle _headerStyle = const TextStyle();
+  TextStyle _unitStyle = const TextStyle();
+  TextStyle _overlayStyle = const TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
   bool _tutorialVisible = false;
   final GlobalKey<CircularFabMenuState> circularFabKey = GlobalKey();
 
@@ -80,43 +80,34 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
   }
 
+  ActivityExport getExporter(String format) {
+    switch (format.toUpperCase()) {
+      case "TCX":
+        return TCXExport();
+      case "FIT":
+        return FitExport();
+      case "JSON":
+        return JsonExport();
+      case "CSV":
+      default:
+        return CsvExport();
+    }
+  }
+
   Widget _actionButtonRow(Activity activity, double size) {
     final actionsRow = <Widget>[
       IconButton(
-        icon: Icon(
-          BrandIcons.strava,
-          color: activity.uploaded ? _themeManager.getGreyColor() : _themeManager.getOrangeColor(),
-          size: size,
-        ),
+        icon: _themeManager.getActionIcon(Icons.cloud_upload, size),
         onPressed: () async {
-          if (!await InternetConnectionChecker().hasConnection) {
-            Get.snackbar("Warning", "No data connection detected");
+          if (!await hasInternetConnection()) {
+            Get.snackbar("Warning", "No data connection detected, try again later!");
             return;
           }
 
-          StravaService stravaService;
-          if (!Get.isRegistered<StravaService>()) {
-            stravaService = Get.put<StravaService>(StravaService());
-          } else {
-            stravaService = Get.find<StravaService>();
-          }
-          final success = await stravaService.login();
-          if (!success) {
-            Get.snackbar("Warning", "Strava login unsuccessful");
-            return;
-          }
-
-          final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
-
-          final statusCode = await stravaService.upload(activity, records);
-          setState(() {
-            _editCount++;
-          });
-          Get.snackbar(
-              "Upload",
-              statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300
-                  ? "Activity ${activity.id} submitted successfully"
-                  : "Activity ${activity.id} upload failure");
+          Get.bottomSheet(
+            UploadPortalPickerBottomSheet(activity: activity),
+            enableDrag: false,
+          );
         },
       ),
       IconButton(
@@ -127,7 +118,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           }
 
           final formatPick = await Get.bottomSheet(
-            ExportFormatPickerBottomSheet(),
+            const ExportFormatPickerBottomSheet(),
             enableDrag: false,
           );
 
@@ -136,13 +127,14 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           }
 
           final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
-          ActivityExport exporter = formatPick == "CSV"
-              ? CSVExport()
-              : formatPick == "TCX"
-                  ? TCXExport()
-                  : FitExport();
-          final fileStream =
-              await exporter.getExport(activity, records, formatPick == "CSV", false);
+          ActivityExport exporter = getExporter(formatPick);
+          final fileStream = await exporter.getExport(
+            activity,
+            records,
+            formatPick == "CSV",
+            false,
+            ExportTarget.regular,
+          );
           final persistenceValues = exporter.getPersistenceValues(activity, false);
           ShareFilesAndScreenshotWidgets().shareFile(
             persistenceValues['name'],
@@ -205,7 +197,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     }
 
     actionsRow.addAll([
-      Spacer(),
+      const Spacer(),
       IconButton(
         icon: _themeManager.getDeleteIcon(size),
         onPressed: () async {
@@ -213,7 +205,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             title: 'Warning!!!',
             middleText: 'Are you sure to delete this Activity?',
             confirm: TextButton(
-              child: Text("Yes"),
+              child: const Text("Yes"),
               onPressed: () async {
                 await _database.recordDao.deleteAllActivityRecords(activity.id ?? 0);
                 await _database.activityDao.deleteActivity(activity);
@@ -224,13 +216,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               },
             ),
             cancel: TextButton(
-              child: Text("No"),
+              child: const Text("No"),
               onPressed: () => Get.close(1),
             ),
           );
         },
       ),
-      Spacer(),
+      const Spacer(),
       IconButton(
         icon: _themeManager.getActionIcon(Icons.chevron_right, size),
         onPressed: () async =>
@@ -276,7 +268,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         0,
         () async {
           final formatPick = await Get.bottomSheet(
-            ImportFormatPickerBottomSheet(),
+            const ImportFormatPickerBottomSheet(),
             enableDrag: false,
           );
 
@@ -297,7 +289,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         "Device Usages",
         8,
         () async {
-          await Get.to(() => DeviceUsagesScreen());
+          await Get.to(() => const DeviceUsagesScreen());
         },
       ),
       _themeManager.getBlueFab(
@@ -307,7 +299,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         "Power Tunes",
         0,
         () async {
-          await Get.to(() => PowerTunesScreen());
+          await Get.to(() => const PowerTunesScreen());
         },
       ),
       _themeManager.getBlueFab(
@@ -317,7 +309,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
         "Calorie Tunes",
         -16,
         () async {
-          await Get.to(() => CalorieTunesScreen());
+          await Get.to(() => const CalorieTunesScreen());
         },
       ),
     ];
@@ -331,7 +323,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           "Leaderboards",
           -8,
           () async {
-            Get.bottomSheet(LeaderBoardTypeBottomSheet(), enableDrag: false);
+            Get.bottomSheet(const LeaderBoardTypeBottomSheet(), enableDrag: false);
           },
         ),
       );
@@ -363,7 +355,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           ignoringSemantics: true,
           child: Scaffold(
             appBar: AppBar(
-              title: Text('Activities'),
+              title: const Text('Activities'),
               actions: [
                 OverlayTutorialHole(
                   enabled: _tutorialVisible,
@@ -383,7 +375,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     ],
                   ),
                   child: IconButton(
-                      icon: Icon(Icons.info_rounded),
+                      icon: const Icon(Icons.info_rounded),
                       onPressed: () {
                         if (!(circularFabKey.currentState?.isOpen ?? true)) {
                           circularFabKey.currentState?.open();
@@ -399,7 +391,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
               key: Key("CLV$_editCount"),
               paginationMode: PaginationMode.page,
               initialOffset: 0,
-              loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
+              loadingBuilder: (BuildContext context) =>
+                  const Center(child: CircularProgressIndicator()),
               adapter: ListAdapter(
                 fetchItems: (int page, int limit) async {
                   final offset = page * limit;
@@ -413,12 +406,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     Text(error.toString()),
                     ElevatedButton(
                       onPressed: () => state.loadMore(),
-                      child: Text('Retry'),
+                      child: const Text('Retry'),
                     ),
                   ],
                 );
               },
-              empty: Center(
+              empty: const Center(
                 child: Text('No activities found'),
               ),
               itemBuilder: (context, _, item) {
@@ -453,8 +446,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                     ),
                     collapsed: Container(),
                     expanded: ListTile(
-                      onTap: () async => await Get.to(
-                          () => RecordsScreen(activity: item, size: Get.mediaQuery.size)),
+                      onTap: () =>
+                          Get.to(() => RecordsScreen(activity: item, size: Get.mediaQuery.size)),
                       title: Column(
                         children: [
                           Row(
@@ -477,7 +470,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-                              Spacer(),
+                              const Spacer(),
                               Text(activity.elapsedString, style: _measurementStyle),
                             ],
                           ),
@@ -486,7 +479,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-                              Spacer(),
+                              const Spacer(),
                               Text(activity.distanceString(_si, _highRes),
                                   style: _measurementStyle),
                               SizedBox(
@@ -500,7 +493,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-                              Spacer(),
+                              const Spacer(),
                               Text('${activity.calories}', style: _measurementStyle),
                               SizedBox(
                                 width: _sizeDefault,

@@ -16,7 +16,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   ShortMetricDescriptor? paceMetric;
 
   int _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT;
-  ListQueue<int> _strokeRates = ListQueue<int>();
+  final ListQueue<int> _strokeRates = ListQueue<int>();
   int _strokeRateSum = 0;
 
   RowerDeviceDescriptor({
@@ -96,7 +96,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
         _strokeRateSum -= _strokeRates.first;
         _strokeRates.removeFirst();
       }
-      strokeRate = _strokeRates.length > 0 ? (_strokeRateSum / _strokeRates.length).round() : 0;
+      strokeRate = _strokeRates.isNotEmpty ? (_strokeRateSum / _strokeRates.length).round() : 0;
     }
 
     return RecordWithSport(
@@ -151,9 +151,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   int processPaceFlag(int flag) {
     if (flag % 2 == 1) {
       // UInt16, seconds with 1 resolution
-      if (paceMetric == null) {
-        paceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
-      }
+      paceMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
     flag ~/= 2;

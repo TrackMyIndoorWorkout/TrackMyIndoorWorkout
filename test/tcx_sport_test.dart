@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:track_my_indoor_exercise/export/tcx/tcx_export.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
-import 'package:track_my_indoor_exercise/utils/display.dart';
 import 'utils.dart';
 
 void main() {
@@ -8,7 +8,7 @@ void main() {
     SPORTS.forEach((sport) {
       final expected = sport == ActivityType.Ride || sport == ActivityType.Run ? sport : "Other";
       test("$sport -> $expected", () async {
-        expect(tcxSport(sport), expected);
+        expect(TCXExport.tcxSport(sport), expected);
       });
     });
   });

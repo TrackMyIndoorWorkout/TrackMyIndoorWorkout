@@ -15,22 +15,22 @@ import '../../utils/theme_manager.dart';
 class DeviceLeaderboardScreen extends StatefulWidget {
   final Tuple2<String, String> device;
 
-  DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
+  const DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => DeviceLeaderboardScreenState();
 }
 
 class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
-  AppDatabase _database = Get.find<AppDatabase>();
+  final AppDatabase _database = Get.find<AppDatabase>();
   bool _si = UNIT_SYSTEM_DEFAULT;
   bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
   int _editCount = 0;
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
-  TextStyle _textStyle2 = TextStyle();
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
+  TextStyle _textStyle = const TextStyle();
+  TextStyle _textStyle2 = const TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
               title: 'Warning!!!',
               middleText: 'Are you sure to delete this entry?',
               confirm: TextButton(
-                child: Text("Yes"),
+                child: const Text("Yes"),
                 onPressed: () async {
                   await _database.workoutSummaryDao.deleteWorkoutSummary(workoutSummary);
                   setState(() {
@@ -66,7 +66,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
                 },
               ),
               cancel: TextButton(
-                child: Text("No"),
+                child: const Text("No"),
                 onPressed: () => Get.close(1),
               ),
             );
@@ -84,7 +84,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
         initialOffset: 0,
-        loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
+        loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
@@ -99,12 +99,12 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
               Text(error.toString()),
               ElevatedButton(
                 onPressed: () => state.loadMore(),
-                child: Text('Retry'),
+                child: const Text('Retry'),
               ),
             ],
           );
         },
-        empty: Center(
+        empty: const Center(
           child: Text('No entries found'),
         ),
         itemBuilder: (context, index, item) {

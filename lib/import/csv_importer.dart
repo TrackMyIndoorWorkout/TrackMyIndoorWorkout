@@ -10,6 +10,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../utils/time_zone.dart';
 import 'constants.dart';
 
 class WorkoutRow {
@@ -31,24 +32,24 @@ class WorkoutRow {
     required double tuneRatio,
     required bool extendTuning,
   }) {
-    if (rowString.length > 0) {
+    if (rowString.isNotEmpty) {
       final values = rowString.split(",");
-      this.power = (int.tryParse(values[0]) ?? 0 * tuneRatio).round();
-      this.cadence = int.tryParse(values[1]) ?? 0;
-      this.heartRate = int.tryParse(values[2]) ?? 0;
-      if (this.heartRate == 0 && lastHeartRate > 0 && heartRateGapWorkaround) {
-        this.heartRate = lastHeartRate;
+      power = (int.tryParse(values[0]) ?? 0 * tuneRatio).round();
+      cadence = int.tryParse(values[1]) ?? 0;
+      heartRate = int.tryParse(values[2]) ?? 0;
+      if (heartRate == 0 && lastHeartRate > 0 && heartRateGapWorkaround) {
+        heartRate = lastHeartRate;
       } else if (heartRateUpperLimit > 0 &&
-          this.heartRate > heartRateUpperLimit &&
+          heartRate > heartRateUpperLimit &&
           heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
         if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
-          this.heartRate = heartRateUpperLimit;
+          heartRate = heartRateUpperLimit;
         } else {
-          this.heartRate = 0;
+          heartRate = 0;
         }
       }
 
-      this.distance = (double.tryParse(values[3]) ?? 0.0) * (extendTuning ? tuneRatio : 1.0);
+      distance = (double.tryParse(values[3]) ?? 0.0) * (extendTuning ? tuneRatio : 1.0);
     }
   }
 }
@@ -75,7 +76,7 @@ class CSVImporter {
 
   List<String> _lines = [];
   int _linePointer = 0;
-  Map<int, double> _velocityForPowerDict = Map<int, double>();
+  final Map<int, double> _velocityForPowerDict = <int, double>{};
 
   CSVImporter(this.migration, this.start);
 
@@ -88,13 +89,13 @@ class CSVImporter {
   }
 
   double powerForVelocity(velocity) {
-    final fRolling = G_CONST * (BIKER_WEIGHT + BIKE_WEIGHT) * ROLLING_RESISTANCE_COEFFICIENT;
+    const fRolling = G_CONST * (BIKER_WEIGHT + BIKE_WEIGHT) * ROLLING_RESISTANCE_COEFFICIENT;
 
     final fDrag = 0.5 * FRONTAL_AREA * DRAG_COEFFICIENT * AIR_DENSITY * velocity * velocity;
 
     final totalForce = fRolling + fDrag;
     final wheelPower = totalForce * velocity;
-    final driveTrainFraction = 1.0 - (DRIVE_TRAIN_LOSS / 100.0);
+    const driveTrainFraction = 1.0 - (DRIVE_TRAIN_LOSS / 100.0);
     final legPower = wheelPower / driveTrainFraction;
     return legPower;
   }
@@ -113,10 +114,11 @@ class CSVImporter {
     do {
       if ((middlePower - power).abs() < EPSILON) break;
 
-      if (middlePower > power)
+      if (middlePower > power) {
         upperVelocity = middleVelocity;
-      else
+      } else {
         lowerVelocity = middleVelocity;
+      }
 
       middleVelocity = (upperVelocity + lowerVelocity) / 2.0;
       middlePower = powerForVelocity(middleVelocity);
@@ -127,7 +129,7 @@ class CSVImporter {
   }
 
   Future<Activity?> import(String csv, SetProgress setProgress) async {
-    LineSplitter lineSplitter = LineSplitter();
+    LineSplitter lineSplitter = const LineSplitter();
     _lines = lineSplitter.convert(csv);
     if (_lines.length < 20) {
       message = "Content too short";
@@ -363,6 +365,7 @@ class CSVImporter {
       sport: sport,
       calorieFactor: calorieFactor,
       powerFactor: powerFactor,
+      timeZone: await getTimeZone(),
     );
 
     final prefService = Get.find<BasePrefService>();
@@ -481,7 +484,7 @@ class CSVImporter {
             elapsed: elapsed ~/ 1000,
             calories: energy.round(),
             power: powerInt,
-            speed: speed * DeviceDescriptor.MS2KMH,
+            speed: speed * DeviceDescriptor.ms2kmh,
             cadence: cadence.round(),
             heartRate: heartRate.round(),
             elapsedMillis: elapsed.round(),
