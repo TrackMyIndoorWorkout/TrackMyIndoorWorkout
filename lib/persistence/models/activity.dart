@@ -138,7 +138,7 @@ class Activity {
     }
   }
 
-  bool hasWorkoutUrl(String portalName) {
+  bool isSpecificWorkoutUrl(String portalName) {
     switch (portalName) {
       case suuntoChoice:
         return suuntoWorkoutUrl.isNotEmpty && suuntoUploadIdentifier.isNotEmpty;
@@ -159,10 +159,10 @@ class Activity {
       case underArmourChoice:
         return "https://www.mapmyrun.com/workout/$uaWorkoutId";
       case trainingPeaksChoice:
-        return "";
+        return "https://app.trainingpeaks.com/";
       case stravaChoice:
       default:
-        return "";
+        return "https://sports-tracker.com/";
     }
   }
 

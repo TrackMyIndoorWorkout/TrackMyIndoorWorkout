@@ -27,7 +27,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   @override
   void initState() {
     super.initState();
-    _largerTextStyle = Get.textTheme.headline4!;
+    _largerTextStyle = Get.textTheme.headline4!.apply(color: _themeManager.getProtagonistColor());
     for (final portalName in portalNames) {
       uploadStates[portalName] = widget.activity.isUploaded(portalName);
     }
@@ -83,7 +83,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                     horizontal: 0.0,
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       GestureDetector(
@@ -110,23 +110,26 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                           ],
                         ),
                       ),
-                      widget.activity.hasWorkoutUrl(e.value.name) ?
-                      IconButton(
-                        icon: Icon(
-                          Icons.open_in_new,
-                          size: _largerTextStyle.fontSize! * 1.5,
-                          color: _themeManager.getProtagonistColor(),
-                        ),
-                        onPressed: () async {
-                          final workoutUrl = widget.activity.workoutUrl(e.value.name);
-                          debugPrint("Workout URL: $workoutUrl");
-                          if (await canLaunch(workoutUrl)) {
-                            launch(workoutUrl);
-                          } else {
-                            Get.snackbar("Attention", "Cannot open URL");
-                          }
-                        },
-                      ) : Container(),
+                      (uploadStates[e.value.name] ?? false)
+                          ? IconButton(
+                              icon: Icon(
+                                Icons.open_in_new,
+                                size: _largerTextStyle.fontSize! * 1.5,
+                                color: widget.activity.isSpecificWorkoutUrl(e.value.name)
+                                    ? _themeManager.getProtagonistColor()
+                                    : _themeManager.getGreyColor(),
+                              ),
+                              onPressed: () async {
+                                final workoutUrl = widget.activity.workoutUrl(e.value.name);
+                                debugPrint("Workout URL: $workoutUrl");
+                                if (await canLaunch(workoutUrl)) {
+                                  launch(workoutUrl);
+                                } else {
+                                  Get.snackbar("Attention", "Cannot open URL");
+                                }
+                              },
+                            )
+                          : Container(),
                     ],
                   ),
                 ),
