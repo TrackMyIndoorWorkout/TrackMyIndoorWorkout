@@ -112,7 +112,7 @@ class ThemeManager {
   }
 
   Color getGreyColor() {
-    return isDark() ? Colors.grey.shade200 : Colors.grey.shade700;
+    return isDark() ? Colors.grey.shade400 : Colors.grey.shade600;
   }
 
   Color getAntagonistColor() {
