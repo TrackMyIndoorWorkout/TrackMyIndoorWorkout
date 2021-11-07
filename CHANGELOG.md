@@ -1,3 +1,17 @@
+## 1.1.83
+
+* BREAKING CHANGE: Re-authentication with Strava will be needed due to preference library changes
+* Under Armour integration (workout upload)
+* SUUNTO integration (workout upload)
+* Integration UX changes in concert with the new supported portals
+* Flutter API v2 upgrade for the file download module (share_files_and_screenshot_widgets)
+* Flutter API v2 upgrade for the bluetooth enable module (bluetooth_enable)
+* Fix: 10 second lag while uploading workout files, data connection checker module
+  (internet_connection_checker) main upgrade
+* Fix: custom data connection checking rules now apply
+* Fix: enforce GetX permanent flag to avoid eviction of services by SmartManagement
+* Fix: release version exception prevention by catches in flutter_blue fork
+
 ## 1.1.82
 
 * Adding compensation logic for (distance, calories, and elapsed time) consecutive workouts
