@@ -37,7 +37,10 @@ class UnderArmourToken {
   /// return {null, null} if there is not token yet
   /// stored in globals
   Map<String, String> getAuthorizationHeader(String clientId) {
-    if (accessToken != null && accessToken!.isNotEmpty && accessToken != "Error") {
+    if (accessToken != null &&
+        accessToken!.isNotEmpty &&
+        accessToken != "Error" &&
+        accessToken != "null") {
       return {
         'Authorization': 'Bearer $accessToken',
         'Api-Key': clientId,

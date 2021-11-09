@@ -342,6 +342,7 @@ abstract class Auth {
   /// statusOK or statusNoAuthenticationYet
   Future<int> deAuthorize(String clientId) async {
     await _saveToken(null, null, null);
+    // TODO: we'd need the user ID: https://developer.underarmour.com/docs/v71_OAuth2ConnectionRevokeResource/
     return 200;
   }
 }
