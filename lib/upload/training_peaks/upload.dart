@@ -74,8 +74,7 @@ abstract class Upload {
         '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.startDateTime!)}",'
         '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.startDateTime!)}",'
         '"Type": "${trainingPeaksSport(activity.sport)}"}';
-    final uploadUrlBase = kDebugMode ? TP_SANDBOX_API_URL_BASE : TP_PRODUCTION_API_URL_BASE;
-    final uploadUrl = uploadUrlBase + UPLOAD_PATH;
+    final uploadUrl = TP_PRODUCTION_API_URL_BASE + UPLOAD_PATH;
     final uploadResponse = await http.post(
       Uri.parse(uploadUrl),
       headers: headers,
