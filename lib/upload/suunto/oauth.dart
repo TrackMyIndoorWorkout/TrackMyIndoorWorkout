@@ -344,35 +344,29 @@ abstract class Auth {
   ///return codes:
   /// true or false
   Future<bool> deAuthorize(String clientId, String subscriptionKey) async {
-    if (!Get.isRegistered<SuuntoToken>()) {
-      debugPrint('Token not yet known');
-      return false;
-    }
-    var suuntoToken = Get.find<SuuntoToken>();
-
-    if (suuntoToken.accessToken == null) {
-      // Token has not been yet stored in memory
-      suuntoToken = await _getStoredToken();
-    }
-
-    final header = suuntoToken.getAuthorizationHeader(subscriptionKey);
+    final token =
+        Get.isRegistered<SuuntoToken>() ? Get.find<SuuntoToken>() : await _getStoredToken();
+    final header = token.getAuthorizationHeader(subscriptionKey);
     // If header is "empty"
     if (header.containsKey('88')) {
-      debugPrint('No Authentication has been done yet');
+      debugPrint('Access token seems to be already cleared');
       return true;
     }
 
     final deAuthorizeUrl = "$DEAUTHORIZATION_ENDPOINT?client_id=$clientId";
 
     debugPrint('request $deAuthorizeUrl');
+    bool success = false;
     final response = await http.post(Uri.parse(deAuthorizeUrl), headers: header);
     if (response.statusCode >= 200 && response.statusCode < 300) {
       debugPrint('DeAuthorize done');
       debugPrint('response ${response.body}');
-      await _saveToken(null, null, null);
-      return true;
+      success = true;
+    } else {
+      debugPrint('Error while deauthorizing');
     }
+    await _saveToken(null, null, null);
 
-    return false;
+    return success;
   }
 }

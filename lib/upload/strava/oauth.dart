@@ -400,18 +400,9 @@ abstract class Auth {
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
   Future<Fault> deAuthorize() async {
-    if (!Get.isRegistered<StravaToken>()) {
-      debugPrint('Token not yet known');
-      return Fault(StravaStatusCode.statusTokenNotKnownYet, 'Token not yet known');
-    }
-    var stravaToken = Get.find<StravaToken>();
-
-    if (stravaToken.accessToken == null) {
-      // Token has not been yet stored in memory
-      stravaToken = await _getStoredToken();
-    }
-
-    final header = stravaToken.getAuthorizationHeader();
+    final token =
+        Get.isRegistered<StravaToken>() ? Get.find<StravaToken>() : await _getStoredToken();
+    final header = token.getAuthorizationHeader();
     var fault = Fault(StravaStatusCode.statusUnknownError, "Unknown reason");
     // If header is not "empty"
     if (header.containsKey('88') == false) {
@@ -421,11 +412,9 @@ abstract class Auth {
       if (rep.statusCode >= 200 && rep.statusCode < 300) {
         debugPrint('DeAuthorize done');
         debugPrint('response ${rep.body}');
-        await _saveToken(null, null, null, null);
         fault.statusCode = StravaStatusCode.statusOk;
         fault.message = 'DeAuthorize done';
       } else {
-        await _saveToken(null, null, null, null);
         debugPrint('Problem in deAuthorize request');
         fault.statusCode = StravaStatusCode.statusDeAuthorizeError;
       }
@@ -435,6 +424,7 @@ abstract class Auth {
       fault.statusCode = StravaStatusCode.statusNoAuthenticationYet;
       fault.message = 'No Authentication has been done yet';
     }
+    await _saveToken(null, null, null, null);
 
     return fault;
   }

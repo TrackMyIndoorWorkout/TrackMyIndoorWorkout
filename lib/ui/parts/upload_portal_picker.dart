@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/activity.dart';
@@ -22,6 +23,7 @@ class UploadPortalPickerBottomSheet extends StatefulWidget {
 class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomSheet> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _largerTextStyle = const TextStyle();
+  bool uploadInProgress = false;
   Map<String, bool> uploadStates = {};
 
   @override
@@ -36,9 +38,15 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   Future<bool> uploadActivity(String portalName) async {
     UploadService uploadService = UploadService.getInstance(portalName);
 
+    setState(() {
+      uploadInProgress = true;
+    });
     final success = await uploadService.login();
     if (!success) {
       Get.snackbar("Warning", "$portalName login unsuccessful");
+      setState(() {
+        uploadInProgress = false;
+      });
       return false;
     }
 
@@ -53,13 +61,14 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
         : "Activity ${widget.activity.id} upload failure";
     Get.snackbar("Upload", resultMessage);
 
-    if (finalResult) {
-      setState(() {
+    setState(() {
+      uploadInProgress = false;
+      if (finalResult) {
         for (final portalName in portalNames) {
           uploadStates[portalName] = widget.activity.isUploaded(portalName);
         }
-      });
-    }
+      }
+    });
 
     return finalResult;
   }
@@ -67,11 +76,25 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   @override
   Widget build(BuildContext context) {
     List<Widget> choiceRows = [
-      Text(
-        "Integrations:",
-        style: _largerTextStyle,
-        textAlign: TextAlign.center,
-      ),
+      uploadInProgress
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(
+                  semanticsLabel: "Progress indicator",
+                ),
+                JumpingText(
+                  "Uploading...",
+                  style: _largerTextStyle,
+                ),
+              ],
+            )
+          : Text(
+              "Integrations:",
+              style: _largerTextStyle,
+              textAlign: TextAlign.center,
+            ),
     ];
     choiceRows.addAll(
       getPortalChoices(_themeManager).asMap().entries.map(

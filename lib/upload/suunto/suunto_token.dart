@@ -37,7 +37,10 @@ class SuuntoToken {
   /// return {null, null} if there is not token yet
   /// stored in globals
   Map<String, String> getAuthorizationHeader(String subscriptionKey) {
-    if (accessToken != null && accessToken!.isNotEmpty && accessToken != "Error") {
+    if (accessToken != null &&
+        accessToken!.isNotEmpty &&
+        accessToken != "Error" &&
+        accessToken != "null") {
       return {
         'Authorization': 'Bearer $accessToken',
         'Ocp-Apim-Subscription-Key': subscriptionKey,

@@ -18,11 +18,7 @@ abstract class Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
   String getUrlBase(bool oAuthOrApi) {
-    if (oAuthOrApi) {
-      return kDebugMode ? TP_SANDBOX_OAUTH_URL_BASE : TP_PRODUCTION_OAUTH_URL_BASE;
-    }
-
-    return kDebugMode ? TP_SANDBOX_API_URL_BASE : TP_PRODUCTION_API_URL_BASE;
+    return oAuthOrApi ? TP_PRODUCTION_OAUTH_URL_BASE : TP_PRODUCTION_API_URL_BASE;
   }
 
   Future<void> registerToken(
@@ -363,21 +359,13 @@ abstract class Auth {
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
   Future<bool> deAuthorize() async {
-    if (!Get.isRegistered<TrainingPeaksToken>()) {
-      debugPrint('Token not yet known');
-      return false;
-    }
-    var trainingPeaksToken = Get.find<TrainingPeaksToken>();
-
-    if (trainingPeaksToken.accessToken == null) {
-      // Token has not been yet stored in memory
-      trainingPeaksToken = await _getStoredToken();
-    }
-
-    final header = trainingPeaksToken.getAuthorizationHeader();
+    final token = Get.isRegistered<TrainingPeaksToken>()
+        ? Get.find<TrainingPeaksToken>()
+        : await _getStoredToken();
+    final header = token.getAuthorizationHeader();
     // If header is "empty"
     if (header.containsKey('88')) {
-      debugPrint('No Authentication has been done yet');
+      debugPrint('Access token seems to be already cleared');
       return true;
     }
 
@@ -385,16 +373,16 @@ abstract class Auth {
 
     debugPrint('request $deAuthorizeUrl');
     final response = await http.post(Uri.parse(deAuthorizeUrl), headers: header);
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      // response.statusCode != 201
-      debugPrint('Error while deauthorizing');
-    } else {
+    bool success = false;
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       debugPrint('DeAuthorize done');
       debugPrint('response ${response.body}');
-      await _saveToken(null, null, null, null);
-      return true;
+      success = true;
+    } else {
+      debugPrint('Error while deauthorizing');
     }
+    await _saveToken(null, null, null, null);
 
-    return false;
+    return success;
   }
 }
