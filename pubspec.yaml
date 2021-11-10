@@ -2,7 +2,7 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.83+83
+version: 1.1.84+84
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
