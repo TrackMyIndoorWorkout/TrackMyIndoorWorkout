@@ -76,6 +76,7 @@ class RecordingState extends State<RecordingScreen> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   TrackCalculator? _trackCalculator;
+  int _trackLength = trackLength.toInt();
   bool _measuring = false;
   int _pointCount = 0;
   ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
@@ -139,6 +140,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _rankRibbonVisualization = RANK_RIBBON_VISUALIZATION_DEFAULT;
   bool _rankTrackVisualization = RANK_TRACK_VISUALIZATION_DEFAULT;
   bool _rankInfoOnTrack = RANK_INFO_ON_TRACK_DEFAULT;
+  bool _displayLapCounter = DISPLAY_LAP_COUNTER_DEFAULT;
   Color _darkRed = Colors.red;
   Color _darkGreen = Colors.green;
   Color _darkBlue = Colors.blue;
@@ -152,6 +154,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _isLight = true;
   bool _zoneIndexColoring = false;
   bool _tutorialVisible = false;
+  int _lapCount = 0;
 
   Future<void> _connectOnDemand() async {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
@@ -223,6 +226,7 @@ class RecordingState extends State<RecordingScreen> {
     setState(() {
       _elapsed = 0;
       _distance = 0.0;
+      _lapCount = 0;
       _measuring = true;
       _zoneIndexes = [null, null, null, null];
     });
@@ -255,6 +259,7 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           _distance = record.distance ?? 0.0;
+          _lapCount = (_distance / _trackLength).floor();
           _elapsed = record.elapsed ?? 0;
           if (record.heartRate != null &&
               (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
@@ -414,6 +419,7 @@ class RecordingState extends State<RecordingScreen> {
         lengthFactor: widget.descriptor.lengthFactor,
       ),
     );
+    _trackLength = (trackLength * widget.descriptor.lengthFactor).toInt();
     _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
         DISTANCE_RESOLUTION_DEFAULT;
@@ -578,6 +584,7 @@ class RecordingState extends State<RecordingScreen> {
     _rankTrackVisualization =
         prefService.get<bool>(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
     _rankInfoOnTrack = prefService.get<bool>(RANK_INFO_ON_TRACK_TAG) ?? RANK_INFO_ON_TRACK_DEFAULT;
+    _displayLapCounter = prefService.get<bool>(DISPLAY_LAP_COUNTER_TAG) ?? DISPLAY_LAP_COUNTER_DEFAULT;
 
     final isLight = !_themeManager.isDark();
     _darkRed = isLight ? Colors.red.shade900 : Colors.redAccent.shade100;
@@ -1305,6 +1312,10 @@ class RecordingState extends State<RecordingScreen> {
             if (rankInfo != null) {
               markers.add(rankInfo);
             }
+          } else if (_displayLapCounter) {
+            markers.add(Center(
+              child: Text("Lap $_lapCount", style: _measurementStyle),
+            ));
           }
 
           // Add red circle around the athlete marker to distinguish

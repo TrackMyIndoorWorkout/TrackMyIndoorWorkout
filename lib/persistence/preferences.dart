@@ -324,6 +324,12 @@ const RANK_INFO_ON_TRACK_DESCRIPTION =
     "in the middle of the track: it'll list the preceding and following positions "
     "along with the distance compared to the athlete's current position";
 
+const DISPLAY_LAP_COUNTER = "Display the number of lamps";
+const DISPLAY_LAP_COUNTER_TAG = "display_lap_counter";
+const DISPLAY_LAP_COUNTER_DEFAULT = false;
+const DISPLAY_LAP_COUNTER_DESCRIPTION =
+    "On: the number of lamps passed will be displayed in the middle of the track";
+
 const EXPERT_PREFERENCES = "Expert Preferences";
 
 const APP_DEBUG_MODE = "Application Debug Mode";
