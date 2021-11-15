@@ -76,7 +76,7 @@ class RecordingState extends State<RecordingScreen> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   TrackCalculator? _trackCalculator;
-  int _trackLength = trackLength.toInt();
+  double _trackLength = trackLength;
   bool _measuring = false;
   int _pointCount = 0;
   ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
@@ -419,7 +419,7 @@ class RecordingState extends State<RecordingScreen> {
         lengthFactor: widget.descriptor.lengthFactor,
       ),
     );
-    _trackLength = (trackLength * widget.descriptor.lengthFactor).toInt();
+    _trackLength = trackLength * widget.descriptor.lengthFactor;
     _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
     _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
         DISTANCE_RESOLUTION_DEFAULT;
@@ -1028,7 +1028,14 @@ class RecordingState extends State<RecordingScreen> {
 
   Widget _getLeaderboardInfoText(int rank, double distance, bool lead) {
     final distanceString = distanceByUnit(distance - _distance, _si, _highRes);
-    return _getLeaderboardInfoTextCore("#$rank $distanceString", lead);
+    var rankText = "";
+    if (_displayLapCounter) {
+      final lapCount = (distance / _trackLength).floor();
+      rankText = "#$rank L$lapCount $distanceString";
+    } else {
+      rankText = "#$rank $distanceString";
+    }
+    return _getLeaderboardInfoTextCore(rankText, lead);
   }
 
   Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int? rank, String rankString) {
@@ -1052,7 +1059,12 @@ class RecordingState extends State<RecordingScreen> {
       rows.add(const Divider(height: 1));
     }
 
-    rows.add(_getLeaderboardInfoTextCore(rankString, rank <= 1));
+    var rankStringEx = rankString;
+    if (_displayLapCounter) {
+      rankStringEx += " L$_lapCount";
+    }
+
+    rows.add(_getLeaderboardInfoTextCore(rankStringEx, rank <= 1));
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
