@@ -142,7 +142,7 @@ const DATA_STREAM_GAP_WATCHDOG_DEFAULT = 5;
 const DATA_STREAM_GAP_WATCHDOG_MAX = 50;
 const DATA_STREAM_GAP_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered "
     "as a disconnection. A watchdog would finish the workout and can trigger sound warnings as well. "
-    "Zero means disabled";
+    "Zero means disabled.";
 
 const SOUND_EFFECT_NONE = "none";
 const SOUND_EFFECT_NONE_DESCRIPTION = "No sound effect";
