@@ -15,21 +15,19 @@ import 'training_peaks_token.dart';
 
 abstract class Upload {
   String trainingPeaksSport(String sport) {
-    if (sport == ActivityType.Swim) {
-      sport = "swim";
-    } else if (sport == ActivityType.Canoeing ||
-        sport == ActivityType.Kayaking ||
-        sport == ActivityType.Rowing) {
-      sport = "rowing";
-    } else if (sport == ActivityType.Run) {
-      sport = "run";
+    if (sport == ActivityType.Canoeing || sport == ActivityType.Kayaking) {
+      sport = "Rowing";
     } else if (sport == ActivityType.Ride) {
-      sport = "bike";
+      sport = "Bike";
     } else if (sport == ActivityType.Elliptical) {
-      sport = "x-train";
+      sport = "X-train";
+    } else if (sport != ActivityType.Swim &&
+        sport != ActivityType.Rowing &&
+        sport != ActivityType.Run) {
+      sport = "Other";
     }
 
-    return "other";
+    return sport;
   }
 
   /// statusCode:
