@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import '../../persistence/database.dart';
 import '../../persistence/preferences.dart';
 import '../../utils/sound.dart';
 import 'preferences_base.dart';
@@ -48,6 +49,53 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         min: DATA_STREAM_GAP_WATCHDOG_MIN,
         max: DATA_STREAM_GAP_WATCHDOG_MAX,
         direction: Axis.vertical,
+      ),
+      PrefButton(
+        title: const Text("Empty workout after connection loss workaround"),
+        subtitle: const Text("Sometimes in case of data connection loss the auto-stopped and "
+            "auto-closed workouts could show all 0s. That's a bug and the data "
+            "is still there under the hood. Use the button bellow to fix those "
+            "activities."),
+        onTap: () async {
+          final database = Get.find<AppDatabase>();
+          final activities = await database.activityDao.findAllActivities();
+          for (var activity in activities) {
+            final lastRecord =
+                await database.recordDao.findLastRecordOfActivity(activity.id!).first;
+            if (lastRecord != null) {
+              int updated = 0;
+              if (lastRecord.calories != null &&
+                  lastRecord.calories! > 0 &&
+                  activity.calories == 0) {
+                activity.calories = lastRecord.calories!;
+                updated++;
+              }
+
+              if (lastRecord.distance != null &&
+                  lastRecord.distance! > 0 &&
+                  activity.distance == 0) {
+                activity.distance = lastRecord.distance!;
+                updated++;
+              }
+
+              if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
+                activity.elapsed = lastRecord.elapsed!;
+                updated++;
+              }
+
+              if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
+                activity.end = lastRecord.timeStamp!;
+                updated++;
+              }
+
+              if (updated > 0) {
+                database.activityDao.updateActivity(activity);
+                Get.snackbar("Activity ${activity.id}", "Updated $updated fields");
+              }
+            }
+          }
+        },
+        child: const Text("Fix empty workouts"),
       ),
       const PrefLabel(
         title: Text(DATA_STREAM_GAP_SOUND_EFFECT),
