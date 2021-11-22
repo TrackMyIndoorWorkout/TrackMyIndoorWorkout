@@ -10,7 +10,7 @@ class TestPair {
   final List<int> data;
   final RecordWithSport record;
 
-  TestPair({required this.data, required this.record});
+  const TestPair({required this.data, required this.record});
 }
 
 void main() {
@@ -24,8 +24,8 @@ void main() {
 
   test('Rower Device interprets KayakPro flags properly', () async {
     final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC] as RowerDeviceDescriptor;
-    final lsb = 44;
-    final msb = 9;
+    const lsb = 44;
+    const msb = 9;
     final flag = MAX_UINT8 * msb + lsb;
     await initPrefServiceForTest();
     rower.stopWorkout();
@@ -46,7 +46,7 @@ void main() {
   });
 
   group('Rower Device interprets KayakPro data properly', () {
-    [
+    for (final testPair in [
       TestPair(
         data: [44, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, MAX_BYTE, MAX_BYTE, 0, 0, MAX_BYTE, 0, 0],
         record: RecordWithSport(
@@ -207,7 +207,7 @@ void main() {
           caloriesPerMinute: null,
         ),
       ),
-    ].forEach((testPair) {
+    ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
         await initPrefServiceForTest();
@@ -234,6 +234,6 @@ void main() {
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
       });
-    });
+    }
   });
 }

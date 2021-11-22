@@ -7,18 +7,18 @@ class TestPair {
   final MachineType machineType;
   final String sport;
 
-  TestPair({required this.machineType, required this.sport});
+  const TestPair({required this.machineType, required this.sport});
 }
 
 void main() {
   group('AdvertisementDigest infers sport as expected from MachineType', () {
-    [
-      TestPair(machineType: MachineType.IndoorBike, sport: ActivityType.Ride),
-      TestPair(machineType: MachineType.Treadmill, sport: ActivityType.Run),
-      TestPair(machineType: MachineType.Rower, sport: ActivityType.Kayaking),
-      TestPair(machineType: MachineType.CrossTrainer, sport: ActivityType.Elliptical),
-      TestPair(machineType: MachineType.StepClimber, sport: ActivityType.Ride),
-    ].forEach((testPair) {
+    for (final testPair in [
+      const TestPair(machineType: MachineType.IndoorBike, sport: ActivityType.Ride),
+      const TestPair(machineType: MachineType.Treadmill, sport: ActivityType.Run),
+      const TestPair(machineType: MachineType.Rower, sport: ActivityType.Kayaking),
+      const TestPair(machineType: MachineType.CrossTrainer, sport: ActivityType.Elliptical),
+      const TestPair(machineType: MachineType.StepClimber, sport: ActivityType.Ride),
+    ]) {
       test("${testPair.machineType} -> ${testPair.sport}", () async {
         final advertisementDigest = AdvertisementDigest(
           id: "",
@@ -30,6 +30,6 @@ void main() {
 
         expect(advertisementDigest.fitnessMachineSport(), testPair.sport);
       });
-    });
+    }
   });
 }

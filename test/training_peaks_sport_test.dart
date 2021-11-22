@@ -6,23 +6,23 @@ class TestPair {
   final String input;
   final String expected;
 
-  TestPair({required this.input, required this.expected});
+  const TestPair({required this.input, required this.expected});
 }
 
 void main() {
   group('TrainingPeaks sport conversions', () {
-    for (var testPair in [
-      TestPair(input: "", expected: "Other"),
-      TestPair(input: " ", expected: "Other"),
-      TestPair(input: "abc", expected: "Other"),
-      TestPair(input: ActivityType.Swim, expected: "Swim"),
-      TestPair(input: ActivityType.Canoeing, expected: "Rowing"),
-      TestPair(input: ActivityType.Kayaking, expected: "Rowing"),
-      TestPair(input: ActivityType.Rowing, expected: "Rowing"),
-      TestPair(input: ActivityType.Run, expected: "Run"),
-      TestPair(input: ActivityType.Ride, expected: "Bike"),
-      TestPair(input: ActivityType.Elliptical, expected: "X-train"),
-      TestPair(input: ActivityType.NordicSki, expected: "Other"),
+    for (final testPair in [
+      const TestPair(input: "", expected: "Other"),
+      const TestPair(input: " ", expected: "Other"),
+      const TestPair(input: "abc", expected: "Other"),
+      const TestPair(input: ActivityType.Swim, expected: "Swim"),
+      const TestPair(input: ActivityType.Canoeing, expected: "Rowing"),
+      const TestPair(input: ActivityType.Kayaking, expected: "Rowing"),
+      const TestPair(input: ActivityType.Rowing, expected: "Rowing"),
+      const TestPair(input: ActivityType.Run, expected: "Run"),
+      const TestPair(input: ActivityType.Ride, expected: "Bike"),
+      const TestPair(input: ActivityType.Elliptical, expected: "X-train"),
+      const TestPair(input: ActivityType.NordicSki, expected: "Other"),
     ]) {
       test("${testPair.input} -> ${testPair.expected}", () async {
         final tp = TrainingPeaks("", "");

@@ -11,52 +11,52 @@ class TestPair {
   final String address;
   final Tuple2<String, int> expected;
 
-  TestPair({required this.address, required this.expected});
+  const TestPair({required this.address, required this.expected});
 }
 
 void main() {
   group('parseIpAddress corner cases', () {
-    [
-      TestPair(address: "", expected: dummyAddressTuple),
-      TestPair(address: "", expected: dummyAddressTuple),
-      TestPair(address: " ", expected: dummyAddressTuple),
-      TestPair(address: "*^&@%", expected: dummyAddressTuple),
-      TestPair(address: "abc", expected: dummyAddressTuple),
-      TestPair(address: " abc ", expected: dummyAddressTuple),
-      TestPair(address: " abc123 ", expected: dummyAddressTuple),
-      TestPair(address: " 123abc ", expected: dummyAddressTuple),
-      TestPair(address: "1", expected: dummyAddressTuple),
-      TestPair(address: " 1", expected: dummyAddressTuple),
-      TestPair(address: "1 ", expected: dummyAddressTuple),
-      TestPair(address: "  1  ", expected: dummyAddressTuple),
-      TestPair(address: "1.", expected: dummyAddressTuple),
-      TestPair(address: "...", expected: dummyAddressTuple),
-      TestPair(address: " . . . ", expected: dummyAddressTuple),
-      TestPair(address: "1.2", expected: dummyAddressTuple),
-      TestPair(address: "1.2.", expected: dummyAddressTuple),
-      TestPair(address: "1.2.3", expected: dummyAddressTuple),
-      TestPair(address: "1.2.3.", expected: dummyAddressTuple),
-      TestPair(address: "1.a.2.3", expected: dummyAddressTuple),
-      TestPair(address: "1.2.3.444", expected: dummyAddressTuple),
-      TestPair(address: "1111.2.3.4", expected: dummyAddressTuple),
-      TestPair(address: "1.2.3.4.5", expected: dummyAddressTuple),
-      TestPair(address: "-1.2.3.4", expected: dummyAddressTuple),
-      TestPair(address: "1.-2.3.4", expected: dummyAddressTuple),
-      TestPair(address: " 1 . 2 . 3 . 4 ", expected: dummyAddressTuple),
-      TestPair(address: "1.2.3.4:0", expected: dummyAddressTuple),
-      TestPair(address: "1.2.3.4:65536", expected: dummyAddressTuple),
-      TestPair(address: "2.3.4.5:100000", expected: dummyAddressTuple),
-      TestPair(address: "0.0.0.0", expected: dummyAddressTuple),
-      TestPair(address: "1.2.3.4", expected: Tuple2<String, int>("1.2.3.4", HTTPS_PORT)),
-      TestPair(address: " 1.2.3.4", expected: Tuple2<String, int>("1.2.3.4", HTTPS_PORT)),
-      TestPair(address: "1.2.3.4:55", expected: Tuple2<String, int>("1.2.3.4", 55)),
-      TestPair(address: "6.7.8.9:100", expected: Tuple2<String, int>("6.7.8.9", 100)),
-    ].forEach((testPair) {
+    for (final testPair in [
+      const TestPair(address: "", expected: dummyAddressTuple),
+      const TestPair(address: "", expected: dummyAddressTuple),
+      const TestPair(address: " ", expected: dummyAddressTuple),
+      const TestPair(address: "*^&@%", expected: dummyAddressTuple),
+      const TestPair(address: "abc", expected: dummyAddressTuple),
+      const TestPair(address: " abc ", expected: dummyAddressTuple),
+      const TestPair(address: " abc123 ", expected: dummyAddressTuple),
+      const TestPair(address: " 123abc ", expected: dummyAddressTuple),
+      const TestPair(address: "1", expected: dummyAddressTuple),
+      const TestPair(address: " 1", expected: dummyAddressTuple),
+      const TestPair(address: "1 ", expected: dummyAddressTuple),
+      const TestPair(address: "  1  ", expected: dummyAddressTuple),
+      const TestPair(address: "1.", expected: dummyAddressTuple),
+      const TestPair(address: "...", expected: dummyAddressTuple),
+      const TestPair(address: " . . . ", expected: dummyAddressTuple),
+      const TestPair(address: "1.2", expected: dummyAddressTuple),
+      const TestPair(address: "1.2.", expected: dummyAddressTuple),
+      const TestPair(address: "1.2.3", expected: dummyAddressTuple),
+      const TestPair(address: "1.2.3.", expected: dummyAddressTuple),
+      const TestPair(address: "1.a.2.3", expected: dummyAddressTuple),
+      const TestPair(address: "1.2.3.444", expected: dummyAddressTuple),
+      const TestPair(address: "1111.2.3.4", expected: dummyAddressTuple),
+      const TestPair(address: "1.2.3.4.5", expected: dummyAddressTuple),
+      const TestPair(address: "-1.2.3.4", expected: dummyAddressTuple),
+      const TestPair(address: "1.-2.3.4", expected: dummyAddressTuple),
+      const TestPair(address: " 1 . 2 . 3 . 4 ", expected: dummyAddressTuple),
+      const TestPair(address: "1.2.3.4:0", expected: dummyAddressTuple),
+      const TestPair(address: "1.2.3.4:65536", expected: dummyAddressTuple),
+      const TestPair(address: "2.3.4.5:100000", expected: dummyAddressTuple),
+      const TestPair(address: "0.0.0.0", expected: dummyAddressTuple),
+      const TestPair(address: "1.2.3.4", expected: Tuple2<String, int>("1.2.3.4", HTTPS_PORT)),
+      const TestPair(address: " 1.2.3.4", expected: Tuple2<String, int>("1.2.3.4", HTTPS_PORT)),
+      const TestPair(address: "1.2.3.4:55", expected: Tuple2<String, int>("1.2.3.4", 55)),
+      const TestPair(address: "6.7.8.9:100", expected: Tuple2<String, int>("6.7.8.9", 100)),
+    ]) {
       test("${testPair.address} -> ${testPair.expected}", () async {
         final tuple = parseIpAddress(testPair.address);
         expect(tuple, testPair.expected);
       });
-    });
+    }
   });
 
   group('parseIpAddress random test', () {

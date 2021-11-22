@@ -8,7 +8,7 @@ class TestPair {
   final List<int> data;
   final RecordWithSport record;
 
-  TestPair({required this.data, required this.record});
+  const TestPair({required this.data, required this.record});
 }
 
 void main() {
@@ -37,7 +37,7 @@ void main() {
   });
 
   group('Precor Spinner Chrono Power interprets Data properly', () {
-    [
+    for (final testPair in [
       TestPair(
         data: [83, 89, 22, 110, 2, 0, 200, 8, 84, 1, 80, 14, 0, 57, 0, 47, 0, 90, 0],
         record: RecordWithSport(
@@ -198,7 +198,7 @@ void main() {
           caloriesPerMinute: null,
         ),
       ),
-    ].forEach((testPair) {
+    ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
         final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC]!;
@@ -222,6 +222,6 @@ void main() {
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
       });
-    });
+    }
   });
 }

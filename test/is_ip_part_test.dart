@@ -10,49 +10,49 @@ class TestPair {
   final String input;
   final bool expected;
 
-  TestPair({required this.input, required this.expected});
+  const TestPair({required this.input, required this.expected});
 }
 
 void main() {
   group('isIpPart corner cases', () {
-    [
-      TestPair(input: "", expected: false),
-      TestPair(input: " ", expected: false),
-      TestPair(input: "*^&@%", expected: false),
-      TestPair(input: "abc", expected: false),
-      TestPair(input: " abc ", expected: false),
-      TestPair(input: " abc123 ", expected: false),
-      TestPair(input: " 123abc ", expected: false),
-      TestPair(input: "1", expected: true),
-      TestPair(input: " 1", expected: true),
-      TestPair(input: "1 ", expected: true),
-      TestPair(input: "  1  ", expected: true),
-      TestPair(input: "0", expected: false),
-      TestPair(input: " 0", expected: false),
-      TestPair(input: "0 ", expected: false),
-      TestPair(input: "  0  ", expected: false),
-    ].forEach((testPair) {
+    for (final testPair in [
+      const TestPair(input: "", expected: false),
+      const TestPair(input: " ", expected: false),
+      const TestPair(input: "*^&@%", expected: false),
+      const TestPair(input: "abc", expected: false),
+      const TestPair(input: " abc ", expected: false),
+      const TestPair(input: " abc123 ", expected: false),
+      const TestPair(input: " 123abc ", expected: false),
+      const TestPair(input: "1", expected: true),
+      const TestPair(input: " 1", expected: true),
+      const TestPair(input: "1 ", expected: true),
+      const TestPair(input: "  1  ", expected: true),
+      const TestPair(input: "0", expected: false),
+      const TestPair(input: " 0", expected: false),
+      const TestPair(input: "0 ", expected: false),
+      const TestPair(input: "  0  ", expected: false),
+    ]) {
       test("${testPair.input} -> ${testPair.expected}", () async {
         expect(isIpPart(testPair.input, false), testPair.expected);
       });
-    });
+    }
   });
 
   group('isIpPart corner cases when allow zero', () {
-    [
-      TestPair(input: "1", expected: true),
-      TestPair(input: " 1", expected: true),
-      TestPair(input: "1 ", expected: true),
-      TestPair(input: "  1  ", expected: true),
-      TestPair(input: "0", expected: true),
-      TestPair(input: " 0", expected: true),
-      TestPair(input: "0 ", expected: true),
-      TestPair(input: "  0  ", expected: true),
-    ].forEach((testPair) {
+    for (final testPair in [
+      const TestPair(input: "1", expected: true),
+      const TestPair(input: " 1", expected: true),
+      const TestPair(input: "1 ", expected: true),
+      const TestPair(input: "  1  ", expected: true),
+      const TestPair(input: "0", expected: true),
+      const TestPair(input: " 0", expected: true),
+      const TestPair(input: "0 ", expected: true),
+      const TestPair(input: "  0  ", expected: true),
+    ]) {
       test("${testPair.input} -> ${testPair.expected}", () async {
         expect(isIpPart(testPair.input, true), testPair.expected);
       });
-    });
+    }
   });
 
   group('isIpPart random test', () {
