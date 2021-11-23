@@ -394,6 +394,20 @@ class FitnessEquipment extends DeviceBase {
 
     startingValues = false;
 
+    // TODO: write tests
+    // Make sure that cumulative fields cannot decrease over time
+    if (stub.distance != null && lastRecord.distance != null && stub.distance! < lastRecord.distance!) {
+      stub.distance = lastRecord.distance;
+    }
+
+    if (stub.elapsed != null && lastRecord.elapsed != null && stub.elapsed! < lastRecord.elapsed!) {
+      stub.elapsed = lastRecord.elapsed;
+    }
+
+    if (stub.calories != null && lastRecord.calories != null && stub.calories! < lastRecord.calories!) {
+      stub.calories = lastRecord.calories;
+    }
+
     return stub;
   }
 
