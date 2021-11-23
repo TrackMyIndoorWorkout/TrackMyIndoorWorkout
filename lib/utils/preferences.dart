@@ -36,7 +36,7 @@ bool isIpAddress(String ipAddress) {
       isIpPart(ipParts[3], true);
 }
 
-final dummyAddressTuple = Tuple2<String, int>("", 0);
+const dummyAddressTuple = Tuple2<String, int>("", 0);
 
 Tuple2<String, int> parseIpAddress(String ipAddress) {
   if (ipAddress.trim().isEmpty) return dummyAddressTuple;
