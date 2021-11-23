@@ -196,7 +196,8 @@ Future<BasePrefService> initPreferences() async {
   if (prefVersion < PREFERENCES_VERSION_INCREASE_WATCHDOG_DEFAULT) {
     final currentDefault = prefService.get<int>(DATA_STREAM_GAP_WATCHDOG_INT_TAG);
     if (currentDefault == DATA_STREAM_GAP_WATCHDOG_OLD_DEFAULT) {
-      await prefService.set<int>(DATA_STREAM_GAP_WATCHDOG_INT_TAG, DATA_STREAM_GAP_WATCHDOG_DEFAULT);
+      await prefService.set<int>(
+          DATA_STREAM_GAP_WATCHDOG_INT_TAG, DATA_STREAM_GAP_WATCHDOG_DEFAULT);
     }
   }
 

@@ -396,7 +396,9 @@ class FitnessEquipment extends DeviceBase {
 
     // TODO: write tests
     // Make sure that cumulative fields cannot decrease over time
-    if (stub.distance != null && lastRecord.distance != null && stub.distance! < lastRecord.distance!) {
+    if (stub.distance != null &&
+        lastRecord.distance != null &&
+        stub.distance! < lastRecord.distance!) {
       stub.distance = lastRecord.distance;
     }
 
@@ -404,7 +406,9 @@ class FitnessEquipment extends DeviceBase {
       stub.elapsed = lastRecord.elapsed;
     }
 
-    if (stub.calories != null && lastRecord.calories != null && stub.calories! < lastRecord.calories!) {
+    if (stub.calories != null &&
+        lastRecord.calories != null &&
+        stub.calories! < lastRecord.calories!) {
       stub.calories = lastRecord.calories;
     }
 
