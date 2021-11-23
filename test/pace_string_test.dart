@@ -12,7 +12,7 @@ String paceString(double pace) {
 
 void main() {
   group("paceString formats as expected:", () {
-    final List<Tuple2<double, String>> paces = [
+    const List<Tuple2<double, String>> paces = [
       Tuple2<double, String>(0.0, "0:00"),
       Tuple2<double, String>(0.5, "0:30"),
       Tuple2<double, String>(1.0, "1:00"),
@@ -29,12 +29,12 @@ void main() {
       Tuple2<double, String>(80.0, "80:00"),
       Tuple2<double, String>(80.5, "80:30"),
     ];
-    paces.forEach((pacePair) {
+    for (final pacePair in paces) {
       final expected = pacePair.item2;
       test("${pacePair.item1} -> $expected", () async {
         expect(paceString(pacePair.item1), expected);
       });
-    });
+    }
 
     final rnd = Random();
     1.to(REPETITION).forEach((input) {

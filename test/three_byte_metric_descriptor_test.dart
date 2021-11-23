@@ -8,7 +8,7 @@ import 'utils.dart';
 void main() {
   group('optional ThreeByteMetricDescriptor returns null if the value is max', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1024, rnd).forEach((divider) {
+    for (var divider in getRandomDoubles(REPETITION, 1024, rnd)) {
       final len = rnd.nextInt(99) + 5;
       final data = getRandomInts(len, MAX_UINT8, rnd);
       final lsbLocation = rnd.nextInt(len);
@@ -17,8 +17,8 @@ void main() {
       data[lsbLocation] = MAX_BYTE;
       data[(lsbLocation + msbLocation) ~/ 2] = MAX_BYTE;
       data[msbLocation] = MAX_BYTE;
-      final divider = rnd.nextDouble() * 4;
-      final expected = 0.0;
+      divider = rnd.nextDouble() * 4;
+      const expected = 0.0;
 
       test("$divider -> $expected", () async {
         final desc = ThreeByteMetricDescriptor(
@@ -26,12 +26,12 @@ void main() {
 
         expect(desc.getMeasurementValue(data), null);
       });
-    });
+    }
   });
 
   group('ThreeByteMetricDescriptor calculates measurement as expected', () {
     final rnd = Random();
-    1.to(REPETITION).forEach((input) {
+    for (final input in 1.to(REPETITION)) {
       final len = rnd.nextInt(99) + 5;
       final data = getRandomInts(len, MAX_UINT8, rnd);
       final lsbLocation = rnd.nextInt(len);
@@ -56,6 +56,6 @@ void main() {
 
         expect(desc.getMeasurementValue(data), closeTo(expected, EPS));
       });
-    });
+    }
   });
 }

@@ -160,7 +160,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                                     _heartRateMonitor = heartRateMonitor;
                                   });
                                 } else {
-                                  await Get.delete<HeartRateMonitor>();
+                                  await Get.delete<HeartRateMonitor>(force: true);
                                   setState(() {
                                     _heartRateMonitor = null;
                                   });
@@ -181,7 +181,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                             if (heartRateMonitor == null || existingId != r.device.id.id) {
                               heartRateMonitor = HeartRateMonitor(r.device);
                               if (Get.isRegistered<HeartRateMonitor>()) {
-                                Get.delete<HeartRateMonitor>();
+                                await Get.delete<HeartRateMonitor>(force: true);
                               }
 
                               Get.put<HeartRateMonitor>(heartRateMonitor, permanent: true);

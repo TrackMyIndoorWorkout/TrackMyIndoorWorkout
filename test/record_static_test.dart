@@ -7,7 +7,7 @@ import 'utils.dart';
 
 void main() {
   group("Record getBlank provides blank:", () {
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       test("for $sport", () async {
         final blank = RecordWithSport.getBlank(sport, false, Random());
         expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
@@ -25,12 +25,12 @@ void main() {
         expect(blank.caloriesPerHour, null);
         expect(blank.caloriesPerMinute, null);
       });
-    });
+    }
   });
 
   group("Record getRandom provides random:", () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       test("for $sport", () async {
         final random = RecordWithSport.getRandom(sport, rnd);
         expect(random.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
@@ -48,6 +48,6 @@ void main() {
         expect(random.caloriesPerHour, null);
         expect(random.caloriesPerMinute, null);
       });
-    });
+    }
   });
 }

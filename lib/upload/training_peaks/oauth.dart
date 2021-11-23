@@ -35,7 +35,7 @@ abstract class Auth {
       trainingPeaksToken.expiresAt = expire;
       trainingPeaksToken.scope = scope;
     } else {
-      await Get.delete<TrainingPeaksToken>();
+      await Get.delete<TrainingPeaksToken>(force: true);
       Get.put<TrainingPeaksToken>(
         TrainingPeaksToken(
           accessToken: token,

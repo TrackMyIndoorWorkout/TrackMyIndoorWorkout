@@ -49,7 +49,7 @@ class SoundService {
       }
 
       return _soundPool!;
-    });
+    }, permanent: true);
   }
 
   Future<int> playSoundEffect(SoundEffect soundEffect) async {

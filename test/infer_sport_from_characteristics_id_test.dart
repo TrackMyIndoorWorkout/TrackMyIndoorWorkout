@@ -12,20 +12,20 @@ class TestPair {
   final String characteristicsId;
   final String? sport;
 
-  TestPair({required this.characteristicsId, required this.sport});
+  const TestPair({required this.characteristicsId, required this.sport});
 }
 
 @GenerateMocks([BluetoothDevice])
 void main() {
   group('DeviceBase infers sport as expected from characteristics ID', () {
-    [
-      TestPair(characteristicsId: TREADMILL_ID, sport: ActivityType.Run),
-      TestPair(characteristicsId: PRECOR_MEASUREMENT_ID, sport: ActivityType.Ride),
-      TestPair(characteristicsId: INDOOR_BIKE_ID, sport: ActivityType.Ride),
-      TestPair(characteristicsId: ROWER_DEVICE_ID, sport: ActivityType.Rowing),
-      TestPair(characteristicsId: CROSS_TRAINER_ID, sport: ActivityType.Elliptical),
-      TestPair(characteristicsId: HEART_RATE_MEASUREMENT_ID, sport: null)
-    ].forEach((testPair) {
+    for (final testPair in [
+      const TestPair(characteristicsId: TREADMILL_ID, sport: ActivityType.Run),
+      const TestPair(characteristicsId: PRECOR_MEASUREMENT_ID, sport: ActivityType.Ride),
+      const TestPair(characteristicsId: INDOOR_BIKE_ID, sport: ActivityType.Ride),
+      const TestPair(characteristicsId: ROWER_DEVICE_ID, sport: ActivityType.Rowing),
+      const TestPair(characteristicsId: CROSS_TRAINER_ID, sport: ActivityType.Elliptical),
+      const TestPair(characteristicsId: HEART_RATE_MEASUREMENT_ID, sport: null)
+    ]) {
       test("${testPair.characteristicsId} -> ${testPair.sport}", () async {
         await initPrefServiceForTest();
         final hrm = HeartRateMonitor(MockBluetoothDevice());
@@ -33,6 +33,6 @@ void main() {
 
         expect(hrm.inferSportFromCharacteristicsId(), testPair.sport);
       });
-    });
+    }
   });
 }

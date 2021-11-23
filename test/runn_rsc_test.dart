@@ -14,7 +14,7 @@ class TestPair {
   final List<int> data;
   final RecordWithSport record;
 
-  TestPair({required this.data, required this.record});
+  const TestPair({required this.data, required this.record});
 }
 
 const sampleData = [0, 145, 1, 187];
@@ -42,7 +42,7 @@ void main() {
   });
 
   group('Rower Device interprets KayakPro data properly', () {
-    [
+    for (final testPair in [
       TestPair(
         data: sampleData,
         record: RecordWithSport(
@@ -59,7 +59,7 @@ void main() {
           caloriesPerMinute: null,
         ),
       ),
-    ].forEach((testPair) {
+    ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
         await initPrefServiceForTest();
@@ -89,6 +89,6 @@ void main() {
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
       });
-    });
+    }
   });
 }

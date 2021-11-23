@@ -29,7 +29,7 @@ abstract class Auth {
       stravaToken.refreshToken = refreshToken;
       stravaToken.expiresAt = expire;
     } else {
-      await Get.delete<SuuntoToken>();
+      await Get.delete<SuuntoToken>(force: true);
       Get.put<SuuntoToken>(
         SuuntoToken(
           accessToken: token,

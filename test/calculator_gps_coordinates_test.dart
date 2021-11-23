@@ -10,7 +10,7 @@ import 'utils.dart';
 void main() {
   group("gpsCoordinates start point is invariant", () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
@@ -28,12 +28,12 @@ void main() {
         expect(marker.dx, closeTo(track.center.dx - track.radius * track.horizontalMeter, EPS));
         expect(marker.dy, closeTo(track.center.dy + track.laneHalf * track.verticalMeter, EPS));
       });
-    });
+    }
   });
 
   group('gpsCoordinates whole laps are at the start point', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
@@ -54,12 +54,12 @@ void main() {
         expect(marker.dx, closeTo(track.center.dx - track.radius * track.horizontalMeter, EPS));
         expect(marker.dy, closeTo(track.center.dy + track.laneHalf * track.verticalMeter, EPS));
       });
-    });
+    }
   });
 
   group('gpsCoordinates on the first (left) straight are placed proportionally', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
@@ -84,12 +84,12 @@ void main() {
         expect(marker.dy,
             closeTo(track.center.dy + (track.laneLength / 2 - d) * track.verticalMeter, EPS));
       });
-    });
+    }
   });
 
   group('gpsCoordinates on the first (top) chicane are placed as expected', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
@@ -121,12 +121,12 @@ void main() {
                     (track.laneLength / 2 + sin(rad) * track.radius) * track.verticalMeter,
                 EPS));
       });
-    });
+    }
   });
 
   group('gpsCoordinates on the second (right) straight are placed proportionally', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
@@ -154,12 +154,12 @@ void main() {
             closeTo(track.center.dy + (displacement - track.laneLength / 2) * track.verticalMeter,
                 EPS));
       });
-    });
+    }
   });
 
   group('gpsCoordinates on the second (bottom) chicane are placed proportionally', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
@@ -192,12 +192,12 @@ void main() {
                     (track.laneLength / 2 + sin(rad) * track.radius) * track.verticalMeter,
                 EPS));
       });
-    });
+    }
   });
 
   group('gpsCoordinates left continuity', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
@@ -221,12 +221,12 @@ void main() {
 
         expect(dx * dx + dy * dy, closeTo(d, EPS));
       });
-    });
+    }
   });
 
   group('gpsCoordinates right continuity', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
@@ -250,12 +250,12 @@ void main() {
 
         expect(dx * dx + dy * dy, closeTo(d, EPS));
       });
-    });
+    }
   });
 
   group('gpsCoordinates continuity straight vs chicane', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
@@ -283,12 +283,12 @@ void main() {
         expect(cdy, closeTo(0.0, EPS));
         expect(sdy, closeTo(cdx, DISPLAY_EPS));
       });
-    });
+    }
   });
 
   group('gpsCoordinates general continuity', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
@@ -300,7 +300,7 @@ void main() {
       final d =
           track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
       test("${track.radiusBoost} $lengthFactor $d", () async {
-        1.to((trackLength * 2).round()).forEach((distance) {
+        for (final distance in 1.to((trackLength * 2).round())) {
           final calculator = TrackCalculator(track: track);
 
           final markerA = calculator.gpsCoordinates(distance.toDouble());
@@ -309,8 +309,8 @@ void main() {
           final dy = markerA.dy - markerB.dy;
 
           expect(dx * dx + dy * dy, closeTo(d, EPS));
-        });
+        }
       });
-    });
+    }
   });
 }

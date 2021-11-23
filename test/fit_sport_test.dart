@@ -12,7 +12,7 @@ void main() {
   });
 
   group('FitSport data has the expected length', () {
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       final fileCreator = FitSport(0);
       final expected = fileCreator.fields.fold<int>(0, (accu, field) => accu + field.size);
 
@@ -21,6 +21,6 @@ void main() {
 
         expect(output.length, expected + 1);
       });
-    });
+    }
   });
 }

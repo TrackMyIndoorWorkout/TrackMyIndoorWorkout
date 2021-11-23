@@ -8,25 +8,25 @@ import 'utils.dart';
 void main() {
   group('optional ByteMetricDescriptor returns null if the value is max', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1024, rnd).forEach((divider) {
+    for (var rep in getRandomDoubles(REPETITION, 1024, rnd)) {
       final len = rnd.nextInt(99) + 1;
       final data = getRandomInts(len, MAX_UINT8, rnd);
       final lsbLocation = rnd.nextInt(len);
       data[lsbLocation] = MAX_UINT8 - 1;
       final divider = rnd.nextDouble() * 4;
-      final expected = 0.0;
+      const expected = 0.0;
 
       test("$divider -> $expected", () async {
         final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider, optional: true);
 
         expect(desc.getMeasurementValue(data), null);
       });
-    });
+    }
   });
 
   group('ByteMetricDescriptor calculates measurement as expected', () {
     final rnd = Random();
-    1.to(REPETITION).forEach((input) {
+    for (var rep in 1.to(REPETITION)) {
       final len = rnd.nextInt(99) + 1;
       final data = getRandomInts(len, MAX_UINT8, rnd);
       final lsbLocation = rnd.nextInt(len);
@@ -40,6 +40,6 @@ void main() {
 
         expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, EPS));
       });
-    });
+    }
   });
 }

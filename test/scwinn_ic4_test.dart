@@ -8,7 +8,7 @@ class TestPair {
   final List<int> data;
   final RecordWithSport record;
 
-  TestPair({required this.data, required this.record});
+  const TestPair({required this.data, required this.record});
 }
 
 void main() {
@@ -22,8 +22,8 @@ void main() {
 
   test('Schwinn IC4 interprets FTMS Indoor Bike Data flags properly', () async {
     final bike = deviceMap["SIC4"] as IndoorBikeDeviceDescriptor;
-    final lsb = 68;
-    final msb = 2;
+    const lsb = 68;
+    const msb = 2;
     final flag = MAX_UINT8 * msb + lsb;
     bike.stopWorkout();
 
@@ -40,7 +40,7 @@ void main() {
   });
 
   group('Schwinn IC4 interprets FTMS Indoor Bike Data properly', () {
-    [
+    for (final testPair in [
       TestPair(
         data: [68, 2, 94, 11, 240, 0, 122, 0, 84],
         record: RecordWithSport(
@@ -153,7 +153,7 @@ void main() {
           caloriesPerMinute: null,
         ),
       ),
-    ].forEach((testPair) {
+    ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
         final bike = deviceMap["SIC4"]!;
@@ -179,6 +179,6 @@ void main() {
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
       });
-    });
+    }
   });
 }

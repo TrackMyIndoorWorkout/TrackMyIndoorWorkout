@@ -22,7 +22,7 @@ void main() {
   ];
 
   group("speedStringByUnit for metric system and riding:", () {
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final expected = speed.toStringAsFixed(2);
       test("$speed (Ride wo slowSpeed) -> $expected", () async {
         expect(speedOrPaceString(speed, true, ActivityType.Ride), expected);
@@ -31,11 +31,11 @@ void main() {
       test("$speed (Ride w slowSpeed) -> $expected", () async {
         expect(speedOrPaceString(speed, true, ActivityType.Ride, limitSlowSpeed: true), expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for imperial system and riding:", () {
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final expected = (speed * KM2MI).toStringAsFixed(2);
       test("$speed (Ride wo slowSpeed) -> $expected", () async {
         expect(speedOrPaceString(speed, false, ActivityType.Ride), expected);
@@ -44,55 +44,55 @@ void main() {
       test("$speed (Ride w slowSpeed) -> $expected", () async {
         expect(speedOrPaceString(speed, false, ActivityType.Ride, limitSlowSpeed: true), expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for metric system and running wo slowSpeed:", () {
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed;
       final expected = paceString(pace);
       test("$speed (Run) -> $expected", () async {
         expect(speedOrPaceString(speed, true, ActivityType.Run), expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for metric system and running w slowSpeed:", () {
     final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(ActivityType.Run)]!;
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
       test("$speed (Run) -> $expected", () async {
         expect(speedOrPaceString(speed, true, ActivityType.Run, limitSlowSpeed: true), expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for imperial system and running wo slowSpeed:", () {
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed / KM2MI;
       final expected = paceString(pace);
       test("$speed (Run) -> $expected", () async {
         expect(speedOrPaceString(speed, false, ActivityType.Run), expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for imperial system and running w slowSpeed:", () {
     final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(ActivityType.Run)]!;
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed / KM2MI;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
       test("$speed (Run) -> $expected", () async {
         expect(speedOrPaceString(speed, false, ActivityType.Run, limitSlowSpeed: true), expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for paddle sports wo slowSpeed:", () {
     final sports = [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing];
-    speeds.forEach((speed) {
-      sports.forEach((sport) {
+    for (final speed in speeds) {
+      for (final sport in sports) {
         final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 30.0 / speed;
         final expected = paceString(pace);
         test("$speed ($sport) -> $expected", () async {
@@ -100,27 +100,27 @@ void main() {
           expect(speedOrPaceString(speed, false, sport), expected);
           expect(speedOrPaceString(speed, true, sport), expected);
         });
-      });
-    });
+      }
+    }
   });
 
   group("speedStringByUnit for paddle sports w slowSpeed:", () {
     final sports = [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing];
     final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.PADDLE_SPORT]!;
-    speeds.forEach((speed) {
-      sports.forEach((sport) {
+    for (final speed in speeds) {
+      for (final sport in sports) {
         final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 30.0 / speed;
         final expected = speed < slowSpeed ? "0:00" : paceString(pace);
         test("$speed ($sport) -> $expected", () async {
           expect(speedOrPaceString(speed, false, sport, limitSlowSpeed: true), expected);
           expect(speedOrPaceString(speed, true, sport, limitSlowSpeed: true), expected);
         });
-      });
-    });
+      }
+    }
   });
 
   group("speedStringByUnit for swimming wo slowSpeed:", () {
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 6.0 / speed;
       final expected = paceString(pace);
       test("$speed (Swim) -> $expected", () async {
@@ -128,64 +128,64 @@ void main() {
         expect(speedOrPaceString(speed, false, ActivityType.Swim), expected);
         expect(speedOrPaceString(speed, true, ActivityType.Swim), expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for swimming w slowSpeed:", () {
     final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(ActivityType.Swim)]!;
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 6.0 / speed;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
       test("$speed (Swim) -> $expected", () async {
         expect(speedOrPaceString(speed, false, ActivityType.Swim, limitSlowSpeed: true), expected);
         expect(speedOrPaceString(speed, true, ActivityType.Swim, limitSlowSpeed: true), expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for metric system and elliptical sports wo slowSpeed:", () {
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed;
       final expected = paceString(pace);
       test("$speed (Elliptical) -> $expected", () async {
         expect(speedOrPaceString(speed, true, ActivityType.Elliptical), expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for metric system and elliptical sports w slowSpeed:", () {
     final slowSpeed =
         PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(ActivityType.Elliptical)]!;
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
       test("$speed (Elliptical) -> $expected", () async {
         expect(speedOrPaceString(speed, true, ActivityType.Elliptical, limitSlowSpeed: true),
             expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for imperial system and elliptical sports wo slowSpeed:", () {
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed / KM2MI;
       final expected = paceString(pace);
       test("$speed (Elliptical) -> $expected", () async {
         expect(speedOrPaceString(speed, false, ActivityType.Elliptical), expected);
       });
-    });
+    }
   });
 
   group("speedStringByUnit for imperial system and elliptical sports w slowSpeed:", () {
     final slowSpeed =
         PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(ActivityType.Elliptical)]!;
-    speeds.forEach((speed) {
+    for (final speed in speeds) {
       final pace = speed.abs() < DISPLAY_EPS ? 0.0 : 60.0 / speed / KM2MI;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
       test("$speed (Elliptical) -> $expected", () async {
         expect(speedOrPaceString(speed, false, ActivityType.Elliptical, limitSlowSpeed: true),
             expected);
       });
-    });
+    }
   });
 }

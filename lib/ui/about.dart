@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../utils/constants.dart';
 
@@ -58,45 +57,7 @@ class AboutScreenState extends State<AboutScreen> {
     if (kDebugMode) {
       actions.add(IconButton(
         icon: const Icon(Icons.build),
-        onPressed: () async {
-          final database = Get.find<AppDatabase>();
-          final activities = await database.activityDao.findAllActivities();
-          for (var activity in activities) {
-            final lastRecord =
-                await database.recordDao.findLastRecordOfActivity(activity.id!).first;
-            if (lastRecord != null) {
-              int updated = 0;
-              if (lastRecord.calories != null &&
-                  lastRecord.calories! > 0 &&
-                  activity.calories == 0) {
-                activity.calories = lastRecord.calories!;
-                updated++;
-              }
-
-              if (lastRecord.distance != null &&
-                  lastRecord.distance! > 0 &&
-                  activity.distance == 0) {
-                activity.distance = lastRecord.distance!;
-                updated++;
-              }
-
-              if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
-                activity.elapsed = lastRecord.elapsed!;
-                updated++;
-              }
-
-              if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
-                activity.end = lastRecord.timeStamp!;
-                updated++;
-              }
-
-              if (updated > 0) {
-                database.activityDao.updateActivity(activity);
-                Get.snackbar("Activity ${activity.id}", "Updated $updated fields");
-              }
-            }
-          }
-        },
+        onPressed: () async {},
       ));
     }
 

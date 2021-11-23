@@ -62,6 +62,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     ATHLETE_GENDER_TAG: ATHLETE_GENDER_DEFAULT,
     ATHLETE_VO2MAX_TAG: ATHLETE_VO2MAX_DEFAULT,
     ENFORCED_TIME_ZONE_TAG: ENFORCED_TIME_ZONE_DEFAULT,
+    DISPLAY_LAP_COUNTER_TAG: DISPLAY_LAP_COUNTER_DEFAULT,
   };
   return prefDefaults;
 }
@@ -190,6 +191,14 @@ Future<BasePrefService> initPreferences() async {
 
   if ((prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT) < SCAN_DURATION_DEFAULT) {
     await prefService.set<int>(SCAN_DURATION_TAG, SCAN_DURATION_DEFAULT);
+  }
+
+  if (prefVersion < PREFERENCES_VERSION_INCREASE_WATCHDOG_DEFAULT) {
+    final currentDefault = prefService.get<int>(DATA_STREAM_GAP_WATCHDOG_INT_TAG);
+    if (currentDefault == DATA_STREAM_GAP_WATCHDOG_OLD_DEFAULT) {
+      await prefService.set<int>(
+          DATA_STREAM_GAP_WATCHDOG_INT_TAG, DATA_STREAM_GAP_WATCHDOG_DEFAULT);
+    }
   }
 
   await prefService.set<int>(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);

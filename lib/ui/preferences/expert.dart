@@ -45,7 +45,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
             Get.snackbar("Warning", "No data connection detected");
           }
         },
-        child: const Text("Apply Check Configuration and Test"),
+        child: const Text("Apply Configuration and Test"),
       ),
       const PrefCheckbox(
         title: Text(DEVICE_FILTERING),

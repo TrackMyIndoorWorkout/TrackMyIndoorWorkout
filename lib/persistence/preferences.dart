@@ -5,11 +5,12 @@ import 'package:device_info/device_info.dart';
 const PREFERENCES_PREFIX = "pref_";
 
 const PREFERENCES_VERSION_TAG = "version";
-const PREFERENCES_VERSION_DEFAULT = 3;
 const PREFERENCES_VERSION_SPORT_THRESHOLDS = 1;
 const PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT = 2;
 const PREFERENCES_VERSION_SPINNERS = 3;
-const PREFERENCES_VERSION_DEFAULTING_DATA_CONNECTION = 3;
+const PREFERENCES_VERSION_DEFAULTING_DATA_CONNECTION = 4;
+const PREFERENCES_VERSION_INCREASE_WATCHDOG_DEFAULT = 5;
+const PREFERENCES_VERSION_DEFAULT = PREFERENCES_VERSION_INCREASE_WATCHDOG_DEFAULT;
 const PREFERENCES_VERSION_NEXT = PREFERENCES_VERSION_DEFAULT + 1;
 
 const INT_TAG_POSTFIX = "_int";
@@ -138,11 +139,12 @@ const DATA_STREAM_GAP_WATCHDOG = "Data Stream Gap Watchdog Timer";
 const DATA_STREAM_GAP_WATCHDOG_TAG = "data_stream_gap_watchdog_timer";
 const DATA_STREAM_GAP_WATCHDOG_INT_TAG = DATA_STREAM_GAP_WATCHDOG_TAG + INT_TAG_POSTFIX;
 const DATA_STREAM_GAP_WATCHDOG_MIN = 0;
-const DATA_STREAM_GAP_WATCHDOG_DEFAULT = 5;
+const DATA_STREAM_GAP_WATCHDOG_OLD_DEFAULT = 5;
+const DATA_STREAM_GAP_WATCHDOG_DEFAULT = 30;
 const DATA_STREAM_GAP_WATCHDOG_MAX = 50;
 const DATA_STREAM_GAP_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered "
     "as a disconnection. A watchdog would finish the workout and can trigger sound warnings as well. "
-    "Zero means disabled";
+    "Zero means disabled.";
 
 const SOUND_EFFECT_NONE = "none";
 const SOUND_EFFECT_NONE_DESCRIPTION = "No sound effect";
@@ -323,6 +325,12 @@ const RANK_INFO_ON_TRACK_DESCRIPTION =
     "On: when rank position is enabled this switch will display extra information "
     "in the middle of the track: it'll list the preceding and following positions "
     "along with the distance compared to the athlete's current position";
+
+const DISPLAY_LAP_COUNTER = "Display the number of lamps";
+const DISPLAY_LAP_COUNTER_TAG = "display_lap_counter";
+const DISPLAY_LAP_COUNTER_DEFAULT = false;
+const DISPLAY_LAP_COUNTER_DESCRIPTION =
+    "On: the number of lamps passed will be displayed in the middle of the track";
 
 const EXPERT_PREFERENCES = "Expert Preferences";
 
