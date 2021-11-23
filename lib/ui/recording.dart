@@ -259,7 +259,10 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           _distance = record.distance ?? 0.0;
-          _lapCount = (_distance / _trackLength).floor();
+          if (_displayLapCounter) {
+            _lapCount = (_distance / _trackLength).floor();
+          }
+
           _elapsed = record.elapsed ?? 0;
           if (record.heartRate != null &&
               (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {

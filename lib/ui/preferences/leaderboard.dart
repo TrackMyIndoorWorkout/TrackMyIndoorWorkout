@@ -76,11 +76,11 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
           }
         },
       ),
-      const PrefCheckbox(
-        title: Text(DISPLAY_LAP_COUNTER),
-        subtitle: Text(DISPLAY_LAP_COUNTER_DESCRIPTION),
-        pref: DISPLAY_LAP_COUNTER_TAG,
-      ),
+      // const PrefCheckbox(
+      //   title: Text(DISPLAY_LAP_COUNTER),
+      //   subtitle: Text(DISPLAY_LAP_COUNTER_DESCRIPTION),
+      //   pref: DISPLAY_LAP_COUNTER_TAG,
+      // ),
     ];
 
     return Scaffold(
