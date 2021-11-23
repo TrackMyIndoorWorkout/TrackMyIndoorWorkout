@@ -193,6 +193,13 @@ Future<BasePrefService> initPreferences() async {
     await prefService.set<int>(SCAN_DURATION_TAG, SCAN_DURATION_DEFAULT);
   }
 
+  if (prefVersion < PREFERENCES_VERSION_INCREASE_WATCHDOG_DEFAULT) {
+    final currentDefault = prefService.get<int>(DATA_STREAM_GAP_WATCHDOG_INT_TAG);
+    if (currentDefault == DATA_STREAM_GAP_WATCHDOG_OLD_DEFAULT) {
+      await prefService.set<int>(DATA_STREAM_GAP_WATCHDOG_INT_TAG, DATA_STREAM_GAP_WATCHDOG_DEFAULT);
+    }
+  }
+
   await prefService.set<int>(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);
 
   for (var sport in PreferencesSpec.SPORT_PREFIXES) {
