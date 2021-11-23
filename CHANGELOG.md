@@ -1,3 +1,11 @@
+## 1.1.85
+
+* Fix Training Peaks sport type (showed up as other, now it's proper)
+* When data connection timeout happens the auto closed workout won't be all zeroes
+* Special designated button in the Data Preferences to retroactively fix workouts with all zeroes
+* Increase default data connection timeout limit from 5 seconds to 30 seconds
+* Fix anomaly when someone starts a workout on a fitness machine right after exercising on another
+
 ## 1.1.84
 
 * Training Peaks integration (workout upload)
