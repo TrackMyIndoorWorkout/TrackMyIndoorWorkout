@@ -243,7 +243,7 @@ class RecordingState extends State<RecordingScreen> {
         );
       }
 
-      if (_measuring) {
+      if (_measuring && (_fitnessEquipment?.measuring ?? false)) {
         if (!_uxDebug) {
           await _database.recordDao.insertRecord(record);
         }
@@ -584,7 +584,8 @@ class RecordingState extends State<RecordingScreen> {
     _rankTrackVisualization =
         prefService.get<bool>(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
     _rankInfoOnTrack = prefService.get<bool>(RANK_INFO_ON_TRACK_TAG) ?? RANK_INFO_ON_TRACK_DEFAULT;
-    _displayLapCounter = prefService.get<bool>(DISPLAY_LAP_COUNTER_TAG) ?? DISPLAY_LAP_COUNTER_DEFAULT;
+    _displayLapCounter =
+        prefService.get<bool>(DISPLAY_LAP_COUNTER_TAG) ?? DISPLAY_LAP_COUNTER_DEFAULT;
 
     final isLight = !_themeManager.isDark();
     _darkRed = isLight ? Colors.red.shade900 : Colors.redAccent.shade100;
@@ -643,7 +644,7 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
 
     if (_dataGapSoundEffect != SOUND_EFFECT_NONE) {
-      await _dataTimeoutBeeper();
+      _dataTimeoutBeeper();
     }
 
     await _stopMeasurement(false);
@@ -708,7 +709,7 @@ class RecordingState extends State<RecordingScreen> {
     });
 
     try {
-      await _fitnessEquipment?.detach();
+      _fitnessEquipment?.detach();
     } on PlatformException catch (e, stack) {
       debugPrint("Equipment got turned off?");
       debugPrint("$e");
