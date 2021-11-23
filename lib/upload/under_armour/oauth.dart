@@ -25,7 +25,7 @@ abstract class Auth {
       underArmourToken.refreshToken = refreshToken;
       underArmourToken.expiresAt = expire;
     } else {
-      await Get.delete<UnderArmourToken>();
+      await Get.delete<UnderArmourToken>(force: true);
       Get.put<UnderArmourToken>(
         UnderArmourToken(
           accessToken: token,

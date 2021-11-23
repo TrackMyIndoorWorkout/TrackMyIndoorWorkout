@@ -1,4 +1,5 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -277,11 +278,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
     FitnessEquipment? ftmsWithoutServiceData = fitnessEquipment;
     fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
 
+    await Get.delete<FitnessEquipment>(force: true);
     if (fitnessEquipment != null) {
       if (fitnessEquipment.device?.id.id != device.id.id) {
-        await fitnessEquipment.detach();
-        await fitnessEquipment.disconnect();
-        Get.delete<FitnessEquipment>();
+        try {
+          await fitnessEquipment.detach();
+          await fitnessEquipment.disconnect();
+        } on PlatformException catch (e, stack) {
+          debugPrint("$e");
+          debugPrintStack(stackTrace: stack, label: "trace:");
+        }
+
         fitnessEquipment = null;
       }
     } else {
@@ -290,16 +297,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     if (fitnessEquipment != null) {
       fitnessEquipment.descriptor = descriptor;
-      if (ftmsWithoutServiceData != null) {
-        Get.put<FitnessEquipment>(fitnessEquipment, permanent: true);
-      }
     } else {
       fitnessEquipment = FitnessEquipment(
         descriptor: descriptor,
         device: device,
       );
-      Get.put<FitnessEquipment>(fitnessEquipment, permanent: true);
     }
+
+    Get.put<FitnessEquipment>(fitnessEquipment, permanent: true);
 
     setState(() {
       _fitnessEquipment = fitnessEquipment;
@@ -664,7 +669,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                           _heartRateMonitor = heartRateMonitor;
                                         });
                                       } else {
-                                        await Get.delete<HeartRateMonitor>();
+                                        await Get.delete<HeartRateMonitor>(force: true);
                                         setState(() {
                                           _heartRateMonitor = null;
                                         });
@@ -680,7 +685,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   if (heartRateMonitor == null || existingId != r.device.id.id) {
                                     heartRateMonitor = HeartRateMonitor(r.device);
                                     if (Get.isRegistered<HeartRateMonitor>()) {
-                                      await Get.delete<HeartRateMonitor>();
+                                      await Get.delete<HeartRateMonitor>(force: true);
                                     }
 
                                     Get.put<HeartRateMonitor>(heartRateMonitor, permanent: true);

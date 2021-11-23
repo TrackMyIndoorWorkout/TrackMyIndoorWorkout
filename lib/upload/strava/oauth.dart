@@ -34,7 +34,7 @@ abstract class Auth {
       stravaToken.expiresAt = expire;
       stravaToken.scope = scope;
     } else {
-      await Get.delete<StravaToken>();
+      await Get.delete<StravaToken>(force: true);
       Get.put<StravaToken>(
         StravaToken(
           accessToken: token,
