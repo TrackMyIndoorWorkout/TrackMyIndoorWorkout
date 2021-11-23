@@ -9,7 +9,7 @@ import 'utils.dart';
 void main() {
   group('distanceString cobverts values as expected', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 40000, rnd).forEach((meters) {
+    for (final meters in getRandomDoubles(REPETITION, 40000, rnd)) {
       final expected = meters.toStringAsFixed(0);
 
       test("$meters -> $expected", () async {
@@ -33,6 +33,6 @@ void main() {
       test("$meters -> $expected4", () async {
         expect(distanceString(meters, false, false), expected4);
       });
-    });
+    }
   });
 }

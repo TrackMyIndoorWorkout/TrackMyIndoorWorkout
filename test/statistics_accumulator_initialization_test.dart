@@ -183,7 +183,7 @@ void main() {
   });
 
   group('StatisticsAccumulator initializes max speed when max requested', () {
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       final accu = StatisticsAccumulator(
         si: Random().nextBool(),
         sport: sport,
@@ -220,11 +220,11 @@ void main() {
         expect(accu.maxCadence, MAX_INIT);
         expect(accu.minCadence, MIN_INIT);
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator initializes min speed when min requested', () {
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       final accu = StatisticsAccumulator(
         si: Random().nextBool(),
         sport: sport,
@@ -261,7 +261,7 @@ void main() {
         expect(accu.maxCadence, MAX_INIT);
         expect(accu.minCadence, MIN_INIT);
       });
-    });
+    }
   });
 
   test('StatisticsAccumulator initializes hr variables when avg requested', () async {
@@ -481,7 +481,7 @@ void main() {
   });
 
   group('StatisticsAccumulator initializes everything when all requested', () {
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       final accu = StatisticsAccumulator(
         si: Random().nextBool(),
         sport: sport,
@@ -533,6 +533,6 @@ void main() {
         expect(accu.avgHeartRate, 0);
         expect(accu.avgCadence, 0);
       });
-    });
+    }
   });
 }

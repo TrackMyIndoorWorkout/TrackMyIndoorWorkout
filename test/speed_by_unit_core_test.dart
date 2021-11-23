@@ -21,24 +21,24 @@ void main() {
     20.0,
   ];
   group("speedByUnitCore for metric system and riding:", () {
-    speeds.forEach((speed) {
-      SPORTS.forEach((sport) {
+    for (final speed in speeds) {
+      for (final sport in SPORTS) {
         final expected = speed;
         test("$speed ($sport) -> $expected", () async {
           expect(speedByUnitCore(speed, true), expected);
         });
-      });
-    });
+      }
+    }
   });
 
   group("speedByUnitCore for imperial system and riding:", () {
-    speeds.forEach((speed) {
-      SPORTS.forEach((sport) {
+    for (final speed in speeds) {
+      for (final sport in SPORTS) {
         final expected = speed * KM2MI;
         test("$speed ($sport) -> $expected", () async {
           expect(speedByUnitCore(speed, false), expected);
         });
-      });
-    });
+      }
+    }
   });
 }

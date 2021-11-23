@@ -14,7 +14,7 @@ void main() {
 
   group('trackMarker start point is invariant', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -34,12 +34,12 @@ void main() {
             marker.dx, closeTo(thick + calculator.trackOffset!.dx + calculator.trackRadius!, EPS));
         expect(marker.dy, closeTo(size.height - thick - calculator.trackOffset!.dy, EPS));
       });
-    });
+    }
   });
 
   group('trackMarker whole laps are at the start point', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -61,12 +61,12 @@ void main() {
             marker.dx, closeTo(thick + calculator.trackOffset!.dx + calculator.trackRadius!, EPS));
         expect(marker.dy, closeTo(size.height - thick - calculator.trackOffset!.dy, EPS));
       });
-    });
+    }
   });
 
   group('trackMarkers on the first (bottom) straight are placed proportionally', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -93,12 +93,12 @@ void main() {
         expect(marker.dx, closeTo(thick + calculator.trackOffset!.dx + r + displacement, EPS));
         expect(marker.dy, closeTo(size.height - thick - calculator.trackOffset!.dy, EPS));
       });
-    });
+    }
   });
 
   group('trackMarkers on the first (right) chicane are placed as expected', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -126,12 +126,12 @@ void main() {
             closeTo(size.width - (thick + calculator.trackOffset!.dx + r) + sin(rad) * r, EPS));
         expect(marker.dy, closeTo(r + thick + calculator.trackOffset!.dy + cos(rad) * r, EPS));
       });
-    });
+    }
   });
 
   group('trackMarkers on the second (top) straight are placed proportionally', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -159,12 +159,12 @@ void main() {
             closeTo(size.width - (thick + calculator.trackOffset!.dx + r) - displacement, EPS));
         expect(marker.dy, closeTo(thick + calculator.trackOffset!.dy, EPS));
       });
-    });
+    }
   });
 
   group('trackMarkers on the second (left) chicane are placed as expected', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -192,12 +192,12 @@ void main() {
         expect(marker.dx, closeTo((1 - sin(rad)) * r + thick + calculator.trackOffset!.dx, EPS));
         expect(marker.dy, closeTo((cos(rad) + 1) * r + thick + calculator.trackOffset!.dy, EPS));
       });
-    });
+    }
   });
 
   group('trackMarker always in bounds', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -205,7 +205,7 @@ void main() {
       );
       final calculator = TrackCalculator(track: track);
       test("${track.radiusBoost} $lengthFactor", () async {
-        1.to((trackLength * 2).round()).forEach((distance) {
+        for (final distance in 1.to((trackLength * 2).round())) {
           final size = Size(
             minPixel + rnd.nextDouble() * maxPixel,
             minPixel + rnd.nextDouble() * maxPixel,
@@ -218,14 +218,14 @@ void main() {
           expect(marker.dx, lessThanOrEqualTo(size.width - thick));
           expect(marker.dy, greaterThanOrEqualTo(thick));
           expect(marker.dy, lessThanOrEqualTo(size.height - thick));
-        });
+        }
       });
-    });
+    }
   });
 
   group('trackMarker top continuity', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -251,12 +251,12 @@ void main() {
 
         expect(dx * dx + dy * dy, closeTo(uDSquare, trackLen * DISPLAY_EPS));
       });
-    });
+    }
   });
 
   group('trackMarker bottom continuity', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -282,12 +282,12 @@ void main() {
 
         expect(dx * dx + dy * dy, closeTo(uDSquare, trackLen * DISPLAY_EPS));
       });
-    });
+    }
   });
 
   group('trackMarker continuity straight vs chicane', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -317,12 +317,12 @@ void main() {
         expect(cdx, closeTo(0.0, DISPLAY_EPS));
         expect(sdx, closeTo(cdy, DISPLAY_EPS));
       });
-    });
+    }
   });
 
   group('trackMarker general continuity', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1.5, rnd).forEach((lengthFactor) {
+    for (var lengthFactor in getRandomDoubles(REPETITION, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
         radiusBoost: 0.65 + rnd.nextDouble(),
@@ -338,15 +338,15 @@ void main() {
       final unitDistance = calculator.trackRadius! / track.radius;
       final uDSquare = unitDistance * unitDistance;
       test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
-        1.to((trackLength * 2).round()).forEach((distance) {
+        for (final distance in 1.to((trackLength * 2).round())) {
           final markerA = calculator.trackMarker(distance.toDouble())!;
           final markerB = calculator.trackMarker((distance + 1).toDouble())!;
           final dx = markerA.dx - markerB.dx;
           final dy = markerA.dy - markerB.dy;
 
           expect(dx * dx + dy * dy, closeTo(uDSquare, trackLength * DISPLAY_EPS));
-        });
+        }
       });
-    });
+    }
   });
 }

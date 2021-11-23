@@ -5,11 +5,11 @@ import 'utils.dart';
 
 void main() {
   group("speedTitle is pace for everything else than Ride", () {
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       final expected = sport == ActivityType.Ride ? "Speed" : "Pace";
       test("$sport -> $expected", () {
         expect(speedTitle(sport), expected);
       });
-    });
+    }
   });
 }

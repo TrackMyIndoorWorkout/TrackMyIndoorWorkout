@@ -10,7 +10,7 @@ import 'utils.dart';
 void main() {
   group('StatisticsAccumulator calculates avg power when requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgPower: true);
@@ -57,12 +57,12 @@ void main() {
           expect(accu.avgPower, actualCount > 0 ? sum / actualCount : 0.0);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator calculates max power when requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxPower: true);
@@ -104,12 +104,12 @@ void main() {
           expect(accu.minCadence, MIN_INIT);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator calculates min power when requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinPower: true);
@@ -153,12 +153,12 @@ void main() {
           expect(accu.minCadence, MIN_INIT);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator calculates avg speed when requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgSpeed: true);
@@ -201,12 +201,12 @@ void main() {
           expect(accu.avgSpeed, count > 0 ? sum / count : 0.0);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator calculates max speed when requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxSpeed: true);
@@ -248,12 +248,12 @@ void main() {
           expect(accu.minCadence, MIN_INIT);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator calculates min speed when requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinSpeed: true);
@@ -295,12 +295,12 @@ void main() {
           expect(accu.minCadence, MIN_INIT);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator calculates avg hr when requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgHeartRate: true);
@@ -347,12 +347,12 @@ void main() {
           expect(accu.avgHeartRate, cnt > 0 ? sum ~/ cnt : 0);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator calculates max hr when requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxHeartRate: true);
@@ -394,12 +394,12 @@ void main() {
           expect(accu.minCadence, MIN_INIT);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator calculates min hr when requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinHeartRate: true);
@@ -443,12 +443,12 @@ void main() {
           expect(accu.minCadence, MIN_INIT);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator calculates avg cadence when requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgCadence: true);
@@ -495,12 +495,12 @@ void main() {
           expect(accu.avgCadence, cnt > 0 ? sum ~/ cnt : 0);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator initializes max cadence when max requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxCadence: true);
@@ -542,12 +542,12 @@ void main() {
           expect(accu.minCadence, MIN_INIT);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator initializes min cadence when min requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinCadence: true);
@@ -591,12 +591,12 @@ void main() {
           expect(accu.minCadence, minimum);
         });
       });
-    });
+    }
   });
 
   group('StatisticsAccumulator initializes everything when all requested', () {
     final rnd = Random();
-    SPORTS.forEach((sport) {
+    for (final sport in SPORTS) {
       1.to(SMALL_REPETITION).forEach((input) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
@@ -703,6 +703,6 @@ void main() {
           expect(accu.avgCadence, cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0);
         });
       });
-    });
+    }
   });
 }

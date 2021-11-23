@@ -14,17 +14,17 @@ void main() {
   });
 
   group("getSpeedUnit for paddle sports:", () {
-    [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing].forEach((sport) {
-      final expected = "min /500";
+    for (final sport in [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing]) {
+      const expected = "min /500";
       test("$sport -> $expected", () async {
         expect(getSpeedUnit(true, sport), expected);
         expect(getSpeedUnit(false, sport), expected);
       });
-    });
+    }
   });
 
   test("getSpeedUnit for swimming:", () async {
-    final expected = "min /100";
+    const expected = "min /100";
     expect(getSpeedUnit(true, ActivityType.Swim), expected);
     expect(getSpeedUnit(false, ActivityType.Swim), expected);
   });
