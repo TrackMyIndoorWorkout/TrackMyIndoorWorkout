@@ -34,8 +34,6 @@ abstract class Upload {
     debugPrint('Starting to upload activity');
 
     final postUri = Uri.parse(UPLOADS_ENDPOINT);
-    StreamController<int> onUploadPending = StreamController();
-
     final persistenceValues = exporter.getPersistenceValues(activity, true);
     var request = http.MultipartRequest("POST", postUri);
     request.fields['data_type'] = exporter.fileExtension(true);
@@ -64,86 +62,77 @@ abstract class Upload {
         filename: persistenceValues["fileName"], contentType: MediaType("application", "x-gzip")));
     debugPrint(request.toString());
 
-    final response = await request.send();
+    final streamedResponse = await request.send();
 
-    debugPrint('Response: ${response.statusCode} ${response.reasonPhrase}');
+    debugPrint('Response: ${streamedResponse.statusCode} ${streamedResponse.reasonPhrase}');
 
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      // response.statusCode != 201
+    if (streamedResponse.statusCode < 200 || streamedResponse.statusCode >= 300) {
+      // response.statusCode indicates problem
       debugPrint('Error while uploading the activity');
-      debugPrint('${response.statusCode} - ${response.reasonPhrase}');
-    }
-
-    int idUpload;
-
-    // Upload is processed by the server
-    // now wait for the upload to be finished
-    //----------------------------------------
-    if (response.statusCode >= 200 && response.statusCode < 300) {
+      debugPrint('${streamedResponse.statusCode} - ${streamedResponse.reasonPhrase}');
+    } else {
+      // Upload is processed by the server
+      // now wait for the upload to be finished
+      //----------------------------------------
       // response.statusCode == 201
       debugPrint('Activity successfully created');
-      response.stream.transform(utf8.decoder).listen((value) async {
-        debugPrint(value);
-        final Map<String, dynamic> _body = json.decode(value);
-        final response = ResponseUploadActivity.fromJson(_body);
 
-        if (response.id > 0) {
-          final database = Get.find<AppDatabase>();
-          activity.markUploaded(response.id);
-          await database.activityDao.updateActivity(activity);
-          debugPrint('id ${response.id}');
-          idUpload = response.id;
-          onUploadPending.add(idUpload);
-        }
-      });
+      final response = await http.Response.fromStream(streamedResponse);
+      final body = response.body;
+      debugPrint(body);
+      final Map<String, dynamic> bodyMap = json.decode(body);
+      final decodedResponse = ResponseUploadActivity.fromJson(bodyMap);
 
-      String reqCheckUpgrade = '$UPLOADS_ENDPOINT/';
-      onUploadPending.stream.listen((id) async {
-        reqCheckUpgrade = reqCheckUpgrade + id.toString();
-        final resp = await http.get(Uri.parse(reqCheckUpgrade), headers: header);
-        debugPrint('check status ${resp.reasonPhrase}  ${resp.statusCode}');
+      if (decodedResponse.id > 0) {
+        final database = Get.find<AppDatabase>();
+        activity.markUploaded(decodedResponse.id);
+        await database.activityDao.updateActivity(activity);
+        debugPrint('id ${decodedResponse.id}');
 
-        // Everything is fine the file has been loaded
-        if (resp.statusCode >= 200 && resp.statusCode < 300) {
-          // resp.statusCode == 200
-          debugPrint('${resp.statusCode} ${resp.reasonPhrase}');
-        }
+        final reqCheckUpgrade = '$UPLOADS_ENDPOINT/${decodedResponse.id}';
+        final uri = Uri.parse(reqCheckUpgrade);
+        String? reasonPhrase = StravaStatusText.processed;
+        while (reasonPhrase == StravaStatusText.processed) {
+          final resp = await http.get(uri, headers: header);
+          reasonPhrase = resp.reasonPhrase;
+          debugPrint('Check Status $reasonPhrase ${resp.statusCode}');
 
-        // 404 the temp id does not exist anymore
-        // Activity has been probably already loaded
-        if (resp.statusCode == 404) {
-          debugPrint('---> 404 activity already loaded  ${resp.reasonPhrase}');
-        }
-
-        if (resp.reasonPhrase != null) {
-          if (resp.reasonPhrase!.compareTo(StravaStatusText.ready) == 0) {
-            debugPrint('---> Activity successfully uploaded');
-            onUploadPending.close();
+          // Everything is fine the file has been loaded
+          if (resp.statusCode >= 200 && resp.statusCode < 300) {
+            // resp.statusCode == 200
+            debugPrint('Check Body: ${resp.body}');
           }
 
-          if ((resp.reasonPhrase!.compareTo(StravaStatusText.notFound) == 0) ||
-              (resp.reasonPhrase!.compareTo(StravaStatusText.errorMsg) == 0)) {
-            debugPrint('---> Error while checking status upload');
-            onUploadPending.close();
+          // 404 the temp id does not exist anymore
+          // Activity has been probably already loaded
+          if (resp.statusCode == 404) {
+            debugPrint('---> 404 activity already loaded  $reasonPhrase');
           }
 
-          if (resp.reasonPhrase!.compareTo(StravaStatusText.deleted) == 0) {
-            debugPrint('---> Activity deleted');
-            onUploadPending.close();
-          }
+          if (reasonPhrase != null) {
+            if (reasonPhrase.compareTo(StravaStatusText.ready) == 0) {
+              debugPrint('---> Activity successfully uploaded');
+            }
 
-          if (resp.reasonPhrase!.compareTo(StravaStatusText.processed) == 0) {
-            debugPrint('---> try another time');
-            // wait 2 sec before checking again status
-            Timer(const Duration(seconds: 2), () => onUploadPending.add(id));
+            if (reasonPhrase.compareTo(StravaStatusText.notFound) == 0 ||
+                reasonPhrase.compareTo(StravaStatusText.errorMsg) == 0) {
+              debugPrint('---> Error while checking status upload');
+            }
+
+            if (reasonPhrase.compareTo(StravaStatusText.deleted) == 0) {
+              debugPrint('---> Activity deleted');
+            }
+
+            if (reasonPhrase.compareTo(StravaStatusText.processed) == 0) {
+              debugPrint('---> try another time');
+            }
+          } else {
+            debugPrint('---> Unknown error');
           }
-        } else {
-          debugPrint('---> Unknown error');
-          onUploadPending.close();
         }
-      });
+      }
     }
 
-    return Fault(response.statusCode, response.reasonPhrase ?? "Unknown reason");
+    return Fault(streamedResponse.statusCode, streamedResponse.reasonPhrase ?? "Unknown reason");
   }
 }
