@@ -89,7 +89,7 @@
 ## 1.1.70
 
 * Data connection check preferences bug fix (was not reading the right value)
-* Recognizing Schwinn 130 / 170 / 510u specifically by name instead of a generic FTMS bike
+* Recognizing Schwinn 230 / 510u specifically by name instead of a generic FTMS bike
 * Swap the order of Leaderboard and Zone Preferences button in the preferences hub
 * Preferences wording change: persist -> record
 * Reverting back to official pref plugin after my PR was merged
