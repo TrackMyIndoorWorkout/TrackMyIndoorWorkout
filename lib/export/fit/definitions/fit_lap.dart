@@ -49,10 +49,10 @@ class FitLap extends FitDefinitionMessage {
     var data = FitData();
     data.output = [localMessageType];
     data.addShort(0);
-    data.addLong(FitSerializable.fitTimeStamp(last.timeStampInteger));
+    data.addLong(FitSerializable.fitTimeStamp(last.record.timeStamp));
     data.addByte(FitEvent.Lap);
     data.addByte(FitEventType.Stop);
-    data.addLong(FitSerializable.fitTimeStamp(first.timeStampInteger));
+    data.addLong(FitSerializable.fitTimeStamp(first.record.timeStamp));
     data.addGpsCoordinate(first.latitude);
     data.addGpsCoordinate(first.longitude);
     data.addGpsCoordinate(last.latitude);

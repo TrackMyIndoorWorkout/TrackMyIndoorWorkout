@@ -44,8 +44,7 @@ class TCXExport extends ActivityExport {
     <Activity Sport="$activityType">""");
 
     // Add ID
-    final dateActivity = DateTime.fromMillisecondsSinceEpoch(exportModel.activity.start);
-    addElement('Id', timeStampString(dateActivity));
+    addElement('Id', timeStampString(exportModel.activity.start));
     addLap(exportModel);
     addCreator(exportModel);
 
@@ -56,8 +55,7 @@ class TCXExport extends ActivityExport {
   void addLap(ExportModel exportModel) {
     // Add lap
     //---------
-    final dateActivity = DateTime.fromMillisecondsSinceEpoch(exportModel.activity.start);
-    _sb.writeln('        <Lap StartTime="${timeStampString(dateActivity)}">');
+    _sb.writeln('        <Lap StartTime="${timeStampString(exportModel.activity.start)}">');
 
     addElement('TotalTimeSeconds', exportModel.activity.elapsed.toStringAsFixed(1));
     // Add Total distance in meters
@@ -101,13 +99,13 @@ class TCXExport extends ActivityExport {
   }
 
   /// Generate a string that will include
-  /// all the tags corresponding to TCX trackpoint
+  /// all the tags corresponding to TCX Trackpoint
   ///
   /// Extension handling is missing for the moment
   ///
   void addTrackPoint(ExportRecord record, ExportModel exportModel) {
     _sb.writeln("<Trackpoint>");
-    addElement('Time', record.timeStampString);
+    addElement('Time', timeStampString(record.record.timeStamp));
     addPosition(record.latitude.toStringAsFixed(7), record.longitude.toStringAsFixed(7));
     addElement('AltitudeMeters', exportModel.altitude.toString());
     addElement('DistanceMeters', (record.record.distance ?? 0.0).toStringAsFixed(2));
@@ -225,13 +223,8 @@ class TCXExport extends ActivityExport {
   /// To get 2019-03-03T11:43:46.000Z
   /// utc time
   /// Need to add T in the middle
-  @override
-  String timeStampString(DateTime dateTime) {
+  String timeStampString(int? epochTime) {
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(epochTime ?? 0);
     return dateTime.toUtc().toString().replaceFirst(' ', 'T');
-  }
-
-  @override
-  int timeStampInteger(DateTime dateTime) {
-    return 0; // Not used for TCX
   }
 }
