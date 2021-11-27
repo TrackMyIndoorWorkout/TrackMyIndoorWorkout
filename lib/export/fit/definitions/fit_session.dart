@@ -78,7 +78,7 @@ class FitSession extends FitDefinitionMessage {
     data.addShort(0);
     if (exportTarget == ExportTarget.regular) {
       data.addLong(FitSerializable.fitTimeStamp(last.timeStampInteger));
-      data.addByte(FitEvent.Lap);
+      data.addByte(FitEvent.Session);
       data.addByte(FitEventType.Stop);
     }
 
