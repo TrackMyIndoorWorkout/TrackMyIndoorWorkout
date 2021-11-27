@@ -70,7 +70,11 @@ abstract class FitSerializable {
     return output;
   }
 
-  static int fitTimeStamp(int unixMilliseconds) {
+  static int fitTimeStamp(int? unixMilliseconds) {
+    if (unixMilliseconds == null) {
+      return 0;
+    }
+
     return (unixMilliseconds - fitEpoch) ~/ 1000;
   }
 

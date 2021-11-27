@@ -77,12 +77,12 @@ class FitSession extends FitDefinitionMessage {
     data.output = [localMessageType];
     data.addShort(0);
     if (exportTarget == ExportTarget.regular) {
-      data.addLong(FitSerializable.fitTimeStamp(last.timeStampInteger));
+      data.addLong(FitSerializable.fitTimeStamp(last.record.timeStamp));
       data.addByte(FitEvent.Session);
       data.addByte(FitEventType.Stop);
     }
 
-    data.addLong(FitSerializable.fitTimeStamp(first.timeStampInteger));
+    data.addLong(FitSerializable.fitTimeStamp(first.record.timeStamp));
     if (exportTarget == ExportTarget.regular) {
       data.addGpsCoordinate(first.latitude);
       data.addGpsCoordinate(first.longitude);
