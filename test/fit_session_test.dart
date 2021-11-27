@@ -5,7 +5,6 @@ import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/export/export_target.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_session.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
-import 'package:track_my_indoor_exercise/export/fit/fit_serializable.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:tuple/tuple.dart';
 import 'utils.dart';
@@ -34,7 +33,6 @@ void main() {
         final session = FitSession(0, exportTarget.item1);
         final now = DateTime.now();
         final exportRecord = ExportRecord(
-          timeStampInteger: FitSerializable.fitDateTime(now),
           latitude: rng.nextDouble(),
           longitude: rng.nextDouble(),
           record: Record(

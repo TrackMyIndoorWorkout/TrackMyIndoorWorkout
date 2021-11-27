@@ -10,7 +10,6 @@ import 'definitions/fit_session.dart';
 import 'definitions/fit_sport.dart';
 import 'fit_data.dart';
 import 'fit_header.dart';
-import 'fit_serializable.dart';
 
 class FitExport extends ActivityExport {
   FitExport()
@@ -88,13 +87,13 @@ class FitExport extends ActivityExport {
     return headerBytes + bodyBytes;
   }
 
-  @override
-  String timeStampString(DateTime dateTime) {
-    return ""; // Not used for FIT
-  }
-
-  @override
-  int timeStampInteger(DateTime dateTime) {
-    return FitSerializable.fitDateTime(dateTime);
-  }
+  // @override
+  // String timeStampString(DateTime dateTime) {
+  //   return ""; // Not used for FIT
+  // }
+  //
+  // @override
+  // int timeStampInteger(DateTime dateTime) {
+  //   return FitSerializable.fitDateTime(dateTime);
+  // }
 }

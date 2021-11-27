@@ -61,14 +61,4 @@ class CsvExport extends ActivityExport {
       _sb.writeln("${record.record.calories},");
     }
   }
-
-  @override
-  String timeStampString(DateTime dateTime) {
-    return ""; // Not used for CSV
-  }
-
-  @override
-  int timeStampInteger(DateTime dateTime) {
-    return 0; // Not used for CSV
-  }
 }

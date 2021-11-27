@@ -64,7 +64,6 @@ abstract class ActivityExport {
     TrackCalculator calculator,
     bool rawData,
   ) {
-    final timeStamp = DateTime.fromMillisecondsSinceEpoch(record.timeStamp ?? 0);
     record.distance ??= 0.0;
 
     Offset gps = record.distance != null && !rawData
@@ -77,9 +76,7 @@ abstract class ActivityExport {
 
     return ExportRecord(record: record)
       ..longitude = gps.dx
-      ..latitude = gps.dy
-      ..timeStampString = timeStampString(timeStamp)
-      ..timeStampInteger = timeStampInteger(timeStamp);
+      ..latitude = gps.dy;
   }
 
   Future<List<int>> getExport(
@@ -182,8 +179,4 @@ abstract class ActivityExport {
   }
 
   Future<List<int>> getFileCore(ExportModel exportModel);
-
-  String timeStampString(DateTime dateTime);
-
-  int timeStampInteger(DateTime dateTime);
 }
