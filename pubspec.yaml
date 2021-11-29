@@ -16,7 +16,7 @@ dependencies:
   device_info: ^2.0.3
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^4.2.4
+  file_picker: ^4.2.5
   floor: ^1.2.0
   flutter_blue:
     git:
@@ -46,7 +46,7 @@ dependencies:
   syncfusion_flutter_charts: ^19.3.55
   tuple: ^2.0.0
   uni_links: ^0.5.1
-  url_launcher: ^6.0.15
+  url_launcher: ^6.0.16
   wakelock: ^0.5.6
   flutter:
     sdk: flutter
