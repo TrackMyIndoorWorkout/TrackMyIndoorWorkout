@@ -79,7 +79,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   final charts.TrackballBehavior _trackballBehavior = charts.TrackballBehavior(
     enable: true,
     activationMode: charts.ActivationMode.singleTap,
-    tooltipDisplayMode: charts.TrackballDisplayMode.nearestPoint,
+    tooltipDisplayMode: charts.TrackballDisplayMode.groupAllPoints,
   );
 
   Future<void> extraInit() async {
