@@ -63,6 +63,8 @@ class ExportModelForTests extends ExportModel {
                 sport: ActivityType.Ride,
                 powerFactor: 1.0,
                 calorieFactor: 1.0,
+                hrCalorieFactor: 1.0,
+                hrBasedCalories: false,
                 timeZone: "America/Los_Angeles",
               ),
           rawData: rawData ?? false,

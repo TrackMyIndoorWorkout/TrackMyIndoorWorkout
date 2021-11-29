@@ -127,6 +127,10 @@ class ThemeManager {
     return Icon(icon, color: getBlueColor(), size: size);
   }
 
+  Icon getGreyIcon(IconData icon, double size) {
+    return Icon(icon, color: getGreyColor(), size: size);
+  }
+
   OverlayTutorialHole getBlueIconWithHole(
     IconData icon,
     double size,

@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:floor/floor.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -17,10 +19,11 @@ import 'models/device_usage.dart';
 import 'models/power_tune.dart';
 import 'models/record.dart';
 import 'models/workout_summary.dart';
+import 'preferences.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 14, entities: [
+@Database(version: 15, entities: [
   Activity,
   Record,
   DeviceUsage,
@@ -36,9 +39,13 @@ abstract class AppDatabase extends FloorDatabase {
   PowerTuneDao get powerTuneDao;
   WorkoutSummaryDao get workoutSummaryDao;
 
-  Future<int> rowCount(String tableName, String deviceId) async {
-    final result = await database
-        .rawQuery("SELECT COUNT(`id`) AS cnt FROM `$tableName` WHERE `mac` = ?", [deviceId]);
+  Future<int> rowCount(String tableName, String deviceId, {String extraPredicate: ""}) async {
+    var queryString = "SELECT COUNT(`id`) AS cnt FROM `$tableName` WHERE `mac` = ?";
+    if (extraPredicate.isNotEmpty) {
+      queryString += " AND $extraPredicate";
+    }
+
+    final result = await database.rawQuery(queryString, [deviceId]);
 
     if (result.isEmpty) {
       return 0;
@@ -65,18 +72,37 @@ abstract class AppDatabase extends FloorDatabase {
     return powerTune?.powerFactor ?? 1.0;
   }
 
-  Future<bool> hasCalorieTune(String deviceId) async {
-    return await rowCount(calorieTuneTableName, deviceId) > 0;
+  Future<bool> hasCalorieTune(String deviceId, bool hrBased) async {
+    final extraPredicate = "`hr_based` = ${hrBased ? 1 : 0}";
+    return await rowCount(calorieTuneTableName, deviceId, extraPredicate: extraPredicate) > 0;
   }
 
   Future<double> calorieFactor(String deviceId, DeviceDescriptor descriptor) async {
-    if (!await hasCalorieTune(deviceId)) {
+    if (!await hasCalorieTune(deviceId, false)) {
       return descriptor.calorieFactorDefault;
     }
 
     final calorieTune = await calorieTuneDao.findCalorieTuneByMac(deviceId).first;
 
     return calorieTune?.calorieFactor ?? descriptor.calorieFactorDefault;
+  }
+
+  Future<double> hrCalorieFactor(String deviceId, DeviceDescriptor descriptor) async {
+    if (!await hasCalorieTune(deviceId, true)) {
+      return descriptor.hrCalorieFactorDefault;
+    }
+
+    final calorieTune = await calorieTuneDao.findHrCalorieTuneByMac(deviceId).first;
+
+    return calorieTune?.calorieFactor ?? descriptor.calorieFactorDefault;
+  }
+
+  Future<CalorieTune?> findCalorieTuneByMac(String mac, bool hrBased) async {
+    if (hrBased) {
+      return await calorieTuneDao.findHrCalorieTuneByMac(mac).first;
+    } else {
+      return await calorieTuneDao.findCalorieTuneByMac(mac).first;
+    }
   }
 
   Future<bool> hasLeaderboardData() async {
@@ -217,4 +243,18 @@ final migration13to14 = Migration(13, 14, (database) async {
       "ALTER TABLE `$activitiesTableName` ADD COLUMN `training_peaks_athlete_id` INTEGER NOT NULL DEFAULT 0");
   await database.execute(
       "ALTER TABLE `$activitiesTableName` ADD COLUMN `training_peaks_workout_id` INTEGER NOT NULL DEFAULT 0");
+});
+
+final migration14to15 = Migration(14, 15, (database) async {
+  final prefService = Get.find<BasePrefService>();
+  final useHrBasedCalorieCounting =
+      prefService.get<bool>(USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG) ??
+          USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+  final hrBaseCalories = useHrBasedCalorieCounting ? 1 : 0;
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `hr_calorie_factor` REAL NOT NULL DEFAULT 1.0");
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `hr_based_calories` INTEGER NOT NULL DEFAULT $hrBaseCalories");
+  await database.execute(
+      "ALTER TABLE `$calorieTuneTableName` ADD COLUMN `hr_based` INTEGER NOT NULL DEFAULT 0");
 });

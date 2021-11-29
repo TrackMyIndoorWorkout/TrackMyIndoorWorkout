@@ -34,6 +34,18 @@ class CsvExport extends ActivityExport {
     _sb.writeln("$SPORT_TAG,${exportModel.activity.sport},");
     _sb.writeln("$POWER_FACTOR,${exportModel.activity.powerFactor},");
     _sb.writeln("$CALORIE_FACTOR,${exportModel.activity.calorieFactor},");
+    _sb.writeln("$HR_CALORIE_FACTOR,${exportModel.activity.hrCalorieFactor},");
+    _sb.writeln("$HR_BASED_CALORIES,${exportModel.activity.hrBasedCalories},");
+    _sb.writeln("$TIME_ZONE,${exportModel.activity.timeZone},");
+    _sb.writeln("$SUUNTO_UPLOADED,${exportModel.activity.suuntoUploaded},");
+    _sb.writeln("$SUUNTO_BLOB_URL,${exportModel.activity.suuntoBlobUrl},");
+    _sb.writeln("$SUUNTO_WORKOUT_URL,${exportModel.activity.suuntoWorkoutUrl},");
+    _sb.writeln("$SUUNTO_UPLOAD_ID,${exportModel.activity.suuntoUploadIdentifier},");
+    _sb.writeln("$UNDER_ARMOUR_UPLOADED,${exportModel.activity.underArmourUploaded},");
+    _sb.writeln("$UA_WORKOUT_ID,${exportModel.activity.uaWorkoutId},");
+    _sb.writeln("$TRAINING_PEAKS_UPLOADED,${exportModel.activity.trainingPeaksUploaded},");
+    _sb.writeln("$TRAINING_PEAKS_ATHLETE_ID,${exportModel.activity.trainingPeaksAthleteId},");
+    _sb.writeln("$TRAINING_PEAKS_WORKOUT_ID,${exportModel.activity.trainingPeaksWorkoutId},");
     _sb.writeln("");
 
     addRideData(exportModel);

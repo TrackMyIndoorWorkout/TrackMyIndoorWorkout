@@ -72,7 +72,7 @@ class _$AppDatabase extends AppDatabase {
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 14,
+      version: 15,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -87,13 +87,13 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `uploaded` INTEGER NOT NULL, `strava_id` INTEGER NOT NULL, `four_cc` TEXT NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL, `time_zone` TEXT NOT NULL, `suunto_uploaded` INTEGER NOT NULL, `suunto_blob_url` TEXT NOT NULL, `under_armour_uploaded` INTEGER NOT NULL, `training_peaks_uploaded` INTEGER NOT NULL, `ua_workout_id` INTEGER NOT NULL, `suunto_upload_id` INTEGER NOT NULL, `suunto_upload_identifier` TEXT NOT NULL, `suunto_workout_url` TEXT NOT NULL, `training_peaks_workout_id` INTEGER NOT NULL, `training_peaks_athlete_id` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `uploaded` INTEGER NOT NULL, `strava_id` INTEGER NOT NULL, `four_cc` TEXT NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL, `hr_calorie_factor` REAL NOT NULL, `hr_based_calories` INTEGER NOT NULL, `time_zone` TEXT NOT NULL, `suunto_uploaded` INTEGER NOT NULL, `suunto_blob_url` TEXT NOT NULL, `under_armour_uploaded` INTEGER NOT NULL, `training_peaks_uploaded` INTEGER NOT NULL, `ua_workout_id` INTEGER NOT NULL, `suunto_upload_id` INTEGER NOT NULL, `suunto_upload_identifier` TEXT NOT NULL, `suunto_workout_url` TEXT NOT NULL, `training_peaks_workout_id` INTEGER NOT NULL, `training_peaks_athlete_id` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `activity_id` INTEGER, `time_stamp` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `power` INTEGER, `speed` REAL, `cadence` INTEGER, `heart_rate` INTEGER, FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `device_usage` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sport` TEXT NOT NULL, `mac` TEXT NOT NULL, `name` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `manufacturer_name` TEXT, `time` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `calorie_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, `calorie_factor` REAL NOT NULL, `time` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `calorie_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, `calorie_factor` REAL NOT NULL, `hr_based` INTEGER NOT NULL, `time` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `power_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, `power_factor` REAL NOT NULL, `time` INTEGER NOT NULL)');
         await database.execute(
@@ -168,6 +168,8 @@ class _$ActivityDao extends ActivityDao {
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
                   'calorie_factor': item.calorieFactor,
+                  'hr_calorie_factor': item.hrCalorieFactor,
+                  'hr_based_calories': item.hrBasedCalories ? 1 : 0,
                   'time_zone': item.timeZone,
                   'suunto_uploaded': item.suuntoUploaded ? 1 : 0,
                   'suunto_blob_url': item.suuntoBlobUrl,
@@ -200,6 +202,8 @@ class _$ActivityDao extends ActivityDao {
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
                   'calorie_factor': item.calorieFactor,
+                  'hr_calorie_factor': item.hrCalorieFactor,
+                  'hr_based_calories': item.hrBasedCalories ? 1 : 0,
                   'time_zone': item.timeZone,
                   'suunto_uploaded': item.suuntoUploaded ? 1 : 0,
                   'suunto_blob_url': item.suuntoBlobUrl,
@@ -232,6 +236,8 @@ class _$ActivityDao extends ActivityDao {
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
                   'calorie_factor': item.calorieFactor,
+                  'hr_calorie_factor': item.hrCalorieFactor,
+                  'hr_based_calories': item.hrBasedCalories ? 1 : 0,
                   'time_zone': item.timeZone,
                   'suunto_uploaded': item.suuntoUploaded ? 1 : 0,
                   'suunto_blob_url': item.suuntoBlobUrl,
@@ -286,6 +292,8 @@ class _$ActivityDao extends ActivityDao {
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
             calorieFactor: row['calorie_factor'] as double,
+            hrCalorieFactor: row['hr_calorie_factor'] as double,
+            hrBasedCalories: (row['hr_based_calories'] as int) != 0,
             timeZone: row['time_zone'] as String));
   }
 
@@ -317,6 +325,8 @@ class _$ActivityDao extends ActivityDao {
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
             calorieFactor: row['calorie_factor'] as double,
+            hrCalorieFactor: row['hr_calorie_factor'] as double,
+            hrBasedCalories: (row['hr_based_calories'] as int) != 0,
             timeZone: row['time_zone'] as String),
         arguments: [id],
         queryableName: 'activities',
@@ -352,6 +362,8 @@ class _$ActivityDao extends ActivityDao {
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
             calorieFactor: row['calorie_factor'] as double,
+            hrCalorieFactor: row['hr_calorie_factor'] as double,
+            hrBasedCalories: (row['hr_based_calories'] as int) != 0,
             timeZone: row['time_zone'] as String),
         arguments: [limit, offset]);
   }
@@ -665,6 +677,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
                   'id': item.id,
                   'mac': item.mac,
                   'calorie_factor': item.calorieFactor,
+                  'hr_based': item.hrBased ? 1 : 0,
                   'time': item.time
                 },
             changeListener),
@@ -676,6 +689,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
                   'id': item.id,
                   'mac': item.mac,
                   'calorie_factor': item.calorieFactor,
+                  'hr_based': item.hrBased ? 1 : 0,
                   'time': item.time
                 },
             changeListener),
@@ -687,6 +701,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
                   'id': item.id,
                   'mac': item.mac,
                   'calorie_factor': item.calorieFactor,
+                  'hr_based': item.hrBased ? 1 : 0,
                   'time': item.time
                 },
             changeListener);
@@ -710,6 +725,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
             id: row['id'] as int?,
             mac: row['mac'] as String,
             calorieFactor: row['calorie_factor'] as double,
+            hrBased: (row['hr_based'] as int) != 0,
             time: row['time'] as int));
   }
 
@@ -720,6 +736,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
             id: row['id'] as int?,
             mac: row['mac'] as String,
             calorieFactor: row['calorie_factor'] as double,
+            hrBased: (row['hr_based'] as int) != 0,
             time: row['time'] as int),
         arguments: [id],
         queryableName: 'calorie_tune',
@@ -729,11 +746,27 @@ class _$CalorieTuneDao extends CalorieTuneDao {
   @override
   Stream<CalorieTune?> findCalorieTuneByMac(String mac) {
     return _queryAdapter.queryStream(
-        'SELECT * FROM `calorie_tune` WHERE `mac` = ?1 ORDER BY `time` DESC LIMIT 1',
+        'SELECT * FROM `calorie_tune` WHERE `mac` = ?1 AND `hr_based` = 0 ORDER BY `time` DESC LIMIT 1',
         mapper: (Map<String, Object?> row) => CalorieTune(
             id: row['id'] as int?,
             mac: row['mac'] as String,
             calorieFactor: row['calorie_factor'] as double,
+            hrBased: (row['hr_based'] as int) != 0,
+            time: row['time'] as int),
+        arguments: [mac],
+        queryableName: 'calorie_tune',
+        isView: false);
+  }
+
+  @override
+  Stream<CalorieTune?> findHrCalorieTuneByMac(String mac) {
+    return _queryAdapter.queryStream(
+        'SELECT * FROM `calorie_tune` WHERE `mac` = ?1 AND `hr_based` = 1 ORDER BY `time` DESC LIMIT 1',
+        mapper: (Map<String, Object?> row) => CalorieTune(
+            id: row['id'] as int?,
+            mac: row['mac'] as String,
+            calorieFactor: row['calorie_factor'] as double,
+            hrBased: (row['hr_based'] as int) != 0,
             time: row['time'] as int),
         arguments: [mac],
         queryableName: 'calorie_tune',
@@ -748,6 +781,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
             id: row['id'] as int?,
             mac: row['mac'] as String,
             calorieFactor: row['calorie_factor'] as double,
+            hrBased: (row['hr_based'] as int) != 0,
             time: row['time'] as int),
         arguments: [limit, offset]);
   }

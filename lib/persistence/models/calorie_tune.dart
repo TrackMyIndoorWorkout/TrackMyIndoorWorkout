@@ -14,6 +14,8 @@ class CalorieTune {
   final String mac;
   @ColumnInfo(name: 'calorie_factor')
   double calorieFactor;
+  @ColumnInfo(name: 'hr_based')
+  bool hrBased;
 
   int time; // ms since epoch
 
@@ -21,6 +23,7 @@ class CalorieTune {
     this.id,
     required this.mac,
     required this.calorieFactor,
+    required this.hrBased,
     required this.time,
   });
 

@@ -9,8 +9,10 @@ import '../../utils/theme_manager.dart';
 class CalorieOverrideBottomSheet extends StatefulWidget {
   final String deviceId;
   final double oldCalories;
+  final bool hrBased;
 
-  CalorieOverrideBottomSheet({Key? key, required this.deviceId, required this.oldCalories})
+  const CalorieOverrideBottomSheet(
+      {Key? key, required this.deviceId, required this.oldCalories, required this.hrBased})
       : super(key: key);
 
   @override
@@ -19,8 +21,8 @@ class CalorieOverrideBottomSheet extends StatefulWidget {
 
 class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> {
   double _newCalorie = 0.0;
-  TextStyle _largerTextStyle = TextStyle();
-  ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = const TextStyle();
+  final _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
@@ -56,8 +58,8 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
         final database = Get.find<AppDatabase>();
         final calorieFactor = _newCalorie / widget.oldCalories;
         CalorieTune? calorieTune;
-        if (await database.hasCalorieTune(widget.deviceId)) {
-          calorieTune = await database.calorieTuneDao.findCalorieTuneByMac(widget.deviceId).first;
+        if (await database.hasCalorieTune(widget.deviceId, widget.hrBased)) {
+          calorieTune = await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
         }
 
         if (calorieTune != null) {
@@ -67,6 +69,7 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
           calorieTune = CalorieTune(
             mac: widget.deviceId,
             calorieFactor: calorieFactor,
+            hrBased: widget.hrBased,
             time: DateTime.now().millisecondsSinceEpoch,
           );
           await database.calorieTuneDao.insertCalorieTune(calorieTune);

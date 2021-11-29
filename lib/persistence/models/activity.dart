@@ -34,6 +34,10 @@ class Activity {
   final double powerFactor;
   @ColumnInfo(name: 'calorie_factor')
   final double calorieFactor;
+  @ColumnInfo(name: 'hr_calorie_factor')
+  final double hrCalorieFactor;
+  @ColumnInfo(name: 'hr_based_calories')
+  final bool hrBasedCalories;
   @ColumnInfo(name: 'time_zone')
   final String timeZone;
   @ColumnInfo(name: 'suunto_uploaded')
@@ -88,6 +92,8 @@ class Activity {
     required this.sport,
     required this.powerFactor,
     required this.calorieFactor,
+    required this.hrCalorieFactor,
+    required this.hrBasedCalories,
     required this.timeZone,
   });
 

@@ -161,7 +161,7 @@ class _ImportFormState extends State<ImportForm> {
                           try {
                             File file = File(_filePath!);
                             String contents = await file.readAsString();
-                            final importer = CSVImporter(widget.migration, _activityDateTime);
+                            final importer = CSVImporter(_activityDateTime);
                             var activity = await importer.import(contents, setProgress);
                             setState(() {
                               _isLoading = false;

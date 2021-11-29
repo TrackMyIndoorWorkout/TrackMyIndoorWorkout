@@ -80,6 +80,8 @@ void main() {
       final calPerHour = (1.0 + value) * (60 * 60);
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
       const seconds = 60;
       test('$calPerHour $powerFactor $calorieFactor', () async {
         await initPrefServiceForTest();
@@ -94,6 +96,8 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
           calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(
@@ -123,6 +127,8 @@ void main() {
       final descriptor = deviceMap["SIC4"]!;
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
       final power = ((150 + pow) / J_TO_KCAL).floor();
       test('$power', () async {
         await initPrefServiceForTest();
@@ -136,6 +142,8 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
           calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(
@@ -163,6 +171,8 @@ void main() {
     getRandomInts(SMALL_REPETITION, 300, rnd).forEach((calories) {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
       test('$calories', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
@@ -176,6 +186,8 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
           calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(
@@ -203,6 +215,8 @@ void main() {
     getRandomDoubles(SMALL_REPETITION, 10, rnd).forEach((speed) {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
       test('$speed', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
@@ -216,6 +230,8 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
           calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(
@@ -242,6 +258,8 @@ void main() {
     getRandomDoubles(SMALL_REPETITION, 1000, rnd).forEach((distance) {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
       test('$distance', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
@@ -255,6 +273,8 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
           calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(

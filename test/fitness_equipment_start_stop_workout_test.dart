@@ -45,6 +45,7 @@ void main() {
     getRandomInts(SMALL_REPETITION, 300, rnd).forEach((calories) {
       test('$calories', () async {
         await initPrefServiceForTest();
+        final hrBasedCalories = rnd.nextBool();
         final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
         final descriptor = deviceMap["SIC4"]!;
         final activity = Activity(
@@ -56,6 +57,8 @@ void main() {
           sport: descriptor.defaultSport,
           powerFactor: 1.0,
           calorieFactor: 1.0,
+          hrCalorieFactor: 1.0,
+          hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());

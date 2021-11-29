@@ -168,7 +168,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           }
           Get.bottomSheet(
             CalorieOverrideBottomSheet(
-                deviceId: activity.deviceId, oldCalories: activity.calories.toDouble()),
+              deviceId: activity.deviceId,
+              oldCalories: activity.calories.toDouble(),
+              hrBased: activity.hrBasedCalories,
+            ),
             enableDrag: false,
           );
         },

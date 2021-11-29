@@ -43,6 +43,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
               CalorieFactorTuneBottomSheet(
                 deviceId: calorieTune.mac,
                 oldCalorieFactor: calorieTune.calorieFactor,
+                hrBased: calorieTune.hrBased,
               ),
               enableDrag: false,
             );
@@ -116,6 +117,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
           final timeStamp = DateTime.fromMillisecondsSinceEpoch(calorieTune.time);
           final dateString = DateFormat.yMd().format(timeStamp);
           final timeString = DateFormat.Hms().format(timeStamp);
+          final hrBasedString = calorieTune.hrBased ? "HR based" : "Non HR based";
           final caloriePercent = (calorieTune.calorieFactor * 100).round();
           return Card(
             elevation: 6,
@@ -156,6 +158,16 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
                       children: [
                         _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
                         Text(timeString, style: _textStyle),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        calorieTune.hrBased
+                            ? _themeManager.getBlueIcon(Icons.favorite, _sizeDefault)
+                            : _themeManager.getGreyIcon(Icons.favorite, _sizeDefault),
+                        Text(hrBasedString, style: _textStyle),
                       ],
                     ),
                     _actionButtonRow(calorieTune, _sizeDefault),

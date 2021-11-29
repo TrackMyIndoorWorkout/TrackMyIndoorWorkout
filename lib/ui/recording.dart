@@ -128,6 +128,7 @@ class RecordingState extends State<RecordingScreen> {
   int _hrBeepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT;
   bool _targetHrAudio = TARGET_HEART_RATE_AUDIO_DEFAULT;
   bool _targetHrAlerting = false;
+  bool _hrBasedCalorieCounting = USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
   bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
   bool _rankingForDevice = RANKING_FOR_DEVICE_DEFAULT;
   List<WorkoutSummary> _deviceLeaderboard = [];
@@ -191,6 +192,7 @@ class RecordingState extends State<RecordingScreen> {
     final now = DateTime.now();
     final powerFactor = await _database.powerFactor(widget.device.id.id);
     final calorieFactor = await _database.calorieFactor(widget.device.id.id, widget.descriptor);
+    final hrCalorieFactor = await _database.hrCalorieFactor(widget.device.id.id, widget.descriptor);
     _activity = Activity(
       fourCC: widget.descriptor.fourCC,
       deviceName: widget.device.name,
@@ -200,6 +202,8 @@ class RecordingState extends State<RecordingScreen> {
       sport: widget.descriptor.defaultSport,
       powerFactor: powerFactor,
       calorieFactor: calorieFactor,
+      hrCalorieFactor: hrCalorieFactor,
+      hrBasedCalories: _hrBasedCalorieCounting,
       timeZone: await getTimeZone(),
     );
     if (!_uxDebug) {
@@ -424,8 +428,7 @@ class RecordingState extends State<RecordingScreen> {
     );
     _trackLength = trackLength * widget.descriptor.lengthFactor;
     _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
-        DISTANCE_RESOLUTION_DEFAULT;
+    _highRes = prefService.get<bool>(DISTANCE_RESOLUTION_TAG) ?? DISTANCE_RESOLUTION_DEFAULT;
     _simplerUi = prefService.get<bool>(SIMPLER_UI_TAG) ?? SIMPLER_UI_SLOW_DEFAULT;
     _instantUpload = prefService.get<bool>(INSTANT_UPLOAD_TAG) ?? INSTANT_UPLOAD_DEFAULT;
     _pointCount = min(60, size.width ~/ 2);
@@ -474,6 +477,9 @@ class RecordingState extends State<RecordingScreen> {
         Get.put<SoundService>(SoundService(), permanent: true);
       }
     }
+
+    _hrBasedCalorieCounting = prefService.get<bool>(USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG) ??
+        USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
 
     _metricToDataFn = {
       "power": _powerChartData,

@@ -4,12 +4,13 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
-import '../ui/import_form.dart';
-import '../utils/constants.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../ui/import_form.dart';
+import '../utils/constants.dart';
+import '../utils/hr_based_calories.dart';
 import '../utils/time_zone.dart';
 import 'constants.dart';
 
@@ -71,14 +72,15 @@ class CSVImporter {
   static const AIR_DENSITY = 0.076537 * LB_TO_KG / (FT_TO_M * FT_TO_M * FT_TO_M);
 
   DateTime? start;
-  final bool migration;
   String message = "";
 
   List<String> _lines = [];
   int _linePointer = 0;
+  bool _migration = false;
+  int _version = CSV_VERSION;
   final Map<int, double> _velocityForPowerDict = <int, double>{};
 
-  CSVImporter(this.migration, this.start);
+  CSVImporter(this.start);
 
   bool _findLine(String lead) {
     while (_linePointer < _lines.length && !_lines[_linePointer].startsWith(lead)) {
@@ -137,6 +139,22 @@ class CSVImporter {
     }
 
     _linePointer = 0;
+    final firstLine = _lines[0].split(",");
+    if (firstLine.length > 1) {
+      if (firstLine[0] != CSV_MAGIC) {
+        message = "Cannot recognize migration CSV magic";
+        return null;
+      }
+
+      if (!firstLine[1].isNumericOnly) {
+        message = "CSV version number is not an integer";
+        return null;
+      }
+
+      _migration = true;
+      _version = int.parse(firstLine[1]);
+    }
+
     if (!_findLine(RIDE_SUMMARY)) {
       message = "Cannot locate $RIDE_SUMMARY";
       return null;
@@ -184,6 +202,8 @@ class CSVImporter {
       totalDistance = distanceValue;
     }
 
+    final prefService = Get.find<BasePrefService>();
+
     var deviceName = "";
     var deviceId = MPOWER_IMPORT_DEVICE_ID;
     var startTime = 0;
@@ -194,8 +214,21 @@ class CSVImporter {
     var fourCC = "SAP+";
     var sport = ActivityType.Ride;
     var calorieFactor = 1.0;
+    var hrCalorieFactor = 1.0;
+    var hrBasedCalories = false;
     var powerFactor = 1.0;
-    if (migration) {
+    var timeZone = await getTimeZone();
+    var suuntoUploaded = false;
+    var suuntoBlobUrl = "";
+    var suuntoWorkoutUrl = "";
+    var suuntoUploadIdentifier = "";
+    var underArmourUploaded = false;
+    var uaWorkoutId = 0;
+    var trainingPeaksUploaded = false;
+    var trainingPeaksAthleteId = 0;
+    var trainingPeaksWorkoutId = 0;
+
+    if (_migration) {
       _linePointer++;
       final deviceNameLine = _lines[_linePointer].split(",");
       if (deviceNameLine[0].trim() != DEVICE_NAME) {
@@ -314,6 +347,130 @@ class CSVImporter {
       }
 
       calorieFactor = double.tryParse(calorieFactorLine[1]) ?? 1.0;
+
+      _linePointer++;
+
+      if (_version > 1) {
+        final hrCalorieFactorLine = _lines[_linePointer].split(",");
+        if (hrCalorieFactorLine[0].trim() != HR_CALORIE_FACTOR) {
+          message = "Couldn't parse $HR_CALORIE_FACTOR";
+          return null;
+        }
+
+        hrCalorieFactor = double.tryParse(hrCalorieFactorLine[1]) ?? 1.0;
+
+        _linePointer++;
+
+        final hrBasedCaloriesLine = _lines[_linePointer].split(",");
+        if (hrBasedCaloriesLine[0].trim() != HR_BASED_CALORIES) {
+          message = "Couldn't parse $HR_BASED_CALORIES";
+          return null;
+        }
+
+        hrBasedCalories = hrBasedCaloriesLine[1].trim().toLowerCase() == "true";
+
+        _linePointer++;
+
+        final timeZoneLine = _lines[_linePointer].split(",");
+        if (timeZoneLine[0].trim() != TIME_ZONE) {
+          message = "Couldn't parse $TIME_ZONE";
+          return null;
+        }
+
+        timeZone = timeZoneLine[1].trim();
+
+        _linePointer++;
+
+        final suuntoUploadedLine = _lines[_linePointer].split(",");
+        if (suuntoUploadedLine[0].trim() != SUUNTO_UPLOADED) {
+          message = "Couldn't parse $SUUNTO_UPLOADED";
+          return null;
+        }
+
+        suuntoUploaded = suuntoUploadedLine[1].trim().toLowerCase() == "true";
+
+        _linePointer++;
+
+        final suuntoBlobUrlLine = _lines[_linePointer].split(",");
+        if (suuntoBlobUrlLine[0].trim() != SUUNTO_BLOB_URL) {
+          message = "Couldn't parse $SUUNTO_BLOB_URL";
+          return null;
+        }
+
+        suuntoBlobUrl = suuntoBlobUrlLine[1].trim();
+
+        _linePointer++;
+
+        final suuntoWorkoutUrlLine = _lines[_linePointer].split(",");
+        if (suuntoWorkoutUrlLine[0].trim() != SUUNTO_WORKOUT_URL) {
+          message = "Couldn't parse $SUUNTO_WORKOUT_URL";
+          return null;
+        }
+
+        suuntoWorkoutUrl = suuntoWorkoutUrlLine[1].trim();
+
+        _linePointer++;
+
+        final suuntoUploadIdLine = _lines[_linePointer].split(",");
+        if (suuntoUploadIdLine[0].trim() != SUUNTO_UPLOAD_ID) {
+          message = "Couldn't parse $SUUNTO_UPLOAD_ID";
+          return null;
+        }
+
+        suuntoUploadIdentifier = suuntoUploadIdLine[1].trim();
+
+        _linePointer++;
+
+        final auUploadedLine = _lines[_linePointer].split(",");
+        if (auUploadedLine[0].trim() != UNDER_ARMOUR_UPLOADED) {
+          message = "Couldn't parse $UNDER_ARMOUR_UPLOADED";
+          return null;
+        }
+
+        underArmourUploaded = auUploadedLine[1].trim().toLowerCase() == "true";
+
+        _linePointer++;
+
+        final auWorkoutIdLine = _lines[_linePointer].split(",");
+        if (auWorkoutIdLine[0].trim() != UA_WORKOUT_ID) {
+          message = "Couldn't parse $UA_WORKOUT_ID";
+          return null;
+        }
+
+        uaWorkoutId = int.tryParse(auWorkoutIdLine[1]) ?? 0;
+
+        _linePointer++;
+
+        final tpUploadedLine = _lines[_linePointer].split(",");
+        if (tpUploadedLine[0].trim() != TRAINING_PEAKS_UPLOADED) {
+          message = "Couldn't parse $TRAINING_PEAKS_UPLOADED";
+          return null;
+        }
+
+        trainingPeaksUploaded = tpUploadedLine[1].trim().toLowerCase() == "true";
+
+        _linePointer++;
+
+        final tpAthleteIdLine = _lines[_linePointer].split(",");
+        if (tpAthleteIdLine[0].trim() != TRAINING_PEAKS_ATHLETE_ID) {
+          message = "Couldn't parse $TRAINING_PEAKS_ATHLETE_ID";
+          return null;
+        }
+
+        trainingPeaksAthleteId = int.tryParse(tpAthleteIdLine[1]) ?? 0;
+
+        _linePointer++;
+
+        final tpWorkoutIdLine = _lines[_linePointer].split(",");
+        if (tpWorkoutIdLine[0].trim() != TRAINING_PEAKS_WORKOUT_ID) {
+          message = "Couldn't parse $TRAINING_PEAKS_WORKOUT_ID";
+          return null;
+        }
+
+        trainingPeaksWorkoutId = int.tryParse(tpWorkoutIdLine[1]) ?? 0;
+
+        _linePointer++;
+      }
     } else {
       DeviceDescriptor device = deviceMap[SCHWINN_AC_PERF_PLUS_FOURCC]!;
       device.refreshTuning(deviceId);
@@ -321,6 +478,9 @@ class CSVImporter {
       fourCC = device.fourCC;
       sport = device.defaultSport;
       calorieFactor = device.calorieFactor;
+      hrCalorieFactor = device.hrCalorieFactor;
+      hrBasedCalories = prefService.get<bool>(USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG) ??
+          USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
       powerFactor = device.powerFactor;
       startTime = start!.millisecondsSinceEpoch;
       endTime = start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch;
@@ -341,7 +501,7 @@ class CSVImporter {
       message = "Unexpected detailed ride data format";
       return null;
     }
-    if (migration &&
+    if (_migration &&
         (rideDataHeader[4].trim() != TIME_STAMP ||
             rideDataHeader[5].trim() != ELAPSED ||
             rideDataHeader[6].trim() != SPEED ||
@@ -364,11 +524,21 @@ class CSVImporter {
       fourCC: fourCC,
       sport: sport,
       calorieFactor: calorieFactor,
+      hrCalorieFactor: hrCalorieFactor,
+      hrBasedCalories: hrBasedCalories,
       powerFactor: powerFactor,
-      timeZone: await getTimeZone(),
+      timeZone: timeZone,
+      suuntoUploaded: suuntoUploaded,
+      suuntoBlobUrl: suuntoBlobUrl,
+      suuntoWorkoutUrl: suuntoWorkoutUrl,
+      suuntoUploadIdentifier: suuntoUploadIdentifier,
+      underArmourUploaded: underArmourUploaded,
+      uaWorkoutId: uaWorkoutId,
+      trainingPeaksUploaded: trainingPeaksUploaded,
+      trainingPeaksAthleteId: trainingPeaksAthleteId,
+      trainingPeaksWorkoutId: trainingPeaksWorkoutId,
     );
 
-    final prefService = Get.find<BasePrefService>();
     final extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
     final database = Get.find<AppDatabase>();
     final id = await database.activityDao.insertActivity(activity);
@@ -377,7 +547,7 @@ class CSVImporter {
     final numRow = _lines.length - _linePointer;
     _linePointer++;
 
-    if (migration) {
+    if (_migration) {
       int progressSteps = numRow ~/ PROGRESS_STEPS;
       int progressCounter = 0;
       int recordCounter = 0;
@@ -431,6 +601,14 @@ class CSVImporter {
           prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
       String heartRateLimitingMethod =
           prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+
+      bool useHrBasedCalorieCounting = hrBasedCalories;
+      int weight = prefService.get<int>(ATHLETE_BODY_WEIGHT_INT_TAG) ?? ATHLETE_BODY_WEIGHT_DEFAULT;
+      int age = prefService.get<int>(ATHLETE_AGE_TAG) ?? ATHLETE_AGE_DEFAULT;
+      bool isMale = (prefService.get<String>(ATHLETE_GENDER_TAG) ?? ATHLETE_GENDER_DEFAULT) ==
+          ATHLETE_GENDER_MALE;
+      int vo2Max = prefService.get<int>(ATHLETE_VO2MAX_TAG) ?? ATHLETE_VO2MAX_DEFAULT;
+      useHrBasedCalorieCounting &= (weight > ATHLETE_BODY_WEIGHT_MIN && age > ATHLETE_AGE_MIN);
 
       while (_linePointer < _lines.length) {
         WorkoutRow row = nextRow ??
@@ -492,7 +670,15 @@ class CSVImporter {
           );
 
           distance += dDistance;
-          final dEnergy = power * milliSecondsPerRecord / 1000 * J_TO_KCAL * calorieFactor;
+          double dEnergy = 0.0;
+          if (useHrBasedCalorieCounting && row.heartRate > 0) {
+            dEnergy = hrBasedCaloriesPerMinute(row.heartRate, weight, age, isMale, vo2Max) *
+                milliSecondsPerRecord /
+                (1000 * 60) *
+                hrCalorieFactor;
+          } else {
+            dEnergy = power * milliSecondsPerRecord / 1000 * J_TO_KCAL * calorieFactor;
+          }
           energy += dEnergy;
           await database.recordDao.insertRecord(record);
 

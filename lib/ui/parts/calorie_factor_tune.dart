@@ -9,9 +9,10 @@ import '../../utils/theme_manager.dart';
 class CalorieFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
   final double oldCalorieFactor;
+  final bool hrBased;
 
   const CalorieFactorTuneBottomSheet(
-      {Key? key, required this.deviceId, required this.oldCalorieFactor})
+      {Key? key, required this.deviceId, required this.oldCalorieFactor, required this.hrBased})
       : super(key: key);
 
   @override
@@ -21,7 +22,7 @@ class CalorieFactorTuneBottomSheet extends StatefulWidget {
 class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomSheet> {
   double _calorieFactorPercent = 100.0;
   TextStyle _largerTextStyle = const TextStyle();
-  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  final _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
@@ -57,8 +58,8 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
         final database = Get.find<AppDatabase>();
         final calorieFactor = _calorieFactorPercent / 100.0;
         CalorieTune? calorieTune;
-        if (await database.hasCalorieTune(widget.deviceId)) {
-          calorieTune = await database.calorieTuneDao.findCalorieTuneByMac(widget.deviceId).first;
+        if (await database.hasCalorieTune(widget.deviceId, widget.hrBased)) {
+          calorieTune = await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
         }
 
         if (calorieTune != null) {
@@ -68,6 +69,7 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
           calorieTune = CalorieTune(
             mac: widget.deviceId,
             calorieFactor: calorieFactor,
+            hrBased: widget.hrBased,
             time: DateTime.now().millisecondsSinceEpoch,
           );
           await database.calorieTuneDao.insertCalorieTune(calorieTune);

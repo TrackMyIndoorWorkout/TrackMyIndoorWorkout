@@ -46,6 +46,8 @@ abstract class DeviceDescriptor {
   // Adjusting skewed calories
   double calorieFactorDefault;
   double calorieFactor = 1.0;
+  double hrCalorieFactorDefault;
+  double hrCalorieFactor = 1.0;
   // Adjusting skewed distance
   double powerFactor = 1.0;
   bool extendTuning = EXTEND_TUNING_DEFAULT;
@@ -73,8 +75,10 @@ abstract class DeviceDescriptor {
     this.cadenceMetric,
     this.distanceMetric,
     this.calorieFactorDefault = 1.0,
+    this.hrCalorieFactorDefault = 1.0,
   }) {
     calorieFactor = calorieFactorDefault;
+    hrCalorieFactor = hrCalorieFactorDefault;
   }
 
   String get fullName => '$vendorName $modelName';
@@ -105,6 +109,7 @@ abstract class DeviceDescriptor {
   refreshTuning(String deviceId) async {
     final database = Get.find<AppDatabase>();
     calorieFactor = await database.calorieFactor(deviceId, this);
+    hrCalorieFactor = await database.hrCalorieFactor(deviceId, this);
     powerFactor = await database.powerFactor(deviceId);
     final prefService = Get.find<BasePrefService>();
     extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;

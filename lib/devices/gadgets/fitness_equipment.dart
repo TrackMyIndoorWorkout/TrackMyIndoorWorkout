@@ -13,6 +13,7 @@ import '../../persistence/preferences.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
+import '../../utils/hr_based_calories.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../bluetooth_device_ex.dart';
 import '../gatt_constants.dart';
@@ -67,6 +68,7 @@ class FitnessEquipment extends DeviceBase {
   String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.Ride);
   double get powerFactor => _activity?.powerFactor ?? (descriptor?.powerFactor ?? 1.0);
   double get calorieFactor => _activity?.calorieFactor ?? (descriptor?.calorieFactor ?? 1.0);
+  double get hrCalorieFactor => _activity?.hrCalorieFactor ?? (descriptor?.hrCalorieFactor ?? 1.0);
   double get residueCalories => _residueCalories;
   double get lastPositiveCalories => _lastPositiveCalories;
 
@@ -175,26 +177,6 @@ class FitnessEquipment extends DeviceBase {
     equipmentDiscovery = false;
     return manufacturerName!.contains(descriptor!.manufacturerPrefix) ||
         descriptor!.manufacturerPrefix == "Unknown";
-  }
-
-  // Based on https://www.braydenwm.com/calburn.htm
-  double _caloriesPerMinute(int heartRate) {
-    if (_vo2Max > ATHLETE_VO2MAX_MIN) {
-      if (_isMale) {
-        return (-59.3954 +
-                (-36.3781 + 0.271 * _age + 0.394 * _weight + 0.404 * _vo2Max + 0.634 * heartRate)) /
-            4.184;
-      } else {
-        return (-59.3954 + (0.274 * _age + 0.103 * _weight + 0.380 * _vo2Max + 0.450 * heartRate)) /
-            4.184;
-      }
-    } else {
-      if (_isMale) {
-        return (-55.0969 + 0.6309 * heartRate + 0.1988 * _weight + 0.2017 * _age) / 4.184;
-      } else {
-        return (-20.4022 + 0.4472 * heartRate - 0.1263 * _weight + 0.074 * _age) / 4.184;
-      }
-    }
   }
 
   Record processRecord(Record stub) {
@@ -322,7 +304,9 @@ class FitnessEquipment extends DeviceBase {
     } else {
       var deltaCalories = 0.0;
       if (_useHrBasedCalorieCounting && stub.heartRate != null && stub.heartRate! > 0) {
-        stub.caloriesPerMinute = _caloriesPerMinute(stub.heartRate!) * calorieFactor;
+        stub.caloriesPerMinute =
+            hrBasedCaloriesPerMinute(stub.heartRate!, _weight, _age, _isMale, _vo2Max) *
+                hrCalorieFactor;
       }
 
       if (deltaCalories < EPS && stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
