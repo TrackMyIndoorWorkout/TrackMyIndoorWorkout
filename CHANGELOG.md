@@ -1,8 +1,8 @@
 ## 1.1.86
 
-Update the check-mark and open icons immediately when Strava upload finishes
-(right now it requires the upload bottom shelf to be cloed and reopened).
-Fix activity timestamp problem of SUUNTO workout uploads.
+* Update the check-mark and open icons immediately when Strava upload finishes
+  (right now it requires the upload bottom shelf to be closed and reopened).
+* Fix activity timestamp problem of SUUNTO workout uploads.
 
 ## 1.1.85
 
