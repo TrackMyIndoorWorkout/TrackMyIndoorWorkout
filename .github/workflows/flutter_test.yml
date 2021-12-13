@@ -14,6 +14,6 @@ jobs:
         with:
           channel: 'stable' # or: 'beta', 'dev' or 'master'
       - run: flutter pub get
-      - run: echo 'const STRAVA_SECRET="a";const STRAVA_CLIENT_ID="1";const SUUNTO_SECRET="a";const SUUNTO_CLIENT_ID="a";const SUUNTO_SUBSCRIPTION_PRIMARY_KEY="a";const SUUNTO_SUBSCRIPTION_SECONDARY_KEY="a";const UNDER_ARMOUR_SECRET = 'a'; const UNDER_ARMOUR_KEY = 'a'; const TRAINING_PEAKS_SECRET="a";const TRAINING_PEAKS_CLIENT_ID="a";const GOOGLE_FIT_CLIENT_ID="a";const GOOGLE_FIT_SECRET="a";' > lib/persistence/secret.dart
+      - run: echo 'const STRAVA_SECRET="a";const STRAVA_CLIENT_ID="1";const SUUNTO_SECRET="a";const SUUNTO_CLIENT_ID="a";const SUUNTO_SUBSCRIPTION_PRIMARY_KEY="a";const SUUNTO_SUBSCRIPTION_SECONDARY_KEY="a";const UNDER_ARMOUR_SECRET="a";const UNDER_ARMOUR_KEY="a";const TRAINING_PEAKS_SECRET="a";const TRAINING_PEAKS_CLIENT_ID="a";const GOOGLE_FIT_CLIENT_ID="a";const GOOGLE_FIT_SECRET="a";' > lib/persistence/secret.dart
       - run: flutter test
       - run: flutter build appbundle
