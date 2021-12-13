@@ -1,5 +1,11 @@
 name: Flutter Test & Build
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 jobs:
   flutter_test:
     runs-on: ubuntu-latest
