@@ -9,7 +9,7 @@ import 'device_descriptors/treadmill_device_descriptor.dart';
 
 const MPOWER_IMPORT_DEVICE_ID = "MPowerImport";
 const PRECOR_SPINNER_CHRONO_POWER_FOURCC = "PSCP";
-const SCHWINN_IC4_BIKE_FOURCC = "SIC4";
+const SCHWINN_IC_BIKE_FOURCC = "SIC4";
 const BOWFLEX_C7_BIKE_FOURCC = "BFC7";
 const SCHWINN_UPRIGHT_BIKE_FOURCC = "S130";
 const SCHWINN_AC_PERF_PLUS_FOURCC = "SAP+";
@@ -25,8 +25,8 @@ const GENERIC_FTMS_ELLIPTICAL_FOURCC = "GXtr";
 
 Map<String, DeviceDescriptor> deviceMap = {
   PRECOR_SPINNER_CHRONO_POWER_FOURCC: PrecorSpinnerChronoPower(),
-  SCHWINN_IC4_BIKE_FOURCC: IndoorBikeDeviceDescriptor(
-    fourCC: SCHWINN_IC4_BIKE_FOURCC,
+  SCHWINN_IC_BIKE_FOURCC: IndoorBikeDeviceDescriptor(
+    fourCC: SCHWINN_IC_BIKE_FOURCC,
     vendorName: "Nautilus, Inc",
     modelName: "Schwinn IC4/IC8",
     namePrefixes: ["IC Bike"],
