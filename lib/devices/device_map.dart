@@ -9,7 +9,8 @@ import 'device_descriptors/treadmill_device_descriptor.dart';
 
 const MPOWER_IMPORT_DEVICE_ID = "MPowerImport";
 const PRECOR_SPINNER_CHRONO_POWER_FOURCC = "PSCP";
-const SCHWINN_IC_BIKE_FOURCC = "SIC4";
+const SCHWINN_IC4_BIKE_FOURCC = "SIC4";
+const BOWFLEX_C7_BIKE_FOURCC = "BFC7";
 const SCHWINN_UPRIGHT_BIKE_FOURCC = "S130";
 const SCHWINN_AC_PERF_PLUS_FOURCC = "SAP+";
 const KAYAK_PRO_GENESIS_PORT_FOURCC = "KPro";
@@ -24,8 +25,8 @@ const GENERIC_FTMS_ELLIPTICAL_FOURCC = "GXtr";
 
 Map<String, DeviceDescriptor> deviceMap = {
   PRECOR_SPINNER_CHRONO_POWER_FOURCC: PrecorSpinnerChronoPower(),
-  SCHWINN_IC_BIKE_FOURCC: IndoorBikeDeviceDescriptor(
-    fourCC: SCHWINN_IC_BIKE_FOURCC,
+  SCHWINN_IC4_BIKE_FOURCC: IndoorBikeDeviceDescriptor(
+    fourCC: SCHWINN_IC4_BIKE_FOURCC,
     vendorName: "Nautilus, Inc",
     modelName: "Schwinn IC4/IC8",
     namePrefixes: ["IC Bike"],
@@ -34,14 +35,24 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: "IC BIKE",
     calorieFactorDefault: 3.60,
   ),
+  BOWFLEX_C7_BIKE_FOURCC: IndoorBikeDeviceDescriptor(
+    fourCC: BOWFLEX_C7_BIKE_FOURCC,
+    vendorName: "Nautilus Inc.",
+    modelName: "Bowflex C7",
+    namePrefixes: ["C7-"],
+    manufacturerPrefix: "Nautilus",
+    manufacturerFitId: nautilusFitId,
+    model: "Bowflex C7",
+    calorieFactorDefault: 3.60,
+  ),
   SCHWINN_UPRIGHT_BIKE_FOURCC: IndoorBikeDeviceDescriptor(
-    fourCC: SCHWINN_IC_BIKE_FOURCC,
+    fourCC: SCHWINN_UPRIGHT_BIKE_FOURCC,
     vendorName: "Nautilus, Inc",
-    modelName: "Schwinn 130/170/510",
+    modelName: "Schwinn 230/510",
     namePrefixes: ["SCH130", "SCH170"],
     manufacturerPrefix: "Nautilus",
     manufacturerFitId: nautilusFitId,
-    model: "SCH 130 BIKE",
+    model: "SCH BIKE",
     calorieFactorDefault: 1.00,
   ),
   SCHWINN_AC_PERF_PLUS_FOURCC: SchwinnACPerformancePlus(),
