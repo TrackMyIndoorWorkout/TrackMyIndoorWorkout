@@ -261,7 +261,7 @@ packages:
       name: file_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.2.8"
+    version: "4.3.0"
   fixnum:
     dependency: transitive
     description:
@@ -958,14 +958,14 @@ packages:
       name: syncfusion_flutter_charts
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.3.59"
+    version: "19.4.38"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.3.59"
+    version: "19.4.38"
   synchronized:
     dependency: transitive
     description:
