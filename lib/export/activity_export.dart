@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
-import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/preferences.dart';
@@ -87,7 +86,7 @@ abstract class ActivityExport {
     int exportTarget,
   ) async {
     activity.hydrate();
-    final descriptor = deviceMap[activity.fourCC] ?? genericDescriptorForSport(activity.sport);
+    final descriptor = activity.deviceDescriptor();
     final track = getDefaultTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     final exportRecords = records.map((r) {

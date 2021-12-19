@@ -1,4 +1,6 @@
 import 'package:floor/floor.dart';
+import '../../devices/device_descriptors/device_descriptor.dart';
+import '../../devices/device_map.dart';
 import '../../persistence/preferences.dart';
 import '../../upload/constants.dart';
 import '../../utils/display.dart' as display;
@@ -183,6 +185,15 @@ class Activity {
   Activity hydrate() {
     startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
     return this;
+  }
+
+  DeviceDescriptor deviceDescriptor() {
+    return deviceMap[fourCC] ?? genericDescriptorForSport(sport);
+  }
+
+  double defaultCalorieFactor() {
+    final descriptor = deviceDescriptor();
+    return hrBasedCalories ? descriptor.hrCalorieFactorDefault : descriptor.calorieFactorDefault;
   }
 
   WorkoutSummary getWorkoutSummary(String manufacturer) {
