@@ -17,6 +17,7 @@ class FitDefinitionMessageTest extends FitDefinitionMessage {
   FitDefinitionMessageTest({localMessageType, globalMessageNumber})
       : super(localMessageType, globalMessageNumber);
 
+  @override
   List<int> serializeData(dynamic parameter) {
     return super.binarySerialize();
   }
@@ -38,11 +39,12 @@ class FitStringFieldTest extends FitDefinitionMessage {
   }) : super(localMessageType, globalMessageNumber) {
     fields = [
       FitField(definitionNumber, FitBaseTypes.uint8Type),
-      FitStringField(definitionNumber + 1, this.text.length),
+      FitStringField(definitionNumber + 1, text.length),
       FitField(definitionNumber + 2, FitBaseTypes.uint8Type),
     ];
   }
 
+  @override
   List<int> serializeData(dynamic parameter) {
     var data = FitData();
     data.output = [localMessageType, 0];

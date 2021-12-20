@@ -235,13 +235,10 @@ abstract class Auth {
     var returnToken = RefreshAnswer();
 
     debugPrint('Entering getNewAccessToken');
-
-    final tokenRefreshUrl = TOKEN_ENDPOINT;
-
-    debugPrint('urlRefresh $tokenRefreshUrl $refreshToken');
+    debugPrint('urlRefresh $TOKEN_ENDPOINT $refreshToken');
 
     final refreshResponse = await http.post(
-      Uri.parse(tokenRefreshUrl),
+      Uri.parse(TOKEN_ENDPOINT),
       headers: {
         "Accept": "application/json",
         "Api-Key": clientId,
@@ -277,13 +274,10 @@ abstract class Auth {
     var answer = UnderArmourToken();
 
     debugPrint('Entering getUnderArmourToken!!');
-
-    final tokenRequestUrl = TOKEN_ENDPOINT;
-
-    debugPrint('urlToken $tokenRequestUrl');
+    debugPrint('urlToken $TOKEN_ENDPOINT');
 
     final tokenResponse = await http.post(
-      Uri.parse(tokenRequestUrl),
+      Uri.parse(TOKEN_ENDPOINT),
       headers: {
         "Accept": "application/json",
         "Api-Key": clientId,

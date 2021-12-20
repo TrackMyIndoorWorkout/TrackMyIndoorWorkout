@@ -3,66 +3,66 @@ import 'package:track_my_indoor_exercise/persistence/palettes.dart';
 
 void main() {
   group('sevenLightBgPalette test', () {
-    sevenLightBgPalette.forEach((color) {
+    for (var color in sevenLightBgPalette) {
       test("$color", () async {
         expect(color.toString().length, greaterThan(0));
       });
-    });
+    }
   });
 
   group('sevenDarkBgPalette test', () {
-    sevenDarkBgPalette.forEach((color) {
+    for (var color in sevenDarkBgPalette) {
       test("$color", () async {
         expect(color.toString().length, greaterThan(0));
       });
-    });
+    }
   });
 
   group('sevenLightFgPalette test', () {
-    sevenLightFgPalette.forEach((color) {
+    for (var color in sevenLightFgPalette) {
       test("$color", () async {
         expect(color.toString().length, greaterThan(0));
       });
-    });
+    }
   });
 
   group('sevenDarkFgPalette test', () {
-    sevenDarkFgPalette.forEach((color) {
+    for (var color in sevenDarkFgPalette) {
       test("$color", () async {
         expect(color.toString().length, greaterThan(0));
       });
-    });
+    }
   });
 
   group('fiveLightBgPalette test', () {
-    fiveLightBgPalette.forEach((color) {
+    for (var color in fiveLightBgPalette) {
       test("$color", () async {
         expect(color.toString().length, greaterThan(0));
       });
-    });
+    }
   });
 
   group('fiveDarkBgPalette test', () {
-    fiveDarkBgPalette.forEach((color) {
+    for (var color in fiveDarkBgPalette) {
       test("$color", () async {
         expect(color.toString().length, greaterThan(0));
       });
-    });
+    }
   });
 
   group('fiveLightFgPalette test', () {
-    fiveLightFgPalette.forEach((color) {
+    for (var color in fiveLightFgPalette) {
       test("$color", () async {
         expect(color.toString().length, greaterThan(0));
       });
-    });
+    }
   });
 
   group('fiveDarkFgPalette test', () {
-    fiveDarkFgPalette.forEach((color) {
+    for (var color in fiveDarkFgPalette) {
       test("$color", () async {
         expect(color.toString().length, greaterThan(0));
       });
-    });
+    }
   });
 }

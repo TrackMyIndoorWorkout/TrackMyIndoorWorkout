@@ -441,6 +441,6 @@ Future<bool> getSimplerUiDefault() async {
 
 extension DurationDisplay on Duration {
   String toDisplay() {
-    return this.toString().split('.').first.padLeft(8, "0");
+    return toString().split('.').first.padLeft(8, "0");
   }
 }

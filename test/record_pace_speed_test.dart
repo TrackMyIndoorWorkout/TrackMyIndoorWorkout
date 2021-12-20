@@ -24,14 +24,14 @@ void main() {
       [12.0, 5.0],
       [15.0, 4.0],
     ];
-    paces.forEach((pacePair) {
+    for (var pacePair in paces) {
       final expected = pacePair[1];
-      [ActivityType.Run, ActivityType.VirtualRun].forEach((sport) {
+      for (var sport in [ActivityType.Run, ActivityType.VirtualRun]) {
         test("${pacePair[0]} -> $expected", () async {
           expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, EPS));
         });
-      });
-    });
+      }
+    }
   });
 
   group("Record constructor fills speed properly if random running pace is present:", () {
@@ -39,11 +39,11 @@ void main() {
     1.to(REPETITION).forEach((input) {
       final randomPace = rnd.nextDouble() * 20;
       final expected = 60 / randomPace;
-      [ActivityType.Run, ActivityType.VirtualRun].forEach((sport) {
+      for (var sport in [ActivityType.Run, ActivityType.VirtualRun]) {
         test("$randomPace -> $expected", () async {
           expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, EPS));
         });
-      });
+      }
     });
   });
 
@@ -62,14 +62,14 @@ void main() {
       [300.0, 6.0],
       [360.0, 5.0],
     ];
-    paces.forEach((pacePair) {
+    for (var pacePair in paces) {
       final expected = pacePair[1];
-      [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing].forEach((sport) {
+      for (var sport in [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing]) {
         test("${pacePair[0]} -> $expected", () async {
           expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, EPS));
         });
-      });
-    });
+      }
+    }
   });
 
   group("Record constructor fills speed properly if random paddling pace is present:", () {
@@ -77,11 +77,11 @@ void main() {
     1.to(REPETITION).forEach((input) {
       final randomPace = rnd.nextDouble() * 360;
       final expected = 30.0 / (randomPace / 60.0);
-      [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing].forEach((sport) {
+      for (var sport in [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing]) {
         test("$randomPace -> $expected", () async {
           expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, EPS));
         });
-      });
+      }
     });
   });
 }

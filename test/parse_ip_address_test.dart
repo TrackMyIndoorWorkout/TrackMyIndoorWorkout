@@ -61,7 +61,7 @@ void main() {
 
   group('parseIpAddress random test', () {
     final rnd = Random();
-    List.generate(REPETITION, (index) => index).forEach((index) {
+    for (var index in List.generate(REPETITION, (index) => index)) {
       final ipParts = getRandomInts(4, 320, rnd);
       final port = rnd.nextInt(81920);
       final valid = ipParts.fold<bool>(true, (prev, part) => prev && part < MAX_UINT8) &&
@@ -71,9 +71,9 @@ void main() {
       final addressString = ipParts.map((part) => part.toString()).join(".");
       final fullAddress = addressString + ":$port";
       final expected = valid ? Tuple2<String, int>(addressString, port) : dummyAddressTuple;
-      test('$fullAddress -> $expected', () async {
+      test('$index.: $fullAddress -> $expected', () async {
         expect(parseIpAddress(fullAddress), expected);
       });
-    });
+    }
   });
 }

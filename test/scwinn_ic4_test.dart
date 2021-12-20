@@ -24,7 +24,7 @@ void main() {
     final bike = deviceMap["SIC4"] as IndoorBikeDeviceDescriptor;
     const lsb = 68;
     const msb = 2;
-    final flag = MAX_UINT8 * msb + lsb;
+    const flag = MAX_UINT8 * msb + lsb;
     bike.stopWorkout();
 
     bike.processFlag(flag);

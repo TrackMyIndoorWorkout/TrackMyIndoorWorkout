@@ -17,7 +17,7 @@ void main() {
       data[lsbLocation] = MAX_BYTE;
       data[msbLocation] = MAX_BYTE;
       final divider = rnd.nextDouble() * 4;
-      final expected = 0.0;
+      const expected = 0.0;
 
       test("$divider -> $expected", () async {
         final desc = ShortMetricDescriptor(

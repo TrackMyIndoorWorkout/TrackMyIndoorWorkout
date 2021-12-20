@@ -46,7 +46,7 @@ void main() {
       test('$calories', () async {
         await initPrefServiceForTest();
         final hrBasedCalories = rnd.nextBool();
-        final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
+        final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = deviceMap["SIC4"]!;
         final activity = Activity(
           deviceId: MPOWER_IMPORT_DEVICE_ID,

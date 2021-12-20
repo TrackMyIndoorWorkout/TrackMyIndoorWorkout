@@ -39,7 +39,7 @@ abstract class AppDatabase extends FloorDatabase {
   PowerTuneDao get powerTuneDao;
   WorkoutSummaryDao get workoutSummaryDao;
 
-  Future<int> rowCount(String tableName, String deviceId, {String extraPredicate: ""}) async {
+  Future<int> rowCount(String tableName, String deviceId, {String extraPredicate = ""}) async {
     var queryString = "SELECT COUNT(`id`) AS cnt FROM `$tableName` WHERE `mac` = ?";
     if (extraPredicate.isNotEmpty) {
       queryString += " AND $extraPredicate";

@@ -7,23 +7,23 @@ import 'utils.dart';
 
 void main() {
   group('FitActivity has the expected global message number', () {
-    [
+    for (var exportTarget in [
       const Tuple2<int, String>(ExportTarget.regular, "regular"),
       const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
-    ].forEach((exportTarget) {
+    ]) {
       test('for ${exportTarget.item2}', () async {
         final activity = FitActivity(0, exportTarget.item1);
 
         expect(activity.globalMessageNumber, FitMessage.Activity);
       });
-    });
+    }
   });
 
   group('FitActivity data has the expected length', () {
-    [
+    for (var exportTarget in [
       const Tuple2<int, String>(ExportTarget.regular, "regular"),
       const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
-    ].forEach((exportTarget) {
+    ]) {
       test('for ${exportTarget.item2}', () async {
         final activity = FitActivity(0, exportTarget.item1);
         final exportModel = ExportModelForTests();
@@ -33,6 +33,6 @@ void main() {
 
         expect(output.length, expected + 1);
       });
-    });
+    }
   });
 }

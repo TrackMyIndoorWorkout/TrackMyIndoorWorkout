@@ -26,7 +26,7 @@ void main() {
     final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC] as RowerDeviceDescriptor;
     const lsb = 44;
     const msb = 9;
-    final flag = MAX_UINT8 * msb + lsb;
+    const flag = MAX_UINT8 * msb + lsb;
     await initPrefServiceForTest();
     rower.stopWorkout();
 

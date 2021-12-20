@@ -29,13 +29,13 @@ class TrackDescriptor {
     this.altitude = 0.0,
     required this.lengthFactor,
   }) {
-    this.center = center ?? Offset(0, 0);
+    this.center = center ?? const Offset(0, 0);
   }
 }
 
 Map<String, TrackDescriptor> trackMap = {
   "Marymoor": TrackDescriptor(
-    center: Offset(-122.112045, 47.665821),
+    center: const Offset(-122.112045, 47.665821),
     radiusBoost: 1.2,
     horizontalMeter: 0.000013337,
     verticalMeter: 0.000008985,
@@ -43,7 +43,7 @@ Map<String, TrackDescriptor> trackMap = {
     lengthFactor: 1.0,
   ),
   "Lincoln": TrackDescriptor(
-    center: Offset(-119.77381, 36.846039),
+    center: const Offset(-119.77381, 36.846039),
     radiusBoost: 1.15,
     horizontalMeter: 0.00001121,
     verticalMeter: 0.00000901,
@@ -51,7 +51,7 @@ Map<String, TrackDescriptor> trackMap = {
     lengthFactor: 1.0,
   ),
   "Hoover": TrackDescriptor(
-    center: Offset(-119.768433, 36.8195),
+    center: const Offset(-119.768433, 36.8195),
     radiusBoost: 1.1,
     horizontalMeter: 0.000011156,
     verticalMeter: 0.000009036,
@@ -59,7 +59,7 @@ Map<String, TrackDescriptor> trackMap = {
     lengthFactor: 1.0,
   ),
   "SanJoaquinBluffPointe": TrackDescriptor(
-    center: Offset(-119.8730278, 36.84823845),
+    center: const Offset(-119.8730278, 36.84823845),
     radiusBoost: 1.2,
     horizontalMeter: 0.00001121,
     verticalMeter: 0.00000901,

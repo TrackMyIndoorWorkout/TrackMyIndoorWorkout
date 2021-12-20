@@ -406,9 +406,8 @@ abstract class Auth {
     var fault = Fault(StravaStatusCode.statusUnknownError, "Unknown reason");
     // If header is not "empty"
     if (header.containsKey('88') == false) {
-      final requestDeAuthorize = DEAUTHORIZATION_ENDPOINT;
-      debugPrint('request $requestDeAuthorize');
-      final rep = await http.post(Uri.parse(requestDeAuthorize), headers: header);
+      debugPrint('request $DEAUTHORIZATION_ENDPOINT');
+      final rep = await http.post(Uri.parse(DEAUTHORIZATION_ENDPOINT), headers: header);
       if (rep.statusCode >= 200 && rep.statusCode < 300) {
         debugPrint('DeAuthorize done');
         debugPrint('response ${rep.body}');
