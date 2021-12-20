@@ -19,25 +19,9 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
       - name: Mock Secrets File
-        run: |
-          echo const stravaSecret="a"; > lib/persistence/secret.dart
-          echo const stravaClientId="1"; >> lib/persistence/secret.dart
-          echo const suuntoSecret="a"; >> lib/persistence/secret.dart
-          echo const suuntoClientId="a"; >> lib/persistence/secret.dart
-          echo const suuntoSubscriptionPrimaryKey="a"; >> lib/persistence/secret.dart
-          echo const suuntoSubscriptionSecondaryKey="a"; >> lib/persistence/secret.dart
-          echo const underArmourSecret="a"; >> lib/persistence/secret.dart
-          echo const underArmourKey="a"; >> lib/persistence/secret.dart
-          echo const trainingPeaksSecret="a"; >> lib/persistence/secret.dart
-          echo const trainingPeaksClientId="a"; >> lib/persistence/secret.dart
-          echo const googleFitClientId="a"; >> lib/persistence/secret.dart
-          echo const googleFitSecret="a"; >> lib/persistence/secret.dart
-      - name: Verify Mock Secret file
-        run: cat lib/persistence/secret.dart
+        run: printf 'const stravaSecret="a";\nconst stravaClientId="1";\nconst suuntoSecret="a";\nconst suuntoClientId="a";\nconst suuntoSubscriptionPrimaryKey="a";\nconst suuntoSubscriptionSecondaryKey="a";\nconst underArmourSecret="a";\nconst underArmourKey="a";\nconst trainingPeaksSecret="a";\nconst trainingPeaksClientId="a";\nconst googleFitClientId="a";\nconst googleFitSecret="a";\n' > lib/persistence/secret.dart
       - name: Format files
-        run: flutter format --line-length 100 .
-      - name: Verify Mock Secret file 2
-        run: cat lib/persistence/secret.dart
+        run: flutter format --line-length 100 --set-exit-if-changed .
       - name: Analyze files
         run: flutter analyze .
       - name: Run the tests
