@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/record.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/extend_tuning.dart';
 import '../../track/tracks.dart';
 import '../../utils/constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
@@ -50,7 +50,7 @@ abstract class DeviceDescriptor {
   double hrCalorieFactor = 1.0;
   // Adjusting skewed distance
   double powerFactor = 1.0;
-  bool extendTuning = EXTEND_TUNING_DEFAULT;
+  bool extendTuning = extendTuningDefault;
   double? slowPace;
 
   DeviceDescriptor({
@@ -112,7 +112,7 @@ abstract class DeviceDescriptor {
     hrCalorieFactor = await database.hrCalorieFactor(deviceId, this);
     powerFactor = await database.powerFactor(deviceId);
     final prefService = Get.find<BasePrefService>();
-    extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
+    extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
   }
 
   double? getSpeed(List<int> data) {

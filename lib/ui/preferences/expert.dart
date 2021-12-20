@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import '../../preferences/device_filtering.dart';
+import '../../preferences/enforced_time_zone.dart';
 import '../../utils/preferences.dart';
 import 'preferences_base.dart';
 
@@ -54,9 +55,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         pref: deviceFilteringTag,
       ),
       PrefDropdown<String>(
-        title: const Text(ENFORCED_TIME_ZONE),
-        subtitle: const Text(ENFORCED_TIME_ZONE_DESCRIPTION),
-        pref: ENFORCED_TIME_ZONE_TAG,
+        title: const Text(enforcedTimeZone),
+        subtitle: const Text(enforcedTimeZoneDescription),
+        pref: enforcedTimeZoneTag,
         items: timeZoneChoices
             .map((timeZone) => DropdownMenuItem(value: timeZone, child: Text(timeZone)))
             .toList(growable: false),

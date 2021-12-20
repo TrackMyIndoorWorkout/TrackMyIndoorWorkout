@@ -8,6 +8,11 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../preferences/athlete_age.dart';
+import '../preferences/athlete_body_weight.dart';
+import '../preferences/athlete_gender.dart';
+import '../preferences/athlete_vo2max.dart';
+import '../preferences/extend_tuning.dart';
 import '../ui/import_form.dart';
 import '../utils/constants.dart';
 import '../utils/hr_based_calories.dart';
@@ -539,7 +544,7 @@ class CSVImporter {
       trainingPeaksWorkoutId: trainingPeaksWorkoutId,
     );
 
-    final extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
+    final extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
     final database = Get.find<AppDatabase>();
     final id = await database.activityDao.insertActivity(activity);
     activity.id = id;
@@ -603,12 +608,12 @@ class CSVImporter {
           prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
 
       bool useHrBasedCalorieCounting = hrBasedCalories;
-      int weight = prefService.get<int>(ATHLETE_BODY_WEIGHT_INT_TAG) ?? ATHLETE_BODY_WEIGHT_DEFAULT;
-      int age = prefService.get<int>(ATHLETE_AGE_TAG) ?? ATHLETE_AGE_DEFAULT;
-      bool isMale = (prefService.get<String>(ATHLETE_GENDER_TAG) ?? ATHLETE_GENDER_DEFAULT) ==
-          ATHLETE_GENDER_MALE;
-      int vo2Max = prefService.get<int>(ATHLETE_VO2MAX_TAG) ?? ATHLETE_VO2MAX_DEFAULT;
-      useHrBasedCalorieCounting &= (weight > ATHLETE_BODY_WEIGHT_MIN && age > ATHLETE_AGE_MIN);
+      int weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
+      int age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
+      bool isMale = (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) ==
+          athleteGenderMale;
+      int vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
+      useHrBasedCalorieCounting &= (weight > athleteBodyWeightMin && age > athleteAgeMin);
 
       while (_linePointer < _lines.length) {
         WorkoutRow row = nextRow ??

@@ -11,7 +11,7 @@ import 'package:tuple/tuple.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
@@ -73,8 +73,8 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   String _currentSpeedString = "...";
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
-  int _preferencesWeight = ATHLETE_BODY_WEIGHT_DEFAULT;
-  bool _rememberLastWeight = REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
+  int _preferencesWeight = athleteBodyWeightDefault;
+  bool _rememberLastWeight = rememberAthleteBodyWeightDefault;
 
   bool get _spinDownPossible =>
       _weightData != null &&
@@ -98,10 +98,10 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     final prefService = Get.find<BasePrefService>();
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
-    _rememberLastWeight = prefService.get<bool>(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ??
-        REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
+    _rememberLastWeight = prefService.get<bool>(rememberAthleteBodyWeightTag) ??
+        rememberAthleteBodyWeightDefault;
     _preferencesWeight =
-        prefService.get<int>(ATHLETE_BODY_WEIGHT_INT_TAG) ?? ATHLETE_BODY_WEIGHT_DEFAULT;
+        prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     _weight = (_preferencesWeight * (_si ? 1.0 : kgToLb)).round();
     final weightBytes = getWeightBytes(_weight);
     _oldWeightLsb = weightBytes.item1;
@@ -332,7 +332,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       if (_rememberLastWeight) {
         final weightKg = _weight * (_si ? 1.0 : lbToKg);
         final prefService = Get.find<BasePrefService>();
-        await prefService.set<int>(ATHLETE_BODY_WEIGHT_INT_TAG, weightKg.round());
+        await prefService.set<int>(athleteBodyWeightTag, weightKg.round());
       }
 
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);

@@ -6,6 +6,7 @@ import '../../preferences/distance_resolution.dart';
 import '../../preferences/instant_measurement_start.dart';
 import '../../preferences/instant_scan.dart';
 import '../../preferences/instant_upload.dart';
+import '../../preferences/multi_sport_device_support.dart';
 import '../../preferences/scan_duration.dart';
 import '../../preferences/simpler_ui.dart';
 import '../../preferences/unit_system.dart';
@@ -81,9 +82,9 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         pref: instantUploadTag,
       ),
       const PrefCheckbox(
-        title: Text(MULTI_SPORT_DEVICE_SUPPORT),
-        subtitle: Text(MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION),
-        pref: MULTI_SPORT_DEVICE_SUPPORT_TAG,
+        title: Text(multiSportDeviceSupport),
+        subtitle: Text(multiSportDeviceSupportDescription),
+        pref: multiSportDeviceSupportTag,
       ),
       const PrefCheckbox(
         title: Text(simplerUi),

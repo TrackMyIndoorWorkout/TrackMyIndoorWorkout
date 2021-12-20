@@ -14,12 +14,12 @@ import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
 import '../preferences/auto_connect.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/last_equipment_id.dart';
+import '../preferences/multi_sport_device_support.dart';
 import '../preferences/scan_duration.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
@@ -243,8 +243,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final prefService = Get.find<BasePrefService>();
 
     if (descriptor.isMultiSport) {
-      final multiSportSupport = prefService.get<bool>(MULTI_SPORT_DEVICE_SUPPORT_TAG) ??
-          MULTI_SPORT_DEVICE_SUPPORT_DEFAULT;
+      final multiSportSupport = prefService.get<bool>(multiSportDeviceSupportTag) ??
+          multiSportDeviceSupportDefault;
       if (deviceUsage == null || multiSportSupport) {
         final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
         final sportPick = await Get.bottomSheet(

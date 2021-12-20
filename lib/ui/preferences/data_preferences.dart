@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/database.dart';
 import '../../persistence/preferences.dart';
+import '../../preferences/extend_tuning.dart';
 import '../../utils/sound.dart';
 import 'preferences_base.dart';
 
@@ -17,9 +18,9 @@ class DataPreferencesScreen extends PreferencesScreenBase {
     List<Widget> dataPreferences = [
       const PrefTitle(title: Text("Tuning")),
       const PrefCheckbox(
-        title: Text(EXTEND_TUNING),
-        subtitle: Text(EXTEND_TUNING_DESCRIPTION),
-        pref: EXTEND_TUNING_TAG,
+        title: Text(extendTuning),
+        subtitle: Text(extendTuningDescription),
+        pref: extendTuningTag,
       ),
       const PrefCheckbox(
         title: Text(USE_HR_MONITOR_REPORTED_CALORIES),

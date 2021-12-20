@@ -9,6 +9,10 @@ import 'package:rxdart/rxdart.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../persistence/preferences.dart';
+import '../../preferences/athlete_age.dart';
+import '../../preferences/athlete_body_weight.dart';
+import '../../preferences/athlete_gender.dart';
+import '../../preferences/athlete_vo2max.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
@@ -43,10 +47,10 @@ class FitnessEquipment extends DeviceBase {
   String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
   bool _useHrmReportedCalories = USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT;
   bool _useHrBasedCalorieCounting = USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
-  int _weight = ATHLETE_BODY_WEIGHT_DEFAULT;
-  int _age = ATHLETE_AGE_DEFAULT;
+  int _weight = athleteBodyWeightDefault;
+  int _age = athleteAgeDefault;
   bool _isMale = true;
-  int _vo2Max = ATHLETE_VO2MAX_DEFAULT;
+  int _vo2Max = athleteVO2MaxDefault;
   Activity? _activity;
   bool measuring = false;
   bool calibrating = false;
@@ -413,12 +417,12 @@ class FitnessEquipment extends DeviceBase {
         USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT;
     _useHrBasedCalorieCounting = prefService.get<bool>(USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG) ??
         USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
-    _weight = prefService.get<int>(ATHLETE_BODY_WEIGHT_INT_TAG) ?? ATHLETE_BODY_WEIGHT_DEFAULT;
-    _age = prefService.get<int>(ATHLETE_AGE_TAG) ?? ATHLETE_AGE_DEFAULT;
-    _isMale = (prefService.get<String>(ATHLETE_GENDER_TAG) ?? ATHLETE_GENDER_DEFAULT) ==
-        ATHLETE_GENDER_MALE;
-    _vo2Max = prefService.get<int>(ATHLETE_VO2MAX_TAG) ?? ATHLETE_VO2MAX_DEFAULT;
-    _useHrBasedCalorieCounting &= (_weight > ATHLETE_BODY_WEIGHT_MIN && _age > ATHLETE_AGE_MIN);
+    _weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
+    _age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
+    _isMale = (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) ==
+        athleteGenderMale;
+    _vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
+    _useHrBasedCalorieCounting &= (_weight > athleteBodyWeightMin && _age > athleteAgeMin);
     _runningCadenceSensor?.refreshFactors();
   }
 

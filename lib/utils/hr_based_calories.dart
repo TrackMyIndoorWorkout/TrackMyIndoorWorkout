@@ -1,8 +1,8 @@
-import '../persistence/preferences.dart';
+import '../preferences/athlete_vo2max.dart';
 
 // Based on https://www.braydenwm.com/calburn.htm
 double hrBasedCaloriesPerMinute(int heartRate, int weight, int age, bool isMale, int vo2Max) {
-  if (vo2Max > ATHLETE_VO2MAX_MIN) {
+  if (vo2Max > athleteVO2MaxMin) {
     if (isMale) {
       return (-59.3954 +
               (-36.3781 + 0.271 * age + 0.394 * weight + 0.404 * vo2Max + 0.634 * heartRate)) /

@@ -2,14 +2,21 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
+import '../preferences/athlete_age.dart';
+import '../preferences/athlete_body_weight.dart';
+import '../preferences/athlete_gender.dart';
+import '../preferences/athlete_vo2max.dart';
 import '../preferences/auto_connect.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
+import '../preferences/enforced_time_zone.dart';
+import '../preferences/extend_tuning.dart';
 import '../preferences/generic.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
 import '../preferences/last_equipment_id.dart';
+import '../preferences/multi_sport_device_support.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/unit_system.dart';
@@ -35,12 +42,12 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     instantUploadTag: instantUploadDefault,
     simplerUiTag: await getSimplerUiDefault(),
     deviceFilteringTag: deviceFilteringDefault,
-    MULTI_SPORT_DEVICE_SUPPORT_TAG: MULTI_SPORT_DEVICE_SUPPORT_DEFAULT,
+    multiSportDeviceSupportTag: multiSportDeviceSupportDefault,
     MEASUREMENT_PANELS_EXPANDED_TAG: MEASUREMENT_PANELS_EXPANDED_DEFAULT,
     MEASUREMENT_DETAIL_SIZE_TAG: MEASUREMENT_DETAIL_SIZE_DEFAULT,
     APP_DEBUG_MODE_TAG: APP_DEBUG_MODE_DEFAULT,
     DATA_CONNECTION_ADDRESSES_TAG: DATA_CONNECTION_ADDRESSES_DEFAULT,
-    EXTEND_TUNING_TAG: EXTEND_TUNING_DEFAULT,
+    extendTuningTag: extendTuningDefault,
     STROKE_RATE_SMOOTHING_INT_TAG: STROKE_RATE_SMOOTHING_DEFAULT,
     DATA_STREAM_GAP_WATCHDOG_INT_TAG: DATA_STREAM_GAP_WATCHDOG_DEFAULT,
     DATA_STREAM_GAP_SOUND_EFFECT_TAG: DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT,
@@ -65,14 +72,14 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     RANK_INFO_ON_TRACK_TAG: RANK_INFO_ON_TRACK_DEFAULT,
     THEME_SELECTION_TAG: THEME_SELECTION_DEFAULT,
     ZONE_INDEX_DISPLAY_COLORING_TAG: ZONE_INDEX_DISPLAY_COLORING_DEFAULT,
-    ATHLETE_BODY_WEIGHT_INT_TAG: ATHLETE_BODY_WEIGHT_DEFAULT,
-    REMEMBER_ATHLETE_BODY_WEIGHT_TAG: REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT,
+    athleteBodyWeightIntTag: athleteBodyWeightDefault,
+    rememberAthleteBodyWeightTag: rememberAthleteBodyWeightDefault,
     USE_HR_MONITOR_REPORTED_CALORIES_TAG: USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT,
     USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG: USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT,
-    ATHLETE_AGE_TAG: ATHLETE_AGE_DEFAULT,
-    ATHLETE_GENDER_TAG: ATHLETE_GENDER_DEFAULT,
-    ATHLETE_VO2MAX_TAG: ATHLETE_VO2MAX_DEFAULT,
-    ENFORCED_TIME_ZONE_TAG: ENFORCED_TIME_ZONE_DEFAULT,
+    athleteAgeTag: athleteAgeDefault,
+    athleteGenderTag: athleteGenderDefault,
+    athleteVO2MaxTag: athleteVO2MaxDefault,
+    enforcedTimeZoneTag: enforcedTimeZoneDefault,
     DISPLAY_LAP_COUNTER_TAG: DISPLAY_LAP_COUNTER_DEFAULT,
   };
   return prefDefaults;
@@ -182,8 +189,8 @@ Future<BasePrefService> initPreferences() async {
       prefService,
     );
     migrateStringIntegerPreference(
-      ATHLETE_BODY_WEIGHT_TAG,
-      ATHLETE_BODY_WEIGHT_DEFAULT,
+      athleteBodyWeightTag,
+      athleteBodyWeightDefault,
       prefService,
     );
   }

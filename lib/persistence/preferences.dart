@@ -1,28 +1,11 @@
-import 'package:track_my_indoor_exercise/preferences/generic.dart';
+import '../preferences/generic.dart';
 
-
-const MULTI_SPORT_DEVICE_SUPPORT = "Multi-Sport Device Support";
-const MULTI_SPORT_DEVICE_SUPPORT_TAG = "multi_sport_device_support";
-const MULTI_SPORT_DEVICE_SUPPORT_DEFAULT = false;
-const MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION =
-    "Turn this on only if you use a device (like Genesis Port) with multiple equipment of "
-    "different sport (like Kayaking, Canoeing, Rowing, and Swimming). In that case you'll "
-    "be prompted to select a sport before every workout.";
 
 const MEASUREMENT_PANELS_EXPANDED_TAG = "measurement_panels_expanded";
 const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
 
 const MEASUREMENT_DETAIL_SIZE_TAG = "measurement_detail_size";
 const MEASUREMENT_DETAIL_SIZE_DEFAULT = "00000";
-
-const EXTEND_TUNING = "Extend Power Tuning If Applicable";
-const EXTEND_TUNING_TAG = "extend_tuning";
-const EXTEND_TUNING_DEFAULT = false;
-const EXTEND_TUNING_DESCRIPTION =
-    "Apply power tuning to other attributes (speed, distance) as well when applicable. "
-    "Note that depending on the equipment the tuning might already affect multiple attributes "
-    "if they depend on each other like when calories or speed is calculated from power. "
-    "Also note when both calorie and power tuning applied then their effect may combine.";
 
 const USE_HR_MONITOR_REPORTED_CALORIES = "Use heart rate monitor reported calories";
 const USE_HR_MONITOR_REPORTED_CALORIES_TAG = "use_heart_rate_monitor_reported_calories";
@@ -246,8 +229,6 @@ const DISPLAY_LAP_COUNTER_DEFAULT = false;
 const DISPLAY_LAP_COUNTER_DESCRIPTION =
     "On: the number of lamps passed will be displayed in the middle of the track";
 
-const EXPERT_PREFERENCES = "Expert Preferences";
-
 const APP_DEBUG_MODE = "Application Debug Mode";
 const APP_DEBUG_MODE_TAG = "app_debug_mode";
 const APP_DEBUG_MODE_DEFAULT = false;
@@ -285,56 +266,3 @@ const ZONE_INDEX_DISPLAY_COLORING_DEFAULT = true;
 const ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION =
     "On: The measurement font and background is color modified to reflect the zone value. "
     "Off: The zone is displayed without any re-coloring, this is less performance intensive.";
-
-const ATHLETE_BODY_WEIGHT = "Body Weight (kg)";
-const ATHLETE_BODY_WEIGHT_TAG = "athlete_body_weight";
-const ATHLETE_BODY_WEIGHT_INT_TAG = ATHLETE_BODY_WEIGHT_TAG + intTagPostfix;
-const ATHLETE_BODY_WEIGHT_MIN = 1;
-const ATHLETE_BODY_WEIGHT_DEFAULT = 60;
-const ATHLETE_BODY_WEIGHT_MAX = 300;
-const ATHLETE_BODY_WEIGHT_DESCRIPTION =
-    "This settings is optional. It could be used either for heart rate based calorie counting equations "
-    "or spin-down capable devices to set "
-    "the initial value displayed in the weight input until the device sends the last inputted weight. "
-    "As soon as the last inputted weight is received from the device it'll override the value in the input";
-
-const REMEMBER_ATHLETE_BODY_WEIGHT = "Remember last inputted weight at spin-down";
-const REMEMBER_ATHLETE_BODY_WEIGHT_TAG = "remember_athlete_body_weight";
-const REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT = true;
-const REMEMBER_ATHLETE_BODY_WEIGHT_DESCRIPTION =
-    "On: The weight inputted at the beginning of a spin-down will override the weight above. "
-    "Off: The weight input adjusted at spin-down won't be stored back to the setting above.";
-
-const ATHLETE_AGE = "Age (years)";
-const ATHLETE_AGE_TAG = "athlete_age";
-const ATHLETE_AGE_MIN = 0;
-const ATHLETE_AGE_DEFAULT = 30;
-const ATHLETE_AGE_MAX = 120;
-const ATHLETE_AGE_DESCRIPTION = "Used for heart rate base calorie counting if that is preferred";
-
-const ATHLETE_GENDER = "Gender";
-const ATHLETE_GENDER_TAG = "athlete_gender";
-const ATHLETE_GENDER_DESCRIPTION =
-    "The gender classification for the purpose heart rate based calorie calculation equations.";
-const ATHLETE_GENDER_MALE = "male";
-const ATHLETE_GENDER_MALE_DESCRIPTION = "Male";
-const ATHLETE_GENDER_FEMALE = "female";
-const ATHLETE_GENDER_FEMALE_DESCRIPTION = "Female";
-const ATHLETE_GENDER_DEFAULT = ATHLETE_GENDER_MALE;
-
-const ATHLETE_VO2MAX = "VO2max (ml/kg/min)";
-const ATHLETE_VO2MAX_TAG = "athlete_vo2max";
-const ATHLETE_VO2MAX_MIN = 15;
-const ATHLETE_VO2MAX_DEFAULT = ATHLETE_VO2MAX_MIN;
-const ATHLETE_VO2MAX_MAX = 100;
-const ATHLETE_VO2MAX_DESCRIPTION = "Optional, but it could make the equation more precise. "
-    "15 (minimum) means that the VO2max is ignored (not set).";
-
-const ENFORCED_TIME_ZONE = "Enforced Time Zone";
-const ENFORCED_TIME_ZONE_TAG = "enforced_time_zone";
-const ENFORCED_TIME_ZONE_DEFAULT = "Auto Detected";
-const ENFORCED_TIME_ZONE_DESCRIPTION = "The supposed time-zone of a workout. "
-    "If not set the app will auto detect the device's time zone, "
-    "you can see the auto detected time zone on About screen."
-    "Right now only Training Peaks has time zone information, and all GPS "
-    "data is at the US Pacific Coast.";

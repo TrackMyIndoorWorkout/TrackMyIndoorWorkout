@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:rxdart/rxdart.dart';
 import '../../persistence/models/record.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/extend_tuning.dart';
 import '../../utils/delays.dart';
 import 'sensor_base.dart';
 
@@ -17,7 +17,7 @@ abstract class ComplexSensor extends SensorBase {
   ComplexSensor(serviceId, characteristicsId, device)
       : super(serviceId, characteristicsId, device) {
     random = Random();
-    extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
+    extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
   }
 
   Stream<RecordWithSport> get _listenToData async* {
