@@ -16,6 +16,11 @@ import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
+import '../preferences/auto_connect.dart';
+import '../preferences/device_filtering.dart';
+import '../preferences/instant_scan.dart';
+import '../preferences/last_equipment_id.dart';
+import '../preferences/scan_duration.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/scan_result_ex.dart';
@@ -37,16 +42,16 @@ class FindDevicesScreen extends StatefulWidget {
 }
 
 class FindDevicesState extends State<FindDevicesScreen> {
-  bool _instantScan = INSTANT_SCAN_DEFAULT;
-  int _scanDuration = SCAN_DURATION_DEFAULT;
-  bool _autoConnect = AUTO_CONNECT_DEFAULT;
+  bool _instantScan = instantScanDefault;
+  int _scanDuration = scanDurationDefault;
+  bool _autoConnect = autoConnectDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   bool _goingToRecording = false;
   bool _autoConnectLatch = false;
   bool _pairingHrm = false;
   final List<String> _lastEquipmentIds = [];
-  bool _filterDevices = DEVICE_FILTERING_DEFAULT;
+  bool _filterDevices = deviceFilteringDefault;
   HeartRateMonitor? _heartRateMonitor;
   FitnessEquipment? _fitnessEquipment;
   TextStyle _captionStyle = const TextStyle();
@@ -93,9 +98,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     final prefService = Get.find<BasePrefService>();
-    _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
-    _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
-    _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
+    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
+    _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
+    _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _scannedDevices.clear();
     _isScanning = true;
     _autoConnectLatch = true;
@@ -124,17 +129,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
     initializeDateFormatting();
     super.initState();
     final prefService = Get.find<BasePrefService>();
-    _instantScan = prefService.get<bool>(INSTANT_SCAN_TAG) ?? INSTANT_SCAN_DEFAULT;
-    _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
-    _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
+    _instantScan = prefService.get<bool>(instantScanTag) ?? instantScanDefault;
+    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
+    _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
     for (var sport in PreferencesSpec.sportPrefixes) {
-      final lastEquipmentId = prefService.get<String>(LAST_EQUIPMENT_ID_TAG_PREFIX + sport) ?? "";
+      final lastEquipmentId = prefService.get<String>(lastEquipmentIdTagPrefix + sport) ?? "";
       if (lastEquipmentId.isNotEmpty) {
         _lastEquipmentIds.add(lastEquipmentId);
       }
     }
 
-    _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
+    _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _isScanning = false;
     _openDatabase().then((value) => _instantScan ? _startScan() : {});
 

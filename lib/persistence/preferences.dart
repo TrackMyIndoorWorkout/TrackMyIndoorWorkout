@@ -1,88 +1,5 @@
-import 'dart:io';
+import 'package:track_my_indoor_exercise/preferences/generic.dart';
 
-import 'package:device_info/device_info.dart';
-
-const PREFERENCES_PREFIX = "pref_";
-
-const PREFERENCES_VERSION_TAG = "version";
-const PREFERENCES_VERSION_SPORT_THRESHOLDS = 1;
-const PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT = 2;
-const PREFERENCES_VERSION_SPINNERS = 3;
-const PREFERENCES_VERSION_DEFAULTING_DATA_CONNECTION = 4;
-const PREFERENCES_VERSION_INCREASE_WATCHDOG_DEFAULT = 5;
-const PREFERENCES_VERSION_DEFAULT = PREFERENCES_VERSION_INCREASE_WATCHDOG_DEFAULT;
-const PREFERENCES_VERSION_NEXT = PREFERENCES_VERSION_DEFAULT + 1;
-
-const INT_TAG_POSTFIX = "_int";
-
-const UX_PREFERENCES = "UI / UX Preferences";
-
-const UNIT_SYSTEM = "Unit System";
-const UNIT_SYSTEM_TAG = "unit_system";
-const UNIT_SYSTEM_DEFAULT = false;
-const UNIT_SYSTEM_DESCRIPTION =
-    "On: metric (km/h speed, meters distance), Off: imperial (mp/h speed, miles distance).";
-
-const DISTANCE_RESOLUTION = "Distance Resolution High/Low";
-const DISTANCE_RESOLUTION_TAG = "distance_resolution";
-const DISTANCE_RESOLUTION_DEFAULT = false;
-const DISTANCE_RESOLUTION_DESCRIPTION =
-    "On: high resolution - m or yd, Off: low resolution - km or mi.";
-
-const INSTANT_SCAN = "Instant Scanning";
-const INSTANT_SCAN_TAG = "instant_scan";
-const INSTANT_SCAN_DEFAULT = true;
-const INSTANT_SCAN_DESCRIPTION = "On: the app will automatically start "
-    "scanning for equipment after application start.";
-
-const SCAN_DURATION = "Scan Duration (s)";
-const SCAN_DURATION_TAG = "scan_duration";
-const SCAN_DURATION_MIN = 6;
-const SCAN_DURATION_DEFAULT = 6;
-const SCAN_DURATION_MAX = 15;
-const SCAN_DURATION_DESCRIPTION =
-    "Duration in seconds the app will spend looking Bluetooth Low Energy equipment.";
-
-const AUTO_CONNECT = "Auto Connect";
-const AUTO_CONNECT_TAG = "auto_connect";
-const AUTO_CONNECT_DEFAULT = false;
-const AUTO_CONNECT_DESCRIPTION = "On: if there's only a single "
-    "equipment after scan, or one of the devices match the "
-    "last exercise machine the app will automatically move to the "
-    "measurement screen to start recording.";
-
-const LAST_EQUIPMENT_ID_TAG = "last_equipment";
-const LAST_EQUIPMENT_ID_TAG_PREFIX = LAST_EQUIPMENT_ID_TAG + "_";
-const LAST_EQUIPMENT_ID_DEFAULT = "";
-
-const INSTANT_MEASUREMENT_START = "Instant Measurement Start";
-const INSTANT_MEASUREMENT_START_TAG = "instant_measurement_start";
-const INSTANT_MEASUREMENT_START_DEFAULT = true;
-const INSTANT_MEASUREMENT_START_DESCRIPTION = "On: when navigating to the measurement screen the "
-    "workout recording will start immediately. Off: the workout has to be started manually by "
-    "pressing the play button.";
-
-const INSTANT_UPLOAD = "Instant Upload";
-const INSTANT_UPLOAD_TAG = "instant_upload";
-const INSTANT_UPLOAD_DEFAULT = false;
-const INSTANT_UPLOAD_DESCRIPTION = "On: when Strava is authenticated and "
-    "the device is connected then activity upload is automatically "
-    "attempted at the end of workout";
-
-const SIMPLER_UI = "Simplify Measurement UI";
-const SIMPLER_UI_TAG = "simpler_ui";
-const SIMPLER_UI_FAST_DEFAULT = false;
-const SIMPLER_UI_SLOW_DEFAULT = true;
-const SIMPLER_UI_DESCRIPTION = "On: the track visualization and the real-time"
-    " graphs won't be featured at the bottom of the measurement "
-    "screen. This can help old / slow phones.";
-
-const DEVICE_FILTERING = "Device Filtering";
-const DEVICE_FILTERING_TAG = "device_filtering";
-const DEVICE_FILTERING_DEFAULT = true;
-const DEVICE_FILTERING_DESCRIPTION =
-    "Off: the app won't filter the list of Bluetooth device while scanning. "
-    "If your device is not listed while filtering is on then most probably it's not compatible.";
 
 const MULTI_SPORT_DEVICE_SUPPORT = "Multi-Sport Device Support";
 const MULTI_SPORT_DEVICE_SUPPORT_TAG = "multi_sport_device_support";
@@ -91,9 +8,6 @@ const MULTI_SPORT_DEVICE_SUPPORT_DESCRIPTION =
     "Turn this on only if you use a device (like Genesis Port) with multiple equipment of "
     "different sport (like Kayaking, Canoeing, Rowing, and Swimming). In that case you'll "
     "be prompted to select a sport before every workout.";
-
-const TUNING_PREFERENCES = "Tuning";
-const WORKAROUND_PREFERENCES = "Workarounds";
 
 const MEASUREMENT_PANELS_EXPANDED_TAG = "measurement_panels_expanded";
 const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
@@ -127,7 +41,7 @@ const USE_HEART_RATE_BASED_CALORIE_COUNTING_DESCRIPTION =
 
 const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
 const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
-const STROKE_RATE_SMOOTHING_INT_TAG = STROKE_RATE_SMOOTHING_TAG + INT_TAG_POSTFIX;
+const STROKE_RATE_SMOOTHING_INT_TAG = STROKE_RATE_SMOOTHING_TAG + intTagPostfix;
 const STROKE_RATE_SMOOTHING_MIN = 1;
 const STROKE_RATE_SMOOTHING_DEFAULT = 10;
 const STROKE_RATE_SMOOTHING_MAX = 50;
@@ -137,7 +51,7 @@ const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery da
 
 const DATA_STREAM_GAP_WATCHDOG = "Data Stream Gap Watchdog Timer";
 const DATA_STREAM_GAP_WATCHDOG_TAG = "data_stream_gap_watchdog_timer";
-const DATA_STREAM_GAP_WATCHDOG_INT_TAG = DATA_STREAM_GAP_WATCHDOG_TAG + INT_TAG_POSTFIX;
+const DATA_STREAM_GAP_WATCHDOG_INT_TAG = DATA_STREAM_GAP_WATCHDOG_TAG + intTagPostfix;
 const DATA_STREAM_GAP_WATCHDOG_MIN = 0;
 const DATA_STREAM_GAP_WATCHDOG_OLD_DEFAULT = 5;
 const DATA_STREAM_GAP_WATCHDOG_DEFAULT = 30;
@@ -187,7 +101,7 @@ const HEART_RATE_GAP_WORKAROUND_DEFAULT = DATA_GAP_WORKAROUND_LAST_POSITIVE_VALU
 
 const HEART_RATE_UPPER_LIMIT = "Heart Rate Upper Limit";
 const HEART_RATE_UPPER_LIMIT_TAG = "heart_rate_upper_limit";
-const HEART_RATE_UPPER_LIMIT_INT_TAG = HEART_RATE_UPPER_LIMIT_TAG + INT_TAG_POSTFIX;
+const HEART_RATE_UPPER_LIMIT_INT_TAG = HEART_RATE_UPPER_LIMIT_TAG + intTagPostfix;
 const HEART_RATE_UPPER_LIMIT_MIN = 0;
 const HEART_RATE_UPPER_LIMIT_DEFAULT = 0;
 const HEART_RATE_UPPER_LIMIT_MAX = 300;
@@ -225,7 +139,7 @@ const TARGET_HEART_RATE_MODE_DEFAULT = TARGET_HEART_RATE_MODE_NONE;
 
 const TARGET_HEART_RATE_LOWER_BPM = "Target Heart Rate Lower BPM";
 const TARGET_HEART_RATE_LOWER_BPM_TAG = "target_heart_rate_bpm_lower";
-const TARGET_HEART_RATE_LOWER_BPM_INT_TAG = TARGET_HEART_RATE_LOWER_BPM_TAG + INT_TAG_POSTFIX;
+const TARGET_HEART_RATE_LOWER_BPM_INT_TAG = TARGET_HEART_RATE_LOWER_BPM_TAG + intTagPostfix;
 const TARGET_HEART_RATE_LOWER_BPM_MIN = 0;
 const TARGET_HEART_RATE_LOWER_BPM_DEFAULT = 120;
 const TARGET_HEART_RATE_LOWER_BPM_DESCRIPTION =
@@ -233,7 +147,7 @@ const TARGET_HEART_RATE_LOWER_BPM_DESCRIPTION =
 
 const TARGET_HEART_RATE_UPPER_BPM = "Target Heart Rate Upper BPM";
 const TARGET_HEART_RATE_UPPER_BPM_TAG = "target_heart_rate_bpm_upper";
-const TARGET_HEART_RATE_UPPER_BPM_INT_TAG = TARGET_HEART_RATE_UPPER_BPM_TAG + INT_TAG_POSTFIX;
+const TARGET_HEART_RATE_UPPER_BPM_INT_TAG = TARGET_HEART_RATE_UPPER_BPM_TAG + intTagPostfix;
 const TARGET_HEART_RATE_UPPER_BPM_DEFAULT = 140;
 const TARGET_HEART_RATE_UPPER_BPM_MAX = 300;
 const TARGET_HEART_RATE_UPPER_BPM_DESCRIPTION =
@@ -241,7 +155,7 @@ const TARGET_HEART_RATE_UPPER_BPM_DESCRIPTION =
 
 const TARGET_HEART_RATE_LOWER_ZONE = "Target Heart Rate Lower Zone";
 const TARGET_HEART_RATE_LOWER_ZONE_TAG = "target_heart_rate_zone_lower";
-const TARGET_HEART_RATE_LOWER_ZONE_INT_TAG = TARGET_HEART_RATE_LOWER_ZONE_TAG + INT_TAG_POSTFIX;
+const TARGET_HEART_RATE_LOWER_ZONE_INT_TAG = TARGET_HEART_RATE_LOWER_ZONE_TAG + intTagPostfix;
 const TARGET_HEART_RATE_LOWER_ZONE_MIN = 0;
 const TARGET_HEART_RATE_LOWER_ZONE_DEFAULT = 3;
 const TARGET_HEART_RATE_LOWER_ZONE_DESCRIPTION =
@@ -249,7 +163,7 @@ const TARGET_HEART_RATE_LOWER_ZONE_DESCRIPTION =
 
 const TARGET_HEART_RATE_UPPER_ZONE = "Target Heart Rate Upper Zone";
 const TARGET_HEART_RATE_UPPER_ZONE_TAG = "target_heart_rate_zone_upper";
-const TARGET_HEART_RATE_UPPER_ZONE_INT_TAG = TARGET_HEART_RATE_UPPER_ZONE_TAG + INT_TAG_POSTFIX;
+const TARGET_HEART_RATE_UPPER_ZONE_INT_TAG = TARGET_HEART_RATE_UPPER_ZONE_TAG + intTagPostfix;
 const TARGET_HEART_RATE_UPPER_ZONE_DEFAULT = 3;
 const TARGET_HEART_RATE_UPPER_ZONE_MAX = 7;
 const TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION =
@@ -262,7 +176,7 @@ const TARGET_HEART_RATE_AUDIO_DESCRIPTION = "Should a sound effect play when HR 
 
 const TARGET_HEART_RATE_AUDIO_PERIOD = "Target HR Audio Period (seconds)";
 const TARGET_HEART_RATE_AUDIO_PERIOD_TAG = "target_heart_rate_audio_period";
-const TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG = TARGET_HEART_RATE_AUDIO_PERIOD_TAG + INT_TAG_POSTFIX;
+const TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG = TARGET_HEART_RATE_AUDIO_PERIOD_TAG + intTagPostfix;
 const TARGET_HEART_RATE_AUDIO_PERIOD_MIN = 0;
 const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT = 0;
 const TARGET_HEART_RATE_AUDIO_PERIOD_MAX = 10;
@@ -277,7 +191,7 @@ const TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_TWO_TONE;
 
 const AUDIO_VOLUME = "Audio Volume (%)";
 const AUDIO_VOLUME_TAG = "audio_volume";
-const AUDIO_VOLUME_INT_TAG = AUDIO_VOLUME_TAG + INT_TAG_POSTFIX;
+const AUDIO_VOLUME_INT_TAG = AUDIO_VOLUME_TAG + intTagPostfix;
 const AUDIO_VOLUME_MIN = 0;
 const AUDIO_VOLUME_DEFAULT = 50;
 const AUDIO_VOLUME_MAX = 100;
@@ -353,8 +267,6 @@ const DATA_CONNECTION_ADDRESSES_DESCRIPTION =
     "The application will reach out to these endpoints to determine if "
     "there is really a data connection.";
 
-const ZONE_PREFERENCES = " Zone Preferences";
-
 const THEME_SELECTION = "Theme Selection (System / Light / Dark):";
 const THEME_SELECTION_TAG = "theme_selection";
 const THEME_SELECTION_DESCRIPTION =
@@ -376,7 +288,7 @@ const ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION =
 
 const ATHLETE_BODY_WEIGHT = "Body Weight (kg)";
 const ATHLETE_BODY_WEIGHT_TAG = "athlete_body_weight";
-const ATHLETE_BODY_WEIGHT_INT_TAG = ATHLETE_BODY_WEIGHT_TAG + INT_TAG_POSTFIX;
+const ATHLETE_BODY_WEIGHT_INT_TAG = ATHLETE_BODY_WEIGHT_TAG + intTagPostfix;
 const ATHLETE_BODY_WEIGHT_MIN = 1;
 const ATHLETE_BODY_WEIGHT_DEFAULT = 60;
 const ATHLETE_BODY_WEIGHT_MAX = 300;
@@ -426,21 +338,3 @@ const ENFORCED_TIME_ZONE_DESCRIPTION = "The supposed time-zone of a workout. "
     "you can see the auto detected time zone on About screen."
     "Right now only Training Peaks has time zone information, and all GPS "
     "data is at the US Pacific Coast.";
-
-Future<bool> getSimplerUiDefault() async {
-  var simplerUiDefault = SIMPLER_UI_FAST_DEFAULT;
-  if (Platform.isAndroid) {
-    var androidInfo = await DeviceInfoPlugin().androidInfo;
-    if (androidInfo.version.sdkInt < 26) {
-      // Remove complexities for very old Android devices
-      simplerUiDefault = SIMPLER_UI_SLOW_DEFAULT;
-    }
-  }
-  return simplerUiDefault;
-}
-
-extension DurationDisplay on Duration {
-  String toDisplay() {
-    return toString().split('.').first.padLeft(8, "0");
-  }
-}

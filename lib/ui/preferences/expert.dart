@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
+import '../../preferences/device_filtering.dart';
 import '../../utils/preferences.dart';
 import 'preferences_base.dart';
 
@@ -48,9 +49,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         child: const Text("Apply Configuration and Test"),
       ),
       const PrefCheckbox(
-        title: Text(DEVICE_FILTERING),
-        subtitle: Text(DEVICE_FILTERING_DESCRIPTION),
-        pref: DEVICE_FILTERING_TAG,
+        title: Text(deviceFiltering),
+        subtitle: Text(deviceFilteringDescription),
+        pref: deviceFilteringTag,
       ),
       PrefDropdown<String>(
         title: const Text(ENFORCED_TIME_ZONE),

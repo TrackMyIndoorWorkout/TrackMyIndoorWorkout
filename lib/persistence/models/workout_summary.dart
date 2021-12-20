@@ -1,6 +1,6 @@
 import 'package:floor/floor.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/generic.dart';
 import '../../utils/display.dart';
 
 const workoutSummariesTableName = 'workout_summary';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/instant_upload.dart';
 import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/preferences.dart';
@@ -72,9 +72,9 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
   Widget build(BuildContext context) {
     List<Widget> integrationPreferences = [
       const PrefCheckbox(
-        title: Text(INSTANT_UPLOAD),
-        subtitle: Text(INSTANT_UPLOAD_DESCRIPTION),
-        pref: INSTANT_UPLOAD_TAG,
+        title: Text(instantUpload),
+        subtitle: Text(instantUploadDescription),
+        pref: instantUploadTag,
       ),
       const PrefLabel(
         title: Text("Available Integrations:"),

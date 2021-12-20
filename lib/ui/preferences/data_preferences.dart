@@ -15,7 +15,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> dataPreferences = [
-      const PrefTitle(title: Text(TUNING_PREFERENCES)),
+      const PrefTitle(title: Text("Tuning")),
       const PrefCheckbox(
         title: Text(EXTEND_TUNING),
         subtitle: Text(EXTEND_TUNING_DESCRIPTION),
@@ -40,7 +40,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         max: STROKE_RATE_SMOOTHING_MAX,
         direction: Axis.vertical,
       ),
-      const PrefTitle(title: Text(WORKAROUND_PREFERENCES)),
+      const PrefTitle(title: Text("Workarounds")),
       PrefSlider<int>(
         title: const Text(DATA_STREAM_GAP_WATCHDOG),
         subtitle: const Text(DATA_STREAM_GAP_WATCHDOG_DESCRIPTION),

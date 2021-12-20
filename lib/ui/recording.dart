@@ -21,6 +21,13 @@ import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
+import '../preferences/distance_resolution.dart';
+import '../preferences/generic.dart';
+import '../preferences/instant_measurement_start.dart';
+import '../preferences/instant_upload.dart';
+import '../preferences/last_equipment_id.dart';
+import '../preferences/simpler_ui.dart';
+import '../preferences/unit_system.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
@@ -91,7 +98,7 @@ class RecordingState extends State<RecordingScreen> {
   TextStyle _markerStyle = const TextStyle();
   TextStyle _overlayStyle = const TextStyle();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(
-    hasIcon: !SIMPLER_UI_SLOW_DEFAULT,
+    hasIcon: !simplerUiSlowDefault,
     iconColor: Colors.black,
   );
   List<bool> _expandedState = [];
@@ -101,10 +108,10 @@ class RecordingState extends State<RecordingScreen> {
 
   Activity? _activity;
   AppDatabase _database = Get.find<AppDatabase>();
-  bool _si = UNIT_SYSTEM_DEFAULT;
-  bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
-  bool _simplerUi = SIMPLER_UI_SLOW_DEFAULT;
-  bool _instantUpload = INSTANT_UPLOAD_DEFAULT;
+  bool _si = unitSystemDefault;
+  bool _highRes = distanceResolutionDefault;
+  bool _simplerUi = simplerUiSlowDefault;
+  bool _instantUpload = instantUploadDefault;
   bool _uxDebug = APP_DEBUG_MODE_DEFAULT;
 
   Timer? _dataGapWatchdog;
@@ -160,8 +167,8 @@ class RecordingState extends State<RecordingScreen> {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
       final prefService = Get.find<BasePrefService>();
-      if (prefService.get<bool>(INSTANT_MEASUREMENT_START_TAG) ??
-          INSTANT_MEASUREMENT_START_DEFAULT) {
+      if (prefService.get<bool>(instantMeasurementStartTag) ??
+          instantMeasurementStartDefault) {
         await _startMeasurement();
       }
     } else {
@@ -405,7 +412,7 @@ class RecordingState extends State<RecordingScreen> {
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     final prefService = Get.find<BasePrefService>();
     prefService.set<String>(
-      LAST_EQUIPMENT_ID_TAG_PREFIX + PreferencesSpec.sport2Sport(widget.sport),
+      lastEquipmentIdTagPrefix + PreferencesSpec.sport2Sport(widget.sport),
       widget.device.id.id,
     );
     widget.descriptor.refreshTuning(widget.device.id.id);
@@ -426,10 +433,10 @@ class RecordingState extends State<RecordingScreen> {
       ),
     );
     _trackLength = trackLength * widget.descriptor.lengthFactor;
-    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _highRes = prefService.get<bool>(DISTANCE_RESOLUTION_TAG) ?? DISTANCE_RESOLUTION_DEFAULT;
-    _simplerUi = prefService.get<bool>(SIMPLER_UI_TAG) ?? SIMPLER_UI_SLOW_DEFAULT;
-    _instantUpload = prefService.get<bool>(INSTANT_UPLOAD_TAG) ?? INSTANT_UPLOAD_DEFAULT;
+    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
+    _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
+    _instantUpload = prefService.get<bool>(instantUploadTag) ?? instantUploadDefault;
     _pointCount = min(60, size.width ~/ 2);
     final now = DateTime.now();
     _graphData = _simplerUi

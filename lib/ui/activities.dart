@@ -21,6 +21,8 @@ import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
+import '../preferences/distance_resolution.dart';
+import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/preferences.dart';
@@ -51,8 +53,8 @@ class ActivitiesScreen extends StatefulWidget {
 class ActivitiesScreenState extends State<ActivitiesScreen> {
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
-  bool _si = UNIT_SYSTEM_DEFAULT;
-  bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
+  bool _si = unitSystemDefault;
+  bool _highRes = distanceResolutionDefault;
   bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
@@ -71,9 +73,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   void initState() {
     super.initState();
     final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
-        DISTANCE_RESOLUTION_DEFAULT;
+    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _highRes = Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ??
+        distanceResolutionDefault;
     _leaderboardFeature =
         prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());

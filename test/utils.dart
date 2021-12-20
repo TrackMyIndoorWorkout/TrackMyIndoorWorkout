@@ -5,7 +5,7 @@ import 'package:pref/pref.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
 import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/preferences.dart';
+import 'package:track_my_indoor_exercise/preferences/generic.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
@@ -85,6 +85,6 @@ class ExportModelForTests extends ExportModel {
 Future<void> initPrefServiceForTest() async {
   var prefDefaults = await getPrefDefaults();
   final prefService =
-      await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
+      await PrefServiceShared.init(prefix: preferencesPrefix, defaults: prefDefaults);
   Get.put<BasePrefService>(prefService);
 }

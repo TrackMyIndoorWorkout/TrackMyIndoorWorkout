@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/scan_duration.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 import 'heart_rate_monitor_scan_result.dart';
@@ -53,7 +53,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   void initState() {
     super.initState();
     final prefService = Get.find<BasePrefService>();
-    _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
+    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
     _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
     _isScanning = false;

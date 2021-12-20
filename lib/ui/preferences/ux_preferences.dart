@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
+import '../../preferences/auto_connect.dart';
+import '../../preferences/distance_resolution.dart';
+import '../../preferences/instant_measurement_start.dart';
+import '../../preferences/instant_scan.dart';
+import '../../preferences/instant_upload.dart';
+import '../../preferences/scan_duration.dart';
+import '../../preferences/simpler_ui.dart';
+import '../../preferences/unit_system.dart';
 import 'preferences_base.dart';
 
 class UXPreferencesScreen extends PreferencesScreenBase {
@@ -33,44 +41,44 @@ class UXPreferencesScreen extends PreferencesScreenBase {
       ),
       const PrefLabel(title: Divider(height: 1)),
       const PrefCheckbox(
-        title: Text(UNIT_SYSTEM),
-        subtitle: Text(UNIT_SYSTEM_DESCRIPTION),
-        pref: UNIT_SYSTEM_TAG,
+        title: Text(unitSystem),
+        subtitle: Text(unitSystemDescription),
+        pref: unitSystemTag,
       ),
       const PrefCheckbox(
-        title: Text(DISTANCE_RESOLUTION),
-        subtitle: Text(DISTANCE_RESOLUTION_DESCRIPTION),
-        pref: DISTANCE_RESOLUTION_TAG,
+        title: Text(distanceResolution),
+        subtitle: Text(distanceResolutionDescription),
+        pref: distanceResolutionTag,
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(
-        title: const Text(SCAN_DURATION),
-        subtitle: const Text(SCAN_DURATION_DESCRIPTION),
-        pref: SCAN_DURATION_TAG,
+        title: const Text(scanDuration),
+        subtitle: const Text(scanDurationDescription),
+        pref: scanDurationTag,
         trailing: (num value) => Text("$value s"),
-        min: SCAN_DURATION_MIN,
-        max: SCAN_DURATION_MAX,
+        min: scanDurationMin,
+        max: scanDurationMax,
         direction: Axis.vertical,
       ),
       const PrefCheckbox(
-        title: Text(INSTANT_SCAN),
-        subtitle: Text(INSTANT_SCAN_DESCRIPTION),
-        pref: INSTANT_SCAN_TAG,
+        title: Text(instantScan),
+        subtitle: Text(instantScanDescription),
+        pref: instantScanTag,
       ),
       const PrefCheckbox(
-        title: Text(AUTO_CONNECT),
-        subtitle: Text(AUTO_CONNECT_DESCRIPTION),
-        pref: AUTO_CONNECT_TAG,
+        title: Text(autoConnect),
+        subtitle: Text(autoConnectDescription),
+        pref: autoConnectTag,
       ),
       const PrefCheckbox(
-        title: Text(INSTANT_MEASUREMENT_START),
-        subtitle: Text(INSTANT_MEASUREMENT_START_DESCRIPTION),
-        pref: INSTANT_MEASUREMENT_START_TAG,
+        title: Text(instantMeasurementStart),
+        subtitle: Text(instantMeasurementStartDescription),
+        pref: instantMeasurementStartTag,
       ),
       const PrefCheckbox(
-        title: Text(INSTANT_UPLOAD),
-        subtitle: Text(INSTANT_UPLOAD_DESCRIPTION),
-        pref: INSTANT_UPLOAD_TAG,
+        title: Text(instantUpload),
+        subtitle: Text(instantUploadDescription),
+        pref: instantUploadTag,
       ),
       const PrefCheckbox(
         title: Text(MULTI_SPORT_DEVICE_SUPPORT),
@@ -78,9 +86,9 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         pref: MULTI_SPORT_DEVICE_SUPPORT_TAG,
       ),
       const PrefCheckbox(
-        title: Text(SIMPLER_UI),
-        subtitle: Text(SIMPLER_UI_DESCRIPTION),
-        pref: SIMPLER_UI_TAG,
+        title: Text(simplerUi),
+        subtitle: Text(simplerUiDescription),
+        pref: simplerUiTag,
       ),
     ];
 

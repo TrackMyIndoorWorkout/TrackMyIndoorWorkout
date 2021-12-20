@@ -1,7 +1,7 @@
 import 'package:floor/floor.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../devices/device_map.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/generic.dart';
 import '../../upload/constants.dart';
 import '../../utils/display.dart' as display;
 import 'workout_summary.dart';

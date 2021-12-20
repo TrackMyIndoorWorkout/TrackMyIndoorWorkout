@@ -10,8 +10,9 @@ import 'package:pref/pref.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
+import '../preferences/distance_resolution.dart';
+import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/statistics_accumulator.dart';
@@ -44,8 +45,8 @@ class RecordsScreenState extends State<RecordsScreen> {
   bool _initialized = false;
   final List<String> _selectedTimes = [];
   final List<String> _selectedValues = [];
-  bool _si = UNIT_SYSTEM_DEFAULT;
-  bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
+  bool _si = unitSystemDefault;
+  bool _highRes = distanceResolutionDefault;
   List<PreferencesSpec> _preferencesSpecs = [];
 
   double? _mediaWidth;
@@ -312,9 +313,9 @@ class RecordsScreenState extends State<RecordsScreen> {
   void initState() {
     super.initState();
     final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
-        DISTANCE_RESOLUTION_DEFAULT;
+    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _highRes = Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ??
+        distanceResolutionDefault;
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.activity.sport);
     widget.activity.hydrate();
     _isLight = !_themeManager.isDark();

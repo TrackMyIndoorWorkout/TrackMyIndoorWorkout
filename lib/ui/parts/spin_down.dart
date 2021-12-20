@@ -12,6 +12,7 @@ import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
 import '../../persistence/preferences.dart';
+import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/display.dart';
@@ -50,7 +51,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   double _sizeDefault = 10.0;
   TextStyle _smallerTextStyle = const TextStyle();
   TextStyle _largerTextStyle = const TextStyle();
-  bool _si = UNIT_SYSTEM_DEFAULT;
+  bool _si = unitSystemDefault;
   int _step = stepWeightInput;
   int _weight = 80;
   int _oldWeightLsb = 0;
@@ -96,7 +97,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   void initState() {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
+    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _rememberLastWeight = prefService.get<bool>(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ??
         REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
     _preferencesWeight =

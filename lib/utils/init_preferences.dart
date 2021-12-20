@@ -2,28 +2,39 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
+import '../preferences/auto_connect.dart';
+import '../preferences/device_filtering.dart';
+import '../preferences/distance_resolution.dart';
+import '../preferences/generic.dart';
+import '../preferences/instant_measurement_start.dart';
+import '../preferences/instant_scan.dart';
+import '../preferences/instant_upload.dart';
+import '../preferences/last_equipment_id.dart';
+import '../preferences/scan_duration.dart';
+import '../preferences/simpler_ui.dart';
+import '../preferences/unit_system.dart';
 import 'constants.dart';
 
 void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService prefService) {
   final valueString = prefService.get<String>(tag) ?? "$defaultInt";
   final intValue = int.tryParse(valueString);
   if (intValue != null && intValue != defaultInt) {
-    prefService.set<int>(tag + INT_TAG_POSTFIX, intValue);
+    prefService.set<int>(tag + intTagPostfix, intValue);
   }
 }
 
 Future<Map<String, dynamic>> getPrefDefaults() async {
   Map<String, dynamic> prefDefaults = {
-    PREFERENCES_VERSION_TAG: PREFERENCES_VERSION_NEXT,
-    UNIT_SYSTEM_TAG: UNIT_SYSTEM_DEFAULT,
-    DISTANCE_RESOLUTION_TAG: DISTANCE_RESOLUTION_DEFAULT,
-    INSTANT_SCAN_TAG: INSTANT_SCAN_DEFAULT,
-    SCAN_DURATION_TAG: SCAN_DURATION_DEFAULT,
-    AUTO_CONNECT_TAG: AUTO_CONNECT_DEFAULT,
-    INSTANT_MEASUREMENT_START_TAG: INSTANT_MEASUREMENT_START_DEFAULT,
-    INSTANT_UPLOAD_TAG: INSTANT_UPLOAD_DEFAULT,
-    SIMPLER_UI_TAG: await getSimplerUiDefault(),
-    DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT,
+    preferencesVersionTag: preferencesVersionNext,
+    unitSystemTag: unitSystemDefault,
+    distanceResolutionTag: distanceResolutionDefault,
+    instantScanTag: instantScanDefault,
+    scanDurationTag: scanDurationDefault,
+    autoConnectTag: autoConnectDefault,
+    instantMeasurementStartTag: instantMeasurementStartDefault,
+    instantUploadTag: instantUploadDefault,
+    simplerUiTag: await getSimplerUiDefault(),
+    deviceFilteringTag: deviceFilteringDefault,
     MULTI_SPORT_DEVICE_SUPPORT_TAG: MULTI_SPORT_DEVICE_SUPPORT_DEFAULT,
     MEASUREMENT_PANELS_EXPANDED_TAG: MEASUREMENT_PANELS_EXPANDED_DEFAULT,
     MEASUREMENT_DETAIL_SIZE_TAG: MEASUREMENT_DETAIL_SIZE_DEFAULT,
@@ -77,7 +88,7 @@ Future<BasePrefService> initPreferences() async {
       });
     }
 
-    prefDefaults.addAll({LAST_EQUIPMENT_ID_TAG_PREFIX + sport: LAST_EQUIPMENT_ID_DEFAULT});
+    prefDefaults.addAll({lastEquipmentIdTagPrefix + sport: lastEquipmentIdDefault});
     if (sport != ActivityType.ride) {
       prefDefaults.addAll(
           {PreferencesSpec.slowSpeedTag(sport): PreferencesSpec.slowSpeeds[sport].toString()});
@@ -92,11 +103,11 @@ Future<BasePrefService> initPreferences() async {
   }
 
   final prefService =
-      await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
+      await PrefServiceShared.init(prefix: preferencesPrefix, defaults: prefDefaults);
   Get.put<BasePrefService>(prefService, permanent: true);
 
-  final prefVersion = prefService.get<int>(PREFERENCES_VERSION_TAG) ?? PREFERENCES_VERSION_NEXT;
-  if (prefVersion < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
+  final prefVersion = prefService.get<int>(preferencesVersionTag) ?? preferencesVersionNext;
+  if (prefVersion < preferencesVersionSportThresholds) {
     for (var prefSpec in PreferencesSpec.preferencesSpecs) {
       final thresholdTag = PreferencesSpec.thresholdPrefix + prefSpec.metric;
       var thresholdString = prefService.get<String>(thresholdTag) ?? "";
@@ -114,17 +125,17 @@ Future<BasePrefService> initPreferences() async {
     }
   }
 
-  if (prefVersion < PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT) {
-    final lastEquipmentId = prefService.get<String>(LAST_EQUIPMENT_ID_TAG) ?? "";
+  if (prefVersion < preferencesVersionEquipmentRemembrancePerSport) {
+    final lastEquipmentId = prefService.get<String>(lastEquipmentIdTag) ?? "";
     if (lastEquipmentId.trim().isNotEmpty) {
       await prefService.set<String>(
-        LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.ride,
+        lastEquipmentIdTagPrefix + ActivityType.ride,
         lastEquipmentId,
       );
     }
   }
 
-  if (prefVersion < PREFERENCES_VERSION_SPINNERS) {
+  if (prefVersion < preferencesVersionSpinners) {
     migrateStringIntegerPreference(
       STROKE_RATE_SMOOTHING_TAG,
       STROKE_RATE_SMOOTHING_DEFAULT,
@@ -179,7 +190,7 @@ Future<BasePrefService> initPreferences() async {
 
   String addressesString =
       prefService.get<String>(DATA_CONNECTION_ADDRESSES_TAG) ?? DATA_CONNECTION_ADDRESSES_DEFAULT;
-  if (prefVersion < PREFERENCES_VERSION_DEFAULTING_DATA_CONNECTION) {
+  if (prefVersion < preferencesVersionDefaultingDataConnection) {
     if (addressesString == DATA_CONNECTION_ADDRESSES_OLD_DEFAULT) {
       await prefService.set<String>(
         DATA_CONNECTION_ADDRESSES_TAG,
@@ -189,11 +200,11 @@ Future<BasePrefService> initPreferences() async {
     }
   }
 
-  if ((prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT) < SCAN_DURATION_DEFAULT) {
-    await prefService.set<int>(SCAN_DURATION_TAG, SCAN_DURATION_DEFAULT);
+  if ((prefService.get<int>(scanDurationTag) ?? scanDurationDefault) < scanDurationDefault) {
+    await prefService.set<int>(scanDurationTag, scanDurationDefault);
   }
 
-  if (prefVersion < PREFERENCES_VERSION_INCREASE_WATCHDOG_DEFAULT) {
+  if (prefVersion < preferencesVersionIncreaseWatchdogDefault) {
     final currentDefault = prefService.get<int>(DATA_STREAM_GAP_WATCHDOG_INT_TAG);
     if (currentDefault == DATA_STREAM_GAP_WATCHDOG_OLD_DEFAULT) {
       await prefService.set<int>(
@@ -201,7 +212,7 @@ Future<BasePrefService> initPreferences() async {
     }
   }
 
-  await prefService.set<int>(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);
+  await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
 
   for (var sport in PreferencesSpec.sportPrefixes) {
     if (sport != ActivityType.ride) {
