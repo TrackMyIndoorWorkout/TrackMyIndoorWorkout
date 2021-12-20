@@ -32,8 +32,12 @@ jobs:
           echo const trainingPeaksClientId="a"; >> lib/persistence/secret.dart
           echo const googleFitClientId="a"; >> lib/persistence/secret.dart
           echo const googleFitSecret="a"; >> lib/persistence/secret.dart
+      - name: Verify Mock Secret file
+        run: cat lib/persistence/secret.dart
       - name: Format files
-        run: flutter format --line-length 100 --set-exit-if-changed .
+        run: flutter format --line-length 100 .
+      - name: Verify Mock Secret file 2
+        run: cat lib/persistence/secret.dart
       - name: Analyze files
         run: flutter analyze .
       - name: Run the tests
