@@ -18,7 +18,7 @@ class AdvertisementDigest {
   });
 
   bool isHeartRateMonitor() {
-    return serviceUuids.contains(HEART_RATE_SERVICE_ID);
+    return serviceUuids.contains(heartRateServiceUuid);
   }
 
   String fitnessMachineSport() {

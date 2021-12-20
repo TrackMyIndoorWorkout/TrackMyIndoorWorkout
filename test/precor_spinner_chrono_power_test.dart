@@ -13,15 +13,15 @@ class TestPair {
 
 void main() {
   test('Precor Spinner Chrono Power constructor tests', () async {
-    final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC]!;
+    final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
 
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.Ride);
-    expect(bike.fourCC, PRECOR_SPINNER_CHRONO_POWER_FOURCC);
+    expect(bike.fourCC, precorSpinnerChronoPowerFourCC);
   });
 
   test('Precor Spinner Chrono Power interprets Data flags properly', () async {
-    final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC] as PrecorSpinnerChronoPower;
+    final bike = deviceMap[precorSpinnerChronoPowerFourCC] as PrecorSpinnerChronoPower;
 
     expect(
         bike.canDataProcessed([83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), true);
@@ -201,7 +201,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC]!;
+        final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
         final record = bike.stubRecord(testPair.data)!;
 
         expect(record.id, null);

@@ -30,7 +30,7 @@ extension HeartRateMonitorScanResult on ScanResult {
     return serviceUuids.contains(serviceId);
   }
 
-  bool get isHeartRateMonitor => hasService(HEART_RATE_SERVICE_ID);
+  bool get isHeartRateMonitor => hasService(heartRateServiceUuid);
 }
 
 class HeartRateMonitorScanResultTile extends StatelessWidget {

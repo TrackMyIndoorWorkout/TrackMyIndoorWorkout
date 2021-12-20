@@ -22,11 +22,11 @@ const sampleData = [0, 145, 1, 187];
 @GenerateMocks([BluetoothDevice])
 void main() {
   test('Runn RSC constructor tests', () async {
-    final rower = deviceMap[NPE_RUNN_FOURCC]!;
+    final rower = deviceMap[npeRunnFourCC]!;
 
     expect(rower.canMeasureHeartRate, false);
     expect(rower.defaultSport, ActivityType.Run);
-    expect(rower.fourCC, NPE_RUNN_FOURCC);
+    expect(rower.fourCC, npeRunnFourCC);
   });
 
   test('Runn RSC Device interprets flags properly', () async {

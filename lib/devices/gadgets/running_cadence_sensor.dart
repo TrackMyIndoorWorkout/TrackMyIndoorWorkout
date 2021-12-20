@@ -14,7 +14,7 @@ class RunningCadenceSensor extends ComplexSensor {
   LongMetricDescriptor? distanceMetric;
 
   RunningCadenceSensor(device, powerFactor)
-      : super(RUNNING_CADENCE_SERVICE_ID, RUNNING_CADENCE_MEASUREMENT_ID, device);
+      : super(runningCadenceServiceUuid, runningCadenceMeasurementUuid, device);
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml
   @override

@@ -19,12 +19,12 @@ class TestPair {
 void main() {
   group('DeviceBase infers sport as expected from characteristics ID', () {
     for (final testPair in [
-      const TestPair(characteristicsId: TREADMILL_ID, sport: ActivityType.Run),
-      const TestPair(characteristicsId: PRECOR_MEASUREMENT_ID, sport: ActivityType.Ride),
-      const TestPair(characteristicsId: INDOOR_BIKE_ID, sport: ActivityType.Ride),
-      const TestPair(characteristicsId: ROWER_DEVICE_ID, sport: ActivityType.Rowing),
-      const TestPair(characteristicsId: CROSS_TRAINER_ID, sport: ActivityType.Elliptical),
-      const TestPair(characteristicsId: HEART_RATE_MEASUREMENT_ID, sport: null)
+      const TestPair(characteristicsId: treadmillUuid, sport: ActivityType.Run),
+      const TestPair(characteristicsId: precorMeasurementUuid, sport: ActivityType.Ride),
+      const TestPair(characteristicsId: indoorBikeUuid, sport: ActivityType.Ride),
+      const TestPair(characteristicsId: rowerDeviceUuid, sport: ActivityType.Rowing),
+      const TestPair(characteristicsId: crossTrainerUuid, sport: ActivityType.Elliptical),
+      const TestPair(characteristicsId: heartRateMeasurementUuid, sport: null)
     ]) {
       test("${testPair.characteristicsId} -> ${testPair.sport}", () async {
         await initPrefServiceForTest();

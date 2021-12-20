@@ -73,7 +73,7 @@ abstract class DeviceBase {
           .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
     } else {
       characteristic = _service!.characteristics
-          .firstWhereOrNull((ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()));
+          .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
       characteristicsId = characteristic?.uuid.uuidString();
     }
 
@@ -107,13 +107,13 @@ abstract class DeviceBase {
   }
 
   String? inferSportFromCharacteristicsId() {
-    if (characteristicsId == TREADMILL_ID) {
+    if (characteristicsId == treadmillUuid) {
       return ActivityType.Run;
-    } else if (characteristicsId == PRECOR_MEASUREMENT_ID || characteristicsId == INDOOR_BIKE_ID) {
+    } else if (characteristicsId == precorMeasurementUuid || characteristicsId == indoorBikeUuid) {
       return ActivityType.Ride;
-    } else if (characteristicsId == ROWER_DEVICE_ID) {
+    } else if (characteristicsId == rowerDeviceUuid) {
       return ActivityType.Rowing;
-    } else if (characteristicsId == CROSS_TRAINER_ID) {
+    } else if (characteristicsId == crossTrainerUuid) {
       return ActivityType.Elliptical;
     }
 

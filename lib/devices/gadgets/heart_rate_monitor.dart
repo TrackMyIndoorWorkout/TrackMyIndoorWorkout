@@ -10,7 +10,7 @@ class HeartRateMonitor extends ComplexSensor {
   ShortMetricDescriptor? _shortHeartRateMetric;
   ShortMetricDescriptor? _caloriesMetric;
 
-  HeartRateMonitor(device) : super(HEART_RATE_SERVICE_ID, HEART_RATE_MEASUREMENT_ID, device);
+  HeartRateMonitor(device) : super(heartRateServiceUuid, heartRateMeasurementUuid, device);
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.heart_rate_measurement.xml
   @override

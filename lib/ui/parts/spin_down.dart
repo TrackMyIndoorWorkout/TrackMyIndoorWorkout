@@ -147,17 +147,17 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     if (!(_fitnessEquipment?.discovered ?? false)) return false;
 
     final userData =
-        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], USER_DATA_SERVICE);
+        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], userDataServiceUuid);
     _weightData =
-        BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, WEIGHT_CHARACTERISTIC);
+        BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, weightCharacteristicUuid);
     if (_weightData == null) return false;
 
     final fitnessMachine =
-        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], FITNESS_MACHINE_ID);
+        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], fitnessMachineUuid);
     _controlPoint = BluetoothDeviceEx.filterCharacteristic(
-        fitnessMachine?.characteristics, FITNESS_MACHINE_CONTROL_POINT);
+        fitnessMachine?.characteristics, fitnessMachineControlPointUuid);
     _fitnessMachineStatus = BluetoothDeviceEx.filterCharacteristic(
-        fitnessMachine?.characteristics, FITNESS_MACHINE_STATUS);
+        fitnessMachine?.characteristics, fitnessMachineStatusUuid);
     if (_controlPoint == null || _fitnessMachineStatus == null) return false;
 
     // #117 Attach the handler way ahead of the actual weight write
@@ -172,7 +172,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         .throttleTime(const Duration(milliseconds: SPIN_DOWN_THRESHOLD))
         .listen((response) async {
       if (response.length == 1 && _calibrationState == CalibrationState.weightSubmitting) {
-        if (response[0] != WEIGHT_SUCCESS_OPCODE) {
+        if (response[0] != weightSuccessOpcode) {
           setState(() {
             _calibrationState = CalibrationState.weighInProblem;
           });
@@ -222,7 +222,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         .throttleTime(const Duration(milliseconds: SPIN_DOWN_THRESHOLD))
         .listen((data) async {
       if (data.length == 1) {
-        if (data[0] != SPIN_DOWN_OPCODE) {
+        if (data[0] != spinDownOpcode) {
           setState(() {
             _step = stepDone;
             _calibrationState = CalibrationState.calibrationFail;
@@ -231,9 +231,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       }
 
       if (data.length == 7) {
-        if (data[0] != CONTROL_OPCODE ||
-            data[1] != SPIN_DOWN_OPCODE ||
-            data[2] != SUCCESS_RESPONSE) {
+        if (data[0] != controlOpcode ||
+            data[1] != spinDownOpcode ||
+            data[2] != successResponse) {
           setState(() {
             _step = stepDone;
             _calibrationState = CalibrationState.calibrationFail;
@@ -398,7 +398,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     });
 
     try {
-      await _controlPoint?.write([SPIN_DOWN_OPCODE, SPIN_DOWN_START_COMMAND]);
+      await _controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
       await _fitnessMachineStatus?.setNotifyValue(true);
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
@@ -408,22 +408,22 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _statusSubscription = _fitnessMachineStatus?.value
         .throttleTime(const Duration(milliseconds: FTMS_STATUS_THRESHOLD))
         .listen((status) {
-      if (status.length == 2 && status[0] == SPIN_DOWN_STATUS) {
-        if (status[1] == SPIN_DOWN_STATUS_SUCCESS) {
+      if (status.length == 2 && status[0] == spinDownStatus) {
+        if (status[1] == spinDownStatusSuccess) {
           _reset();
           setState(() {
             _step = stepDone;
             _calibrationState = CalibrationState.calibrationSuccess;
           });
         }
-        if (status[1] == SPIN_DOWN_STATUS_ERROR) {
+        if (status[1] == spinDownStatusError) {
           _reset();
           setState(() {
             _step = stepDone;
             _calibrationState = CalibrationState.calibrationFail;
           });
         }
-        if (status[1] == SPIN_DOWN_STATUS_STOP_PEDALING) {
+        if (status[1] == spinDownStatusStopPedaling) {
           setState(() {
             _calibrationState = CalibrationState.calibrationOver;
           });

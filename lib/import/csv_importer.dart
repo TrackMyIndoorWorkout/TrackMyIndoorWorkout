@@ -205,7 +205,7 @@ class CSVImporter {
     final prefService = Get.find<BasePrefService>();
 
     var deviceName = "";
-    var deviceId = MPOWER_IMPORT_DEVICE_ID;
+    var deviceId = mPowerImportDeviceId;
     var startTime = 0;
     var endTime = 0;
     var calories = 0;
@@ -472,7 +472,7 @@ class CSVImporter {
         _linePointer++;
       }
     } else {
-      DeviceDescriptor device = deviceMap[SCHWINN_AC_PERF_PLUS_FOURCC]!;
+      DeviceDescriptor device = deviceMap[schwinnACPerfPlusFourCC]!;
       device.refreshTuning(deviceId);
       deviceName = device.namePrefixes[0];
       fourCC = device.fourCC;

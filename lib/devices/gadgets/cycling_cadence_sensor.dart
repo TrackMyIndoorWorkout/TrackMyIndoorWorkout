@@ -17,8 +17,8 @@ class CyclingCadenceSensor extends IntegerSensor {
 
   CyclingCadenceSensor(device)
       : super(
-          CYCLING_CADENCE_SERVICE_ID,
-          CYCLING_CADENCE_MEASUREMENT_ID,
+          cyclingCadenceServiceUuid,
+          cyclingCadenceMeasurementUuid,
           device,
         );
 

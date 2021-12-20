@@ -56,7 +56,7 @@ class FitnessEquipment extends DeviceBase {
 
   FitnessEquipment({this.descriptor, device, this.startingValues = true})
       : super(
-          serviceId: descriptor?.dataServiceId ?? FITNESS_MACHINE_ID,
+          serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
           characteristicsId: descriptor?.dataCharacteristicId,
           device: device,
         ) {
@@ -115,7 +115,7 @@ class FitnessEquipment extends DeviceBase {
     }
     if (sport == ActivityType.Run) {
       if (services.firstWhereOrNull(
-              (service) => service.uuid.uuidString() == RUNNING_CADENCE_SERVICE_ID) !=
+              (service) => service.uuid.uuidString() == runningCadenceServiceUuid) !=
           null) {
         _runningCadenceSensor = RunningCadenceSensor(device, powerFactor);
         _runningCadenceSensor?.services = services;
@@ -149,9 +149,9 @@ class FitnessEquipment extends DeviceBase {
     equipmentDiscovery = true;
     // Check manufacturer name
     if (manufacturerName == null) {
-      final deviceInfo = BluetoothDeviceEx.filterService(services, DEVICE_INFORMATION_ID);
+      final deviceInfo = BluetoothDeviceEx.filterService(services, deviceInformationUuid);
       final nameCharacteristic =
-          BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, MANUFACTURER_NAME_ID);
+          BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, manufacturerNameUuid);
       if (nameCharacteristic == null) {
         return false;
       }

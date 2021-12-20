@@ -177,8 +177,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
-    if (descriptor == null && advertisementDigest.serviceUuids.contains(PRECOR_SERVICE_ID)) {
-      descriptor = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC];
+    if (descriptor == null && advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
+      descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
     }
 
     final database = Get.find<AppDatabase>();
@@ -198,7 +198,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         if (advertisementDigest.machineType != MachineType.NotFitnessMachine) {
           // Determine FTMS sport by Service Data bits
           inferredSport = advertisementDigest.fitnessMachineSport();
-        } else if (advertisementDigest.serviceUuids.contains(FITNESS_MACHINE_ID)) {
+        } else if (advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
           // Determine FTMS sport by analyzing 0x1826 service's characteristics
           setState(() {
             _goingToRecording = true;

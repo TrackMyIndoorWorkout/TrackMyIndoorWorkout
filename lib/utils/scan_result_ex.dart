@@ -37,9 +37,9 @@ extension ScanResultEx on ScanResult {
 
       if (advertisementData.serviceUuids.isNotEmpty) {
         final serviceUuids = advertisementData.uuids;
-        if (serviceUuids.contains(FITNESS_MACHINE_ID) ||
-            serviceUuids.contains(PRECOR_SERVICE_ID) ||
-            serviceUuids.contains(HEART_RATE_SERVICE_ID)) {
+        if (serviceUuids.contains(fitnessMachineUuid) ||
+            serviceUuids.contains(precorServiceUuid) ||
+            serviceUuids.contains(heartRateServiceUuid)) {
           return true;
         }
       }
@@ -54,7 +54,7 @@ extension ScanResultEx on ScanResult {
     return serviceUuids.contains(serviceId);
   }
 
-  bool get isHeartRateMonitor => hasService(HEART_RATE_SERVICE_ID);
+  bool get isHeartRateMonitor => hasService(heartRateServiceUuid);
 
   String manufacturerName() {
     final companyRegistry = Get.find<CompanyRegistry>();
@@ -73,20 +73,20 @@ extension ScanResultEx on ScanResult {
   }
 
   MachineType getMachineType() {
-    if (serviceUuids.contains(PRECOR_SERVICE_ID)) {
+    if (serviceUuids.contains(precorServiceUuid)) {
       return MachineType.IndoorBike;
     }
 
-    if (serviceUuids.contains(HEART_RATE_SERVICE_ID)) {
+    if (serviceUuids.contains(heartRateServiceUuid)) {
       return MachineType.HeartRateMonitor;
     }
 
-    if (!serviceUuids.contains(FITNESS_MACHINE_ID)) {
+    if (!serviceUuids.contains(fitnessMachineUuid)) {
       return MachineType.NotFitnessMachine;
     }
 
     for (MapEntry<String, List<int>> entry in advertisementData.serviceData.entries) {
-      if (entry.key.uuidString() == FITNESS_MACHINE_ID) {
+      if (entry.key.uuidString() == fitnessMachineUuid) {
         final serviceData = entry.value;
         if (serviceData.length > 2 && serviceData[0] >= 1) {
           for (final machineType in MachineType.values) {

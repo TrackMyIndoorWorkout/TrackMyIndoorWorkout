@@ -29,13 +29,13 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   TextStyle _textStyle = const TextStyle();
 
   Future<String> _readBatteryLevelCore(List<BluetoothService> services) async {
-    final batteryService = BluetoothDeviceEx.filterService(services, BATTERY_SERVICE_ID);
+    final batteryService = BluetoothDeviceEx.filterService(services, batteryServiceUuid);
     if (batteryService == null) {
       return NOT_AVAILABLE;
     }
 
     final batteryLevel =
-        BluetoothDeviceEx.filterCharacteristic(batteryService.characteristics, BATTERY_LEVEL_ID);
+        BluetoothDeviceEx.filterCharacteristic(batteryService.characteristics, batteryLevelUuid);
     if (batteryLevel == null) {
       return NOT_AVAILABLE;
     }

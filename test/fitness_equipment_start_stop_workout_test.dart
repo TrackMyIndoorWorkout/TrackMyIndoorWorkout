@@ -49,7 +49,7 @@ void main() {
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = deviceMap["SIC4"]!;
         final activity = Activity(
-          deviceId: MPOWER_IMPORT_DEVICE_ID,
+          deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
           start: oneSecondAgo.millisecondsSinceEpoch,
           startDateTime: oneSecondAgo,

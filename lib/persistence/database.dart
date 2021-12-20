@@ -149,14 +149,14 @@ final migration1to2 = Migration(1, 2, (database) async {
 
 final migration2to3 = Migration(2, 3, (database) async {
   await database.execute(
-      "UPDATE `$activitiesTableName` SET four_cc='$PRECOR_SPINNER_CHRONO_POWER_FOURCC' WHERE 1=1");
+      "UPDATE `$activitiesTableName` SET four_cc='$precorSpinnerChronoPowerFourCC' WHERE 1=1");
 });
 
 final migration3to4 = Migration(3, 4, (database) async {
   // Cannot add a non null column
   await database.execute("ALTER TABLE `$activitiesTableName` ADD COLUMN `sport` TEXT");
   await database.execute(
-      "UPDATE `$activitiesTableName` SET `sport`='Kayaking' WHERE `four_cc`='$KAYAK_PRO_GENESIS_PORT_FOURCC'");
+      "UPDATE `$activitiesTableName` SET `sport`='Kayaking' WHERE `four_cc`='$kayakProGenesisPortFourCC'");
   await database.execute("UPDATE `$activitiesTableName` SET `sport`='Ride' WHERE `sport` IS NULL");
 });
 
@@ -180,13 +180,13 @@ final migration5to6 = Migration(5, 6, (database) async {
   await database.execute("ALTER TABLE `$activitiesTableName` ADD COLUMN `calorie_factor` FLOAT");
 
   await database.execute("UPDATE `$activitiesTableName` "
-      "SET device_id='$MPOWER_IMPORT_DEVICE_ID' WHERE `device_id`=''");
+      "SET device_id='$mPowerImportDeviceId' WHERE `device_id`=''");
   await database.execute("UPDATE `$activitiesTableName` SET `power_factor`=1.0");
   await database.execute("UPDATE `$activitiesTableName` SET `calorie_factor`=1.0");
   await database.execute(
-      "UPDATE `$activitiesTableName` SET `calorie_factor`=1.4 WHERE `four_cc`='$SCHWINN_IC_BIKE_FOURCC'");
+      "UPDATE `$activitiesTableName` SET `calorie_factor`=1.4 WHERE `four_cc`='$schwinnICBikeFourCC'");
   await database.execute(
-      "UPDATE `$activitiesTableName` SET `calorie_factor`=3.9 WHERE `four_cc`='$SCHWINN_AC_PERF_PLUS_FOURCC'");
+      "UPDATE `$activitiesTableName` SET `calorie_factor`=3.9 WHERE `four_cc`='$schwinnACPerfPlusFourCC'");
 });
 
 final migration6to7 = Migration(6, 7, (database) async {
