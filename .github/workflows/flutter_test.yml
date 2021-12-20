@@ -20,18 +20,18 @@ jobs:
         run: flutter pub get
       - name: Mock Secrets File
         run: |
-          echo 'const stravaSecret="a";' > lib/persistence/secret.dart
-          echo 'const stravaClientId="1";' >> lib/persistence/secret.dart
-          echo 'const suuntoSecret="a";' >> lib/persistence/secret.dart
-          echo 'const suuntoClientId="a";' >> lib/persistence/secret.dart
-          echo 'const suuntoSubscriptionPrimaryKey="a";' >> lib/persistence/secret.dart
-          echo 'const suuntoSubscriptionSecondaryKey="a";' >> lib/persistence/secret.dart
-          echo 'const underArmourSecret="a";' >> lib/persistence/secret.dart
-          echo 'const underArmourKey="a";' >> lib/persistence/secret.dart
-          echo 'const trainingPeaksSecret="a";' >> lib/persistence/secret.dart
-          echo 'const trainingPeaksClientId="a";' >> lib/persistence/secret.dart
-          echo 'const googleFitClientId="a";' >> lib/persistence/secret.dart
-          echo 'const googleFitSecret="a";' >> lib/persistence/secret.dart
+          echo const stravaSecret="a"; > lib/persistence/secret.dart
+          echo const stravaClientId="1"; >> lib/persistence/secret.dart
+          echo const suuntoSecret="a"; >> lib/persistence/secret.dart
+          echo const suuntoClientId="a"; >> lib/persistence/secret.dart
+          echo const suuntoSubscriptionPrimaryKey="a"; >> lib/persistence/secret.dart
+          echo const suuntoSubscriptionSecondaryKey="a"; >> lib/persistence/secret.dart
+          echo const underArmourSecret="a"; >> lib/persistence/secret.dart
+          echo const underArmourKey="a"; >> lib/persistence/secret.dart
+          echo const trainingPeaksSecret="a"; >> lib/persistence/secret.dart
+          echo const trainingPeaksClientId="a"; >> lib/persistence/secret.dart
+          echo const googleFitClientId="a"; >> lib/persistence/secret.dart
+          echo const googleFitSecret="a"; >> lib/persistence/secret.dart
       - name: Format files
         run: flutter format --line-length 100 --set-exit-if-changed .
       - name: Analyze files
