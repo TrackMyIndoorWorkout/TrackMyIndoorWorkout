@@ -1,6 +1,5 @@
 import '../preferences/generic.dart';
 
-
 const MEASUREMENT_PANELS_EXPANDED_TAG = "measurement_panels_expanded";
 const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
 

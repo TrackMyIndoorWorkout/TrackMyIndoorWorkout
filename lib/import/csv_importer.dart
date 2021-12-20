@@ -610,8 +610,8 @@ class CSVImporter {
       bool useHrBasedCalorieCounting = hrBasedCalories;
       int weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
       int age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
-      bool isMale = (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) ==
-          athleteGenderMale;
+      bool isMale =
+          (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) == athleteGenderMale;
       int vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
       useHrBasedCalorieCounting &= (weight > athleteBodyWeightMin && age > athleteAgeMin);
 

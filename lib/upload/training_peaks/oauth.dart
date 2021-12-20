@@ -106,8 +106,7 @@ abstract class Auth {
   Future<void> _getTrainingPeaksCode(String clientId, String scope) async {
     debugPrint('Entering getTrainingPeaksCode');
 
-    final params =
-        '?response_type=code&client_id=$clientId&scope=$scope&redirect_uri=$redirectUrl';
+    final params = '?response_type=code&client_id=$clientId&scope=$scope&redirect_uri=$redirectUrl';
 
     final reqAuth = getUrlBase(true) + authorizationPath + params;
     debugPrint(reqAuth);

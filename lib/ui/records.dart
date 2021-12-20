@@ -314,8 +314,8 @@ class RecordsScreenState extends State<RecordsScreen> {
     super.initState();
     final prefService = Get.find<BasePrefService>();
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
-    _highRes = Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ??
-        distanceResolutionDefault;
+    _highRes =
+        Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.activity.sport);
     widget.activity.hydrate();
     _isLight = !_themeManager.isDark();

@@ -419,8 +419,8 @@ class FitnessEquipment extends DeviceBase {
         USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
     _weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     _age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
-    _isMale = (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) ==
-        athleteGenderMale;
+    _isMale =
+        (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) == athleteGenderMale;
     _vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
     _useHrBasedCalorieCounting &= (_weight > athleteBodyWeightMin && _age > athleteAgeMin);
     _runningCadenceSensor?.refreshFactors();

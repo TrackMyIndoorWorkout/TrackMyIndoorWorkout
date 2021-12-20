@@ -243,8 +243,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final prefService = Get.find<BasePrefService>();
 
     if (descriptor.isMultiSport) {
-      final multiSportSupport = prefService.get<bool>(multiSportDeviceSupportTag) ??
-          multiSportDeviceSupportDefault;
+      final multiSportSupport =
+          prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;
       if (deviceUsage == null || multiSportSupport) {
         final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
         final sportPick = await Get.bottomSheet(
@@ -622,8 +622,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       : null;
                                   final existingId =
                                       heartRateMonitor?.device?.id.id ?? notAvailable;
-                                  final storedId =
-                                      _heartRateMonitor?.device?.id.id ?? notAvailable;
+                                  final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
                                   bool disconnectOnly = false;
                                   if (heartRateMonitor != null) {
                                     disconnectOnly = existingId == r.device.id.id;
@@ -762,8 +761,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         () async {
                           if (_isScanning) {
                             await FlutterBlue.instance.stopScan();
-                            await Future.delayed(
-                                const Duration(milliseconds: uiIntermittentDelay));
+                            await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
                           }
                         },
                       );

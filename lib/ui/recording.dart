@@ -167,8 +167,7 @@ class RecordingState extends State<RecordingScreen> {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
       final prefService = Get.find<BasePrefService>();
-      if (prefService.get<bool>(instantMeasurementStartTag) ??
-          instantMeasurementStartDefault) {
+      if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
         await _startMeasurement();
       }
     } else {

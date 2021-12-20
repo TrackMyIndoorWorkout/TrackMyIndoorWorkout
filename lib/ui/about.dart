@@ -47,8 +47,7 @@ class AboutScreenState extends State<AboutScreen> {
     });
 
     final prefService = Get.find<BasePrefService>();
-    _enforcedTimeZone =
-        prefService.get<String>(enforcedTimeZoneTag) ?? enforcedTimeZoneDefault;
+    _enforcedTimeZone = prefService.get<String>(enforcedTimeZoneTag) ?? enforcedTimeZoneDefault;
   }
 
   @override

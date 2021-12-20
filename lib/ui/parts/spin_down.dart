@@ -98,10 +98,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     final prefService = Get.find<BasePrefService>();
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
-    _rememberLastWeight = prefService.get<bool>(rememberAthleteBodyWeightTag) ??
-        rememberAthleteBodyWeightDefault;
-    _preferencesWeight =
-        prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
+    _rememberLastWeight =
+        prefService.get<bool>(rememberAthleteBodyWeightTag) ?? rememberAthleteBodyWeightDefault;
+    _preferencesWeight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     _weight = (_preferencesWeight * (_si ? 1.0 : kgToLb)).round();
     final weightBytes = getWeightBytes(_weight);
     _oldWeightLsb = weightBytes.item1;
@@ -232,9 +231,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       }
 
       if (data.length == 7) {
-        if (data[0] != controlOpcode ||
-            data[1] != spinDownOpcode ||
-            data[2] != successResponse) {
+        if (data[0] != controlOpcode || data[1] != spinDownOpcode || data[2] != successResponse) {
           setState(() {
             _step = stepDone;
             _calibrationState = CalibrationState.calibrationFail;

@@ -74,8 +74,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     super.initState();
     final prefService = Get.find<BasePrefService>();
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
-    _highRes = Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ??
-        distanceResolutionDefault;
+    _highRes =
+        Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _leaderboardFeature =
         prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());

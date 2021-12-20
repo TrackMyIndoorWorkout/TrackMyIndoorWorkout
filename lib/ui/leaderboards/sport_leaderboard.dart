@@ -37,8 +37,8 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   void initState() {
     super.initState();
     _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
-    _highRes = Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ??
-        distanceResolutionDefault;
+    _highRes =
+        Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _textStyle = Get.textTheme.headline5!
         .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
