@@ -59,10 +59,10 @@ void main() {
 
   group('isIpAddress random test', () {
     final rnd = Random();
-    for (var index in List.generate(REPETITION, (index) => index)) {
+    for (var index in List.generate(repetition, (index) => index)) {
       final ipParts = getRandomInts(4, 320, rnd);
       final expected =
-          ipParts.fold<bool>(true, (prev, part) => prev && part < MAX_UINT8) && ipParts[0] > 0;
+          ipParts.fold<bool>(true, (prev, part) => prev && part < maxUint8) && ipParts[0] > 0;
       final addressString = ipParts.map((part) => part.toString()).join(".");
       test('$index.: $addressString -> $expected', () async {
         expect(isIpAddress(addressString), expected);

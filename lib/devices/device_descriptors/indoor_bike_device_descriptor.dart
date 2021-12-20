@@ -18,7 +18,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     heartRateByteIndex,
     calorieFactorDefault = 1.0,
   }) : super(
-          defaultSport: ActivityType.Ride,
+          defaultSport: ActivityType.ride,
           isMultiSport: false,
           fourCC: fourCC,
           vendorName: vendorName,

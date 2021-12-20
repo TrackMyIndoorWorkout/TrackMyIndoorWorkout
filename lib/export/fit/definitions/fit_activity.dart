@@ -13,7 +13,7 @@ import '../fit_serializable.dart';
 class FitActivity extends FitDefinitionMessage {
   int exportTarget;
 
-  FitActivity(localMessageType, this.exportTarget) : super(localMessageType, FitMessage.Activity) {
+  FitActivity(localMessageType, this.exportTarget) : super(localMessageType, FitMessage.activity) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
     ];
@@ -36,9 +36,9 @@ class FitActivity extends FitDefinitionMessage {
     dummy.addLong(FitSerializable.fitDateTime(model.activity.startDateTime!));
     if (exportTarget == ExportTarget.regular) {
       dummy.addShort(1);
-      dummy.addByte(FitActivityEnum.Manual);
-      dummy.addByte(FitEvent.Activity);
-      dummy.addByte(FitEventType.Stop);
+      dummy.addByte(FitActivityEnum.manual);
+      dummy.addByte(FitEvent.activity);
+      dummy.addByte(FitEventType.stop);
     }
 
     return dummy.output;

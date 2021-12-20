@@ -27,11 +27,11 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
     super.initState();
     final themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline4!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: Colors.white,
     );
     _inverseTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: themeManager.getProtagonistColor(),
     );
     _sizeDefault = _textStyle.fontSize! * 2;

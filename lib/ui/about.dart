@@ -35,7 +35,7 @@ class AboutScreenState extends State<AboutScreen> {
   void initState() {
     super.initState();
     _fieldStyle = Get.textTheme.headline5!;
-    _valueStyle = Get.textTheme.headline6!.apply(fontFamily: FONT_FAMILY);
+    _valueStyle = Get.textTheme.headline6!.apply(fontFamily: fontFamily);
     final packageInfo = Get.find<PackageInfo>();
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;

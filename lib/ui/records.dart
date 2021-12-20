@@ -55,7 +55,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   TextStyle _textStyle = const TextStyle();
   TextStyle _unitStyle = const TextStyle();
   final TextStyle _pieChartLabelStyle = const TextStyle(
-    fontFamily: FONT_FAMILY,
+    fontFamily: fontFamily,
     fontWeight: FontWeight.bold,
     fontSize: 16,
   );
@@ -64,7 +64,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   Color _chartTextColor = Colors.black;
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
   TextStyle _chartLabelStyle = const TextStyle(
-    fontFamily: FONT_FAMILY,
+    fontFamily: fontFamily,
     fontSize: 11,
   );
 
@@ -123,8 +123,8 @@ class RecordsScreenState extends State<RecordsScreen> {
 
       if (measurementCounter.hasPower) {
         _tiles.add("power");
-        _selectedTimes.add(EMPTY_MEASUREMENT);
-        _selectedValues.add(EMPTY_MEASUREMENT);
+        _selectedTimes.add(emptyMeasurement);
+        _selectedValues.add(emptyMeasurement);
         var prefSpec = _preferencesSpecs[0];
         var tileConfig = TileConfiguration(
           title: prefSpec.fullTitle,
@@ -150,8 +150,8 @@ class RecordsScreenState extends State<RecordsScreen> {
 
       if (measurementCounter.hasSpeed) {
         _tiles.add("speed");
-        _selectedTimes.add(EMPTY_MEASUREMENT);
-        _selectedValues.add(EMPTY_MEASUREMENT);
+        _selectedTimes.add(emptyMeasurement);
+        _selectedValues.add(emptyMeasurement);
         var prefSpec = _preferencesSpecs[1];
         var tileConfig = TileConfiguration(
           title: prefSpec.fullTitle,
@@ -177,8 +177,8 @@ class RecordsScreenState extends State<RecordsScreen> {
 
       if (measurementCounter.hasCadence) {
         _tiles.add("cadence");
-        _selectedTimes.add(EMPTY_MEASUREMENT);
-        _selectedValues.add(EMPTY_MEASUREMENT);
+        _selectedTimes.add(emptyMeasurement);
+        _selectedValues.add(emptyMeasurement);
         var prefSpec = _preferencesSpecs[2];
         var tileConfig = TileConfiguration(
           title: prefSpec.fullTitle,
@@ -204,8 +204,8 @@ class RecordsScreenState extends State<RecordsScreen> {
 
       if (measurementCounter.hasHeartRate) {
         _tiles.add("hr");
-        _selectedTimes.add(EMPTY_MEASUREMENT);
-        _selectedValues.add(EMPTY_MEASUREMENT);
+        _selectedTimes.add(emptyMeasurement);
+        _selectedValues.add(emptyMeasurement);
         var prefSpec = _preferencesSpecs[3];
         var tileConfig = TileConfiguration(
           title: prefSpec.fullTitle,
@@ -320,7 +320,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
     _chartLabelStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       fontSize: 11,
       color: _chartTextColor,
     );
@@ -452,12 +452,12 @@ class RecordsScreenState extends State<RecordsScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > EPS) {
+    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
       _sizeDefault = mediaWidth / 7;
       _sizeDefault2 = _sizeDefault / 1.5;
       _measurementStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
+        fontFamily: fontFamily,
         fontSize: _sizeDefault,
       );
       _textStyle = TextStyle(
@@ -616,7 +616,7 @@ class RecordsScreenState extends State<RecordsScreen> {
                     ),
                     collapsed: Container(),
                     expanded: Column(children: [
-                      item == "speed" && widget.activity.sport != ActivityType.Ride
+                      item == "speed" && widget.activity.sport != ActivityType.ride
                           ? Text(
                               "Speed ${_si ? 'km' : 'mi'}/h",
                               style: _textStyle,

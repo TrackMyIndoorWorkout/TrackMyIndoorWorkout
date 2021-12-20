@@ -69,7 +69,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
 
 Future<BasePrefService> initPreferences() async {
   var prefDefaults = await getPrefDefaults();
-  for (var sport in PreferencesSpec.SPORT_PREFIXES) {
+  for (var sport in PreferencesSpec.sportPrefixes) {
     for (var prefSpec in PreferencesSpec.preferencesSpecs) {
       prefDefaults.addAll({
         prefSpec.thresholdTag(sport): prefSpec.thresholdDefault(sport),
@@ -78,7 +78,7 @@ Future<BasePrefService> initPreferences() async {
     }
 
     prefDefaults.addAll({LAST_EQUIPMENT_ID_TAG_PREFIX + sport: LAST_EQUIPMENT_ID_DEFAULT});
-    if (sport != ActivityType.Ride) {
+    if (sport != ActivityType.ride) {
       prefDefaults.addAll(
           {PreferencesSpec.slowSpeedTag(sport): PreferencesSpec.slowSpeeds[sport].toString()});
     }
@@ -86,7 +86,7 @@ Future<BasePrefService> initPreferences() async {
 
   for (var prefSpec in PreferencesSpec.preferencesSpecs) {
     prefDefaults.addAll({
-      "${prefSpec.metric}_${PreferencesSpec.ZONE_INDEX_DISPLAY_TAG_POSTFIX}":
+      "${prefSpec.metric}_${PreferencesSpec.zoneIndexDisplayTagPostfix}":
           prefSpec.indexDisplayDefault
     });
   }
@@ -98,17 +98,17 @@ Future<BasePrefService> initPreferences() async {
   final prefVersion = prefService.get<int>(PREFERENCES_VERSION_TAG) ?? PREFERENCES_VERSION_NEXT;
   if (prefVersion < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
     for (var prefSpec in PreferencesSpec.preferencesSpecs) {
-      final thresholdTag = PreferencesSpec.THRESHOLD_PREFIX + prefSpec.metric;
+      final thresholdTag = PreferencesSpec.thresholdPrefix + prefSpec.metric;
       var thresholdString = prefService.get<String>(thresholdTag) ?? "";
       if (prefSpec.metric == "speed") {
-        final threshold = double.tryParse(thresholdString) ?? EPS;
-        thresholdString = decimalRound(threshold * MI2KM).toString();
+        final threshold = double.tryParse(thresholdString) ?? eps;
+        thresholdString = decimalRound(threshold * mi2km).toString();
       }
 
-      await prefService.set<String>(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
-      final zoneTag = prefSpec.metric + PreferencesSpec.ZONES_POSTFIX;
+      await prefService.set<String>(prefSpec.thresholdTag(ActivityType.ride), thresholdString);
+      final zoneTag = prefSpec.metric + PreferencesSpec.zonesPostfix;
       await prefService.set<String>(
-        prefSpec.zonesTag(ActivityType.Ride),
+        prefSpec.zonesTag(ActivityType.ride),
         prefService.get<String>(zoneTag) ?? "55,75,90,105,120,150",
       );
     }
@@ -118,7 +118,7 @@ Future<BasePrefService> initPreferences() async {
     final lastEquipmentId = prefService.get<String>(LAST_EQUIPMENT_ID_TAG) ?? "";
     if (lastEquipmentId.trim().isNotEmpty) {
       await prefService.set<String>(
-        LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride,
+        LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.ride,
         lastEquipmentId,
       );
     }
@@ -203,10 +203,10 @@ Future<BasePrefService> initPreferences() async {
 
   await prefService.set<int>(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);
 
-  for (var sport in PreferencesSpec.SPORT_PREFIXES) {
-    if (sport != ActivityType.Ride) {
+  for (var sport in PreferencesSpec.sportPrefixes) {
+    if (sport != ActivityType.ride) {
       final slowSpeedString = prefService.get<String>(PreferencesSpec.slowSpeedTag(sport)) ?? "";
-      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? EPS;
+      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? eps;
     }
   }
 

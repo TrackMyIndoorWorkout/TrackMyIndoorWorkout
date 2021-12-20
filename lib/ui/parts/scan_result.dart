@@ -29,7 +29,7 @@ class ScanResultTile extends StatelessWidget {
       children: [
         Text(
           result.device.name.isNotEmpty ? result.device.name : deviceIdString,
-          style: themeManger.boldStyle(captionStyle, fontSizeFactor: FONT_SIZE_FACTOR),
+          style: themeManger.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
           overflow: TextOverflow.ellipsis,
         ),
         Text(deviceIdString, style: dataStyle),
@@ -87,8 +87,8 @@ class ScanResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final captionStyle = Get.textTheme.headline6!;
-    final detailStyle = captionStyle.apply(fontSizeFactor: 1 / FONT_SIZE_FACTOR);
-    final secondaryStyle = captionStyle.apply(fontFamily: FONT_FAMILY);
+    final detailStyle = captionStyle.apply(fontSizeFactor: 1 / fontSizeFactor);
+    final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
 
     return ExpansionTile(

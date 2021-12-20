@@ -22,7 +22,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     heartRateByteIndex,
     calorieFactorDefault = 1.0,
   }) : super(
-          defaultSport: ActivityType.Run,
+          defaultSport: ActivityType.run,
           isMultiSport: false,
           fourCC: fourCC,
           vendorName: vendorName,

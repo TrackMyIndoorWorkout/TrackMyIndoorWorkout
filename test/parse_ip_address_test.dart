@@ -47,8 +47,8 @@ void main() {
       const TestPair(address: "1.2.3.4:65536", expected: dummyAddressTuple),
       const TestPair(address: "2.3.4.5:100000", expected: dummyAddressTuple),
       const TestPair(address: "0.0.0.0", expected: dummyAddressTuple),
-      const TestPair(address: "1.2.3.4", expected: Tuple2<String, int>("1.2.3.4", HTTPS_PORT)),
-      const TestPair(address: " 1.2.3.4", expected: Tuple2<String, int>("1.2.3.4", HTTPS_PORT)),
+      const TestPair(address: "1.2.3.4", expected: Tuple2<String, int>("1.2.3.4", httpsPort)),
+      const TestPair(address: " 1.2.3.4", expected: Tuple2<String, int>("1.2.3.4", httpsPort)),
       const TestPair(address: "1.2.3.4:55", expected: Tuple2<String, int>("1.2.3.4", 55)),
       const TestPair(address: "6.7.8.9:100", expected: Tuple2<String, int>("6.7.8.9", 100)),
     ]) {
@@ -61,13 +61,13 @@ void main() {
 
   group('parseIpAddress random test', () {
     final rnd = Random();
-    for (var index in List.generate(REPETITION, (index) => index)) {
+    for (var index in List.generate(repetition, (index) => index)) {
       final ipParts = getRandomInts(4, 320, rnd);
       final port = rnd.nextInt(81920);
-      final valid = ipParts.fold<bool>(true, (prev, part) => prev && part < MAX_UINT8) &&
+      final valid = ipParts.fold<bool>(true, (prev, part) => prev && part < maxUint8) &&
           ipParts[0] > 0 &&
           port > 0 &&
-          port < MAX_UINT16;
+          port < maxUint16;
       final addressString = ipParts.map((part) => part.toString()).join(".");
       final fullAddress = addressString + ":$port";
       final expected = valid ? Tuple2<String, int>(addressString, port) : dummyAddressTuple;

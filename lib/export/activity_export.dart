@@ -93,7 +93,7 @@ abstract class ActivityExport {
       final record = recordToExport(r, activity, calculator, rawData);
 
       if (!rawData) {
-        if ((record.record.speed ?? 0.0) > EPS) {
+        if ((record.record.speed ?? 0.0) > eps) {
           // #101, #122
           if ((record.record.cadence == null || record.record.cadence == 0) &&
               _lastPositiveCadence > 0 &&
@@ -139,7 +139,7 @@ abstract class ActivityExport {
       rawData: rawData,
       descriptor: descriptor,
       author: 'Csaba Consulting',
-      name: APP_NAME,
+      name: appName,
       swVersionMajor: versionParts[0],
       swVersionMinor: versionParts[1],
       buildVersionMajor: versionParts[2],

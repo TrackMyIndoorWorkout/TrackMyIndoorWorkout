@@ -40,7 +40,7 @@ void main() {
 
   group('isBoundedInteger random test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, 1000, rnd).forEach((num1) {
+    getRandomInts(smallRepetition, 1000, rnd).forEach((num1) {
       final num2 = rnd.nextInt(100);
       final num3 = rnd.nextInt(2000);
       final expected = num1 <= num3 && num1 >= num2;

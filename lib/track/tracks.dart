@@ -5,7 +5,7 @@ import 'package:flutter/painting.dart';
 import '../utils/constants.dart';
 import 'constants.dart';
 
-const TRACK_PAINTING_RADIUS_BOOST = 1.2;
+const trackPaintingRadiusBoost = 1.2;
 
 class TrackDescriptor {
   late Offset center; // lon, lat
@@ -24,8 +24,8 @@ class TrackDescriptor {
   TrackDescriptor({
     required this.radiusBoost,
     center,
-    this.horizontalMeter = EPS,
-    this.verticalMeter = EPS,
+    this.horizontalMeter = eps,
+    this.verticalMeter = eps,
     this.altitude = 0.0,
     required this.lengthFactor,
   }) {
@@ -71,16 +71,16 @@ Map<String, TrackDescriptor> trackMap = {
 // For bikes we use a running track and for runs we'll use the velodrome
 // So KOMs and CRs won't be disturbed. We mustn't to fit on any segment.
 Map<String, String> defaultTrackMap = {
-  ActivityType.Ride: "Hoover",
-  ActivityType.VirtualRide: "Hoover",
-  ActivityType.Run: "Marymoor",
-  ActivityType.VirtualRun: "Marymoor",
-  ActivityType.Elliptical: "Marymoor",
-  ActivityType.StairStepper: "Marymoor",
-  ActivityType.Kayaking: "SanJoaquinBluffPointe",
-  ActivityType.Canoeing: "SanJoaquinBluffPointe",
-  ActivityType.Rowing: "SanJoaquinBluffPointe",
-  ActivityType.Swim: "SanJoaquinBluffPointe",
+  ActivityType.ride: "Hoover",
+  ActivityType.virtualRide: "Hoover",
+  ActivityType.run: "Marymoor",
+  ActivityType.virtualRun: "Marymoor",
+  ActivityType.elliptical: "Marymoor",
+  ActivityType.stairStepper: "Marymoor",
+  ActivityType.kayaking: "SanJoaquinBluffPointe",
+  ActivityType.canoeing: "SanJoaquinBluffPointe",
+  ActivityType.rowing: "SanJoaquinBluffPointe",
+  ActivityType.swim: "SanJoaquinBluffPointe",
 };
 
 TrackDescriptor getDefaultTrack(String sport) {

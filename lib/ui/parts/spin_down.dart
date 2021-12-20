@@ -84,12 +84,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       _spinDownPossible && _calibrationState == CalibrationState.readyToWeighIn;
 
   Tuple2<int, int> getWeightBytes(int weight) {
-    final weightTransport = (weight * (_si ? 1.0 : LB_TO_KG) * 200).round();
-    return Tuple2<int, int>(weightTransport % MAX_UINT8, weightTransport ~/ MAX_UINT8);
+    final weightTransport = (weight * (_si ? 1.0 : lbToKg) * 200).round();
+    return Tuple2<int, int>(weightTransport % maxUint8, weightTransport ~/ maxUint8);
   }
 
   int getWeightFromBytes(int weightLsb, int weightMsb) {
-    return (weightLsb + weightMsb * MAX_UINT8) / (_si ? 1.0 : LB_TO_KG) ~/ 200;
+    return (weightLsb + weightMsb * maxUint8) / (_si ? 1.0 : lbToKg) ~/ 200;
   }
 
   @override
@@ -101,7 +101,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
     _preferencesWeight =
         prefService.get<int>(ATHLETE_BODY_WEIGHT_INT_TAG) ?? ATHLETE_BODY_WEIGHT_DEFAULT;
-    _weight = (_preferencesWeight * (_si ? 1.0 : KG_TO_LB)).round();
+    _weight = (_preferencesWeight * (_si ? 1.0 : kgToLb)).round();
     final weightBytes = getWeightBytes(_weight);
     _oldWeightLsb = weightBytes.item1;
     _oldWeightMsb = weightBytes.item2;
@@ -109,12 +109,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _newWeightMsb = weightBytes.item2;
     _isLight = !_themeManager.isDark();
     _smallerTextStyle = Get.textTheme.headline5!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
     _sizeDefault = _smallerTextStyle.fontSize!;
     _largerTextStyle = Get.textTheme.headline2!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
     _prepareSpinDown();
@@ -169,7 +169,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     _weightDataSubscription = _weightData?.value
-        .throttleTime(const Duration(milliseconds: SPIN_DOWN_THRESHOLD))
+        .throttleTime(const Duration(milliseconds: spinDownThreshold))
         .listen((response) async {
       if (response.length == 1 && _calibrationState == CalibrationState.weightSubmitting) {
         if (response[0] != weightSuccessOpcode) {
@@ -219,7 +219,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     _controlPointSubscription = _controlPoint?.value
-        .throttleTime(const Duration(milliseconds: SPIN_DOWN_THRESHOLD))
+        .throttleTime(const Duration(milliseconds: spinDownThreshold))
         .listen((data) async {
       if (data.length == 1) {
         if (data[0] != spinDownOpcode) {
@@ -242,12 +242,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         }
         setState(() {
           _calibrationState = CalibrationState.calibrationInProgress;
-          _targetSpeedHigh = (data[3] * MAX_UINT8 + data[4]) / 100;
+          _targetSpeedHigh = (data[3] * maxUint8 + data[4]) / 100;
           _targetSpeedHighString = speedOrPaceString(
-              _targetSpeedHigh, _si, _fitnessEquipment?.sport ?? ActivityType.Ride);
-          _targetSpeedLow = (data[5] * MAX_UINT8 + data[6]) / 100;
+              _targetSpeedHigh, _si, _fitnessEquipment?.sport ?? ActivityType.ride);
+          _targetSpeedLow = (data[5] * maxUint8 + data[6]) / 100;
           _targetSpeedLowString = speedOrPaceString(
-              _targetSpeedLow, _si, _fitnessEquipment?.sport ?? ActivityType.Ride);
+              _targetSpeedLow, _si, _fitnessEquipment?.sport ?? ActivityType.ride);
         });
       }
     });
@@ -329,7 +329,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _newWeightMsb = newWeightBytes.item2;
     try {
       if (_rememberLastWeight) {
-        final weightKg = _weight * (_si ? 1.0 : LB_TO_KG);
+        final weightKg = _weight * (_si ? 1.0 : lbToKg);
         final prefService = Get.find<BasePrefService>();
         await prefService.set<int>(ATHLETE_BODY_WEIGHT_INT_TAG, weightKg.round());
       }
@@ -354,7 +354,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     if (_calibrationState == CalibrationState.calibrationInProgress) {
-      if (_currentSpeed < EPS || _currentSpeed < _targetSpeedLow) {
+      if (_currentSpeed < eps || _currentSpeed < _targetSpeedLow) {
         return "FASTER";
       } else if (_currentSpeed > _targetSpeedHigh) {
         return "SLOWER";
@@ -406,7 +406,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     _statusSubscription = _fitnessMachineStatus?.value
-        .throttleTime(const Duration(milliseconds: FTMS_STATUS_THRESHOLD))
+        .throttleTime(const Duration(milliseconds: ftmsStatusThreshold))
         .listen((status) {
       if (status.length == 2 && status[0] == spinDownStatus) {
         if (status[1] == spinDownStatusSuccess) {
@@ -437,7 +437,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       setState(() {
         _currentSpeed = record.speed ?? 0.0;
         _currentSpeedString =
-            record.speedOrPaceStringByUnit(_si, _fitnessEquipment?.sport ?? ActivityType.Ride);
+            record.speedOrPaceStringByUnit(_si, _fitnessEquipment?.sport ?? ActivityType.ride);
       });
     });
   }

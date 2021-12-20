@@ -8,8 +8,8 @@ class ThreeByteMetricDescriptor extends MetricDescriptor {
   @override
   double? getMeasurementValue(List<int> data) {
     final dir = lsb < msb ? 1 : -1;
-    final value = data[lsb] + MAX_UINT8 * (data[lsb + dir] + MAX_UINT8 * data[msb]);
-    if (optional && value == MAX_UINT24 - 1) {
+    final value = data[lsb] + maxUint8 * (data[lsb + dir] + maxUint8 * data[msb]);
+    if (optional && value == maxUint24 - 1) {
       return null;
     }
 

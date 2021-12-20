@@ -16,7 +16,7 @@ import 'fitness_equipment_process_record_test.mocks.dart';
 void main() {
   group('processRecord recognizes total calorie counting capability', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, 400, rnd).forEach((calorieBase) {
+    getRandomInts(smallRepetition, 400, rnd).forEach((calorieBase) {
       final calorie = calorieBase + 100;
       test('$calorie', () async {
         await initPrefServiceForTest();
@@ -35,7 +35,7 @@ void main() {
 
   group('processRecord recognizes total calorie counting capability 2', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, 500, rnd).forEach((calorie) {
+    getRandomInts(smallRepetition, 500, rnd).forEach((calorie) {
       calorie++;
       test('$calorie', () async {
         await initPrefServiceForTest();
@@ -56,7 +56,7 @@ void main() {
 
   group('processRecord recognizes lack total calorie counting capability', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, 500, rnd).forEach((calorie) {
+    getRandomInts(smallRepetition, 500, rnd).forEach((calorie) {
       test('$calorie', () async {
         await initPrefServiceForTest();
         final equipment = FitnessEquipment(
@@ -76,7 +76,7 @@ void main() {
 
   group('processRecord calculates calories from caloriesPerHour', () {
     final rnd = Random();
-    getRandomDoubles(SMALL_REPETITION, 3, rnd).forEach((value) {
+    getRandomDoubles(smallRepetition, 3, rnd).forEach((value) {
       final calPerHour = (1.0 + value) * (60 * 60);
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
@@ -123,13 +123,13 @@ void main() {
 
   group('processRecord calculates calories from power', () {
     final rnd = Random();
-    getRandomDoubles(SMALL_REPETITION, 150, rnd).forEach((pow) {
+    getRandomDoubles(smallRepetition, 150, rnd).forEach((pow) {
       final descriptor = deviceMap["SIC4"]!;
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final hrBasedCalories = rnd.nextBool();
-      final power = ((150 + pow) / J_TO_KCAL).floor();
+      final power = ((150 + pow) / jToKCal).floor();
       test('$power', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
@@ -168,7 +168,7 @@ void main() {
 
   group('processRecord does not override calories when explicitly reported available', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, 300, rnd).forEach((calories) {
+    getRandomInts(smallRepetition, 300, rnd).forEach((calories) {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
@@ -212,7 +212,7 @@ void main() {
 
   group('processRecord calculates distance from speed', () {
     final rnd = Random();
-    getRandomDoubles(SMALL_REPETITION, 10, rnd).forEach((speed) {
+    getRandomDoubles(smallRepetition, 10, rnd).forEach((speed) {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
@@ -248,14 +248,14 @@ void main() {
 
         final record = equipment.processRecord(Record(speed: speed));
 
-        expect(record.distance, closeTo(10 + speed * DeviceDescriptor.kmh2ms, DISPLAY_EPS));
+        expect(record.distance, closeTo(10 + speed * DeviceDescriptor.kmh2ms, displayEps));
       });
     });
   });
 
   group('processRecord does not override distance when explicitly reported available', () {
     final rnd = Random();
-    getRandomDoubles(SMALL_REPETITION, 1000, rnd).forEach((distance) {
+    getRandomDoubles(smallRepetition, 1000, rnd).forEach((distance) {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;

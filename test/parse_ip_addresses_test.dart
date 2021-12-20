@@ -42,8 +42,8 @@ void main() {
       const TestPair(addresses: " 1 . 2 . 3 . 4 ", expected: []),
       const TestPair(addresses: "1.2.3.4:0", expected: []),
       const TestPair(addresses: "1.2.3.4:65536", expected: []),
-      const TestPair(addresses: "1.2.3.4", expected: [Tuple2<String, int>("1.2.3.4", HTTPS_PORT)]),
-      const TestPair(addresses: " 1.2.3.4", expected: [Tuple2<String, int>("1.2.3.4", HTTPS_PORT)]),
+      const TestPair(addresses: "1.2.3.4", expected: [Tuple2<String, int>("1.2.3.4", httpsPort)]),
+      const TestPair(addresses: " 1.2.3.4", expected: [Tuple2<String, int>("1.2.3.4", httpsPort)]),
       const TestPair(addresses: "1.2.3.4:55", expected: [Tuple2<String, int>("1.2.3.4", 55)]),
       const TestPair(
           addresses: "1.2.3.4:55,6.7.8.9:100",

@@ -12,17 +12,17 @@ class TestPair {
 void main() {
   group('toFitSport conversions', () {
     for (final testPair in [
-      const TestPair(input: "", expected: ActivityType.Workout),
-      const TestPair(input: " ", expected: ActivityType.Workout),
-      const TestPair(input: "abc", expected: ActivityType.Workout),
-      const TestPair(input: ActivityType.Swim, expected: ActivityType.Swim),
-      const TestPair(input: ActivityType.Canoeing, expected: ActivityType.Kayaking),
-      const TestPair(input: ActivityType.Kayaking, expected: ActivityType.Kayaking),
-      const TestPair(input: ActivityType.Rowing, expected: ActivityType.Rowing),
-      const TestPair(input: ActivityType.Run, expected: ActivityType.Run),
-      const TestPair(input: ActivityType.Ride, expected: ActivityType.Ride),
-      const TestPair(input: ActivityType.Elliptical, expected: ActivityType.Elliptical),
-      const TestPair(input: ActivityType.NordicSki, expected: ActivityType.Workout),
+      const TestPair(input: "", expected: ActivityType.workout),
+      const TestPair(input: " ", expected: ActivityType.workout),
+      const TestPair(input: "abc", expected: ActivityType.workout),
+      const TestPair(input: ActivityType.swim, expected: ActivityType.swim),
+      const TestPair(input: ActivityType.canoeing, expected: ActivityType.kayaking),
+      const TestPair(input: ActivityType.kayaking, expected: ActivityType.kayaking),
+      const TestPair(input: ActivityType.rowing, expected: ActivityType.rowing),
+      const TestPair(input: ActivityType.run, expected: ActivityType.run),
+      const TestPair(input: ActivityType.ride, expected: ActivityType.ride),
+      const TestPair(input: ActivityType.elliptical, expected: ActivityType.elliptical),
+      const TestPair(input: ActivityType.nordicSki, expected: ActivityType.workout),
     ]) {
       test("${testPair.input} -> ${testPair.expected}", () async {
         expect(toFitSport(testPair.input), fitSport[testPair.expected]);

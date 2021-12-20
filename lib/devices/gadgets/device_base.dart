@@ -108,13 +108,13 @@ abstract class DeviceBase {
 
   String? inferSportFromCharacteristicsId() {
     if (characteristicsId == treadmillUuid) {
-      return ActivityType.Run;
+      return ActivityType.run;
     } else if (characteristicsId == precorMeasurementUuid || characteristicsId == indoorBikeUuid) {
-      return ActivityType.Ride;
+      return ActivityType.ride;
     } else if (characteristicsId == rowerDeviceUuid) {
-      return ActivityType.Rowing;
+      return ActivityType.rowing;
     } else if (characteristicsId == crossTrainerUuid) {
-      return ActivityType.Elliptical;
+      return ActivityType.elliptical;
     }
 
     return null;

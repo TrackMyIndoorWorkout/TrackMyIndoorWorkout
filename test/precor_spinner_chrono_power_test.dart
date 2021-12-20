@@ -16,7 +16,7 @@ void main() {
     final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
 
     expect(bike.canMeasureHeartRate, true);
-    expect(bike.defaultSport, ActivityType.Ride);
+    expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, precorSpinnerChronoPowerFourCC);
   });
 
@@ -49,7 +49,7 @@ void main() {
           cadence: 34,
           heartRate: 0,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -65,7 +65,7 @@ void main() {
           cadence: 35,
           heartRate: 77,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -81,7 +81,7 @@ void main() {
           cadence: 0,
           heartRate: 67,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -97,7 +97,7 @@ void main() {
           cadence: 0,
           heartRate: 0,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -113,7 +113,7 @@ void main() {
           cadence: 64,
           heartRate: 79,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -129,7 +129,7 @@ void main() {
           cadence: 63,
           heartRate: 103,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -145,7 +145,7 @@ void main() {
           cadence: 42,
           heartRate: 88,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -161,7 +161,7 @@ void main() {
           cadence: 40,
           heartRate: 81,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -177,7 +177,7 @@ void main() {
           cadence: 92,
           heartRate: 68,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -193,7 +193,7 @@ void main() {
           cadence: 102,
           heartRate: 83,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),

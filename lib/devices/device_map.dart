@@ -57,7 +57,7 @@ Map<String, DeviceDescriptor> deviceMap = {
   ),
   schwinnACPerfPlusFourCC: SchwinnACPerformancePlus(),
   kayakProGenesisPortFourCC: RowerDeviceDescriptor(
-    defaultSport: ActivityType.Kayaking,
+    defaultSport: ActivityType.kayaking,
     fourCC: kayakProGenesisPortFourCC,
     vendorName: "KayakPro",
     modelName: "KayakPro Compact",
@@ -95,7 +95,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: "Generic Indoor Bike",
   ),
   genericFTMSKayakFourCC: RowerDeviceDescriptor(
-    defaultSport: ActivityType.Kayaking,
+    defaultSport: ActivityType.kayaking,
     isMultiSport: false,
     fourCC: genericFTMSKayakFourCC,
     vendorName: "Unknown",
@@ -106,7 +106,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: "Generic Kayak Ergometer",
   ),
   genericFTMSCanoeFourCC: RowerDeviceDescriptor(
-    defaultSport: ActivityType.Canoeing,
+    defaultSport: ActivityType.canoeing,
     isMultiSport: false,
     fourCC: genericFTMSCanoeFourCC,
     vendorName: "Unknown",
@@ -117,7 +117,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: "Generic Canoe Ergometer",
   ),
   genericFTMSRowerFourCC: RowerDeviceDescriptor(
-    defaultSport: ActivityType.Rowing,
+    defaultSport: ActivityType.rowing,
     isMultiSport: false,
     fourCC: genericFTMSRowerFourCC,
     vendorName: "Unknown",
@@ -128,7 +128,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: "Generic Rower Ergometer",
   ),
   genericFTMSSwimFourCC: RowerDeviceDescriptor(
-    defaultSport: ActivityType.Swim,
+    defaultSport: ActivityType.swim,
     isMultiSport: false,
     fourCC: genericFTMSSwimFourCC,
     vendorName: "Unknown",
@@ -139,7 +139,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: "Generic Swim Ergometer",
   ),
   genericFTMSEllipticalFourCC: RowerDeviceDescriptor(
-    defaultSport: ActivityType.Elliptical,
+    defaultSport: ActivityType.elliptical,
     isMultiSport: false,
     fourCC: genericFTMSEllipticalFourCC,
     vendorName: "Unknown",
@@ -152,19 +152,19 @@ Map<String, DeviceDescriptor> deviceMap = {
 };
 
 DeviceDescriptor genericDescriptorForSport(String sport) {
-  if (sport == ActivityType.Ride) {
+  if (sport == ActivityType.ride) {
     return deviceMap[genericFTMSBikeFourCC]!;
-  } else if (sport == ActivityType.Run) {
+  } else if (sport == ActivityType.run) {
     return deviceMap[genericFTMSTreadmillFourCC]!;
-  } else if (sport == ActivityType.Kayaking) {
+  } else if (sport == ActivityType.kayaking) {
     return deviceMap[genericFTMSKayakFourCC]!;
-  } else if (sport == ActivityType.Canoeing) {
+  } else if (sport == ActivityType.canoeing) {
     return deviceMap[genericFTMSCanoeFourCC]!;
-  } else if (sport == ActivityType.Rowing) {
+  } else if (sport == ActivityType.rowing) {
     return deviceMap[genericFTMSRowerFourCC]!;
-  } else if (sport == ActivityType.Swim) {
+  } else if (sport == ActivityType.swim) {
     return deviceMap[genericFTMSSwimFourCC]!;
-  } else if (sport == ActivityType.Elliptical) {
+  } else if (sport == ActivityType.elliptical) {
     return deviceMap[genericFTMSEllipticalFourCC]!;
   }
 

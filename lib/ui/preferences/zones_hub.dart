@@ -24,7 +24,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
   void initState() {
     super.initState();
     _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: Colors.white,
     );
     _sizeDefault = _textStyle.fontSize! * 2;
@@ -35,7 +35,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> items = PreferencesSpec.SPORT_PREFIXES.map((sport) {
+    List<Widget> items = PreferencesSpec.sportPrefixes.map((sport) {
       return Container(
         padding: const EdgeInsets.all(5.0),
         margin: const EdgeInsets.all(5.0),

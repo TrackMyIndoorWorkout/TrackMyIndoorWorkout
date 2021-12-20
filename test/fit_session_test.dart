@@ -18,7 +18,7 @@ void main() {
       test('for ${exportTarget.item2}', () async {
         final session = FitSession(0, exportTarget.item1);
 
-        expect(session.globalMessageNumber, FitMessage.Session);
+        expect(session.globalMessageNumber, FitMessage.session);
       });
     }
   });

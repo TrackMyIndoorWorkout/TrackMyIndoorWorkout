@@ -18,7 +18,7 @@ abstract class Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
   String getUrlBase(bool oAuthOrApi) {
-    return oAuthOrApi ? TP_PRODUCTION_OAUTH_URL_BASE : TP_PRODUCTION_API_URL_BASE;
+    return oAuthOrApi ? tpProductionOAuthUrlBase : tpProductionApiUrlBase;
   }
 
   Future<void> registerToken(
@@ -56,10 +56,10 @@ abstract class Auth {
     String? scope,
   ) async {
     final prefService = Get.find<BasePrefService>();
-    await prefService.set<String>(TRAINING_PEAKS_ACCESS_TOKEN_TAG, token ?? '');
-    await prefService.set<String>(TRAINING_PEAKS_REFRESH_TOKEN_TAG, refreshToken ?? '');
-    await prefService.set<int>(TRAINING_PEAKS_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
-    await prefService.set<String>(TRAINING_PEAKS_TOKEN_SCOPE_TAG, scope ?? '');
+    await prefService.set<String>(trainingPeaksAccessTokenTag, token ?? '');
+    await prefService.set<String>(trainingPeaksRefreshTokenTag, refreshToken ?? '');
+    await prefService.set<int>(trainingPeaksExpiresAtTag, expire ?? 0); // Stored in seconds
+    await prefService.set<String>(trainingPeaksTokenScopeTag, scope ?? '');
     await registerToken(token, refreshToken, expire, scope);
     debugPrint('token saved!!!');
   }
@@ -75,10 +75,10 @@ abstract class Auth {
 
     try {
       final prefService = Get.find<BasePrefService>();
-      localToken.accessToken = prefService.get<String>(TRAINING_PEAKS_ACCESS_TOKEN_TAG);
-      localToken.refreshToken = prefService.get<String>(TRAINING_PEAKS_REFRESH_TOKEN_TAG);
-      localToken.expiresAt = prefService.get<int>(TRAINING_PEAKS_EXPIRES_AT_TAG);
-      localToken.scope = prefService.get<String>(TRAINING_PEAKS_TOKEN_SCOPE_TAG);
+      localToken.accessToken = prefService.get<String>(trainingPeaksAccessTokenTag);
+      localToken.refreshToken = prefService.get<String>(trainingPeaksRefreshTokenTag);
+      localToken.expiresAt = prefService.get<int>(trainingPeaksExpiresAtTag);
+      localToken.scope = prefService.get<String>(trainingPeaksTokenScopeTag);
 
       // load the data into Get
       await registerToken(
@@ -107,9 +107,9 @@ abstract class Auth {
     debugPrint('Entering getTrainingPeaksCode');
 
     final params =
-        '?response_type=code&client_id=$clientId&scope=$scope&redirect_uri=$REDIRECT_URL';
+        '?response_type=code&client_id=$clientId&scope=$scope&redirect_uri=$redirectUrl';
 
-    final reqAuth = getUrlBase(true) + AUTHORIZATION_PATH + params;
+    final reqAuth = getUrlBase(true) + authorizationPath + params;
     debugPrint(reqAuth);
     StreamSubscription? sub;
 
@@ -129,7 +129,7 @@ abstract class Auth {
       } else {
         // Parse the link and warn the user, if it is not correct
         debugPrint('Got a link!! $uri');
-        if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientId') != 0) {
+        if (uri.scheme.compareTo('${redirectUrlScheme}_$clientId') != 0) {
           debugPrint('This is not the good scheme ${uri.scheme}');
         }
         final code = uri.queryParameters["code"] ?? "N/A";
@@ -153,7 +153,7 @@ abstract class Auth {
 
   Future<bool> hasValidToken() async {
     final prefService = Get.find<BasePrefService>();
-    String? accessToken = prefService.get<String>(TRAINING_PEAKS_ACCESS_TOKEN_TAG);
+    String? accessToken = prefService.get<String>(trainingPeaksAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
@@ -254,7 +254,7 @@ abstract class Auth {
 
     debugPrint('Entering getNewAccessToken');
 
-    final tokenRefreshUrl = getUrlBase(true) + TOKEN_PATH;
+    final tokenRefreshUrl = getUrlBase(true) + tokenPath;
 
     debugPrint('urlRefresh $tokenRefreshUrl $refreshToken');
 
@@ -296,7 +296,7 @@ abstract class Auth {
 
     debugPrint('Entering getTrainingPeaksToken!!');
 
-    final tokenRequestUrl = getUrlBase(true) + TOKEN_PATH;
+    final tokenRequestUrl = getUrlBase(true) + tokenPath;
 
     debugPrint('urlToken $tokenRequestUrl');
 
@@ -311,7 +311,7 @@ abstract class Auth {
         "client_id": clientId,
         "client_secret": secret,
         "code": code,
-        "redirect_uri": REDIRECT_URL,
+        "redirect_uri": redirectUrl,
       },
     );
 
@@ -369,7 +369,7 @@ abstract class Auth {
       return true;
     }
 
-    final deAuthorizeUrl = getUrlBase(true) + DEAUTHORIZATION_PATH;
+    final deAuthorizeUrl = getUrlBase(true) + deauthorizationPath;
 
     debugPrint('request $deAuthorizeUrl');
     final response = await http.post(Uri.parse(deAuthorizeUrl), headers: header);

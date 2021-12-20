@@ -12,7 +12,7 @@ import '../fit_serializable.dart';
 import '../fit_sport.dart';
 
 class FitLap extends FitDefinitionMessage {
-  FitLap(localMessageType) : super(localMessageType, FitMessage.Lap) {
+  FitLap(localMessageType) : super(localMessageType, FitMessage.lap) {
     fields = [
       FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
       FitField(253, FitBaseTypes.uint32Type), // Timestamp (Lap end time)
@@ -50,8 +50,8 @@ class FitLap extends FitDefinitionMessage {
     data.output = [localMessageType];
     data.addShort(0);
     data.addLong(FitSerializable.fitTimeStamp(last.record.timeStamp));
-    data.addByte(FitEvent.Lap);
-    data.addByte(FitEventType.Stop);
+    data.addByte(FitEvent.lap);
+    data.addByte(FitEventType.stop);
     data.addLong(FitSerializable.fitTimeStamp(first.record.timeStamp));
     data.addGpsCoordinate(first.latitude);
     data.addGpsCoordinate(first.longitude);
@@ -62,10 +62,10 @@ class FitLap extends FitDefinitionMessage {
     data.addShort(model.activity.calories > 0
         ? model.activity.calories
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.averageSpeed > EPS
+    data.addShort(model.averageSpeed > eps
         ? (model.averageSpeed * 1000).round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.maximumSpeed > EPS
+    data.addShort(model.maximumSpeed > eps
         ? (model.maximumSpeed * 1000).round()
         : FitBaseTypes.uint16Type.invalidValue);
     data.addByte(
@@ -76,13 +76,13 @@ class FitLap extends FitDefinitionMessage {
         model.averageCadence > 0 ? model.averageCadence : FitBaseTypes.uint8Type.invalidValue);
     data.addByte(
         model.maximumCadence > 0 ? model.maximumCadence : FitBaseTypes.uint8Type.invalidValue);
-    data.addShort(model.averagePower > EPS
+    data.addShort(model.averagePower > eps
         ? model.averagePower.round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.maximumPower > EPS
+    data.addShort(model.maximumPower > eps
         ? model.maximumPower.round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addByte(FitLapTrigger.SessionEnd);
+    data.addByte(FitLapTrigger.sessionEnd);
     final fitSport = toFitSport(model.activity.sport);
     data.addByte(fitSport.item1);
     data.addByte(fitSport.item2);

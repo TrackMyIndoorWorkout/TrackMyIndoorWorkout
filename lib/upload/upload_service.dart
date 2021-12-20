@@ -57,20 +57,20 @@ abstract class UploadService {
     switch (portalType) {
       case suuntoChoice:
         {
-          return prefService.get<String>(SUUNTO_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+          return prefService.get<String>(suuntoAccessTokenTag)?.isNotEmpty ?? false;
         }
       case underArmourChoice:
         {
-          return prefService.get<String>(UNDER_ARMOUR_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+          return prefService.get<String>(underArmourAccessTokenTag)?.isNotEmpty ?? false;
         }
       case trainingPeaksChoice:
         {
-          return prefService.get<String>(TRAINING_PEAKS_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+          return prefService.get<String>(trainingPeaksAccessTokenTag)?.isNotEmpty ?? false;
         }
       case stravaChoice:
       default:
         {
-          return prefService.get<String>(STRAVA_ACCESS_TOKEN_TAG)?.isNotEmpty ?? false;
+          return prefService.get<String>(stravaAccessTokenTag)?.isNotEmpty ?? false;
         }
     }
   }

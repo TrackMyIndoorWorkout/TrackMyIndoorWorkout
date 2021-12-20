@@ -54,8 +54,8 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     super.initState();
     final prefService = Get.find<BasePrefService>();
     _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
-    _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
-    _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
+    _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
+    _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
     _isScanning = false;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _startScan();
@@ -76,16 +76,16 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                 _heartRateMonitor != null
                     ? ListTile(
                         title: TextOneLine(
-                          _heartRateMonitor?.device?.name ?? EMPTY_MEASUREMENT,
+                          _heartRateMonitor?.device?.name ?? emptyMeasurement,
                           overflow: TextOverflow.ellipsis,
                           style: _themeManager.boldStyle(
                             _captionStyle,
-                            fontSizeFactor: FONT_SIZE_FACTOR,
+                            fontSizeFactor: fontSizeFactor,
                           ),
                         ),
                         subtitle: Text(
                           _heartRateMonitor?.device?.id.id.replaceAll(colonRegex, '') ??
-                              EMPTY_MEASUREMENT,
+                              emptyMeasurement,
                           style: _subtitleStyle,
                         ),
                         trailing: StreamBuilder<BluetoothDeviceState>(
@@ -131,9 +131,9 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                             var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                 ? Get.find<HeartRateMonitor>()
                                 : null;
-                            final existingId = heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
-                            final storedId = _heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
-                            if (existingId != NOT_AVAILABLE && existingId != r.device.id.id) {
+                            final existingId = heartRateMonitor?.device?.id.id ?? notAvailable;
+                            final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
+                            if (existingId != notAvailable && existingId != r.device.id.id) {
                               if (!(await showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(

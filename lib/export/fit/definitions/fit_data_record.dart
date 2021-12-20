@@ -19,7 +19,7 @@ class FitDataRecord extends FitDefinitionMessage {
     this.heartRateGapWorkaround,
     this.heartRateUpperLimit,
     this.heartRateLimitingMethod,
-  ) : super(localMessageType, FitMessage.Record) {
+  ) : super(localMessageType, FitMessage.record) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
       FitField(0, FitBaseTypes.sint32Type), // PositionLat

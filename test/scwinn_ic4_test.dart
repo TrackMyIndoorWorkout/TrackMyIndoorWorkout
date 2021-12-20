@@ -16,7 +16,7 @@ void main() {
     final bike = deviceMap["SIC4"]!;
 
     expect(bike.canMeasureHeartRate, true);
-    expect(bike.defaultSport, ActivityType.Ride);
+    expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, "SIC4");
   });
 
@@ -24,7 +24,7 @@ void main() {
     final bike = deviceMap["SIC4"] as IndoorBikeDeviceDescriptor;
     const lsb = 68;
     const msb = 2;
-    const flag = MAX_UINT8 * msb + lsb;
+    const flag = maxUint8 * msb + lsb;
     bike.stopWorkout();
 
     bike.processFlag(flag);
@@ -52,7 +52,7 @@ void main() {
           cadence: 120,
           heartRate: 84,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -68,7 +68,7 @@ void main() {
           cadence: 125,
           heartRate: 101,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -84,7 +84,7 @@ void main() {
           cadence: 125,
           heartRate: 115,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -100,7 +100,7 @@ void main() {
           cadence: 53,
           heartRate: 117,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -116,7 +116,7 @@ void main() {
           cadence: 57,
           heartRate: 90,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -132,7 +132,7 @@ void main() {
           cadence: 55,
           heartRate: 116,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -148,7 +148,7 @@ void main() {
           cadence: 0,
           heartRate: 85,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),

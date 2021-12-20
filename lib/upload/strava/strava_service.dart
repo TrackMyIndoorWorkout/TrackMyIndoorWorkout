@@ -9,7 +9,7 @@ import 'fault.dart';
 import 'strava.dart';
 
 class StravaService implements UploadService {
-  final Strava _strava = Strava(STRAVA_CLIENT_ID, STRAVA_SECRET);
+  final Strava _strava = Strava(stravaClientId, stravaSecret);
 
   @override
   Future<bool> login() async {

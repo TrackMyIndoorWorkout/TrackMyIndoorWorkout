@@ -1,28 +1,28 @@
 enum MachineType {
-  NotFitnessMachine,
-  IndoorBike,
-  Treadmill,
-  Rower,
-  CrossTrainer,
-  StepClimber,
-  StairClimber,
-  HeartRateMonitor,
+  notFitnessMachine,
+  indoorBike,
+  treadmill,
+  rower,
+  crossTrainer,
+  stepClimber,
+  stairClimber,
+  heartRateMonitor,
 }
 
 extension MachineTypeEx on MachineType {
   int get bit {
     switch (this) {
-      case MachineType.IndoorBike:
+      case MachineType.indoorBike:
         return 32;
-      case MachineType.Treadmill:
+      case MachineType.treadmill:
         return 1;
-      case MachineType.CrossTrainer:
+      case MachineType.crossTrainer:
         return 2;
-      case MachineType.StepClimber:
+      case MachineType.stepClimber:
         return 4;
-      case MachineType.StairClimber:
+      case MachineType.stairClimber:
         return 8;
-      case MachineType.Rower:
+      case MachineType.rower:
         return 16;
       default:
         return 0;

@@ -127,7 +127,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _instantScan = prefService.get<bool>(INSTANT_SCAN_TAG) ?? INSTANT_SCAN_DEFAULT;
     _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
     _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
-    for (var sport in PreferencesSpec.SPORT_PREFIXES) {
+    for (var sport in PreferencesSpec.sportPrefixes) {
       final lastEquipmentId = prefService.get<String>(LAST_EQUIPMENT_ID_TAG_PREFIX + sport) ?? "";
       if (lastEquipmentId.isNotEmpty) {
         _lastEquipmentIds.add(lastEquipmentId);
@@ -139,7 +139,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _openDatabase().then((value) => _instantScan ? _startScan() : {});
 
     _captionStyle = Get.textTheme.headline6!;
-    _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
+    _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
     _overlayStyle = _captionStyle.copyWith(color: Colors.yellowAccent);
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
@@ -195,7 +195,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         descriptor = genericDescriptorForSport(deviceUsage.sport);
       } else {
         String? inferredSport;
-        if (advertisementDigest.machineType != MachineType.NotFitnessMachine) {
+        if (advertisementDigest.machineType != MachineType.notFitnessMachine) {
           // Determine FTMS sport by Service Data bits
           inferredSport = advertisementDigest.fitnessMachineSport();
         } else if (advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
@@ -402,7 +402,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             _scannedDevices.where((d) => _lastEquipmentIds.contains(d.id.id));
                         if (_fitnessEquipment != null &&
                                 !_advertisementCache.hasEntry(
-                                    _fitnessEquipment!.device?.id.id ?? EMPTY_MEASUREMENT) ||
+                                    _fitnessEquipment!.device?.id.id ?? emptyMeasurement) ||
                             _filterDevices &&
                                 _scannedDevices.length == 1 &&
                                 !_advertisementCache.hasEntry(_scannedDevices.first.id.id) ||
@@ -477,14 +477,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       _heartRateMonitor != null
                           ? ListTile(
                               title: TextOneLine(
-                                _heartRateMonitor?.device?.name ?? EMPTY_MEASUREMENT,
+                                _heartRateMonitor?.device?.name ?? emptyMeasurement,
                                 overflow: TextOverflow.ellipsis,
                                 style: _themeManager.boldStyle(_captionStyle,
-                                    fontSizeFactor: FONT_SIZE_FACTOR),
+                                    fontSizeFactor: fontSizeFactor),
                               ),
                               subtitle: Text(
                                 _heartRateMonitor?.device?.id.id.replaceAll(_colonRegex, '') ??
-                                    EMPTY_MEASUREMENT,
+                                    emptyMeasurement,
                                 style: _subtitleStyle,
                               ),
                               trailing: StreamBuilder<BluetoothDeviceState>(
@@ -518,16 +518,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       _fitnessEquipment != null
                           ? ListTile(
                               title: TextOneLine(
-                                _fitnessEquipment?.device?.name ?? EMPTY_MEASUREMENT,
+                                _fitnessEquipment?.device?.name ?? emptyMeasurement,
                                 overflow: TextOverflow.ellipsis,
                                 style: _themeManager.boldStyle(
                                   _captionStyle,
-                                  fontSizeFactor: FONT_SIZE_FACTOR,
+                                  fontSizeFactor: fontSizeFactor,
                                 ),
                               ),
                               subtitle: Text(
                                 _fitnessEquipment?.device?.id.id.replaceAll(_colonRegex, '') ??
-                                    EMPTY_MEASUREMENT,
+                                    emptyMeasurement,
                                 style: _subtitleStyle,
                               ),
                               trailing: StreamBuilder<BluetoothDeviceState>(
@@ -545,7 +545,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                         if (_isScanning) {
                                           await FlutterBlue.instance.stopScan();
                                           await Future.delayed(
-                                              const Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                                              const Duration(milliseconds: uiIntermittentDelay));
                                         }
 
                                         await goToRecording(
@@ -591,7 +591,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 if (_isScanning) {
                                   FlutterBlue.instance.stopScan().whenComplete(() async {
                                     await Future.delayed(
-                                        const Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                                        const Duration(milliseconds: uiIntermittentDelay));
                                   });
                                 }
                               }
@@ -601,7 +601,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   if (_isScanning) {
                                     await FlutterBlue.instance.stopScan();
                                     await Future.delayed(
-                                        const Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                                        const Duration(milliseconds: uiIntermittentDelay));
                                   }
 
                                   await goToRecording(
@@ -616,9 +616,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       ? Get.find<HeartRateMonitor>()
                                       : null;
                                   final existingId =
-                                      heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
+                                      heartRateMonitor?.device?.id.id ?? notAvailable;
                                   final storedId =
-                                      _heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
+                                      _heartRateMonitor?.device?.id.id ?? notAvailable;
                                   bool disconnectOnly = false;
                                   if (heartRateMonitor != null) {
                                     disconnectOnly = existingId == r.device.id.id;
@@ -758,7 +758,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           if (_isScanning) {
                             await FlutterBlue.instance.stopScan();
                             await Future.delayed(
-                                const Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                                const Duration(milliseconds: uiIntermittentDelay));
                           }
                         },
                       );

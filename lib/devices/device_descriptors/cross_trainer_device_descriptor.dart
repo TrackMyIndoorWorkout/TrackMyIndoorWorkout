@@ -18,7 +18,7 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
     heartRateByteIndex,
     calorieFactorDefault = 1.0,
   }) : super(
-          defaultSport: ActivityType.Elliptical,
+          defaultSport: ActivityType.elliptical,
           isMultiSport: false,
           fourCC: fourCC,
           vendorName: vendorName,

@@ -15,7 +15,7 @@ abstract class IntegerSensor extends SensorBase {
     if (!attached || characteristic == null) return;
 
     await for (var byteString in characteristic!.value
-        .throttleTime(const Duration(milliseconds: SENSOR_DATA_THRESHOLD))) {
+        .throttleTime(const Duration(milliseconds: sensorDataThreshold))) {
       if (!canMeasurementProcessed(byteString)) continue;
 
       metric = processMeasurement(byteString);

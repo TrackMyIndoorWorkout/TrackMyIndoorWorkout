@@ -14,7 +14,7 @@ void main() {
       test('for ${exportTarget.item2}', () async {
         final activity = FitActivity(0, exportTarget.item1);
 
-        expect(activity.globalMessageNumber, FitMessage.Activity);
+        expect(activity.globalMessageNumber, FitMessage.activity);
       });
     }
   });

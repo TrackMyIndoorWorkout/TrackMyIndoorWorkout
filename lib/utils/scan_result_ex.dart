@@ -61,7 +61,7 @@ extension ScanResultEx on ScanResult {
 
     final companyIds = advertisementData.manufacturerData.keys;
     if (companyIds.isEmpty) {
-      return NOT_AVAILABLE;
+      return notAvailable;
     }
 
     List<String> nameStrings = [];
@@ -74,15 +74,15 @@ extension ScanResultEx on ScanResult {
 
   MachineType getMachineType() {
     if (serviceUuids.contains(precorServiceUuid)) {
-      return MachineType.IndoorBike;
+      return MachineType.indoorBike;
     }
 
     if (serviceUuids.contains(heartRateServiceUuid)) {
-      return MachineType.HeartRateMonitor;
+      return MachineType.heartRateMonitor;
     }
 
     if (!serviceUuids.contains(fitnessMachineUuid)) {
-      return MachineType.NotFitnessMachine;
+      return MachineType.notFitnessMachine;
     }
 
     for (MapEntry<String, List<int>> entry in advertisementData.serviceData.entries) {
@@ -98,7 +98,7 @@ extension ScanResultEx on ScanResult {
       }
     }
 
-    return MachineType.NotFitnessMachine;
+    return MachineType.notFitnessMachine;
   }
 
   IconData getEquipmentIcon() {
@@ -106,25 +106,25 @@ extension ScanResultEx on ScanResult {
 
     var icon = Icons.help;
     switch (machineType) {
-      case MachineType.IndoorBike:
+      case MachineType.indoorBike:
         icon = Icons.directions_bike;
         break;
-      case MachineType.Treadmill:
+      case MachineType.treadmill:
         icon = Icons.directions_run;
         break;
-      case MachineType.Rower:
+      case MachineType.rower:
         icon = Icons.kayaking;
         break;
-      case MachineType.HeartRateMonitor:
+      case MachineType.heartRateMonitor:
         icon = Icons.favorite;
         break;
-      case MachineType.CrossTrainer:
+      case MachineType.crossTrainer:
         icon = Icons.downhill_skiing;
         break;
-      case MachineType.StepClimber:
+      case MachineType.stepClimber:
         icon = Icons.stairs;
         break;
-      case MachineType.StairClimber:
+      case MachineType.stairClimber:
         icon = Icons.stairs;
         break;
       default:

@@ -8,11 +8,11 @@ void main() {
   test('FitSport has the expected global message number', () async {
     final sport = FitSport(0);
 
-    expect(sport.globalMessageNumber, FitMessage.Sport);
+    expect(sport.globalMessageNumber, FitMessage.sport);
   });
 
   group('FitSport data has the expected length', () {
-    for (final sport in SPORTS) {
+    for (final sport in sports) {
       final fileCreator = FitSport(0);
       final expected = fileCreator.fields.fold<int>(0, (accu, field) => accu + field.size);
 

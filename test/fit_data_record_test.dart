@@ -17,7 +17,7 @@ void main() {
       HEART_RATE_LIMITING_NO_LIMIT,
     );
 
-    expect(dataRecord.globalMessageNumber, FitMessage.Record);
+    expect(dataRecord.globalMessageNumber, FitMessage.record);
   });
 
   test('FitDataRecord data has the expected length', () async {

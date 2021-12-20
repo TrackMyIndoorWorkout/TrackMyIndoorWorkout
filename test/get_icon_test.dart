@@ -5,38 +5,38 @@ import 'package:track_my_indoor_exercise/utils/display.dart';
 
 void main() {
   test("getIcon for Riding:", () async {
-    expect(getIcon(ActivityType.Ride), Icons.directions_bike);
+    expect(getIcon(ActivityType.ride), Icons.directions_bike);
   });
 
   test("getIcon for Running:", () async {
-    expect(getIcon(ActivityType.Run), Icons.directions_run);
+    expect(getIcon(ActivityType.run), Icons.directions_run);
   });
 
   test("getIcon for Kayaking:", () async {
-    expect(getIcon(ActivityType.Kayaking), Icons.kayaking);
+    expect(getIcon(ActivityType.kayaking), Icons.kayaking);
   });
 
   test("getIcon for Canoeing:", () async {
-    expect(getIcon(ActivityType.Canoeing), Icons.rowing);
+    expect(getIcon(ActivityType.canoeing), Icons.rowing);
   });
 
   test("getIcon for Rowing:", () async {
-    expect(getIcon(ActivityType.Rowing), Icons.rowing);
+    expect(getIcon(ActivityType.rowing), Icons.rowing);
   });
 
   test("getIcon for Swimming:", () async {
-    expect(getIcon(ActivityType.Swim), Icons.waves);
+    expect(getIcon(ActivityType.swim), Icons.waves);
   });
 
   test("getIcon for Elliptical:", () async {
-    expect(getIcon(ActivityType.Elliptical), Icons.downhill_skiing);
+    expect(getIcon(ActivityType.elliptical), Icons.downhill_skiing);
   });
 
   test("getIcon for StairStepper:", () async {
-    expect(getIcon(ActivityType.StairStepper), Icons.stairs);
+    expect(getIcon(ActivityType.stairStepper), Icons.stairs);
   });
 
   test("getIcon for other (Crossfit):", () async {
-    expect(getIcon(ActivityType.Crossfit), Icons.directions_bike);
+    expect(getIcon(ActivityType.crossfit), Icons.directions_bike);
   });
 }

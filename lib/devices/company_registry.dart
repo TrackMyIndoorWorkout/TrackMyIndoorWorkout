@@ -17,7 +17,7 @@ class CompanyRegistry {
   }
 
   String nameForId(int id) {
-    if (!registry.containsKey(id)) return NOT_AVAILABLE;
+    if (!registry.containsKey(id)) return notAvailable;
 
     return registry[id]!;
   }

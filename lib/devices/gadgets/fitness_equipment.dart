@@ -64,7 +64,7 @@ class FitnessEquipment extends DeviceBase {
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 
-  String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.Ride);
+  String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
   double get powerFactor => _activity?.powerFactor ?? (descriptor?.powerFactor ?? 1.0);
   double get calorieFactor => _activity?.calorieFactor ?? (descriptor?.calorieFactor ?? 1.0);
   double get hrCalorieFactor => _activity?.hrCalorieFactor ?? (descriptor?.hrCalorieFactor ?? 1.0);
@@ -75,7 +75,7 @@ class FitnessEquipment extends DeviceBase {
     if (!attached || characteristic == null || descriptor == null) return;
 
     await for (var byteString
-        in characteristic!.value.throttleTime(const Duration(milliseconds: FTMS_DATA_THRESHOLD))) {
+        in characteristic!.value.throttleTime(const Duration(milliseconds: ftmsDataThreshold))) {
       if (!descriptor!.canDataProcessed(byteString)) continue;
       if (!measuring && !calibrating) continue;
 
@@ -113,7 +113,7 @@ class FitnessEquipment extends DeviceBase {
       await _runningCadenceSensor?.detach();
       _runningCadenceSensor = null;
     }
-    if (sport == ActivityType.Run) {
+    if (sport == ActivityType.run) {
       if (services.firstWhereOrNull(
               (service) => service.uuid.uuidString() == runningCadenceServiceUuid) !=
           null) {
@@ -215,7 +215,7 @@ class FitnessEquipment extends DeviceBase {
       stub.elapsed = stub.elapsed! - _startingElapsed;
     }
 
-    if (sport == ActivityType.Run &&
+    if (sport == ActivityType.run &&
         _runningCadenceSensor != null &&
         (_runningCadenceSensor?.attached ?? false)) {
       if ((stub.cadence == null || stub.cadence == 0) &&
@@ -224,20 +224,20 @@ class FitnessEquipment extends DeviceBase {
       }
 
       if ((stub.speed == null || stub.speed == 0) &&
-          (_runningCadenceSensor?.record?.speed ?? 0.0) > EPS) {
+          (_runningCadenceSensor?.record?.speed ?? 0.0) > eps) {
         stub.speed = _runningCadenceSensor!.record!.speed;
       }
 
       if ((stub.distance == null || stub.distance == 0) &&
-          (_runningCadenceSensor?.record?.distance ?? 0.0) > EPS) {
+          (_runningCadenceSensor?.record?.distance ?? 0.0) > eps) {
         stub.distance = _runningCadenceSensor!.record!.distance;
       }
     }
 
     final dT = (elapsedMillis - lastRecord.elapsedMillis!) / 1000.0;
-    if ((stub.distance ?? 0.0) < EPS) {
+    if ((stub.distance ?? 0.0) < eps) {
       stub.distance = (lastRecord.distance ?? 0);
-      if ((stub.speed ?? 0.0) > 0 && dT > EPS) {
+      if ((stub.speed ?? 0.0) > 0 && dT > eps) {
         // Speed possibly already has powerFactor effect
         double dD = (stub.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
         stub.distance = stub.distance! + dD;
@@ -251,7 +251,7 @@ class FitnessEquipment extends DeviceBase {
         _startingDistance = stub.distance!;
         stub.distance = 0.0;
       }
-    } else if (_startingDistance > EPS) {
+    } else if (_startingDistance > eps) {
       stub.distance = stub.distance! - _startingDistance;
     }
 
@@ -292,12 +292,12 @@ class FitnessEquipment extends DeviceBase {
     }
 
     var calories = 0.0;
-    if (calories1 > EPS &&
-        (!_useHrmReportedCalories || calories2 < EPS) &&
+    if (calories1 > eps &&
+        (!_useHrmReportedCalories || calories2 < eps) &&
         (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
       calories = calories1;
-    } else if (calories2 > EPS &&
-        (_useHrmReportedCalories || calories1 < EPS) &&
+    } else if (calories2 > eps &&
+        (_useHrmReportedCalories || calories1 < eps) &&
         (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
       calories = calories2;
     } else {
@@ -308,19 +308,19 @@ class FitnessEquipment extends DeviceBase {
                 hrCalorieFactor;
       }
 
-      if (deltaCalories < EPS && stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
+      if (deltaCalories < eps && stub.caloriesPerHour != null && stub.caloriesPerHour! > eps) {
         deltaCalories = stub.caloriesPerHour! / (60 * 60) * dT;
       }
 
-      if (deltaCalories < EPS && stub.caloriesPerMinute != null && stub.caloriesPerMinute! > EPS) {
+      if (deltaCalories < eps && stub.caloriesPerMinute != null && stub.caloriesPerMinute! > eps) {
         deltaCalories = stub.caloriesPerMinute! / 60 * dT;
       }
 
       // Supplement power from calories https://www.braydenwm.com/calburn.htm
-      if (stub.power == null || stub.power! < EPS) {
-        if (stub.caloriesPerMinute != null && stub.caloriesPerMinute! > EPS) {
+      if (stub.power == null || stub.power! < eps) {
+        if (stub.caloriesPerMinute != null && stub.caloriesPerMinute! > eps) {
           stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
-        } else if (stub.caloriesPerHour != null && stub.caloriesPerHour! > EPS) {
+        } else if (stub.caloriesPerHour != null && stub.caloriesPerHour! > eps) {
           stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
         }
 
@@ -329,8 +329,8 @@ class FitnessEquipment extends DeviceBase {
         }
       }
 
-      if (deltaCalories < EPS && stub.power != null && stub.power! > EPS) {
-        deltaCalories = stub.power! * dT * J_TO_KCAL * calorieFactor;
+      if (deltaCalories < eps && stub.power != null && stub.power! > eps) {
+        deltaCalories = stub.power! * dT * jToKCal * calorieFactor;
       }
 
       _residueCalories += deltaCalories;
@@ -342,7 +342,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     if (stub.pace != null && stub.pace! > 0 && slowPace != null && stub.pace! < slowPace! ||
-        stub.speed != null && stub.speed! > EPS) {
+        stub.speed != null && stub.speed! > eps) {
       // #101, #122
       if ((stub.cadence == null || stub.cadence == 0) &&
           _lastPositiveCadence > 0 &&
@@ -354,7 +354,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #111
-    if (calories < EPS && _lastPositiveCalories > 0) {
+    if (calories < eps && _lastPositiveCalories > 0) {
       calories = _lastPositiveCalories;
     } else {
       _lastPositiveCalories = calories;
@@ -366,14 +366,14 @@ class FitnessEquipment extends DeviceBase {
         _startingCalories = calories;
         calories = 0.0;
       }
-    } else if (_startingCalories > EPS) {
+    } else if (_startingCalories > eps) {
       calories -= _startingCalories;
     }
 
     stub.calories = calories.floor();
 
     stub.activityId = _activity?.id ?? 0;
-    stub.sport = descriptor?.defaultSport ?? ActivityType.Ride;
+    stub.sport = descriptor?.defaultSport ?? ActivityType.ride;
 
     startingValues = false;
 

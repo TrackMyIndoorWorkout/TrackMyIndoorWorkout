@@ -85,7 +85,7 @@ class RecordingState extends State<RecordingScreen> {
   TextStyle _unitStyle = const TextStyle();
   Color _chartTextColor = Colors.black;
   TextStyle _chartLabelStyle = const TextStyle(
-    fontFamily: FONT_FAMILY,
+    fontFamily: fontFamily,
     fontSize: 11,
   );
   TextStyle _markerStyle = const TextStyle();
@@ -282,11 +282,11 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           _values = [
-            record.calories?.toString() ?? EMPTY_MEASUREMENT,
-            record.power?.toString() ?? EMPTY_MEASUREMENT,
+            record.calories?.toString() ?? emptyMeasurement,
+            record.power?.toString() ?? emptyMeasurement,
             record.speedOrPaceStringByUnit(_si, widget.descriptor.defaultSport),
-            record.cadence?.toString() ?? EMPTY_MEASUREMENT,
-            record.heartRate?.toString() ?? EMPTY_MEASUREMENT,
+            record.cadence?.toString() ?? emptyMeasurement,
+            record.heartRate?.toString() ?? emptyMeasurement,
             record.distanceStringByUnit(_si, _highRes),
           ];
           amendZoneToValue(0, record.power ?? 0);
@@ -364,7 +364,7 @@ class RecordingState extends State<RecordingScreen> {
     final discovered = (await _heartRateMonitor?.discover()) ?? false;
     if (discovered) {
       if (_heartRateMonitor?.device?.id.id !=
-          (_fitnessEquipment?.heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE)) {
+          (_fitnessEquipment?.heartRateMonitor?.device?.id.id ?? notAvailable)) {
         _fitnessEquipment?.setHeartRateMonitor(_heartRateMonitor!);
       }
       _heartRateMonitor?.refreshFactors();
@@ -378,7 +378,7 @@ class RecordingState extends State<RecordingScreen> {
                 (record.heartRate != null && record.heartRate! > 0)) {
               _heartRate = record.heartRate;
             }
-            _values[4] = record.heartRate?.toString() ?? EMPTY_MEASUREMENT;
+            _values[4] = record.heartRate?.toString() ?? emptyMeasurement;
             amendZoneToValue(3, record.heartRate ?? 0);
           });
         });
@@ -398,7 +398,7 @@ class RecordingState extends State<RecordingScreen> {
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
     _unitStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: _themeManager.getBlueColor(),
     );
     _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 1.4);
@@ -421,7 +421,7 @@ class RecordingState extends State<RecordingScreen> {
 
     _trackCalculator = TrackCalculator(
       track: TrackDescriptor(
-        radiusBoost: TRACK_PAINTING_RADIUS_BOOST,
+        radiusBoost: trackPaintingRadiusBoost,
         lengthFactor: widget.descriptor.lengthFactor,
       ),
     );
@@ -439,7 +439,7 @@ class RecordingState extends State<RecordingScreen> {
             (i) => DisplayRecord.from(
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
 
-    if (widget.sport != ActivityType.Ride) {
+    if (widget.sport != ActivityType.ride) {
       final slowPace = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(widget.sport)]!;
       widget.descriptor.slowPace = slowPace;
       _fitnessEquipment?.slowPace = slowPace;
@@ -489,7 +489,7 @@ class RecordingState extends State<RecordingScreen> {
 
     _chartTextColor = _themeManager.getProtagonistColor();
     _chartLabelStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       fontSize: 11,
       color: _chartTextColor,
     );
@@ -570,12 +570,12 @@ class RecordingState extends State<RecordingScreen> {
     _uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
     _fitnessEquipment?.measuring = false;
     _values = [
-      EMPTY_MEASUREMENT,
-      EMPTY_MEASUREMENT,
-      EMPTY_MEASUREMENT,
-      EMPTY_MEASUREMENT,
-      EMPTY_MEASUREMENT,
-      EMPTY_MEASUREMENT,
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
     ];
     _zoneIndexes = [null, null, null, null];
 
@@ -860,7 +860,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   String _getRankString(int? rank, List<WorkoutSummary> leaderboard) {
-    return rank == null ? EMPTY_MEASUREMENT : rank.toString();
+    return rank == null ? emptyMeasurement : rank.toString();
   }
 
   int? _getDeviceRank() {
@@ -945,7 +945,7 @@ class RecordingState extends State<RecordingScreen> {
 
   String _getTargetHrText(TargetHrState hrState) {
     if (hrState == TargetHrState.off) {
-      return EMPTY_MEASUREMENT;
+      return emptyMeasurement;
     }
 
     if (hrState == TargetHrState.under) {
@@ -1103,11 +1103,11 @@ class RecordingState extends State<RecordingScreen> {
     const separatorHeight = 1.0;
 
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > EPS) {
+    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
       _sizeDefault = mediaWidth / 8;
       _measurementStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
+        fontFamily: fontFamily,
         fontSize: _sizeDefault,
       );
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
@@ -1263,7 +1263,7 @@ class RecordingState extends State<RecordingScreen> {
             extraExtras.add(Text(_sportRankString, style: devicePaceLightColor));
           }
 
-          if (widget.descriptor.defaultSport != ActivityType.Ride) {
+          if (widget.descriptor.defaultSport != ActivityType.ride) {
             extraExtras.add(Text("Speed ${_si ? 'km' : 'mi'}/h"));
           }
 

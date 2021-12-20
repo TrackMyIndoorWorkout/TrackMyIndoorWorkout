@@ -26,9 +26,9 @@ void main() {
     ];
     for (var pacePair in paces) {
       final expected = pacePair[1];
-      for (var sport in [ActivityType.Run, ActivityType.VirtualRun]) {
+      for (var sport in [ActivityType.run, ActivityType.virtualRun]) {
         test("${pacePair[0]} -> $expected", () async {
-          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, EPS));
+          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, eps));
         });
       }
     }
@@ -36,12 +36,12 @@ void main() {
 
   group("Record constructor fills speed properly if random running pace is present:", () {
     final rnd = Random();
-    1.to(REPETITION).forEach((input) {
+    1.to(repetition).forEach((input) {
       final randomPace = rnd.nextDouble() * 20;
       final expected = 60 / randomPace;
-      for (var sport in [ActivityType.Run, ActivityType.VirtualRun]) {
+      for (var sport in [ActivityType.run, ActivityType.virtualRun]) {
         test("$randomPace -> $expected", () async {
-          expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, EPS));
+          expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, eps));
         });
       }
     });
@@ -64,9 +64,9 @@ void main() {
     ];
     for (var pacePair in paces) {
       final expected = pacePair[1];
-      for (var sport in [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing]) {
+      for (var sport in [ActivityType.kayaking, ActivityType.canoeing, ActivityType.rowing]) {
         test("${pacePair[0]} -> $expected", () async {
-          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, EPS));
+          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, eps));
         });
       }
     }
@@ -74,12 +74,12 @@ void main() {
 
   group("Record constructor fills speed properly if random paddling pace is present:", () {
     final rnd = Random();
-    1.to(REPETITION).forEach((input) {
+    1.to(repetition).forEach((input) {
       final randomPace = rnd.nextDouble() * 360;
       final expected = 30.0 / (randomPace / 60.0);
-      for (var sport in [ActivityType.Kayaking, ActivityType.Canoeing, ActivityType.Rowing]) {
+      for (var sport in [ActivityType.kayaking, ActivityType.canoeing, ActivityType.rowing]) {
         test("$randomPace -> $expected", () async {
-          expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, EPS));
+          expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, eps));
         });
       }
     });

@@ -96,7 +96,7 @@ abstract class DeviceDescriptor {
 
   RecordWithSport? stubRecord(List<int> data) {
     if (data.length > 2) {
-      var flag = data[0] + MAX_UINT8 * data[1];
+      var flag = data[0] + maxUint8 * data[1];
       if (flag != featuresFlag) {
         featuresFlag = flag;
         processFlag(flag);

@@ -22,11 +22,11 @@ void main() {
 
     equipment.startWorkout();
 
-    expect(equipment.lastRecord.distance, closeTo(0.0, EPS));
+    expect(equipment.lastRecord.distance, closeTo(0.0, eps));
     expect(equipment.lastRecord.elapsed, 0);
     expect(equipment.lastRecord.calories, 0);
     expect(equipment.lastRecord.power, 0);
-    expect(equipment.lastRecord.speed, closeTo(0.0, EPS));
+    expect(equipment.lastRecord.speed, closeTo(0.0, eps));
     expect(equipment.lastRecord.cadence, 0);
     expect(equipment.lastRecord.heartRate, 0);
     expect(equipment.lastRecord.elapsedMillis, 0);
@@ -36,13 +36,13 @@ void main() {
     expect(equipment.lastRecord.caloriesPerHour, null);
     expect(equipment.lastRecord.caloriesPerMinute, null);
 
-    expect(equipment.residueCalories, closeTo(0.0, EPS));
-    expect(equipment.lastPositiveCalories, closeTo(0.0, EPS));
+    expect(equipment.residueCalories, closeTo(0.0, eps));
+    expect(equipment.lastPositiveCalories, closeTo(0.0, eps));
   });
 
   group('stopWorkout blanks out calorie helper variables', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, 300, rnd).forEach((calories) {
+    getRandomInts(smallRepetition, 300, rnd).forEach((calories) {
       test('$calories', () async {
         await initPrefServiceForTest();
         final hrBasedCalories = rnd.nextBool();
@@ -67,12 +67,12 @@ void main() {
             Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, calories: 0);
         equipment.processRecord(Record(calories: calories));
 
-        expect(equipment.lastPositiveCalories, closeTo(calories, EPS));
+        expect(equipment.lastPositiveCalories, closeTo(calories, eps));
 
         equipment.stopWorkout();
 
-        expect(equipment.residueCalories, closeTo(0.0, EPS));
-        expect(equipment.lastPositiveCalories, closeTo(0.0, EPS));
+        expect(equipment.residueCalories, closeTo(0.0, eps));
+        expect(equipment.lastPositiveCalories, closeTo(0.0, eps));
       });
     });
   });

@@ -37,7 +37,7 @@ class HeartRateMonitor extends ComplexSensor {
       // Energy Expended Status
       if (flag % 2 == 1) {
         _caloriesMetric =
-            ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1, divider: CAL_TO_J);
+            ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1, divider: calToJ);
         expectedLength += 2; // 16 bit, kJ
       }
 
@@ -56,14 +56,14 @@ class HeartRateMonitor extends ComplexSensor {
   @override
   RecordWithSport processMeasurement(List<int> data) {
     if (!canMeasurementProcessed(data)) {
-      return RecordWithSport.getBlank(ActivityType.Run, uxDebug, random);
+      return RecordWithSport.getBlank(ActivityType.run, uxDebug, random);
     }
 
     return RecordWithSport(
       timeStamp: DateTime.now().millisecondsSinceEpoch,
       heartRate: getHeartRate(data),
       calories: getCalories(data),
-      sport: ActivityType.Run,
+      sport: ActivityType.run,
     );
   }
 

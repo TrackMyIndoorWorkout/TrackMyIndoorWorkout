@@ -151,7 +151,7 @@ class ThemeManager {
   }
 
   TextStyle getBlueTextStyle(double fontSize) {
-    return TextStyle(fontFamily: FONT_FAMILY, fontSize: fontSize, color: getBlueColor());
+    return TextStyle(fontFamily: fontFamily, fontSize: fontSize, color: getBlueColor());
   }
 
   Widget _getFabCore(
@@ -266,7 +266,7 @@ class ThemeManager {
   }
 
   Widget getRankIcon(int rank) {
-    final textStyle = Get.textTheme.headline4!.apply(fontFamily: FONT_FAMILY, color: Colors.black);
+    final textStyle = Get.textTheme.headline4!.apply(fontFamily: fontFamily, color: Colors.black);
     return _getFabCore(
       Colors.black,
       getYellowColor(),

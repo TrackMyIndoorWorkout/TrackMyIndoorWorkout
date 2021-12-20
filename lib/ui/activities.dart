@@ -148,7 +148,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       IconButton(
         icon: _themeManager.getActionIcon(Icons.bolt, size),
         onPressed: () async {
-          if (activity.powerFactor < EPS) {
+          if (activity.powerFactor < eps) {
             Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
             return;
           }
@@ -242,20 +242,20 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > EPS) {
+    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
       _sizeDefault = _mediaWidth! / 7;
       _sizeDefault2 = _sizeDefault / 1.5;
 
       _measurementStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
+        fontFamily: fontFamily,
         fontSize: _sizeDefault,
       );
       _textStyle = TextStyle(
         fontSize: _sizeDefault2,
       );
       _headerStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
+        fontFamily: fontFamily,
         fontSize: _sizeDefault2,
       );
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);

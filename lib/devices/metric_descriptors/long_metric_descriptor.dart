@@ -9,8 +9,8 @@ class LongMetricDescriptor extends MetricDescriptor {
   double? getMeasurementValue(List<int> data) {
     final dir = lsb < msb ? 1 : -1;
     final value = data[lsb] +
-        MAX_UINT8 * (data[lsb + dir] + MAX_UINT8 * (data[msb - dir] + MAX_UINT8 * data[msb]));
-    if (optional && value == MAX_UINT32 - 1) {
+        maxUint8 * (data[lsb + dir] + maxUint8 * (data[msb - dir] + maxUint8 * data[msb]));
+    if (optional && value == maxUint32 - 1) {
       return null;
     }
 

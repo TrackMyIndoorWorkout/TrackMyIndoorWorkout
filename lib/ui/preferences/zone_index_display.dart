@@ -13,7 +13,7 @@ class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> indexDisplayPreferences = [
-      const PrefLabel(title: Text(PreferencesSpec.ZONE_INDEX_DISPLAY_EXTRA_NOTE, maxLines: 10)),
+      const PrefLabel(title: Text(PreferencesSpec.zoneIndexDisplayExtraNote, maxLines: 10)),
       const PrefCheckbox(
         title: Text(ZONE_INDEX_DISPLAY_COLORING),
         subtitle: Text(ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION),

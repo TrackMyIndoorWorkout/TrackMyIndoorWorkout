@@ -56,20 +56,20 @@ class WorkoutRow {
 }
 
 class CSVImporter {
-  static const PROGRESS_STEPS = 400;
-  static const ENERGY_2_SPEED = 5.28768241564455E-05;
-  static const TIME_RESOLUTION_FACTOR = 2;
-  static const EPSILON = 0.001;
-  static const MAX_ITERATIONS = 100;
-  static const DRIVE_TRAIN_LOSS = 0; // %
-  static const G_CONST = 9.8067;
-  static const BIKER_WEIGHT = 81; // kg
-  static const BIKE_WEIGHT = 9; // kg
-  static const ROLLING_RESISTANCE_COEFFICIENT = 0.005;
-  static const DRAG_COEFFICIENT = 0.63;
+  static const maxProgressSteps = 400;
+  static const energy2speed = 5.28768241564455E-05;
+  static const timeResolutionFactor = 2;
+  static const epsilon = 0.001;
+  static const maxIterations = 100;
+  static const driveTrainLoss = 0; // %
+  static const gConst = 9.8067;
+  static const bikerWeight = 81; // kg
+  static const bikeWeight = 9; // kg
+  static const rollingResistanceCoefficient = 0.005;
+  static const dragCoefficient = 0.63;
   // Backup: 5.4788
-  static const FRONTAL_AREA = 4 * FT_TO_M * FT_TO_M; // ft * ft_2_m^2
-  static const AIR_DENSITY = 0.076537 * LB_TO_KG / (FT_TO_M * FT_TO_M * FT_TO_M);
+  static const frontalArea = 4 * ftToM * ftToM; // ft * ft_2_m^2
+  static const airDensity = 0.076537 * lbToKg / (ftToM * ftToM * ftToM);
 
   DateTime? start;
   String message = "";
@@ -77,7 +77,7 @@ class CSVImporter {
   List<String> _lines = [];
   int _linePointer = 0;
   bool _migration = false;
-  int _version = CSV_VERSION;
+  int _version = csvVersion;
   final Map<int, double> _velocityForPowerDict = <int, double>{};
 
   CSVImporter(this.start);
@@ -91,13 +91,13 @@ class CSVImporter {
   }
 
   double powerForVelocity(velocity) {
-    const fRolling = G_CONST * (BIKER_WEIGHT + BIKE_WEIGHT) * ROLLING_RESISTANCE_COEFFICIENT;
+    const fRolling = gConst * (bikerWeight + bikeWeight) * rollingResistanceCoefficient;
 
-    final fDrag = 0.5 * FRONTAL_AREA * DRAG_COEFFICIENT * AIR_DENSITY * velocity * velocity;
+    final fDrag = 0.5 * frontalArea * dragCoefficient * airDensity * velocity * velocity;
 
     final totalForce = fRolling + fDrag;
     final wheelPower = totalForce * velocity;
-    const driveTrainFraction = 1.0 - (DRIVE_TRAIN_LOSS / 100.0);
+    const driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
     final legPower = wheelPower / driveTrainFraction;
     return legPower;
   }
@@ -109,12 +109,12 @@ class CSVImporter {
 
     var lowerVelocity = 0.0;
     var upperVelocity = 2000.0;
-    var middleVelocity = power * ENERGY_2_SPEED * 1000;
+    var middleVelocity = power * energy2speed * 1000;
     var middlePower = powerForVelocity(middleVelocity);
 
     var i = 0;
     do {
-      if ((middlePower - power).abs() < EPSILON) break;
+      if ((middlePower - power).abs() < epsilon) break;
 
       if (middlePower > power) {
         upperVelocity = middleVelocity;
@@ -124,7 +124,7 @@ class CSVImporter {
 
       middleVelocity = (upperVelocity + lowerVelocity) / 2.0;
       middlePower = powerForVelocity(middleVelocity);
-    } while (i++ < MAX_ITERATIONS);
+    } while (i++ < maxIterations);
 
     _velocityForPowerDict[power] = middleVelocity;
     return middleVelocity;
@@ -141,7 +141,7 @@ class CSVImporter {
     _linePointer = 0;
     final firstLine = _lines[0].split(",");
     if (firstLine.length > 1) {
-      if (firstLine[0] != CSV_MAGIC) {
+      if (firstLine[0] != csvMagic) {
         message = "Cannot recognize migration CSV magic";
         return null;
       }
@@ -155,50 +155,50 @@ class CSVImporter {
       _version = int.parse(firstLine[1]);
     }
 
-    if (!_findLine(RIDE_SUMMARY)) {
-      message = "Cannot locate $RIDE_SUMMARY";
+    if (!_findLine(rideSummaryTag)) {
+      message = "Cannot locate $rideSummaryTag";
       return null;
     }
 
     // Total Time
-    if (!_findLine(TOTAL_TIME)) {
-      message = "Couldn't find $TOTAL_TIME";
+    if (!_findLine(totalTimeTag)) {
+      message = "Couldn't find $totalTimeTag";
       return null;
     }
 
     final timeLine = _lines[_linePointer].split(",");
     final timeValue = double.tryParse(timeLine[1]);
     if (timeValue == null) {
-      message = "Couldn't parse $TOTAL_TIME";
+      message = "Couldn't parse $totalTimeTag";
       return null;
     }
 
     int totalElapsed = timeValue.round(); // Seconds by default
-    if (timeLine[2].trim() == MINUTES_UNIT) {
+    if (timeLine[2].trim() == minutesUnitTag) {
       totalElapsed = (timeValue * 60).round();
-    } else if (timeLine[2].trim() == HOURS_UNIT) {
+    } else if (timeLine[2].trim() == hoursUnitTag) {
       totalElapsed = (timeValue * 3600).round();
     }
 
     // Total Distance
-    if (!_findLine(TOTAL_DISTANCE)) {
-      message = "Couldn't find $TOTAL_DISTANCE";
+    if (!_findLine(totalDistanceTag)) {
+      message = "Couldn't find $totalDistanceTag";
       return null;
     }
 
     final distanceLine = _lines[_linePointer].split(",");
     final distanceValue = double.tryParse(distanceLine[1]);
     if (distanceValue == null) {
-      message = "Couldn't parse $TOTAL_DISTANCE";
+      message = "Couldn't parse $totalDistanceTag";
       return null;
     }
 
     double totalDistance = 0.0;
-    if (distanceLine[2].trim() == MILE_UNIT) {
-      totalDistance = distanceValue * 1000 * MI2KM;
-    } else if (distanceLine[2].trim() == KM_UNIT) {
+    if (distanceLine[2].trim() == mileUnitTag) {
+      totalDistance = distanceValue * 1000 * mi2km;
+    } else if (distanceLine[2].trim() == kmUnitTag) {
       totalDistance = distanceValue * 1000;
-    } else if (distanceLine[2].trim() == METER_UNIT) {
+    } else if (distanceLine[2].trim() == meterUnitTag) {
       totalDistance = distanceValue;
     }
 
@@ -212,7 +212,7 @@ class CSVImporter {
     var uploaded = false;
     var stravaId = 0;
     var fourCC = "SAP+";
-    var sport = ActivityType.Ride;
+    var sport = ActivityType.ride;
     var calorieFactor = 1.0;
     var hrCalorieFactor = 1.0;
     var hrBasedCalories = false;
@@ -231,8 +231,8 @@ class CSVImporter {
     if (_migration) {
       _linePointer++;
       final deviceNameLine = _lines[_linePointer].split(",");
-      if (deviceNameLine[0].trim() != DEVICE_NAME) {
-        message = "Couldn't parse $DEVICE_NAME";
+      if (deviceNameLine[0].trim() != deviceName) {
+        message = "Couldn't parse $deviceName";
         return null;
       }
 
@@ -241,8 +241,8 @@ class CSVImporter {
       _linePointer++;
 
       final deviceIdLine = _lines[_linePointer].split(",");
-      if (deviceIdLine[0].trim() != DEVICE_ID) {
-        message = "Couldn't parse $DEVICE_ID";
+      if (deviceIdLine[0].trim() != deviceId) {
+        message = "Couldn't parse $deviceId";
         return null;
       }
 
@@ -251,14 +251,14 @@ class CSVImporter {
       _linePointer++;
 
       final startTimeLine = _lines[_linePointer].split(",");
-      if (startTimeLine[0].trim() != START_TIME) {
-        message = "Couldn't parse $START_TIME";
+      if (startTimeLine[0].trim() != startTimeTag) {
+        message = "Couldn't parse $startTimeTag";
         return null;
       }
 
       startTime = int.tryParse(startTimeLine[1]) ?? 0;
       if (startTime == 0) {
-        message = "Couldn't parse $START_TIME";
+        message = "Couldn't parse $startTimeTag";
         return null;
       }
 
@@ -267,22 +267,22 @@ class CSVImporter {
       _linePointer++;
 
       final endTimeLine = _lines[_linePointer].split(",");
-      if (endTimeLine[0].trim() != END_TIME) {
-        message = "Couldn't parse $END_TIME";
+      if (endTimeLine[0].trim() != endTimeTag) {
+        message = "Couldn't parse $endTimeTag";
         return null;
       }
 
       endTime = int.tryParse(endTimeLine[1]) ?? 0;
       if (endTime == 0) {
-        message = "Couldn't parse $END_TIME";
+        message = "Couldn't parse $endTimeTag";
         return null;
       }
 
       _linePointer++;
 
       final calorieLine = _lines[_linePointer].split(",");
-      if (calorieLine[0].trim() != CALORIES) {
-        message = "Couldn't parse $CALORIES";
+      if (calorieLine[0].trim() != caloriesTag) {
+        message = "Couldn't parse $caloriesTag";
         return null;
       }
 
@@ -291,8 +291,8 @@ class CSVImporter {
       _linePointer++;
 
       final uploadedLine = _lines[_linePointer].split(",");
-      if (uploadedLine[0].trim() != UPLOADED_TAG) {
-        message = "Couldn't parse $UPLOADED_TAG";
+      if (uploadedLine[0].trim() != uploadedTag) {
+        message = "Couldn't parse $uploadedTag";
         return null;
       }
 
@@ -301,8 +301,8 @@ class CSVImporter {
       _linePointer++;
 
       final stravaIdLine = _lines[_linePointer].split(",");
-      if (stravaIdLine[0].trim() != STRAVA_ID) {
-        message = "Couldn't parse $STRAVA_ID";
+      if (stravaIdLine[0].trim() != stravaIdTag) {
+        message = "Couldn't parse $stravaIdTag";
         return null;
       }
 
@@ -311,8 +311,8 @@ class CSVImporter {
       _linePointer++;
 
       final fourCcLine = _lines[_linePointer].split(",");
-      if (fourCcLine[0].trim() != FOUR_CC) {
-        message = "Couldn't parse $FOUR_CC";
+      if (fourCcLine[0].trim() != fourCCTag) {
+        message = "Couldn't parse $fourCCTag";
         return null;
       }
 
@@ -321,8 +321,8 @@ class CSVImporter {
       _linePointer++;
 
       final sportLine = _lines[_linePointer].split(",");
-      if (sportLine[0].trim() != SPORT_TAG) {
-        message = "Couldn't parse $SPORT_TAG";
+      if (sportLine[0].trim() != sportTag) {
+        message = "Couldn't parse $sportTag";
         return null;
       }
 
@@ -331,8 +331,8 @@ class CSVImporter {
       _linePointer++;
 
       final powerFactorLine = _lines[_linePointer].split(",");
-      if (powerFactorLine[0].trim() != POWER_FACTOR) {
-        message = "Couldn't parse $POWER_FACTOR";
+      if (powerFactorLine[0].trim() != powerFactorTag) {
+        message = "Couldn't parse $powerFactorTag";
         return null;
       }
 
@@ -341,8 +341,8 @@ class CSVImporter {
       _linePointer++;
 
       final calorieFactorLine = _lines[_linePointer].split(",");
-      if (calorieFactorLine[0].trim() != CALORIE_FACTOR) {
-        message = "Couldn't parse $CALORIE_FACTOR";
+      if (calorieFactorLine[0].trim() != calorieFactorTag) {
+        message = "Couldn't parse $calorieFactorTag";
         return null;
       }
 
@@ -352,8 +352,8 @@ class CSVImporter {
 
       if (_version > 1) {
         final hrCalorieFactorLine = _lines[_linePointer].split(",");
-        if (hrCalorieFactorLine[0].trim() != HR_CALORIE_FACTOR) {
-          message = "Couldn't parse $HR_CALORIE_FACTOR";
+        if (hrCalorieFactorLine[0].trim() != hrCalorieFactorTag) {
+          message = "Couldn't parse $hrCalorieFactorTag";
           return null;
         }
 
@@ -362,8 +362,8 @@ class CSVImporter {
         _linePointer++;
 
         final hrBasedCaloriesLine = _lines[_linePointer].split(",");
-        if (hrBasedCaloriesLine[0].trim() != HR_BASED_CALORIES) {
-          message = "Couldn't parse $HR_BASED_CALORIES";
+        if (hrBasedCaloriesLine[0].trim() != hrBasedCaloriesTag) {
+          message = "Couldn't parse $hrBasedCaloriesTag";
           return null;
         }
 
@@ -372,8 +372,8 @@ class CSVImporter {
         _linePointer++;
 
         final timeZoneLine = _lines[_linePointer].split(",");
-        if (timeZoneLine[0].trim() != TIME_ZONE) {
-          message = "Couldn't parse $TIME_ZONE";
+        if (timeZoneLine[0].trim() != timeZoneTag) {
+          message = "Couldn't parse $timeZoneTag";
           return null;
         }
 
@@ -382,8 +382,8 @@ class CSVImporter {
         _linePointer++;
 
         final suuntoUploadedLine = _lines[_linePointer].split(",");
-        if (suuntoUploadedLine[0].trim() != SUUNTO_UPLOADED) {
-          message = "Couldn't parse $SUUNTO_UPLOADED";
+        if (suuntoUploadedLine[0].trim() != suuntoUploadedTag) {
+          message = "Couldn't parse $suuntoUploadedTag";
           return null;
         }
 
@@ -392,8 +392,8 @@ class CSVImporter {
         _linePointer++;
 
         final suuntoBlobUrlLine = _lines[_linePointer].split(",");
-        if (suuntoBlobUrlLine[0].trim() != SUUNTO_BLOB_URL) {
-          message = "Couldn't parse $SUUNTO_BLOB_URL";
+        if (suuntoBlobUrlLine[0].trim() != suuntoBlobUrlTag) {
+          message = "Couldn't parse $suuntoBlobUrlTag";
           return null;
         }
 
@@ -402,8 +402,8 @@ class CSVImporter {
         _linePointer++;
 
         final suuntoWorkoutUrlLine = _lines[_linePointer].split(",");
-        if (suuntoWorkoutUrlLine[0].trim() != SUUNTO_WORKOUT_URL) {
-          message = "Couldn't parse $SUUNTO_WORKOUT_URL";
+        if (suuntoWorkoutUrlLine[0].trim() != suuntoWorkoutUrlTag) {
+          message = "Couldn't parse $suuntoWorkoutUrlTag";
           return null;
         }
 
@@ -412,8 +412,8 @@ class CSVImporter {
         _linePointer++;
 
         final suuntoUploadIdLine = _lines[_linePointer].split(",");
-        if (suuntoUploadIdLine[0].trim() != SUUNTO_UPLOAD_ID) {
-          message = "Couldn't parse $SUUNTO_UPLOAD_ID";
+        if (suuntoUploadIdLine[0].trim() != suuntoUploadIdTag) {
+          message = "Couldn't parse $suuntoUploadIdTag";
           return null;
         }
 
@@ -422,8 +422,8 @@ class CSVImporter {
         _linePointer++;
 
         final auUploadedLine = _lines[_linePointer].split(",");
-        if (auUploadedLine[0].trim() != UNDER_ARMOUR_UPLOADED) {
-          message = "Couldn't parse $UNDER_ARMOUR_UPLOADED";
+        if (auUploadedLine[0].trim() != underArmourUploadedTag) {
+          message = "Couldn't parse $underArmourUploadedTag";
           return null;
         }
 
@@ -432,8 +432,8 @@ class CSVImporter {
         _linePointer++;
 
         final auWorkoutIdLine = _lines[_linePointer].split(",");
-        if (auWorkoutIdLine[0].trim() != UA_WORKOUT_ID) {
-          message = "Couldn't parse $UA_WORKOUT_ID";
+        if (auWorkoutIdLine[0].trim() != uaWorkoutIdTag) {
+          message = "Couldn't parse $uaWorkoutIdTag";
           return null;
         }
 
@@ -442,8 +442,8 @@ class CSVImporter {
         _linePointer++;
 
         final tpUploadedLine = _lines[_linePointer].split(",");
-        if (tpUploadedLine[0].trim() != TRAINING_PEAKS_UPLOADED) {
-          message = "Couldn't parse $TRAINING_PEAKS_UPLOADED";
+        if (tpUploadedLine[0].trim() != trainingPeaksUploadedTag) {
+          message = "Couldn't parse $trainingPeaksUploadedTag";
           return null;
         }
 
@@ -452,8 +452,8 @@ class CSVImporter {
         _linePointer++;
 
         final tpAthleteIdLine = _lines[_linePointer].split(",");
-        if (tpAthleteIdLine[0].trim() != TRAINING_PEAKS_ATHLETE_ID) {
-          message = "Couldn't parse $TRAINING_PEAKS_ATHLETE_ID";
+        if (tpAthleteIdLine[0].trim() != trainingPeaksAthleteIdTag) {
+          message = "Couldn't parse $trainingPeaksAthleteIdTag";
           return null;
         }
 
@@ -462,8 +462,8 @@ class CSVImporter {
         _linePointer++;
 
         final tpWorkoutIdLine = _lines[_linePointer].split(",");
-        if (tpWorkoutIdLine[0].trim() != TRAINING_PEAKS_WORKOUT_ID) {
-          message = "Couldn't parse $TRAINING_PEAKS_WORKOUT_ID";
+        if (tpWorkoutIdLine[0].trim() != trainingPeaksWorkoutIdTag) {
+          message = "Couldn't parse $trainingPeaksWorkoutIdTag";
           return null;
         }
 
@@ -486,26 +486,26 @@ class CSVImporter {
       endTime = start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch;
     }
 
-    if (!_findLine(RIDE_DATA)) {
-      message = "Cannot locate $RIDE_DATA";
+    if (!_findLine(rideDataTag)) {
+      message = "Cannot locate $rideDataTag";
       return null;
     }
 
     _linePointer++;
 
     final rideDataHeader = _lines[_linePointer].split(",");
-    if (rideDataHeader[0].trim() != POWER_HEADER ||
-        rideDataHeader[1].trim() != RPM_HEADER ||
-        rideDataHeader[2].trim() != HR_HEADER ||
-        rideDataHeader[3].trim() != DISTANCE_HEADER) {
+    if (rideDataHeader[0].trim() != powerHeaderTag ||
+        rideDataHeader[1].trim() != rpmHeaderTag ||
+        rideDataHeader[2].trim() != hrHeaderTag ||
+        rideDataHeader[3].trim() != distanceHeaderTag) {
       message = "Unexpected detailed ride data format";
       return null;
     }
     if (_migration &&
-        (rideDataHeader[4].trim() != TIME_STAMP ||
-            rideDataHeader[5].trim() != ELAPSED ||
-            rideDataHeader[6].trim() != SPEED ||
-            rideDataHeader[7].trim() != CALORIES)) {
+        (rideDataHeader[4].trim() != timeStampTag ||
+            rideDataHeader[5].trim() != elapsedTag ||
+            rideDataHeader[6].trim() != speedTag ||
+            rideDataHeader[7].trim() != caloriesTag)) {
       message = "Unexpected detailed ride data format";
       return null;
     }
@@ -548,7 +548,7 @@ class CSVImporter {
     _linePointer++;
 
     if (_migration) {
-      int progressSteps = numRow ~/ PROGRESS_STEPS;
+      int progressSteps = numRow ~/ maxProgressSteps;
       int progressCounter = 0;
       int recordCounter = 0;
 
@@ -578,12 +578,12 @@ class CSVImporter {
     } else {
       double secondsPerRow = totalElapsed / numRow;
       int secondsPerRowInt = secondsPerRow.round();
-      int recordsPerRow = secondsPerRowInt * TIME_RESOLUTION_FACTOR;
+      int recordsPerRow = secondsPerRowInt * timeResolutionFactor;
       double milliSecondsPerRecord = secondsPerRow * 1000 / recordsPerRow;
       int milliSecondsPerRecordInt = milliSecondsPerRecord.round();
 
       int recordCount = numRow * recordsPerRow;
-      int progressSteps = recordCount ~/ PROGRESS_STEPS;
+      int progressSteps = recordCount ~/ maxProgressSteps;
       int progressCounter = 0;
       int recordCounter = 0;
       double energy = 0;
@@ -677,7 +677,7 @@ class CSVImporter {
                 (1000 * 60) *
                 hrCalorieFactor;
           } else {
-            dEnergy = power * milliSecondsPerRecord / 1000 * J_TO_KCAL * calorieFactor;
+            dEnergy = power * milliSecondsPerRecord / 1000 * jToKCal * calorieFactor;
           }
           energy += dEnergy;
           await database.recordDao.insertRecord(record);

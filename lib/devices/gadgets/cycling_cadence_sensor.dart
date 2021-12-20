@@ -73,7 +73,7 @@ class CyclingCadenceSensor extends IntegerSensor {
     var revDiff = lastData.revolutions - firstData.revolutions;
     // Check overflow
     if (revDiff < 0) {
-      revDiff += MAX_UINT16;
+      revDiff += maxUint16;
     }
     var secondsDiff = lastData.seconds - firstData.seconds;
     // Check overflow

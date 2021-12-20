@@ -19,11 +19,11 @@ class TestPair {
 void main() {
   group('DeviceBase infers sport as expected from characteristics ID', () {
     for (final testPair in [
-      const TestPair(characteristicsId: treadmillUuid, sport: ActivityType.Run),
-      const TestPair(characteristicsId: precorMeasurementUuid, sport: ActivityType.Ride),
-      const TestPair(characteristicsId: indoorBikeUuid, sport: ActivityType.Ride),
-      const TestPair(characteristicsId: rowerDeviceUuid, sport: ActivityType.Rowing),
-      const TestPair(characteristicsId: crossTrainerUuid, sport: ActivityType.Elliptical),
+      const TestPair(characteristicsId: treadmillUuid, sport: ActivityType.run),
+      const TestPair(characteristicsId: precorMeasurementUuid, sport: ActivityType.ride),
+      const TestPair(characteristicsId: indoorBikeUuid, sport: ActivityType.ride),
+      const TestPair(characteristicsId: rowerDeviceUuid, sport: ActivityType.rowing),
+      const TestPair(characteristicsId: crossTrainerUuid, sport: ActivityType.elliptical),
       const TestPair(characteristicsId: heartRateMeasurementUuid, sport: null)
     ]) {
       test("${testPair.characteristicsId} -> ${testPair.sport}", () async {

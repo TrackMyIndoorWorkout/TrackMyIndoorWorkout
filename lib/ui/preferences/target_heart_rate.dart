@@ -7,7 +7,7 @@ import '../../utils/sound.dart';
 import 'preferences_base.dart';
 
 class TargetHrPreferencesScreen extends PreferencesScreenBase {
-  static String shortTitle = TARGET_HR_SHORT_TITLE;
+  static String shortTitle = targetHrShortTitle;
   static String title = "$shortTitle Preferences";
 
   const TargetHrPreferencesScreen({Key? key}) : super(key: key);

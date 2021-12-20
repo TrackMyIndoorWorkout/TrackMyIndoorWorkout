@@ -39,7 +39,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
     _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
         DISTANCE_RESOLUTION_DEFAULT;
     _textStyle = Get.textTheme.headline5!
-        .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
+        .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());

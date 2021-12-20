@@ -18,7 +18,7 @@ void main() {
     final rower = deviceMap[kayakProGenesisPortFourCC]!;
 
     expect(rower.canMeasureHeartRate, false);
-    expect(rower.defaultSport, ActivityType.Kayaking);
+    expect(rower.defaultSport, ActivityType.kayaking);
     expect(rower.fourCC, kayakProGenesisPortFourCC);
   });
 
@@ -26,7 +26,7 @@ void main() {
     final rower = deviceMap[kayakProGenesisPortFourCC] as RowerDeviceDescriptor;
     const lsb = 44;
     const msb = 9;
-    const flag = MAX_UINT8 * msb + lsb;
+    const flag = maxUint8 * msb + lsb;
     await initPrefServiceForTest();
     rower.stopWorkout();
 
@@ -48,7 +48,7 @@ void main() {
   group('Rower Device interprets KayakPro data properly', () {
     for (final testPair in [
       TestPair(
-        data: [44, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, MAX_BYTE, MAX_BYTE, 0, 0, MAX_BYTE, 0, 0],
+        data: [44, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, maxByte, maxByte, 0, 0, maxByte, 0, 0],
         record: RecordWithSport(
           distance: 0.0,
           elapsed: 0,
@@ -58,7 +58,7 @@ void main() {
           cadence: 0,
           heartRate: 0,
           pace: 0.0,
-          sport: ActivityType.Kayaking,
+          sport: ActivityType.kayaking,
           caloriesPerHour: 0.0,
           caloriesPerMinute: null,
         ),
@@ -77,11 +77,11 @@ void main() {
           1,
           12,
           0,
-          MAX_BYTE,
-          MAX_BYTE,
+          maxByte,
+          maxByte,
           89,
           1,
-          MAX_BYTE,
+          maxByte,
           62,
           0
         ],
@@ -94,7 +94,7 @@ void main() {
           cadence: 39,
           heartRate: 0,
           pace: 342.0,
-          sport: ActivityType.Kayaking,
+          sport: ActivityType.kayaking,
           caloriesPerHour: 345.0,
           caloriesPerMinute: null,
         ),
@@ -113,11 +113,11 @@ void main() {
           1,
           16,
           0,
-          MAX_BYTE,
-          MAX_BYTE,
+          maxByte,
+          maxByte,
           97,
           1,
-          MAX_BYTE,
+          maxByte,
           106,
           0
         ],
@@ -130,7 +130,7 @@ void main() {
           cadence: 76,
           heartRate: 0,
           pace: 316.0,
-          sport: ActivityType.Kayaking,
+          sport: ActivityType.kayaking,
           caloriesPerHour: 353.0,
           caloriesPerMinute: null,
         ),
@@ -149,11 +149,11 @@ void main() {
           1,
           20,
           0,
-          MAX_BYTE,
-          MAX_BYTE,
+          maxByte,
+          maxByte,
           107,
           1,
-          MAX_BYTE,
+          maxByte,
           45,
           1
         ],
@@ -166,7 +166,7 @@ void main() {
           cadence: 42,
           heartRate: 0,
           pace: 295.0,
-          sport: ActivityType.Kayaking,
+          sport: ActivityType.kayaking,
           caloriesPerHour: 363.0,
           caloriesPerMinute: null,
         ),
@@ -185,11 +185,11 @@ void main() {
           1,
           30,
           0,
-          MAX_BYTE,
-          MAX_BYTE,
+          maxByte,
+          maxByte,
           133,
           1,
-          MAX_BYTE,
+          maxByte,
           91,
           1
         ],
@@ -202,7 +202,7 @@ void main() {
           cadence: 88,
           heartRate: 0,
           pace: 256.0,
-          sport: ActivityType.Kayaking,
+          sport: ActivityType.kayaking,
           caloriesPerHour: 389.0,
           caloriesPerMinute: null,
         ),

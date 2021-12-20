@@ -13,7 +13,7 @@ class TCXExport extends ActivityExport {
   TCXExport() : super(nonCompressedFileExtension: 'tcx', nonCompressedMimeType: 'text/xml');
 
   static String tcxSport(String sport) {
-    return sport == ActivityType.Ride || sport == ActivityType.Run ? sport : "Other";
+    return sport == ActivityType.ride || sport == ActivityType.run ? sport : "Other";
   }
 
   @override

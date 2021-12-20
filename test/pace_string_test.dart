@@ -37,7 +37,7 @@ void main() {
     }
 
     final rnd = Random();
-    1.to(REPETITION).forEach((input) {
+    1.to(repetition).forEach((input) {
       final randomPace = rnd.nextDouble() * 100;
       final expected = paceString(randomPace);
       test("$randomPace -> $expected", () async {

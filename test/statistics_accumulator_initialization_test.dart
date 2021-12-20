@@ -7,7 +7,7 @@ import 'utils.dart';
 
 void main() {
   test('StatisticsAccumulator is empty after creation', () async {
-    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.Ride);
+    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.ride);
     expect(accu.calculateAvgPower, false);
     expect(accu.calculateMaxPower, false);
     expect(accu.calculateMinPower, false);
@@ -22,26 +22,26 @@ void main() {
     expect(accu.calculateMinHeartRate, false);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   test('StatisticsAccumulator initializes power variables when avg requested', () async {
     final accu = StatisticsAccumulator(
       si: Random().nextBool(),
-      sport: ActivityType.Ride,
+      sport: ActivityType.ride,
       calculateAvgPower: true,
     );
     expect(accu.calculateAvgPower, true);
@@ -58,26 +58,26 @@ void main() {
     expect(accu.calculateMinHeartRate, false);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0.0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   test('StatisticsAccumulator initializes max power when max requested', () async {
     final accu = StatisticsAccumulator(
       si: Random().nextBool(),
-      sport: ActivityType.Ride,
+      sport: ActivityType.ride,
       calculateMaxPower: true,
     );
     expect(accu.calculateAvgPower, false);
@@ -94,26 +94,26 @@ void main() {
     expect(accu.calculateMinHeartRate, false);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   test('StatisticsAccumulator initializes min power when min requested', () async {
     final accu = StatisticsAccumulator(
       si: Random().nextBool(),
-      sport: ActivityType.Ride,
+      sport: ActivityType.ride,
       calculateMinPower: true,
     );
     expect(accu.calculateAvgPower, false);
@@ -130,26 +130,26 @@ void main() {
     expect(accu.calculateMinHeartRate, false);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   test('StatisticsAccumulator initializes speed variables when avg requested', () async {
     final accu = StatisticsAccumulator(
       si: Random().nextBool(),
-      sport: ActivityType.Ride,
+      sport: ActivityType.ride,
       calculateAvgSpeed: true,
     );
     expect(accu.calculateAvgPower, false);
@@ -166,24 +166,24 @@ void main() {
     expect(accu.calculateMinHeartRate, false);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0.0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   group('StatisticsAccumulator initializes max speed when max requested', () {
-    for (final sport in SPORTS) {
+    for (final sport in sports) {
       final accu = StatisticsAccumulator(
         si: Random().nextBool(),
         sport: sport,
@@ -205,26 +205,26 @@ void main() {
         expect(accu.calculateMinHeartRate, false);
         expect(accu.powerSum, 0);
         expect(accu.powerCount, 0);
-        expect(accu.maxPower, MAX_INIT);
-        expect(accu.minPower, MIN_INIT);
+        expect(accu.maxPower, maxInit);
+        expect(accu.minPower, minInit);
         expect(accu.speedSum, 0.0);
         expect(accu.speedCount, 0);
-        expect(accu.maxSpeed, MAX_INIT.toDouble());
-        expect(accu.minSpeed, MIN_INIT.toDouble());
+        expect(accu.maxSpeed, maxInit.toDouble());
+        expect(accu.minSpeed, minInit.toDouble());
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
-        expect(accu.maxHeartRate, MAX_INIT);
-        expect(accu.minHeartRate, MIN_INIT);
+        expect(accu.maxHeartRate, maxInit);
+        expect(accu.minHeartRate, minInit);
         expect(accu.cadenceSum, 0);
         expect(accu.cadenceCount, 0);
-        expect(accu.maxCadence, MAX_INIT);
-        expect(accu.minCadence, MIN_INIT);
+        expect(accu.maxCadence, maxInit);
+        expect(accu.minCadence, minInit);
       });
     }
   });
 
   group('StatisticsAccumulator initializes min speed when min requested', () {
-    for (final sport in SPORTS) {
+    for (final sport in sports) {
       final accu = StatisticsAccumulator(
         si: Random().nextBool(),
         sport: sport,
@@ -246,20 +246,20 @@ void main() {
         expect(accu.calculateMinHeartRate, false);
         expect(accu.powerSum, 0);
         expect(accu.powerCount, 0);
-        expect(accu.maxPower, MAX_INIT);
-        expect(accu.minPower, MIN_INIT);
+        expect(accu.maxPower, maxInit);
+        expect(accu.minPower, minInit);
         expect(accu.speedSum, 0.0);
         expect(accu.speedCount, 0);
-        expect(accu.maxSpeed, MAX_INIT.toDouble());
-        expect(accu.minSpeed, MIN_INIT.toDouble());
+        expect(accu.maxSpeed, maxInit.toDouble());
+        expect(accu.minSpeed, minInit.toDouble());
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
-        expect(accu.maxHeartRate, MAX_INIT);
-        expect(accu.minHeartRate, MIN_INIT);
+        expect(accu.maxHeartRate, maxInit);
+        expect(accu.minHeartRate, minInit);
         expect(accu.cadenceSum, 0);
         expect(accu.cadenceCount, 0);
-        expect(accu.maxCadence, MAX_INIT);
-        expect(accu.minCadence, MIN_INIT);
+        expect(accu.maxCadence, maxInit);
+        expect(accu.minCadence, minInit);
       });
     }
   });
@@ -267,7 +267,7 @@ void main() {
   test('StatisticsAccumulator initializes hr variables when avg requested', () async {
     final accu = StatisticsAccumulator(
       si: Random().nextBool(),
-      sport: ActivityType.Ride,
+      sport: ActivityType.ride,
       calculateAvgHeartRate: true,
     );
     expect(accu.calculateAvgPower, false);
@@ -284,26 +284,26 @@ void main() {
     expect(accu.calculateMinHeartRate, false);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   test('StatisticsAccumulator initializes max hr when max requested', () async {
     final accu = StatisticsAccumulator(
       si: Random().nextBool(),
-      sport: ActivityType.Ride,
+      sport: ActivityType.ride,
       calculateMaxHeartRate: true,
     );
     expect(accu.calculateAvgPower, false);
@@ -320,26 +320,26 @@ void main() {
     expect(accu.calculateMinHeartRate, false);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   test('StatisticsAccumulator initializes min hr when min requested', () async {
     final accu = StatisticsAccumulator(
       si: Random().nextBool(),
-      sport: ActivityType.Ride,
+      sport: ActivityType.ride,
       calculateMinHeartRate: true,
     );
     expect(accu.calculateAvgPower, false);
@@ -356,26 +356,26 @@ void main() {
     expect(accu.calculateMinHeartRate, true);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   test('StatisticsAccumulator initializes cadence variables when avg requested', () async {
     final accu = StatisticsAccumulator(
       si: Random().nextBool(),
-      sport: ActivityType.Ride,
+      sport: ActivityType.ride,
       calculateAvgCadence: true,
     );
     expect(accu.calculateAvgPower, false);
@@ -392,26 +392,26 @@ void main() {
     expect(accu.calculateMinHeartRate, false);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0.0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   test('StatisticsAccumulator initializes max cadence when max requested', () async {
     final accu = StatisticsAccumulator(
       si: Random().nextBool(),
-      sport: ActivityType.Ride,
+      sport: ActivityType.ride,
       calculateMaxCadence: true,
     );
     expect(accu.calculateAvgPower, false);
@@ -428,26 +428,26 @@ void main() {
     expect(accu.calculateMinHeartRate, false);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   test('StatisticsAccumulator initializes min cadence when min requested', () async {
     final accu = StatisticsAccumulator(
       si: Random().nextBool(),
-      sport: ActivityType.Ride,
+      sport: ActivityType.ride,
       calculateMinCadence: true,
     );
     expect(accu.calculateAvgPower, false);
@@ -464,24 +464,24 @@ void main() {
     expect(accu.calculateMinHeartRate, false);
     expect(accu.powerSum, 0);
     expect(accu.powerCount, 0);
-    expect(accu.maxPower, MAX_INIT);
-    expect(accu.minPower, MIN_INIT);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
     expect(accu.speedSum, 0);
     expect(accu.speedCount, 0);
-    expect(accu.maxSpeed, MAX_INIT.toDouble());
-    expect(accu.minSpeed, MIN_INIT.toDouble());
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
     expect(accu.heartRateSum, 0);
     expect(accu.heartRateCount, 0);
-    expect(accu.maxHeartRate, MAX_INIT);
-    expect(accu.minHeartRate, MIN_INIT);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
     expect(accu.cadenceSum, 0);
     expect(accu.cadenceCount, 0);
-    expect(accu.maxCadence, MAX_INIT);
-    expect(accu.minCadence, MIN_INIT);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
   });
 
   group('StatisticsAccumulator initializes everything when all requested', () {
-    for (final sport in SPORTS) {
+    for (final sport in sports) {
       final accu = StatisticsAccumulator(
         si: Random().nextBool(),
         sport: sport,
@@ -514,20 +514,20 @@ void main() {
         expect(accu.calculateMinHeartRate, true);
         expect(accu.powerSum, 0);
         expect(accu.powerCount, 0);
-        expect(accu.maxPower, MAX_INIT);
-        expect(accu.minPower, MIN_INIT);
+        expect(accu.maxPower, maxInit);
+        expect(accu.minPower, minInit);
         expect(accu.speedSum, 0.0);
         expect(accu.speedCount, 0);
-        expect(accu.maxSpeed, MAX_INIT.toDouble());
-        expect(accu.minSpeed, MIN_INIT.toDouble());
+        expect(accu.maxSpeed, maxInit.toDouble());
+        expect(accu.minSpeed, minInit.toDouble());
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
-        expect(accu.maxHeartRate, MAX_INIT);
-        expect(accu.minHeartRate, MIN_INIT);
+        expect(accu.maxHeartRate, maxInit);
+        expect(accu.minHeartRate, minInit);
         expect(accu.cadenceSum, 0);
         expect(accu.cadenceCount, 0);
-        expect(accu.maxCadence, MAX_INIT);
-        expect(accu.minCadence, MIN_INIT);
+        expect(accu.maxCadence, maxInit);
+        expect(accu.minCadence, minInit);
         expect(accu.avgPower, 0);
         expect(accu.avgSpeed, 0);
         expect(accu.avgHeartRate, 0);

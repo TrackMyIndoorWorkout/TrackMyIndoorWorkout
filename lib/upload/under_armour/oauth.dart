@@ -44,9 +44,9 @@ abstract class Auth {
     int? expire,
   ) async {
     final prefService = Get.find<BasePrefService>();
-    await prefService.set<String>(UNDER_ARMOUR_ACCESS_TOKEN_TAG, token ?? '');
-    await prefService.set<String>(UNDER_ARMOUR_REFRESH_TOKEN_TAG, refreshToken ?? '');
-    await prefService.set<int>(UNDER_ARMOUR_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
+    await prefService.set<String>(underArmourAccessTokenTag, token ?? '');
+    await prefService.set<String>(underArmourRefreshTokenTag, refreshToken ?? '');
+    await prefService.set<int>(underArmourExpiresAtTag, expire ?? 0); // Stored in seconds
     await registerToken(token, refreshToken, expire);
     debugPrint('token saved!!!');
   }
@@ -62,9 +62,9 @@ abstract class Auth {
 
     try {
       final prefService = Get.find<BasePrefService>();
-      localToken.accessToken = prefService.get<String>(UNDER_ARMOUR_ACCESS_TOKEN_TAG);
-      localToken.refreshToken = prefService.get<String>(UNDER_ARMOUR_REFRESH_TOKEN_TAG);
-      localToken.expiresAt = prefService.get<int>(UNDER_ARMOUR_EXPIRES_AT_TAG);
+      localToken.accessToken = prefService.get<String>(underArmourAccessTokenTag);
+      localToken.refreshToken = prefService.get<String>(underArmourRefreshTokenTag);
+      localToken.expiresAt = prefService.get<int>(underArmourExpiresAtTag);
 
       // load the data into Get
       await registerToken(localToken.accessToken, localToken.refreshToken, localToken.expiresAt);
@@ -90,9 +90,9 @@ abstract class Auth {
   Future<void> _getUnderArmourCode(String clientId) async {
     debugPrint('Entering getUnderArmourCode');
 
-    final params = '?client_id=$clientId&response_type=code&redirect_uri=$REDIRECT_URL';
+    final params = '?client_id=$clientId&response_type=code&redirect_uri=$redirectUrl';
 
-    final reqAuth = AUTHORIZATION_ENDPOINT + params;
+    final reqAuth = authorizationEndpoint + params;
     debugPrint(reqAuth);
     StreamSubscription? sub;
 
@@ -112,7 +112,7 @@ abstract class Auth {
       } else {
         // Parse the link and warn the user, if it is not correct
         debugPrint('Got a link!! $uri');
-        if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientId') != 0) {
+        if (uri.scheme.compareTo('${redirectUrlScheme}_$clientId') != 0) {
           debugPrint('This is not the good scheme ${uri.scheme}');
         }
         final code = uri.queryParameters["code"] ?? "N/A";
@@ -136,7 +136,7 @@ abstract class Auth {
 
   Future<bool> hasValidToken() async {
     final prefService = Get.find<BasePrefService>();
-    String? accessToken = prefService.get<String>(UNDER_ARMOUR_ACCESS_TOKEN_TAG);
+    String? accessToken = prefService.get<String>(underArmourAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
@@ -235,10 +235,10 @@ abstract class Auth {
     var returnToken = RefreshAnswer();
 
     debugPrint('Entering getNewAccessToken');
-    debugPrint('urlRefresh $TOKEN_ENDPOINT $refreshToken');
+    debugPrint('urlRefresh $tokenEndpoint $refreshToken');
 
     final refreshResponse = await http.post(
-      Uri.parse(TOKEN_ENDPOINT),
+      Uri.parse(tokenEndpoint),
       headers: {
         "Accept": "application/json",
         "Api-Key": clientId,
@@ -274,10 +274,10 @@ abstract class Auth {
     var answer = UnderArmourToken();
 
     debugPrint('Entering getUnderArmourToken!!');
-    debugPrint('urlToken $TOKEN_ENDPOINT');
+    debugPrint('urlToken $tokenEndpoint');
 
     final tokenResponse = await http.post(
-      Uri.parse(TOKEN_ENDPOINT),
+      Uri.parse(tokenEndpoint),
       headers: {
         "Accept": "application/json",
         "Api-Key": clientId,
@@ -287,7 +287,7 @@ abstract class Auth {
         "client_id": clientId,
         "client_secret": secret,
         "code": code,
-        "redirect_uri": REDIRECT_URL,
+        "redirect_uri": redirectUrl,
       },
     );
 

@@ -8,9 +8,9 @@ import 'suunto.dart';
 
 class SuuntoService implements UploadService {
   final Suunto _suunto = Suunto(
-    SUUNTO_CLIENT_ID,
-    SUUNTO_SECRET,
-    SUUNTO_SUBSCRIPTION_PRIMARY_KEY,
+    suuntoClientId,
+    suuntoSecret,
+    suuntoSubscriptionPrimaryKey,
   );
 
   @override

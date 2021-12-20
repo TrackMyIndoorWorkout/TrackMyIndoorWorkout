@@ -13,122 +13,122 @@ double decimalRound(double value, {int precision = 100}) {
   return (value * precision).round() / precision;
 }
 
-const TARGET_HR_SHORT_TITLE = "Target HR";
-const SLOW_SPEED_POSTFIX = " Speed (kmh) Considered Too Slow to Display";
-const SLOW_SPEED_TAG_PREFIX = "slow_speed_";
+const targetHrShortTitle = "Target HR";
+const slowSpeedPostfix = " Speed (kmh) Considered Too Slow to Display";
+const slowSpeedTagPrefix = "slow_speed_";
 
 class PreferencesSpec {
-  static const THRESHOLD_CAPITAL = " Threshold ";
-  static const ZONES_CAPITAL = " Zones (list of % of threshold)";
-  static const PADDLE_SPORT = "Paddle";
-  static const SPORT_PREFIXES = [
-    ActivityType.Ride,
-    ActivityType.Run,
-    PADDLE_SPORT,
-    ActivityType.Swim
+  static const thresholdCapital = " Threshold ";
+  static const zonesCapital = " Zones (list of % of threshold)";
+  static const paddleSport = "Paddle";
+  static const sportPrefixes = [
+    ActivityType.ride,
+    ActivityType.run,
+    paddleSport,
+    ActivityType.swim
   ];
-  static const THRESHOLD_PREFIX = "threshold_";
-  static const ZONES_POSTFIX = "_zones";
-  static const METRICS = ["power", "speed", "cadence", "hr"];
-  static const ZONE_INDEX_DISPLAY_TAG_POSTFIX = "zone_index_display";
-  static const ZONE_INDEX_DISPLAY_TEXT = "Zone Index Display";
-  static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 = "Display the Zone Index Next to the ";
-  static const ZONE_INDEX_DISPLAY_DESCRIPTION_PART2 = " Measurement Value";
-  static const ZONE_INDEX_DISPLAY_EXTRA_NOTE =
+  static const thresholdPrefix = "threshold_";
+  static const zonesPostfix = "_zones";
+  static const metrics = ["power", "speed", "cadence", "hr"];
+  static const zoneIndexDisplayTagPostfix = "zone_index_display";
+  static const zoneIndexDisplayText = "Zone Index Display";
+  static const zoneIndexDisplayDescriptionPart1 = "Display the Zone Index Next to the ";
+  static const zoneIndexDisplayDescriptionPart2 = " Measurement Value";
+  static const zoneIndexDisplayExtraNote =
       "These Zone settings apply for the fixed panel sections. "
-      "For extra HR zone display feature check out '$TARGET_HR_SHORT_TITLE' configuration "
+      "For extra HR zone display feature check out '$targetHrShortTitle' configuration "
       "in the upstream settings selection. For extra speed feedback check out leaderboard rank settings.";
-  static const ZONE_INDEX_DISPLAY_DEFAULT = false;
+  static const zoneIndexDisplayDefault = false;
 
   static final slowSpeeds = {
-    ActivityType.Ride: 4.0,
-    ActivityType.Run: 2.0,
-    ActivityType.Elliptical: 1.0,
-    PADDLE_SPORT: 1.0,
-    ActivityType.Swim: 0.5,
+    ActivityType.ride: 4.0,
+    ActivityType.run: 2.0,
+    ActivityType.elliptical: 1.0,
+    paddleSport: 1.0,
+    ActivityType.swim: 0.5,
   };
 
   static final _preferencesSpecsTemplate = [
     PreferencesSpec(
-      metric: METRICS[0],
+      metric: metrics[0],
       title: "Power",
       unit: "W",
-      thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[0],
+      thresholdTagPostfix: thresholdPrefix + metrics[0],
       thresholdDefaultInts: {
-        SPORT_PREFIXES[0]: 360,
-        SPORT_PREFIXES[1]: 360,
-        SPORT_PREFIXES[2]: 120,
-        SPORT_PREFIXES[3]: 120,
+        sportPrefixes[0]: 360,
+        sportPrefixes[1]: 360,
+        sportPrefixes[2]: 120,
+        sportPrefixes[3]: 120,
       },
-      zonesTagPostfix: METRICS[0] + ZONES_POSTFIX,
+      zonesTagPostfix: metrics[0] + zonesPostfix,
       zonesDefaultInts: {
-        SPORT_PREFIXES[0]: [55, 75, 90, 105, 120, 150],
-        SPORT_PREFIXES[1]: [55, 75, 90, 105, 120, 150],
-        SPORT_PREFIXES[2]: [55, 75, 90, 105, 120, 150],
-        SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[0]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[1]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[2]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[3]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.bolt,
       indexDisplayDefault: false,
     ),
     PreferencesSpec(
-      metric: METRICS[1],
+      metric: metrics[1],
       title: "Speed",
       unit: "mph",
-      thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[1],
+      thresholdTagPostfix: thresholdPrefix + metrics[1],
       thresholdDefaultInts: {
-        SPORT_PREFIXES[0]: 32,
-        SPORT_PREFIXES[1]: 16,
-        SPORT_PREFIXES[2]: 7,
-        SPORT_PREFIXES[3]: 1,
+        sportPrefixes[0]: 32,
+        sportPrefixes[1]: 16,
+        sportPrefixes[2]: 7,
+        sportPrefixes[3]: 1,
       },
-      zonesTagPostfix: METRICS[1] + ZONES_POSTFIX,
+      zonesTagPostfix: metrics[1] + zonesPostfix,
       zonesDefaultInts: {
-        SPORT_PREFIXES[0]: [55, 75, 90, 105, 120, 150],
-        SPORT_PREFIXES[1]: [55, 75, 90, 105, 120, 150],
-        SPORT_PREFIXES[2]: [55, 75, 90, 105, 120, 150],
-        SPORT_PREFIXES[3]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[0]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[1]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[2]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[3]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.speed,
       indexDisplayDefault: false,
     ),
     PreferencesSpec(
-      metric: METRICS[2],
+      metric: metrics[2],
       title: "Cadence",
       unit: "rpm",
-      thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[2],
+      thresholdTagPostfix: thresholdPrefix + metrics[2],
       thresholdDefaultInts: {
-        SPORT_PREFIXES[0]: 120,
-        SPORT_PREFIXES[1]: 180,
-        SPORT_PREFIXES[2]: 90,
-        SPORT_PREFIXES[3]: 90,
+        sportPrefixes[0]: 120,
+        sportPrefixes[1]: 180,
+        sportPrefixes[2]: 90,
+        sportPrefixes[3]: 90,
       },
-      zonesTagPostfix: METRICS[2] + ZONES_POSTFIX,
+      zonesTagPostfix: metrics[2] + zonesPostfix,
       zonesDefaultInts: {
-        SPORT_PREFIXES[0]: [25, 37, 50, 75, 100, 120],
-        SPORT_PREFIXES[1]: [25, 37, 50, 75, 100, 120],
-        SPORT_PREFIXES[2]: [25, 37, 50, 75, 100, 120],
-        SPORT_PREFIXES[3]: [25, 37, 50, 75, 100, 120],
+        sportPrefixes[0]: [25, 37, 50, 75, 100, 120],
+        sportPrefixes[1]: [25, 37, 50, 75, 100, 120],
+        sportPrefixes[2]: [25, 37, 50, 75, 100, 120],
+        sportPrefixes[3]: [25, 37, 50, 75, 100, 120],
       },
       icon: Icons.directions_bike,
       indexDisplayDefault: false,
     ),
     PreferencesSpec(
-      metric: METRICS[3],
+      metric: metrics[3],
       title: "Heart Rate",
       unit: "bpm",
-      thresholdTagPostfix: THRESHOLD_PREFIX + METRICS[3],
+      thresholdTagPostfix: thresholdPrefix + metrics[3],
       thresholdDefaultInts: {
-        SPORT_PREFIXES[0]: 180,
-        SPORT_PREFIXES[1]: 180,
-        SPORT_PREFIXES[2]: 180,
-        SPORT_PREFIXES[3]: 180,
+        sportPrefixes[0]: 180,
+        sportPrefixes[1]: 180,
+        sportPrefixes[2]: 180,
+        sportPrefixes[3]: 180,
       },
-      zonesTagPostfix: METRICS[3] + ZONES_POSTFIX,
+      zonesTagPostfix: metrics[3] + zonesPostfix,
       zonesDefaultInts: {
-        SPORT_PREFIXES[0]: [50, 60, 70, 80, 90, 100],
-        SPORT_PREFIXES[1]: [50, 60, 70, 80, 90, 100],
-        SPORT_PREFIXES[2]: [50, 60, 70, 80, 90, 100],
-        SPORT_PREFIXES[3]: [50, 60, 70, 80, 90, 100],
+        sportPrefixes[0]: [50, 60, 70, 80, 90, 100],
+        sportPrefixes[1]: [50, 60, 70, 80, 90, 100],
+        sportPrefixes[2]: [50, 60, 70, 80, 90, 100],
+        sportPrefixes[3]: [50, 60, 70, 80, 90, 100],
       },
       icon: Icons.favorite,
       indexDisplayDefault: false,
@@ -152,7 +152,7 @@ class PreferencesSpec {
   List<double> zoneLower = [];
   List<double> zoneUpper = [];
   bool si = false;
-  String sport = ActivityType.Ride;
+  String sport = ActivityType.ride;
 
   late List<charts.PlotBand> plotBands;
 
@@ -176,16 +176,16 @@ class PreferencesSpec {
   String get kmhTitle => "$title (kmh)";
   String get histogramTitle => "$title zones (%)";
 
-  String get zoneIndexText => "$title $ZONE_INDEX_DISPLAY_TEXT";
-  String get zoneIndexTag => "${metric}_$ZONE_INDEX_DISPLAY_TAG_POSTFIX";
+  String get zoneIndexText => "$title $zoneIndexDisplayText";
+  String get zoneIndexTag => "${metric}_$zoneIndexDisplayTagPostfix";
   String get zoneIndexDescription =>
-      "$ZONE_INDEX_DISPLAY_DESCRIPTION_PART1 $title $ZONE_INDEX_DISPLAY_DESCRIPTION_PART2";
+      "$zoneIndexDisplayDescriptionPart1 $title $zoneIndexDisplayDescriptionPart2";
 
   static String sport2Sport(String sport) {
-    return sport == ActivityType.Kayaking ||
-            sport == ActivityType.Canoeing ||
-            sport == ActivityType.Rowing
-        ? PADDLE_SPORT
+    return sport == ActivityType.kayaking ||
+            sport == ActivityType.canoeing ||
+            sport == ActivityType.rowing
+        ? paddleSport
         : sport;
   }
 
@@ -206,7 +206,7 @@ class PreferencesSpec {
   }
 
   static String slowSpeedTag(String sport) {
-    return SLOW_SPEED_TAG_PREFIX + sport2Sport(sport);
+    return slowSpeedTagPrefix + sport2Sport(sport);
   }
 
   void updateMultiLineUnit() {
@@ -223,7 +223,7 @@ class PreferencesSpec {
     this.sport = sport;
     final prefService = Get.find<BasePrefService>();
     final thresholdString = prefService.get<String>(thresholdTag(sport))!;
-    threshold = double.tryParse(thresholdString) ?? EPS;
+    threshold = double.tryParse(thresholdString) ?? eps;
     if (metric == "speed") {
       threshold = speedByUnitCore(threshold, si);
     }
@@ -251,7 +251,7 @@ class PreferencesSpec {
     }
 
     final bandTextStyle = TextStyle(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       fontWeight: FontWeight.bold,
       fontSize: 11,
       color: isLight ? Colors.grey.shade700 : Colors.grey.shade200,

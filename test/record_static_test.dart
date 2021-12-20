@@ -7,15 +7,15 @@ import 'utils.dart';
 
 void main() {
   group("Record getBlank provides blank:", () {
-    for (final sport in SPORTS) {
+    for (final sport in sports) {
       test("for $sport", () async {
         final blank = RecordWithSport.getBlank(sport, false, Random());
         expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
-        expect(blank.distance, closeTo(0.0, EPS));
+        expect(blank.distance, closeTo(0.0, eps));
         expect(blank.elapsed, 0);
         expect(blank.calories, 0);
         expect(blank.power, 0);
-        expect(blank.speed, closeTo(0.0, EPS));
+        expect(blank.speed, closeTo(0.0, eps));
         expect(blank.cadence, 0);
         expect(blank.heartRate, 0);
         expect(blank.elapsedMillis, 0);
@@ -30,7 +30,7 @@ void main() {
 
   group("Record getRandom provides random:", () {
     final rnd = Random();
-    for (final sport in SPORTS) {
+    for (final sport in sports) {
       test("for $sport", () async {
         final random = RecordWithSport.getRandom(sport, rnd);
         expect(random.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));

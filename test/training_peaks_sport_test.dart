@@ -15,14 +15,14 @@ void main() {
       const TestPair(input: "", expected: "Other"),
       const TestPair(input: " ", expected: "Other"),
       const TestPair(input: "abc", expected: "Other"),
-      const TestPair(input: ActivityType.Swim, expected: "Swim"),
-      const TestPair(input: ActivityType.Canoeing, expected: "Rowing"),
-      const TestPair(input: ActivityType.Kayaking, expected: "Rowing"),
-      const TestPair(input: ActivityType.Rowing, expected: "Rowing"),
-      const TestPair(input: ActivityType.Run, expected: "Run"),
-      const TestPair(input: ActivityType.Ride, expected: "Bike"),
-      const TestPair(input: ActivityType.Elliptical, expected: "X-train"),
-      const TestPair(input: ActivityType.NordicSki, expected: "Other"),
+      const TestPair(input: ActivityType.swim, expected: "Swim"),
+      const TestPair(input: ActivityType.canoeing, expected: "Rowing"),
+      const TestPair(input: ActivityType.kayaking, expected: "Rowing"),
+      const TestPair(input: ActivityType.rowing, expected: "Rowing"),
+      const TestPair(input: ActivityType.run, expected: "Run"),
+      const TestPair(input: ActivityType.ride, expected: "Bike"),
+      const TestPair(input: ActivityType.elliptical, expected: "X-train"),
+      const TestPair(input: ActivityType.nordicSki, expected: "Other"),
     ]) {
       test("${testPair.input} -> ${testPair.expected}", () async {
         final tp = TrainingPeaks("", "");

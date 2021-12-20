@@ -54,7 +54,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         children: [
           Text(
             result.device.name,
-            style: themeManager.boldStyle(captionStyle, fontSizeFactor: FONT_SIZE_FACTOR),
+            style: themeManager.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
             overflow: TextOverflow.ellipsis,
           ),
           Text(deviceIdString, style: dataStyle)
@@ -69,18 +69,18 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    final captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
-    final secondaryStyle = captionStyle.apply(fontFamily: FONT_FAMILY);
+    final captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
+    final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
 
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: Text(
         result.rssi.toString(),
-        style: captionStyle.apply(fontFamily: FONT_FAMILY),
+        style: captionStyle.apply(fontFamily: fontFamily),
       ),
       trailing: themeManager.getIconFab(
-        (heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE) == result.device.id.id
+        (heartRateMonitor?.device?.id.id ?? notAvailable) == result.device.id.id
             ? themeManager.getGreenColor()
             : themeManager.getBlueColor(),
         Icons.favorite,

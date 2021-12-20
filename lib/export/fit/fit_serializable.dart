@@ -25,21 +25,21 @@ abstract class FitSerializable {
 
     if (number < 0) {
       // Two compliments flipping
-      int threshold = MAX_UINT8;
+      int threshold = maxUint8;
       if (length == 2) {
-        threshold = MAX_UINT16;
+        threshold = maxUint16;
       } else if (length == 3) {
-        threshold = MAX_UINT24;
+        threshold = maxUint24;
       } else if (length == 4) {
-        threshold = MAX_UINT32;
+        threshold = maxUint32;
       }
 
       number += threshold;
     }
 
     for (int i = 0; i < length; i++) {
-      output.add(number! % MAX_UINT8);
-      number ~/= MAX_UINT8;
+      output.add(number! % maxUint8);
+      number ~/= maxUint8;
     }
     assert(number == 0);
   }
@@ -62,7 +62,7 @@ abstract class FitSerializable {
   }
 
   void addGpsCoordinate(double coordinate) {
-    addLong((coordinate * DEG_TO_FIT_GPS).round(), signed: true);
+    addLong((coordinate * degToFitGps).round(), signed: true);
   }
 
   List<int> binarySerialize() {

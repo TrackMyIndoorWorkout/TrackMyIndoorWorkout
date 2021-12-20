@@ -6,7 +6,7 @@ import 'device_descriptor.dart';
 class SchwinnACPerformancePlus extends DeviceDescriptor {
   SchwinnACPerformancePlus()
       : super(
-          defaultSport: ActivityType.Ride,
+          defaultSport: ActivityType.ride,
           isMultiSport: false,
           fourCC: schwinnACPerfPlusFourCC,
           vendorName: "Schwinn",

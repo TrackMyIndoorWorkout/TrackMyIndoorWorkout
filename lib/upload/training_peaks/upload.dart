@@ -15,15 +15,15 @@ import 'training_peaks_token.dart';
 
 abstract class Upload {
   String trainingPeaksSport(String sport) {
-    if (sport == ActivityType.Canoeing || sport == ActivityType.Kayaking) {
+    if (sport == ActivityType.canoeing || sport == ActivityType.kayaking) {
       sport = "Rowing";
-    } else if (sport == ActivityType.Ride) {
+    } else if (sport == ActivityType.ride) {
       sport = "Bike";
-    } else if (sport == ActivityType.Elliptical) {
+    } else if (sport == ActivityType.elliptical) {
       sport = "X-train";
-    } else if (sport != ActivityType.Swim &&
-        sport != ActivityType.Rowing &&
-        sport != ActivityType.Run) {
+    } else if (sport != ActivityType.swim &&
+        sport != ActivityType.rowing &&
+        sport != ActivityType.run) {
       sport = "Other";
     }
 
@@ -64,7 +64,7 @@ abstract class Upload {
 
     final persistenceValues = exporter.getPersistenceValues(activity, true);
     String fileContentString = base64.encode(fileContent);
-    String contentString = '{"UploadClient": "$APP_NAME",'
+    String contentString = '{"UploadClient": "$appName",'
         '"Filename": "${persistenceValues["fileName"]}",'
         '"Data": "$fileContentString",'
         '"Title": "${persistenceValues["name"]}",'
@@ -72,7 +72,7 @@ abstract class Upload {
         '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.startDateTime!)}",'
         '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.startDateTime!)}",'
         '"Type": "${trainingPeaksSport(activity.sport)}"}';
-    final uploadUrl = TP_PRODUCTION_API_URL_BASE + UPLOAD_PATH;
+    const uploadUrl = tpProductionApiUrlBase + uploadPath;
     final uploadResponse = await http.post(
       Uri.parse(uploadUrl),
       headers: headers,

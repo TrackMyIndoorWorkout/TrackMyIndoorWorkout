@@ -48,9 +48,9 @@ abstract class Auth {
     int? expire,
   ) async {
     final prefService = Get.find<BasePrefService>();
-    await prefService.set<String>(SUUNTO_ACCESS_TOKEN_TAG, token ?? '');
-    await prefService.set<String>(SUUNTO_REFRESH_TOKEN_TAG, refreshToken ?? '');
-    await prefService.set<int>(SUUNTO_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
+    await prefService.set<String>(suuntoAccessTokenTag, token ?? '');
+    await prefService.set<String>(suuntoRefreshTokenTag, refreshToken ?? '');
+    await prefService.set<int>(suuntoExpiresAtTag, expire ?? 0); // Stored in seconds
     await registerToken(token, refreshToken, expire);
     debugPrint('token saved!!!');
   }
@@ -66,10 +66,10 @@ abstract class Auth {
 
     try {
       final prefService = Get.find<BasePrefService>();
-      localToken.accessToken = prefService.get<String>(SUUNTO_ACCESS_TOKEN_TAG);
-      localToken.refreshToken = prefService.get<String>(SUUNTO_REFRESH_TOKEN_TAG);
+      localToken.accessToken = prefService.get<String>(suuntoAccessTokenTag);
+      localToken.refreshToken = prefService.get<String>(suuntoRefreshTokenTag);
       // localToken.expiresAt = prefService.get<int>('expire') * 1000; // To get in ms
-      localToken.expiresAt = prefService.get<int>(SUUNTO_EXPIRES_AT_TAG);
+      localToken.expiresAt = prefService.get<int>(suuntoExpiresAtTag);
 
       // load the data into Get
       await registerToken(localToken.accessToken, localToken.refreshToken, localToken.expiresAt);
@@ -95,9 +95,9 @@ abstract class Auth {
   Future<void> _getSuuntoCode(String clientId) async {
     debugPrint('Entering getSuuntoCode');
 
-    final encodedRedirectUrl = Uri.encodeQueryComponent(REDIRECT_URL);
+    final encodedRedirectUrl = Uri.encodeQueryComponent(redirectUrl);
     final params = "?response_type=code&client_id=$clientId&redirect_uri=$encodedRedirectUrl";
-    final oAuth2Url = AUTHORIZATION_ENDPOINT + params;
+    final oAuth2Url = authorizationEndpoint + params;
 
     debugPrint(oAuth2Url);
 
@@ -116,7 +116,7 @@ abstract class Auth {
       } else {
         // Parse the link and warn the user, if it is not correct
         debugPrint('Got a link!! $uri');
-        if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientId') != 0) {
+        if (uri.scheme.compareTo('${redirectUrlScheme}_$clientId') != 0) {
           debugPrint('This is not the good scheme ${uri.scheme}');
         }
         final code = uri.queryParameters["code"] ?? "N/A";
@@ -140,7 +140,7 @@ abstract class Auth {
 
   Future<bool> hasValidToken() async {
     final prefService = Get.find<BasePrefService>();
-    String? accessToken = prefService.get<String>(SUUNTO_ACCESS_TOKEN_TAG);
+    String? accessToken = prefService.get<String>(suuntoAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty) {
       return false;
     }
@@ -241,7 +241,7 @@ abstract class Auth {
     debugPrint('Entering getNewAccessToken');
 
     final params = "?grant_type=refresh_token&refresh_token=${suuntoToken.refreshToken}";
-    final tokenRefreshUrl = TOKEN_ENDPOINT + params;
+    final tokenRefreshUrl = tokenEndpoint + params;
 
     debugPrint('urlRefresh $tokenRefreshUrl ${suuntoToken.refreshToken}');
 
@@ -284,7 +284,7 @@ abstract class Auth {
 
     debugPrint('Entering getSuuntoToken!!');
 
-    const tokenRequestUrl = TOKEN_ENDPOINT;
+    const tokenRequestUrl = tokenEndpoint;
 
     debugPrint('urlToken $tokenRequestUrl');
 
@@ -295,7 +295,7 @@ abstract class Auth {
       body: {
         "grant_type": "authorization_code",
         "code": code,
-        "redirect_uri": REDIRECT_URL,
+        "redirect_uri": redirectUrl,
       },
     );
 
@@ -353,7 +353,7 @@ abstract class Auth {
       return true;
     }
 
-    final deAuthorizeUrl = "$DEAUTHORIZATION_ENDPOINT?client_id=$clientId";
+    final deAuthorizeUrl = "$deauthorizationEndpoint?client_id=$clientId";
 
     debugPrint('request $deAuthorizeUrl');
     bool success = false;

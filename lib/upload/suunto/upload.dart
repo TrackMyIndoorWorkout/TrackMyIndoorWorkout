@@ -39,7 +39,7 @@ abstract class Upload {
       return 0;
     }
 
-    var headers = suuntoToken.getAuthorizationHeader(SUUNTO_SUBSCRIPTION_PRIMARY_KEY);
+    var headers = suuntoToken.getAuthorizationHeader(suuntoSubscriptionPrimaryKey);
     if (headers.containsKey('88') == true) {
       debugPrint('Token not yet known');
       return 0;
@@ -55,7 +55,7 @@ abstract class Upload {
     }
 
     Map<String, dynamic> persistenceValues = exporter.getPersistenceValues(activity, false);
-    final postUri = Uri.parse(UPLOADS_ENDPOINT);
+    final postUri = Uri.parse(uploadsEndpoint);
     final uploadInitResponse = await http.post(
       postUri,
       headers: headers,
@@ -138,7 +138,7 @@ abstract class Upload {
       return 200;
     }
 
-    final statusUri = Uri.parse(UPLOADS_ENDPOINT + "/${activity.suuntoUploadIdentifier}");
+    final statusUri = Uri.parse(uploadsEndpoint + "/${activity.suuntoUploadIdentifier}");
 
     final uploadStatusResponse = await http.get(
       statusUri,

@@ -23,12 +23,12 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
   void initState() {
     super.initState();
     _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: Colors.white,
     );
     _sizeDefault = _textStyle.fontSize! * 3;
     _subTextStyle = Get.textTheme.headline6!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: Colors.white,
     );
   }
