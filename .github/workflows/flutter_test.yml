@@ -11,15 +11,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
           java-version: '11'
-      - uses: subosito/flutter-action@v1
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1
         with:
-          channel: 'stable' # or: 'beta', 'dev' or 'master'
-      - run: flutter pub get
-      - run: echo 'const STRAVA_SECRET="a";const STRAVA_CLIENT_ID="1";const SUUNTO_SECRET="a";const SUUNTO_CLIENT_ID="a";const SUUNTO_SUBSCRIPTION_PRIMARY_KEY="a";const SUUNTO_SUBSCRIPTION_SECONDARY_KEY="a";const UNDER_ARMOUR_SECRET="a";const UNDER_ARMOUR_KEY="a";const TRAINING_PEAKS_SECRET="a";const TRAINING_PEAKS_CLIENT_ID="a";const GOOGLE_FIT_CLIENT_ID="a";const GOOGLE_FIT_SECRET="a";' > lib/persistence/secret.dart
-      - run: flutter test
-      - run: flutter build appbundle
+          channel: 'stable'
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      - name: Mock Secrets
+        run: echo 'const STRAVA_SECRET="a";const STRAVA_CLIENT_ID="1";const SUUNTO_SECRET="a";const SUUNTO_CLIENT_ID="a";const SUUNTO_SUBSCRIPTION_PRIMARY_KEY="a";const SUUNTO_SUBSCRIPTION_SECONDARY_KEY="a";const UNDER_ARMOUR_SECRET="a";const UNDER_ARMOUR_KEY="a";const TRAINING_PEAKS_SECRET="a";const TRAINING_PEAKS_CLIENT_ID="a";const GOOGLE_FIT_CLIENT_ID="a";const GOOGLE_FIT_SECRET="a";' > lib/persistence/secret.dart
+      - name: Format files
+        run: flutter format --line-length 100 --set-exit-if-changed .
+      - name: Analyze files
+        run: flutter analyze .
+      - name: Run the tests
+        run: flutter test
+      #- name: Build App Bundle (debug)
+      #  run: flutter build appbundle
