@@ -13,6 +13,7 @@ import '../preferences/athlete_body_weight.dart';
 import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/extend_tuning.dart';
+import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../ui/import_form.dart';
 import '../utils/constants.dart';
 import '../utils/hr_based_calories.dart';
@@ -484,8 +485,8 @@ class CSVImporter {
       sport = device.defaultSport;
       calorieFactor = device.calorieFactor;
       hrCalorieFactor = device.hrCalorieFactor;
-      hrBasedCalories = prefService.get<bool>(USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG) ??
-          USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+      hrBasedCalories = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
+          useHeartRateBasedCalorieCountingDefault;
       powerFactor = device.powerFactor;
       startTime = start!.millisecondsSinceEpoch;
       endTime = start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch;

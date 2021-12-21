@@ -6,59 +6,6 @@ const MEASUREMENT_PANELS_EXPANDED_DEFAULT = "00001";
 const MEASUREMENT_DETAIL_SIZE_TAG = "measurement_detail_size";
 const MEASUREMENT_DETAIL_SIZE_DEFAULT = "00000";
 
-const USE_HR_MONITOR_REPORTED_CALORIES = "Use heart rate monitor reported calories";
-const USE_HR_MONITOR_REPORTED_CALORIES_TAG = "use_heart_rate_monitor_reported_calories";
-const USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT = false;
-const USE_HR_MONITOR_REPORTED_CALORIES_DESCRIPTION =
-    "Only very enhanced heart rate monitors are capable reporting calories."
-    "In such case should that calorie count take precedence over the value "
-    "calculated by the fitness equipment (explicitly or deducted from the power reading).";
-
-const USE_HEART_RATE_BASED_CALORIE_COUNTING = "Use heart rate based calorie counting";
-const USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG = "heart_rate_based_calorie_counting";
-const USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT = false;
-const USE_HEART_RATE_BASED_CALORIE_COUNTING_DESCRIPTION =
-    "This method also requires configured athlete weight, age, and gender. "
-    "Optional VO2max could make the calculation even more precise.";
-
-const STROKE_RATE_SMOOTHING = "Stroke Rate Smoothing";
-const STROKE_RATE_SMOOTHING_TAG = "stroke_rate_smoothing";
-const STROKE_RATE_SMOOTHING_INT_TAG = STROKE_RATE_SMOOTHING_TAG + intTagPostfix;
-const STROKE_RATE_SMOOTHING_MIN = 1;
-const STROKE_RATE_SMOOTHING_DEFAULT = 10;
-const STROKE_RATE_SMOOTHING_MAX = 50;
-const STROKE_RATE_SMOOTHING_DESCRIPTION = "Ergometers may provide too jittery data. Averaging "
-    "these over time soothes the data. This setting tells the window size by how many samples "
-    "could be in the smoothing queue. 1 means no smoothing.";
-
-const DATA_STREAM_GAP_WATCHDOG = "Data Stream Gap Watchdog Timer";
-const DATA_STREAM_GAP_WATCHDOG_TAG = "data_stream_gap_watchdog_timer";
-const DATA_STREAM_GAP_WATCHDOG_INT_TAG = DATA_STREAM_GAP_WATCHDOG_TAG + intTagPostfix;
-const DATA_STREAM_GAP_WATCHDOG_MIN = 0;
-const DATA_STREAM_GAP_WATCHDOG_OLD_DEFAULT = 5;
-const DATA_STREAM_GAP_WATCHDOG_DEFAULT = 30;
-const DATA_STREAM_GAP_WATCHDOG_MAX = 50;
-const DATA_STREAM_GAP_WATCHDOG_DESCRIPTION = "How many seconds of data gap considered "
-    "as a disconnection. A watchdog would finish the workout and can trigger sound warnings as well. "
-    "Zero means disabled.";
-
-const SOUND_EFFECT_NONE = "none";
-const SOUND_EFFECT_NONE_DESCRIPTION = "No sound effect";
-const SOUND_EFFECT_ONE_TONE = "one_tone_beep";
-const SOUND_EFFECT_ONE_TONE_DESCRIPTION = "A single tone 1200Hz beep";
-const SOUND_EFFECT_TWO_TONE = "two_tone_beep";
-const SOUND_EFFECT_TWO_TONE_DESCRIPTION = "Two beep tones repeated twice";
-const SOUND_EFFECT_THREE_TONE = "three_tone_beep";
-const SOUND_EFFECT_THREE_TONE_DESCRIPTION = "Three beep tones after one another";
-const SOUND_EFFECT_BLEEP = "media_bleep";
-const SOUND_EFFECT_BLEEP_DESCRIPTION = "A Media Call type bleep";
-
-const DATA_STREAM_GAP_SOUND_EFFECT = "Data Stream Gap Audio Warning:";
-const DATA_STREAM_GAP_SOUND_EFFECT_TAG = "data_stream_gap_sound_effect";
-const DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION =
-    "Select the type of sound effect played when data acquisition timeout happens:";
-const DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_THREE_TONE;
-
 const CADENCE_GAP_WORKAROUND = "Cadence Data Gap Workaround:";
 const CADENCE_GAP_WORKAROUND_TAG = "cadence_data_gap_workaround";
 const CADENCE_GAP_WORKAROUND_DEFAULT = true;
@@ -164,20 +111,6 @@ const TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT = 0;
 const TARGET_HEART_RATE_AUDIO_PERIOD_MAX = 10;
 const TARGET_HEART_RATE_AUDIO_PERIOD_DESCRIPTION = "0 or 1: no periodicity. Larger than 1 seconds: "
     "the selected sound effect will play with the periodicity until the HR is back in range.";
-
-const TARGET_HEART_RATE_SOUND_EFFECT = "Target Heart Rate Out of Range Sound Effect:";
-const TARGET_HEART_RATE_SOUND_EFFECT_TAG = "target_heart_rate_sound_effect";
-const TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION =
-    "Select the type of sound effect played when the HR gets out of range:";
-const TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT = SOUND_EFFECT_TWO_TONE;
-
-const AUDIO_VOLUME = "Audio Volume (%)";
-const AUDIO_VOLUME_TAG = "audio_volume";
-const AUDIO_VOLUME_INT_TAG = AUDIO_VOLUME_TAG + intTagPostfix;
-const AUDIO_VOLUME_MIN = 0;
-const AUDIO_VOLUME_DEFAULT = 50;
-const AUDIO_VOLUME_MAX = 100;
-const AUDIO_VOLUME_DESCRIPTION = "Volume base of the audio effects.";
 
 const LEADERBOARD_FEATURE = "Leaderboard Feature";
 const LEADERBOARD_FEATURE_TAG = "leaderboard_feature";

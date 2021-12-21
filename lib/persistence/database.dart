@@ -6,6 +6,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
+import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
 import 'dao/calorie_tune_dao.dart';
@@ -19,7 +20,6 @@ import 'models/device_usage.dart';
 import 'models/power_tune.dart';
 import 'models/record.dart';
 import 'models/workout_summary.dart';
-import 'preferences.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
@@ -247,9 +247,8 @@ final migration13to14 = Migration(13, 14, (database) async {
 
 final migration14to15 = Migration(14, 15, (database) async {
   final prefService = Get.find<BasePrefService>();
-  final useHrBasedCalorieCounting =
-      prefService.get<bool>(USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG) ??
-          USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+  final useHrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
+      useHeartRateBasedCalorieCountingDefault;
   final hrBaseCalories = useHrBasedCalorieCounting ? 1 : 0;
   await database.execute(
       "ALTER TABLE `$activitiesTableName` ADD COLUMN `hr_calorie_factor` REAL NOT NULL DEFAULT 1.0");

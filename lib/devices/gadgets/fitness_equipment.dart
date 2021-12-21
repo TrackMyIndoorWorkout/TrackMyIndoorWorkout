@@ -13,6 +13,8 @@ import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
+import '../../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
@@ -45,8 +47,8 @@ class FitnessEquipment extends DeviceBase {
   String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
   int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT;
   String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
-  bool _useHrmReportedCalories = USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT;
-  bool _useHrBasedCalorieCounting = USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+  bool _useHrmReportedCalories = useHrMonitorReportedCaloriesDefault;
+  bool _useHrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   int _weight = athleteBodyWeightDefault;
   int _age = athleteAgeDefault;
   bool _isMale = true;
@@ -413,10 +415,10 @@ class FitnessEquipment extends DeviceBase {
         prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
     _heartRateLimitingMethod =
         prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
-    _useHrmReportedCalories = prefService.get<bool>(USE_HR_MONITOR_REPORTED_CALORIES_TAG) ??
-        USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT;
-    _useHrBasedCalorieCounting = prefService.get<bool>(USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG) ??
-        USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+    _useHrmReportedCalories = prefService.get<bool>(useHrMonitorReportedCaloriesTag) ??
+        useHrMonitorReportedCaloriesDefault;
+    _useHrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
+        useHeartRateBasedCalorieCountingDefault;
     _weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     _age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
     _isMale =

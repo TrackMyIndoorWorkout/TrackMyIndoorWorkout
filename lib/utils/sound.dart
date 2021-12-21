@@ -2,7 +2,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:soundpool/soundpool.dart';
-import '../persistence/preferences.dart';
+import '../preferences/audio_volume.dart';
+import '../preferences/data_stream_gap_sound_effect.dart';
+import '../preferences/sound_effects.dart';
+import '../preferences/target_heart_rate_sound_effect.dart';
 
 enum SoundEffect { bleep, flatBeep, twoTone, threeTone }
 final Map<SoundEffect, String> _soundAssetPaths = {
@@ -28,10 +31,10 @@ class SoundService {
     SoundEffect.threeTone: 0,
   };
   final Map<String, SoundEffect> _soundPreferences = {
-    SOUND_EFFECT_BLEEP: SoundEffect.bleep,
-    SOUND_EFFECT_ONE_TONE: SoundEffect.flatBeep,
-    SOUND_EFFECT_TWO_TONE: SoundEffect.twoTone,
-    SOUND_EFFECT_THREE_TONE: SoundEffect.threeTone,
+    soundEffectBleep: SoundEffect.bleep,
+    soundEffectOneTone: SoundEffect.flatBeep,
+    soundEffectTwoTone: SoundEffect.twoTone,
+    soundEffectThreeTone: SoundEffect.threeTone,
   };
 
   SoundService() {
@@ -59,7 +62,7 @@ class SoundService {
     }
 
     final prefService = Get.find<BasePrefService>();
-    final volumePercent = prefService.get<int>(AUDIO_VOLUME_INT_TAG) ?? AUDIO_VOLUME_DEFAULT;
+    final volumePercent = prefService.get<int>(audioVolumeIntTag) ?? audioVolumeDefault;
     final volume = volumePercent / 100.0;
     _soundPool?.setVolume(soundId: soundId, volume: volume);
     final streamId = await _soundPool?.play(soundId) ?? 0;
@@ -78,16 +81,16 @@ class SoundService {
 
   Future<int> playTargetHrSoundEffect() async {
     final prefService = Get.find<BasePrefService>();
-    final soundEffectString = prefService.get<String>(TARGET_HEART_RATE_SOUND_EFFECT_TAG) ??
-        TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT;
+    final soundEffectString =
+        prefService.get<String>(targetHeartRateSoundEffectTag) ?? targetHeartRateSoundEffectDefault;
     return await playSpecificSoundEffect(soundEffectString);
   }
 
   Future<int> playDataTimeoutSoundEffect() async {
     final prefService = Get.find<BasePrefService>();
-    final soundEffectString = prefService.get<String>(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
-        DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
-    if (soundEffectString == SOUND_EFFECT_NONE) {
+    final soundEffectString =
+        prefService.get<String>(dataStreamGapSoundEffectTag) ?? dataStreamGapSoundEffectDefault;
+    if (soundEffectString == soundEffectNone) {
       return 0;
     }
 

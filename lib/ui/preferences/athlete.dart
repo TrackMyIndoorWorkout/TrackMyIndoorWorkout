@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
+import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import 'preferences_base.dart';
 
 class AthletePreferencesScreen extends PreferencesScreenBase {
@@ -31,9 +31,9 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
         pref: rememberAthleteBodyWeightTag,
       ),
       const PrefCheckbox(
-        title: Text(USE_HEART_RATE_BASED_CALORIE_COUNTING),
-        subtitle: Text(USE_HEART_RATE_BASED_CALORIE_COUNTING_DESCRIPTION),
-        pref: USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG,
+        title: Text(useHeartRateBasedCalorieCounting),
+        subtitle: Text(useHeartRateBasedCalorieCountingDescription),
+        pref: useHeartRateBasedCalorieCountingTag,
       ),
       PrefSlider<int>(
         title: const Text(athleteAge),

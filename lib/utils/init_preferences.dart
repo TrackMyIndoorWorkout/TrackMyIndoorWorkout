@@ -6,7 +6,10 @@ import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
 import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
+import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
+import '../preferences/data_stream_gap_sound_effect.dart';
+import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/enforced_time_zone.dart';
@@ -19,7 +22,11 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
+import '../preferences/stroke_rate_smoothing.dart';
+import '../preferences/target_heart_rate_sound_effect.dart';
 import '../preferences/unit_system.dart';
+import '../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../preferences/use_hr_monitor_reported_calories.dart';
 import 'constants.dart';
 
 void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService prefService) {
@@ -48,9 +55,9 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     APP_DEBUG_MODE_TAG: APP_DEBUG_MODE_DEFAULT,
     DATA_CONNECTION_ADDRESSES_TAG: DATA_CONNECTION_ADDRESSES_DEFAULT,
     extendTuningTag: extendTuningDefault,
-    STROKE_RATE_SMOOTHING_INT_TAG: STROKE_RATE_SMOOTHING_DEFAULT,
-    DATA_STREAM_GAP_WATCHDOG_INT_TAG: DATA_STREAM_GAP_WATCHDOG_DEFAULT,
-    DATA_STREAM_GAP_SOUND_EFFECT_TAG: DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT,
+    strokeRateSmoothingIntTag: strokeRateSmoothingDefault,
+    dataStreamGapWatchdogIntTag: dataStreamGapWatchdogDefault,
+    dataStreamGapSoundEffectTag: dataStreamGapSoundEffectDefault,
     CADENCE_GAP_WORKAROUND_TAG: CADENCE_GAP_WORKAROUND_DEFAULT,
     HEART_RATE_GAP_WORKAROUND_TAG: HEART_RATE_GAP_WORKAROUND_DEFAULT,
     HEART_RATE_UPPER_LIMIT_INT_TAG: HEART_RATE_UPPER_LIMIT_DEFAULT,
@@ -62,8 +69,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     TARGET_HEART_RATE_UPPER_ZONE_INT_TAG: TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
     TARGET_HEART_RATE_AUDIO_TAG: TARGET_HEART_RATE_AUDIO_DEFAULT,
     TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG: TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
-    TARGET_HEART_RATE_SOUND_EFFECT_TAG: TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT,
-    AUDIO_VOLUME_INT_TAG: AUDIO_VOLUME_DEFAULT,
+    targetHeartRateSoundEffectTag: targetHeartRateSoundEffectDefault,
+    audioVolumeIntTag: audioVolumeDefault,
     LEADERBOARD_FEATURE_TAG: LEADERBOARD_FEATURE_DEFAULT,
     RANK_RIBBON_VISUALIZATION_TAG: RANK_RIBBON_VISUALIZATION_DEFAULT,
     RANKING_FOR_DEVICE_TAG: RANKING_FOR_DEVICE_DEFAULT,
@@ -74,8 +81,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     ZONE_INDEX_DISPLAY_COLORING_TAG: ZONE_INDEX_DISPLAY_COLORING_DEFAULT,
     athleteBodyWeightIntTag: athleteBodyWeightDefault,
     rememberAthleteBodyWeightTag: rememberAthleteBodyWeightDefault,
-    USE_HR_MONITOR_REPORTED_CALORIES_TAG: USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT,
-    USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG: USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT,
+    useHrMonitorReportedCaloriesTag: useHrMonitorReportedCaloriesDefault,
+    useHeartRateBasedCalorieCountingTag: useHeartRateBasedCalorieCountingDefault,
     athleteAgeTag: athleteAgeDefault,
     athleteGenderTag: athleteGenderDefault,
     athleteVO2MaxTag: athleteVO2MaxDefault,
@@ -144,13 +151,13 @@ Future<BasePrefService> initPreferences() async {
 
   if (prefVersion < preferencesVersionSpinners) {
     migrateStringIntegerPreference(
-      STROKE_RATE_SMOOTHING_TAG,
-      STROKE_RATE_SMOOTHING_DEFAULT,
+      strokeRateSmoothingTag,
+      strokeRateSmoothingDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      DATA_STREAM_GAP_WATCHDOG_TAG,
-      DATA_STREAM_GAP_WATCHDOG_DEFAULT,
+      dataStreamGapWatchdogTag,
+      dataStreamGapWatchdogDefault,
       prefService,
     );
     migrateStringIntegerPreference(
@@ -184,8 +191,8 @@ Future<BasePrefService> initPreferences() async {
       prefService,
     );
     migrateStringIntegerPreference(
-      AUDIO_VOLUME_TAG,
-      AUDIO_VOLUME_DEFAULT,
+      audioVolumeTag,
+      audioVolumeDefault,
       prefService,
     );
     migrateStringIntegerPreference(
@@ -212,10 +219,9 @@ Future<BasePrefService> initPreferences() async {
   }
 
   if (prefVersion < preferencesVersionIncreaseWatchdogDefault) {
-    final currentDefault = prefService.get<int>(DATA_STREAM_GAP_WATCHDOG_INT_TAG);
-    if (currentDefault == DATA_STREAM_GAP_WATCHDOG_OLD_DEFAULT) {
-      await prefService.set<int>(
-          DATA_STREAM_GAP_WATCHDOG_INT_TAG, DATA_STREAM_GAP_WATCHDOG_DEFAULT);
+    final currentDefault = prefService.get<int>(dataStreamGapWatchdogIntTag);
+    if (currentDefault == dataStreamGapWatchdogOldDefault) {
+      await prefService.set<int>(dataStreamGapWatchdogIntTag, dataStreamGapWatchdogDefault);
     }
   }
 

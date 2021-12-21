@@ -21,13 +21,17 @@ import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
+import '../preferences/data_stream_gap_sound_effect.dart';
+import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/generic.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_upload.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/simpler_ui.dart';
+import '../preferences/sound_effects.dart';
 import '../preferences/unit_system.dart';
+import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
@@ -115,8 +119,8 @@ class RecordingState extends State<RecordingScreen> {
   bool _uxDebug = APP_DEBUG_MODE_DEFAULT;
 
   Timer? _dataGapWatchdog;
-  int _dataGapWatchdogTime = DATA_STREAM_GAP_WATCHDOG_DEFAULT;
-  String _dataGapSoundEffect = DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
+  int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
+  String _dataGapSoundEffect = dataStreamGapSoundEffectDefault;
   Timer? _dataGapBeeperTimer;
 
   List<DisplayRecord> get graphData => _graphData.toList();
@@ -134,7 +138,7 @@ class RecordingState extends State<RecordingScreen> {
   int _hrBeepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT;
   bool _targetHrAudio = TARGET_HEART_RATE_AUDIO_DEFAULT;
   bool _targetHrAlerting = false;
-  bool _hrBasedCalorieCounting = USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+  bool _hrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
   bool _rankingForDevice = RANKING_FOR_DEVICE_DEFAULT;
   List<WorkoutSummary> _deviceLeaderboard = [];
@@ -461,9 +465,9 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     _dataGapWatchdogTime =
-        prefService.get<int>(DATA_STREAM_GAP_WATCHDOG_INT_TAG) ?? DATA_STREAM_GAP_WATCHDOG_DEFAULT;
-    _dataGapSoundEffect = prefService.get<String>(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
-        DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
+        prefService.get<int>(dataStreamGapWatchdogIntTag) ?? dataStreamGapWatchdogDefault;
+    _dataGapSoundEffect =
+        prefService.get<String>(dataStreamGapSoundEffectTag) ?? dataStreamGapSoundEffectDefault;
 
     _targetHrMode =
         prefService.get<String>(TARGET_HEART_RATE_MODE_TAG) ?? TARGET_HEART_RATE_MODE_DEFAULT;
@@ -477,14 +481,14 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
-        _dataGapSoundEffect != SOUND_EFFECT_NONE) {
+        _dataGapSoundEffect != soundEffectNone) {
       if (!Get.isRegistered<SoundService>()) {
         Get.put<SoundService>(SoundService(), permanent: true);
       }
     }
 
-    _hrBasedCalorieCounting = prefService.get<bool>(USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG) ??
-        USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT;
+    _hrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
+        useHeartRateBasedCalorieCountingDefault;
 
     _metricToDataFn = {
       "power": _powerChartData,
@@ -622,7 +626,7 @@ class RecordingState extends State<RecordingScreen> {
     _dataGapWatchdog?.cancel();
     _dataGapBeeperTimer?.cancel();
     if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
-        _dataGapSoundEffect != SOUND_EFFECT_NONE) {
+        _dataGapSoundEffect != soundEffectNone) {
       Get.find<SoundService>().stopAllSoundEffects();
     }
 
@@ -657,7 +661,7 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment?.measuring = false;
     _hrBeepPeriodTimer?.cancel();
 
-    if (_dataGapSoundEffect != SOUND_EFFECT_NONE) {
+    if (_dataGapSoundEffect != soundEffectNone) {
       _dataTimeoutBeeper();
     }
 
@@ -674,7 +678,7 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> _dataTimeoutBeeper() async {
     await Get.find<SoundService>().playDataTimeoutSoundEffect();
-    if (_measuring && _dataGapSoundEffect != SOUND_EFFECT_NONE && _dataGapWatchdogTime >= 2) {
+    if (_measuring && _dataGapSoundEffect != soundEffectNone && _dataGapWatchdogTime >= 2) {
       _dataGapBeeperTimer = Timer(Duration(seconds: _dataGapWatchdogTime), _dataTimeoutBeeper);
     }
   }
@@ -714,7 +718,7 @@ class RecordingState extends State<RecordingScreen> {
     _dataGapWatchdog?.cancel();
     _dataGapBeeperTimer?.cancel();
     if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
-        _dataGapSoundEffect != SOUND_EFFECT_NONE) {
+        _dataGapSoundEffect != soundEffectNone) {
       Get.find<SoundService>().stopAllSoundEffects();
     }
 

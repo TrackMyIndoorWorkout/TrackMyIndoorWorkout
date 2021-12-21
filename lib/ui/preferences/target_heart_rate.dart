@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/preferences.dart';
 import '../../persistence/preferences_spec.dart';
+import '../../preferences/audio_volume.dart';
+import '../../preferences/sound_effects.dart';
+import '../../preferences/target_heart_rate_sound_effect.dart';
 import '../../utils/sound.dart';
 import 'preferences_base.dart';
 
@@ -118,41 +121,41 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         direction: Axis.vertical,
       ),
       const PrefLabel(
-        title: Text(TARGET_HEART_RATE_SOUND_EFFECT),
-        subtitle: Text(TARGET_HEART_RATE_SOUND_EFFECT_DESCRIPTION),
+        title: Text(targetHeartRateSoundEffect),
+        subtitle: Text(targetHeartRateSoundEffectDescription),
       ),
       PrefRadio<String>(
-        title: const Text(SOUND_EFFECT_ONE_TONE_DESCRIPTION),
-        value: SOUND_EFFECT_ONE_TONE,
-        pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
+        title: const Text(soundEffectOneToneDescription),
+        value: soundEffectOneTone,
+        pref: targetHeartRateSoundEffectTag,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(soundEffectOneTone),
       ),
       PrefRadio<String>(
-        title: const Text(SOUND_EFFECT_TWO_TONE_DESCRIPTION),
-        value: SOUND_EFFECT_TWO_TONE,
-        pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
+        title: const Text(soundEffectTwoToneDescription),
+        value: soundEffectTwoTone,
+        pref: targetHeartRateSoundEffectTag,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(soundEffectTwoTone),
       ),
       PrefRadio<String>(
-        title: const Text(SOUND_EFFECT_THREE_TONE_DESCRIPTION),
-        value: SOUND_EFFECT_THREE_TONE,
-        pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
+        title: const Text(soundEffectThreeToneDescription),
+        value: soundEffectThreeTone,
+        pref: targetHeartRateSoundEffectTag,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(soundEffectThreeTone),
       ),
       PrefRadio<String>(
-        title: const Text(SOUND_EFFECT_BLEEP_DESCRIPTION),
-        value: SOUND_EFFECT_BLEEP,
-        pref: TARGET_HEART_RATE_SOUND_EFFECT_TAG,
-        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
+        title: const Text(soundEffectBleepDescription),
+        value: soundEffectBleep,
+        pref: targetHeartRateSoundEffectTag,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(soundEffectBleep),
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(
-        title: const Text(AUDIO_VOLUME),
-        subtitle: const Text(AUDIO_VOLUME_DESCRIPTION),
-        pref: AUDIO_VOLUME_INT_TAG,
+        title: const Text(audioVolume),
+        subtitle: const Text(audioVolumeDescription),
+        pref: audioVolumeIntTag,
         trailing: (num value) => Text("$value %"),
-        min: AUDIO_VOLUME_MIN,
-        max: AUDIO_VOLUME_MAX,
+        min: audioVolumeMin,
+        max: audioVolumeMax,
         direction: Axis.vertical,
       ),
     ];
