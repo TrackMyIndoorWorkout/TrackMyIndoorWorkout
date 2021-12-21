@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/persistence/palettes.dart';
+import 'package:track_my_indoor_exercise/preferences/palettes.dart';
 
 void main() {
   group('sevenLightBgPalette test', () {
