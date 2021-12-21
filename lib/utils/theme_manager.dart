@@ -3,13 +3,13 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import '../ui/about.dart';
-import '../persistence/preferences.dart';
+import '../preferences/theme_selection.dart';
 import '../utils/constants.dart';
 
 class ThemeManager {
   ThemeMode getThemeMode() {
     final prefService = Get.find<BasePrefService>();
-    final themeSelection = prefService.get<String>(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
+    final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
     if (themeSelection == "light") {
       return ThemeMode.light;
     } else if (themeSelection == "dark") {
@@ -21,7 +21,7 @@ class ThemeManager {
 
   bool isDark() {
     final prefService = Get.find<BasePrefService>();
-    final themeSelection = prefService.get<String>(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
+    final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
     if (themeSelection == "light") {
       return false;
     } else if (themeSelection == "dark") {

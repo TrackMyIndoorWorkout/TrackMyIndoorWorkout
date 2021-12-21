@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
 import '../../preferences/auto_connect.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/instant_measurement_start.dart';
@@ -9,6 +8,7 @@ import '../../preferences/instant_upload.dart';
 import '../../preferences/multi_sport_device_support.dart';
 import '../../preferences/scan_duration.dart';
 import '../../preferences/simpler_ui.dart';
+import '../../preferences/theme_selection.dart';
 import '../../preferences/unit_system.dart';
 import 'preferences_base.dart';
 
@@ -22,23 +22,23 @@ class UXPreferencesScreen extends PreferencesScreenBase {
   Widget build(BuildContext context) {
     List<Widget> uxPreferences = [
       const PrefLabel(
-        title: Text(THEME_SELECTION),
-        subtitle: Text(THEME_SELECTION_DESCRIPTION),
+        title: Text(themeSelection),
+        subtitle: Text(themeSelectionDescription),
       ),
       const PrefRadio<String>(
-        title: Text(THEME_SELECTION_SYSTEM_DESCRIPTION),
-        value: THEME_SELECTION_SYSTEM,
-        pref: THEME_SELECTION_TAG,
+        title: Text(themeSelectionSystemDescription),
+        value: themeSelectionSystem,
+        pref: themeSelectionTag,
       ),
       const PrefRadio<String>(
-        title: Text(THEME_SELECTION_LIGHT_DESCRIPTION),
-        value: THEME_SELECTION_LIGHT,
-        pref: THEME_SELECTION_TAG,
+        title: Text(themeSelectionLightDescription),
+        value: themeSelectionLight,
+        pref: themeSelectionTag,
       ),
       const PrefRadio<String>(
-        title: Text(THEME_SELECTION_DARK_DESCRIPTION),
-        value: THEME_SELECTION_DARK,
-        pref: THEME_SELECTION_TAG,
+        title: Text(themeSelectionDarkDescription),
+        value: themeSelectionDark,
+        pref: themeSelectionTag,
       ),
       const PrefLabel(title: Divider(height: 1)),
       const PrefCheckbox(

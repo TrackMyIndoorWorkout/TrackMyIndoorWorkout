@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/database.dart';
-import '../../persistence/preferences.dart';
 import '../../preferences/audio_volume.dart';
+import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../preferences/data_stream_gap_sound_effect.dart';
 import '../../preferences/data_stream_gap_watchdog_time.dart';
 import '../../preferences/extend_tuning.dart';
+import '../../preferences/heart_rate_gap_workaround.dart';
+import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/sound_effects.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
@@ -149,56 +151,56 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         direction: Axis.vertical,
       ),
       const PrefCheckbox(
-        title: Text(CADENCE_GAP_WORKAROUND),
-        subtitle: Text(CADENCE_GAP_WORKAROUND_DESCRIPTION),
-        pref: CADENCE_GAP_WORKAROUND_TAG,
+        title: Text(cadenceGapWorkaround),
+        subtitle: Text(cadenceGapWorkaroundDescription),
+        pref: cadenceGapWorkaroundTag,
       ),
-      const PrefLabel(title: Text(HEART_RATE_GAP_WORKAROUND_SELECTION)),
+      const PrefLabel(title: Text(heartRateGapWorkaroundSelection)),
       const PrefRadio<String>(
-        title: Text(DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION),
-        value: DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE,
-        pref: HEART_RATE_GAP_WORKAROUND_TAG,
-      ),
-      const PrefRadio<String>(
-        title: Text(DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION),
-        value: DATA_GAP_WORKAROUND_NO_WORKAROUND,
-        pref: HEART_RATE_GAP_WORKAROUND_TAG,
+        title: Text(dataGapWorkaroundLastPositiveValueDescription),
+        value: dataGapWorkaroundLastPositiveValue,
+        pref: heartRateGapWorkaroundTag,
       ),
       const PrefRadio<String>(
-        title: Text(DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION),
-        value: DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS,
-        pref: HEART_RATE_GAP_WORKAROUND_TAG,
+        title: Text(dataGapWorkaroundNoWorkaroundDescription),
+        value: dataGapWorkaroundNoWorkaround,
+        pref: heartRateGapWorkaroundTag,
+      ),
+      const PrefRadio<String>(
+        title: Text(dataGapWorkaroundDoNotWriteZerosDescription),
+        value: dataGapWorkaroundDoNotWriteZeros,
+        pref: heartRateGapWorkaroundTag,
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(
-        title: const Text(HEART_RATE_UPPER_LIMIT),
-        subtitle: const Text(HEART_RATE_UPPER_LIMIT_DESCRIPTION),
-        pref: HEART_RATE_UPPER_LIMIT_INT_TAG,
+        title: const Text(heartRateUpperLimit),
+        subtitle: const Text(heartRateUpperLimitDescription),
+        pref: heartRateUpperLimitIntTag,
         trailing: (num value) => Text("$value"),
-        min: HEART_RATE_UPPER_LIMIT_MIN,
-        max: HEART_RATE_UPPER_LIMIT_MAX,
+        min: heartRateUpperLimitMin,
+        max: heartRateUpperLimitMax,
         direction: Axis.vertical,
       ),
-      const PrefLabel(title: Text(HEART_RATE_LIMITING_METHOD)),
+      const PrefLabel(title: Text(heartRateLimitingMethod)),
       const PrefRadio<String>(
-        title: Text(HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION),
-        value: HEART_RATE_LIMITING_WRITE_ZERO,
-        pref: HEART_RATE_LIMITING_METHOD_TAG,
+        title: Text(heartRateLimitingWriteZeroDescription),
+        value: heartRateLimitingWriteZero,
+        pref: heartRateLimitingMethodTag,
       ),
       const PrefRadio<String>(
-        title: Text(HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION),
-        value: HEART_RATE_LIMITING_WRITE_NOTHING,
-        pref: HEART_RATE_LIMITING_METHOD_TAG,
+        title: Text(heartRateLimitingWriteNothingDescription),
+        value: heartRateLimitingWriteNothing,
+        pref: heartRateLimitingMethodTag,
       ),
       const PrefRadio<String>(
-        title: Text(HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION),
-        value: HEART_RATE_LIMITING_CAP_AT_LIMIT,
-        pref: HEART_RATE_LIMITING_METHOD_TAG,
+        title: Text(heartRateLimitingCapAtLimitDescription),
+        value: heartRateLimitingCapAtLimit,
+        pref: heartRateLimitingMethodTag,
       ),
       const PrefRadio<String>(
-        title: Text(HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION),
-        value: HEART_RATE_LIMITING_NO_LIMIT,
-        pref: HEART_RATE_LIMITING_METHOD_TAG,
+        title: Text(heartRateLimitingNoLimitDescription),
+        value: heartRateLimitingNoLimit,
+        pref: heartRateLimitingMethodTag,
       ),
     ];
 

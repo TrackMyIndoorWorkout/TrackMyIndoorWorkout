@@ -21,6 +21,7 @@ import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
+import '../preferences/app_debug_mode.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/distance_resolution.dart';
@@ -28,8 +29,10 @@ import '../preferences/generic.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_upload.dart';
 import '../preferences/last_equipment_id.dart';
+import '../preferences/measurement_ui_state.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
+import '../preferences/target_heart_rate.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../track/calculator.dart';
@@ -116,7 +119,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _highRes = distanceResolutionDefault;
   bool _simplerUi = simplerUiSlowDefault;
   bool _instantUpload = instantUploadDefault;
-  bool _uxDebug = APP_DEBUG_MODE_DEFAULT;
+  bool _uxDebug = appDebugModeDefault;
 
   Timer? _dataGapWatchdog;
   int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
@@ -131,12 +134,12 @@ class RecordingState extends State<RecordingScreen> {
   double _distance = 0.0;
   int _elapsed = 0;
 
-  String _targetHrMode = TARGET_HEART_RATE_MODE_DEFAULT;
+  String _targetHrMode = targetHeartRateModeDefault;
   Tuple2<double, double> _targetHrBounds = const Tuple2(0, 0);
   int? _heartRate;
   Timer? _hrBeepPeriodTimer;
-  int _hrBeepPeriod = TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT;
-  bool _targetHrAudio = TARGET_HEART_RATE_AUDIO_DEFAULT;
+  int _hrBeepPeriod = targetHeartRateAudioPeriodDefault;
+  bool _targetHrAudio = targetHeartRateAudioDefault;
   bool _targetHrAlerting = false;
   bool _hrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
@@ -314,7 +317,7 @@ class RecordingState extends State<RecordingScreen> {
           List<String>.generate(_expandedState.length, (index) => _expandedState[index] ? "1" : "0")
               .join("");
       final prefService = Get.find<BasePrefService>();
-      prefService.set<String>(MEASUREMENT_PANELS_EXPANDED_TAG, expandedStateStr);
+      prefService.set<String>(measurementPanelsExpandedTag, expandedStateStr);
     });
   }
 
@@ -344,7 +347,7 @@ class RecordingState extends State<RecordingScreen> {
       final expandedHeightStr = List<String>.generate(
           _expandedHeights.length, (index) => _expandedHeights[index].toString()).join("");
       final prefService = Get.find<BasePrefService>();
-      prefService.set<String>(MEASUREMENT_DETAIL_SIZE_TAG, expandedHeightStr);
+      prefService.set<String>(measurementDetailSizeTag, expandedHeightStr);
     });
   }
 
@@ -469,18 +472,16 @@ class RecordingState extends State<RecordingScreen> {
     _dataGapSoundEffect =
         prefService.get<String>(dataStreamGapSoundEffectTag) ?? dataStreamGapSoundEffectDefault;
 
-    _targetHrMode =
-        prefService.get<String>(TARGET_HEART_RATE_MODE_TAG) ?? TARGET_HEART_RATE_MODE_DEFAULT;
+    _targetHrMode = prefService.get<String>(targetHeartRateModeTag) ?? targetHeartRateModeDefault;
     _targetHrBounds = getTargetHeartRateBounds(_targetHrMode, _preferencesSpecs[3], prefService);
     _targetHrAlerting = false;
-    _targetHrAudio =
-        prefService.get<bool>(TARGET_HEART_RATE_AUDIO_TAG) ?? TARGET_HEART_RATE_AUDIO_DEFAULT;
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio) {
-      _hrBeepPeriod = prefService.get<int>(TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG) ??
-          TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT;
+    _targetHrAudio = prefService.get<bool>(targetHeartRateAudioTag) ?? targetHeartRateAudioDefault;
+    if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio) {
+      _hrBeepPeriod = prefService.get<int>(targetHeartRateAudioPeriodIntTag) ??
+          targetHeartRateAudioPeriodDefault;
     }
 
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
+    if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
       if (!Get.isRegistered<SoundService>()) {
         Get.put<SoundService>(SoundService(), permanent: true);
@@ -545,10 +546,10 @@ class RecordingState extends State<RecordingScreen> {
         expandable: !_simplerUi,
       ),
     ];
-    final expandedStateStr = prefService.get<String>(MEASUREMENT_PANELS_EXPANDED_TAG) ??
-        MEASUREMENT_PANELS_EXPANDED_DEFAULT;
+    final expandedStateStr =
+        prefService.get<String>(measurementPanelsExpandedTag) ?? measurementPanelsExpandedDefault;
     final expandedHeightStr =
-        prefService.get<String>(MEASUREMENT_DETAIL_SIZE_TAG) ?? MEASUREMENT_DETAIL_SIZE_DEFAULT;
+        prefService.get<String>(measurementDetailSizeTag) ?? measurementDetailSizeDefault;
     _expandedState = List<bool>.generate(expandedStateStr.length, (int index) {
       final expanded = expandedStateStr[index] == "1";
       ExpandableController rowController = ExpandableController(initialExpanded: expanded);
@@ -577,7 +578,7 @@ class RecordingState extends State<RecordingScreen> {
       return expanded;
     });
 
-    _uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    _uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
     _fitnessEquipment?.measuring = false;
     _values = [
       emptyMeasurement,
@@ -625,7 +626,7 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
     _dataGapWatchdog?.cancel();
     _dataGapBeeperTimer?.cancel();
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
+    if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
       Get.find<SoundService>().stopAllSoundEffects();
     }
@@ -686,7 +687,7 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _hrBeeper() async {
     Get.find<SoundService>().playTargetHrSoundEffect();
     if (_measuring &&
-        _targetHrMode != TARGET_HEART_RATE_MODE_NONE &&
+        _targetHrMode != targetHeartRateModeNone &&
         _targetHrAudio &&
         _heartRate != null &&
         _heartRate! > 0) {
@@ -717,7 +718,7 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
     _dataGapWatchdog?.cancel();
     _dataGapBeeperTimer?.cancel();
-    if (_targetHrMode != TARGET_HEART_RATE_MODE_NONE && _targetHrAudio ||
+    if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
       Get.find<SoundService>().stopAllSoundEffects();
     }
@@ -914,7 +915,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   TargetHrState _getTargetHrState() {
-    if (_heartRate == null || _heartRate == 0 || _targetHrMode == TARGET_HEART_RATE_MODE_NONE) {
+    if (_heartRate == null || _heartRate == 0 || _targetHrMode == targetHeartRateModeNone) {
       return TargetHrState.off;
     }
 
@@ -1124,7 +1125,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (_measuring &&
-        _targetHrMode != TARGET_HEART_RATE_MODE_NONE &&
+        _targetHrMode != targetHeartRateModeNone &&
         _targetHrAudio &&
         _heartRate != null &&
         _heartRate! > 0) {
@@ -1169,8 +1170,7 @@ class RecordingState extends State<RecordingScreen> {
         measurementStyle = _getPaceLightTextStyle(_deviceRank, _sportRank);
       }
 
-      if (entry.key == 4 && _targetHrMode != TARGET_HEART_RATE_MODE_NONE ||
-          _zoneIndexes[3] != null) {
+      if (entry.key == 4 && _targetHrMode != targetHeartRateModeNone || _zoneIndexes[3] != null) {
         measurementStyle = targetHrTextStyle;
       }
 
@@ -1249,7 +1249,7 @@ class RecordingState extends State<RecordingScreen> {
             onChartTouchInteractionUp: (arg) => _onChartTouchInteractionUp(entry.key, arg.position),
           ),
         );
-        if (entry.value.metric == "hr" && _targetHrMode != TARGET_HEART_RATE_MODE_NONE) {
+        if (entry.value.metric == "hr" && _targetHrMode != targetHeartRateModeNone) {
           int zoneIndex =
               targetHrState == TargetHrState.off ? 0 : entry.value.binIndex(_heartRate ?? 0);
           String targetText = _getTargetHrText(targetHrState);

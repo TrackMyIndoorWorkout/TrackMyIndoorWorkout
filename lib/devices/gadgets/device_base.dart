@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/app_debug_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../gatt_constants.dart';
@@ -26,14 +26,14 @@ abstract class DeviceBase {
   bool discovered = false;
 
   final prefService = Get.find<BasePrefService>();
-  bool uxDebug = APP_DEBUG_MODE_DEFAULT;
+  bool uxDebug = appDebugModeDefault;
 
   DeviceBase({
     required this.serviceId,
     this.characteristicsId,
     this.device,
   }) {
-    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
   }
 
   Future<bool> connect() async {

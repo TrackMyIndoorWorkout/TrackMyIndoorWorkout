@@ -5,16 +5,17 @@ import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_data_record.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
-import 'package:track_my_indoor_exercise/persistence/preferences.dart';
+import 'package:track_my_indoor_exercise/preferences/heart_rate_gap_workaround.dart';
+import 'package:track_my_indoor_exercise/preferences/heart_rate_limiting.dart';
 
 void main() {
   test('FitDataRecord has the expected global message number', () async {
     final dataRecord = FitDataRecord(
       0,
       0,
-      HEART_RATE_GAP_WORKAROUND_DEFAULT,
-      HEART_RATE_UPPER_LIMIT_DEFAULT,
-      HEART_RATE_LIMITING_NO_LIMIT,
+      heartRateGapWorkaroundDefault,
+      heartRateUpperLimitDefault,
+      heartRateLimitingMethodDefault,
     );
 
     expect(dataRecord.globalMessageNumber, FitMessage.record);
@@ -25,9 +26,9 @@ void main() {
     final dataRecord = FitDataRecord(
       0,
       0,
-      HEART_RATE_GAP_WORKAROUND_DEFAULT,
-      HEART_RATE_UPPER_LIMIT_DEFAULT,
-      HEART_RATE_LIMITING_NO_LIMIT,
+      heartRateGapWorkaroundDefault,
+      heartRateUpperLimitDefault,
+      heartRateLimitingMethodDefault,
     );
     final now = DateTime.now();
     final exportRecord = ExportRecord(

@@ -8,11 +8,14 @@ import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/app_debug_mode.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
+import '../../preferences/cadence_data_gap_workaround.dart';
+import '../../preferences/heart_rate_gap_workaround.dart';
+import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
@@ -33,7 +36,7 @@ class FitnessEquipment extends DeviceBase {
   String? manufacturerName;
   double _residueCalories = 0.0;
   int _lastPositiveCadence = 0; // #101
-  bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
+  bool _cadenceGapWorkaround = cadenceGapWorkaroundDefault;
   double _lastPositiveCalories = 0.0; // #111
   bool startingValues; // #197
   double _startingCalories = 0.0;
@@ -44,9 +47,9 @@ class FitnessEquipment extends DeviceBase {
   late Record lastRecord;
   HeartRateMonitor? heartRateMonitor;
   RunningCadenceSensor? _runningCadenceSensor;
-  String _heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
-  int _heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT;
-  String _heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
+  String _heartRateGapWorkaround = heartRateGapWorkaroundDefault;
+  int _heartRateUpperLimit = heartRateUpperLimitDefault;
+  String _heartRateLimitingMethod = heartRateLimitingMethodDefault;
   bool _useHrmReportedCalories = useHrMonitorReportedCaloriesDefault;
   bool _useHrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   int _weight = athleteBodyWeightDefault;
@@ -270,15 +273,15 @@ class FitnessEquipment extends DeviceBase {
     if ((stub.heartRate == null || stub.heartRate == 0) &&
         lastRecord.heartRate != null &&
         lastRecord.heartRate! > 0 &&
-        _heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
+        _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue) {
       stub.heartRate = lastRecord.heartRate;
     }
 
     // #114
     if (_heartRateUpperLimit > 0 &&
         (stub.heartRate ?? 0) > _heartRateUpperLimit &&
-        _heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
-      if (_heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+        _heartRateLimitingMethod != heartRateLimitingNoLimit) {
+      if (_heartRateLimitingMethod == heartRateLimitingCapAtLimit) {
         stub.heartRate = _heartRateUpperLimit;
       } else {
         stub.heartRate = 0;
@@ -407,14 +410,14 @@ class FitnessEquipment extends DeviceBase {
   void readConfiguration() {
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
-        prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
-    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+        prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
+    uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
     _heartRateGapWorkaround =
-        prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+        prefService.get<String>(heartRateGapWorkaroundTag) ?? heartRateGapWorkaroundDefault;
     _heartRateUpperLimit =
-        prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+        prefService.get<int>(heartRateUpperLimitIntTag) ?? heartRateUpperLimitDefault;
     _heartRateLimitingMethod =
-        prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+        prefService.get<String>(heartRateLimitingMethodTag) ?? heartRateLimitingMethodDefault;
     _useHrmReportedCalories = prefService.get<bool>(useHrMonitorReportedCaloriesTag) ??
         useHrMonitorReportedCaloriesDefault;
     _useHrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??

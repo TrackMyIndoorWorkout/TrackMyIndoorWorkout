@@ -5,7 +5,7 @@ import 'package:soundpool/soundpool.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/sound_effects.dart';
-import '../preferences/target_heart_rate_sound_effect.dart';
+import '../preferences/target_heart_rate.dart';
 
 enum SoundEffect { bleep, flatBeep, twoTone, threeTone }
 final Map<SoundEffect, String> _soundAssetPaths = {

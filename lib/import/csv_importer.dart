@@ -7,12 +7,13 @@ import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
 import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/extend_tuning.dart';
+import '../preferences/heart_rate_gap_workaround.dart';
+import '../preferences/heart_rate_limiting.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../ui/import_form.dart';
 import '../utils/constants.dart';
@@ -48,8 +49,8 @@ class WorkoutRow {
         heartRate = lastHeartRate;
       } else if (heartRateUpperLimit > 0 &&
           heartRate > heartRateUpperLimit &&
-          heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
-        if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+          heartRateLimitingMethod != heartRateLimitingNoLimit) {
+        if (heartRateLimitingMethod == heartRateLimitingCapAtLimit) {
           heartRate = heartRateUpperLimit;
         } else {
           heartRate = 0;
@@ -599,14 +600,13 @@ class CSVImporter {
       int lastHeartRate = 0;
       int timeStamp = start!.millisecondsSinceEpoch;
       String heartRateGapWorkaroundSetting =
-          prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ??
-              HEART_RATE_GAP_WORKAROUND_DEFAULT;
+          prefService.get<String>(heartRateGapWorkaroundTag) ?? heartRateGapWorkaroundDefault;
       bool heartRateGapWorkaround =
-          heartRateGapWorkaroundSetting == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE;
+          heartRateGapWorkaroundSetting == dataGapWorkaroundLastPositiveValue;
       int heartRateUpperLimit =
-          prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+          prefService.get<int>(heartRateUpperLimitIntTag) ?? heartRateUpperLimitDefault;
       String heartRateLimitingMethod =
-          prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+          prefService.get<String>(heartRateLimitingMethodTag) ?? heartRateLimitingMethodDefault;
 
       bool useHrBasedCalorieCounting = hrBasedCalories;
       int weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;

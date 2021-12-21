@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
 import '../../persistence/preferences_spec.dart';
 import '../../preferences/audio_volume.dart';
 import '../../preferences/sound_effects.dart';
-import '../../preferences/target_heart_rate_sound_effect.dart';
+import '../../preferences/target_heart_rate.dart';
 import '../../utils/sound.dart';
 import 'preferences_base.dart';
 
@@ -19,105 +18,101 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
   Widget build(BuildContext context) {
     List<Widget> targetHrPreferences = [
       const PrefLabel(
-        title: Text(TARGET_HEART_RATE_MODE),
-        subtitle: Text(TARGET_HEART_RATE_MODE_DESCRIPTION),
+        title: Text(targetHeartRateMode),
+        subtitle: Text(targetHeartRateModeDescription),
       ),
       const PrefRadio<String>(
-        title: Text(TARGET_HEART_RATE_MODE_NONE_DESCRIPTION),
-        value: TARGET_HEART_RATE_MODE_NONE,
-        pref: TARGET_HEART_RATE_MODE_TAG,
+        title: Text(targetHeartRateModeNoneDescription),
+        value: targetHeartRateModeNone,
+        pref: targetHeartRateModeTag,
       ),
       const PrefRadio<String>(
-        title: Text(TARGET_HEART_RATE_MODE_BPM_DESCRIPTION),
-        value: TARGET_HEART_RATE_MODE_BPM,
-        pref: TARGET_HEART_RATE_MODE_TAG,
+        title: Text(targetHeartRateModeBpmDescription),
+        value: targetHeartRateModeBpm,
+        pref: targetHeartRateModeTag,
       ),
       const PrefRadio<String>(
-        title: Text(TARGET_HEART_RATE_MODE_ZONES_DESCRIPTION),
-        value: TARGET_HEART_RATE_MODE_ZONES,
-        pref: TARGET_HEART_RATE_MODE_TAG,
+        title: Text(targetHeartRateModeZonesDescription),
+        value: targetHeartRateModeZones,
+        pref: targetHeartRateModeTag,
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(
-        title: const Text(TARGET_HEART_RATE_LOWER_BPM),
-        subtitle: const Text(TARGET_HEART_RATE_LOWER_BPM_DESCRIPTION),
-        pref: TARGET_HEART_RATE_LOWER_BPM_INT_TAG,
+        title: const Text(targetHeartRateLowerBpm),
+        subtitle: const Text(targetHeartRateLowerBpmDescription),
+        pref: targetHeartRateLowerBpmIntTag,
         trailing: (num value) => Text("$value"),
-        min: TARGET_HEART_RATE_LOWER_BPM_MIN,
-        max: TARGET_HEART_RATE_UPPER_BPM_MAX,
+        min: targetHeartRateLowerBpmMin,
+        max: targetHeartRateUpperBpmMax,
         direction: Axis.vertical,
         onChange: (num value) {
-          final upperLimit =
-              PrefService.of(context).get<int>(TARGET_HEART_RATE_UPPER_BPM_INT_TAG) ??
-                  TARGET_HEART_RATE_UPPER_BPM_DEFAULT;
+          final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperBpmIntTag) ??
+              targetHeartRateUpperBpmDefault;
           if (value >= upperLimit) {
-            PrefService.of(context).set<int>(TARGET_HEART_RATE_LOWER_BPM_INT_TAG, upperLimit - 1);
+            PrefService.of(context).set<int>(targetHeartRateLowerBpmIntTag, upperLimit - 1);
           }
         },
       ),
       PrefSlider<int>(
-        title: const Text(TARGET_HEART_RATE_UPPER_BPM),
-        subtitle: const Text(TARGET_HEART_RATE_UPPER_BPM_DESCRIPTION),
-        pref: TARGET_HEART_RATE_UPPER_BPM_INT_TAG,
+        title: const Text(targetHeartRateUpperBpm),
+        subtitle: const Text(targetHeartRateUpperBpmDescription),
+        pref: targetHeartRateUpperBpmIntTag,
         trailing: (num value) => Text("$value"),
-        min: TARGET_HEART_RATE_LOWER_BPM_MIN,
-        max: TARGET_HEART_RATE_UPPER_BPM_MAX,
+        min: targetHeartRateLowerBpmMin,
+        max: targetHeartRateUpperBpmMax,
         direction: Axis.vertical,
         onChange: (num value) {
-          final lowerLimit =
-              PrefService.of(context).get<int>(TARGET_HEART_RATE_LOWER_BPM_INT_TAG) ??
-                  TARGET_HEART_RATE_LOWER_BPM_DEFAULT;
+          final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerBpmIntTag) ??
+              targetHeartRateLowerBpmDefault;
           if (value <= lowerLimit) {
-            PrefService.of(context).set<int>(TARGET_HEART_RATE_UPPER_BPM_INT_TAG, lowerLimit + 1);
+            PrefService.of(context).set<int>(targetHeartRateUpperBpmIntTag, lowerLimit + 1);
           }
         },
       ),
       PrefSlider<int>(
-        title: const Text(TARGET_HEART_RATE_LOWER_ZONE),
-        subtitle: const Text(TARGET_HEART_RATE_LOWER_ZONE_DESCRIPTION),
-        pref: TARGET_HEART_RATE_LOWER_ZONE_INT_TAG,
+        title: const Text(targetHeartRateLowerZone),
+        subtitle: const Text(targetHeartRateLowerZoneDescription),
+        pref: targetHeartRateLowerZoneIntTag,
         trailing: (num value) => Text("$value"),
-        min: TARGET_HEART_RATE_LOWER_ZONE_MIN,
-        max: TARGET_HEART_RATE_UPPER_ZONE_MAX,
+        min: targetHeartRateLowerZoneMin,
+        max: targetHeartRateUpperZoneMax,
         direction: Axis.vertical,
         onChange: (num value) {
-          final upperLimit =
-              PrefService.of(context).get<int>(TARGET_HEART_RATE_UPPER_ZONE_INT_TAG) ??
-                  TARGET_HEART_RATE_UPPER_ZONE_DEFAULT;
+          final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperZoneIntTag) ??
+              targetHeartRateUpperZoneDefault;
           if (value > upperLimit) {
-            PrefService.of(context).set<int>(TARGET_HEART_RATE_LOWER_ZONE_INT_TAG, upperLimit);
+            PrefService.of(context).set<int>(targetHeartRateLowerZoneIntTag, upperLimit);
           }
         },
       ),
       PrefSlider<int>(
-        title: const Text(TARGET_HEART_RATE_UPPER_ZONE),
-        subtitle: const Text(TARGET_HEART_RATE_UPPER_ZONE_DESCRIPTION),
-        pref: TARGET_HEART_RATE_UPPER_ZONE_INT_TAG,
+        title: const Text(targetHeartRateUpperZone),
+        subtitle: const Text(targetHeartRateUpperZoneDescription),
+        pref: targetHeartRateUpperZoneIntTag,
         trailing: (num value) => Text("$value"),
-        min: TARGET_HEART_RATE_LOWER_ZONE_MIN,
-        max: TARGET_HEART_RATE_UPPER_ZONE_MAX,
+        min: targetHeartRateLowerZoneMin,
+        max: targetHeartRateUpperZoneMax,
         direction: Axis.vertical,
         onChange: (num value) {
-          final lowerLimit =
-              PrefService.of(context).get<int>(TARGET_HEART_RATE_LOWER_ZONE_INT_TAG) ??
-                  TARGET_HEART_RATE_LOWER_ZONE_DEFAULT;
+          final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerZoneIntTag) ??
+              targetHeartRateLowerZoneDefault;
           if (value < lowerLimit) {
-            PrefService.of(context).set<int>(TARGET_HEART_RATE_UPPER_ZONE_INT_TAG, lowerLimit);
+            PrefService.of(context).set<int>(targetHeartRateUpperZoneIntTag, lowerLimit);
           }
         },
       ),
       const PrefCheckbox(
-        title: Text(TARGET_HEART_RATE_AUDIO),
-        subtitle: Text(TARGET_HEART_RATE_AUDIO_DESCRIPTION),
-        pref: TARGET_HEART_RATE_AUDIO_TAG,
+        title: Text(targetHeartRateAudio),
+        subtitle: Text(targetHeartRateAudioDescription),
+        pref: targetHeartRateAudioTag,
       ),
       PrefSlider<int>(
-        title: const Text(TARGET_HEART_RATE_AUDIO_PERIOD),
-        subtitle: const Text(TARGET_HEART_RATE_AUDIO_PERIOD_DESCRIPTION),
-        pref: TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG,
+        title: const Text(targetHeartRateAudioPeriod),
+        subtitle: const Text(targetHeartRateAudioPeriodDescription),
+        pref: targetHeartRateAudioPeriodIntTag,
         trailing: (num value) => Text("$value s"),
-        min: TARGET_HEART_RATE_AUDIO_PERIOD_MIN,
-        max: TARGET_HEART_RATE_AUDIO_PERIOD_MAX,
+        min: targetHeartRateAudioPeriodMin,
+        max: targetHeartRateAudioPeriodMax,
         direction: Axis.vertical,
       ),
       const PrefLabel(

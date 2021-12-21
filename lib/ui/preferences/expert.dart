@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/app_debug_mode.dart';
+import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enforced_time_zone.dart';
 import '../../utils/preferences.dart';
@@ -18,10 +19,10 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> expertPreferences = [
-      const PrefLabel(title: Text(DATA_CONNECTION_ADDRESSES_DESCRIPTION, maxLines: 10)),
+      const PrefLabel(title: Text(dataConnectionAddressesDescription, maxLines: 10)),
       PrefText(
-        label: DATA_CONNECTION_ADDRESSES,
-        pref: DATA_CONNECTION_ADDRESSES_TAG,
+        label: dataConnectionAddresses,
+        pref: dataConnectionAddressesTag,
         validator: (str) {
           if (str == null) {
             return null;
@@ -66,9 +67,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
 
     if (kDebugMode) {
       expertPreferences.add(const PrefCheckbox(
-        title: Text(APP_DEBUG_MODE),
-        subtitle: Text(APP_DEBUG_MODE_DESCRIPTION),
-        pref: APP_DEBUG_MODE_TAG,
+        title: Text(appDebugMode),
+        subtitle: Text(appDebugModeDescription),
+        pref: appDebugModeTag,
       ));
     }
 

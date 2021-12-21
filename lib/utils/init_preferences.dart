@@ -2,12 +2,15 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
+import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
 import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
+import '../preferences/cadence_data_gap_workaround.dart';
+import '../preferences/data_connection_addresses.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/device_filtering.dart';
@@ -15,15 +18,19 @@ import '../preferences/distance_resolution.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/extend_tuning.dart';
 import '../preferences/generic.dart';
+import '../preferences/heart_rate_gap_workaround.dart';
+import '../preferences/heart_rate_limiting.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
 import '../preferences/last_equipment_id.dart';
+import '../preferences/measurement_ui_state.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/stroke_rate_smoothing.dart';
-import '../preferences/target_heart_rate_sound_effect.dart';
+import '../preferences/target_heart_rate.dart';
+import '../preferences/theme_selection.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
@@ -50,25 +57,25 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     simplerUiTag: await getSimplerUiDefault(),
     deviceFilteringTag: deviceFilteringDefault,
     multiSportDeviceSupportTag: multiSportDeviceSupportDefault,
-    MEASUREMENT_PANELS_EXPANDED_TAG: MEASUREMENT_PANELS_EXPANDED_DEFAULT,
-    MEASUREMENT_DETAIL_SIZE_TAG: MEASUREMENT_DETAIL_SIZE_DEFAULT,
-    APP_DEBUG_MODE_TAG: APP_DEBUG_MODE_DEFAULT,
-    DATA_CONNECTION_ADDRESSES_TAG: DATA_CONNECTION_ADDRESSES_DEFAULT,
+    measurementPanelsExpandedTag: measurementPanelsExpandedDefault,
+    measurementDetailSizeTag: measurementDetailSizeDefault,
+    appDebugModeTag: appDebugModeDefault,
+    dataConnectionAddressesTag: dataConnectionAddressesDefault,
     extendTuningTag: extendTuningDefault,
     strokeRateSmoothingIntTag: strokeRateSmoothingDefault,
     dataStreamGapWatchdogIntTag: dataStreamGapWatchdogDefault,
     dataStreamGapSoundEffectTag: dataStreamGapSoundEffectDefault,
-    CADENCE_GAP_WORKAROUND_TAG: CADENCE_GAP_WORKAROUND_DEFAULT,
-    HEART_RATE_GAP_WORKAROUND_TAG: HEART_RATE_GAP_WORKAROUND_DEFAULT,
-    HEART_RATE_UPPER_LIMIT_INT_TAG: HEART_RATE_UPPER_LIMIT_DEFAULT,
-    HEART_RATE_LIMITING_METHOD_TAG: HEART_RATE_LIMITING_METHOD_DEFAULT,
-    TARGET_HEART_RATE_MODE_TAG: TARGET_HEART_RATE_MODE_DEFAULT,
-    TARGET_HEART_RATE_LOWER_BPM_INT_TAG: TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
-    TARGET_HEART_RATE_UPPER_BPM_INT_TAG: TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
-    TARGET_HEART_RATE_LOWER_ZONE_INT_TAG: TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
-    TARGET_HEART_RATE_UPPER_ZONE_INT_TAG: TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
-    TARGET_HEART_RATE_AUDIO_TAG: TARGET_HEART_RATE_AUDIO_DEFAULT,
-    TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG: TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
+    cadenceGapWorkaroundTag: cadenceGapWorkaroundDefault,
+    heartRateGapWorkaroundTag: heartRateGapWorkaroundDefault,
+    heartRateUpperLimitIntTag: heartRateUpperLimitDefault,
+    heartRateLimitingMethodTag: heartRateLimitingMethodDefault,
+    targetHeartRateModeTag: targetHeartRateModeDefault,
+    targetHeartRateLowerBpmIntTag: targetHeartRateLowerBpmDefault,
+    targetHeartRateUpperBpmIntTag: targetHeartRateUpperBpmDefault,
+    targetHeartRateLowerZoneIntTag: targetHeartRateLowerZoneDefault,
+    targetHeartRateUpperZoneIntTag: targetHeartRateUpperZoneDefault,
+    targetHeartRateAudioTag: targetHeartRateAudioDefault,
+    targetHeartRateAudioPeriodIntTag: targetHeartRateAudioPeriodDefault,
     targetHeartRateSoundEffectTag: targetHeartRateSoundEffectDefault,
     audioVolumeIntTag: audioVolumeDefault,
     LEADERBOARD_FEATURE_TAG: LEADERBOARD_FEATURE_DEFAULT,
@@ -77,7 +84,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     RANKING_FOR_SPORT_TAG: RANKING_FOR_SPORT_DEFAULT,
     RANK_TRACK_VISUALIZATION_TAG: RANK_TRACK_VISUALIZATION_DEFAULT,
     RANK_INFO_ON_TRACK_TAG: RANK_INFO_ON_TRACK_DEFAULT,
-    THEME_SELECTION_TAG: THEME_SELECTION_DEFAULT,
+    themeSelectionTag: themeSelectionDefault,
     ZONE_INDEX_DISPLAY_COLORING_TAG: ZONE_INDEX_DISPLAY_COLORING_DEFAULT,
     athleteBodyWeightIntTag: athleteBodyWeightDefault,
     rememberAthleteBodyWeightTag: rememberAthleteBodyWeightDefault,
@@ -161,33 +168,33 @@ Future<BasePrefService> initPreferences() async {
       prefService,
     );
     migrateStringIntegerPreference(
-      HEART_RATE_UPPER_LIMIT_TAG,
-      HEART_RATE_UPPER_LIMIT_DEFAULT,
+      heartRateUpperLimitTag,
+      heartRateUpperLimitDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      TARGET_HEART_RATE_LOWER_BPM_TAG,
-      TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
+      targetHeartRateLowerBpmTag,
+      targetHeartRateLowerBpmDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      TARGET_HEART_RATE_UPPER_BPM_TAG,
-      TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
+      targetHeartRateUpperBpmTag,
+      targetHeartRateUpperBpmDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      TARGET_HEART_RATE_LOWER_ZONE_TAG,
-      TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
+      targetHeartRateLowerZoneTag,
+      targetHeartRateLowerZoneDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      TARGET_HEART_RATE_UPPER_ZONE_TAG,
-      TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
+      targetHeartRateUpperZoneTag,
+      targetHeartRateUpperZoneDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
-      TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
+      targetHeartRateAudioPeriodTag,
+      targetHeartRateAudioPeriodDefault,
       prefService,
     );
     migrateStringIntegerPreference(
@@ -203,12 +210,12 @@ Future<BasePrefService> initPreferences() async {
   }
 
   String addressesString =
-      prefService.get<String>(DATA_CONNECTION_ADDRESSES_TAG) ?? DATA_CONNECTION_ADDRESSES_DEFAULT;
+      prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
   if (prefVersion < preferencesVersionDefaultingDataConnection) {
-    if (addressesString == DATA_CONNECTION_ADDRESSES_OLD_DEFAULT) {
+    if (addressesString == dataConnectionAddressesOldDefault) {
       await prefService.set<String>(
-        DATA_CONNECTION_ADDRESSES_TAG,
-        DATA_CONNECTION_ADDRESSES_DEFAULT,
+        dataConnectionAddressesTag,
+        dataConnectionAddressesDefault,
       );
       addressesString = "";
     }
