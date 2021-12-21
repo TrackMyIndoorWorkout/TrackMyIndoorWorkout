@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/zone_index_display_coloring.dart';
 import '../../persistence/preferences_spec.dart';
 import 'preferences_base.dart';
 
@@ -15,9 +15,9 @@ class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
     List<Widget> indexDisplayPreferences = [
       const PrefLabel(title: Text(PreferencesSpec.zoneIndexDisplayExtraNote, maxLines: 10)),
       const PrefCheckbox(
-        title: Text(ZONE_INDEX_DISPLAY_COLORING),
-        subtitle: Text(ZONE_INDEX_DISPLAY_COLORING_DESCRIPTION),
-        pref: ZONE_INDEX_DISPLAY_COLORING_TAG,
+        title: Text(zoneIndexDisplayColoring),
+        subtitle: Text(zoneIndexDisplayColoringDescription),
+        pref: zoneIndexDisplayColoringTag,
       ),
     ];
 

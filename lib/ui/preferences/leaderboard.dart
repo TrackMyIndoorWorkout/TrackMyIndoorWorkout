@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/leaderboard_and_rank.dart';
 import 'preferences_base.dart';
 
 class LeaderboardPreferencesScreen extends PreferencesScreenBase {
@@ -13,73 +13,73 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
   Widget build(BuildContext context) {
     List<Widget> leaderboardPreferences = [
       PrefCheckbox(
-        title: const Text(LEADERBOARD_FEATURE),
-        subtitle: const Text(LEADERBOARD_FEATURE_DESCRIPTION),
-        pref: LEADERBOARD_FEATURE_TAG,
+        title: const Text(leaderboardFeature),
+        subtitle: const Text(leaderboardFeatureDescription),
+        pref: leaderboardFeatureTag,
         onChange: (value) {
           if (!value) {
-            PrefService.of(context).set(RANK_RIBBON_VISUALIZATION_TAG, false);
-            PrefService.of(context).set(RANK_TRACK_VISUALIZATION_TAG, false);
-            PrefService.of(context).set(RANKING_FOR_DEVICE_TAG, false);
-            PrefService.of(context).set(RANKING_FOR_SPORT_TAG, false);
+            PrefService.of(context).set(rankRibbonVisualizationTag, false);
+            PrefService.of(context).set(rankTrackVisualizationTag, false);
+            PrefService.of(context).set(rankingForDeviceTag, false);
+            PrefService.of(context).set(rankingForSportTag, false);
           }
         },
       ),
       PrefCheckbox(
-        title: const Text(RANK_RIBBON_VISUALIZATION),
-        subtitle: const Text(RANK_RIBBON_VISUALIZATION_DESCRIPTION),
-        pref: RANK_RIBBON_VISUALIZATION_TAG,
+        title: const Text(rankRibbonVisualization),
+        subtitle: const Text(rankRibbonVisualizationDescription),
+        pref: rankRibbonVisualizationTag,
         onChange: (value) {
           if (value) {
-            PrefService.of(context).set(LEADERBOARD_FEATURE_TAG, true);
+            PrefService.of(context).set(leaderboardFeatureTag, true);
           }
         },
       ),
       PrefCheckbox(
-        title: const Text(RANK_TRACK_VISUALIZATION),
-        subtitle: const Text(RANK_TRACK_VISUALIZATION_DESCRIPTION),
-        pref: RANK_TRACK_VISUALIZATION_TAG,
+        title: const Text(rankTrackVisualization),
+        subtitle: const Text(rankTrackVisualizationDescription),
+        pref: rankTrackVisualizationTag,
         onChange: (value) {
           if (value) {
-            PrefService.of(context).set(LEADERBOARD_FEATURE_TAG, true);
+            PrefService.of(context).set(leaderboardFeatureTag, true);
           }
         },
       ),
       PrefCheckbox(
-        title: const Text(RANK_INFO_ON_TRACK),
-        subtitle: const Text(RANK_INFO_ON_TRACK_DESCRIPTION),
-        pref: RANK_INFO_ON_TRACK_TAG,
+        title: const Text(rankInfoOnTrack),
+        subtitle: const Text(rankInfoOnTrackDescription),
+        pref: rankInfoOnTrackTag,
         onChange: (value) {
           if (value) {
-            PrefService.of(context).set(RANK_TRACK_VISUALIZATION_TAG, true);
-            PrefService.of(context).set(LEADERBOARD_FEATURE_TAG, true);
+            PrefService.of(context).set(rankTrackVisualizationTag, true);
+            PrefService.of(context).set(leaderboardFeatureTag, true);
           }
         },
       ),
       PrefCheckbox(
-        title: const Text(RANKING_FOR_DEVICE),
-        subtitle: const Text(RANKING_FOR_DEVICE_DESCRIPTION),
-        pref: RANKING_FOR_DEVICE_TAG,
+        title: const Text(rankingForDevice),
+        subtitle: const Text(rankingForDeviceDescription),
+        pref: rankingForDeviceTag,
         onChange: (value) {
           if (value) {
-            PrefService.of(context).set(LEADERBOARD_FEATURE_TAG, true);
+            PrefService.of(context).set(leaderboardFeatureTag, true);
           }
         },
       ),
       PrefCheckbox(
-        title: const Text(RANKING_FOR_SPORT),
-        subtitle: const Text(RANKING_FOR_SPORT_DESCRIPTION),
-        pref: RANKING_FOR_SPORT_TAG,
+        title: const Text(rankingForSport),
+        subtitle: const Text(rankingForSportDescription),
+        pref: rankingForSportTag,
         onChange: (value) {
           if (value) {
-            PrefService.of(context).set(LEADERBOARD_FEATURE_TAG, true);
+            PrefService.of(context).set(leaderboardFeatureTag, true);
           }
         },
       ),
       // const PrefCheckbox(
-      //   title: Text(DISPLAY_LAP_COUNTER),
-      //   subtitle: Text(DISPLAY_LAP_COUNTER_DESCRIPTION),
-      //   pref: DISPLAY_LAP_COUNTER_TAG,
+      //   title: Text(displayLapCounter),
+      //   subtitle: Text(displayLapCounterDescription),
+      //   pref: displayLapCounterTag,
       // ),
     ];
 

@@ -19,7 +19,6 @@ import '../devices/gadgets/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
@@ -28,13 +27,16 @@ import '../preferences/distance_resolution.dart';
 import '../preferences/generic.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_upload.dart';
+import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
+import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../preferences/zone_index_display_coloring.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
@@ -142,19 +144,19 @@ class RecordingState extends State<RecordingScreen> {
   bool _targetHrAudio = targetHeartRateAudioDefault;
   bool _targetHrAlerting = false;
   bool _hrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
-  bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
-  bool _rankingForDevice = RANKING_FOR_DEVICE_DEFAULT;
+  bool _leaderboardFeature = leaderboardFeatureDefault;
+  bool _rankingForDevice = rankingForDeviceDefault;
   List<WorkoutSummary> _deviceLeaderboard = [];
   int? _deviceRank;
   String _deviceRankString = "";
-  bool _rankingForSport = RANKING_FOR_SPORT_DEFAULT;
+  bool _rankingForSport = rankingForSportDefault;
   List<WorkoutSummary> _sportLeaderboard = [];
   int? _sportRank;
   String _sportRankString = "";
-  bool _rankRibbonVisualization = RANK_RIBBON_VISUALIZATION_DEFAULT;
-  bool _rankTrackVisualization = RANK_TRACK_VISUALIZATION_DEFAULT;
-  bool _rankInfoOnTrack = RANK_INFO_ON_TRACK_DEFAULT;
-  bool _displayLapCounter = DISPLAY_LAP_COUNTER_DEFAULT;
+  bool _rankRibbonVisualization = rankRibbonVisualizationDefault;
+  bool _rankTrackVisualization = rankTrackVisualizationDefault;
+  bool _rankInfoOnTrack = rankInfoOnTrackDefault;
+  bool _displayLapCounter = displayLapCounterDefault;
   Color _darkRed = Colors.red;
   Color _darkGreen = Colors.green;
   Color _darkBlue = Colors.blue;
@@ -590,21 +592,19 @@ class RecordingState extends State<RecordingScreen> {
     ];
     _zoneIndexes = [null, null, null, null];
 
-    _leaderboardFeature =
-        prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
+    _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _rankRibbonVisualization =
-        prefService.get<bool>(RANK_RIBBON_VISUALIZATION_TAG) ?? RANK_RIBBON_VISUALIZATION_DEFAULT;
-    _rankingForDevice = prefService.get<bool>(RANKING_FOR_DEVICE_TAG) ?? RANKING_FOR_DEVICE_DEFAULT;
+        prefService.get<bool>(rankRibbonVisualizationTag) ?? rankRibbonVisualizationDefault;
+    _rankingForDevice = prefService.get<bool>(rankingForDeviceTag) ?? rankingForDeviceDefault;
     _deviceLeaderboard = [];
     _deviceRankString = "";
-    _rankingForSport = prefService.get<bool>(RANKING_FOR_SPORT_TAG) ?? RANKING_FOR_SPORT_DEFAULT;
+    _rankingForSport = prefService.get<bool>(rankingForSportTag) ?? rankingForSportDefault;
     _sportLeaderboard = [];
     _sportRankString = "";
     _rankTrackVisualization =
-        prefService.get<bool>(RANK_TRACK_VISUALIZATION_TAG) ?? RANK_TRACK_VISUALIZATION_DEFAULT;
-    _rankInfoOnTrack = prefService.get<bool>(RANK_INFO_ON_TRACK_TAG) ?? RANK_INFO_ON_TRACK_DEFAULT;
-    _displayLapCounter =
-        prefService.get<bool>(DISPLAY_LAP_COUNTER_TAG) ?? DISPLAY_LAP_COUNTER_DEFAULT;
+        prefService.get<bool>(rankTrackVisualizationTag) ?? rankTrackVisualizationDefault;
+    _rankInfoOnTrack = prefService.get<bool>(rankInfoOnTrackTag) ?? rankInfoOnTrackDefault;
+    _displayLapCounter = prefService.get<bool>(displayLapCounterTag) ?? displayLapCounterDefault;
 
     final isLight = !_themeManager.isDark();
     _darkRed = isLight ? Colors.red.shade900 : Colors.redAccent.shade100;
@@ -614,8 +614,8 @@ class RecordingState extends State<RecordingScreen> {
     _lightGreen = isLight ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
     _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
 
-    _zoneIndexColoring = prefService.get<bool>(ZONE_INDEX_DISPLAY_COLORING_TAG) ??
-        ZONE_INDEX_DISPLAY_COLORING_DEFAULT;
+    _zoneIndexColoring =
+        prefService.get<bool>(zoneIndexDisplayColoringTag) ?? zoneIndexDisplayColoringDefault;
 
     _initializeHeartRateMonitor();
     _connectOnDemand();

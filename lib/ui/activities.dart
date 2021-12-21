@@ -20,8 +20,8 @@ import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
 import '../preferences/distance_resolution.dart';
+import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -55,7 +55,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   int _editCount = 0;
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
-  bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
+  bool _leaderboardFeature = leaderboardFeatureDefault;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeDefault2 = 10.0;
@@ -76,8 +76,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
-    _leaderboardFeature =
-        prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
+    _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
   }

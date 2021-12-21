@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../persistence/preferences.dart';
 import '../persistence/preferences_spec.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
@@ -23,7 +22,9 @@ import '../preferences/heart_rate_limiting.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
+import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
+import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/scan_duration.dart';
@@ -34,6 +35,7 @@ import '../preferences/theme_selection.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
+import '../preferences/zone_index_display_coloring.dart';
 import 'constants.dart';
 
 void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService prefService) {
@@ -78,14 +80,14 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     targetHeartRateAudioPeriodIntTag: targetHeartRateAudioPeriodDefault,
     targetHeartRateSoundEffectTag: targetHeartRateSoundEffectDefault,
     audioVolumeIntTag: audioVolumeDefault,
-    LEADERBOARD_FEATURE_TAG: LEADERBOARD_FEATURE_DEFAULT,
-    RANK_RIBBON_VISUALIZATION_TAG: RANK_RIBBON_VISUALIZATION_DEFAULT,
-    RANKING_FOR_DEVICE_TAG: RANKING_FOR_DEVICE_DEFAULT,
-    RANKING_FOR_SPORT_TAG: RANKING_FOR_SPORT_DEFAULT,
-    RANK_TRACK_VISUALIZATION_TAG: RANK_TRACK_VISUALIZATION_DEFAULT,
-    RANK_INFO_ON_TRACK_TAG: RANK_INFO_ON_TRACK_DEFAULT,
+    leaderboardFeatureTag: leaderboardFeatureDefault,
+    rankRibbonVisualizationTag: rankRibbonVisualizationDefault,
+    rankingForDeviceTag: rankingForDeviceDefault,
+    rankingForSportTag: rankingForSportDefault,
+    rankTrackVisualizationTag: rankTrackVisualizationDefault,
+    rankInfoOnTrackTag: rankInfoOnTrackDefault,
     themeSelectionTag: themeSelectionDefault,
-    ZONE_INDEX_DISPLAY_COLORING_TAG: ZONE_INDEX_DISPLAY_COLORING_DEFAULT,
+    zoneIndexDisplayColoringTag: zoneIndexDisplayColoringDefault,
     athleteBodyWeightIntTag: athleteBodyWeightDefault,
     rememberAthleteBodyWeightTag: rememberAthleteBodyWeightDefault,
     useHrMonitorReportedCaloriesTag: useHrMonitorReportedCaloriesDefault,
@@ -94,7 +96,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     athleteGenderTag: athleteGenderDefault,
     athleteVO2MaxTag: athleteVO2MaxDefault,
     enforcedTimeZoneTag: enforcedTimeZoneDefault,
-    DISPLAY_LAP_COUNTER_TAG: DISPLAY_LAP_COUNTER_DEFAULT,
+    displayLapCounterTag: displayLapCounterDefault,
   };
   return prefDefaults;
 }
