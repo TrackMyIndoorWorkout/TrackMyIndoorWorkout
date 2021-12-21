@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../persistence/preferences_spec.dart';
+import '../preferences/preferences_spec.dart';
 import 'constants.dart';
 
 double speedByUnitCore(double speed, bool si) {

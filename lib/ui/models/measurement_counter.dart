@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import '../../persistence/models/record.dart';
-import '../../persistence/preferences_spec.dart';
+import '../../preferences/preferences_spec.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 

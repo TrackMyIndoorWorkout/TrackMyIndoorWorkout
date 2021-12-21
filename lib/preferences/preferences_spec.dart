@@ -6,7 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import '../utils/constants.dart';
 import '../utils/display.dart';
-import 'palettes.dart';
+import '../persistence/palettes.dart';
 
 // https://stackoverflow.com/questions/57481767/dart-rounding-errors
 double decimalRound(double value, {int precision = 100}) {

@@ -1,6 +1,6 @@
 import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
-import '../persistence/preferences_spec.dart';
+import '../preferences/preferences_spec.dart';
 import '../preferences/target_heart_rate.dart';
 
 // This can be eliminated once #107 takes care of integer preferences

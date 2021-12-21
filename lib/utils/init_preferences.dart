@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../persistence/preferences_spec.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
@@ -27,6 +26,7 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/multi_sport_device_support.dart';
+import '../preferences/preferences_spec.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/stroke_rate_smoothing.dart';

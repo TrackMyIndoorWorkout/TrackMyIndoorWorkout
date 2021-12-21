@@ -1,7 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../persistence/preferences_spec.dart';
+import '../../preferences/preferences_spec.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import 'measurement_zones.dart';

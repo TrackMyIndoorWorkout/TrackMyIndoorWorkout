@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/persistence/preferences_spec.dart';
+import 'package:track_my_indoor_exercise/preferences/preferences_spec.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/display.dart';
 
