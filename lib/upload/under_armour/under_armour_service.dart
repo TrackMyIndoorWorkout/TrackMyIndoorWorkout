@@ -2,7 +2,7 @@ import '../../export/export_target.dart';
 import '../../export/json/json_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
-import '../../persistence/secret.dart';
+import '../../secret.dart';
 import '../upload_service.dart';
 import 'under_armour.dart';
 

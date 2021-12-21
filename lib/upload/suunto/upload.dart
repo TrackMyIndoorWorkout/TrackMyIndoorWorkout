@@ -6,8 +6,7 @@ import 'package:http/http.dart' as http;
 import '../../export/activity_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/database.dart';
-import '../../persistence/secret.dart';
-
+import '../../secret.dart';
 import 'constants.dart';
 import 'suunto_token.dart';
 
