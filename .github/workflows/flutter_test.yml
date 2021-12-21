@@ -18,11 +18,20 @@ jobs:
           channel: 'stable'
       - name: Install Flutter dependencies
         run: flutter pub get
-      - name: Mock Secrets File
+      - name: Mock Secret File
         run: |
-          git clone https://gist.github.com/MrCsabaToth/594df97db65588c2924011d37cca4207
-          mv 594df97db65588c2924011d37cca4207/secret.dart lib/
-          rm -rf 594df97db65588c2924011d37cca4207/
+          echo 'const stravaSecret = "a";' > lib/secret.dart
+          echo 'const stravaClientId = "1";' >> lib/secret.dart
+          echo 'const suuntoSecret = "a";' >> lib/secret.dart
+          echo 'const suuntoClientId = "a";' >> lib/secret.dart
+          echo 'const suuntoSubscriptionPrimaryKey = "a";' >> lib/secret.dart
+          echo 'const suuntoSubscriptionSecondaryKey = "a";' >> lib/secret.dart
+          echo 'const underArmourSecret = "a";' >> lib/secret.dart
+          echo 'const underArmourKey = "a";' >> lib/secret.dart
+          echo 'const trainingPeaksSecret = "a";' >> lib/secret.dart
+          echo 'const trainingPeaksClientId = "a";' >> lib/secret.dart
+          echo 'const googleFitClientId = "a";' >> lib/secret.dart
+          echo 'const googleFitSecret = "a";' >> lib/secret.dart
       - name: Format files
         run: flutter format --line-length 100 --set-exit-if-changed .
       - name: Analyze files
