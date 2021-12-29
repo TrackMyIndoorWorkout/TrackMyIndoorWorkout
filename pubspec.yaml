@@ -6,7 +6,7 @@ version: 1.1.86+86
 
 environment:
   sdk: ">=2.15.0 <3.0.0"
-  flutter: ">=2.8.0"
+  flutter: ">=2.8.1"
 
 dependencies:
   assorted_layout_widgets: ^5.2.1
@@ -23,7 +23,7 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/flutter_blue.git
   flutter_native_timezone: ^2.0.0
-  flutter_spinbox: ^0.7.0
+  flutter_spinbox: ^0.8.0
   flutter_svg: ^1.0.0
   get: ^4.6.1
   http: ^0.13.4
@@ -44,7 +44,7 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/spinner_input.git
   sqflite: ^2.0.1
-  syncfusion_flutter_charts: ^19.4.38
+  syncfusion_flutter_charts: ^19.4.40
   tuple: ^2.0.0
   uni_links: ^0.5.1
   url_launcher: ^6.0.17
