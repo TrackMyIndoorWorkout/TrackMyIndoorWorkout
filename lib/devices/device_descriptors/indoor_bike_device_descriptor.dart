@@ -16,7 +16,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     dataCharacteristicId = indoorBikeUuid,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactorDefault = 1.0,
+    canMeasureCalories = true,
   }) : super(
           defaultSport: ActivityType.ride,
           isMultiSport: false,
@@ -31,7 +31,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactorDefault: calorieFactorDefault,
+          canMeasureCalories: canMeasureCalories,
         );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.indoor_bike_data.xml
@@ -58,7 +58,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   @override
-  RecordWithSport stubRecord(List<int> data) {
+  RecordWithSport? stubRecord(List<int> data) {
     super.stubRecord(data);
     return RecordWithSport(
       distance: getDistance(data),

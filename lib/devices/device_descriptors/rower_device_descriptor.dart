@@ -32,7 +32,6 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     dataCharacteristicId = rowerDeviceUuid,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactorDefault = 1.0,
     isMultiSport = true,
   }) : super(
           defaultSport: defaultSport,
@@ -48,7 +47,6 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactorDefault: calorieFactorDefault,
         );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
@@ -79,7 +77,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   @override
-  RecordWithSport stubRecord(List<int> data) {
+  RecordWithSport? stubRecord(List<int> data) {
     super.stubRecord(data);
 
     final pace = getPace(data);
@@ -163,11 +161,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   double? getPace(List<int> data) {
-    var pace = paceMetric?.getMeasurementValue(data);
-    if (pace == null || !extendTuning) {
-      return pace;
-    }
-    return pace / powerFactor;
+    return paceMetric?.getMeasurementValue(data);
   }
 
   @override

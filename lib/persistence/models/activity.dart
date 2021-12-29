@@ -21,6 +21,8 @@ class Activity {
   final String deviceName;
   @ColumnInfo(name: 'device_id')
   final String deviceId;
+  @ColumnInfo(name: 'hrm_id')
+  String hrmId;
   int start; // ms since epoch
   int end; // ms since epoch
   double distance; // m
@@ -35,9 +37,11 @@ class Activity {
   @ColumnInfo(name: 'power_factor')
   final double powerFactor;
   @ColumnInfo(name: 'calorie_factor')
-  final double calorieFactor;
+  double calorieFactor;
   @ColumnInfo(name: 'hr_calorie_factor')
   final double hrCalorieFactor;
+  @ColumnInfo(name: 'hrm_calorie_factor')
+  double hrmCalorieFactor;
   @ColumnInfo(name: 'hr_based_calories')
   final bool hrBasedCalories;
   @ColumnInfo(name: 'time_zone')
@@ -72,6 +76,7 @@ class Activity {
     this.id,
     required this.deviceName,
     required this.deviceId,
+    required this.hrmId,
     required this.start,
     this.end = 0,
     this.distance = 0.0,
@@ -95,6 +100,7 @@ class Activity {
     required this.powerFactor,
     required this.calorieFactor,
     required this.hrCalorieFactor,
+    required this.hrmCalorieFactor,
     required this.hrBasedCalories,
     required this.timeZone,
   });
@@ -189,11 +195,6 @@ class Activity {
 
   DeviceDescriptor deviceDescriptor() {
     return deviceMap[fourCC] ?? genericDescriptorForSport(sport);
-  }
-
-  double defaultCalorieFactor() {
-    final descriptor = deviceDescriptor();
-    return hrBasedCalories ? descriptor.hrCalorieFactorDefault : descriptor.calorieFactorDefault;
   }
 
   WorkoutSummary getWorkoutSummary(String manufacturer) {

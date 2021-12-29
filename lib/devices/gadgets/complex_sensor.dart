@@ -3,21 +3,18 @@ import 'dart:math';
 
 import 'package:rxdart/rxdart.dart';
 import '../../persistence/models/record.dart';
-import '../../preferences/extend_tuning.dart';
 import '../../utils/delays.dart';
 import 'sensor_base.dart';
 
 typedef ComplexMetricProcessingFunction = Function(RecordWithSport record);
 
 abstract class ComplexSensor extends SensorBase {
-  late bool extendTuning;
   late Random random;
   RecordWithSport? record;
 
   ComplexSensor(serviceId, characteristicsId, device)
       : super(serviceId, characteristicsId, device) {
     random = Random();
-    extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
   }
 
   Stream<RecordWithSport> get _listenToData async* {

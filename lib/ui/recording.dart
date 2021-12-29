@@ -204,19 +204,18 @@ class RecordingState extends State<RecordingScreen> {
     await _fitnessEquipment?.additionalSensorsOnDemand();
 
     final now = DateTime.now();
-    final powerFactor = await _database.powerFactor(widget.device.id.id);
-    final calorieFactor = await _database.calorieFactor(widget.device.id.id, widget.descriptor);
-    final hrCalorieFactor = await _database.hrCalorieFactor(widget.device.id.id, widget.descriptor);
     _activity = Activity(
       fourCC: widget.descriptor.fourCC,
       deviceName: widget.device.name,
       deviceId: widget.device.id.id,
+      hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
       start: now.millisecondsSinceEpoch,
       startDateTime: now,
       sport: widget.descriptor.defaultSport,
-      powerFactor: powerFactor,
-      calorieFactor: calorieFactor,
-      hrCalorieFactor: hrCalorieFactor,
+      powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
+      calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
+      hrCalorieFactor: _fitnessEquipment?.hrCalorieFactor ?? 1.0,
+      hrmCalorieFactor: _fitnessEquipment?.hrmCalorieFactor ?? 1.0,
       hrBasedCalories: _hrBasedCalorieCounting,
       timeZone: await getTimeZone(),
     );
@@ -374,7 +373,7 @@ class RecordingState extends State<RecordingScreen> {
     _chartTouchInteractionIndex = -1;
   }
 
-  Future<void> _initializeHeartRateMonitor() async {
+  Future<String> _initializeHeartRateMonitor() async {
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     final discovered = (await _heartRateMonitor?.discover()) ?? false;
     if (discovered) {
@@ -382,7 +381,6 @@ class RecordingState extends State<RecordingScreen> {
           (_fitnessEquipment?.heartRateMonitor?.device?.id.id ?? notAvailable)) {
         _fitnessEquipment?.setHeartRateMonitor(_heartRateMonitor!);
       }
-      _heartRateMonitor?.refreshFactors();
       _heartRateMonitor?.attach().then((_) async {
         if (_heartRateMonitor?.subscription != null) {
           _heartRateMonitor?.cancelSubscription();
@@ -398,7 +396,11 @@ class RecordingState extends State<RecordingScreen> {
           });
         });
       });
+
+      return _heartRateMonitor?.device?.id.id ?? "";
     }
+
+    return "";
   }
 
   @override
@@ -423,10 +425,10 @@ class RecordingState extends State<RecordingScreen> {
       lastEquipmentIdTagPrefix + PreferencesSpec.sport2Sport(widget.sport),
       widget.device.id.id,
     );
-    widget.descriptor.refreshTuning(widget.device.id.id);
     if (Get.isRegistered<FitnessEquipment>()) {
       _fitnessEquipment = Get.find<FitnessEquipment>();
       _fitnessEquipment?.descriptor = widget.descriptor;
+      _fitnessEquipment?.refreshFactors();
     } else {
       _fitnessEquipment = Get.put<FitnessEquipment>(
         FitnessEquipment(descriptor: widget.descriptor, device: widget.device),
@@ -1575,7 +1577,13 @@ class RecordingState extends State<RecordingScreen> {
                         isDismissible: false,
                         enableDrag: false,
                       );
-                      await _initializeHeartRateMonitor();
+                      String hrmId = await _initializeHeartRateMonitor();
+                      if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
+                        _activity!.hrmId = hrmId;
+                        _activity!.hrmCalorieFactor =
+                            await _database.calorieFactorValue(hrmId, true);
+                        _database.activityDao.updateActivity(_activity!);
+                      }
                     },
                   ),
                   _themeManager.getBlueFab(

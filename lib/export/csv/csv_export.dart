@@ -35,6 +35,8 @@ class CsvExport extends ActivityExport {
     _sb.writeln("$powerFactorTag,${exportModel.activity.powerFactor},");
     _sb.writeln("$calorieFactorTag,${exportModel.activity.calorieFactor},");
     _sb.writeln("$hrCalorieFactorTag,${exportModel.activity.hrCalorieFactor},");
+    _sb.writeln("$hrmCalorieFactorTag,${exportModel.activity.hrmCalorieFactor},");
+    _sb.writeln("$hrmIdTag,${exportModel.activity.hrmId},");
     _sb.writeln("$hrBasedCaloriesTag,${exportModel.activity.hrBasedCalories},");
     _sb.writeln("$timeZoneTag,${exportModel.activity.timeZone},");
     _sb.writeln("$suuntoUploadedTag,${exportModel.activity.suuntoUploaded},");

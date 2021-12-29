@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
+import '../../persistence/models/activity.dart';
 import '../../persistence/models/calorie_tune.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class CalorieOverrideBottomSheet extends StatefulWidget {
-  final String deviceId;
-  final double oldCalories;
-  final bool hrBased;
+  late final String deviceId;
+  late final double oldCalories;
+  late final bool hrBased;
 
-  const CalorieOverrideBottomSheet(
-      {Key? key, required this.deviceId, required this.oldCalories, required this.hrBased})
-      : super(key: key);
+  CalorieOverrideBottomSheet({Key? key, required Activity activity}) : super(key: key) {
+    deviceId = activity.deviceId;
+    oldCalories = activity.calories.toDouble();
+    hrBased = activity.hrBasedCalories;
+  }
 
   @override
   CalorieOverrideBottomSheetState createState() => CalorieOverrideBottomSheetState();

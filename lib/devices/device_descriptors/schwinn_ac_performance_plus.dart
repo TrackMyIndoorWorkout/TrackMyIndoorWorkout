@@ -4,6 +4,8 @@ import '../device_map.dart';
 import 'device_descriptor.dart';
 
 class SchwinnACPerformancePlus extends DeviceDescriptor {
+  static const double extraCalorieFactor = 3.9;
+
   SchwinnACPerformancePlus()
       : super(
           defaultSport: ActivityType.ride,
@@ -18,7 +20,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           dataServiceId: null,
           dataCharacteristicId: null,
           antPlus: true,
-          calorieFactorDefault: 3.9,
+          canMeasureCalories: false,
         );
 
   @override

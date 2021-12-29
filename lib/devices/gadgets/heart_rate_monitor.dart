@@ -78,12 +78,7 @@ class HeartRateMonitor extends ComplexSensor {
   }
 
   double? getCalories(List<int> data) {
-    var calories = _caloriesMetric?.getMeasurementValue(data);
-    if (calories == null || !extendTuning) {
-      return calories;
-    }
-
-    return calories * calorieFactor;
+    return _caloriesMetric?.getMeasurementValue(data);
   }
 
   @override

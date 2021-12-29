@@ -32,6 +32,8 @@ part 'database.g.dart'; // the generated code is in that file
   WorkoutSummary,
 ])
 abstract class AppDatabase extends FloorDatabase {
+  static bool additional15to16Migration = false;
+
   ActivityDao get activityDao;
   RecordDao get recordDao;
   DeviceUsageDao get deviceUsageDao;
@@ -77,32 +79,28 @@ abstract class AppDatabase extends FloorDatabase {
     return await rowCount(calorieTuneTableName, deviceId, extraPredicate: extraPredicate) > 0;
   }
 
-  Future<double> calorieFactor(String deviceId, DeviceDescriptor descriptor) async {
-    if (!await hasCalorieTune(deviceId, false)) {
-      return descriptor.calorieFactorDefault;
-    }
-
-    final calorieTune = await calorieTuneDao.findCalorieTuneByMac(deviceId).first;
-
-    return calorieTune?.calorieFactor ?? descriptor.calorieFactorDefault;
-  }
-
-  Future<double> hrCalorieFactor(String deviceId, DeviceDescriptor descriptor) async {
-    if (!await hasCalorieTune(deviceId, true)) {
-      return descriptor.hrCalorieFactorDefault;
-    }
-
-    final calorieTune = await calorieTuneDao.findHrCalorieTuneByMac(deviceId).first;
-
-    return calorieTune?.calorieFactor ?? descriptor.calorieFactorDefault;
-  }
-
   Future<CalorieTune?> findCalorieTuneByMac(String mac, bool hrBased) async {
+    if (!await hasCalorieTune(mac, true)) {
+      return null;
+    }
+
     if (hrBased) {
       return await calorieTuneDao.findHrCalorieTuneByMac(mac).first;
     } else {
       return await calorieTuneDao.findCalorieTuneByMac(mac).first;
     }
+  }
+
+  Future<double> calorieFactorValue(String deviceId, bool hrBased) async {
+    return (await findCalorieTuneByMac(deviceId, hrBased))?.calorieFactor ?? 1.0;
+  }
+
+  Future<Tuple3<double, double, double>> getFactors(String deviceId) async {
+    return Tuple3(
+      await powerFactor(deviceId),
+      await calorieFactorValue(deviceId, false),
+      await calorieFactorValue(deviceId, true),
+    );
   }
 
   Future<bool> hasLeaderboardData() async {
@@ -139,6 +137,20 @@ abstract class AppDatabase extends FloorDatabase {
         .map((row) =>
             Tuple2<String, String>(row['device_id'] as String, row['device_name'] as String))
         .toList(growable: false);
+  }
+
+  /// Correct those activity calorieFactors where the device doesn't supply
+  /// calorie data and it has to be calculated from watts. From now on the
+  /// in those cases a 4.0 (earlier 3.6) will be implicit.
+  Future<void> correctCalorieFactors() async {
+    AppDatabase.additional15to16Migration = false;
+    for (var activity in await activityDao.findAllActivities()) {
+      final deviceDescriptor = activity.deviceDescriptor();
+      if (!deviceDescriptor.canMeasureCalories && activity.calorieFactor > 1.0) {
+        activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
+        activityDao.updateActivity(activity);
+      }
+    }
   }
 }
 
@@ -256,4 +268,13 @@ final migration14to15 = Migration(14, 15, (database) async {
       "ALTER TABLE `$activitiesTableName` ADD COLUMN `hr_based_calories` INTEGER NOT NULL DEFAULT $hrBaseCalories");
   await database.execute(
       "ALTER TABLE `$calorieTuneTableName` ADD COLUMN `hr_based` INTEGER NOT NULL DEFAULT 0");
+});
+
+final migration15to16 = Migration(15, 16, (database) async {
+  await database
+      .execute("ALTER TABLE `$activitiesTableName` ADD COLUMN `hrm_id` TEXT NOT NULL DEFAULT ''");
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `hrm_calorie_factor` REAL NOT NULL DEFAULT 1.0");
+
+  AppDatabase.additional15to16Migration = true;
 });

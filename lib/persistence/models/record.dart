@@ -172,7 +172,7 @@ class RecordWithSport extends Record {
           caloriesPerMinute: caloriesPerMinute,
         );
 
-  static getBlank(String sport, bool uxDebug, Random random) {
+  static RecordWithSport getBlank(String sport, bool uxDebug, Random random) {
     return RecordWithSport(
       timeStamp: 0,
       distance: 0.0,
@@ -187,7 +187,7 @@ class RecordWithSport extends Record {
     );
   }
 
-  static getRandom(String sport, Random random) {
+  static RecordWithSport getRandom(String sport, Random random) {
     return RecordWithSport(
       timeStamp: DateTime.now().millisecondsSinceEpoch,
       calories: random.nextInt(1500),

@@ -88,7 +88,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
       migration12to13,
       migration13to14,
       migration14to15,
+      migration15to16,
     ]).build();
+    if (AppDatabase.additional15to16Migration) {
+      await database.correctCalorieFactors();
+    }
+
     Get.put<AppDatabase>(database, permanent: true);
   }
 

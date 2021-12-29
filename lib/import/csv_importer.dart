@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
@@ -210,9 +211,11 @@ class CSVImporter {
     }
 
     final prefService = Get.find<BasePrefService>();
+    final database = Get.find<AppDatabase>();
 
     var deviceName = "";
     var deviceId = mPowerImportDeviceId;
+    var hrmId = "";
     var startTime = 0;
     var endTime = 0;
     var calories = 0;
@@ -222,6 +225,7 @@ class CSVImporter {
     var sport = ActivityType.ride;
     var calorieFactor = 1.0;
     var hrCalorieFactor = 1.0;
+    var hrmCalorieFactor = 1.0;
     var hrBasedCalories = false;
     var powerFactor = 1.0;
     var timeZone = await getTimeZone();
@@ -368,6 +372,26 @@ class CSVImporter {
 
         _linePointer++;
 
+        final hrmCalorieFactorLine = _lines[_linePointer].split(",");
+        if (hrmCalorieFactorLine[0].trim() != hrmCalorieFactorTag) {
+          message = "Couldn't parse $hrmCalorieFactorTag";
+          return null;
+        }
+
+        hrmCalorieFactor = double.tryParse(hrmCalorieFactorLine[1]) ?? 1.0;
+
+        _linePointer++;
+
+        final hrmIdLine = _lines[_linePointer].split(",");
+        if (hrmIdLine[0].trim() != hrmIdTag) {
+          message = "Couldn't parse $hrmIdTag";
+          return null;
+        }
+
+        hrmId = hrmIdLine[1].trim();
+
+        _linePointer++;
+
         final hrBasedCaloriesLine = _lines[_linePointer].split(",");
         if (hrBasedCaloriesLine[0].trim() != hrBasedCaloriesTag) {
           message = "Couldn't parse $hrBasedCaloriesTag";
@@ -480,15 +504,16 @@ class CSVImporter {
       }
     } else {
       DeviceDescriptor device = deviceMap[schwinnACPerfPlusFourCC]!;
-      device.refreshTuning(deviceId);
+      final factors = await database.getFactors(deviceId);
       deviceName = device.namePrefixes[0];
       fourCC = device.fourCC;
       sport = device.defaultSport;
-      calorieFactor = device.calorieFactor;
-      hrCalorieFactor = device.hrCalorieFactor;
+      calorieFactor = factors.item2 *
+          (device.canMeasureCalories ? 1.0 : DeviceDescriptor.powerCalorieFactorDefault);
+      hrCalorieFactor = factors.item3;
       hrBasedCalories = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
           useHeartRateBasedCalorieCountingDefault;
-      powerFactor = device.powerFactor;
+      powerFactor = factors.item1;
       startTime = start!.millisecondsSinceEpoch;
       endTime = start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch;
     }
@@ -520,6 +545,7 @@ class CSVImporter {
     var activity = Activity(
       deviceName: deviceName,
       deviceId: deviceId,
+      hrmId: hrmId,
       start: startTime,
       end: endTime,
       distance: totalDistance,
@@ -532,6 +558,7 @@ class CSVImporter {
       sport: sport,
       calorieFactor: calorieFactor,
       hrCalorieFactor: hrCalorieFactor,
+      hrmCalorieFactor: hrmCalorieFactor,
       hrBasedCalories: hrBasedCalories,
       powerFactor: powerFactor,
       timeZone: timeZone,
@@ -547,7 +574,6 @@ class CSVImporter {
     );
 
     final extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
-    final database = Get.find<AppDatabase>();
     final id = await database.activityDao.insertActivity(activity);
     activity.id = id;
 
@@ -683,7 +709,12 @@ class CSVImporter {
                 (1000 * 60) *
                 hrCalorieFactor;
           } else {
-            dEnergy = power * milliSecondsPerRecord / 1000 * jToKCal * calorieFactor;
+            dEnergy = power *
+                milliSecondsPerRecord /
+                1000 *
+                jToKCal *
+                calorieFactor *
+                SchwinnACPerformancePlus.extraCalorieFactor;
           }
           energy += dEnergy;
           await database.recordDao.insertRecord(record);

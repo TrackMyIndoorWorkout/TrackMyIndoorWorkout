@@ -1,5 +1,6 @@
 import '../export/fit/fit_manufacturer.dart';
 import '../utils/constants.dart';
+import 'device_descriptors/cross_trainer_device_descriptor.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
 import 'device_descriptors/precor_spinner_chrono_power.dart';
@@ -21,7 +22,8 @@ const genericFTMSKayakFourCC = "GKay";
 const genericFTMSCanoeFourCC = "GCan";
 const genericFTMSRowerFourCC = "GRow";
 const genericFTMSSwimFourCC = "GSwi";
-const genericFTMSEllipticalFourCC = "GXtr";
+const genericFTMSEllipticalFourCC = "GEll";
+const genericFTMSCrossTrainerFourCC = "GXtr";
 
 Map<String, DeviceDescriptor> deviceMap = {
   precorSpinnerChronoPowerFourCC: PrecorSpinnerChronoPower(),
@@ -33,7 +35,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturerPrefix: "Nautilus",
     manufacturerFitId: nautilusFitId,
     model: "IC BIKE",
-    calorieFactorDefault: 3.60,
+    canMeasureCalories: false,
   ),
   bowflexC7BikeFourCC: IndoorBikeDeviceDescriptor(
     fourCC: bowflexC7BikeFourCC,
@@ -43,7 +45,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturerPrefix: "Nautilus",
     manufacturerFitId: nautilusFitId,
     model: "Bowflex C7",
-    calorieFactorDefault: 3.60,
+    canMeasureCalories: false,
   ),
   schwinnUprightBikeFourCC: IndoorBikeDeviceDescriptor(
     fourCC: schwinnUprightBikeFourCC,
@@ -53,7 +55,6 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturerPrefix: "Nautilus",
     manufacturerFitId: nautilusFitId,
     model: "SCH BIKE",
-    calorieFactorDefault: 1.00,
   ),
   schwinnACPerfPlusFourCC: SchwinnACPerformancePlus(),
   kayakProGenesisPortFourCC: RowerDeviceDescriptor(
@@ -143,7 +144,16 @@ Map<String, DeviceDescriptor> deviceMap = {
     isMultiSport: false,
     fourCC: genericFTMSEllipticalFourCC,
     vendorName: "Unknown",
-    modelName: "Generic Cross Trainer / Elliptical",
+    modelName: "Generic Cross Elliptical",
+    namePrefixes: ["FTMS Elliptical"],
+    manufacturerPrefix: "Unknown",
+    manufacturerFitId: stravaFitId,
+    model: "Generic Elliptical",
+  ),
+  genericFTMSCrossTrainerFourCC: CrossTrainerDeviceDescriptor(
+    fourCC: genericFTMSCrossTrainerFourCC,
+    vendorName: "Unknown",
+    modelName: "Generic Cross Trainer",
     namePrefixes: ["FTMS Cross Trainer"],
     manufacturerPrefix: "Unknown",
     manufacturerFitId: stravaFitId,

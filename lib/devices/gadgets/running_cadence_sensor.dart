@@ -70,12 +70,7 @@ class RunningCadenceSensor extends ComplexSensor {
   }
 
   double? getSpeed(List<int> data) {
-    var speed = speedMetric?.getMeasurementValue(data);
-    if (speed == null || !extendTuning) {
-      return speed;
-    }
-
-    return speed * powerFactor;
+    return speedMetric?.getMeasurementValue(data);
   }
 
   double? getCadence(List<int> data) {
@@ -83,12 +78,7 @@ class RunningCadenceSensor extends ComplexSensor {
   }
 
   double? getDistance(List<int> data) {
-    var distance = distanceMetric?.getMeasurementValue(data);
-    if (distance == null || !extendTuning) {
-      return distance;
-    }
-
-    return distance * powerFactor;
+    return distanceMetric?.getMeasurementValue(data);
   }
 
   @override

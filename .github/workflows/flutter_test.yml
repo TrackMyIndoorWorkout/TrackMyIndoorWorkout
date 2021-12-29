@@ -37,6 +37,6 @@ jobs:
       - name: Analyze files
         run: flutter analyze .
       - name: Run the tests
-        run: flutter test
+        run: flutter test --dart-define=testing_mode=true
       #- name: Build App Bundle (debug)
       #  run: flutter build appbundle

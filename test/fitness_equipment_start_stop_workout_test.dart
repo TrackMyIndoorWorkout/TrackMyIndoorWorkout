@@ -51,6 +51,7 @@ void main() {
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
+          hrmId: "",
           start: oneSecondAgo.millisecondsSinceEpoch,
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
@@ -58,6 +59,7 @@ void main() {
           powerFactor: 1.0,
           calorieFactor: 1.0,
           hrCalorieFactor: 1.0,
+          hrmCalorieFactor: 1.0,
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
@@ -65,7 +67,8 @@ void main() {
         equipment.setActivity(activity);
         equipment.lastRecord =
             Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, calories: 0);
-        equipment.processRecord(Record(calories: calories));
+        equipment
+            .processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: calories));
 
         expect(equipment.lastPositiveCalories, closeTo(calories, eps));
 

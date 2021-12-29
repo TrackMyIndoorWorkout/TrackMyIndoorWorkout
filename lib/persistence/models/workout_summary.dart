@@ -26,9 +26,9 @@ class WorkoutSummary {
   late double speed; // km/h
   final String sport;
   @ColumnInfo(name: 'power_factor')
-  final double powerFactor;
+  final double powerFactor; // Unused
   @ColumnInfo(name: 'calorie_factor')
-  final double calorieFactor;
+  final double calorieFactor; // Unused
 
   @ignore
   late DateTime startDateTime;
@@ -44,8 +44,8 @@ class WorkoutSummary {
     required this.distance,
     required this.elapsed,
     required this.sport,
-    required this.powerFactor,
-    required this.calorieFactor,
+    this.powerFactor = 1.0,
+    this.calorieFactor = 1.0,
   }) {
     startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
     speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.ms2kmh : 0.0;

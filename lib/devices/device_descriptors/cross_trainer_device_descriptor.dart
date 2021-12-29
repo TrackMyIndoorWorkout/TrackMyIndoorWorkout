@@ -16,7 +16,6 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
     dataCharacteristicId = crossTrainerUuid,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactorDefault = 1.0,
   }) : super(
           defaultSport: ActivityType.elliptical,
           isMultiSport: false,
@@ -31,7 +30,6 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactorDefault: calorieFactorDefault,
         );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.cross_trainer_data.xml
@@ -57,7 +55,7 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   @override
-  RecordWithSport stubRecord(List<int> data) {
+  RecordWithSport? stubRecord(List<int> data) {
     super.stubRecord(data);
     return RecordWithSport(
       distance: getDistance(data),

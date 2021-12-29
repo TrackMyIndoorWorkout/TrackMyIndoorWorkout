@@ -45,7 +45,7 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         );
 
   @override
-  RecordWithSport stubRecord(List<int> data) {
+  RecordWithSport? stubRecord(List<int> data) {
     return RecordWithSport(
       distance: getDistance(data),
       elapsed: getTime(data)?.toInt(),
