@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import '../../devices/gadgets/device_base.dart';
@@ -59,7 +60,13 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
 
     if (!device.discovered) return notAvailable;
 
-    return await _readBatteryLevelCore(device.services);
+    try {
+      return await _readBatteryLevelCore(device.services);
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      return notAvailable;
+    }
   }
 
   Future<void> _readBatteryLevels() async {
