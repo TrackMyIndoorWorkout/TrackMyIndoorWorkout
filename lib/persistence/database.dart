@@ -144,11 +144,23 @@ abstract class AppDatabase extends FloorDatabase {
   /// in those cases a 4.0 (earlier 3.6) will be implicit.
   Future<void> correctCalorieFactors() async {
     AppDatabase.additional15to16Migration = false;
+    Map<String, bool> noCalorieDevices = {};
     for (var activity in await activityDao.findAllActivities()) {
       final deviceDescriptor = activity.deviceDescriptor();
-      if (!deviceDescriptor.canMeasureCalories && activity.calorieFactor > 1.0) {
-        activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
-        activityDao.updateActivity(activity);
+      if (!deviceDescriptor.canMeasureCalories) {
+        noCalorieDevices.assign(activity.deviceId, true);
+        if (activity.calorieFactor > 1.0) {
+          activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
+          activityDao.updateActivity(activity);
+        }
+      }
+    }
+
+    for (var calorieTune in await calorieTuneDao.findAllCalorieTunes()) {
+      if (noCalorieDevices.containsKey(calorieTune.mac) ||
+          calorieTune.calorieFactor > DeviceDescriptor.oldPowerCalorieFactorDefault - 1.0) {
+        calorieTune.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
+        calorieTuneDao.updateCalorieTune(calorieTune);
       }
     }
   }
