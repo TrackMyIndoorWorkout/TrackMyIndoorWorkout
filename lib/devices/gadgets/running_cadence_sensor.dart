@@ -14,7 +14,7 @@ class RunningCadenceSensor extends ComplexSensor {
   LongMetricDescriptor? distanceMetric;
 
   RunningCadenceSensor(device, powerFactor)
-      : super(RUNNING_CADENCE_SERVICE_ID, RUNNING_CADENCE_MEASUREMENT_ID, device);
+      : super(runningCadenceServiceUuid, runningCadenceMeasurementUuid, device);
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml
   @override
@@ -57,7 +57,7 @@ class RunningCadenceSensor extends ComplexSensor {
   @override
   RecordWithSport processMeasurement(List<int> data) {
     if (!canMeasurementProcessed(data)) {
-      return RecordWithSport.getBlank(ActivityType.Run, uxDebug, random);
+      return RecordWithSport.getBlank(ActivityType.run, uxDebug, random);
     }
 
     return RecordWithSport(
@@ -65,17 +65,12 @@ class RunningCadenceSensor extends ComplexSensor {
       distance: getDistance(data),
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
-      sport: ActivityType.Run,
+      sport: ActivityType.run,
     );
   }
 
   double? getSpeed(List<int> data) {
-    var speed = speedMetric?.getMeasurementValue(data);
-    if (speed == null || !extendTuning) {
-      return speed;
-    }
-
-    return speed * powerFactor;
+    return speedMetric?.getMeasurementValue(data);
   }
 
   double? getCadence(List<int> data) {
@@ -83,12 +78,7 @@ class RunningCadenceSensor extends ComplexSensor {
   }
 
   double? getDistance(List<int> data) {
-    var distance = distanceMetric?.getMeasurementValue(data);
-    if (distance == null || !extendTuning) {
-      return distance;
-    }
-
-    return distance * powerFactor;
+    return distanceMetric?.getMeasurementValue(data);
   }
 
   @override

@@ -61,20 +61,20 @@ class StatisticsAccumulator {
   }) {
     powerSum = 0;
     powerCount = 0;
-    maxPower = MAX_INIT;
-    minPower = MIN_INIT;
+    maxPower = maxInit;
+    minPower = minInit;
     speedSum = 0.0;
     speedCount = 0;
-    maxSpeed = MAX_INIT.toDouble();
-    minSpeed = MIN_INIT.toDouble();
+    maxSpeed = maxInit.toDouble();
+    minSpeed = minInit.toDouble();
     heartRateSum = 0;
     heartRateCount = 0;
-    maxHeartRate = MAX_INIT;
-    minHeartRate = MIN_INIT;
+    maxHeartRate = maxInit;
+    minHeartRate = minInit;
     cadenceSum = 0;
     cadenceCount = 0;
-    maxCadence = MAX_INIT;
-    minCadence = MIN_INIT;
+    maxCadence = maxInit;
+    minCadence = minInit;
   }
 
   processExportRecord(ExportRecord exportRecord) {
@@ -93,7 +93,7 @@ class StatisticsAccumulator {
       }
     }
 
-    if ((exportRecord.record.speed ?? 0.0) > EPS) {
+    if ((exportRecord.record.speed ?? 0.0) > eps) {
       if (calculateAvgSpeed) {
         speedSum += exportRecord.record.speed!;
         speedCount++;

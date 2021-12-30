@@ -5,21 +5,21 @@ import 'package:pref/pref.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
 import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/preferences.dart';
+import 'package:track_my_indoor_exercise/preferences/generic.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
-const SMALL_REPETITION = 10;
-const REPETITION = 50;
+const smallRepetition = 10;
+const repetition = 50;
 
-const SPORTS = [
-  ActivityType.Ride,
-  ActivityType.Run,
-  ActivityType.Kayaking,
-  ActivityType.Canoeing,
-  ActivityType.Rowing,
-  ActivityType.Swim,
-  ActivityType.Elliptical,
+const sports = [
+  ActivityType.ride,
+  ActivityType.run,
+  ActivityType.kayaking,
+  ActivityType.canoeing,
+  ActivityType.rowing,
+  ActivityType.swim,
+  ActivityType.elliptical,
 ];
 
 extension RangeExtension on int {
@@ -36,7 +36,7 @@ List<double> getRandomDoubles(int count, double max, Random source) {
 }
 
 String getRandomSport() {
-  return SPORTS[Random().nextInt(SPORTS.length)];
+  return sports[Random().nextInt(sports.length)];
 }
 
 class ExportModelForTests extends ExportModel {
@@ -58,17 +58,21 @@ class ExportModelForTests extends ExportModel {
               Activity(
                 deviceName: "Test Dummy",
                 deviceId: "CAFEBAEBE",
+                hrmId: "",
                 start: 0,
                 fourCC: "SAP+",
-                sport: ActivityType.Ride,
+                sport: ActivityType.ride,
                 powerFactor: 1.0,
                 calorieFactor: 1.0,
+                hrCalorieFactor: 1.0,
+                hrmCalorieFactor: 1.0,
+                hrBasedCalories: false,
                 timeZone: "America/Los_Angeles",
               ),
           rawData: rawData ?? false,
           descriptor: descriptor ?? deviceMap["SAP+"]!,
           author: author ?? 'Csaba Consulting',
-          name: name ?? APP_NAME,
+          name: name ?? appName,
           swVersionMajor: swVersionMajor ?? "1",
           swVersionMinor: swVersionMinor ?? "0",
           buildVersionMajor: buildVersionMajor ?? "1",
@@ -83,6 +87,6 @@ class ExportModelForTests extends ExportModel {
 Future<void> initPrefServiceForTest() async {
   var prefDefaults = await getPrefDefaults();
   final prefService =
-      await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
+      await PrefServiceShared.init(prefix: preferencesPrefix, defaults: prefDefaults);
   Get.put<BasePrefService>(prefService);
 }

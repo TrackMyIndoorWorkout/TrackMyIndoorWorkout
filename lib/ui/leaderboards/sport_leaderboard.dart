@@ -8,7 +8,9 @@ import 'package:pref/pref.dart';
 import '../../utils/constants.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/distance_resolution.dart';
+import '../../preferences/generic.dart';
+import '../../preferences/unit_system.dart';
 import '../../utils/theme_manager.dart';
 
 class SportLeaderboardScreen extends StatefulWidget {
@@ -22,8 +24,8 @@ class SportLeaderboardScreen extends StatefulWidget {
 
 class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   final AppDatabase _database = Get.find<AppDatabase>();
-  bool _si = UNIT_SYSTEM_DEFAULT;
-  bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
+  bool _si = unitSystemDefault;
+  bool _highRes = distanceResolutionDefault;
   int _editCount = 0;
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
@@ -34,11 +36,11 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   @override
   void initState() {
     super.initState();
-    _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
-        DISTANCE_RESOLUTION_DEFAULT;
+    _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _highRes =
+        Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _textStyle = Get.textTheme.headline5!
-        .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
+        .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());

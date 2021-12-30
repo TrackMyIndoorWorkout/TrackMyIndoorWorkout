@@ -18,20 +18,20 @@ class AdvertisementDigest {
   });
 
   bool isHeartRateMonitor() {
-    return serviceUuids.contains(HEART_RATE_SERVICE_ID);
+    return serviceUuids.contains(heartRateServiceUuid);
   }
 
   String fitnessMachineSport() {
-    if (machineType == MachineType.IndoorBike) {
-      return ActivityType.Ride;
-    } else if (machineType == MachineType.Treadmill) {
-      return ActivityType.Run;
-    } else if (machineType == MachineType.Rower) {
-      return ActivityType.Kayaking;
-    } else if (machineType == MachineType.CrossTrainer) {
-      return ActivityType.Elliptical;
+    if (machineType == MachineType.indoorBike) {
+      return ActivityType.ride;
+    } else if (machineType == MachineType.treadmill) {
+      return ActivityType.run;
+    } else if (machineType == MachineType.rower) {
+      return ActivityType.kayaking;
+    } else if (machineType == MachineType.crossTrainer) {
+      return ActivityType.elliptical;
     }
 
-    return ActivityType.Ride;
+    return ActivityType.ride;
   }
 }

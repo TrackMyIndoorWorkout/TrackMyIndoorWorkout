@@ -11,7 +11,7 @@ void main() {
   test('FitLap has the expected global message number', () async {
     final lap = FitLap(0);
 
-    expect(lap.globalMessageNumber, FitMessage.Lap);
+    expect(lap.globalMessageNumber, FitMessage.lap);
   });
 
   test('FitLap data has the expected length', () async {

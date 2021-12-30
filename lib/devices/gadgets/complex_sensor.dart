@@ -3,28 +3,25 @@ import 'dart:math';
 
 import 'package:rxdart/rxdart.dart';
 import '../../persistence/models/record.dart';
-import '../../persistence/preferences.dart';
 import '../../utils/delays.dart';
 import 'sensor_base.dart';
 
 typedef ComplexMetricProcessingFunction = Function(RecordWithSport record);
 
 abstract class ComplexSensor extends SensorBase {
-  late bool extendTuning;
   late Random random;
   RecordWithSport? record;
 
   ComplexSensor(serviceId, characteristicsId, device)
       : super(serviceId, characteristicsId, device) {
     random = Random();
-    extendTuning = prefService.get<bool>(EXTEND_TUNING_TAG) ?? EXTEND_TUNING_DEFAULT;
   }
 
   Stream<RecordWithSport> get _listenToData async* {
     if (!attached || characteristic == null) return;
 
-    await for (var byteString in characteristic!.value
-        .throttleTime(const Duration(milliseconds: SENSOR_DATA_THRESHOLD))) {
+    await for (var byteString
+        in characteristic!.value.throttleTime(const Duration(milliseconds: sensorDataThreshold))) {
       if (!canMeasurementProcessed(byteString)) continue;
 
       record = processMeasurement(byteString);

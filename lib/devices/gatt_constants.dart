@@ -1,52 +1,52 @@
-const DEVICE_INFORMATION_ID = '180a';
-const FITNESS_MACHINE_ID = '1826';
-const TREADMILL_ID = '2acd';
-const INDOOR_BIKE_ID = '2ad2';
-const ROWER_DEVICE_ID = '2ad1';
-const CROSS_TRAINER_ID = '2ace';
-const DEVICE_NAME_ID = '2a00';
-const APPEARANCE_ID = '2a01';
-const MODEL_NUMBER_ID = '2a24';
-const SERIAL_NUMBER_ID = '2a25';
-const FIRMWARE_REVISION_ID = '2a26';
-const HARDWARE_REVISION_ID = '2a27';
-const SOFTWARE_REVISION_ID = '2a28';
-const MANUFACTURER_NAME_ID = '2a29';
+const deviceInformationUuid = '180a';
+const fitnessMachineUuid = '1826';
+const treadmillUuid = '2acd';
+const indoorBikeUuid = '2ad2';
+const rowerDeviceUuid = '2ad1';
+const crossTrainerUuid = '2ace';
+const deviceNameUuid = '2a00';
+const appearanceUuid = '2a01';
+const modelNumberUuid = '2a24';
+const serialNumberUuid = '2a25';
+const firmwareRevisionUuid = '2a26';
+const hardwareRevisionUuid = '2a27';
+const softwareRevisionUuid = '2a28';
+const manufacturerNameUuid = '2a29';
 
-const FTMS_SPORT_CHARACTERISTICS = [TREADMILL_ID, INDOOR_BIKE_ID, ROWER_DEVICE_ID];
+const ftmsSportCharacteristics = [treadmillUuid, indoorBikeUuid, rowerDeviceUuid];
 
-const BATTERY_SERVICE_ID = '180f';
-const BATTERY_LEVEL_ID = '2a19';
+const batteryServiceUuid = '180f';
+const batteryLevelUuid = '2a19';
 
-const HEART_RATE_SERVICE_ID = '180d';
-const HEART_RATE_MEASUREMENT_ID = '2a37';
+const heartRateServiceUuid = '180d';
+const heartRateMeasurementUuid = '2a37';
 
-const CYCLING_CADENCE_SERVICE_ID = '1816';
-const CYCLING_CADENCE_MEASUREMENT_ID = '2a5b';
+const cyclingCadenceServiceUuid = '1816';
+const cyclingCadenceMeasurementUuid = '2a5b';
 
-const RUNNING_CADENCE_SERVICE_ID = '1814';
-const RUNNING_CADENCE_MEASUREMENT_ID = '2a53';
+const runningCadenceServiceUuid = '1814';
+const runningCadenceMeasurementUuid = '2a53';
 
-const PRECOR_SERVICE_ID = 'ee07';
-const PRECOR_MEASUREMENT_ID = 'e01d';
+const precorServiceUuid = 'ee07';
+const precorMeasurementUuid = 'e01d';
 
-const USER_DATA_SERVICE = '181c';
-const WEIGHT_CHARACTERISTIC = '2a98';
-const WEIGHT_SUCCESS_OPCODE = 0x13;
-const FITNESS_MACHINE_STATUS = '2ada';
-const FITNESS_MACHINE_CONTROL_POINT = '2ad9';
-const SPIN_DOWN_OPCODE = 0x13;
-const SPIN_DOWN_STATUS = 0x14;
-const SPIN_DOWN_START_COMMAND = 0x01;
-const CONTROL_OPCODE = 0x80;
+const userDataServiceUuid = '181c';
+const weightCharacteristicUuid = '2a98';
+const weightSuccessOpcode = 0x13;
+const fitnessMachineStatusUuid = '2ada';
+const fitnessMachineControlPointUuid = '2ad9';
+const spinDownOpcode = 0x13;
+const spinDownStatus = 0x14;
+const spinDownStartCommand = 0x01;
+const controlOpcode = 0x80;
 // Response codes, FTMS Table 4.24
-const SUCCESS_RESPONSE = 0x01;
-const OPCODE_NOT_SUPPORTED = 0x02;
-const INVALID_PARAMETER = 0x03;
-const OPERATION_FAILED = 0x04;
-const CONTROL_NOT_PERMITTED = 0x05;
+const successResponse = 0x01;
+const opcodeNotSupported = 0x02;
+const invalidParameter = 0x03;
+const operationFailed = 0x04;
+const controlNotPermitted = 0x05;
 // Spin Down statuses
-const SPIN_DOWN_STATUS_REQUESTED = 0x01;
-const SPIN_DOWN_STATUS_SUCCESS = 0x02;
-const SPIN_DOWN_STATUS_ERROR = 0x03;
-const SPIN_DOWN_STATUS_STOP_PEDALING = 0x04;
+const spinDownStatusRequested = 0x01;
+const spinDownStatusSuccess = 0x02;
+const spinDownStatusError = 0x03;
+const spinDownStatusStopPedaling = 0x04;

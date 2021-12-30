@@ -33,7 +33,7 @@ abstract class Upload {
   ) async {
     debugPrint('Starting to upload activity');
 
-    final postUri = Uri.parse(UPLOADS_ENDPOINT);
+    final postUri = Uri.parse(uploadsEndpoint);
     final persistenceValues = exporter.getPersistenceValues(activity, true);
     var request = http.MultipartRequest("POST", postUri);
     request.fields['data_type'] = exporter.fileExtension(true);
@@ -89,7 +89,7 @@ abstract class Upload {
         await database.activityDao.updateActivity(activity);
         debugPrint('id ${decodedResponse.id}');
 
-        final reqCheckUpgrade = '$UPLOADS_ENDPOINT/${decodedResponse.id}';
+        final reqCheckUpgrade = '$uploadsEndpoint/${decodedResponse.id}';
         final uri = Uri.parse(reqCheckUpgrade);
         String? reasonPhrase = StravaStatusText.processed;
         while (reasonPhrase == StravaStatusText.processed) {

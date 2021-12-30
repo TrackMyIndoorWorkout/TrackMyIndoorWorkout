@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
 import '../../persistence/models/record.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/stroke_rate_smoothing.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../gatt_constants.dart';
@@ -15,7 +15,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   ShortMetricDescriptor? strokeCountMetric;
   ShortMetricDescriptor? paceMetric;
 
-  int _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT;
+  int _strokeRateWindowSize = strokeRateSmoothingDefault;
   final ListQueue<int> _strokeRates = ListQueue<int>();
   int _strokeRateSum = 0;
 
@@ -28,11 +28,10 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
-    dataServiceId = FITNESS_MACHINE_ID,
-    dataCharacteristicId = ROWER_DEVICE_ID,
+    dataServiceId = fitnessMachineUuid,
+    dataCharacteristicId = rowerDeviceUuid,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactorDefault = 1.0,
     isMultiSport = true,
   }) : super(
           defaultSport: defaultSport,
@@ -48,7 +47,6 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactorDefault: calorieFactorDefault,
         );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
@@ -57,7 +55,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     super.processFlag(flag);
     final prefService = Get.find<BasePrefService>();
     _strokeRateWindowSize =
-        prefService.get<int>(STROKE_RATE_SMOOTHING_INT_TAG) ?? STROKE_RATE_SMOOTHING_DEFAULT;
+        prefService.get<int>(strokeRateSmoothingIntTag) ?? strokeRateSmoothingDefault;
 
     // KayakPro Compact: two flag bytes
     // 44 00101100 (stroke rate, stroke count), total distance, instant pace, instant power
@@ -79,7 +77,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   @override
-  RecordWithSport stubRecord(List<int> data) {
+  RecordWithSport? stubRecord(List<int> data) {
     super.stubRecord(data);
 
     final pace = getPace(data);
@@ -163,11 +161,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   double? getPace(List<int> data) {
-    var pace = paceMetric?.getMeasurementValue(data);
-    if (pace == null || !extendTuning) {
-      return pace;
-    }
-    return pace / powerFactor;
+    return paceMetric?.getMeasurementValue(data);
   }
 
   @override

@@ -1,8 +1,17 @@
+## 1.1.87
+
+* Fix: power based calorie counting factor won't interfere (skyrocket) the HR based calories
+* Fix: Default 4.0 power based calorie factor will be implicit and hidden
+  to make factors more uniform
+* Large code churn to get Continuous Integration going and preparation for contributions
+* GPLv3 license once the app will go open source
+* Recognize Bowflex C7 not as generic
+
 ## 1.1.86
 
-Update the check-mark and open icons immediately when Strava upload finishes
-(right now it requires the upload bottom shelf to be cloed and reopened).
-Fix activity timestamp problem of SUUNTO workout uploads.
+* Update the check-mark and open icons immediately when Strava upload finishes
+  (right now it requires the upload bottom shelf to be closed and reopened).
+* Fix activity timestamp problem of SUUNTO workout uploads.
 
 ## 1.1.85
 

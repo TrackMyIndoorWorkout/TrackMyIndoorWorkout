@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences_spec.dart';
+import '../../preferences/preferences_spec.dart';
 import '../../utils/constants.dart';
 import 'preferences_base.dart';
 
@@ -39,7 +39,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
       zonePreferences.addAll([
         PrefText(
           label: sport +
-              PreferencesSpec.THRESHOLD_CAPITAL +
+              PreferencesSpec.thresholdCapital +
               (prefSpec.metric == "speed" ? prefSpec.kmhTitle : prefSpec.fullTitle),
           pref: prefSpec.thresholdTag(sport),
           validator: (str) {
@@ -51,7 +51,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
           },
         ),
         PrefText(
-          label: "$sport ${prefSpec.title}${PreferencesSpec.ZONES_CAPITAL}",
+          label: "$sport ${prefSpec.title}${PreferencesSpec.zonesCapital}",
           pref: prefSpec.zonesTag(sport),
           validator: (str) {
             if (str == null || !isMonotoneIncreasingList(str)) {
@@ -64,10 +64,10 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
       ]);
     }
 
-    if (sport != ActivityType.Ride) {
+    if (sport != ActivityType.ride) {
       zonePreferences.addAll([
         PrefText(
-          label: sport + SLOW_SPEED_POSTFIX,
+          label: sport + slowSpeedPostfix,
           pref: PreferencesSpec.slowSpeedTag(sport),
           validator: (str) {
             if (str == null || !isNumber(str, 0.01, -1)) {

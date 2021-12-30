@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import '../../devices/gadgets/device_base.dart';
@@ -22,22 +23,22 @@ class BatteryStatusBottomSheet extends StatefulWidget {
 class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
-  String _hrmBatteryLevel = NOT_AVAILABLE;
-  String _batteryLevel = NOT_AVAILABLE;
+  String _hrmBatteryLevel = notAvailable;
+  String _batteryLevel = notAvailable;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
 
   Future<String> _readBatteryLevelCore(List<BluetoothService> services) async {
-    final batteryService = BluetoothDeviceEx.filterService(services, BATTERY_SERVICE_ID);
+    final batteryService = BluetoothDeviceEx.filterService(services, batteryServiceUuid);
     if (batteryService == null) {
-      return NOT_AVAILABLE;
+      return notAvailable;
     }
 
     final batteryLevel =
-        BluetoothDeviceEx.filterCharacteristic(batteryService.characteristics, BATTERY_LEVEL_ID);
+        BluetoothDeviceEx.filterCharacteristic(batteryService.characteristics, batteryLevelUuid);
     if (batteryLevel == null) {
-      return NOT_AVAILABLE;
+      return notAvailable;
     }
 
     final batteryLevelData = await batteryLevel.read();
@@ -45,21 +46,27 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   }
 
   Future<String> _readBatteryLevel(DeviceBase? device) async {
-    if (device == null || device.device == null) return NOT_AVAILABLE;
+    if (device == null || device.device == null) return notAvailable;
 
     if (!device.connected) {
       await device.connect();
     }
 
-    if (!device.connected) return NOT_AVAILABLE;
+    if (!device.connected) return notAvailable;
 
     if (!device.discovered) {
       await device.discover();
     }
 
-    if (!device.discovered) return NOT_AVAILABLE;
+    if (!device.discovered) return notAvailable;
 
-    return await _readBatteryLevelCore(device.services);
+    try {
+      return await _readBatteryLevelCore(device.services);
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      return notAvailable;
+    }
   }
 
   Future<void> _readBatteryLevels() async {
@@ -77,7 +84,7 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   void initState() {
     super.initState();
     _textStyle = Get.textTheme.headline3!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
     _sizeDefault = _textStyle.fontSize!;

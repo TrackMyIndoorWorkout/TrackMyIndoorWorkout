@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 
-import '../../persistence/preferences.dart';
+import '../../preferences/heart_rate_gap_workaround.dart';
+import '../../preferences/heart_rate_limiting.dart';
 import '../../utils/constants.dart';
 import '../activity_export.dart';
 import '../export_model.dart';
@@ -13,7 +14,7 @@ class TCXExport extends ActivityExport {
   TCXExport() : super(nonCompressedFileExtension: 'tcx', nonCompressedMimeType: 'text/xml');
 
   static String tcxSport(String sport) {
-    return sport == ActivityType.Ride || sport == ActivityType.Run ? sport : "Other";
+    return sport == ActivityType.ride || sport == ActivityType.run ? sport : "Other";
   }
 
   @override
@@ -122,8 +123,8 @@ class TCXExport extends ActivityExport {
     );
 
     if ((record.record.heartRate ?? 0) > 0 ||
-        heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND ||
-        heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
+        heartRateGapWorkaround == dataGapWorkaroundNoWorkaround ||
+        heartRateLimitingMethod == heartRateLimitingWriteZero) {
       addHeartRate(record.record.heartRate);
     }
 

@@ -5,9 +5,9 @@ import 'utils.dart';
 
 void main() {
   group("hydrate should initialize dt based on timeStamp:", () {
-    1.to(SMALL_REPETITION).forEach((input) {
+    1.to(smallRepetition).forEach((input) {
       final randomDateTime = mockDate();
-      for (final sport in SPORTS) {
+      for (final sport in sports) {
         test("$input -> $randomDateTime", () {
           var record =
               RecordWithSport(timeStamp: randomDateTime.millisecondsSinceEpoch, sport: sport);
@@ -19,7 +19,7 @@ void main() {
   });
 
   group('Constructor initializes dt', () {
-    for (final sport in SPORTS) {
+    for (final sport in sports) {
       test(sport, () {
         final now = DateTime.now();
         final record = RecordWithSport(sport: sport);

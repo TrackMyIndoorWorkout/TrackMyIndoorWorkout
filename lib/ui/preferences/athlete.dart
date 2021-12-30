@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/athlete_age.dart';
+import '../../preferences/athlete_body_weight.dart';
+import '../../preferences/athlete_gender.dart';
+import '../../preferences/athlete_vo2max.dart';
+import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import 'preferences_base.dart';
 
 class AthletePreferencesScreen extends PreferencesScreenBase {
@@ -13,55 +17,55 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
   Widget build(BuildContext context) {
     List<Widget> athletePreferences = [
       PrefSlider<int>(
-        title: const Text(ATHLETE_BODY_WEIGHT),
-        subtitle: const Text(ATHLETE_BODY_WEIGHT_DESCRIPTION),
-        pref: ATHLETE_BODY_WEIGHT_INT_TAG,
+        title: const Text(athleteBodyWeight),
+        subtitle: const Text(athleteBodyWeightDescription),
+        pref: athleteBodyWeightIntTag,
         trailing: (num value) => Text("$value kg"),
-        min: ATHLETE_BODY_WEIGHT_MIN,
-        max: ATHLETE_BODY_WEIGHT_MAX,
+        min: athleteBodyWeightMin,
+        max: athleteBodyWeightMax,
         direction: Axis.vertical,
       ),
       const PrefCheckbox(
-        title: Text(REMEMBER_ATHLETE_BODY_WEIGHT),
-        subtitle: Text(REMEMBER_ATHLETE_BODY_WEIGHT_DESCRIPTION),
-        pref: REMEMBER_ATHLETE_BODY_WEIGHT_TAG,
+        title: Text(rememberAthleteBodyWeight),
+        subtitle: Text(rememberAthleteBodyWeightDescription),
+        pref: rememberAthleteBodyWeightTag,
       ),
       const PrefCheckbox(
-        title: Text(USE_HEART_RATE_BASED_CALORIE_COUNTING),
-        subtitle: Text(USE_HEART_RATE_BASED_CALORIE_COUNTING_DESCRIPTION),
-        pref: USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG,
+        title: Text(useHeartRateBasedCalorieCounting),
+        subtitle: Text(useHeartRateBasedCalorieCountingDescription),
+        pref: useHeartRateBasedCalorieCountingTag,
       ),
       PrefSlider<int>(
-        title: const Text(ATHLETE_AGE),
-        subtitle: const Text(ATHLETE_AGE_DESCRIPTION),
-        pref: ATHLETE_AGE_TAG,
+        title: const Text(athleteAge),
+        subtitle: const Text(athleteAgeDescription),
+        pref: athleteAgeTag,
         trailing: (num value) => Text("$value"),
-        min: ATHLETE_AGE_MIN,
-        max: ATHLETE_AGE_MAX,
+        min: athleteAgeMin,
+        max: athleteAgeMax,
         direction: Axis.vertical,
       ),
       const PrefLabel(
-        title: Text(ATHLETE_GENDER),
-        subtitle: Text(ATHLETE_GENDER_DESCRIPTION),
+        title: Text(athleteGender),
+        subtitle: Text(athleteGenderDescription),
       ),
       const PrefRadio<String>(
-        title: Text(ATHLETE_GENDER_MALE_DESCRIPTION),
-        value: ATHLETE_GENDER_MALE,
-        pref: ATHLETE_GENDER_TAG,
+        title: Text(athleteGenderMaleDescription),
+        value: athleteGenderMale,
+        pref: athleteGenderTag,
       ),
       const PrefRadio<String>(
-        title: Text(ATHLETE_GENDER_FEMALE_DESCRIPTION),
-        value: ATHLETE_GENDER_FEMALE,
-        pref: ATHLETE_GENDER_TAG,
+        title: Text(athleteGenderFemaleDescription),
+        value: athleteGenderFemale,
+        pref: athleteGenderTag,
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(
-        title: const Text(ATHLETE_VO2MAX),
-        subtitle: const Text(ATHLETE_VO2MAX_DESCRIPTION),
-        pref: ATHLETE_VO2MAX_TAG,
+        title: const Text(athleteVO2Max),
+        subtitle: const Text(athleteVO2MaxDescription),
+        pref: athleteVO2MaxTag,
         trailing: (num value) => Text("$value"),
-        min: ATHLETE_VO2MAX_MIN,
-        max: ATHLETE_VO2MAX_MAX,
+        min: athleteVO2MaxMin,
+        max: athleteVO2MaxMax,
         direction: Axis.vertical,
       ),
     ];

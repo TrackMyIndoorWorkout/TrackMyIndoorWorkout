@@ -1,4 +1,5 @@
-import '../../../persistence/preferences.dart';
+import '../../../preferences/heart_rate_gap_workaround.dart';
+import '../../../preferences/heart_rate_limiting.dart';
 import '../../export_record.dart';
 import '../fit_base_type.dart';
 import '../fit_data.dart';
@@ -19,7 +20,7 @@ class FitDataRecord extends FitDefinitionMessage {
     this.heartRateGapWorkaround,
     this.heartRateUpperLimit,
     this.heartRateLimitingMethod,
-  ) : super(localMessageType, FitMessage.Record) {
+  ) : super(localMessageType, FitMessage.record) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
       FitField(0, FitBaseTypes.sint32Type), // PositionLat
@@ -49,8 +50,8 @@ class FitDataRecord extends FitDefinitionMessage {
 
     if (model.record.heartRate != null) {
       if (model.record.heartRate == 0 &&
-          (heartRateGapWorkaround == DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS ||
-              heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_NOTHING)) {
+          (heartRateGapWorkaround == dataGapWorkaroundDoNotWriteZeros ||
+              heartRateLimitingMethod == heartRateLimitingWriteNothing)) {
         // #93 #113 #114
         model.record.heartRate = FitBaseTypes.uint8Type.invalidValue;
       }

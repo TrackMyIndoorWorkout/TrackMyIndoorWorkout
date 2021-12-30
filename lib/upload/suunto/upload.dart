@@ -6,8 +6,7 @@ import 'package:http/http.dart' as http;
 import '../../export/activity_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/database.dart';
-import '../../persistence/secret.dart';
-
+import '../../secret.dart';
 import 'constants.dart';
 import 'suunto_token.dart';
 
@@ -39,7 +38,7 @@ abstract class Upload {
       return 0;
     }
 
-    var headers = suuntoToken.getAuthorizationHeader(SUUNTO_SUBSCRIPTION_PRIMARY_KEY);
+    var headers = suuntoToken.getAuthorizationHeader(suuntoSubscriptionPrimaryKey);
     if (headers.containsKey('88') == true) {
       debugPrint('Token not yet known');
       return 0;
@@ -55,7 +54,7 @@ abstract class Upload {
     }
 
     Map<String, dynamic> persistenceValues = exporter.getPersistenceValues(activity, false);
-    final postUri = Uri.parse(UPLOADS_ENDPOINT);
+    final postUri = Uri.parse(uploadsEndpoint);
     final uploadInitResponse = await http.post(
       postUri,
       headers: headers,
@@ -138,7 +137,7 @@ abstract class Upload {
       return 200;
     }
 
-    final statusUri = Uri.parse(UPLOADS_ENDPOINT + "/${activity.suuntoUploadIdentifier}");
+    final statusUri = Uri.parse(uploadsEndpoint + "/${activity.suuntoUploadIdentifier}");
 
     final uploadStatusResponse = await http.get(
       statusUri,

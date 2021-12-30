@@ -13,11 +13,11 @@ class TestPair {
 void main() {
   group('AdvertisementDigest infers sport as expected from MachineType', () {
     for (final testPair in [
-      const TestPair(machineType: MachineType.IndoorBike, sport: ActivityType.Ride),
-      const TestPair(machineType: MachineType.Treadmill, sport: ActivityType.Run),
-      const TestPair(machineType: MachineType.Rower, sport: ActivityType.Kayaking),
-      const TestPair(machineType: MachineType.CrossTrainer, sport: ActivityType.Elliptical),
-      const TestPair(machineType: MachineType.StepClimber, sport: ActivityType.Ride),
+      const TestPair(machineType: MachineType.indoorBike, sport: ActivityType.ride),
+      const TestPair(machineType: MachineType.treadmill, sport: ActivityType.run),
+      const TestPair(machineType: MachineType.rower, sport: ActivityType.kayaking),
+      const TestPair(machineType: MachineType.crossTrainer, sport: ActivityType.elliptical),
+      const TestPair(machineType: MachineType.stepClimber, sport: ActivityType.ride),
     ]) {
       test("${testPair.machineType} -> ${testPair.sport}", () async {
         final advertisementDigest = AdvertisementDigest(

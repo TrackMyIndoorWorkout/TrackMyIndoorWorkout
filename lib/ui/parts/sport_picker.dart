@@ -33,19 +33,19 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
 
     _sportChoices = widget.allSports
         ? [
-            ActivityType.Ride,
-            ActivityType.Run,
-            ActivityType.Elliptical,
-            ActivityType.Kayaking,
-            ActivityType.Canoeing,
-            ActivityType.Rowing,
-            ActivityType.Swim,
+            ActivityType.ride,
+            ActivityType.run,
+            ActivityType.elliptical,
+            ActivityType.kayaking,
+            ActivityType.canoeing,
+            ActivityType.rowing,
+            ActivityType.swim,
           ]
         : [
-            ActivityType.Kayaking,
-            ActivityType.Canoeing,
-            ActivityType.Rowing,
-            ActivityType.Swim,
+            ActivityType.kayaking,
+            ActivityType.canoeing,
+            ActivityType.rowing,
+            ActivityType.swim,
           ];
     _sportIndex = max(0, _sportChoices.indexOf(widget.initialSport));
     _largerTextStyle = Get.textTheme.headline4!;

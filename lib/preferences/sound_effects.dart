@@ -1,0 +1,10 @@
+const soundEffectNone = "none";
+const soundEffectNoneDescription = "No sound effect";
+const soundEffectOneTone = "one_tone_beep";
+const soundEffectOneToneDescription = "A single tone 1200Hz beep";
+const soundEffectTwoTone = "two_tone_beep";
+const soundEffectTwoToneDescription = "Two beep tones repeated twice";
+const soundEffectThreeTone = "three_tone_beep";
+const soundEffectThreeToneDescription = "Three beep tones after one another";
+const soundEffectBleep = "media_bleep";
+const soundEffectBleepDescription = "A Media Call type bleep";

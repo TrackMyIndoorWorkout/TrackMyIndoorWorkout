@@ -2,7 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/app_debug_mode.dart';
+import '../../preferences/data_connection_addresses.dart';
+import '../../preferences/device_filtering.dart';
+import '../../preferences/enforced_time_zone.dart';
 import '../../utils/preferences.dart';
 import 'preferences_base.dart';
 
@@ -16,10 +19,10 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> expertPreferences = [
-      const PrefLabel(title: Text(DATA_CONNECTION_ADDRESSES_DESCRIPTION, maxLines: 10)),
+      const PrefLabel(title: Text(dataConnectionAddressesDescription, maxLines: 10)),
       PrefText(
-        label: DATA_CONNECTION_ADDRESSES,
-        pref: DATA_CONNECTION_ADDRESSES_TAG,
+        label: dataConnectionAddresses,
+        pref: dataConnectionAddressesTag,
         validator: (str) {
           if (str == null) {
             return null;
@@ -48,14 +51,14 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         child: const Text("Apply Configuration and Test"),
       ),
       const PrefCheckbox(
-        title: Text(DEVICE_FILTERING),
-        subtitle: Text(DEVICE_FILTERING_DESCRIPTION),
-        pref: DEVICE_FILTERING_TAG,
+        title: Text(deviceFiltering),
+        subtitle: Text(deviceFilteringDescription),
+        pref: deviceFilteringTag,
       ),
       PrefDropdown<String>(
-        title: const Text(ENFORCED_TIME_ZONE),
-        subtitle: const Text(ENFORCED_TIME_ZONE_DESCRIPTION),
-        pref: ENFORCED_TIME_ZONE_TAG,
+        title: const Text(enforcedTimeZone),
+        subtitle: const Text(enforcedTimeZoneDescription),
+        pref: enforcedTimeZoneTag,
         items: timeZoneChoices
             .map((timeZone) => DropdownMenuItem(value: timeZone, child: Text(timeZone)))
             .toList(growable: false),
@@ -64,9 +67,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
 
     if (kDebugMode) {
       expertPreferences.add(const PrefCheckbox(
-        title: Text(APP_DEBUG_MODE),
-        subtitle: Text(APP_DEBUG_MODE_DESCRIPTION),
-        pref: APP_DEBUG_MODE_TAG,
+        title: Text(appDebugMode),
+        subtitle: Text(appDebugModeDescription),
+        pref: appDebugModeTag,
       ));
     }
 

@@ -16,13 +16,12 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
-    dataServiceId = FITNESS_MACHINE_ID,
-    dataCharacteristicId = TREADMILL_ID,
+    dataServiceId = fitnessMachineUuid,
+    dataCharacteristicId = treadmillUuid,
     canMeasureHeartRate = false,
     heartRateByteIndex,
-    calorieFactorDefault = 1.0,
   }) : super(
-          defaultSport: ActivityType.Run,
+          defaultSport: ActivityType.run,
           isMultiSport: false,
           fourCC: fourCC,
           vendorName: vendorName,
@@ -35,7 +34,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactorDefault: calorieFactorDefault,
         );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
@@ -59,13 +57,13 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   @override
-  RecordWithSport stubRecord(List<int> data) {
+  RecordWithSport? stubRecord(List<int> data) {
     super.stubRecord(data);
 
     double? speed = getSpeed(data);
     double? pace = getPace(data); // km / minute
     speed ??= (pace ?? 0.0) * 60.0; // km / h
-
+    // Run pace is not really a pace (speed reciprocal) but it's km/min
     if (pace != null && pace > 0) {
       pace = 1 / pace; // now minutes / km
     }
@@ -127,13 +125,8 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   double? getPace(List<int> data) {
-    var pace = paceMetric?.getMeasurementValue(data);
-    if (pace == null || !extendTuning) {
-      return pace;
-    }
     // Run pace is not really a pace (speed reciprocal) but it's km/min
-    // So we multiply unlike Rowing/Kayaking/Swimming division
-    return pace * powerFactor;
+    return paceMetric?.getMeasurementValue(data);
   }
 
   @override

@@ -21,7 +21,7 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
   void initState() {
     super.initState();
     _textStyle = Get.textTheme.headline4!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: Colors.white,
     );
     _sizeDefault = _textStyle.fontSize! * 2;

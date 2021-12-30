@@ -15,18 +15,18 @@ class TestPair {
 
 void main() {
   test('KayakPro Rower Device constructor tests', () async {
-    final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC]!;
+    final rower = deviceMap[kayakProGenesisPortFourCC]!;
 
     expect(rower.canMeasureHeartRate, false);
-    expect(rower.defaultSport, ActivityType.Kayaking);
-    expect(rower.fourCC, KAYAK_PRO_GENESIS_PORT_FOURCC);
+    expect(rower.defaultSport, ActivityType.kayaking);
+    expect(rower.fourCC, kayakProGenesisPortFourCC);
   });
 
   test('Rower Device interprets KayakPro flags properly', () async {
-    final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC] as RowerDeviceDescriptor;
+    final rower = deviceMap[kayakProGenesisPortFourCC] as RowerDeviceDescriptor;
     const lsb = 44;
     const msb = 9;
-    final flag = MAX_UINT8 * msb + lsb;
+    const flag = maxUint8 * msb + lsb;
     await initPrefServiceForTest();
     rower.stopWorkout();
 
@@ -48,7 +48,7 @@ void main() {
   group('Rower Device interprets KayakPro data properly', () {
     for (final testPair in [
       TestPair(
-        data: [44, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, MAX_BYTE, MAX_BYTE, 0, 0, MAX_BYTE, 0, 0],
+        data: [44, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, maxByte, maxByte, 0, 0, maxByte, 0, 0],
         record: RecordWithSport(
           distance: 0.0,
           elapsed: 0,
@@ -58,33 +58,13 @@ void main() {
           cadence: 0,
           heartRate: 0,
           pace: 0.0,
-          sport: ActivityType.Kayaking,
+          sport: ActivityType.kayaking,
           caloriesPerHour: 0.0,
           caloriesPerMinute: null,
         ),
       ),
       TestPair(
-        data: [
-          44,
-          9,
-          79,
-          33,
-          0,
-          50,
-          0,
-          0,
-          86,
-          1,
-          12,
-          0,
-          MAX_BYTE,
-          MAX_BYTE,
-          89,
-          1,
-          MAX_BYTE,
-          62,
-          0
-        ],
+        data: [44, 9, 79, 33, 0, 50, 0, 0, 86, 1, 12, 0, maxByte, maxByte, 89, 1, maxByte, 62, 0],
         record: RecordWithSport(
           distance: 50.0,
           elapsed: 62,
@@ -94,7 +74,7 @@ void main() {
           cadence: 39,
           heartRate: 0,
           pace: 342.0,
-          sport: ActivityType.Kayaking,
+          sport: ActivityType.kayaking,
           caloriesPerHour: 345.0,
           caloriesPerMinute: null,
         ),
@@ -113,11 +93,11 @@ void main() {
           1,
           16,
           0,
-          MAX_BYTE,
-          MAX_BYTE,
+          maxByte,
+          maxByte,
           97,
           1,
-          MAX_BYTE,
+          maxByte,
           106,
           0
         ],
@@ -130,7 +110,7 @@ void main() {
           cadence: 76,
           heartRate: 0,
           pace: 316.0,
-          sport: ActivityType.Kayaking,
+          sport: ActivityType.kayaking,
           caloriesPerHour: 353.0,
           caloriesPerMinute: null,
         ),
@@ -149,11 +129,11 @@ void main() {
           1,
           20,
           0,
-          MAX_BYTE,
-          MAX_BYTE,
+          maxByte,
+          maxByte,
           107,
           1,
-          MAX_BYTE,
+          maxByte,
           45,
           1
         ],
@@ -166,33 +146,13 @@ void main() {
           cadence: 42,
           heartRate: 0,
           pace: 295.0,
-          sport: ActivityType.Kayaking,
+          sport: ActivityType.kayaking,
           caloriesPerHour: 363.0,
           caloriesPerMinute: null,
         ),
       ),
       TestPair(
-        data: [
-          44,
-          9,
-          177,
-          184,
-          0,
-          48,
-          1,
-          0,
-          0,
-          1,
-          30,
-          0,
-          MAX_BYTE,
-          MAX_BYTE,
-          133,
-          1,
-          MAX_BYTE,
-          91,
-          1
-        ],
+        data: [44, 9, 177, 184, 0, 48, 1, 0, 0, 1, 30, 0, maxByte, maxByte, 133, 1, maxByte, 91, 1],
         record: RecordWithSport(
           distance: 304.0,
           elapsed: 347,
@@ -202,7 +162,7 @@ void main() {
           cadence: 88,
           heartRate: 0,
           pace: 256.0,
-          sport: ActivityType.Kayaking,
+          sport: ActivityType.kayaking,
           caloriesPerHour: 389.0,
           caloriesPerMinute: null,
         ),
@@ -211,7 +171,7 @@ void main() {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
         await initPrefServiceForTest();
-        final rower = deviceMap[KAYAK_PRO_GENESIS_PORT_FOURCC]!;
+        final rower = deviceMap[kayakProGenesisPortFourCC]!;
         rower.stopWorkout();
 
         final record = rower.stubRecord(testPair.data)!;

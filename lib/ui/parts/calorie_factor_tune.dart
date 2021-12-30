@@ -7,12 +7,15 @@ import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class CalorieFactorTuneBottomSheet extends StatefulWidget {
-  final String deviceId;
-  final double oldCalorieFactor;
+  late final String deviceId;
+  late final double oldCalorieFactor;
+  late final bool hrBased;
 
-  const CalorieFactorTuneBottomSheet(
-      {Key? key, required this.deviceId, required this.oldCalorieFactor})
-      : super(key: key);
+  CalorieFactorTuneBottomSheet({Key? key, required CalorieTune calorieTune}) : super(key: key) {
+    deviceId = calorieTune.mac;
+    oldCalorieFactor = calorieTune.calorieFactor;
+    hrBased = calorieTune.hrBased;
+  }
 
   @override
   CalorieFactorTuneBottomSheetState createState() => CalorieFactorTuneBottomSheetState();
@@ -21,14 +24,14 @@ class CalorieFactorTuneBottomSheet extends StatefulWidget {
 class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomSheet> {
   double _calorieFactorPercent = 100.0;
   TextStyle _largerTextStyle = const TextStyle();
-  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  final _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
     super.initState();
     _calorieFactorPercent = widget.oldCalorieFactor * 100.0;
     _largerTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
   }
@@ -57,8 +60,8 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
         final database = Get.find<AppDatabase>();
         final calorieFactor = _calorieFactorPercent / 100.0;
         CalorieTune? calorieTune;
-        if (await database.hasCalorieTune(widget.deviceId)) {
-          calorieTune = await database.calorieTuneDao.findCalorieTuneByMac(widget.deviceId).first;
+        if (await database.hasCalorieTune(widget.deviceId, widget.hrBased)) {
+          calorieTune = await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
         }
 
         if (calorieTune != null) {
@@ -68,6 +71,7 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
           calorieTune = CalorieTune(
             mac: widget.deviceId,
             calorieFactor: calorieFactor,
+            hrBased: widget.hrBased,
             time: DateTime.now().millisecondsSinceEpoch,
           );
           await database.calorieTuneDao.insertCalorieTune(calorieTune);

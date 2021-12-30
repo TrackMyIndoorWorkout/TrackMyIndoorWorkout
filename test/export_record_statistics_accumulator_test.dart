@@ -10,8 +10,8 @@ import 'utils.dart';
 void main() {
   group('StatisticsAccumulator calculates avg power when requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgPower: true);
         final count = rnd.nextInt(99) + 1;
@@ -40,20 +40,20 @@ void main() {
           expect(accu.calculateMinHeartRate, false);
           expect(accu.powerSum, sum);
           expect(accu.powerCount, actualCount);
-          expect(accu.maxPower, MAX_INIT);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.maxPower, maxInit);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
-          expect(accu.maxHeartRate, MAX_INIT);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.maxHeartRate, maxInit);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
-          expect(accu.maxCadence, MAX_INIT);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.maxCadence, maxInit);
+          expect(accu.minCadence, minInit);
           expect(accu.avgPower, actualCount > 0 ? sum / actualCount : 0.0);
         });
       });
@@ -62,12 +62,12 @@ void main() {
 
   group('StatisticsAccumulator calculates max power when requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxPower: true);
         final count = rnd.nextInt(99) + 1;
-        int maximum = MAX_INIT;
+        int maximum = maxInit;
         getRandomInts(count, 100, rnd).forEach((number) {
           accu.processExportRecord(ExportRecord(record: Record(power: number)));
           maximum = max(number, maximum);
@@ -89,19 +89,19 @@ void main() {
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
           expect(accu.maxPower, maximum);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
-          expect(accu.maxHeartRate, MAX_INIT);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.maxHeartRate, maxInit);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
-          expect(accu.maxCadence, MAX_INIT);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.maxCadence, maxInit);
+          expect(accu.minCadence, minInit);
         });
       });
     }
@@ -109,12 +109,12 @@ void main() {
 
   group('StatisticsAccumulator calculates min power when requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinPower: true);
         final count = rnd.nextInt(99) + 1;
-        int minimum = MIN_INIT;
+        int minimum = minInit;
         getRandomInts(count, 100, rnd).forEach((number) {
           accu.processExportRecord(ExportRecord(record: Record(power: number)));
           if (number > 0) {
@@ -137,20 +137,20 @@ void main() {
           expect(accu.calculateMinHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT);
+          expect(accu.maxPower, maxInit);
           expect(accu.minPower, minimum);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
-          expect(accu.maxHeartRate, MAX_INIT);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.maxHeartRate, maxInit);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
-          expect(accu.maxCadence, MAX_INIT);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.maxCadence, maxInit);
+          expect(accu.minCadence, minInit);
         });
       });
     }
@@ -158,8 +158,8 @@ void main() {
 
   group('StatisticsAccumulator calculates avg speed when requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgSpeed: true);
         final count = rnd.nextInt(99) + 1;
@@ -184,20 +184,20 @@ void main() {
           expect(accu.calculateMinHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.maxPower, maxInit);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, sum);
           expect(accu.speedCount, count);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
-          expect(accu.maxHeartRate, MAX_INIT);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.maxHeartRate, maxInit);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
-          expect(accu.maxCadence, MAX_INIT);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.maxCadence, maxInit);
+          expect(accu.minCadence, minInit);
           expect(accu.avgSpeed, count > 0 ? sum / count : 0.0);
         });
       });
@@ -206,12 +206,12 @@ void main() {
 
   group('StatisticsAccumulator calculates max speed when requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxSpeed: true);
         final count = rnd.nextInt(99) + 1;
-        double maximum = MAX_INIT.toDouble();
+        double maximum = maxInit.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
           accu.processExportRecord(ExportRecord(record: Record(speed: number)));
           maximum = max(number, maximum);
@@ -232,20 +232,20 @@ void main() {
           expect(accu.calculateMinHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.maxPower, maxInit);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
           expect(accu.maxSpeed, maximum);
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
-          expect(accu.maxHeartRate, MAX_INIT);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.maxHeartRate, maxInit);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
-          expect(accu.maxCadence, MAX_INIT);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.maxCadence, maxInit);
+          expect(accu.minCadence, minInit);
         });
       });
     }
@@ -253,12 +253,12 @@ void main() {
 
   group('StatisticsAccumulator calculates min speed when requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinSpeed: true);
         final count = rnd.nextInt(99) + 1;
-        double minimum = MIN_INIT.toDouble();
+        double minimum = minInit.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
           accu.processExportRecord(ExportRecord(record: Record(speed: number)));
           minimum = min(number, minimum);
@@ -279,20 +279,20 @@ void main() {
           expect(accu.calculateMinHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.maxPower, maxInit);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
           expect(accu.minSpeed, minimum);
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
-          expect(accu.maxHeartRate, MAX_INIT);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.maxHeartRate, maxInit);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
-          expect(accu.maxCadence, MAX_INIT);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.maxCadence, maxInit);
+          expect(accu.minCadence, minInit);
         });
       });
     }
@@ -300,8 +300,8 @@ void main() {
 
   group('StatisticsAccumulator calculates avg hr when requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgHeartRate: true);
         final count = rnd.nextInt(99) + 1;
@@ -330,20 +330,20 @@ void main() {
           expect(accu.calculateMinHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.maxPower, maxInit);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, sum);
           expect(accu.heartRateCount, cnt);
-          expect(accu.maxHeartRate, MAX_INIT);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.maxHeartRate, maxInit);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
-          expect(accu.maxCadence, MAX_INIT);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.maxCadence, maxInit);
+          expect(accu.minCadence, minInit);
           expect(accu.avgHeartRate, cnt > 0 ? sum ~/ cnt : 0);
         });
       });
@@ -352,12 +352,12 @@ void main() {
 
   group('StatisticsAccumulator calculates max hr when requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxHeartRate: true);
         final count = rnd.nextInt(99) + 1;
-        int maximum = MAX_INIT;
+        int maximum = maxInit;
         getRandomInts(count, 100, rnd).forEach((number) {
           accu.processExportRecord(ExportRecord(record: Record(heartRate: number)));
           maximum = max(number, maximum);
@@ -378,20 +378,20 @@ void main() {
           expect(accu.calculateMinHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.maxPower, maxInit);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
           expect(accu.maxHeartRate, maximum);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
-          expect(accu.maxCadence, MAX_INIT);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.maxCadence, maxInit);
+          expect(accu.minCadence, minInit);
         });
       });
     }
@@ -399,12 +399,12 @@ void main() {
 
   group('StatisticsAccumulator calculates min hr when requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinHeartRate: true);
         final count = rnd.nextInt(99) + 1;
-        int minimum = MIN_INIT;
+        int minimum = minInit;
         getRandomInts(count, 100, rnd).forEach((number) {
           accu.processExportRecord(ExportRecord(record: Record(heartRate: number)));
           if (number > 0) {
@@ -427,20 +427,20 @@ void main() {
           expect(accu.calculateMinHeartRate, true);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.maxPower, maxInit);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
-          expect(accu.maxHeartRate, MAX_INIT);
+          expect(accu.maxHeartRate, maxInit);
           expect(accu.minHeartRate, minimum);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
-          expect(accu.maxCadence, MAX_INIT);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.maxCadence, maxInit);
+          expect(accu.minCadence, minInit);
         });
       });
     }
@@ -448,8 +448,8 @@ void main() {
 
   group('StatisticsAccumulator calculates avg cadence when requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgCadence: true);
         final count = rnd.nextInt(99) + 1;
@@ -478,20 +478,20 @@ void main() {
           expect(accu.calculateMinHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.maxPower, maxInit);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
-          expect(accu.maxHeartRate, MAX_INIT);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.maxHeartRate, maxInit);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, sum);
           expect(accu.cadenceCount, cnt);
-          expect(accu.maxCadence, MAX_INIT);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.maxCadence, maxInit);
+          expect(accu.minCadence, minInit);
           expect(accu.avgCadence, cnt > 0 ? sum ~/ cnt : 0);
         });
       });
@@ -500,12 +500,12 @@ void main() {
 
   group('StatisticsAccumulator initializes max cadence when max requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxCadence: true);
         final count = rnd.nextInt(99) + 1;
-        int maximum = MAX_INIT;
+        int maximum = maxInit;
         getRandomInts(count, 100, rnd).forEach((number) {
           accu.processExportRecord(ExportRecord(record: Record(cadence: number)));
           maximum = max(number, maximum);
@@ -526,20 +526,20 @@ void main() {
           expect(accu.calculateMinHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.maxPower, maxInit);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
-          expect(accu.maxHeartRate, MAX_INIT);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.maxHeartRate, maxInit);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
           expect(accu.maxCadence, maximum);
-          expect(accu.minCadence, MIN_INIT);
+          expect(accu.minCadence, minInit);
         });
       });
     }
@@ -547,12 +547,12 @@ void main() {
 
   group('StatisticsAccumulator initializes min cadence when min requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinCadence: true);
         final count = rnd.nextInt(99) + 1;
-        int minimum = MIN_INIT;
+        int minimum = minInit;
         getRandomInts(count, 100, rnd).forEach((number) {
           accu.processExportRecord(ExportRecord(record: Record(cadence: number)));
           if (number > 0) {
@@ -575,19 +575,19 @@ void main() {
           expect(accu.calculateMinHeartRate, false);
           expect(accu.powerSum, 0);
           expect(accu.powerCount, 0);
-          expect(accu.maxPower, MAX_INIT);
-          expect(accu.minPower, MIN_INIT);
+          expect(accu.maxPower, maxInit);
+          expect(accu.minPower, minInit);
           expect(accu.speedSum, 0);
           expect(accu.speedCount, 0);
-          expect(accu.maxSpeed, MAX_INIT.toDouble());
-          expect(accu.minSpeed, MIN_INIT.toDouble());
+          expect(accu.maxSpeed, maxInit.toDouble());
+          expect(accu.minSpeed, minInit.toDouble());
           expect(accu.heartRateSum, 0);
           expect(accu.heartRateCount, 0);
-          expect(accu.maxHeartRate, MAX_INIT);
-          expect(accu.minHeartRate, MIN_INIT);
+          expect(accu.maxHeartRate, maxInit);
+          expect(accu.minHeartRate, minInit);
           expect(accu.cadenceSum, 0);
           expect(accu.cadenceCount, 0);
-          expect(accu.maxCadence, MAX_INIT);
+          expect(accu.maxCadence, maxInit);
           expect(accu.minCadence, minimum);
         });
       });
@@ -596,8 +596,8 @@ void main() {
 
   group('StatisticsAccumulator initializes everything when all requested', () {
     final rnd = Random();
-    for (final sport in SPORTS) {
-      1.to(SMALL_REPETITION).forEach((input) {
+    for (final sport in sports) {
+      1.to(smallRepetition).forEach((input) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
           sport: sport,
@@ -617,22 +617,22 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         int powerSum = 0;
         int powerCount = 0;
-        int maxPower = MAX_INIT;
-        int minPower = MIN_INIT;
+        int maxPower = maxInit;
+        int minPower = minInit;
         final powers = getRandomInts(count, 100, rnd);
         double speedSum = 0.0;
-        double maxSpeed = MAX_INIT.toDouble();
-        double minSpeed = MIN_INIT.toDouble();
+        double maxSpeed = maxInit.toDouble();
+        double minSpeed = minInit.toDouble();
         final speeds = getRandomDoubles(count, 100, rnd);
         int cadenceSum = 0;
         int cadenceCount = 0;
-        int maxCadence = MAX_INIT;
-        int minCadence = MIN_INIT;
+        int maxCadence = maxInit;
+        int minCadence = minInit;
         final cadences = getRandomInts(count, 100, rnd);
         int hrSum = 0;
         int hrCount = 0;
-        int maxHr = MAX_INIT;
-        int minHr = MIN_INIT;
+        int maxHr = maxInit;
+        int minHr = minInit;
         final hrs = getRandomInts(count, 100, rnd);
         List<int>.generate(count, (index) {
           accu.processExportRecord(ExportRecord(
@@ -691,12 +691,12 @@ void main() {
           expect(accu.minSpeed, minSpeed);
           expect(accu.heartRateSum, hrSum);
           expect(accu.heartRateCount, hrCount);
-          expect(accu.maxHeartRate, hrCount > 0 ? maxHr : MAX_INIT);
-          expect(accu.minHeartRate, hrCount > 0 ? minHr : MIN_INIT);
+          expect(accu.maxHeartRate, hrCount > 0 ? maxHr : maxInit);
+          expect(accu.minHeartRate, hrCount > 0 ? minHr : minInit);
           expect(accu.cadenceSum, cadenceSum);
           expect(accu.cadenceCount, cadenceCount);
-          expect(accu.maxCadence, cadenceCount > 0 ? maxCadence : MAX_INIT);
-          expect(accu.minCadence, cadenceCount > 0 ? minCadence : MIN_INIT);
+          expect(accu.maxCadence, cadenceCount > 0 ? maxCadence : maxInit);
+          expect(accu.minCadence, cadenceCount > 0 ? minCadence : minInit);
           expect(accu.avgPower, powerCount > 0 ? powerSum / powerCount : 0.0);
           expect(accu.avgSpeed, count > 0 ? speedSum / count : 0.0);
           expect(accu.avgHeartRate, hrCount > 0 ? hrSum ~/ hrCount : 0);

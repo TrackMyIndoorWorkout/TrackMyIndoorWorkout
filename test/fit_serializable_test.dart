@@ -16,7 +16,7 @@ final fitEpochDateTime = DateTime.utc(1989, 12, 31, 0, 0, 0);
 void main() {
   group('addByte test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT8, rnd).forEach((byte) {
+    getRandomInts(smallRepetition, maxUint8, rnd).forEach((byte) {
       final expected = [byte];
       test('$byte -> $expected', () async {
         final subject = TestSubject();
@@ -30,8 +30,8 @@ void main() {
 
   group('addByte negative numbers (2 complement) test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT8 ~/ 2, rnd).forEach((byte) {
-      final expected = byte != 0 ? [MAX_UINT8 - byte] : [0];
+    getRandomInts(smallRepetition, maxUint8 ~/ 2, rnd).forEach((byte) {
+      final expected = byte != 0 ? [maxUint8 - byte] : [0];
       test('-$byte -> $expected', () async {
         final subject = TestSubject();
 
@@ -60,8 +60,8 @@ void main() {
 
   group('addShort test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT16, rnd).forEach((short) {
-      final expected = [short % MAX_UINT8, short ~/ MAX_UINT8];
+    getRandomInts(smallRepetition, maxUint16, rnd).forEach((short) {
+      final expected = [short % maxUint8, short ~/ maxUint8];
       test('$short -> $expected', () async {
         final subject = TestSubject();
 
@@ -74,9 +74,9 @@ void main() {
 
   group('addShort negative numbers (2 complement) test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT16 ~/ 2, rnd).forEach((short) {
-      final complemented = MAX_UINT16 - short;
-      final expected = short != 0 ? [complemented % MAX_UINT8, complemented ~/ MAX_UINT8] : [0, 0];
+    getRandomInts(smallRepetition, maxUint16 ~/ 2, rnd).forEach((short) {
+      final complemented = maxUint16 - short;
+      final expected = short != 0 ? [complemented % maxUint8, complemented ~/ maxUint8] : [0, 0];
       test('-$short -> $expected', () async {
         final subject = TestSubject();
 
@@ -105,12 +105,12 @@ void main() {
 
   group('addLong test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT32, rnd).forEach((long) {
+    getRandomInts(smallRepetition, maxUint32, rnd).forEach((long) {
       final expected = [
-        long % MAX_UINT8,
-        long ~/ MAX_UINT8 % MAX_UINT8,
-        long ~/ MAX_UINT16 % MAX_UINT8,
-        long ~/ MAX_UINT24
+        long % maxUint8,
+        long ~/ maxUint8 % maxUint8,
+        long ~/ maxUint16 % maxUint8,
+        long ~/ maxUint24
       ];
       test('$long -> $expected', () async {
         final subject = TestSubject();
@@ -124,14 +124,14 @@ void main() {
 
   group('addLong negative numbers (2 complement) test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT32 ~/ 2, rnd).forEach((long) {
-      final comp = MAX_UINT32 - long;
+    getRandomInts(smallRepetition, maxUint32 ~/ 2, rnd).forEach((long) {
+      final comp = maxUint32 - long;
       final expected = long != 0
           ? [
-              comp % MAX_UINT8,
-              comp ~/ MAX_UINT8 % MAX_UINT8,
-              comp ~/ MAX_UINT16 % MAX_UINT8,
-              comp ~/ MAX_UINT24
+              comp % maxUint8,
+              comp ~/ maxUint8 % maxUint8,
+              comp ~/ maxUint16 % maxUint8,
+              comp ~/ maxUint24
             ]
           : [0, 0, 0, 0];
       test('-$long -> $expected', () async {
@@ -162,7 +162,7 @@ void main() {
 
   group('addString test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT8 ~/ 4, rnd).forEach((length) {
+    getRandomInts(smallRepetition, maxUint8 ~/ 4, rnd).forEach((length) {
       final string = mockString(length + 1);
       final expected = utf8.encode(string) + [0];
       test('$string -> $expected', () async {
@@ -177,9 +177,9 @@ void main() {
 
   group('addGpsCoordinate test', () {
     final rnd = Random();
-    getRandomDoubles(SMALL_REPETITION, 360.0, rnd).forEach((degree) {
+    getRandomDoubles(smallRepetition, 360.0, rnd).forEach((degree) {
       final coordinate = degree - 180.0;
-      final coordinateInt = (coordinate * DEG_TO_FIT_GPS).round();
+      final coordinateInt = (coordinate * degToFitGps).round();
       final subject1 = TestSubject();
 
       subject1.addLong(coordinateInt);
@@ -195,7 +195,7 @@ void main() {
   });
 
   group('fitTimeStamp test', () {
-    1.to(SMALL_REPETITION).forEach((index) {
+    1.to(smallRepetition).forEach((index) {
       final testDateTime = mockDate(fitEpochDateTime);
       final expected =
           (testDateTime.millisecondsSinceEpoch - fitEpochDateTime.millisecondsSinceEpoch) ~/ 1000;
@@ -208,7 +208,7 @@ void main() {
   });
 
   group('fitDateTime test', () {
-    1.to(SMALL_REPETITION).forEach((index) {
+    1.to(smallRepetition).forEach((index) {
       final testDateTime = mockDate(fitEpochDateTime);
       final expected =
           (testDateTime.millisecondsSinceEpoch - fitEpochDateTime.millisecondsSinceEpoch) ~/ 1000;

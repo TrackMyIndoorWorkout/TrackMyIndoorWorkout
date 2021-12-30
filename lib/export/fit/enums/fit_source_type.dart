@@ -1,8 +1,8 @@
 class FitSourceType {
-  static const int Ant = 0;
-  static const int Antplus = 1;
-  static const int Bluetooth = 2;
-  static const int BluetoothLowEnergy = 3;
-  static const int Wifi = 4;
-  static const int Local = 5;
+  static const int ant = 0;
+  static const int antPlus = 1;
+  static const int bluetooth = 2;
+  static const int bluetoothLowEnergy = 3;
+  static const int wifi = 4;
+  static const int local = 5;
 }

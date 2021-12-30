@@ -1,6 +1,6 @@
 class FitSessionTrigger {
-  static const int ActivityEnd = 0;
-  static const int Manual = 1;
-  static const int AutoMultiSport = 2;
-  static const int FitnessEquipment = 3;
+  static const int activityEnd = 0;
+  static const int manual = 1;
+  static const int autoMultiSport = 2;
+  static const int fitnessEquipment = 3;
 }

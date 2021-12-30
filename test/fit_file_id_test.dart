@@ -11,13 +11,13 @@ void main() {
   test('FitFileId has the expected global message number', () async {
     final fileId = FitFileId(0, 0);
 
-    expect(fileId.globalMessageNumber, FitMessage.FileId);
+    expect(fileId.globalMessageNumber, FitMessage.fileId);
   });
 
   group('FitFileId data has the expected length', () {
     final rnd = Random();
     deviceMap.forEach((fourCC, deviceDescriptor) {
-      final globalMessageNumber = rnd.nextInt(MAX_UINT16);
+      final globalMessageNumber = rnd.nextInt(maxUint16);
       final text = deviceDescriptor.fullName;
       final fileId = FitFileId(globalMessageNumber, text.length);
       final exportModel = ExportModelForTests(descriptor: deviceDescriptor);

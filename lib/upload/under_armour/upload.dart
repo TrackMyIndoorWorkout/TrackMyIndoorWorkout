@@ -45,7 +45,7 @@ abstract class Upload {
     });
 
     final uploadResponse = await http.post(
-      Uri.parse(UPLOADS_ENDPOINT),
+      Uri.parse(uploadsEndpoint),
       headers: headers,
       body: fileContent,
     );

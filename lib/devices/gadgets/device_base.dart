@@ -1,12 +1,11 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/app_debug_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../gatt_constants.dart';
@@ -27,14 +26,14 @@ abstract class DeviceBase {
   bool discovered = false;
 
   final prefService = Get.find<BasePrefService>();
-  bool uxDebug = APP_DEBUG_MODE_DEFAULT;
+  bool uxDebug = appDebugModeDefault;
 
   DeviceBase({
     required this.serviceId,
     this.characteristicsId,
     this.device,
   }) {
-    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
   }
 
   Future<bool> connect() async {
@@ -74,7 +73,7 @@ abstract class DeviceBase {
           .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
     } else {
       characteristic = _service!.characteristics
-          .firstWhereOrNull((ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()));
+          .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
       characteristicsId = characteristic?.uuid.uuidString();
     }
 
@@ -108,14 +107,14 @@ abstract class DeviceBase {
   }
 
   String? inferSportFromCharacteristicsId() {
-    if (characteristicsId == TREADMILL_ID) {
-      return ActivityType.Run;
-    } else if (characteristicsId == PRECOR_MEASUREMENT_ID || characteristicsId == INDOOR_BIKE_ID) {
-      return ActivityType.Ride;
-    } else if (characteristicsId == ROWER_DEVICE_ID) {
-      return ActivityType.Rowing;
-    } else if (characteristicsId == CROSS_TRAINER_ID) {
-      return ActivityType.Elliptical;
+    if (characteristicsId == treadmillUuid) {
+      return ActivityType.run;
+    } else if (characteristicsId == precorMeasurementUuid || characteristicsId == indoorBikeUuid) {
+      return ActivityType.ride;
+    } else if (characteristicsId == rowerDeviceUuid) {
+      return ActivityType.rowing;
+    } else if (characteristicsId == crossTrainerUuid) {
+      return ActivityType.elliptical;
     }
 
     return null;

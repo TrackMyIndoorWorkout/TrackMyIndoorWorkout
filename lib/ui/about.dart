@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../persistence/preferences.dart';
+import '../preferences/enforced_time_zone.dart';
 import '../utils/constants.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -35,7 +35,7 @@ class AboutScreenState extends State<AboutScreen> {
   void initState() {
     super.initState();
     _fieldStyle = Get.textTheme.headline5!;
-    _valueStyle = Get.textTheme.headline6!.apply(fontFamily: FONT_FAMILY);
+    _valueStyle = Get.textTheme.headline6!.apply(fontFamily: fontFamily);
     final packageInfo = Get.find<PackageInfo>();
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;
@@ -47,8 +47,7 @@ class AboutScreenState extends State<AboutScreen> {
     });
 
     final prefService = Get.find<BasePrefService>();
-    _enforcedTimeZone =
-        prefService.get<String>(ENFORCED_TIME_ZONE_TAG) ?? ENFORCED_TIME_ZONE_DEFAULT;
+    _enforcedTimeZone = prefService.get<String>(enforcedTimeZoneTag) ?? enforcedTimeZoneDefault;
   }
 
   @override

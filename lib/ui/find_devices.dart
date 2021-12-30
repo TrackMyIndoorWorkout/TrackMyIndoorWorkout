@@ -14,8 +14,13 @@ import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt_constants.dart';
 import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
-import '../persistence/preferences_spec.dart';
+import '../preferences/auto_connect.dart';
+import '../preferences/device_filtering.dart';
+import '../preferences/instant_scan.dart';
+import '../preferences/last_equipment_id.dart';
+import '../preferences/multi_sport_device_support.dart';
+import '../preferences/preferences_spec.dart';
+import '../preferences/scan_duration.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/scan_result_ex.dart';
@@ -37,16 +42,16 @@ class FindDevicesScreen extends StatefulWidget {
 }
 
 class FindDevicesState extends State<FindDevicesScreen> {
-  bool _instantScan = INSTANT_SCAN_DEFAULT;
-  int _scanDuration = SCAN_DURATION_DEFAULT;
-  bool _autoConnect = AUTO_CONNECT_DEFAULT;
+  bool _instantScan = instantScanDefault;
+  int _scanDuration = scanDurationDefault;
+  bool _autoConnect = autoConnectDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   bool _goingToRecording = false;
   bool _autoConnectLatch = false;
   bool _pairingHrm = false;
   final List<String> _lastEquipmentIds = [];
-  bool _filterDevices = DEVICE_FILTERING_DEFAULT;
+  bool _filterDevices = deviceFilteringDefault;
   HeartRateMonitor? _heartRateMonitor;
   FitnessEquipment? _fitnessEquipment;
   TextStyle _captionStyle = const TextStyle();
@@ -82,7 +87,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
       migration11to12,
       migration12to13,
       migration13to14,
+      migration14to15,
+      migration15to16,
     ]).build();
+    if (AppDatabase.additional15to16Migration) {
+      await database.correctCalorieFactors();
+    }
+
     Get.put<AppDatabase>(database, permanent: true);
   }
 
@@ -92,9 +103,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     final prefService = Get.find<BasePrefService>();
-    _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
-    _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
-    _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
+    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
+    _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
+    _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _scannedDevices.clear();
     _isScanning = true;
     _autoConnectLatch = true;
@@ -123,22 +134,22 @@ class FindDevicesState extends State<FindDevicesScreen> {
     initializeDateFormatting();
     super.initState();
     final prefService = Get.find<BasePrefService>();
-    _instantScan = prefService.get<bool>(INSTANT_SCAN_TAG) ?? INSTANT_SCAN_DEFAULT;
-    _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
-    _autoConnect = prefService.get<bool>(AUTO_CONNECT_TAG) ?? AUTO_CONNECT_DEFAULT;
-    for (var sport in PreferencesSpec.SPORT_PREFIXES) {
-      final lastEquipmentId = prefService.get<String>(LAST_EQUIPMENT_ID_TAG_PREFIX + sport) ?? "";
+    _instantScan = prefService.get<bool>(instantScanTag) ?? instantScanDefault;
+    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
+    _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
+    for (var sport in PreferencesSpec.sportPrefixes) {
+      final lastEquipmentId = prefService.get<String>(lastEquipmentIdTagPrefix + sport) ?? "";
       if (lastEquipmentId.isNotEmpty) {
         _lastEquipmentIds.add(lastEquipmentId);
       }
     }
 
-    _filterDevices = prefService.get<bool>(DEVICE_FILTERING_TAG) ?? DEVICE_FILTERING_DEFAULT;
+    _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _isScanning = false;
     _openDatabase().then((value) => _instantScan ? _startScan() : {});
 
     _captionStyle = Get.textTheme.headline6!;
-    _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
+    _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
     _overlayStyle = _captionStyle.copyWith(color: Colors.yellowAccent);
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
@@ -176,8 +187,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
-    if (descriptor == null && advertisementDigest.serviceUuids.contains(PRECOR_SERVICE_ID)) {
-      descriptor = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC];
+    if (descriptor == null && advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
+      descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
     }
 
     final database = Get.find<AppDatabase>();
@@ -194,10 +205,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
         descriptor = genericDescriptorForSport(deviceUsage.sport);
       } else {
         String? inferredSport;
-        if (advertisementDigest.machineType != MachineType.NotFitnessMachine) {
+        if (advertisementDigest.machineType != MachineType.notFitnessMachine) {
           // Determine FTMS sport by Service Data bits
           inferredSport = advertisementDigest.fitnessMachineSport();
-        } else if (advertisementDigest.serviceUuids.contains(FITNESS_MACHINE_ID)) {
+        } else if (advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
           // Determine FTMS sport by analyzing 0x1826 service's characteristics
           setState(() {
             _goingToRecording = true;
@@ -237,8 +248,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final prefService = Get.find<BasePrefService>();
 
     if (descriptor.isMultiSport) {
-      final multiSportSupport = prefService.get<bool>(MULTI_SPORT_DEVICE_SUPPORT_TAG) ??
-          MULTI_SPORT_DEVICE_SUPPORT_DEFAULT;
+      final multiSportSupport =
+          prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;
       if (deviceUsage == null || multiSportSupport) {
         final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
         final sportPick = await Get.bottomSheet(
@@ -401,7 +412,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             _scannedDevices.where((d) => _lastEquipmentIds.contains(d.id.id));
                         if (_fitnessEquipment != null &&
                                 !_advertisementCache.hasEntry(
-                                    _fitnessEquipment!.device?.id.id ?? EMPTY_MEASUREMENT) ||
+                                    _fitnessEquipment!.device?.id.id ?? emptyMeasurement) ||
                             _filterDevices &&
                                 _scannedDevices.length == 1 &&
                                 !_advertisementCache.hasEntry(_scannedDevices.first.id.id) ||
@@ -476,14 +487,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       _heartRateMonitor != null
                           ? ListTile(
                               title: TextOneLine(
-                                _heartRateMonitor?.device?.name ?? EMPTY_MEASUREMENT,
+                                _heartRateMonitor?.device?.name ?? emptyMeasurement,
                                 overflow: TextOverflow.ellipsis,
                                 style: _themeManager.boldStyle(_captionStyle,
-                                    fontSizeFactor: FONT_SIZE_FACTOR),
+                                    fontSizeFactor: fontSizeFactor),
                               ),
                               subtitle: Text(
                                 _heartRateMonitor?.device?.id.id.replaceAll(_colonRegex, '') ??
-                                    EMPTY_MEASUREMENT,
+                                    emptyMeasurement,
                                 style: _subtitleStyle,
                               ),
                               trailing: StreamBuilder<BluetoothDeviceState>(
@@ -517,16 +528,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       _fitnessEquipment != null
                           ? ListTile(
                               title: TextOneLine(
-                                _fitnessEquipment?.device?.name ?? EMPTY_MEASUREMENT,
+                                _fitnessEquipment?.device?.name ?? emptyMeasurement,
                                 overflow: TextOverflow.ellipsis,
                                 style: _themeManager.boldStyle(
                                   _captionStyle,
-                                  fontSizeFactor: FONT_SIZE_FACTOR,
+                                  fontSizeFactor: fontSizeFactor,
                                 ),
                               ),
                               subtitle: Text(
                                 _fitnessEquipment?.device?.id.id.replaceAll(_colonRegex, '') ??
-                                    EMPTY_MEASUREMENT,
+                                    emptyMeasurement,
                                 style: _subtitleStyle,
                               ),
                               trailing: StreamBuilder<BluetoothDeviceState>(
@@ -544,7 +555,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                         if (_isScanning) {
                                           await FlutterBlue.instance.stopScan();
                                           await Future.delayed(
-                                              const Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                                              const Duration(milliseconds: uiIntermittentDelay));
                                         }
 
                                         await goToRecording(
@@ -590,7 +601,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 if (_isScanning) {
                                   FlutterBlue.instance.stopScan().whenComplete(() async {
                                     await Future.delayed(
-                                        const Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                                        const Duration(milliseconds: uiIntermittentDelay));
                                   });
                                 }
                               }
@@ -600,7 +611,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   if (_isScanning) {
                                     await FlutterBlue.instance.stopScan();
                                     await Future.delayed(
-                                        const Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                                        const Duration(milliseconds: uiIntermittentDelay));
                                   }
 
                                   await goToRecording(
@@ -615,9 +626,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       ? Get.find<HeartRateMonitor>()
                                       : null;
                                   final existingId =
-                                      heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
-                                  final storedId =
-                                      _heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
+                                      heartRateMonitor?.device?.id.id ?? notAvailable;
+                                  final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
                                   bool disconnectOnly = false;
                                   if (heartRateMonitor != null) {
                                     disconnectOnly = existingId == r.device.id.id;
@@ -756,8 +766,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         () async {
                           if (_isScanning) {
                             await FlutterBlue.instance.stopScan();
-                            await Future.delayed(
-                                const Duration(milliseconds: UI_INTERMITTENT_DELAY));
+                            await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
                           }
                         },
                       );

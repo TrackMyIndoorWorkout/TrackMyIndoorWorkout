@@ -64,7 +64,7 @@ class ExportModel {
         activity.elapsed = (lastRecord.record.timeStamp! - firstRecord.record.timeStamp!) ~/ 1000;
       }
 
-      if (activity.distance < EPS && (lastRecord.record.distance ?? 0.0) > EPS) {
+      if (activity.distance < eps && (lastRecord.record.distance ?? 0.0) > eps) {
         activity.distance = lastRecord.record.distance!;
       }
     }
@@ -72,7 +72,7 @@ class ExportModel {
     if (!rawData) {
       var accu = StatisticsAccumulator(
         si: true,
-        sport: ActivityType.Ride,
+        sport: ActivityType.ride,
         calculateAvgSpeed: true,
         calculateMaxSpeed: true,
         calculateMinSpeed: true,

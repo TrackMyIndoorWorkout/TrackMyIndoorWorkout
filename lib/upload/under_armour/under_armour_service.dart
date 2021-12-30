@@ -2,12 +2,12 @@ import '../../export/export_target.dart';
 import '../../export/json/json_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
-import '../../persistence/secret.dart';
+import '../../secret.dart';
 import '../upload_service.dart';
 import 'under_armour.dart';
 
 class UnderArmourService implements UploadService {
-  final UnderArmour _underArmour = UnderArmour(UNDER_ARMOUR_KEY, UNDER_ARMOUR_SECRET);
+  final UnderArmour _underArmour = UnderArmour(underArmourKey, underArmourSecret);
 
   @override
   Future<bool> login() async {

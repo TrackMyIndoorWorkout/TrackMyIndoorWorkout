@@ -5,12 +5,12 @@ import 'utils.dart';
 
 void main() {
   group("getCadenceUnit is rpm for Running and Riding, spm for everything else ", () {
-    for (final sport in SPORTS) {
-      final expected = (sport == ActivityType.Kayaking ||
-              sport == ActivityType.Canoeing ||
-              sport == ActivityType.Rowing ||
-              sport == ActivityType.Swim ||
-              sport == ActivityType.Elliptical)
+    for (final sport in sports) {
+      final expected = (sport == ActivityType.kayaking ||
+              sport == ActivityType.canoeing ||
+              sport == ActivityType.rowing ||
+              sport == ActivityType.swim ||
+              sport == ActivityType.elliptical)
           ? "spm"
           : "rpm";
       test("$sport -> $expected", () {

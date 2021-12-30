@@ -86,14 +86,4 @@ class FitExport extends ActivityExport {
 
     return headerBytes + bodyBytes;
   }
-
-  // @override
-  // String timeStampString(DateTime dateTime) {
-  //   return ""; // Not used for FIT
-  // }
-  //
-  // @override
-  // int timeStampInteger(DateTime dateTime) {
-  //   return FitSerializable.fitDateTime(dateTime);
-  // }
 }

@@ -1,75 +1,109 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../persistence/preferences.dart';
-import '../persistence/preferences_spec.dart';
+import '../preferences/app_debug_mode.dart';
+import '../preferences/athlete_age.dart';
+import '../preferences/athlete_body_weight.dart';
+import '../preferences/athlete_gender.dart';
+import '../preferences/athlete_vo2max.dart';
+import '../preferences/audio_volume.dart';
+import '../preferences/auto_connect.dart';
+import '../preferences/cadence_data_gap_workaround.dart';
+import '../preferences/data_connection_addresses.dart';
+import '../preferences/data_stream_gap_sound_effect.dart';
+import '../preferences/data_stream_gap_watchdog_time.dart';
+import '../preferences/device_filtering.dart';
+import '../preferences/distance_resolution.dart';
+import '../preferences/enforced_time_zone.dart';
+import '../preferences/extend_tuning.dart';
+import '../preferences/generic.dart';
+import '../preferences/heart_rate_gap_workaround.dart';
+import '../preferences/heart_rate_limiting.dart';
+import '../preferences/instant_measurement_start.dart';
+import '../preferences/instant_scan.dart';
+import '../preferences/instant_upload.dart';
+import '../preferences/lap_counter.dart';
+import '../preferences/last_equipment_id.dart';
+import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/measurement_ui_state.dart';
+import '../preferences/multi_sport_device_support.dart';
+import '../preferences/preferences_spec.dart';
+import '../preferences/scan_duration.dart';
+import '../preferences/simpler_ui.dart';
+import '../preferences/stroke_rate_smoothing.dart';
+import '../preferences/target_heart_rate.dart';
+import '../preferences/theme_selection.dart';
+import '../preferences/unit_system.dart';
+import '../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../preferences/use_hr_monitor_reported_calories.dart';
+import '../preferences/zone_index_display_coloring.dart';
 import 'constants.dart';
 
 void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService prefService) {
   final valueString = prefService.get<String>(tag) ?? "$defaultInt";
   final intValue = int.tryParse(valueString);
   if (intValue != null && intValue != defaultInt) {
-    prefService.set<int>(tag + INT_TAG_POSTFIX, intValue);
+    prefService.set<int>(tag + intTagPostfix, intValue);
   }
 }
 
 Future<Map<String, dynamic>> getPrefDefaults() async {
   Map<String, dynamic> prefDefaults = {
-    PREFERENCES_VERSION_TAG: PREFERENCES_VERSION_NEXT,
-    UNIT_SYSTEM_TAG: UNIT_SYSTEM_DEFAULT,
-    DISTANCE_RESOLUTION_TAG: DISTANCE_RESOLUTION_DEFAULT,
-    INSTANT_SCAN_TAG: INSTANT_SCAN_DEFAULT,
-    SCAN_DURATION_TAG: SCAN_DURATION_DEFAULT,
-    AUTO_CONNECT_TAG: AUTO_CONNECT_DEFAULT,
-    INSTANT_MEASUREMENT_START_TAG: INSTANT_MEASUREMENT_START_DEFAULT,
-    INSTANT_UPLOAD_TAG: INSTANT_UPLOAD_DEFAULT,
-    SIMPLER_UI_TAG: await getSimplerUiDefault(),
-    DEVICE_FILTERING_TAG: DEVICE_FILTERING_DEFAULT,
-    MULTI_SPORT_DEVICE_SUPPORT_TAG: MULTI_SPORT_DEVICE_SUPPORT_DEFAULT,
-    MEASUREMENT_PANELS_EXPANDED_TAG: MEASUREMENT_PANELS_EXPANDED_DEFAULT,
-    MEASUREMENT_DETAIL_SIZE_TAG: MEASUREMENT_DETAIL_SIZE_DEFAULT,
-    APP_DEBUG_MODE_TAG: APP_DEBUG_MODE_DEFAULT,
-    DATA_CONNECTION_ADDRESSES_TAG: DATA_CONNECTION_ADDRESSES_DEFAULT,
-    EXTEND_TUNING_TAG: EXTEND_TUNING_DEFAULT,
-    STROKE_RATE_SMOOTHING_INT_TAG: STROKE_RATE_SMOOTHING_DEFAULT,
-    DATA_STREAM_GAP_WATCHDOG_INT_TAG: DATA_STREAM_GAP_WATCHDOG_DEFAULT,
-    DATA_STREAM_GAP_SOUND_EFFECT_TAG: DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT,
-    CADENCE_GAP_WORKAROUND_TAG: CADENCE_GAP_WORKAROUND_DEFAULT,
-    HEART_RATE_GAP_WORKAROUND_TAG: HEART_RATE_GAP_WORKAROUND_DEFAULT,
-    HEART_RATE_UPPER_LIMIT_INT_TAG: HEART_RATE_UPPER_LIMIT_DEFAULT,
-    HEART_RATE_LIMITING_METHOD_TAG: HEART_RATE_LIMITING_METHOD_DEFAULT,
-    TARGET_HEART_RATE_MODE_TAG: TARGET_HEART_RATE_MODE_DEFAULT,
-    TARGET_HEART_RATE_LOWER_BPM_INT_TAG: TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
-    TARGET_HEART_RATE_UPPER_BPM_INT_TAG: TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
-    TARGET_HEART_RATE_LOWER_ZONE_INT_TAG: TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
-    TARGET_HEART_RATE_UPPER_ZONE_INT_TAG: TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
-    TARGET_HEART_RATE_AUDIO_TAG: TARGET_HEART_RATE_AUDIO_DEFAULT,
-    TARGET_HEART_RATE_AUDIO_PERIOD_INT_TAG: TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
-    TARGET_HEART_RATE_SOUND_EFFECT_TAG: TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT,
-    AUDIO_VOLUME_INT_TAG: AUDIO_VOLUME_DEFAULT,
-    LEADERBOARD_FEATURE_TAG: LEADERBOARD_FEATURE_DEFAULT,
-    RANK_RIBBON_VISUALIZATION_TAG: RANK_RIBBON_VISUALIZATION_DEFAULT,
-    RANKING_FOR_DEVICE_TAG: RANKING_FOR_DEVICE_DEFAULT,
-    RANKING_FOR_SPORT_TAG: RANKING_FOR_SPORT_DEFAULT,
-    RANK_TRACK_VISUALIZATION_TAG: RANK_TRACK_VISUALIZATION_DEFAULT,
-    RANK_INFO_ON_TRACK_TAG: RANK_INFO_ON_TRACK_DEFAULT,
-    THEME_SELECTION_TAG: THEME_SELECTION_DEFAULT,
-    ZONE_INDEX_DISPLAY_COLORING_TAG: ZONE_INDEX_DISPLAY_COLORING_DEFAULT,
-    ATHLETE_BODY_WEIGHT_INT_TAG: ATHLETE_BODY_WEIGHT_DEFAULT,
-    REMEMBER_ATHLETE_BODY_WEIGHT_TAG: REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT,
-    USE_HR_MONITOR_REPORTED_CALORIES_TAG: USE_HR_MONITOR_REPORTED_CALORIES_DEFAULT,
-    USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG: USE_HEART_RATE_BASED_CALORIE_COUNTING_DEFAULT,
-    ATHLETE_AGE_TAG: ATHLETE_AGE_DEFAULT,
-    ATHLETE_GENDER_TAG: ATHLETE_GENDER_DEFAULT,
-    ATHLETE_VO2MAX_TAG: ATHLETE_VO2MAX_DEFAULT,
-    ENFORCED_TIME_ZONE_TAG: ENFORCED_TIME_ZONE_DEFAULT,
-    DISPLAY_LAP_COUNTER_TAG: DISPLAY_LAP_COUNTER_DEFAULT,
+    preferencesVersionTag: preferencesVersionNext,
+    unitSystemTag: unitSystemDefault,
+    distanceResolutionTag: distanceResolutionDefault,
+    instantScanTag: instantScanDefault,
+    scanDurationTag: scanDurationDefault,
+    autoConnectTag: autoConnectDefault,
+    instantMeasurementStartTag: instantMeasurementStartDefault,
+    instantUploadTag: instantUploadDefault,
+    simplerUiTag: await getSimplerUiDefault(),
+    deviceFilteringTag: deviceFilteringDefault,
+    multiSportDeviceSupportTag: multiSportDeviceSupportDefault,
+    measurementPanelsExpandedTag: measurementPanelsExpandedDefault,
+    measurementDetailSizeTag: measurementDetailSizeDefault,
+    appDebugModeTag: appDebugModeDefault,
+    dataConnectionAddressesTag: dataConnectionAddressesDefault,
+    extendTuningTag: extendTuningDefault,
+    strokeRateSmoothingIntTag: strokeRateSmoothingDefault,
+    dataStreamGapWatchdogIntTag: dataStreamGapWatchdogDefault,
+    dataStreamGapSoundEffectTag: dataStreamGapSoundEffectDefault,
+    cadenceGapWorkaroundTag: cadenceGapWorkaroundDefault,
+    heartRateGapWorkaroundTag: heartRateGapWorkaroundDefault,
+    heartRateUpperLimitIntTag: heartRateUpperLimitDefault,
+    heartRateLimitingMethodTag: heartRateLimitingMethodDefault,
+    targetHeartRateModeTag: targetHeartRateModeDefault,
+    targetHeartRateLowerBpmIntTag: targetHeartRateLowerBpmDefault,
+    targetHeartRateUpperBpmIntTag: targetHeartRateUpperBpmDefault,
+    targetHeartRateLowerZoneIntTag: targetHeartRateLowerZoneDefault,
+    targetHeartRateUpperZoneIntTag: targetHeartRateUpperZoneDefault,
+    targetHeartRateAudioTag: targetHeartRateAudioDefault,
+    targetHeartRateAudioPeriodIntTag: targetHeartRateAudioPeriodDefault,
+    targetHeartRateSoundEffectTag: targetHeartRateSoundEffectDefault,
+    audioVolumeIntTag: audioVolumeDefault,
+    leaderboardFeatureTag: leaderboardFeatureDefault,
+    rankRibbonVisualizationTag: rankRibbonVisualizationDefault,
+    rankingForDeviceTag: rankingForDeviceDefault,
+    rankingForSportTag: rankingForSportDefault,
+    rankTrackVisualizationTag: rankTrackVisualizationDefault,
+    rankInfoOnTrackTag: rankInfoOnTrackDefault,
+    themeSelectionTag: themeSelectionDefault,
+    zoneIndexDisplayColoringTag: zoneIndexDisplayColoringDefault,
+    athleteBodyWeightIntTag: athleteBodyWeightDefault,
+    rememberAthleteBodyWeightTag: rememberAthleteBodyWeightDefault,
+    useHrMonitorReportedCaloriesTag: useHrMonitorReportedCaloriesDefault,
+    useHeartRateBasedCalorieCountingTag: useHeartRateBasedCalorieCountingDefault,
+    athleteAgeTag: athleteAgeDefault,
+    athleteGenderTag: athleteGenderDefault,
+    athleteVO2MaxTag: athleteVO2MaxDefault,
+    enforcedTimeZoneTag: enforcedTimeZoneDefault,
+    displayLapCounterTag: displayLapCounterDefault,
   };
   return prefDefaults;
 }
 
 Future<BasePrefService> initPreferences() async {
   var prefDefaults = await getPrefDefaults();
-  for (var sport in PreferencesSpec.SPORT_PREFIXES) {
+  for (var sport in PreferencesSpec.sportPrefixes) {
     for (var prefSpec in PreferencesSpec.preferencesSpecs) {
       prefDefaults.addAll({
         prefSpec.thresholdTag(sport): prefSpec.thresholdDefault(sport),
@@ -77,8 +111,8 @@ Future<BasePrefService> initPreferences() async {
       });
     }
 
-    prefDefaults.addAll({LAST_EQUIPMENT_ID_TAG_PREFIX + sport: LAST_EQUIPMENT_ID_DEFAULT});
-    if (sport != ActivityType.Ride) {
+    prefDefaults.addAll({lastEquipmentIdTagPrefix + sport: lastEquipmentIdDefault});
+    if (sport != ActivityType.ride) {
       prefDefaults.addAll(
           {PreferencesSpec.slowSpeedTag(sport): PreferencesSpec.slowSpeeds[sport].toString()});
     }
@@ -86,127 +120,126 @@ Future<BasePrefService> initPreferences() async {
 
   for (var prefSpec in PreferencesSpec.preferencesSpecs) {
     prefDefaults.addAll({
-      "${prefSpec.metric}_${PreferencesSpec.ZONE_INDEX_DISPLAY_TAG_POSTFIX}":
+      "${prefSpec.metric}_${PreferencesSpec.zoneIndexDisplayTagPostfix}":
           prefSpec.indexDisplayDefault
     });
   }
 
   final prefService =
-      await PrefServiceShared.init(prefix: PREFERENCES_PREFIX, defaults: prefDefaults);
+      await PrefServiceShared.init(prefix: preferencesPrefix, defaults: prefDefaults);
   Get.put<BasePrefService>(prefService, permanent: true);
 
-  final prefVersion = prefService.get<int>(PREFERENCES_VERSION_TAG) ?? PREFERENCES_VERSION_NEXT;
-  if (prefVersion < PREFERENCES_VERSION_SPORT_THRESHOLDS) {
+  final prefVersion = prefService.get<int>(preferencesVersionTag) ?? preferencesVersionNext;
+  if (prefVersion < preferencesVersionSportThresholds) {
     for (var prefSpec in PreferencesSpec.preferencesSpecs) {
-      final thresholdTag = PreferencesSpec.THRESHOLD_PREFIX + prefSpec.metric;
+      final thresholdTag = PreferencesSpec.thresholdPrefix + prefSpec.metric;
       var thresholdString = prefService.get<String>(thresholdTag) ?? "";
       if (prefSpec.metric == "speed") {
-        final threshold = double.tryParse(thresholdString) ?? EPS;
-        thresholdString = decimalRound(threshold * MI2KM).toString();
+        final threshold = double.tryParse(thresholdString) ?? eps;
+        thresholdString = decimalRound(threshold * mi2km).toString();
       }
 
-      await prefService.set<String>(prefSpec.thresholdTag(ActivityType.Ride), thresholdString);
-      final zoneTag = prefSpec.metric + PreferencesSpec.ZONES_POSTFIX;
+      await prefService.set<String>(prefSpec.thresholdTag(ActivityType.ride), thresholdString);
+      final zoneTag = prefSpec.metric + PreferencesSpec.zonesPostfix;
       await prefService.set<String>(
-        prefSpec.zonesTag(ActivityType.Ride),
+        prefSpec.zonesTag(ActivityType.ride),
         prefService.get<String>(zoneTag) ?? "55,75,90,105,120,150",
       );
     }
   }
 
-  if (prefVersion < PREFERENCES_VERSION_EQUIPMENT_REMEMBRANCE_PER_SPORT) {
-    final lastEquipmentId = prefService.get<String>(LAST_EQUIPMENT_ID_TAG) ?? "";
+  if (prefVersion < preferencesVersionEquipmentRemembrancePerSport) {
+    final lastEquipmentId = prefService.get<String>(lastEquipmentIdTag) ?? "";
     if (lastEquipmentId.trim().isNotEmpty) {
       await prefService.set<String>(
-        LAST_EQUIPMENT_ID_TAG_PREFIX + ActivityType.Ride,
+        lastEquipmentIdTagPrefix + ActivityType.ride,
         lastEquipmentId,
       );
     }
   }
 
-  if (prefVersion < PREFERENCES_VERSION_SPINNERS) {
+  if (prefVersion < preferencesVersionSpinners) {
     migrateStringIntegerPreference(
-      STROKE_RATE_SMOOTHING_TAG,
-      STROKE_RATE_SMOOTHING_DEFAULT,
+      strokeRateSmoothingTag,
+      strokeRateSmoothingDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      DATA_STREAM_GAP_WATCHDOG_TAG,
-      DATA_STREAM_GAP_WATCHDOG_DEFAULT,
+      dataStreamGapWatchdogTag,
+      dataStreamGapWatchdogDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      HEART_RATE_UPPER_LIMIT_TAG,
-      HEART_RATE_UPPER_LIMIT_DEFAULT,
+      heartRateUpperLimitTag,
+      heartRateUpperLimitDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      TARGET_HEART_RATE_LOWER_BPM_TAG,
-      TARGET_HEART_RATE_LOWER_BPM_DEFAULT,
+      targetHeartRateLowerBpmTag,
+      targetHeartRateLowerBpmDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      TARGET_HEART_RATE_UPPER_BPM_TAG,
-      TARGET_HEART_RATE_UPPER_BPM_DEFAULT,
+      targetHeartRateUpperBpmTag,
+      targetHeartRateUpperBpmDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      TARGET_HEART_RATE_LOWER_ZONE_TAG,
-      TARGET_HEART_RATE_LOWER_ZONE_DEFAULT,
+      targetHeartRateLowerZoneTag,
+      targetHeartRateLowerZoneDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      TARGET_HEART_RATE_UPPER_ZONE_TAG,
-      TARGET_HEART_RATE_UPPER_ZONE_DEFAULT,
+      targetHeartRateUpperZoneTag,
+      targetHeartRateUpperZoneDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      TARGET_HEART_RATE_AUDIO_PERIOD_TAG,
-      TARGET_HEART_RATE_AUDIO_PERIOD_DEFAULT,
+      targetHeartRateAudioPeriodTag,
+      targetHeartRateAudioPeriodDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      AUDIO_VOLUME_TAG,
-      AUDIO_VOLUME_DEFAULT,
+      audioVolumeTag,
+      audioVolumeDefault,
       prefService,
     );
     migrateStringIntegerPreference(
-      ATHLETE_BODY_WEIGHT_TAG,
-      ATHLETE_BODY_WEIGHT_DEFAULT,
+      athleteBodyWeightTag,
+      athleteBodyWeightDefault,
       prefService,
     );
   }
 
   String addressesString =
-      prefService.get<String>(DATA_CONNECTION_ADDRESSES_TAG) ?? DATA_CONNECTION_ADDRESSES_DEFAULT;
-  if (prefVersion < PREFERENCES_VERSION_DEFAULTING_DATA_CONNECTION) {
-    if (addressesString == DATA_CONNECTION_ADDRESSES_OLD_DEFAULT) {
+      prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
+  if (prefVersion < preferencesVersionDefaultingDataConnection) {
+    if (addressesString == dataConnectionAddressesOldDefault) {
       await prefService.set<String>(
-        DATA_CONNECTION_ADDRESSES_TAG,
-        DATA_CONNECTION_ADDRESSES_DEFAULT,
+        dataConnectionAddressesTag,
+        dataConnectionAddressesDefault,
       );
       addressesString = "";
     }
   }
 
-  if ((prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT) < SCAN_DURATION_DEFAULT) {
-    await prefService.set<int>(SCAN_DURATION_TAG, SCAN_DURATION_DEFAULT);
+  if ((prefService.get<int>(scanDurationTag) ?? scanDurationDefault) < scanDurationDefault) {
+    await prefService.set<int>(scanDurationTag, scanDurationDefault);
   }
 
-  if (prefVersion < PREFERENCES_VERSION_INCREASE_WATCHDOG_DEFAULT) {
-    final currentDefault = prefService.get<int>(DATA_STREAM_GAP_WATCHDOG_INT_TAG);
-    if (currentDefault == DATA_STREAM_GAP_WATCHDOG_OLD_DEFAULT) {
-      await prefService.set<int>(
-          DATA_STREAM_GAP_WATCHDOG_INT_TAG, DATA_STREAM_GAP_WATCHDOG_DEFAULT);
+  if (prefVersion < preferencesVersionIncreaseWatchdogDefault) {
+    final currentDefault = prefService.get<int>(dataStreamGapWatchdogIntTag);
+    if (currentDefault == dataStreamGapWatchdogOldDefault) {
+      await prefService.set<int>(dataStreamGapWatchdogIntTag, dataStreamGapWatchdogDefault);
     }
   }
 
-  await prefService.set<int>(PREFERENCES_VERSION_TAG, PREFERENCES_VERSION_NEXT);
+  await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
 
-  for (var sport in PreferencesSpec.SPORT_PREFIXES) {
-    if (sport != ActivityType.Ride) {
+  for (var sport in PreferencesSpec.sportPrefixes) {
+    if (sport != ActivityType.ride) {
       final slowSpeedString = prefService.get<String>(PreferencesSpec.slowSpeedTag(sport)) ?? "";
-      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? EPS;
+      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? eps;
     }
   }
 

@@ -13,7 +13,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
   final int productTextLength;
 
   FitDeviceInfo(localMessageType, this.productTextLength)
-      : super(localMessageType, FitMessage.DeviceInfo) {
+      : super(localMessageType, FitMessage.deviceInfo) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
       FitField(1, FitBaseTypes.uint8Type), // DeviceType
@@ -30,10 +30,10 @@ class FitDeviceInfo extends FitDefinitionMessage {
     var data = FitData();
     data.output = [localMessageType];
     data.addLong(FitSerializable.fitDateTime(DateTime.now()));
-    data.addByte(FitDeviceType.FitnessEquipment);
+    data.addByte(FitDeviceType.fitnessEquipment);
     data.addShort(model.descriptor.manufacturerFitId);
     data.addByte(
-        model.descriptor.antPlus ? FitSourceType.Antplus : FitSourceType.BluetoothLowEnergy);
+        model.descriptor.antPlus ? FitSourceType.antPlus : FitSourceType.bluetoothLowEnergy);
     assert(productTextLength == model.descriptor.fullName.length);
     data.addString(model.descriptor.fullName);
 

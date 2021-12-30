@@ -55,10 +55,10 @@ abstract class Auth {
     String? scope,
   ) async {
     final prefService = Get.find<BasePrefService>();
-    await prefService.set<String>(STRAVA_ACCESS_TOKEN_TAG, token ?? '');
-    await prefService.set<String>(STRAVA_REFRESH_TOKEN_TAG, refreshToken ?? '');
-    await prefService.set<int>(STRAVA_EXPIRES_AT_TAG, expire ?? 0); // Stored in seconds
-    await prefService.set<String>(STRAVA_TOKEN_SCOPE_TAG, scope ?? '');
+    await prefService.set<String>(stravaAccessTokenTag, token ?? '');
+    await prefService.set<String>(stravaRefreshTokenTag, refreshToken ?? '');
+    await prefService.set<int>(stravaExpiresAtTag, expire ?? 0); // Stored in seconds
+    await prefService.set<String>(stravaTokenScopeTag, scope ?? '');
     await registerToken(token, refreshToken, expire, scope);
     debugPrint('token saved!!!');
   }
@@ -74,10 +74,10 @@ abstract class Auth {
 
     try {
       final prefService = Get.find<BasePrefService>();
-      localToken.accessToken = prefService.get<String>(STRAVA_ACCESS_TOKEN_TAG);
-      localToken.refreshToken = prefService.get<String>(STRAVA_REFRESH_TOKEN_TAG);
-      localToken.expiresAt = prefService.get<int>(STRAVA_EXPIRES_AT_TAG);
-      localToken.scope = prefService.get<String>(STRAVA_TOKEN_SCOPE_TAG);
+      localToken.accessToken = prefService.get<String>(stravaAccessTokenTag);
+      localToken.refreshToken = prefService.get<String>(stravaRefreshTokenTag);
+      localToken.expiresAt = prefService.get<int>(stravaExpiresAtTag);
+      localToken.scope = prefService.get<String>(stravaTokenScopeTag);
 
       // load the data into Get
       await registerToken(
@@ -112,12 +112,12 @@ abstract class Auth {
     String prompt,
   ) async {
     debugPrint('Entering getStravaCode');
-    String redirectUrl = kIsWeb ? REDIRECT_URL_WEB : REDIRECT_URL_MOBILE;
+    String redirectUrl = kIsWeb ? redirectUrlWeb : redirectUrlMobile;
 
     final params = '?client_id=$clientID&redirect_uri=$redirectUrl'
         '&response_type=code&approval_prompt=$prompt&scope=$scope';
 
-    final reqAuth = AUTHORIZATION_ENDPOINT + params;
+    final reqAuth = authorizationEndpoint + params;
     debugPrint(reqAuth);
     StreamSubscription? sub;
 
@@ -150,7 +150,7 @@ abstract class Auth {
         } else {
           // Parse the link and warn the user, if it is not correct
           debugPrint('Got a link!! $uri');
-          if (uri.scheme.compareTo('${REDIRECT_URL_SCHEME}_$clientID') != 0) {
+          if (uri.scheme.compareTo('${redirectUrlScheme}_$clientID') != 0) {
             debugPrint('This is not the good scheme ${uri.scheme}');
           }
           final code = uri.queryParameters["code"] ?? "N/A";
@@ -204,7 +204,7 @@ abstract class Auth {
 
   Future<bool> hasValidToken() async {
     final prefService = Get.find<BasePrefService>();
-    String? accessToken = prefService.get<String>(STRAVA_ACCESS_TOKEN_TAG);
+    String? accessToken = prefService.get<String>(stravaAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
@@ -318,7 +318,7 @@ abstract class Auth {
 
     final params = '?client_id=$clientID&client_secret=$secret'
         '&grant_type=refresh_token&refresh_token=$refreshToken';
-    final urlRefresh = TOKEN_ENDPOINT + params;
+    final urlRefresh = tokenEndpoint + params;
 
     debugPrint('Entering getNewAccessToken');
     // debugPrint('urlRefresh $urlRefresh');
@@ -350,7 +350,7 @@ abstract class Auth {
     // Put your own secret in secret.dart
     final params =
         '?client_id=$clientID&client_secret=$secret&code=$code&grant_type=authorization_code';
-    final urlToken = TOKEN_ENDPOINT + params;
+    final urlToken = tokenEndpoint + params;
 
     debugPrint('urlToken $urlToken');
 
@@ -406,9 +406,8 @@ abstract class Auth {
     var fault = Fault(StravaStatusCode.statusUnknownError, "Unknown reason");
     // If header is not "empty"
     if (header.containsKey('88') == false) {
-      final requestDeAuthorize = DEAUTHORIZATION_ENDPOINT;
-      debugPrint('request $requestDeAuthorize');
-      final rep = await http.post(Uri.parse(requestDeAuthorize), headers: header);
+      debugPrint('request $deauthorizationEndpoint');
+      final rep = await http.post(Uri.parse(deauthorizationEndpoint), headers: header);
       if (rep.statusCode >= 200 && rep.statusCode < 300) {
         debugPrint('DeAuthorize done');
         debugPrint('response ${rep.body}');

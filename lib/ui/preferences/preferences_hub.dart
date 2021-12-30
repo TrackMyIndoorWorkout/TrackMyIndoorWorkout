@@ -2,7 +2,7 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/enforced_time_zone.dart';
 import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/constants.dart';
@@ -31,7 +31,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   void initState() {
     super.initState();
     _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: Colors.white,
     );
     _sizeDefault = _textStyle.fontSize! * 2;
@@ -201,7 +201,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                   List<String> timeZoneChoices = [];
                   timeZoneChoices.addAll(timeZoneChoicesFixed);
                   timeZoneChoices.sort();
-                  timeZoneChoices.insert(0, ENFORCED_TIME_ZONE_DEFAULT);
+                  timeZoneChoices.insert(0, enforcedTimeZoneDefault);
                   Get.to(() => ExpertPreferencesScreen(timeZoneChoices: timeZoneChoices));
                 },
                 child: Row(

@@ -11,8 +11,8 @@ class CsvExport extends ActivityExport {
 
   @override
   Future<List<int>> getFileCore(ExportModel exportModel) async {
-    _sb.writeln("$CSV_MAGIC,$CSV_VERSION,");
-    _sb.writeln("$RIDE_SUMMARY,");
+    _sb.writeln("$csvMagic,$csvVersion,");
+    _sb.writeln("$rideSummaryTag,");
 
     addActivity(exportModel);
 
@@ -20,35 +20,49 @@ class CsvExport extends ActivityExport {
   }
 
   void addActivity(ExportModel exportModel) {
-    _sb.writeln("$TOTAL_TIME,${exportModel.activity.elapsed},$SECONDS_UNIT,");
-    _sb.writeln("$TOTAL_DISTANCE,${exportModel.activity.distance},$METER_UNIT,");
-    _sb.writeln("$DEVICE_NAME,${exportModel.activity.deviceName},");
-    _sb.writeln("$DEVICE_ID,${exportModel.activity.deviceId},");
+    _sb.writeln("$totalTimeTag,${exportModel.activity.elapsed},$secondsUnitTag,");
+    _sb.writeln("$totalDistanceTag,${exportModel.activity.distance},$meterUnitTag,");
+    _sb.writeln("$deviceNameTag,${exportModel.activity.deviceName},");
+    _sb.writeln("$deviceIdTag,${exportModel.activity.deviceId},");
 
-    _sb.writeln("$START_TIME,${exportModel.activity.start},");
-    _sb.writeln("$END_TIME,${exportModel.activity.end},");
-    _sb.writeln("$CALORIES,${exportModel.activity.calories},");
-    _sb.writeln("$UPLOADED_TAG,${exportModel.activity.uploaded},");
-    _sb.writeln("$STRAVA_ID,${exportModel.activity.stravaId},");
-    _sb.writeln("$FOUR_CC,${exportModel.activity.fourCC},");
-    _sb.writeln("$SPORT_TAG,${exportModel.activity.sport},");
-    _sb.writeln("$POWER_FACTOR,${exportModel.activity.powerFactor},");
-    _sb.writeln("$CALORIE_FACTOR,${exportModel.activity.calorieFactor},");
+    _sb.writeln("$startTimeTag,${exportModel.activity.start},");
+    _sb.writeln("$endTimeTag,${exportModel.activity.end},");
+    _sb.writeln("$caloriesTag,${exportModel.activity.calories},");
+    _sb.writeln("$uploadedTag,${exportModel.activity.uploaded},");
+    _sb.writeln("$stravaIdTag,${exportModel.activity.stravaId},");
+    _sb.writeln("$fourCCTag,${exportModel.activity.fourCC},");
+    _sb.writeln("$sportTag,${exportModel.activity.sport},");
+    _sb.writeln("$powerFactorTag,${exportModel.activity.powerFactor},");
+    _sb.writeln("$calorieFactorTag,${exportModel.activity.calorieFactor},");
+    _sb.writeln("$hrCalorieFactorTag,${exportModel.activity.hrCalorieFactor},");
+    _sb.writeln("$hrmCalorieFactorTag,${exportModel.activity.hrmCalorieFactor},");
+    _sb.writeln("$hrmIdTag,${exportModel.activity.hrmId},");
+    _sb.writeln("$hrBasedCaloriesTag,${exportModel.activity.hrBasedCalories},");
+    _sb.writeln("$timeZoneTag,${exportModel.activity.timeZone},");
+    _sb.writeln("$suuntoUploadedTag,${exportModel.activity.suuntoUploaded},");
+    _sb.writeln("$suuntoBlobUrlTag,${exportModel.activity.suuntoBlobUrl},");
+    _sb.writeln("$suuntoWorkoutUrlTag,${exportModel.activity.suuntoWorkoutUrl},");
+    _sb.writeln("$suuntoUploadIdTag,${exportModel.activity.suuntoUploadIdentifier},");
+    _sb.writeln("$underArmourUploadedTag,${exportModel.activity.underArmourUploaded},");
+    _sb.writeln("$uaWorkoutIdTag,${exportModel.activity.uaWorkoutId},");
+    _sb.writeln("$trainingPeaksUploadedTag,${exportModel.activity.trainingPeaksUploaded},");
+    _sb.writeln("$trainingPeaksAthleteIdTag,${exportModel.activity.trainingPeaksAthleteId},");
+    _sb.writeln("$trainingPeaksWorkoutIdTag,${exportModel.activity.trainingPeaksWorkoutId},");
     _sb.writeln("");
 
     addRideData(exportModel);
   }
 
   void addRideData(ExportModel exportModel) {
-    _sb.writeln(RIDE_DATA);
-    _sb.write("$POWER_HEADER,");
-    _sb.write("$RPM_HEADER,");
-    _sb.write("$HR_HEADER,");
-    _sb.write("$DISTANCE_HEADER,");
-    _sb.write("$TIME_STAMP,");
-    _sb.write("$ELAPSED,");
-    _sb.write("$SPEED,");
-    _sb.writeln("$CALORIES,");
+    _sb.writeln(rideDataTag);
+    _sb.write("$powerHeaderTag,");
+    _sb.write("$rpmHeaderTag,");
+    _sb.write("$hrHeaderTag,");
+    _sb.write("$distanceHeaderTag,");
+    _sb.write("$timeStampTag,");
+    _sb.write("$elapsedTag,");
+    _sb.write("$speedTag,");
+    _sb.writeln("$caloriesTag,");
 
     for (var record in exportModel.records) {
       _sb.write("${record.record.power},");

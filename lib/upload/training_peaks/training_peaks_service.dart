@@ -2,13 +2,12 @@ import '../../export/export_target.dart';
 import '../../export/fit/fit_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
-import '../../persistence/secret.dart';
+import '../../secret.dart';
 import '../upload_service.dart';
 import 'training_peaks.dart';
 
 class TrainingPeaksService implements UploadService {
-  final TrainingPeaks _trainingPeaks =
-      TrainingPeaks(TRAINING_PEAKS_CLIENT_ID, TRAINING_PEAKS_SECRET);
+  final TrainingPeaks _trainingPeaks = TrainingPeaks(trainingPeaksClientId, trainingPeaksSecret);
 
   @override
   Future<bool> login() async {

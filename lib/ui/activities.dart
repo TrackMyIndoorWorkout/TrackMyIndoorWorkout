@@ -20,7 +20,9 @@ import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
-import '../persistence/preferences.dart';
+import '../preferences/distance_resolution.dart';
+import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/preferences.dart';
@@ -51,9 +53,9 @@ class ActivitiesScreen extends StatefulWidget {
 class ActivitiesScreenState extends State<ActivitiesScreen> {
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
-  bool _si = UNIT_SYSTEM_DEFAULT;
-  bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
-  bool _leaderboardFeature = LEADERBOARD_FEATURE_DEFAULT;
+  bool _si = unitSystemDefault;
+  bool _highRes = distanceResolutionDefault;
+  bool _leaderboardFeature = leaderboardFeatureDefault;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeDefault2 = 10.0;
@@ -71,11 +73,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   void initState() {
     super.initState();
     final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
-        DISTANCE_RESOLUTION_DEFAULT;
-    _leaderboardFeature =
-        prefService.get<bool>(LEADERBOARD_FEATURE_TAG) ?? LEADERBOARD_FEATURE_DEFAULT;
+    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _highRes =
+        Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
+    _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
   }
@@ -148,7 +149,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       IconButton(
         icon: _themeManager.getActionIcon(Icons.bolt, size),
         onPressed: () async {
-          if (activity.powerFactor < EPS) {
+          if (activity.powerFactor < eps) {
             Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
             return;
           }
@@ -167,8 +168,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             return;
           }
           Get.bottomSheet(
-            CalorieOverrideBottomSheet(
-                deviceId: activity.deviceId, oldCalories: activity.calories.toDouble()),
+            CalorieOverrideBottomSheet(activity: activity),
             enableDrag: false,
           );
         },
@@ -239,20 +239,20 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > EPS) {
+    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
       _sizeDefault = _mediaWidth! / 7;
       _sizeDefault2 = _sizeDefault / 1.5;
 
       _measurementStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
+        fontFamily: fontFamily,
         fontSize: _sizeDefault,
       );
       _textStyle = TextStyle(
         fontSize: _sizeDefault2,
       );
       _headerStyle = TextStyle(
-        fontFamily: FONT_FAMILY,
+        fontFamily: fontFamily,
         fontSize: _sizeDefault2,
       );
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);

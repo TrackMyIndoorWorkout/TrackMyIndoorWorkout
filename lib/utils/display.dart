@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 
-import '../persistence/preferences_spec.dart';
+import '../preferences/preferences_spec.dart';
 import 'constants.dart';
 
 double speedByUnitCore(double speed, bool si) {
-  return si ? speed : speed * KM2MI;
+  return si ? speed : speed * km2mi;
 }
 
 double speedOrPace(double speed, bool si, String sport) {
-  if (sport == ActivityType.Ride) {
+  if (sport == ActivityType.ride) {
     if (si) return speed;
 
-    return speed * KM2MI;
+    return speed * km2mi;
   } else {
-    if (speed.abs() < DISPLAY_EPS) return 0.0;
+    if (speed.abs() < displayEps) return 0.0;
 
-    if (sport == ActivityType.Run || sport == ActivityType.Elliptical) {
+    if (sport == ActivityType.run || sport == ActivityType.elliptical) {
       final pace = 60.0 / speed;
 
       if (si) return pace;
 
-      return pace / KM2MI; // mph is lower than kmh but pace is reciprocal
-    } else if (sport == ActivityType.Kayaking ||
-        sport == ActivityType.Canoeing ||
-        sport == ActivityType.Rowing) {
+      return pace / km2mi; // mph is lower than kmh but pace is reciprocal
+    } else if (sport == ActivityType.kayaking ||
+        sport == ActivityType.canoeing ||
+        sport == ActivityType.rowing) {
       return 30.0 / speed;
-    } else if (sport == ActivityType.Swim) {
+    } else if (sport == ActivityType.swim) {
       return 6.0 / speed;
     }
     return speed;
@@ -34,15 +34,15 @@ double speedOrPace(double speed, bool si, String sport) {
 
 String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = false}) {
   final spd = speedOrPace(speed, si, sport);
-  if (sport == ActivityType.Ride) {
+  if (sport == ActivityType.ride) {
     return spd.toStringAsFixed(2);
-  } else if (sport == ActivityType.Run ||
-      sport == ActivityType.Kayaking ||
-      sport == ActivityType.Canoeing ||
-      sport == ActivityType.Rowing ||
-      sport == ActivityType.Swim ||
-      sport == ActivityType.Elliptical) {
-    if (speed.abs() < DISPLAY_EPS) return "0:00";
+  } else if (sport == ActivityType.run ||
+      sport == ActivityType.kayaking ||
+      sport == ActivityType.canoeing ||
+      sport == ActivityType.rowing ||
+      sport == ActivityType.swim ||
+      sport == ActivityType.elliptical) {
+    if (speed.abs() < displayEps) return "0:00";
 
     if (limitSlowSpeed) {
       final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)]!;
@@ -52,14 +52,14 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
     }
 
     var pace = 60.0 / speed;
-    if (sport == ActivityType.Kayaking ||
-        sport == ActivityType.Canoeing ||
-        sport == ActivityType.Rowing) {
+    if (sport == ActivityType.kayaking ||
+        sport == ActivityType.canoeing ||
+        sport == ActivityType.rowing) {
       pace /= 2.0;
-    } else if (sport == ActivityType.Swim) {
+    } else if (sport == ActivityType.swim) {
       pace /= 10.0;
     } else if (!si) {
-      pace /= KM2MI;
+      pace /= km2mi;
     }
     return paceString(pace);
   }
@@ -73,49 +73,49 @@ String paceString(double pace) {
 }
 
 String getSpeedUnit(bool si, String sport) {
-  if (sport == ActivityType.Ride) {
+  if (sport == ActivityType.ride) {
     return si ? 'kmh' : 'mph';
-  } else if (sport == ActivityType.Run || sport == ActivityType.Elliptical) {
+  } else if (sport == ActivityType.run || sport == ActivityType.elliptical) {
     return si ? 'min /km' : 'min /mi';
-  } else if (sport == ActivityType.Kayaking ||
-      sport == ActivityType.Canoeing ||
-      sport == ActivityType.Rowing) {
+  } else if (sport == ActivityType.kayaking ||
+      sport == ActivityType.canoeing ||
+      sport == ActivityType.rowing) {
     return 'min /500';
-  } else if (sport == ActivityType.Swim) {
+  } else if (sport == ActivityType.swim) {
     return 'min /100';
   }
   return si ? 'kmh' : 'mph';
 }
 
 String speedTitle(String sport) {
-  return sport == ActivityType.Ride ? "Speed" : "Pace";
+  return sport == ActivityType.ride ? "Speed" : "Pace";
 }
 
 IconData getIcon(String? sport) {
-  if (sport == ActivityType.Ride) {
+  if (sport == ActivityType.ride) {
     return Icons.directions_bike;
-  } else if (sport == ActivityType.Run) {
+  } else if (sport == ActivityType.run) {
     return Icons.directions_run;
-  } else if (sport == ActivityType.Kayaking) {
+  } else if (sport == ActivityType.kayaking) {
     return Icons.kayaking;
-  } else if (sport == ActivityType.Canoeing || sport == ActivityType.Rowing) {
+  } else if (sport == ActivityType.canoeing || sport == ActivityType.rowing) {
     return Icons.rowing;
-  } else if (sport == ActivityType.Swim) {
+  } else if (sport == ActivityType.swim) {
     return Icons.waves;
-  } else if (sport == ActivityType.Elliptical) {
+  } else if (sport == ActivityType.elliptical) {
     return Icons.downhill_skiing;
-  } else if (sport == ActivityType.StairStepper) {
+  } else if (sport == ActivityType.stairStepper) {
     return Icons.stairs;
   }
   return Icons.directions_bike;
 }
 
 String getCadenceUnit(String sport) {
-  if (sport == ActivityType.Kayaking ||
-      sport == ActivityType.Canoeing ||
-      sport == ActivityType.Rowing ||
-      sport == ActivityType.Swim ||
-      sport == ActivityType.Elliptical) {
+  if (sport == ActivityType.kayaking ||
+      sport == ActivityType.canoeing ||
+      sport == ActivityType.rowing ||
+      sport == ActivityType.swim ||
+      sport == ActivityType.elliptical) {
     return "spm";
   }
   return "rpm";
@@ -131,9 +131,9 @@ String distanceString(double distance, bool si, bool highRes) {
   }
 
   if (highRes) {
-    return (distance * M2YARD).toStringAsFixed(0);
+    return (distance * m2yard).toStringAsFixed(0);
   } else {
-    return (distance * M2MILE).toStringAsFixed(2);
+    return (distance * m2mile).toStringAsFixed(2);
   }
 }
 

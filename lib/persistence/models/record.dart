@@ -83,18 +83,18 @@ class Record {
 
   void paceToSpeed() {
     if (sport != null && speed == null && pace != null) {
-      if (pace!.abs() < DISPLAY_EPS) {
+      if (pace!.abs() < displayEps) {
         speed = 0.0;
       } else {
-        if (sport == ActivityType.Run || sport == ActivityType.Elliptical) {
+        if (sport == ActivityType.run || sport == ActivityType.elliptical) {
           // minutes / km pace
           speed = 60.0 / pace!;
-        } else if (sport == ActivityType.Kayaking ||
-            sport == ActivityType.Canoeing ||
-            sport == ActivityType.Rowing) {
+        } else if (sport == ActivityType.kayaking ||
+            sport == ActivityType.canoeing ||
+            sport == ActivityType.rowing) {
           // seconds / 500m pace
           speed = 30.0 / (pace! / 60.0);
-        } else if (sport == ActivityType.Swim) {
+        } else if (sport == ActivityType.swim) {
           // seconds / 100m pace
           speed = 6.0 / (pace! / 60.0);
         } else {
@@ -172,7 +172,7 @@ class RecordWithSport extends Record {
           caloriesPerMinute: caloriesPerMinute,
         );
 
-  static getBlank(String sport, bool uxDebug, Random random) {
+  static RecordWithSport getBlank(String sport, bool uxDebug, Random random) {
     return RecordWithSport(
       timeStamp: 0,
       distance: 0.0,
@@ -187,7 +187,7 @@ class RecordWithSport extends Record {
     );
   }
 
-  static getRandom(String sport, Random random) {
+  static RecordWithSport getRandom(String sport, Random random) {
     return RecordWithSport(
       timeStamp: DateTime.now().millisecondsSinceEpoch,
       calories: random.nextInt(1500),

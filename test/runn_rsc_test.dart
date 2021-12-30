@@ -22,11 +22,11 @@ const sampleData = [0, 145, 1, 187];
 @GenerateMocks([BluetoothDevice])
 void main() {
   test('Runn RSC constructor tests', () async {
-    final rower = deviceMap[NPE_RUNN_FOURCC]!;
+    final rower = deviceMap[npeRunnFourCC]!;
 
     expect(rower.canMeasureHeartRate, false);
-    expect(rower.defaultSport, ActivityType.Run);
-    expect(rower.fourCC, NPE_RUNN_FOURCC);
+    expect(rower.defaultSport, ActivityType.run);
+    expect(rower.fourCC, npeRunnFourCC);
   });
 
   test('Runn RSC Device interprets flags properly', () async {
@@ -54,7 +54,7 @@ void main() {
           cadence: sampleData[3],
           heartRate: null,
           pace: null,
-          sport: ActivityType.Run,
+          sport: ActivityType.run,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -76,7 +76,7 @@ void main() {
         expect(record.calories, testPair.record.calories);
         expect(record.power, testPair.record.power);
         if (testPair.record.speed != null) {
-          expect(record.speed, closeTo(testPair.record.speed!, EPS));
+          expect(record.speed, closeTo(testPair.record.speed!, eps));
         } else {
           expect(record.speed, null);
         }

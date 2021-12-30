@@ -11,23 +11,23 @@ import 'utils.dart';
 
 void main() {
   group('FitSession has the expected global message number', () {
-    [
+    for (var exportTarget in [
       const Tuple2<int, String>(ExportTarget.regular, "regular"),
       const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
-    ].forEach((exportTarget) {
+    ]) {
       test('for ${exportTarget.item2}', () async {
         final session = FitSession(0, exportTarget.item1);
 
-        expect(session.globalMessageNumber, FitMessage.Session);
+        expect(session.globalMessageNumber, FitMessage.session);
       });
-    });
+    }
   });
 
   group('FitSession data has the expected length', () {
-    [
+    for (var exportTarget in [
       const Tuple2<int, String>(ExportTarget.regular, "regular"),
       const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
-    ].forEach((exportTarget) {
+    ]) {
       test('for ${exportTarget.item2}', () async {
         final rng = Random();
         final session = FitSession(0, exportTarget.item1);
@@ -55,6 +55,6 @@ void main() {
 
         expect(output.length, expected + 1);
       });
-    });
+    }
   });
 }

@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'package:floor/floor.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_map.dart';
+import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
 import 'dao/calorie_tune_dao.dart';
@@ -20,7 +23,7 @@ import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 14, entities: [
+@Database(version: 16, entities: [
   Activity,
   Record,
   DeviceUsage,
@@ -29,6 +32,8 @@ part 'database.g.dart'; // the generated code is in that file
   WorkoutSummary,
 ])
 abstract class AppDatabase extends FloorDatabase {
+  static bool additional15to16Migration = false;
+
   ActivityDao get activityDao;
   RecordDao get recordDao;
   DeviceUsageDao get deviceUsageDao;
@@ -36,9 +41,13 @@ abstract class AppDatabase extends FloorDatabase {
   PowerTuneDao get powerTuneDao;
   WorkoutSummaryDao get workoutSummaryDao;
 
-  Future<int> rowCount(String tableName, String deviceId) async {
-    final result = await database
-        .rawQuery("SELECT COUNT(`id`) AS cnt FROM `$tableName` WHERE `mac` = ?", [deviceId]);
+  Future<int> rowCount(String tableName, String deviceId, {String extraPredicate = ""}) async {
+    var queryString = "SELECT COUNT(`id`) AS cnt FROM `$tableName` WHERE `mac` = ?";
+    if (extraPredicate.isNotEmpty) {
+      queryString += " AND $extraPredicate";
+    }
+
+    final result = await database.rawQuery(queryString, [deviceId]);
 
     if (result.isEmpty) {
       return 0;
@@ -65,18 +74,33 @@ abstract class AppDatabase extends FloorDatabase {
     return powerTune?.powerFactor ?? 1.0;
   }
 
-  Future<bool> hasCalorieTune(String deviceId) async {
-    return await rowCount(calorieTuneTableName, deviceId) > 0;
+  Future<bool> hasCalorieTune(String deviceId, bool hrBased) async {
+    final extraPredicate = "`hr_based` = ${hrBased ? 1 : 0}";
+    return await rowCount(calorieTuneTableName, deviceId, extraPredicate: extraPredicate) > 0;
   }
 
-  Future<double> calorieFactor(String deviceId, DeviceDescriptor descriptor) async {
-    if (!await hasCalorieTune(deviceId)) {
-      return descriptor.calorieFactorDefault;
+  Future<CalorieTune?> findCalorieTuneByMac(String mac, bool hrBased) async {
+    if (!await hasCalorieTune(mac, true)) {
+      return null;
     }
 
-    final calorieTune = await calorieTuneDao.findCalorieTuneByMac(deviceId).first;
+    if (hrBased) {
+      return await calorieTuneDao.findHrCalorieTuneByMac(mac).first;
+    } else {
+      return await calorieTuneDao.findCalorieTuneByMac(mac).first;
+    }
+  }
 
-    return calorieTune?.calorieFactor ?? descriptor.calorieFactorDefault;
+  Future<double> calorieFactorValue(String deviceId, bool hrBased) async {
+    return (await findCalorieTuneByMac(deviceId, hrBased))?.calorieFactor ?? 1.0;
+  }
+
+  Future<Tuple3<double, double, double>> getFactors(String deviceId) async {
+    return Tuple3(
+      await powerFactor(deviceId),
+      await calorieFactorValue(deviceId, false),
+      await calorieFactorValue(deviceId, true),
+    );
   }
 
   Future<bool> hasLeaderboardData() async {
@@ -114,6 +138,32 @@ abstract class AppDatabase extends FloorDatabase {
             Tuple2<String, String>(row['device_id'] as String, row['device_name'] as String))
         .toList(growable: false);
   }
+
+  /// Correct those activity calorieFactors where the device doesn't supply
+  /// calorie data and it has to be calculated from watts. From now on the
+  /// in those cases a 4.0 (earlier 3.6) will be implicit.
+  Future<void> correctCalorieFactors() async {
+    AppDatabase.additional15to16Migration = false;
+    Map<String, bool> noCalorieDevices = {};
+    for (var activity in await activityDao.findAllActivities()) {
+      final deviceDescriptor = activity.deviceDescriptor();
+      if (!deviceDescriptor.canMeasureCalories) {
+        noCalorieDevices.assign(activity.deviceId, true);
+        if (activity.calorieFactor > 1.0) {
+          activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
+          activityDao.updateActivity(activity);
+        }
+      }
+    }
+
+    for (var calorieTune in await calorieTuneDao.findAllCalorieTunes()) {
+      if (noCalorieDevices.containsKey(calorieTune.mac) ||
+          calorieTune.calorieFactor > DeviceDescriptor.oldPowerCalorieFactorDefault - 1.0) {
+        calorieTune.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
+        calorieTuneDao.updateCalorieTune(calorieTune);
+      }
+    }
+  }
 }
 
 final migration1to2 = Migration(1, 2, (database) async {
@@ -123,14 +173,14 @@ final migration1to2 = Migration(1, 2, (database) async {
 
 final migration2to3 = Migration(2, 3, (database) async {
   await database.execute(
-      "UPDATE `$activitiesTableName` SET four_cc='$PRECOR_SPINNER_CHRONO_POWER_FOURCC' WHERE 1=1");
+      "UPDATE `$activitiesTableName` SET four_cc='$precorSpinnerChronoPowerFourCC' WHERE 1=1");
 });
 
 final migration3to4 = Migration(3, 4, (database) async {
   // Cannot add a non null column
   await database.execute("ALTER TABLE `$activitiesTableName` ADD COLUMN `sport` TEXT");
   await database.execute(
-      "UPDATE `$activitiesTableName` SET `sport`='Kayaking' WHERE `four_cc`='$KAYAK_PRO_GENESIS_PORT_FOURCC'");
+      "UPDATE `$activitiesTableName` SET `sport`='Kayaking' WHERE `four_cc`='$kayakProGenesisPortFourCC'");
   await database.execute("UPDATE `$activitiesTableName` SET `sport`='Ride' WHERE `sport` IS NULL");
 });
 
@@ -154,13 +204,13 @@ final migration5to6 = Migration(5, 6, (database) async {
   await database.execute("ALTER TABLE `$activitiesTableName` ADD COLUMN `calorie_factor` FLOAT");
 
   await database.execute("UPDATE `$activitiesTableName` "
-      "SET device_id='$MPOWER_IMPORT_DEVICE_ID' WHERE `device_id`=''");
+      "SET device_id='$mPowerImportDeviceId' WHERE `device_id`=''");
   await database.execute("UPDATE `$activitiesTableName` SET `power_factor`=1.0");
   await database.execute("UPDATE `$activitiesTableName` SET `calorie_factor`=1.0");
   await database.execute(
-      "UPDATE `$activitiesTableName` SET `calorie_factor`=1.4 WHERE `four_cc`='$SCHWINN_IC_BIKE_FOURCC'");
+      "UPDATE `$activitiesTableName` SET `calorie_factor`=1.4 WHERE `four_cc`='$schwinnICBikeFourCC'");
   await database.execute(
-      "UPDATE `$activitiesTableName` SET `calorie_factor`=3.9 WHERE `four_cc`='$SCHWINN_AC_PERF_PLUS_FOURCC'");
+      "UPDATE `$activitiesTableName` SET `calorie_factor`=3.9 WHERE `four_cc`='$schwinnACPerfPlusFourCC'");
 });
 
 final migration6to7 = Migration(6, 7, (database) async {
@@ -217,4 +267,26 @@ final migration13to14 = Migration(13, 14, (database) async {
       "ALTER TABLE `$activitiesTableName` ADD COLUMN `training_peaks_athlete_id` INTEGER NOT NULL DEFAULT 0");
   await database.execute(
       "ALTER TABLE `$activitiesTableName` ADD COLUMN `training_peaks_workout_id` INTEGER NOT NULL DEFAULT 0");
+});
+
+final migration14to15 = Migration(14, 15, (database) async {
+  final prefService = Get.find<BasePrefService>();
+  final useHrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
+      useHeartRateBasedCalorieCountingDefault;
+  final hrBaseCalories = useHrBasedCalorieCounting ? 1 : 0;
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `hr_calorie_factor` REAL NOT NULL DEFAULT 1.0");
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `hr_based_calories` INTEGER NOT NULL DEFAULT $hrBaseCalories");
+  await database.execute(
+      "ALTER TABLE `$calorieTuneTableName` ADD COLUMN `hr_based` INTEGER NOT NULL DEFAULT 0");
+});
+
+final migration15to16 = Migration(15, 16, (database) async {
+  await database
+      .execute("ALTER TABLE `$activitiesTableName` ADD COLUMN `hrm_id` TEXT NOT NULL DEFAULT ''");
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `hrm_calorie_factor` REAL NOT NULL DEFAULT 1.0");
+
+  AppDatabase.additional15to16Migration = true;
 });

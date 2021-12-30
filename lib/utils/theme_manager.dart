@@ -3,13 +3,13 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import '../ui/about.dart';
-import '../persistence/preferences.dart';
+import '../preferences/theme_selection.dart';
 import '../utils/constants.dart';
 
 class ThemeManager {
   ThemeMode getThemeMode() {
     final prefService = Get.find<BasePrefService>();
-    final themeSelection = prefService.get<String>(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
+    final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
     if (themeSelection == "light") {
       return ThemeMode.light;
     } else if (themeSelection == "dark") {
@@ -21,7 +21,7 @@ class ThemeManager {
 
   bool isDark() {
     final prefService = Get.find<BasePrefService>();
-    final themeSelection = prefService.get<String>(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
+    final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
     if (themeSelection == "light") {
       return false;
     } else if (themeSelection == "dark") {
@@ -127,6 +127,10 @@ class ThemeManager {
     return Icon(icon, color: getBlueColor(), size: size);
   }
 
+  Icon getGreyIcon(IconData icon, double size) {
+    return Icon(icon, color: getGreyColor(), size: size);
+  }
+
   OverlayTutorialHole getBlueIconWithHole(
     IconData icon,
     double size,
@@ -147,7 +151,7 @@ class ThemeManager {
   }
 
   TextStyle getBlueTextStyle(double fontSize) {
-    return TextStyle(fontFamily: FONT_FAMILY, fontSize: fontSize, color: getBlueColor());
+    return TextStyle(fontFamily: fontFamily, fontSize: fontSize, color: getBlueColor());
   }
 
   Widget _getFabCore(
@@ -262,7 +266,7 @@ class ThemeManager {
   }
 
   Widget getRankIcon(int rank) {
-    final textStyle = Get.textTheme.headline4!.apply(fontFamily: FONT_FAMILY, color: Colors.black);
+    final textStyle = Get.textTheme.headline4!.apply(fontFamily: fontFamily, color: Colors.black);
     return _getFabCore(
       Colors.black,
       getYellowColor(),

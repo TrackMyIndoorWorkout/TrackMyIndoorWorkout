@@ -15,7 +15,7 @@ import '../fit_sport.dart';
 class FitSession extends FitDefinitionMessage {
   int exportTarget;
 
-  FitSession(localMessageType, this.exportTarget) : super(localMessageType, FitMessage.Session) {
+  FitSession(localMessageType, this.exportTarget) : super(localMessageType, FitMessage.session) {
     fields = [
       FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
     ];
@@ -78,8 +78,8 @@ class FitSession extends FitDefinitionMessage {
     data.addShort(0);
     if (exportTarget == ExportTarget.regular) {
       data.addLong(FitSerializable.fitTimeStamp(last.record.timeStamp));
-      data.addByte(FitEvent.Session);
-      data.addByte(FitEventType.Stop);
+      data.addByte(FitEvent.session);
+      data.addByte(FitEventType.stop);
     }
 
     data.addLong(FitSerializable.fitTimeStamp(first.record.timeStamp));
@@ -100,10 +100,10 @@ class FitSession extends FitDefinitionMessage {
     data.addShort(model.activity.calories > 0
         ? model.activity.calories
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.averageSpeed > EPS
+    data.addShort(model.averageSpeed > eps
         ? (model.averageSpeed * 1000).round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.maximumSpeed > EPS
+    data.addShort(model.maximumSpeed > eps
         ? (model.maximumSpeed * 1000).round()
         : FitBaseTypes.uint16Type.invalidValue);
     data.addByte(
@@ -114,14 +114,14 @@ class FitSession extends FitDefinitionMessage {
         model.averageCadence > 0 ? model.averageCadence : FitBaseTypes.uint8Type.invalidValue);
     data.addByte(
         model.maximumCadence > 0 ? model.maximumCadence : FitBaseTypes.uint8Type.invalidValue);
-    data.addShort(model.averagePower > EPS
+    data.addShort(model.averagePower > eps
         ? model.averagePower.round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.maximumPower > EPS
+    data.addShort(model.maximumPower > eps
         ? model.maximumPower.round()
         : FitBaseTypes.uint16Type.invalidValue);
     if (exportTarget == ExportTarget.regular) {
-      data.addByte(FitSessionTrigger.ActivityEnd);
+      data.addByte(FitSessionTrigger.activityEnd);
     }
 
     return data.output;

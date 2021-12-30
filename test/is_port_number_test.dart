@@ -36,8 +36,8 @@ void main() {
 
   group('isPortNumber random test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, 131072, rnd).forEach((number) {
-      final expected = number < MAX_UINT16;
+    getRandomInts(smallRepetition, 131072, rnd).forEach((number) {
+      final expected = number < maxUint16;
       test('$number -> $expected', () async {
         expect(isPortNumber("$number"), expected);
       });

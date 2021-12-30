@@ -17,6 +17,7 @@ class FitDefinitionMessageTest extends FitDefinitionMessage {
   FitDefinitionMessageTest({localMessageType, globalMessageNumber})
       : super(localMessageType, globalMessageNumber);
 
+  @override
   List<int> serializeData(dynamic parameter) {
     return super.binarySerialize();
   }
@@ -38,11 +39,12 @@ class FitStringFieldTest extends FitDefinitionMessage {
   }) : super(localMessageType, globalMessageNumber) {
     fields = [
       FitField(definitionNumber, FitBaseTypes.uint8Type),
-      FitStringField(definitionNumber + 1, this.text.length),
+      FitStringField(definitionNumber + 1, text.length),
       FitField(definitionNumber + 2, FitBaseTypes.uint8Type),
     ];
   }
 
+  @override
   List<int> serializeData(dynamic parameter) {
     var data = FitData();
     data.output = [localMessageType, 0];
@@ -56,10 +58,10 @@ class FitStringFieldTest extends FitDefinitionMessage {
 void main() {
   group('FitDefinition without fields handle globalMessageNumber well', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT16, rnd).forEach((short) {
+    getRandomInts(smallRepetition, maxUint16, rnd).forEach((short) {
       final bigEndian = rnd.nextBool(); // Big Endian?
-      final shortLsb = short % MAX_UINT8;
-      final shortMsb = short ~/ MAX_UINT8;
+      final shortLsb = short % maxUint8;
+      final shortMsb = short ~/ maxUint8;
       final localMessageType = rnd.nextInt(8);
       final expected = [
         FitDefinitionMessage.fourtyRecord + localMessageType,
@@ -84,12 +86,12 @@ void main() {
 
   group('FitDefinition strings serialize properly', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, MAX_UINT8 ~/ 8, rnd).forEach((length) {
-      final byte1 = rnd.nextInt(MAX_BYTE);
+    getRandomInts(smallRepetition, maxUint8 ~/ 8, rnd).forEach((length) {
+      final byte1 = rnd.nextInt(maxByte);
       final text = mockString(length + 1);
-      final byte2 = rnd.nextInt(MAX_BYTE);
+      final byte2 = rnd.nextInt(maxByte);
       final localMessageType = rnd.nextInt(6);
-      final globalMessageNumber = rnd.nextInt(MAX_UINT16);
+      final globalMessageNumber = rnd.nextInt(maxUint16);
       final definitionNumber = rnd.nextInt(6);
       final expected = [localMessageType, 0, byte1] + utf8.encode(text) + [0, byte2];
       test('$text($length) -> $expected', () async {
@@ -110,15 +112,15 @@ void main() {
 
     group('FitDefinition strings with headers serialize properly', () {
       final rnd = Random();
-      getRandomInts(SMALL_REPETITION, MAX_UINT8 ~/ 8, rnd).forEach((length) {
-        final byte1 = rnd.nextInt(MAX_BYTE);
+      getRandomInts(smallRepetition, maxUint8 ~/ 8, rnd).forEach((length) {
+        final byte1 = rnd.nextInt(maxByte);
         final text = mockString(length + 1);
-        final byte2 = rnd.nextInt(MAX_BYTE);
+        final byte2 = rnd.nextInt(maxByte);
         final localMessageType = rnd.nextInt(6);
-        final globalMessageNumber = rnd.nextInt(MAX_UINT16);
+        final globalMessageNumber = rnd.nextInt(maxUint16);
         final definitionNumber = rnd.nextInt(6);
-        final shortLsb = globalMessageNumber % MAX_UINT8;
-        final shortMsb = globalMessageNumber ~/ MAX_UINT8;
+        final shortLsb = globalMessageNumber % maxUint8;
+        final shortMsb = globalMessageNumber ~/ maxUint8;
         final expected = [
           FitDefinitionMessage.fourtyRecord + localMessageType,
           0,

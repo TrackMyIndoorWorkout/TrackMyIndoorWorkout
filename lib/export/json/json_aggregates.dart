@@ -31,19 +31,18 @@ class JsonAggregates {
   int heartRateMax;
   int heartRateAvg;
 
-  String toJson() =>
-      '{"elapsed_time_total": $elapsedTimeTotal,' +
-      '"distance_total": ${distanceTotal.toStringAsFixed(2)},' +
-      '"speed_min": ${speedMin.toStringAsFixed(2)},' +
-      '"speed_max": ${speedMax.toStringAsFixed(2)},' +
-      '"speed_avg": ${speedAvg.toStringAsFixed(2)},' +
-      '"power_min": $powerMin,' +
-      '"power_max": $powerMax,' +
-      '"power_avg": ${powerAvg.toStringAsFixed(2)},' +
-      '"cadence_min": $cadenceMin,' +
-      '"cadence_max": $cadenceMax,' +
-      '"cadence_avg": $cadenceAvg,' +
-      '"heartrate_min": $heartRateMin,' +
-      '"heartrate_max": $heartRateMax,' +
+  String toJson() => '{"elapsed_time_total": $elapsedTimeTotal,'
+      '"distance_total": ${distanceTotal.toStringAsFixed(2)},'
+      '"speed_min": ${speedMin.toStringAsFixed(2)},'
+      '"speed_max": ${speedMax.toStringAsFixed(2)},'
+      '"speed_avg": ${speedAvg.toStringAsFixed(2)},'
+      '"power_min": $powerMin,'
+      '"power_max": $powerMax,'
+      '"power_avg": ${powerAvg.toStringAsFixed(2)},'
+      '"cadence_min": $cadenceMin,'
+      '"cadence_max": $cadenceMax,'
+      '"cadence_avg": $cadenceAvg,'
+      '"heartrate_min": $heartRateMin,'
+      '"heartrate_max": $heartRateMax,'
       '"heartrate_avg": $heartRateAvg}';
 }

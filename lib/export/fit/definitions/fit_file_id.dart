@@ -11,7 +11,7 @@ import '../fit_string_field.dart';
 class FitFileId extends FitDefinitionMessage {
   final int productTextLength;
 
-  FitFileId(localMessageType, this.productTextLength) : super(localMessageType, FitMessage.FileId) {
+  FitFileId(localMessageType, this.productTextLength) : super(localMessageType, FitMessage.fileId) {
     fields = [
       FitField(0, FitBaseTypes.enumType), // type (Activity)
       FitField(1, FitBaseTypes.uint16Type), // manufacturer
@@ -27,7 +27,7 @@ class FitFileId extends FitDefinitionMessage {
 
     var data = FitData();
     data.output = [localMessageType];
-    data.addByte(FitFileType.Activity);
+    data.addByte(FitFileType.activity);
     data.addShort(model.descriptor.manufacturerFitId);
     // data.addShort(1);
     data.addLong(FitSerializable.fitDateTime(DateTime.now()));

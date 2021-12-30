@@ -2,7 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/database.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/audio_volume.dart';
+import '../../preferences/cadence_data_gap_workaround.dart';
+import '../../preferences/data_stream_gap_sound_effect.dart';
+import '../../preferences/data_stream_gap_watchdog_time.dart';
+import '../../preferences/extend_tuning.dart';
+import '../../preferences/heart_rate_gap_workaround.dart';
+import '../../preferences/heart_rate_limiting.dart';
+import '../../preferences/sound_effects.dart';
+import '../../preferences/stroke_rate_smoothing.dart';
+import '../../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/sound.dart';
 import 'preferences_base.dart';
 
@@ -15,39 +25,39 @@ class DataPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> dataPreferences = [
-      const PrefTitle(title: Text(TUNING_PREFERENCES)),
+      const PrefTitle(title: Text("Tuning")),
       const PrefCheckbox(
-        title: Text(EXTEND_TUNING),
-        subtitle: Text(EXTEND_TUNING_DESCRIPTION),
-        pref: EXTEND_TUNING_TAG,
+        title: Text(extendTuning),
+        subtitle: Text(extendTuningDescription),
+        pref: extendTuningTag,
       ),
       const PrefCheckbox(
-        title: Text(USE_HR_MONITOR_REPORTED_CALORIES),
-        subtitle: Text(USE_HR_MONITOR_REPORTED_CALORIES_DESCRIPTION),
-        pref: USE_HR_MONITOR_REPORTED_CALORIES_TAG,
+        title: Text(useHrMonitorReportedCalories),
+        subtitle: Text(useHrMonitorReportedCaloriesDescription),
+        pref: useHrMonitorReportedCaloriesTag,
       ),
       const PrefCheckbox(
-        title: Text(USE_HEART_RATE_BASED_CALORIE_COUNTING),
-        subtitle: Text(USE_HEART_RATE_BASED_CALORIE_COUNTING_DESCRIPTION),
-        pref: USE_HEART_RATE_BASED_CALORIE_COUNTING_TAG,
+        title: Text(useHeartRateBasedCalorieCounting),
+        subtitle: Text(useHeartRateBasedCalorieCountingDescription),
+        pref: useHeartRateBasedCalorieCountingTag,
       ),
       PrefSlider<int>(
-        title: const Text(STROKE_RATE_SMOOTHING),
-        subtitle: const Text(STROKE_RATE_SMOOTHING_DESCRIPTION),
-        pref: STROKE_RATE_SMOOTHING_INT_TAG,
+        title: const Text(strokeRateSmoothing),
+        subtitle: const Text(strokeRateSmoothingDescription),
+        pref: strokeRateSmoothingIntTag,
         trailing: (num value) => Text("$value"),
-        min: STROKE_RATE_SMOOTHING_MIN,
-        max: STROKE_RATE_SMOOTHING_MAX,
+        min: strokeRateSmoothingMin,
+        max: strokeRateSmoothingMax,
         direction: Axis.vertical,
       ),
-      const PrefTitle(title: Text(WORKAROUND_PREFERENCES)),
+      const PrefTitle(title: Text("Workarounds")),
       PrefSlider<int>(
-        title: const Text(DATA_STREAM_GAP_WATCHDOG),
-        subtitle: const Text(DATA_STREAM_GAP_WATCHDOG_DESCRIPTION),
-        pref: DATA_STREAM_GAP_WATCHDOG_INT_TAG,
+        title: const Text(dataStreamGapWatchdog),
+        subtitle: const Text(dataStreamGapWatchdogDescription),
+        pref: dataStreamGapWatchdogIntTag,
         trailing: (num value) => Text("$value s"),
-        min: DATA_STREAM_GAP_WATCHDOG_MIN,
-        max: DATA_STREAM_GAP_WATCHDOG_MAX,
+        min: dataStreamGapWatchdogMin,
+        max: dataStreamGapWatchdogMax,
         direction: Axis.vertical,
       ),
       PrefButton(
@@ -98,99 +108,99 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         child: const Text("Fix empty workouts"),
       ),
       const PrefLabel(
-        title: Text(DATA_STREAM_GAP_SOUND_EFFECT),
-        subtitle: Text(DATA_STREAM_GAP_SOUND_EFFECT_DESCRIPTION),
+        title: Text(dataStreamGapSoundEffect),
+        subtitle: Text(dataStreamGapSoundEffectDescription),
       ),
       const PrefRadio<String>(
-        title: Text(SOUND_EFFECT_NONE_DESCRIPTION),
-        value: SOUND_EFFECT_NONE,
-        pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
+        title: Text(soundEffectNoneDescription),
+        value: soundEffectNone,
+        pref: dataStreamGapSoundEffectTag,
       ),
       PrefRadio<String>(
-        title: const Text(SOUND_EFFECT_ONE_TONE_DESCRIPTION),
-        value: SOUND_EFFECT_ONE_TONE,
-        pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_ONE_TONE),
+        title: const Text(soundEffectOneToneDescription),
+        value: soundEffectOneTone,
+        pref: dataStreamGapSoundEffectTag,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(soundEffectOneTone),
       ),
       PrefRadio<String>(
-        title: const Text(SOUND_EFFECT_TWO_TONE_DESCRIPTION),
-        value: SOUND_EFFECT_TWO_TONE,
-        pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_TWO_TONE),
+        title: const Text(soundEffectTwoToneDescription),
+        value: soundEffectTwoTone,
+        pref: dataStreamGapSoundEffectTag,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(soundEffectTwoTone),
       ),
       PrefRadio<String>(
-        title: const Text(SOUND_EFFECT_THREE_TONE_DESCRIPTION),
-        value: SOUND_EFFECT_THREE_TONE,
-        pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_THREE_TONE),
+        title: const Text(soundEffectThreeToneDescription),
+        value: soundEffectThreeTone,
+        pref: dataStreamGapSoundEffectTag,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(soundEffectThreeTone),
       ),
       PrefRadio<String>(
-        title: const Text(SOUND_EFFECT_BLEEP_DESCRIPTION),
-        value: SOUND_EFFECT_BLEEP,
-        pref: DATA_STREAM_GAP_SOUND_EFFECT_TAG,
-        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(SOUND_EFFECT_BLEEP),
+        title: const Text(soundEffectBleepDescription),
+        value: soundEffectBleep,
+        pref: dataStreamGapSoundEffectTag,
+        onSelect: () => Get.find<SoundService>().playSpecificSoundEffect(soundEffectBleep),
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(
-        title: const Text(AUDIO_VOLUME),
-        subtitle: const Text(AUDIO_VOLUME_DESCRIPTION),
-        pref: AUDIO_VOLUME_INT_TAG,
+        title: const Text(audioVolume),
+        subtitle: const Text(audioVolumeDescription),
+        pref: audioVolumeIntTag,
         trailing: (num value) => Text("$value %"),
-        min: AUDIO_VOLUME_MIN,
-        max: AUDIO_VOLUME_MAX,
+        min: audioVolumeMin,
+        max: audioVolumeMax,
         direction: Axis.vertical,
       ),
       const PrefCheckbox(
-        title: Text(CADENCE_GAP_WORKAROUND),
-        subtitle: Text(CADENCE_GAP_WORKAROUND_DESCRIPTION),
-        pref: CADENCE_GAP_WORKAROUND_TAG,
+        title: Text(cadenceGapWorkaround),
+        subtitle: Text(cadenceGapWorkaroundDescription),
+        pref: cadenceGapWorkaroundTag,
       ),
-      const PrefLabel(title: Text(HEART_RATE_GAP_WORKAROUND_SELECTION)),
+      const PrefLabel(title: Text(heartRateGapWorkaroundSelection)),
       const PrefRadio<String>(
-        title: Text(DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE_DESCRIPTION),
-        value: DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE,
-        pref: HEART_RATE_GAP_WORKAROUND_TAG,
-      ),
-      const PrefRadio<String>(
-        title: Text(DATA_GAP_WORKAROUND_NO_WORKAROUND_DESCRIPTION),
-        value: DATA_GAP_WORKAROUND_NO_WORKAROUND,
-        pref: HEART_RATE_GAP_WORKAROUND_TAG,
+        title: Text(dataGapWorkaroundLastPositiveValueDescription),
+        value: dataGapWorkaroundLastPositiveValue,
+        pref: heartRateGapWorkaroundTag,
       ),
       const PrefRadio<String>(
-        title: Text(DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS_DESCRIPTION),
-        value: DATA_GAP_WORKAROUND_DO_NOT_WRITE_ZEROS,
-        pref: HEART_RATE_GAP_WORKAROUND_TAG,
+        title: Text(dataGapWorkaroundNoWorkaroundDescription),
+        value: dataGapWorkaroundNoWorkaround,
+        pref: heartRateGapWorkaroundTag,
+      ),
+      const PrefRadio<String>(
+        title: Text(dataGapWorkaroundDoNotWriteZerosDescription),
+        value: dataGapWorkaroundDoNotWriteZeros,
+        pref: heartRateGapWorkaroundTag,
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(
-        title: const Text(HEART_RATE_UPPER_LIMIT),
-        subtitle: const Text(HEART_RATE_UPPER_LIMIT_DESCRIPTION),
-        pref: HEART_RATE_UPPER_LIMIT_INT_TAG,
+        title: const Text(heartRateUpperLimit),
+        subtitle: const Text(heartRateUpperLimitDescription),
+        pref: heartRateUpperLimitIntTag,
         trailing: (num value) => Text("$value"),
-        min: HEART_RATE_UPPER_LIMIT_MIN,
-        max: HEART_RATE_UPPER_LIMIT_MAX,
+        min: heartRateUpperLimitMin,
+        max: heartRateUpperLimitMax,
         direction: Axis.vertical,
       ),
-      const PrefLabel(title: Text(HEART_RATE_LIMITING_METHOD)),
+      const PrefLabel(title: Text(heartRateLimitingMethod)),
       const PrefRadio<String>(
-        title: Text(HEART_RATE_LIMITING_WRITE_ZERO_DESCRIPTION),
-        value: HEART_RATE_LIMITING_WRITE_ZERO,
-        pref: HEART_RATE_LIMITING_METHOD_TAG,
+        title: Text(heartRateLimitingWriteZeroDescription),
+        value: heartRateLimitingWriteZero,
+        pref: heartRateLimitingMethodTag,
       ),
       const PrefRadio<String>(
-        title: Text(HEART_RATE_LIMITING_WRITE_NOTHING_DESCRIPTION),
-        value: HEART_RATE_LIMITING_WRITE_NOTHING,
-        pref: HEART_RATE_LIMITING_METHOD_TAG,
+        title: Text(heartRateLimitingWriteNothingDescription),
+        value: heartRateLimitingWriteNothing,
+        pref: heartRateLimitingMethodTag,
       ),
       const PrefRadio<String>(
-        title: Text(HEART_RATE_LIMITING_CAP_AT_LIMIT_DESCRIPTION),
-        value: HEART_RATE_LIMITING_CAP_AT_LIMIT,
-        pref: HEART_RATE_LIMITING_METHOD_TAG,
+        title: Text(heartRateLimitingCapAtLimitDescription),
+        value: heartRateLimitingCapAtLimit,
+        pref: heartRateLimitingMethodTag,
       ),
       const PrefRadio<String>(
-        title: Text(HEART_RATE_LIMITING_NO_LIMIT_DESCRIPTION),
-        value: HEART_RATE_LIMITING_NO_LIMIT,
-        pref: HEART_RATE_LIMITING_METHOD_TAG,
+        title: Text(heartRateLimitingNoLimitDescription),
+        value: heartRateLimitingNoLimit,
+        pref: heartRateLimitingMethodTag,
       ),
     ];
 

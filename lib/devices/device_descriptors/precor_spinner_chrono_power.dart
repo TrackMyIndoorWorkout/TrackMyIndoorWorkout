@@ -9,17 +9,17 @@ import 'fixed_layout_device_descriptor.dart';
 class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
   PrecorSpinnerChronoPower()
       : super(
-          defaultSport: ActivityType.Ride,
+          defaultSport: ActivityType.ride,
           isMultiSport: false,
-          fourCC: PRECOR_SPINNER_CHRONO_POWER_FOURCC,
+          fourCC: precorSpinnerChronoPowerFourCC,
           vendorName: "Precor",
           modelName: "Spinner Chrono Power",
           namePrefixes: ["CHRONO"],
           manufacturerPrefix: "Precor",
           manufacturerFitId: precorFitId,
           model: "1",
-          dataServiceId: PRECOR_SERVICE_ID,
-          dataCharacteristicId: PRECOR_MEASUREMENT_ID,
+          dataServiceId: precorServiceUuid,
+          dataCharacteristicId: precorMeasurementUuid,
           canMeasureHeartRate: true,
           heartRateByteIndex: 5,
           timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4),

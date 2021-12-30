@@ -6,10 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
-import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
-import '../persistence/preferences.dart';
+import '../preferences/cadence_data_gap_workaround.dart';
+import '../preferences/heart_rate_gap_workaround.dart';
+import '../preferences/heart_rate_limiting.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
@@ -27,23 +28,23 @@ abstract class ActivityExport {
   late String buildNumber;
 
   int _lastPositiveCadence = 0; // #101
-  bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
+  bool _cadenceGapWorkaround = cadenceGapWorkaroundDefault;
   int _lastPositiveHeartRate = 0;
-  String heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
-  int heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT;
-  String heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
+  String heartRateGapWorkaround = heartRateGapWorkaroundDefault;
+  int heartRateUpperLimit = heartRateUpperLimitDefault;
+  String heartRateLimitingMethod = heartRateLimitingMethodDefault;
 
   ActivityExport({required this.nonCompressedFileExtension, required this.nonCompressedMimeType}) {
     compressedFileExtension = nonCompressedFileExtension + '.gz';
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
-        prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
+        prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
     heartRateGapWorkaround =
-        prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+        prefService.get<String>(heartRateGapWorkaroundTag) ?? heartRateGapWorkaroundDefault;
     heartRateUpperLimit =
-        prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+        prefService.get<int>(heartRateUpperLimitIntTag) ?? heartRateUpperLimitDefault;
     heartRateLimitingMethod =
-        prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+        prefService.get<String>(heartRateLimitingMethodTag) ?? heartRateLimitingMethodDefault;
 
     final packageInfo = Get.find<PackageInfo>();
     version = packageInfo.version;
@@ -87,14 +88,14 @@ abstract class ActivityExport {
     int exportTarget,
   ) async {
     activity.hydrate();
-    final descriptor = deviceMap[activity.fourCC] ?? genericDescriptorForSport(activity.sport);
+    final descriptor = activity.deviceDescriptor();
     final track = getDefaultTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     final exportRecords = records.map((r) {
       final record = recordToExport(r, activity, calculator, rawData);
 
       if (!rawData) {
-        if ((record.record.speed ?? 0.0) > EPS) {
+        if ((record.record.speed ?? 0.0) > eps) {
           // #101, #122
           if ((record.record.cadence == null || record.record.cadence == 0) &&
               _lastPositiveCadence > 0 &&
@@ -106,14 +107,14 @@ abstract class ActivityExport {
         }
 
         if (record.record.heartRate == null &&
-            heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
+            heartRateLimitingMethod == heartRateLimitingWriteZero) {
           record.record.heartRate = 0;
         }
 
         // #93, #113
         if ((record.record.heartRate == 0 || record.record.heartRate == null) &&
             _lastPositiveHeartRate > 0 &&
-            heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
+            heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue) {
           record.record.heartRate = _lastPositiveHeartRate;
         } else if ((record.record.heartRate ?? 0) > 0) {
           _lastPositiveHeartRate = record.record.heartRate!;
@@ -123,8 +124,8 @@ abstract class ActivityExport {
         if (heartRateUpperLimit > 0 &&
             record.record.heartRate != null &&
             record.record.heartRate! > heartRateUpperLimit &&
-            heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
-          if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+            heartRateLimitingMethod != heartRateLimitingNoLimit) {
+          if (heartRateLimitingMethod == heartRateLimitingCapAtLimit) {
             record.record.heartRate = heartRateUpperLimit;
           } else {
             record.record.heartRate = 0;
@@ -140,7 +141,7 @@ abstract class ActivityExport {
       rawData: rawData,
       descriptor: descriptor,
       author: 'Csaba Consulting',
-      name: APP_NAME,
+      name: appName,
       swVersionMajor: versionParts[0],
       swVersionMinor: versionParts[1],
       buildVersionMajor: versionParts[2],
