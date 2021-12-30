@@ -18,7 +18,7 @@ public final class GeneratedPluginRegistrant {
     try {
       flutterEngine.getPlugins().add(new com.hui.bluetooth_enable.BluetoothEnablePlugin());
     } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin bluetooth_enable, com.hui.bluetooth_enable.BluetoothEnablePlugin", e);
+      Log.e(TAG, "Error registering plugin bluetooth_enable_fork, com.hui.bluetooth_enable.BluetoothEnablePlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.deviceinfo.DeviceInfoPlugin());
