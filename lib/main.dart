@@ -1,4 +1,4 @@
-import 'package:bluetooth_enable/bluetooth_enable.dart';
+import 'package:bluetooth_enable_fork/bluetooth_enable_fork.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
