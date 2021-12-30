@@ -9,11 +9,21 @@ import '../../utils/theme_manager.dart';
 
 class CalorieOverrideBottomSheet extends StatefulWidget {
   late final String deviceId;
+  late final double oldFactor;
   late final double oldCalories;
   late final bool hrBased;
 
   CalorieOverrideBottomSheet({Key? key, required Activity activity}) : super(key: key) {
     deviceId = activity.deviceId;
+    oldFactor = activity.calorieFactor;
+    if (activity.hrBasedCalories) {
+      if (activity.hrmId.isNotEmpty) {
+        deviceId = activity.hrmId;
+        oldFactor = activity.hrmCalorieFactor;
+      } else {
+        oldFactor = activity.hrCalorieFactor;
+      }
+    }
     oldCalories = activity.calories.toDouble();
     hrBased = activity.hrBasedCalories;
   }
@@ -59,7 +69,7 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0, () async {
         final database = Get.find<AppDatabase>();
-        final calorieFactor = _newCalorie / widget.oldCalories;
+        final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
         CalorieTune? calorieTune;
         if (await database.hasCalorieTune(widget.deviceId, widget.hrBased)) {
           calorieTune = await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
