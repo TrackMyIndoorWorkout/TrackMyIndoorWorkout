@@ -1,3 +1,7 @@
+## 1.1.88
+
+* Fix: Calorie factor adjuster data migration could lock up
+
 ## 1.1.87
 
 * Fix: power based calorie counting factor won't interfere (skyrocket) the HR based calories
