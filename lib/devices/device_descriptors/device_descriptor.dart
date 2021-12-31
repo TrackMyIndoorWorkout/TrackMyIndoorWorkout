@@ -81,7 +81,7 @@ abstract class DeviceDescriptor {
     byteCounter = 2;
   }
 
-  RecordWithSport? stubRecord(List<int> data) {
+  void preProcessFlag(List<int> data) {
     if (data.length > 2) {
       var flag = data[0] + maxUint8 * data[1];
       if (flag != featuresFlag) {
@@ -89,6 +89,10 @@ abstract class DeviceDescriptor {
         processFlag(flag);
       }
     }
+  }
+
+  RecordWithSport? stubRecord(List<int> data) {
+    preProcessFlag(data);
 
     return null;
   }
