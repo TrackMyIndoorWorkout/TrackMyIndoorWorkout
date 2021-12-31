@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:floor/floor.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
@@ -144,24 +145,29 @@ abstract class AppDatabase extends FloorDatabase {
   /// in those cases a 4.0 (earlier 3.6) will be implicit.
   Future<void> correctCalorieFactors() async {
     AppDatabase.additional15to16Migration = false;
-    Map<String, bool> noCalorieDevices = {};
-    for (var activity in await activityDao.findAllActivities()) {
-      final deviceDescriptor = activity.deviceDescriptor();
-      if (!deviceDescriptor.canMeasureCalories) {
-        noCalorieDevices.assign(activity.deviceId, true);
-        if (activity.calorieFactor > 1.0) {
-          activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
-          await activityDao.updateActivity(activity);
+    try {
+      Map<String, bool> noCalorieDevices = {};
+      for (var activity in await activityDao.findAllActivities()) {
+        final deviceDescriptor = activity.deviceDescriptor();
+        if (!deviceDescriptor.canMeasureCalories) {
+          noCalorieDevices.assign(activity.deviceId, true);
+          if (activity.calorieFactor > 1.0) {
+            activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
+            await activityDao.updateActivity(activity);
+          }
         }
       }
-    }
 
-    for (var calorieTune in await calorieTuneDao.findAllCalorieTunes()) {
-      if (noCalorieDevices.containsKey(calorieTune.mac) ||
-          calorieTune.calorieFactor > DeviceDescriptor.oldPowerCalorieFactorDefault - 1.0) {
-        calorieTune.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
-        await calorieTuneDao.updateCalorieTune(calorieTune);
+      for (var calorieTune in await calorieTuneDao.findAllCalorieTunes()) {
+        if (noCalorieDevices.containsKey(calorieTune.mac) ||
+            calorieTune.calorieFactor > DeviceDescriptor.oldPowerCalorieFactorDefault - 1.0) {
+          calorieTune.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
+          await calorieTuneDao.updateCalorieTune(calorieTune);
+        }
       }
+    } on Exception catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
     }
   }
 }
