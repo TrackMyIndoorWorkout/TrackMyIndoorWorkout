@@ -99,7 +99,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
               }
 
               if (updated > 0) {
-                database.activityDao.updateActivity(activity);
+                await database.activityDao.updateActivity(activity);
                 Get.snackbar("Activity ${activity.id}", "Updated $updated fields");
               }
             }
