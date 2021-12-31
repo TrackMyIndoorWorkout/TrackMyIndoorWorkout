@@ -151,7 +151,7 @@ abstract class AppDatabase extends FloorDatabase {
         noCalorieDevices.assign(activity.deviceId, true);
         if (activity.calorieFactor > 1.0) {
           activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
-          activityDao.updateActivity(activity);
+          await activityDao.updateActivity(activity);
         }
       }
     }
@@ -160,7 +160,7 @@ abstract class AppDatabase extends FloorDatabase {
       if (noCalorieDevices.containsKey(calorieTune.mac) ||
           calorieTune.calorieFactor > DeviceDescriptor.oldPowerCalorieFactorDefault - 1.0) {
         calorieTune.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
-        calorieTuneDao.updateCalorieTune(calorieTune);
+        await calorieTuneDao.updateCalorieTune(calorieTune);
       }
     }
   }
