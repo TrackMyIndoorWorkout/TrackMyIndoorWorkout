@@ -1582,7 +1582,7 @@ class RecordingState extends State<RecordingScreen> {
                         _activity!.hrmId = hrmId;
                         _activity!.hrmCalorieFactor =
                             await _database.calorieFactorValue(hrmId, true);
-                        _database.activityDao.updateActivity(_activity!);
+                        await _database.activityDao.updateActivity(_activity!);
                       }
                     },
                   ),
