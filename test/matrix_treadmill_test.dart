@@ -39,6 +39,7 @@ void main() {
     expect(treadmill.heartRateByteIndex, 22);
     expect(treadmill.timeMetric, null);
     expect(treadmill.powerMetric, isNotNull);
+    expect(treadmill.byteCounter, 30);
   });
 
   group('GRun interprets FTMS Matrix Data properly', () {
