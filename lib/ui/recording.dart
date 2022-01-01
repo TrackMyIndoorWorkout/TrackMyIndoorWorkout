@@ -1345,15 +1345,15 @@ class RecordingState extends State<RecordingScreen> {
             if (rankInfo != null) {
               markers.add(rankInfo);
             }
-          } else if (_displayLapCounter) {
-            markers.add(Center(
-              child: Text("Lap $_lapCount", style: _measurementStyle),
-            ));
           }
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
           selfMarkerColor = _getPaceLightColor(_deviceRank, _sportRank, background: true).value;
+        } else if (_displayLapCounter) {
+          markers.add(Center(
+            child: Text("Lap $_lapCount", style: _measurementStyle),
+          ));
         }
 
         markers.add(_getTrackMarker(
