@@ -6,7 +6,7 @@
 
 ## 1.1.88
 
-* Fix: Calorie factor adjuster data migration could lock up
+* Hotfix: Calorie factor adjuster data migration could lock up
 
 ## 1.1.87
 
