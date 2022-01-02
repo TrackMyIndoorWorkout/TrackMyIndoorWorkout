@@ -35,6 +35,7 @@ import '../preferences/preferences_spec.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
+import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/zone_index_display_coloring.dart';
@@ -96,9 +97,12 @@ class RecordingState extends State<RecordingScreen> {
   bool _measuring = false;
   int _pointCount = 0;
   ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
+  double? _mediaSizeMin;
+  double? _mediaHeight;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeAdjust = 1.0;
+  bool _landscape = false;
   TextStyle _measurementStyle = const TextStyle();
   TextStyle _unitStyle = const TextStyle();
   Color _chartTextColor = Colors.black;
@@ -122,6 +126,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _simplerUi = simplerUiSlowDefault;
+  bool _twoColumnLayout = twoColumnLayoutDefault;
   bool _instantUpload = instantUploadDefault;
   bool _uxDebug = appDebugModeDefault;
 
@@ -453,6 +458,7 @@ class RecordingState extends State<RecordingScreen> {
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
+    _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
     _instantUpload = prefService.get<bool>(instantUploadTag) ?? instantUploadDefault;
     _pointCount = min(60, size.width ~/ 2);
     final now = DateTime.now();
@@ -1122,10 +1128,17 @@ class RecordingState extends State<RecordingScreen> {
   Widget build(BuildContext context) {
     const separatorHeight = 1.0;
 
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = mediaWidth / 8 * _sizeAdjust;
+    final size = Get.mediaQuery.size;
+    if (size.width != _mediaWidth || size.height != _mediaHeight) {
+      _mediaWidth = size.width;
+      _mediaHeight = size.height;
+      _landscape = _mediaWidth! > _mediaHeight!;
+    }
+
+    final mediaSizeMin = min(_mediaWidth!, _mediaHeight!);
+    if (_mediaSizeMin == null || (_mediaSizeMin! - mediaSizeMin).abs() > eps) {
+      _mediaSizeMin = mediaSizeMin;
+      _sizeDefault = mediaSizeMin / 8 * _sizeAdjust;
       _measurementStyle = TextStyle(
         fontFamily: fontFamily,
         fontSize: _sizeDefault,
@@ -1381,6 +1394,149 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
+    final body = _landscape && _twoColumnLayout
+        ? GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio: _mediaWidth! / _mediaHeight! / 2,
+            physics: const NeverScrollableScrollPhysics(),
+            semanticChildCount: 2,
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    rows[0],
+                    const Divider(height: separatorHeight),
+                    rows[1],
+                    const Divider(height: separatorHeight),
+                    ColoredBox(
+                      color: _getZoneColor(metricIndex: 0, background: true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[2],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[0],
+                        controller: _rowControllers[0],
+                      ),
+                    ),
+                    const Divider(height: separatorHeight),
+                    ColoredBox(
+                      color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[3],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[1],
+                        controller: _rowControllers[1],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ColoredBox(
+                      color: _getZoneColor(metricIndex: 2, background: true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[4],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[2],
+                        controller: _rowControllers[2],
+                      ),
+                    ),
+                    const Divider(height: separatorHeight),
+                    ColoredBox(
+                      color: _getTargetHrColor(targetHrState, true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[5],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[3],
+                        controller: _rowControllers[3],
+                      ),
+                    ),
+                    const Divider(height: separatorHeight),
+                    ExpandablePanel(
+                      theme: _expandableThemeData,
+                      header: rows[6],
+                      collapsed: Container(),
+                      expanded: _simplerUi ? Container() : extras[4],
+                      controller: _rowControllers[4],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        : SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                rows[0],
+                const Divider(height: separatorHeight),
+                rows[1],
+                const Divider(height: separatorHeight),
+                ColoredBox(
+                  color: _getZoneColor(metricIndex: 0, background: true),
+                  child: ExpandablePanel(
+                    theme: _expandableThemeData,
+                    header: rows[2],
+                    collapsed: Container(),
+                    expanded: _simplerUi ? Container() : extras[0],
+                    controller: _rowControllers[0],
+                  ),
+                ),
+                const Divider(height: separatorHeight),
+                ColoredBox(
+                  color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
+                  child: ExpandablePanel(
+                    theme: _expandableThemeData,
+                    header: rows[3],
+                    collapsed: Container(),
+                    expanded: _simplerUi ? Container() : extras[1],
+                    controller: _rowControllers[1],
+                  ),
+                ),
+                const Divider(height: separatorHeight),
+                ColoredBox(
+                  color: _getZoneColor(metricIndex: 2, background: true),
+                  child: ExpandablePanel(
+                    theme: _expandableThemeData,
+                    header: rows[4],
+                    collapsed: Container(),
+                    expanded: _simplerUi ? Container() : extras[2],
+                    controller: _rowControllers[2],
+                  ),
+                ),
+                const Divider(height: separatorHeight),
+                ColoredBox(
+                  color: _getTargetHrColor(targetHrState, true),
+                  child: ExpandablePanel(
+                    theme: _expandableThemeData,
+                    header: rows[5],
+                    collapsed: Container(),
+                    expanded: _simplerUi ? Container() : extras[3],
+                    controller: _rowControllers[3],
+                  ),
+                ),
+                const Divider(height: separatorHeight),
+                ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[6],
+                  collapsed: Container(),
+                  expanded: _simplerUi ? Container() : extras[4],
+                  controller: _rowControllers[4],
+                ),
+              ],
+            ),
+          );
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: GestureDetector(
@@ -1434,69 +1590,7 @@ class RecordingState extends State<RecordingScreen> {
                   ),
                 ],
               ),
-              body: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    rows[0],
-                    const Divider(height: separatorHeight),
-                    rows[1],
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getZoneColor(metricIndex: 0, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[2],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[0],
-                        controller: _rowControllers[0],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[3],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[1],
-                        controller: _rowControllers[1],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getZoneColor(metricIndex: 2, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[4],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[2],
-                        controller: _rowControllers[2],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getTargetHrColor(targetHrState, true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[5],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[3],
-                        controller: _rowControllers[3],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ExpandablePanel(
-                      theme: _expandableThemeData,
-                      header: rows[6],
-                      collapsed: Container(),
-                      expanded: _simplerUi ? Container() : extras[4],
-                      controller: _rowControllers[4],
-                    ),
-                  ],
-                ),
-              ),
+              body: body,
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               floatingActionButton: CircularFabMenu(
                 fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
