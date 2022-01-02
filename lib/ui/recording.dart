@@ -29,6 +29,7 @@ import '../preferences/instant_upload.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/preferences_spec.dart';
 import '../preferences/simpler_ui.dart';
@@ -97,6 +98,7 @@ class RecordingState extends State<RecordingScreen> {
   ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
   double? _mediaWidth;
   double _sizeDefault = 10.0;
+  double _sizeAdjust = 1.0;
   TextStyle _measurementStyle = const TextStyle();
   TextStyle _unitStyle = const TextStyle();
   Color _chartTextColor = Colors.black;
@@ -418,9 +420,14 @@ class RecordingState extends State<RecordingScreen> {
       fontFamily: fontFamily,
       color: _themeManager.getBlueColor(),
     );
+    final prefService = Get.find<BasePrefService>();
+    final sizeAdjustInt =
+        prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
+    if (sizeAdjustInt != 100) {
+      _sizeAdjust = sizeAdjustInt / 100.0;
+    }
     _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 1.4);
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
-    final prefService = Get.find<BasePrefService>();
     prefService.set<String>(
       lastEquipmentIdTagPrefix + PreferencesSpec.sport2Sport(widget.sport),
       widget.device.id.id,
@@ -505,7 +512,7 @@ class RecordingState extends State<RecordingScreen> {
     _chartTextColor = _themeManager.getProtagonistColor();
     _chartLabelStyle = TextStyle(
       fontFamily: fontFamily,
-      fontSize: 11,
+      fontSize: 11 * _sizeAdjust,
       color: _chartTextColor,
     );
     _expandableThemeData = ExpandableThemeData(
@@ -1118,7 +1125,7 @@ class RecordingState extends State<RecordingScreen> {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
-      _sizeDefault = mediaWidth / 8;
+      _sizeDefault = mediaWidth / 8 * _sizeAdjust;
       _measurementStyle = TextStyle(
         fontFamily: fontFamily,
         fontSize: _sizeDefault,

@@ -24,6 +24,7 @@ import '../preferences/instant_upload.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/preferences_spec.dart';
@@ -97,6 +98,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     athleteVO2MaxTag: athleteVO2MaxDefault,
     enforcedTimeZoneTag: enforcedTimeZoneDefault,
     displayLapCounterTag: displayLapCounterDefault,
+    measurementFontSizeAdjustTag: measurementFontSizeAdjustDefault,
   };
   return prefDefaults;
 }

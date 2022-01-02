@@ -5,6 +5,7 @@ import '../../preferences/distance_resolution.dart';
 import '../../preferences/instant_measurement_start.dart';
 import '../../preferences/instant_scan.dart';
 import '../../preferences/instant_upload.dart';
+import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/multi_sport_device_support.dart';
 import '../../preferences/scan_duration.dart';
 import '../../preferences/simpler_ui.dart';
@@ -90,6 +91,15 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         title: Text(simplerUi),
         subtitle: Text(simplerUiDescription),
         pref: simplerUiTag,
+      ),
+      PrefSlider<int>(
+        title: const Text(measurementFontSizeAdjust),
+        subtitle: const Text(measurementFontSizeAdjustDescription),
+        pref: measurementFontSizeAdjustTag,
+        trailing: (num value) => Text("$value %"),
+        min: measurementFontSizeAdjustMin,
+        max: measurementFontSizeAdjustMax,
+        direction: Axis.vertical,
       ),
     ];
 
