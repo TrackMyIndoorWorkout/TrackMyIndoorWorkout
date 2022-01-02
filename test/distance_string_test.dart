@@ -7,7 +7,7 @@ import 'package:track_my_indoor_exercise/utils/display.dart';
 import 'utils.dart';
 
 void main() {
-  group('distanceString cobverts values as expected', () {
+  group('distanceString converts values as expected', () {
     final rnd = Random();
     for (final meters in getRandomDoubles(repetition, 40000, rnd)) {
       final expected = meters.toStringAsFixed(0);
