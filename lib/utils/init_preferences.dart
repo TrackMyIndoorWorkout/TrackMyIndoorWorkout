@@ -33,6 +33,7 @@ import '../preferences/simpler_ui.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
+import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
@@ -99,6 +100,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     enforcedTimeZoneTag: enforcedTimeZoneDefault,
     displayLapCounterTag: displayLapCounterDefault,
     measurementFontSizeAdjustTag: measurementFontSizeAdjustDefault,
+    twoColumnLayoutTag: twoColumnLayoutDefault,
   };
   return prefDefaults;
 }
