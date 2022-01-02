@@ -10,6 +10,7 @@ import '../../preferences/multi_sport_device_support.dart';
 import '../../preferences/scan_duration.dart';
 import '../../preferences/simpler_ui.dart';
 import '../../preferences/theme_selection.dart';
+import '../../preferences/two_column_layout.dart';
 import '../../preferences/unit_system.dart';
 import 'preferences_base.dart';
 
@@ -100,6 +101,11 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         min: measurementFontSizeAdjustMin,
         max: measurementFontSizeAdjustMax,
         direction: Axis.vertical,
+      ),
+      const PrefCheckbox(
+        title: Text(twoColumnLayout),
+        subtitle: Text(twoColumnLayoutDescription),
+        pref: twoColumnLayoutTag,
       ),
     ];
 
