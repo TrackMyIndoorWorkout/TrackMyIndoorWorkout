@@ -200,7 +200,7 @@ class RecordingState extends State<RecordingScreen> {
   void amendZoneToValue(int valueIndex, int value) {
     if (_preferencesSpecs[valueIndex].indexDisplay) {
       int zoneIndex = _preferencesSpecs[valueIndex].binIndex(value);
-      _values[valueIndex + 1] += " Z$zoneIndex";
+      _values[valueIndex + 1] += " Z${zoneIndex + 1}";
       if (_zoneIndexColoring) {
         _zoneIndexes[valueIndex] = zoneIndex;
       }
@@ -1266,7 +1266,7 @@ class RecordingState extends State<RecordingScreen> {
         );
         if (entry.value.metric == "hr" && _targetHrMode != targetHeartRateModeNone) {
           int zoneIndex =
-              targetHrState == TargetHrState.off ? 0 : entry.value.binIndex(_heartRate ?? 0);
+              targetHrState == TargetHrState.off ? 0 : entry.value.binIndex(_heartRate ?? 0) + 1;
           String targetText = _getTargetHrText(targetHrState);
           targetText = "Z$zoneIndex $targetText";
           extra = Column(

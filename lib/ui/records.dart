@@ -352,7 +352,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<charts.CircularSeries<HistogramData, String>> _getPowerHistogram() {
     return <charts.CircularSeries<HistogramData, String>>[
       charts.PieSeries<HistogramData, String>(
-        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index + 1} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
         dataSource: _tileConfigurations["power"]!.histogram,
         explode: true,
@@ -383,7 +383,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.CircularSeries<HistogramData, String>>[
       charts.PieSeries<HistogramData, String>(
         dataSource: _tileConfigurations["speed"]!.histogram,
-        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index + 1} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
         explode: true,
         dataLabelSettings: charts.DataLabelSettings(
@@ -413,7 +413,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.CircularSeries<HistogramData, String>>[
       charts.PieSeries<HistogramData, String>(
         dataSource: _tileConfigurations["cadence"]!.histogram,
-        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index + 1} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
         explode: true,
         dataLabelSettings: charts.DataLabelSettings(
@@ -443,7 +443,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.CircularSeries<HistogramData, String>>[
       charts.PieSeries<HistogramData, String>(
         dataSource: _tileConfigurations["hr"]!.histogram,
-        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index + 1} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
         explode: true,
         dataLabelSettings: charts.DataLabelSettings(
