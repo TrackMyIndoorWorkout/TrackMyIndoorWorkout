@@ -1,3 +1,8 @@
+## 1.1.90
+
+* Measurement row configuration UI for graph height (1/4, 1/3, 1/2) expanded/collapsed state
+* More natural 1-based zone index display instead of 0-based
+
 ## 1.1.89
 
 * Adding lap counter display option (center of track or in leaderboard as well)
