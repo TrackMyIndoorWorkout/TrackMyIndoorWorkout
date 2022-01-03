@@ -321,11 +321,7 @@ class RecordingState extends State<RecordingScreen> {
   void _onToggleDetails(int index) {
     setState(() {
       _expandedState[index] = _rowControllers[index].expanded;
-      final expandedStateStr =
-          List<String>.generate(_expandedState.length, (index) => _expandedState[index] ? "1" : "0")
-              .join("");
-      final prefService = Get.find<BasePrefService>();
-      prefService.set<String>(measurementPanelsExpandedTag, expandedStateStr);
+      applyExpandedStates(_expandedState);
     });
   }
 
@@ -352,10 +348,7 @@ class RecordingState extends State<RecordingScreen> {
   void _rotateChartHeight(int index) {
     setState(() {
       _expandedHeights[index] = (_expandedHeights[index] + 1) % 3;
-      final expandedHeightStr = List<String>.generate(
-          _expandedHeights.length, (index) => _expandedHeights[index].toString()).join("");
-      final prefService = Get.find<BasePrefService>();
-      prefService.set<String>(measurementDetailSizeTag, expandedHeightStr);
+      applyDetailSizes(_expandedHeights);
     });
   }
 
