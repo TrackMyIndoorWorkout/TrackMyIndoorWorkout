@@ -200,7 +200,7 @@ class RecordingState extends State<RecordingScreen> {
   void amendZoneToValue(int valueIndex, int value) {
     if (_preferencesSpecs[valueIndex].indexDisplay) {
       int zoneIndex = _preferencesSpecs[valueIndex].binIndex(value);
-      _values[valueIndex + 1] += " Z$zoneIndex";
+      _values[valueIndex + 1] += " Z${zoneIndex + 1}";
       if (_zoneIndexColoring) {
         _zoneIndexes[valueIndex] = zoneIndex;
       }
@@ -321,11 +321,7 @@ class RecordingState extends State<RecordingScreen> {
   void _onToggleDetails(int index) {
     setState(() {
       _expandedState[index] = _rowControllers[index].expanded;
-      final expandedStateStr =
-          List<String>.generate(_expandedState.length, (index) => _expandedState[index] ? "1" : "0")
-              .join("");
-      final prefService = Get.find<BasePrefService>();
-      prefService.set<String>(measurementPanelsExpandedTag, expandedStateStr);
+      applyExpandedStates(_expandedState);
     });
   }
 
@@ -352,10 +348,7 @@ class RecordingState extends State<RecordingScreen> {
   void _rotateChartHeight(int index) {
     setState(() {
       _expandedHeights[index] = (_expandedHeights[index] + 1) % 3;
-      final expandedHeightStr = List<String>.generate(
-          _expandedHeights.length, (index) => _expandedHeights[index].toString()).join("");
-      final prefService = Get.find<BasePrefService>();
-      prefService.set<String>(measurementDetailSizeTag, expandedHeightStr);
+      applyDetailSizes(_expandedHeights);
     });
   }
 
@@ -1273,7 +1266,7 @@ class RecordingState extends State<RecordingScreen> {
         );
         if (entry.value.metric == "hr" && _targetHrMode != targetHeartRateModeNone) {
           int zoneIndex =
-              targetHrState == TargetHrState.off ? 0 : entry.value.binIndex(_heartRate ?? 0);
+              targetHrState == TargetHrState.off ? 0 : entry.value.binIndex(_heartRate ?? 0) + 1;
           String targetText = _getTargetHrText(targetHrState);
           targetText = "Z$zoneIndex $targetText";
           extra = Column(
