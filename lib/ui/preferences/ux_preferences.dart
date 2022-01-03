@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/auto_connect.dart';
 import '../../preferences/distance_resolution.dart';
@@ -13,6 +14,7 @@ import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
 import '../../preferences/unit_system.dart';
 import 'preferences_base.dart';
+import 'row_configuration_dialog.dart';
 
 class UXPreferencesScreen extends PreferencesScreenBase {
   static String shortTitle = "UX";
@@ -106,6 +108,17 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         title: Text(twoColumnLayout),
         subtitle: Text(twoColumnLayoutDescription),
         pref: twoColumnLayoutTag,
+      ),
+      PrefButton(
+        onTap: () async {
+          Get.defaultDialog(
+            title: "Row Setup",
+            textConfirm: "Close",
+            onConfirm: () => Get.close(1),
+            content: const RowConfigurationDialog(),
+          );
+        },
+        child: const Text("Measurement Row Setup"),
       ),
     ];
 

@@ -9,7 +9,7 @@ environment:
   flutter: ">=2.8.1"
 
 dependencies:
-  assorted_layout_widgets: ^5.2.1
+  assorted_layout_widgets: ^5.4.1
   bluetooth_enable:
     git:
       url: https://github.com/CsabaConsulting/bluetooth_enable.git

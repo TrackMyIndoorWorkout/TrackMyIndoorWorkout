@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
+import '../ui/models/row_configuration.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import 'palettes.dart';
@@ -329,5 +330,22 @@ class PreferencesSpec {
     }
 
     return prefSpecs;
+  }
+
+  static List<RowConfiguration> getRowConfigurations([String sport = ActivityType.ride]) {
+    var rowConfigs = preferencesSpecs
+        .map((p) => RowConfiguration(
+              title: p.title,
+              icon: p.icon,
+              unit: p.unit,
+            ))
+        .toList();
+    rowConfigs.add(RowConfiguration(
+      title: "Distance",
+      icon: Icons.add_road,
+      unit: "m",
+    ));
+
+    return rowConfigs;
   }
 }
