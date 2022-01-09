@@ -139,6 +139,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturerFitId: stravaFitId,
     model: "Generic Swim Ergometer",
   ),
+  // Delete this?
   genericFTMSEllipticalFourCC: RowerDeviceDescriptor(
     defaultSport: ActivityType.elliptical,
     isMultiSport: false,
@@ -175,7 +176,7 @@ DeviceDescriptor genericDescriptorForSport(String sport) {
   } else if (sport == ActivityType.swim) {
     return deviceMap[genericFTMSSwimFourCC]!;
   } else if (sport == ActivityType.elliptical) {
-    return deviceMap[genericFTMSEllipticalFourCC]!;
+    return deviceMap[genericFTMSCrossTrainerFourCC]!;
   }
 
   return deviceMap[genericFTMSBikeFourCC]!;

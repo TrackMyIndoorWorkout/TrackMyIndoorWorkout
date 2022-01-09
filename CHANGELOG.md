@@ -1,6 +1,10 @@
+## 1.1.91
+
+* Enabling FTMS Cross Trainer, assigning it to Elliptical sport
+
 ## 1.1.90
 
-* Measurement row configuration UI for graph height (1/4, 1/3, 1/2) expanded/collapsed state
+* Measurement row configuration UI for graph height (1/4, 1/3, 1/2) and expanded/collapsed state
 * More natural 1-based zone index display instead of 0-based
 
 ## 1.1.89

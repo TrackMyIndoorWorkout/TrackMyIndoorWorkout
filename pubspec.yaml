@@ -2,7 +2,7 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.90+90
+version: 1.1.91+91
 
 environment:
   sdk: ">=2.15.0 <3.0.0"
@@ -44,7 +44,7 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/spinner_input.git
   sqflite: ^2.0.1
-  syncfusion_flutter_charts: ^19.4.40
+  syncfusion_flutter_charts: ^19.4.41
   tuple: ^2.0.0
   uni_links: ^0.5.1
   url_launcher: ^6.0.17
