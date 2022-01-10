@@ -1128,7 +1128,8 @@ class RecordingState extends State<RecordingScreen> {
       _landscape = _mediaWidth! > _mediaHeight!;
     }
 
-    final mediaSizeMin = min(_mediaWidth!, _mediaHeight!);
+    final mediaSizeMin =
+        _landscape && _twoColumnLayout ? _mediaWidth! / 2 : min(_mediaWidth!, _mediaHeight!);
     if (_mediaSizeMin == null || (_mediaSizeMin! - mediaSizeMin).abs() > eps) {
       _mediaSizeMin = mediaSizeMin;
       _sizeDefault = mediaSizeMin / 8 * _sizeAdjust;
