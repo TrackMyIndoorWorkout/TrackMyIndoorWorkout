@@ -1,3 +1,22 @@
+## 1.1.91
+
+* Enabling FTMS Cross Trainer, assigning it to Elliptical sport
+
+## 1.1.90
+
+* Measurement row configuration UI for graph height (1/4, 1/3, 1/2) and expanded/collapsed state
+* More natural 1-based zone index display instead of 0-based
+
+## 1.1.89
+
+* Adding lap counter display option (center of track or in leaderboard as well)
+* Adding preferences slider to shrink fonts on the Recording, Activity and Workout Details screens
+* Adding simple fixed two column layout for landscape mode with explicit preferences switch
+
+## 1.1.88
+
+* Hotfix: Calorie factor adjuster data migration could lock up
+
 ## 1.1.87
 
 * Fix: power based calorie counting factor won't interfere (skyrocket) the HR based calories

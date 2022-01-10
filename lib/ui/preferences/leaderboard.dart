@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import '../../preferences/lap_counter.dart';
 import '../../preferences/leaderboard_and_rank.dart';
 import 'preferences_base.dart';
 
@@ -76,11 +77,11 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
           }
         },
       ),
-      // const PrefCheckbox(
-      //   title: Text(displayLapCounter),
-      //   subtitle: Text(displayLapCounterDescription),
-      //   pref: displayLapCounterTag,
-      // ),
+      const PrefCheckbox(
+        title: Text(displayLapCounter),
+        subtitle: Text(displayLapCounterDescription),
+        pref: displayLapCounterTag,
+      ),
     ];
 
     return Scaffold(
