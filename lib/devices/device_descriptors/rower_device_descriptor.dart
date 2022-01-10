@@ -62,18 +62,18 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     //  9 00001001 expanded energy, (heart rate), elapsed time
     // negated first bit!
     flag = processStrokeRateFlag(flag, true);
-    flag = processAverageStrokeRateFlag(flag);
+    flag = skipFlag(flag, size: 1); // Average Stroke Rate
     flag = processTotalDistanceFlag(flag);
-    flag = processPaceFlag(flag); // Instant
-    flag = processPaceFlag(flag); // Average (fallback)
-    flag = processPowerFlag(flag); // Instant
-    flag = processPowerFlag(flag); // Average (fallback)
-    flag = processResistanceLevelFlag(flag);
+    flag = processPaceFlag(flag);
+    flag = skipFlag(flag); // Average Pace
+    flag = processPowerFlag(flag);
+    flag = skipFlag(flag); // Average Power
+    flag = skipFlag(flag); // Resistance Level
     flag = processExpandedEnergyFlag(flag);
     flag = processHeartRateFlag(flag);
-    flag = processMetabolicEquivalentFlag(flag);
+    flag = skipFlag(flag, size: 1); // Metabolic Equivalent
     flag = processElapsedTimeFlag(flag);
-    flag = processRemainingTimeFlag(flag);
+    flag = skipFlag(flag); // Remaining Time
   }
 
   @override
@@ -134,22 +134,10 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     return flag;
   }
 
-  int processAverageStrokeRateFlag(int flag) {
-    if (flag % 2 == 1) {
-      if (strokeRateMetric != null) {
-        // UByte with 0.5 resolution
-        strokeRateMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 2.0);
-      }
-      byteCounter++;
-    }
-    flag ~/= 2;
-    return flag;
-  }
-
   int processPaceFlag(int flag) {
     if (flag % 2 == 1) {
       // UInt16, seconds with 1 resolution
-      paceMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
+      paceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
     flag ~/= 2;

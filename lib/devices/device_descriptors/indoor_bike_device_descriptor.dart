@@ -42,19 +42,19 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     // 68 01000100 instant cadence, instant power
     //  2 00000010 heart rate
     // negated first bit!
-    flag = processSpeedFlag(flag, true); // Instant
-    flag = processSpeedFlag(flag, false); // Average (fallback)
-    flag = processCadenceFlag(flag); // Instant
-    flag = processCadenceFlag(flag); // Average (fallback)
+    flag = processSpeedFlag(flag, true);
+    flag = skipFlag(flag); // Average Speed
+    flag = processCadenceFlag(flag);
+    flag = skipFlag(flag); // Average Cadence
     flag = processTotalDistanceFlag(flag);
-    flag = processResistanceLevelFlag(flag);
-    flag = processPowerFlag(flag); // Instant
-    flag = processPowerFlag(flag); // Average (fallback)
+    flag = skipFlag(flag); // Resistance Level
+    flag = processPowerFlag(flag);
+    flag = skipFlag(flag); // Average Power
     flag = processExpandedEnergyFlag(flag);
     flag = processHeartRateFlag(flag);
-    flag = processMetabolicEquivalentFlag(flag);
+    flag = skipFlag(flag, size: 1); // Metabolic Equivalent
     flag = processElapsedTimeFlag(flag);
-    flag = processRemainingTimeFlag(flag);
+    flag = skipFlag(flag); // Remaining Time
   }
 
   @override
