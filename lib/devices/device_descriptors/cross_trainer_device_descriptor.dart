@@ -37,7 +37,7 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
   void processFlag(int flag) {
     super.processFlag(flag);
     // negated first bit!
-    flag = processSpeedFlag(flag, true);
+    flag = processSpeedFlag(flag);
     flag = skipFlag(flag); // Average Speed
     flag = processTotalDistanceFlag(flag);
     flag = processStepMetricsFlag(flag);
