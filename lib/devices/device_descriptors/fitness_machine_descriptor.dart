@@ -57,8 +57,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return flag;
   }
 
-  int processSpeedFlag(int flag, [bool negated = false]) {
-    if (flag % 2 == (negated ? 0 : 1)) {
+  int processSpeedFlag(int flag) {
+    // Negated first bit!!!
+    if (flag % 2 == 0) {
       // UInt16, km/h with 0.01 resolution
       speedMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 100.0);
       byteCounter += 2;
