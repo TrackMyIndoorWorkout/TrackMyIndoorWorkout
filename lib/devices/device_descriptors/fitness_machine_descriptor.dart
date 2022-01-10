@@ -48,10 +48,19 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return byteCounter > 2 ? dataLength == byteCounter : dataLength > 2;
   }
 
-  int processSpeedFlag(int flag, bool negated) {
+  int skipFlag(int flag, {int size = 2}) {
+    if (flag % 2 == 1) {
+      byteCounter += size;
+    }
+
+    flag ~/= 2;
+    return flag;
+  }
+
+  int processSpeedFlag(int flag, [bool negated = false]) {
     if (flag % 2 == (negated ? 0 : 1)) {
       // UInt16, km/h with 0.01 resolution
-      speedMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 100.0);
+      speedMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 100.0);
       byteCounter += 2;
     }
 
@@ -62,7 +71,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int processCadenceFlag(int flag) {
     if (flag % 2 == 1) {
       // UInt16, revolutions / minute with 0.5 resolution
-      cadenceMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
+      cadenceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
       byteCounter += 2;
     }
 
@@ -81,20 +90,10 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return flag;
   }
 
-  int processResistanceLevelFlag(int flag) {
-    if (flag % 2 == 1) {
-      // SInt16 (resolution of 1 for bikes, 0.1 for cross trainer)
-      byteCounter += 2;
-    }
-
-    flag ~/= 2;
-    return flag;
-  }
-
   int processPowerFlag(int flag) {
     if (flag % 2 == 1) {
       // SInt16, Watts
-      powerMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
+      powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
 
@@ -141,28 +140,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return flag;
   }
 
-  int processMetabolicEquivalentFlag(int flag) {
-    if (flag % 2 == 1) {
-      // UInt8
-      byteCounter++;
-    }
-
-    flag ~/= 2;
-    return flag;
-  }
-
   int processElapsedTimeFlag(int flag) {
     if (flag % 2 == 1) {
       timeMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
-      byteCounter += 2;
-    }
-
-    flag ~/= 2;
-    return flag;
-  }
-
-  int processRemainingTimeFlag(int flag) {
-    if (flag % 2 == 1) {
       byteCounter += 2;
     }
 
@@ -176,40 +156,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       cadenceMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
       // UInt16 average step rate
-      byteCounter += 2;
-    }
-
-    flag ~/= 2;
-    return flag;
-  }
-
-  int processStrideCountFlag(int flag) {
-    if (flag % 2 == 1) {
-      // UInt16, 0.1 resolution
-      byteCounter += 2;
-    }
-
-    flag ~/= 2;
-    return flag;
-  }
-
-  int processElevationGainMetricsFlag(int flag) {
-    if (flag % 2 == 1) {
-      // UInt16 positive elevation gain
-      byteCounter += 2;
-      // UInt16 negative elevation gain
-      byteCounter += 2;
-    }
-
-    flag ~/= 2;
-    return flag;
-  }
-
-  int processInclinationAndRampAngleFlag(int flag) {
-    if (flag % 2 == 1) {
-      // SInt16 inclination: percent w 0.1 resolution
-      byteCounter += 2;
-      // SInt16 ramp angle: degree w 0.1 resolution
       byteCounter += 2;
     }
 
