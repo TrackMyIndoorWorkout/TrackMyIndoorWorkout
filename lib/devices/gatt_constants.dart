@@ -24,6 +24,7 @@ const heartRateMeasurementUuid = '2a37';
 
 const cyclingCadenceServiceUuid = '1816';
 const cyclingCadenceMeasurementUuid = '2a5b';
+const cyclingCadenceFeaturesUuid = '2a5c';
 
 const cyclingPowerServiceUuid = '1818';
 const cyclingPowerMeasurementUuid = '2a63';
