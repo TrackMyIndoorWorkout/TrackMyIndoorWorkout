@@ -12,16 +12,25 @@ class TestPair {
 }
 
 void main() {
-  test('Treadmill constructor tests', () async {
-    final treadmill = deviceMap["GRun"]!;
+  test('Generic Treadmill constructor tests', () async {
+    final treadmill = deviceMap[genericFTMSTreadmillFourCC]!;
 
     expect(treadmill.canMeasureHeartRate, false);
     expect(treadmill.defaultSport, ActivityType.run);
-    expect(treadmill.fourCC, "GRun");
+    expect(treadmill.fourCC, genericFTMSTreadmillFourCC);
+  });
+
+  test('Generic Indoor Bike constructor tests', () async {
+    final indoorBike = deviceMap[genericFTMSBikeFourCC]!;
+
+    expect(indoorBike.canMeasureHeartRate, true);
+    expect(indoorBike.canMeasureCalories, true);
+    expect(indoorBike.defaultSport, ActivityType.ride);
+    expect(indoorBike.fourCC, genericFTMSBikeFourCC);
   });
 
   test('GRun interprets FTMS Matrix Data flags properly', () async {
-    final treadmill = deviceMap["GRun"] as TreadmillDeviceDescriptor;
+    final treadmill = deviceMap[genericFTMSTreadmillFourCC] as TreadmillDeviceDescriptor;
     const lsb = 158;
     const msb = 27;
     const flag = maxUint8 * msb + lsb;
@@ -63,7 +72,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final treadmill = deviceMap["GRun"]!;
+        final treadmill = deviceMap[genericFTMSTreadmillFourCC]!;
         treadmill.stopWorkout();
 
         final record = treadmill.stubRecord(testPair.data)!;
