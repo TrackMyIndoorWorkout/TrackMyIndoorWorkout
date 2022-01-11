@@ -26,7 +26,8 @@ class PreferencesSpec {
     ActivityType.ride,
     ActivityType.run,
     paddleSport,
-    ActivityType.swim
+    ActivityType.swim,
+    ActivityType.elliptical,
   ];
   static const thresholdPrefix = "threshold_";
   static const zonesPostfix = "_zones";
@@ -44,9 +45,9 @@ class PreferencesSpec {
   static final slowSpeeds = {
     ActivityType.ride: 4.0,
     ActivityType.run: 2.0,
-    ActivityType.elliptical: 1.0,
     paddleSport: 1.0,
     ActivityType.swim: 0.5,
+    ActivityType.elliptical: 1.0,
   };
 
   static final _preferencesSpecsTemplate = [
@@ -60,6 +61,7 @@ class PreferencesSpec {
         sportPrefixes[1]: 360,
         sportPrefixes[2]: 120,
         sportPrefixes[3]: 120,
+        sportPrefixes[4]: 120,
       },
       zonesTagPostfix: metrics[0] + zonesPostfix,
       zonesDefaultInts: {
@@ -67,6 +69,7 @@ class PreferencesSpec {
         sportPrefixes[1]: [55, 75, 90, 105, 120, 150],
         sportPrefixes[2]: [55, 75, 90, 105, 120, 150],
         sportPrefixes[3]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[4]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.bolt,
       indexDisplayDefault: false,
@@ -81,6 +84,7 @@ class PreferencesSpec {
         sportPrefixes[1]: 16,
         sportPrefixes[2]: 7,
         sportPrefixes[3]: 1,
+        sportPrefixes[4]: 7,
       },
       zonesTagPostfix: metrics[1] + zonesPostfix,
       zonesDefaultInts: {
@@ -88,6 +92,7 @@ class PreferencesSpec {
         sportPrefixes[1]: [55, 75, 90, 105, 120, 150],
         sportPrefixes[2]: [55, 75, 90, 105, 120, 150],
         sportPrefixes[3]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[4]: [55, 75, 90, 105, 120, 150],
       },
       icon: Icons.speed,
       indexDisplayDefault: false,
@@ -102,6 +107,7 @@ class PreferencesSpec {
         sportPrefixes[1]: 180,
         sportPrefixes[2]: 90,
         sportPrefixes[3]: 90,
+        sportPrefixes[4]: 90,
       },
       zonesTagPostfix: metrics[2] + zonesPostfix,
       zonesDefaultInts: {
@@ -109,6 +115,7 @@ class PreferencesSpec {
         sportPrefixes[1]: [25, 37, 50, 75, 100, 120],
         sportPrefixes[2]: [25, 37, 50, 75, 100, 120],
         sportPrefixes[3]: [25, 37, 50, 75, 100, 120],
+        sportPrefixes[4]: [25, 37, 50, 75, 100, 120],
       },
       icon: Icons.directions_bike,
       indexDisplayDefault: false,
@@ -123,6 +130,7 @@ class PreferencesSpec {
         sportPrefixes[1]: 180,
         sportPrefixes[2]: 180,
         sportPrefixes[3]: 180,
+        sportPrefixes[4]: 180,
       },
       zonesTagPostfix: metrics[3] + zonesPostfix,
       zonesDefaultInts: {
@@ -130,6 +138,7 @@ class PreferencesSpec {
         sportPrefixes[1]: [50, 60, 70, 80, 90, 100],
         sportPrefixes[2]: [50, 60, 70, 80, 90, 100],
         sportPrefixes[3]: [50, 60, 70, 80, 90, 100],
+        sportPrefixes[4]: [50, 60, 70, 80, 90, 100],
       },
       icon: Icons.favorite,
       indexDisplayDefault: false,
