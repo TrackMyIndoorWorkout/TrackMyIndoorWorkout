@@ -57,9 +57,9 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     _strokeRateWindowSize =
         prefService.get<int>(strokeRateSmoothingIntTag) ?? strokeRateSmoothingDefault;
 
-    // KayakPro Compact: two flag bytes
-    // 44 00101100 (stroke rate, stroke count), total distance, instant pace, instant power
-    //  9 00001001 expanded energy, (heart rate), elapsed time
+    // KayakPro Compact
+    // 44 0010 1100 (stroke rate, stroke count), total distance, instant pace, instant power
+    //  9 0000 1001 expanded energy, (heart rate), elapsed time
     // negated first bit!
     flag = processStrokeRateFlag(flag, true);
     flag = skipFlag(flag, size: 1); // Average Stroke Rate

@@ -28,6 +28,7 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
           model: model,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
+          flagByteSize: 3,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
         );
@@ -36,6 +37,9 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
   @override
   void processFlag(int flag) {
     super.processFlag(flag);
+    // LifePro FlexStride Pro
+    // 12 0000 1100 instant speed, total distance, cadence (step rate)
+    // 33 0010 0001 instant power, elapsed time
     // negated first bit!
     flag = processSpeedFlag(flag);
     flag = skipFlag(flag); // Average Speed

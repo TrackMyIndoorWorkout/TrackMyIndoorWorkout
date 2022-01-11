@@ -13,7 +13,7 @@ const hardwareRevisionUuid = '2a27';
 const softwareRevisionUuid = '2a28';
 const manufacturerNameUuid = '2a29';
 
-const ftmsSportCharacteristics = [treadmillUuid, indoorBikeUuid, rowerDeviceUuid];
+const ftmsSportCharacteristics = [treadmillUuid, indoorBikeUuid, rowerDeviceUuid, crossTrainerUuid];
 
 const batteryServiceUuid = '180f';
 const batteryLevelUuid = '2a19';

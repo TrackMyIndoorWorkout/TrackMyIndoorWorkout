@@ -102,11 +102,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     measurementFontSizeAdjustTag: measurementFontSizeAdjustDefault,
     twoColumnLayoutTag: twoColumnLayoutDefault,
   };
-  return prefDefaults;
-}
 
-Future<BasePrefService> initPreferences() async {
-  var prefDefaults = await getPrefDefaults();
   for (var sport in PreferencesSpec.sportPrefixes) {
     for (var prefSpec in PreferencesSpec.preferencesSpecs) {
       prefDefaults.addAll({
@@ -129,6 +125,11 @@ Future<BasePrefService> initPreferences() async {
     });
   }
 
+  return prefDefaults;
+}
+
+Future<BasePrefService> initPreferences() async {
+  var prefDefaults = await getPrefDefaults();
   final prefService =
       await PrefServiceShared.init(prefix: preferencesPrefix, defaults: prefDefaults);
   Get.put<BasePrefService>(prefService, permanent: true);

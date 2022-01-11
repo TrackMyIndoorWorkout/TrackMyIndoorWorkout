@@ -43,6 +43,7 @@ void main() {
     expect(rower.timeMetric, isNotNull);
     expect(rower.caloriesPerHourMetric, isNotNull);
     expect(rower.caloriesPerMinuteMetric, isNotNull); // It's there but mute
+    expect(rower.heartRateByteIndex, null);
   });
 
   group('Rower Device interprets KayakPro data properly', () {
