@@ -37,6 +37,7 @@ void main() {
     expect(bike.timeMetric, null);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
+    expect(bike.heartRateByteIndex, isNotNull);
   });
 
   group('Schwinn IC4 interprets FTMS Indoor Bike Data properly', () {

@@ -38,9 +38,9 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
   @override
   void processFlag(int flag) {
     super.processFlag(flag);
-    // Schwinn IC4, two flag bytes
-    // 68 01000100 instant cadence, instant power
-    //  2 00000010 heart rate
+    // Schwinn IC4
+    // 68 0100 0100 instant cadence, instant power
+    //  2 0000 0010 heart rate
     // negated first bit!
     flag = processSpeedFlag(flag, true); // Instant
     flag = processSpeedFlag(flag, false); // Average (fallback)
