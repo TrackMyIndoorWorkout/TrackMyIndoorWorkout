@@ -78,9 +78,13 @@ abstract class DeviceDescriptor {
 
   bool canDataProcessed(List<int> data);
 
-  void processFlag(int flag) {
+  void initFlag() {
     clearMetrics();
     byteCounter = flagByteSize;
+  }
+
+  void processFlag(int flag) {
+    initFlag();
   }
 
   void preProcessFlag(List<int> data) {

@@ -91,8 +91,8 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       paceMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 10.0);
       byteCounter += 1;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   int processForceAndPowerFlag(int flag) {
@@ -102,8 +102,8 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   double? getPace(List<int> data) {

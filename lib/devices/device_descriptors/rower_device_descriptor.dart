@@ -130,8 +130,8 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       strokeCountMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   int processPaceFlag(int flag) {
@@ -140,8 +140,8 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       paceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   int? getStrokeRate(List<int> data) {

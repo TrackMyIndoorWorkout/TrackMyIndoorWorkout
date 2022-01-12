@@ -221,7 +221,7 @@ class CSVImporter {
     var calories = 0;
     var uploaded = false;
     var stravaId = 0;
-    var fourCC = "SAP+";
+    var fourCC = schwinnACPerfPlusFourCC;
     var sport = ActivityType.ride;
     var calorieFactor = 1.0;
     var hrCalorieFactor = 1.0;

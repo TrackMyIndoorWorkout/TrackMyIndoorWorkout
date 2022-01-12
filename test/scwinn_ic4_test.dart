@@ -13,15 +13,15 @@ class TestPair {
 
 void main() {
   test('Schwinn IC4 constructor tests', () async {
-    final bike = deviceMap["SIC4"]!;
+    final bike = deviceMap[schwinnICBikeFourCC]!;
 
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
-    expect(bike.fourCC, "SIC4");
+    expect(bike.fourCC, schwinnICBikeFourCC);
   });
 
   test('Schwinn IC4 interprets FTMS Indoor Bike Data flags properly', () async {
-    final bike = deviceMap["SIC4"] as IndoorBikeDeviceDescriptor;
+    final bike = deviceMap[schwinnICBikeFourCC] as IndoorBikeDeviceDescriptor;
     const lsb = 68;
     const msb = 2;
     const flag = maxUint8 * msb + lsb;
@@ -157,7 +157,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap["SIC4"]!;
+        final bike = deviceMap[schwinnICBikeFourCC]!;
         bike.stopWorkout();
 
         final record = bike.stubRecord(testPair.data)!;
