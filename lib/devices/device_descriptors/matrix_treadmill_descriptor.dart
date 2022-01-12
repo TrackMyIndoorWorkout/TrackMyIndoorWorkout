@@ -3,12 +3,13 @@ import '../device_map.dart';
 import 'treadmill_device_descriptor.dart';
 
 class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
-  MatrixTreadmillDescriptor() : super(
+  MatrixTreadmillDescriptor()
+      : super(
           fourCC: matrixTreadmillFourCC,
           vendorName: "Matrix",
           modelName: "Matrix Treadmill",
           namePrefixes: ["CTM", "Johnson", "Matrix"],
-          manufacturerPrefix: "Johnson",
+          manufacturerPrefix: "Johnson Health Tech",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Treadmill",
           canMeasureHeartRate: false,

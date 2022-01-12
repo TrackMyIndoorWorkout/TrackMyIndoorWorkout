@@ -187,8 +187,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
-    if (descriptor == null && advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
-      descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+    // Or other dedicated workarounds
+    if (descriptor == null) {
+      if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
+        descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+      } else if (advertisementDigest.machineType == MachineType.treadmill &&
+          advertisementDigest.needsMatrixSpecialTreatment()) {
+        descriptor = deviceMap[matrixTreadmillFourCC];
+      }
     }
 
     final database = Get.find<AppDatabase>();
