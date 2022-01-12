@@ -41,7 +41,7 @@ void main() {
     expect(runnRsc.distanceMetric, null);
   });
 
-  group('Rower Device interprets KayakPro data properly', () {
+  group('Runn RSC Device interprets RSC data properly', () {
     for (final testPair in [
       TestPair(
         data: sampleData,
