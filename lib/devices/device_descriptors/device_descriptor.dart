@@ -25,6 +25,7 @@ abstract class DeviceDescriptor {
   String? dataCharacteristicId;
   final bool antPlus;
 
+  final int flagByteSize;
   int featuresFlag = -1;
   int byteCounter = 0;
 
@@ -57,6 +58,7 @@ abstract class DeviceDescriptor {
     this.dataServiceId,
     this.dataCharacteristicId,
     this.antPlus = false,
+    this.flagByteSize = 2,
     this.canMeasureHeartRate = true,
     this.heartRateByteIndex,
     this.canMeasureCalories = true,
@@ -78,11 +80,11 @@ abstract class DeviceDescriptor {
 
   void processFlag(int flag) {
     clearMetrics();
-    byteCounter = 2;
+    byteCounter = flagByteSize;
   }
 
   void preProcessFlag(List<int> data) {
-    if (data.length > 2) {
+    if (data.length > flagByteSize) {
       var flag = data[0] + maxUint8 * data[1];
       if (flag != featuresFlag) {
         featuresFlag = flag;
