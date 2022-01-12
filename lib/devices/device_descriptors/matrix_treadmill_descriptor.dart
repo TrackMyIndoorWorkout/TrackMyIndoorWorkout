@@ -24,6 +24,7 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
     // Flag bytes:
     // 158  1001 1110
     // 31   0001 1111
+    //
     // C1  uint16 (2 bytes) Instant Speed (negated bit 0 means present)
     // C2  uint16 (2 bytes) Avg Speed
     // C3  uint24 (3 bytes) Total Distance
@@ -35,6 +36,7 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
     // C11 uint16 (2 bytes) Elapsed Time
     // C12 uint16 (2 bytes) Remaining Time
     // C13 sint16 + sint16 (4 bytes) Force on Belt and Power Output
+    //
     // There's only 20 bytes instead of 30
     // Instantaneous Speed, Avg Speed, Distance, Inclination, Positive Elevation Gain, Total Calories
     flag = processSpeedFlag(flag);

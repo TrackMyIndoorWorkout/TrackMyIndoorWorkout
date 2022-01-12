@@ -3,6 +3,7 @@ import '../utils/constants.dart';
 import 'device_descriptors/cross_trainer_device_descriptor.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
+import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/precor_spinner_chrono_power.dart';
 import 'device_descriptors/rower_device_descriptor.dart';
@@ -60,6 +61,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: "SCH BIKE",
   ),
   schwinnACPerfPlusFourCC: SchwinnACPerformancePlus(),
+  matrixBikeFourCC: MatrixBikeDescriptor(),
   kayakProGenesisPortFourCC: RowerDeviceDescriptor(
     defaultSport: ActivityType.kayaking,
     fourCC: kayakProGenesisPortFourCC,

@@ -191,9 +191,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (descriptor == null) {
       if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
         descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
-      } else if (advertisementDigest.machineType == MachineType.treadmill &&
-          advertisementDigest.needsMatrixSpecialTreatment()) {
-        descriptor = deviceMap[matrixTreadmillFourCC];
+      } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
+        if (advertisementDigest.machineType == MachineType.treadmill) {
+          descriptor = deviceMap[matrixTreadmillFourCC];
+        } else if (advertisementDigest.machineType == MachineType.indoorBike) {
+          descriptor = deviceMap[matrixBikeFourCC];
+        }
       }
     }
 

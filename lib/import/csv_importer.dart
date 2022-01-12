@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';

@@ -21,11 +21,11 @@ class TestPair {
 
 void main() {
   test('Matrix Treadmill constructor tests', () async {
-    final bike = deviceMap[matrixTreadmillFourCC]!;
+    final treadmill = deviceMap[matrixTreadmillFourCC]!;
 
-    expect(bike.canMeasureHeartRate, false);
-    expect(bike.defaultSport, ActivityType.run);
-    expect(bike.fourCC, matrixTreadmillFourCC);
+    expect(treadmill.canMeasureHeartRate, false);
+    expect(treadmill.defaultSport, ActivityType.run);
+    expect(treadmill.fourCC, matrixTreadmillFourCC);
   });
 
   group('Matrix Treadmill interprets faulty FTMS Treadmill Data flags properly', () {
@@ -34,21 +34,21 @@ void main() {
       const FlagBytes(lsb: 158, msb: 31, description: "during workout"),
     ]) {
       test(flagBytes.description, () async {
-        final mx = deviceMap[matrixTreadmillFourCC] as MatrixTreadmillDescriptor;
+        final treadmill = deviceMap[matrixTreadmillFourCC] as MatrixTreadmillDescriptor;
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
-        mx.stopWorkout();
+        treadmill.stopWorkout();
 
-        mx.processFlag(flag);
+        treadmill.processFlag(flag);
 
-        expect(mx.speedMetric, isNotNull);
-        expect(mx.cadenceMetric, null);
-        expect(mx.distanceMetric, isNotNull);
-        expect(mx.powerMetric, null);
-        expect(mx.caloriesMetric, isNotNull);
-        expect(mx.timeMetric, null);
-        expect(mx.caloriesPerHourMetric, null);
-        expect(mx.caloriesPerMinuteMetric, null);
-        expect(mx.heartRateByteIndex, null);
+        expect(treadmill.speedMetric, isNotNull);
+        expect(treadmill.cadenceMetric, null);
+        expect(treadmill.distanceMetric, isNotNull);
+        expect(treadmill.powerMetric, null);
+        expect(treadmill.caloriesMetric, isNotNull);
+        expect(treadmill.timeMetric, null);
+        expect(treadmill.caloriesPerHourMetric, null);
+        expect(treadmill.caloriesPerMinuteMetric, null);
+        expect(treadmill.heartRateByteIndex, null);
       });
     }
   });
@@ -138,10 +138,10 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap[matrixTreadmillFourCC]!;
-        bike.stopWorkout();
+        final treadmill = deviceMap[matrixTreadmillFourCC]!;
+        treadmill.stopWorkout();
 
-        final record = bike.stubRecord(testPair.data)!;
+        final record = treadmill.stubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);
