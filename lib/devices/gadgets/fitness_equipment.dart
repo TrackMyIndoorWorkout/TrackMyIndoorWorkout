@@ -436,36 +436,7 @@ class FitnessEquipment extends DeviceBase {
     stub.sport = descriptor?.defaultSport ?? ActivityType.ride;
 
     if (!startingValues) {
-      // Make sure that cumulative fields cannot decrease over time
-      if (stub.distance != null && lastRecord.distance != null) {
-        if (!testing) {
-          assert(stub.distance! >= lastRecord.distance!);
-        }
-
-        if (stub.distance! < lastRecord.distance!) {
-          stub.distance = lastRecord.distance;
-        }
-      }
-
-      if (stub.elapsed != null && lastRecord.elapsed != null) {
-        if (!testing) {
-          assert(stub.elapsed! >= lastRecord.elapsed!);
-        }
-
-        if (stub.elapsed! < lastRecord.elapsed!) {
-          stub.elapsed = lastRecord.elapsed;
-        }
-      }
-
-      if (stub.calories != null && lastRecord.calories != null) {
-        if (!testing) {
-          assert(stub.calories! >= lastRecord.calories!);
-        }
-
-        if (stub.calories! < lastRecord.calories!) {
-          stub.calories = lastRecord.calories;
-        }
-      }
+      stub.cumulativeMetricsEnforcements(lastRecord, testing);
     }
 
     startingValues = false;

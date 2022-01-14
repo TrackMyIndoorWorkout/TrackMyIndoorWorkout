@@ -147,6 +147,60 @@ class Record {
   bool isEmpty() {
     return isNotMoving() && (distance ?? 0.0) == 0.0 && (elapsed ?? 0) == 0 && (calories ?? 0) == 0;
   }
+
+  void cumulativeDistanceEnforcement(Record lastRecord, [bool testing = false]) {
+    if (distance != null && lastRecord.distance != null) {
+      if (!testing) {
+        assert(distance! >= lastRecord.distance!);
+      }
+
+      if (distance! < lastRecord.distance!) {
+        distance = lastRecord.distance;
+      }
+    }
+  }
+
+  void cumulativeElapsedTimeEnforcement(Record lastRecord, [bool testing = false]) {
+    if (elapsed != null && lastRecord.elapsed != null) {
+      if (!testing) {
+        assert(elapsed! >= lastRecord.elapsed!);
+      }
+
+      if (elapsed! < lastRecord.elapsed!) {
+        elapsed = lastRecord.elapsed;
+      }
+    }
+  }
+
+  void cumulativeMovingTimeEnforcement(Record lastRecord, [bool testing = false]) {
+    if (!testing) {
+      assert(movingTime >= lastRecord.movingTime);
+    }
+
+    if (movingTime < lastRecord.movingTime) {
+      movingTime = lastRecord.movingTime;
+    }
+  }
+
+  void cumulativeCaloriesEnforcement(Record lastRecord, [bool testing = false]) {
+    if (calories != null && lastRecord.calories != null) {
+      if (!testing) {
+        assert(calories! >= lastRecord.calories!);
+      }
+
+      if (calories! < lastRecord.calories!) {
+        calories = lastRecord.calories;
+      }
+    }
+  }
+
+  void cumulativeMetricsEnforcements(Record lastRecord, [bool testing = false]) {
+    // Ensure that cumulative fields cannot decrease over time
+    cumulativeDistanceEnforcement(lastRecord, testing);
+    cumulativeElapsedTimeEnforcement(lastRecord, testing);
+    cumulativeMovingTimeEnforcement(lastRecord, testing);
+    cumulativeCaloriesEnforcement(lastRecord, testing);
+  }
 }
 
 class RecordWithSport extends Record {
