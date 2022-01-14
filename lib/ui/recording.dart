@@ -31,6 +31,7 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
+import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/preferences_spec.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
@@ -129,6 +130,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _twoColumnLayout = twoColumnLayoutDefault;
   bool _instantUpload = instantUploadDefault;
   bool _uxDebug = appDebugModeDefault;
+  bool _movingOrElapsedTime = movingOrElapsedTimeDefault;
 
   Timer? _dataGapWatchdog;
   int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
@@ -142,6 +144,7 @@ class RecordingState extends State<RecordingScreen> {
   List<int?> _zoneIndexes = [];
   double _distance = 0.0;
   int _elapsed = 0;
+  int _movingTime = 0;
 
   String _targetHrMode = targetHeartRateModeDefault;
   Tuple2<double, double> _targetHrBounds = const Tuple2(0, 0);
@@ -249,6 +252,7 @@ class RecordingState extends State<RecordingScreen> {
     await _fitnessEquipment?.attach();
     setState(() {
       _elapsed = 0;
+      _movingTime = 0;
       _distance = 0.0;
       _lapCount = 0;
       _measuring = true;
@@ -267,8 +271,9 @@ class RecordingState extends State<RecordingScreen> {
         );
       }
 
+      final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
       if (_measuring &&
-          (_fitnessEquipment?.reallyStarted ?? false) &&
+          (workoutState == WorkoutState.moving || workoutState == WorkoutState.justStopped) &&
           (_fitnessEquipment?.measuring ?? false)) {
         if (!_uxDebug) {
           await _database.recordDao.insertRecord(record);
@@ -288,6 +293,7 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           _elapsed = record.elapsed ?? 0;
+          _movingTime = record.movingTime.round();
           if (record.heartRate != null &&
               (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
             _heartRate = record.heartRate;
@@ -452,6 +458,8 @@ class RecordingState extends State<RecordingScreen> {
     _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
+    _movingOrElapsedTime =
+        prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
     _instantUpload = prefService.get<bool>(instantUploadTag) ?? instantUploadDefault;
     _pointCount = min(60, size.width ~/ 2);
     final now = DateTime.now();
@@ -1162,7 +1170,8 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final _timeDisplay = Duration(seconds: _elapsed).toDisplay();
+    final _timeDisplay =
+        Duration(seconds: _movingOrElapsedTime ? _movingTime : _elapsed).toDisplay();
 
     List<Widget> rows = [
       Row(

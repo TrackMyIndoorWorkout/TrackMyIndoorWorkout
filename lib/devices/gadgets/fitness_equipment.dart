@@ -33,6 +33,15 @@ import 'running_cadence_sensor.dart';
 
 typedef RecordHandlerFunction = Function(Record data);
 
+// State Machine for #231 and #235
+// (intelligent start and elapsed time tracking)
+enum WorkoutState {
+  waitingForFirstMove,
+  moving,
+  justStopped,
+  stopped,
+}
+
 class FitnessEquipment extends DeviceBase {
   static const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
 
@@ -66,7 +75,7 @@ class FitnessEquipment extends DeviceBase {
   int _vo2Max = athleteVO2MaxDefault;
   Activity? _activity;
   bool measuring = false;
-  bool reallyStarted = false;
+  WorkoutState workoutState = WorkoutState.waitingForFirstMove;
   bool calibrating = false;
   final Random _random = Random();
   double? slowPace;
@@ -146,7 +155,7 @@ class FitnessEquipment extends DeviceBase {
   void setActivity(Activity activity) {
     _activity = activity;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
-    reallyStarted = false;
+    workoutState = WorkoutState.waitingForFirstMove;
     readConfiguration();
   }
 
@@ -208,11 +217,13 @@ class FitnessEquipment extends DeviceBase {
 
   Record processRecord(RecordWithSport stub) {
     final now = DateTime.now();
-    if (!reallyStarted) {
+    // State Machine for #231 and #235
+    // (intelligent start and elapsed time tracking)
+    if (workoutState == WorkoutState.waitingForFirstMove) {
       if (stub.isNotMoving()) {
         return stub;
       } else {
-        reallyStarted = true;
+        workoutState = WorkoutState.moving;
         if (_activity != null) {
           _activity!.startDateTime = now;
           _activity!.start = now.millisecondsSinceEpoch;
@@ -221,6 +232,16 @@ class FitnessEquipment extends DeviceBase {
             database.activityDao.updateActivity(_activity!);
           }
         }
+      }
+    } else {
+      if (stub.isNotMoving()) {
+        if (workoutState == WorkoutState.moving) {
+          workoutState = WorkoutState.justStopped;
+        } else if (workoutState == WorkoutState.justStopped) {
+          workoutState = WorkoutState.stopped;
+        }
+      } else {
+        workoutState = WorkoutState.moving;
       }
     }
 
@@ -265,6 +286,13 @@ class FitnessEquipment extends DeviceBase {
     // #197
     if (_startingElapsed > 0) {
       stub.elapsed = stub.elapsed! - _startingElapsed;
+    }
+
+    if (workoutState == WorkoutState.stopped) {
+      // We have to track the time ticking still #235
+      lastRecord.elapsed = stub.elapsed;
+      lastRecord.elapsedMillis = stub.elapsedMillis;
+      return lastRecord;
     }
 
     RecordWithSport? rscRecord;
