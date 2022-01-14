@@ -47,6 +47,8 @@ class Record {
   double? caloriesPerHour;
   @ignore
   double? caloriesPerMinute;
+  @ignore
+  double movingTime = 0.0; // s
 
   Record({
     this.id,

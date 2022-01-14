@@ -303,6 +303,9 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
+    // #235
+    stub.movingTime = lastRecord.movingTime + dT;
+
     // #197
     stub.distance ??= 0.0;
     if (startingValues && stub.distance! >= 50.0) {
