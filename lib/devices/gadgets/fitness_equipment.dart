@@ -466,7 +466,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     startingValues = false;
-
+    lastRecord = stub;
     return stub;
   }
 

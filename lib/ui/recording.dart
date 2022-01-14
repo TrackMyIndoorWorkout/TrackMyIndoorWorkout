@@ -274,8 +274,6 @@ class RecordingState extends State<RecordingScreen> {
           await _database.recordDao.insertRecord(record);
         }
 
-        _fitnessEquipment?.lastRecord = record;
-
         setState(() {
           if (!_simplerUi) {
             _graphData.add(record.display());
