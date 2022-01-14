@@ -132,6 +132,19 @@ class Record {
   DisplayRecord display() {
     return DisplayRecord(this);
   }
+
+  bool isNotMoving() {
+    return (power ?? 0) == 0 &&
+        (speed ?? 0.0) == 0.0 &&
+        (pace ?? 0.0) == 0.0 &&
+        (caloriesPerHour ?? 0.0) == 0.0 &&
+        (caloriesPerMinute ?? 0.0) == 0.0 &&
+        (cadence ?? 0) == 0;
+  }
+
+  bool isEmpty() {
+    return isNotMoving() && (distance ?? 0.0) == 0.0 && (elapsed ?? 0) == 0 && (calories ?? 0) == 0;
+  }
 }
 
 class RecordWithSport extends Record {

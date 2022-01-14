@@ -66,6 +66,7 @@ class FitnessEquipment extends DeviceBase {
   int _vo2Max = athleteVO2MaxDefault;
   Activity? _activity;
   bool measuring = false;
+  bool reallyStarted = false;
   bool calibrating = false;
   final Random _random = Random();
   double? slowPace;
@@ -145,6 +146,7 @@ class FitnessEquipment extends DeviceBase {
   void setActivity(Activity activity) {
     _activity = activity;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
+    reallyStarted = false;
     readConfiguration();
   }
 
@@ -205,11 +207,27 @@ class FitnessEquipment extends DeviceBase {
   }
 
   Record processRecord(RecordWithSport stub) {
+    final now = DateTime.now();
+    if (!reallyStarted) {
+      if (stub.isNotMoving()) {
+        return stub;
+      } else {
+        reallyStarted = true;
+        if (_activity != null) {
+          _activity!.startDateTime = now;
+          _activity!.start = now.millisecondsSinceEpoch;
+          if (Get.isRegistered<AppDatabase>()) {
+            final database = Get.find<AppDatabase>();
+            database.activityDao.updateActivity(_activity!);
+          }
+        }
+      }
+    }
+
     if (descriptor != null) {
       stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
     }
 
-    final now = DateTime.now();
     int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
     double elapsed = elapsedMillis / 1000.0;
     // When the equipment supplied multiple data read per second but the Fitness Machine

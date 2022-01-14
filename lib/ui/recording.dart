@@ -267,7 +267,9 @@ class RecordingState extends State<RecordingScreen> {
         );
       }
 
-      if (_measuring && (_fitnessEquipment?.measuring ?? false)) {
+      if (_measuring &&
+          (_fitnessEquipment?.reallyStarted ?? false) &&
+          (_fitnessEquipment?.measuring ?? false)) {
         if (!_uxDebug) {
           await _database.recordDao.insertRecord(record);
         }
