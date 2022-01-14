@@ -293,7 +293,7 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    final dT = (elapsedMillis - lastRecord.elapsedMillis!) / 1000.0;
+    final dT = (elapsedMillis - (lastRecord.elapsedMillis ?? 0)) / 1000.0;
     if ((stub.distance ?? 0.0) < eps) {
       stub.distance = (lastRecord.distance ?? 0);
       if ((stub.speed ?? 0.0) > 0 && dT > eps) {
