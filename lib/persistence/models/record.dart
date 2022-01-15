@@ -7,6 +7,7 @@ import '../../utils/display.dart';
 import 'activity.dart';
 
 const recordsTableName = 'records';
+const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
 
 @Entity(tableName: recordsTableName, foreignKeys: [
   ForeignKey(
@@ -148,7 +149,7 @@ class Record {
     return isNotMoving() && (distance ?? 0.0) == 0.0 && (elapsed ?? 0) == 0 && (calories ?? 0) == 0;
   }
 
-  void cumulativeDistanceEnforcement(Record lastRecord, [bool testing = false]) {
+  void cumulativeDistanceEnforcement(Record lastRecord) {
     if (distance != null && lastRecord.distance != null) {
       if (!testing) {
         assert(distance! >= lastRecord.distance!);
@@ -160,7 +161,7 @@ class Record {
     }
   }
 
-  void cumulativeElapsedTimeEnforcement(Record lastRecord, [bool testing = false]) {
+  void cumulativeElapsedTimeEnforcement(Record lastRecord) {
     if (elapsed != null && lastRecord.elapsed != null) {
       if (!testing) {
         assert(elapsed! >= lastRecord.elapsed!);
@@ -172,7 +173,7 @@ class Record {
     }
   }
 
-  void cumulativeMovingTimeEnforcement(Record lastRecord, [bool testing = false]) {
+  void cumulativeMovingTimeEnforcement(Record lastRecord) {
     if (!testing) {
       assert(movingTime >= lastRecord.movingTime);
     }
@@ -182,7 +183,7 @@ class Record {
     }
   }
 
-  void cumulativeCaloriesEnforcement(Record lastRecord, [bool testing = false]) {
+  void cumulativeCaloriesEnforcement(Record lastRecord) {
     if (calories != null && lastRecord.calories != null) {
       if (!testing) {
         assert(calories! >= lastRecord.calories!);
@@ -194,12 +195,12 @@ class Record {
     }
   }
 
-  void cumulativeMetricsEnforcements(Record lastRecord, [bool testing = false]) {
+  void cumulativeMetricsEnforcements(Record lastRecord) {
     // Ensure that cumulative fields cannot decrease over time
-    cumulativeDistanceEnforcement(lastRecord, testing);
-    cumulativeElapsedTimeEnforcement(lastRecord, testing);
-    cumulativeMovingTimeEnforcement(lastRecord, testing);
-    cumulativeCaloriesEnforcement(lastRecord, testing);
+    cumulativeDistanceEnforcement(lastRecord);
+    cumulativeElapsedTimeEnforcement(lastRecord);
+    cumulativeMovingTimeEnforcement(lastRecord);
+    cumulativeCaloriesEnforcement(lastRecord);
   }
 }
 

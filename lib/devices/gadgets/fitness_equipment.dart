@@ -43,8 +43,6 @@ enum WorkoutState {
 }
 
 class FitnessEquipment extends DeviceBase {
-  static const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
-
   DeviceDescriptor? descriptor;
   String? manufacturerName;
   double _residueCalories = 0.0;
