@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -242,8 +242,8 @@ class CSVImporter {
     if (_migration) {
       _linePointer++;
       final deviceNameLine = _lines[_linePointer].split(",");
-      if (deviceNameLine[0].trim() != deviceName) {
-        message = "Couldn't parse $deviceName";
+      if (deviceNameLine[0].trim() != deviceNameTag) {
+        message = "Couldn't parse $deviceNameTag";
         return null;
       }
 
@@ -252,8 +252,8 @@ class CSVImporter {
       _linePointer++;
 
       final deviceIdLine = _lines[_linePointer].split(",");
-      if (deviceIdLine[0].trim() != deviceId) {
-        message = "Couldn't parse $deviceId";
+      if (deviceIdLine[0].trim() != deviceIdTag) {
+        message = "Couldn't parse $deviceIdTag";
         return null;
       }
 
