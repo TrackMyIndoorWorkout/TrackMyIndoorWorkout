@@ -33,9 +33,16 @@ import 'running_cadence_sensor.dart';
 
 typedef RecordHandlerFunction = Function(Record data);
 
-class FitnessEquipment extends DeviceBase {
-  static const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
+// State Machine for #231 and #235
+// (intelligent start and elapsed time tracking)
+enum WorkoutState {
+  waitingForFirstMove,
+  moving,
+  justStopped,
+  stopped,
+}
 
+class FitnessEquipment extends DeviceBase {
   DeviceDescriptor? descriptor;
   String? manufacturerName;
   double _residueCalories = 0.0;
@@ -66,6 +73,7 @@ class FitnessEquipment extends DeviceBase {
   int _vo2Max = athleteVO2MaxDefault;
   Activity? _activity;
   bool measuring = false;
+  WorkoutState workoutState = WorkoutState.waitingForFirstMove;
   bool calibrating = false;
   final Random _random = Random();
   double? slowPace;
@@ -145,6 +153,7 @@ class FitnessEquipment extends DeviceBase {
   void setActivity(Activity activity) {
     _activity = activity;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
+    workoutState = WorkoutState.waitingForFirstMove;
     readConfiguration();
   }
 
@@ -205,11 +214,39 @@ class FitnessEquipment extends DeviceBase {
   }
 
   Record processRecord(RecordWithSport stub) {
+    final now = DateTime.now();
+    // State Machine for #231 and #235
+    // (intelligent start and elapsed time tracking)
+    if (workoutState == WorkoutState.waitingForFirstMove) {
+      if (stub.isNotMoving()) {
+        return stub;
+      } else {
+        workoutState = WorkoutState.moving;
+        if (_activity != null) {
+          _activity!.startDateTime = now;
+          _activity!.start = now.millisecondsSinceEpoch;
+          if (Get.isRegistered<AppDatabase>()) {
+            final database = Get.find<AppDatabase>();
+            database.activityDao.updateActivity(_activity!);
+          }
+        }
+      }
+    } else {
+      if (stub.isNotMoving()) {
+        if (workoutState == WorkoutState.moving) {
+          workoutState = WorkoutState.justStopped;
+        } else if (workoutState == WorkoutState.justStopped) {
+          workoutState = WorkoutState.stopped;
+        }
+      } else {
+        workoutState = WorkoutState.moving;
+      }
+    }
+
     if (descriptor != null) {
       stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
     }
 
-    final now = DateTime.now();
     int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
     double elapsed = elapsedMillis / 1000.0;
     // When the equipment supplied multiple data read per second but the Fitness Machine
@@ -249,6 +286,13 @@ class FitnessEquipment extends DeviceBase {
       stub.elapsed = stub.elapsed! - _startingElapsed;
     }
 
+    if (workoutState == WorkoutState.stopped) {
+      // We have to track the time ticking still #235
+      lastRecord.elapsed = stub.elapsed;
+      lastRecord.elapsedMillis = stub.elapsedMillis;
+      return lastRecord;
+    }
+
     RecordWithSport? rscRecord;
     if (sport == ActivityType.run &&
         _runningCadenceSensor != null &&
@@ -275,7 +319,8 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    final dT = (elapsedMillis - lastRecord.elapsedMillis!) / 1000.0;
+    final dTMillis = elapsedMillis - (lastRecord.elapsedMillis ?? 0);
+    final dT = dTMillis / 1000.0;
     if ((stub.distance ?? 0.0) < eps) {
       stub.distance = (lastRecord.distance ?? 0);
       if ((stub.speed ?? 0.0) > 0 && dT > eps) {
@@ -284,6 +329,9 @@ class FitnessEquipment extends DeviceBase {
         stub.distance = stub.distance! + dD;
       }
     }
+
+    // #235
+    stub.movingTime = lastRecord.movingTime + dTMillis;
 
     // #197
     stub.distance ??= 0.0;
@@ -415,40 +463,11 @@ class FitnessEquipment extends DeviceBase {
     stub.sport = descriptor?.defaultSport ?? ActivityType.ride;
 
     if (!startingValues) {
-      // Make sure that cumulative fields cannot decrease over time
-      if (stub.distance != null && lastRecord.distance != null) {
-        if (!testing) {
-          assert(stub.distance! >= lastRecord.distance!);
-        }
-
-        if (stub.distance! < lastRecord.distance!) {
-          stub.distance = lastRecord.distance;
-        }
-      }
-
-      if (stub.elapsed != null && lastRecord.elapsed != null) {
-        if (!testing) {
-          assert(stub.elapsed! >= lastRecord.elapsed!);
-        }
-
-        if (stub.elapsed! < lastRecord.elapsed!) {
-          stub.elapsed = lastRecord.elapsed;
-        }
-      }
-
-      if (stub.calories != null && lastRecord.calories != null) {
-        if (!testing) {
-          assert(stub.calories! >= lastRecord.calories!);
-        }
-
-        if (stub.calories! < lastRecord.calories!) {
-          stub.calories = lastRecord.calories;
-        }
-      }
+      stub.cumulativeMetricsEnforcements(lastRecord);
     }
 
     startingValues = false;
-
+    lastRecord = stub;
     return stub;
   }
 

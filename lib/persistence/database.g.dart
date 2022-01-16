@@ -72,7 +72,7 @@ class _$AppDatabase extends AppDatabase {
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 16,
+      version: 17,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -87,7 +87,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `hrm_id` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `uploaded` INTEGER NOT NULL, `strava_id` INTEGER NOT NULL, `four_cc` TEXT NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL, `hr_calorie_factor` REAL NOT NULL, `hrm_calorie_factor` REAL NOT NULL, `hr_based_calories` INTEGER NOT NULL, `time_zone` TEXT NOT NULL, `suunto_uploaded` INTEGER NOT NULL, `suunto_blob_url` TEXT NOT NULL, `under_armour_uploaded` INTEGER NOT NULL, `training_peaks_uploaded` INTEGER NOT NULL, `ua_workout_id` INTEGER NOT NULL, `suunto_upload_id` INTEGER NOT NULL, `suunto_upload_identifier` TEXT NOT NULL, `suunto_workout_url` TEXT NOT NULL, `training_peaks_workout_id` INTEGER NOT NULL, `training_peaks_athlete_id` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `activities` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `hrm_id` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `moving_time` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `uploaded` INTEGER NOT NULL, `strava_id` INTEGER NOT NULL, `four_cc` TEXT NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL, `hr_calorie_factor` REAL NOT NULL, `hrm_calorie_factor` REAL NOT NULL, `hr_based_calories` INTEGER NOT NULL, `time_zone` TEXT NOT NULL, `suunto_uploaded` INTEGER NOT NULL, `suunto_blob_url` TEXT NOT NULL, `under_armour_uploaded` INTEGER NOT NULL, `training_peaks_uploaded` INTEGER NOT NULL, `ua_workout_id` INTEGER NOT NULL, `suunto_upload_id` INTEGER NOT NULL, `suunto_upload_identifier` TEXT NOT NULL, `suunto_workout_url` TEXT NOT NULL, `training_peaks_workout_id` INTEGER NOT NULL, `training_peaks_athlete_id` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `activity_id` INTEGER, `time_stamp` INTEGER, `distance` REAL, `elapsed` INTEGER, `calories` INTEGER, `power` INTEGER, `speed` REAL, `cadence` INTEGER, `heart_rate` INTEGER, FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
@@ -97,7 +97,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `power_tune` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `mac` TEXT NOT NULL, `power_factor` REAL NOT NULL, `time` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `workout_summary` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `start` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `speed` REAL NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `workout_summary` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `device_name` TEXT NOT NULL, `device_id` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `start` INTEGER NOT NULL, `distance` REAL NOT NULL, `elapsed` INTEGER NOT NULL, `moving_time` INTEGER NOT NULL, `speed` REAL NOT NULL, `sport` TEXT NOT NULL, `power_factor` REAL NOT NULL, `calorie_factor` REAL NOT NULL)');
         await database.execute('CREATE INDEX `index_activities_start` ON `activities` (`start`)');
         await database
             .execute('CREATE INDEX `index_records_time_stamp` ON `records` (`time_stamp`)');
@@ -162,6 +162,7 @@ class _$ActivityDao extends ActivityDao {
                   'end': item.end,
                   'distance': item.distance,
                   'elapsed': item.elapsed,
+                  'moving_time': item.movingTime,
                   'calories': item.calories,
                   'uploaded': item.uploaded ? 1 : 0,
                   'strava_id': item.stravaId,
@@ -198,6 +199,7 @@ class _$ActivityDao extends ActivityDao {
                   'end': item.end,
                   'distance': item.distance,
                   'elapsed': item.elapsed,
+                  'moving_time': item.movingTime,
                   'calories': item.calories,
                   'uploaded': item.uploaded ? 1 : 0,
                   'strava_id': item.stravaId,
@@ -234,6 +236,7 @@ class _$ActivityDao extends ActivityDao {
                   'end': item.end,
                   'distance': item.distance,
                   'elapsed': item.elapsed,
+                  'moving_time': item.movingTime,
                   'calories': item.calories,
                   'uploaded': item.uploaded ? 1 : 0,
                   'strava_id': item.stravaId,
@@ -282,6 +285,7 @@ class _$ActivityDao extends ActivityDao {
             end: row['end'] as int,
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
+            movingTime: row['moving_time'] as int,
             calories: row['calories'] as int,
             uploaded: (row['uploaded'] as int) != 0,
             suuntoUploaded: (row['suunto_uploaded'] as int) != 0,
@@ -317,6 +321,7 @@ class _$ActivityDao extends ActivityDao {
             end: row['end'] as int,
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
+            movingTime: row['moving_time'] as int,
             calories: row['calories'] as int,
             uploaded: (row['uploaded'] as int) != 0,
             suuntoUploaded: (row['suunto_uploaded'] as int) != 0,
@@ -356,6 +361,7 @@ class _$ActivityDao extends ActivityDao {
             end: row['end'] as int,
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
+            movingTime: row['moving_time'] as int,
             calories: row['calories'] as int,
             uploaded: (row['uploaded'] as int) != 0,
             suuntoUploaded: (row['suunto_uploaded'] as int) != 0,
@@ -942,6 +948,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
                   'start': item.start,
                   'distance': item.distance,
                   'elapsed': item.elapsed,
+                  'moving_time': item.movingTime,
                   'speed': item.speed,
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
@@ -960,6 +967,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
                   'start': item.start,
                   'distance': item.distance,
                   'elapsed': item.elapsed,
+                  'moving_time': item.movingTime,
                   'speed': item.speed,
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
@@ -978,6 +986,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
                   'start': item.start,
                   'distance': item.distance,
                   'elapsed': item.elapsed,
+                  'moving_time': item.movingTime,
                   'speed': item.speed,
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
@@ -1008,6 +1017,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             start: row['start'] as int,
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
+            movingTime: row['moving_time'] as int,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
             calorieFactor: row['calorie_factor'] as double));
@@ -1024,6 +1034,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             start: row['start'] as int,
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
+            movingTime: row['moving_time'] as int,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
             calorieFactor: row['calorie_factor'] as double),
@@ -1044,6 +1055,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             start: row['start'] as int,
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
+            movingTime: row['moving_time'] as int,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
             calorieFactor: row['calorie_factor'] as double),
@@ -1055,7 +1067,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
       String deviceId, int limit, int offset) async {
     return _queryAdapter.queryList(
         'SELECT * FROM `workout_summary` WHERE `device_id` = ?1 ORDER BY `speed` DESC LIMIT ?2 OFFSET ?3',
-        mapper: (Map<String, Object?> row) => WorkoutSummary(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, manufacturer: row['manufacturer'] as String, start: row['start'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double),
+        mapper: (Map<String, Object?> row) => WorkoutSummary(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, manufacturer: row['manufacturer'] as String, start: row['start'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, movingTime: row['moving_time'] as int, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double),
         arguments: [deviceId, limit, offset]);
   }
 
@@ -1071,6 +1083,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             start: row['start'] as int,
             distance: row['distance'] as double,
             elapsed: row['elapsed'] as int,
+            movingTime: row['moving_time'] as int,
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
             calorieFactor: row['calorie_factor'] as double),
@@ -1082,7 +1095,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
       String sport, int limit, int offset) async {
     return _queryAdapter.queryList(
         'SELECT * FROM `workout_summary` WHERE `sport` = ?1 ORDER BY `speed` DESC LIMIT ?2 OFFSET ?3',
-        mapper: (Map<String, Object?> row) => WorkoutSummary(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, manufacturer: row['manufacturer'] as String, start: row['start'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double),
+        mapper: (Map<String, Object?> row) => WorkoutSummary(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, manufacturer: row['manufacturer'] as String, start: row['start'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, movingTime: row['moving_time'] as int, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double),
         arguments: [sport, limit, offset]);
   }
 

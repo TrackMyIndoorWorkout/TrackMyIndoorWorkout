@@ -23,6 +23,8 @@ class WorkoutSummary {
   final int start; // ms since epoch
   final double distance; // m
   final int elapsed; // s
+  @ColumnInfo(name: 'moving_time')
+  int movingTime; // ms
   late double speed; // km/h
   final String sport;
   @ColumnInfo(name: 'power_factor')
@@ -34,6 +36,7 @@ class WorkoutSummary {
   late DateTime startDateTime;
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
+  String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();
 
   WorkoutSummary({
     this.id,
@@ -43,6 +46,7 @@ class WorkoutSummary {
     required this.start,
     required this.distance,
     required this.elapsed,
+    required this.movingTime,
     required this.sport,
     this.powerFactor = 1.0,
     this.calorieFactor = 1.0,
