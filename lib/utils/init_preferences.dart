@@ -26,6 +26,7 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
+import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/preferences_spec.dart';
 import '../preferences/scan_duration.dart';
@@ -101,6 +102,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     displayLapCounterTag: displayLapCounterDefault,
     measurementFontSizeAdjustTag: measurementFontSizeAdjustDefault,
     twoColumnLayoutTag: twoColumnLayoutDefault,
+    movingOrElapsedTimeTag: movingOrElapsedTimeDefault,
   };
 
   for (var sport in PreferencesSpec.sportPrefixes) {

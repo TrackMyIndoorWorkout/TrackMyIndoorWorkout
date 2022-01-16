@@ -27,6 +27,8 @@ class Activity {
   int end; // ms since epoch
   double distance; // m
   int elapsed; // s
+  @ColumnInfo(name: 'moving_time')
+  int movingTime; // ms
   int calories; // kCal
   bool uploaded;
   @ColumnInfo(name: 'strava_id')
@@ -71,6 +73,7 @@ class Activity {
   DateTime? startDateTime;
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
+  String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();
 
   Activity({
     this.id,
@@ -81,6 +84,7 @@ class Activity {
     this.end = 0,
     this.distance = 0.0,
     this.elapsed = 0,
+    this.movingTime = 0,
     this.calories = 0,
     this.uploaded = false,
     this.suuntoUploaded = false,
@@ -105,11 +109,12 @@ class Activity {
     required this.timeZone,
   });
 
-  void finish(double? distance, int? elapsed, int? calories) {
+  void finish(double? distance, int? elapsed, int? calories, int movingTime) {
     end = DateTime.now().millisecondsSinceEpoch;
     this.distance = distance ?? 0.0;
     this.elapsed = elapsed ?? 0;
     this.calories = calories ?? 0;
+    this.movingTime = movingTime;
   }
 
   void markUploaded(int stravaId) {
@@ -205,6 +210,7 @@ class Activity {
       start: start,
       distance: distance,
       elapsed: elapsed,
+      movingTime: movingTime,
       sport: sport,
       powerFactor: powerFactor,
       calorieFactor: calorieFactor,

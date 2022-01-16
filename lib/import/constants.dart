@@ -1,5 +1,5 @@
 const String csvMagic = "TMIW";
-const int csvVersion = 2;
+const int csvVersion = 3;
 const String rideSummaryTag = "RIDE SUMMARY";
 const String totalTimeTag = "Total Time";
 const String totalDistanceTag = "Total Distance";
@@ -42,3 +42,4 @@ const String distanceHeaderTag = "DISTANCE";
 const String timeStampTag = "TIME_STAMP";
 const String elapsedTag = "ELAPSED";
 const String speedTag = "SPEED";
+const String movingTimeTag = "Moving Time";

@@ -474,6 +474,115 @@ class RecordsScreenState extends State<RecordsScreen> {
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
+    final header = [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _themeManager.getBlueIcon(getIcon(widget.activity.sport), _sizeDefault),
+          Expanded(
+            child: TextOneLine(
+              widget.activity.deviceName,
+              style: _textStyle,
+              textAlign: TextAlign.right,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+          const Spacer(),
+          Text(
+            widget.activity.movingTimeString,
+            style: _measurementStyle,
+          ),
+        ],
+      ),
+    ];
+    if (widget.activity.movingTime ~/ 1000 < widget.activity.elapsed) {
+      header.addAll([
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const Spacer(),
+            Text(
+              "(Moving Time)",
+              style: _unitStyle,
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+            const Spacer(),
+            Text(
+              widget.activity.elapsedString,
+              style: _measurementStyle,
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const Spacer(),
+            Text(
+              "(Total Time)",
+              style: _unitStyle,
+            ),
+          ],
+        ),
+      ]);
+    }
+
+    header.addAll([
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
+          const Spacer(),
+          Text(
+            widget.activity.distanceString(_si, _highRes),
+            style: _measurementStyle,
+          ),
+          SizedBox(
+            width: _sizeDefault,
+            child: Text(
+              distanceUnit(_si, _highRes),
+              style: _unitStyle,
+            ),
+          ),
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
+          const Spacer(),
+          Text(
+            '${widget.activity.calories}',
+            style: _measurementStyle,
+          ),
+          SizedBox(
+            width: _sizeDefault,
+            child: Text(
+              'cal',
+              style: _unitStyle,
+            ),
+          ),
+        ],
+      ),
+    ]);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Activities'),
@@ -492,75 +601,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               loadingBuilder: CustomListLoading.defaultBuilder,
               header: Card(
                 elevation: 6,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(getIcon(widget.activity.sport), _sizeDefault),
-                        Expanded(
-                          child: TextOneLine(
-                            widget.activity.deviceName,
-                            style: _textStyle,
-                            textAlign: TextAlign.right,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-                        const Spacer(),
-                        Text(
-                          widget.activity.elapsedString,
-                          style: _measurementStyle,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-                        const Spacer(),
-                        Text(
-                          widget.activity.distanceString(_si, _highRes),
-                          style: _measurementStyle,
-                        ),
-                        SizedBox(
-                          width: _sizeDefault,
-                          child: Text(
-                            distanceUnit(_si, _highRes),
-                            style: _unitStyle,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-                        const Spacer(),
-                        Text(
-                          '${widget.activity.calories}',
-                          style: _measurementStyle,
-                        ),
-                        SizedBox(
-                          width: _sizeDefault,
-                          child: Text(
-                            'cal',
-                            style: _unitStyle,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                child: Column(children: header),
               ),
               adapter: StaticListAdapter(data: _tiles),
               itemBuilder: (context, index, item) {
