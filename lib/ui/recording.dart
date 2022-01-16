@@ -751,10 +751,12 @@ class RecordingState extends State<RecordingScreen> {
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
+    final last = _fitnessEquipment?.lastRecord;
     _activity!.finish(
-      _fitnessEquipment?.lastRecord.distance,
-      _fitnessEquipment?.lastRecord.elapsed,
-      _fitnessEquipment?.lastRecord.calories,
+      last?.distance,
+      last?.elapsed,
+      last?.calories,
+      last?.movingTime ?? 0,
     );
     _fitnessEquipment?.stopWorkout();
 
@@ -1171,7 +1173,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     final _timeDisplay =
-        Duration(seconds: _movingOrElapsedTime ? _movingTime : _elapsed).toDisplay();
+        Duration(seconds: _movingOrElapsedTime ? _movingTime ~/ 1000 : _elapsed).toDisplay();
 
     List<Widget> rows = [
       Row(

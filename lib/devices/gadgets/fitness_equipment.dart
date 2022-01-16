@@ -319,7 +319,8 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    final dT = (elapsedMillis - (lastRecord.elapsedMillis ?? 0)) / 1000.0;
+    final dTMillis = elapsedMillis - (lastRecord.elapsedMillis ?? 0);
+    final dT = dTMillis / 1000.0;
     if ((stub.distance ?? 0.0) < eps) {
       stub.distance = (lastRecord.distance ?? 0);
       if ((stub.speed ?? 0.0) > 0 && dT > eps) {
@@ -330,7 +331,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #235
-    stub.movingTime = lastRecord.movingTime + dT;
+    stub.movingTime = lastRecord.movingTime + dTMillis;
 
     // #197
     stub.distance ??= 0.0;
@@ -462,7 +463,7 @@ class FitnessEquipment extends DeviceBase {
     stub.sport = descriptor?.defaultSport ?? ActivityType.ride;
 
     if (!startingValues) {
-      stub.cumulativeMetricsEnforcements(lastRecord, testing);
+      stub.cumulativeMetricsEnforcements(lastRecord);
     }
 
     startingValues = false;

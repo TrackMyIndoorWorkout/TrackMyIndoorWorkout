@@ -49,7 +49,7 @@ class Record {
   @ignore
   double? caloriesPerMinute;
   @ignore
-  double movingTime = 0.0; // s
+  int movingTime = 0; // ms
 
   Record({
     this.id,

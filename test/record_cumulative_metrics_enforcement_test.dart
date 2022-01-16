@@ -79,8 +79,8 @@ void main() {
 
   group("Record moving time enforcement survives zeros:", () {
     final movingTimes = [
-      [0.0, 0.0],
-      [111.0, 0.0],
+      [0, 0],
+      [111, 0],
     ];
     for (var movingTimePair in movingTimes) {
       test("${movingTimePair[0]}, ${movingTimePair[1]}", () async {
@@ -96,8 +96,8 @@ void main() {
 
   group("Record moving time enforcement makes sure it never decreases:", () {
     final rnd = Random();
-    for (final seconds in getRandomDoubles(repetition, 600, rnd)) {
-      final lastMoving = rnd.nextDouble() * 600;
+    for (final seconds in getRandomInts(repetition, 600000, rnd)) {
+      final lastMoving = rnd.nextInt(600000);
       test("$seconds, $lastMoving", () async {
         final record = Record()..movingTime = seconds;
         final lastRecord = Record()..movingTime = lastMoving;
