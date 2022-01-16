@@ -31,6 +31,7 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
+import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/preferences_spec.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
@@ -129,6 +130,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _twoColumnLayout = twoColumnLayoutDefault;
   bool _instantUpload = instantUploadDefault;
   bool _uxDebug = appDebugModeDefault;
+  bool _movingOrElapsedTime = movingOrElapsedTimeDefault;
 
   Timer? _dataGapWatchdog;
   int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
@@ -142,6 +144,7 @@ class RecordingState extends State<RecordingScreen> {
   List<int?> _zoneIndexes = [];
   double _distance = 0.0;
   int _elapsed = 0;
+  int _movingTime = 0;
 
   String _targetHrMode = targetHeartRateModeDefault;
   Tuple2<double, double> _targetHrBounds = const Tuple2(0, 0);
@@ -249,6 +252,7 @@ class RecordingState extends State<RecordingScreen> {
     await _fitnessEquipment?.attach();
     setState(() {
       _elapsed = 0;
+      _movingTime = 0;
       _distance = 0.0;
       _lapCount = 0;
       _measuring = true;
@@ -267,12 +271,13 @@ class RecordingState extends State<RecordingScreen> {
         );
       }
 
-      if (_measuring && (_fitnessEquipment?.measuring ?? false)) {
+      final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
+      if (_measuring &&
+          (workoutState == WorkoutState.moving || workoutState == WorkoutState.justStopped) &&
+          (_fitnessEquipment?.measuring ?? false)) {
         if (!_uxDebug) {
           await _database.recordDao.insertRecord(record);
         }
-
-        _fitnessEquipment?.lastRecord = record;
 
         setState(() {
           if (!_simplerUi) {
@@ -288,6 +293,7 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           _elapsed = record.elapsed ?? 0;
+          _movingTime = record.movingTime.round();
           if (record.heartRate != null &&
               (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
             _heartRate = record.heartRate;
@@ -452,6 +458,8 @@ class RecordingState extends State<RecordingScreen> {
     _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
+    _movingOrElapsedTime =
+        prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
     _instantUpload = prefService.get<bool>(instantUploadTag) ?? instantUploadDefault;
     _pointCount = min(60, size.width ~/ 2);
     final now = DateTime.now();
@@ -743,10 +751,12 @@ class RecordingState extends State<RecordingScreen> {
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
+    final last = _fitnessEquipment?.lastRecord;
     _activity!.finish(
-      _fitnessEquipment?.lastRecord.distance,
-      _fitnessEquipment?.lastRecord.elapsed,
-      _fitnessEquipment?.lastRecord.calories,
+      last?.distance,
+      last?.elapsed,
+      last?.calories,
+      last?.movingTime ?? 0,
     );
     _fitnessEquipment?.stopWorkout();
 
@@ -861,11 +871,11 @@ class RecordingState extends State<RecordingScreen> {
       return 1;
     }
 
-    if (_elapsed == 0) {
+    if (_movingTime == 0) {
       return null;
     }
 
-    final averageSpeed = _elapsed > 0 ? _distance / _elapsed * DeviceDescriptor.ms2kmh : 0.0;
+    final averageSpeed = _movingTime > 0 ? _distance / _movingTime * DeviceDescriptor.ms2kmh : 0.0;
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
@@ -1006,7 +1016,7 @@ class RecordingState extends State<RecordingScreen> {
     final length = leaderboard.length;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 2}", false));
@@ -1015,7 +1025,7 @@ class RecordingState extends State<RecordingScreen> {
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 1}", false));
@@ -1024,7 +1034,7 @@ class RecordingState extends State<RecordingScreen> {
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
-      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 1}", false));
@@ -1033,7 +1043,7 @@ class RecordingState extends State<RecordingScreen> {
 
     // Following dot after the follower (if any)
     if (rank < length) {
-      final distance = leaderboard[rank].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank].distanceAtTime(_movingTime);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 2}", false));
@@ -1075,14 +1085,14 @@ class RecordingState extends State<RecordingScreen> {
     final length = leaderboard.length;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
       rows.add(_getLeaderboardInfoText(rank - 2, distance, true));
       rows.add(const Divider(height: 1));
     }
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
       rows.add(_getLeaderboardInfoText(rank - 1, distance, true));
       rows.add(const Divider(height: 1));
     }
@@ -1097,14 +1107,14 @@ class RecordingState extends State<RecordingScreen> {
     // Following dot (following directly) if any
     if (rank - 1 < length) {
       rows.add(const Divider(height: 1));
-      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
       rows.add(_getLeaderboardInfoText(rank + 1, distance, false));
     }
 
     // Following dot after the follower (if any)
     if (rank < length) {
       rows.add(const Divider(height: 1));
-      final distance = leaderboard[rank].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank].distanceAtTime(_movingTime);
       rows.add(_getLeaderboardInfoText(rank + 2, distance, false));
     }
 
@@ -1128,7 +1138,8 @@ class RecordingState extends State<RecordingScreen> {
       _landscape = _mediaWidth! > _mediaHeight!;
     }
 
-    final mediaSizeMin = min(_mediaWidth!, _mediaHeight!);
+    final mediaSizeMin =
+        _landscape && _twoColumnLayout ? _mediaWidth! / 2 : min(_mediaWidth!, _mediaHeight!);
     if (_mediaSizeMin == null || (_mediaSizeMin! - mediaSizeMin).abs() > eps) {
       _mediaSizeMin = mediaSizeMin;
       _sizeDefault = mediaSizeMin / 8 * _sizeAdjust;
@@ -1161,7 +1172,8 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final _timeDisplay = Duration(seconds: _elapsed).toDisplay();
+    final _timeDisplay =
+        Duration(seconds: _movingOrElapsedTime ? _movingTime ~/ 1000 : _elapsed).toDisplay();
 
     List<Widget> rows = [
       Row(

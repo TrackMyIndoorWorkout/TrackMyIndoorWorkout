@@ -82,7 +82,6 @@ abstract class Upload {
     debugPrint('Response: ${uploadResponse.statusCode} ${uploadResponse.reasonPhrase}');
 
     final uploadBody = uploadResponse.body;
-    debugPrint("status body: $uploadBody");
     if (uploadResponse.statusCode < 200 || uploadResponse.statusCode >= 300) {
       // response.statusCode != 201
       debugPrint('Error while uploading the activity');

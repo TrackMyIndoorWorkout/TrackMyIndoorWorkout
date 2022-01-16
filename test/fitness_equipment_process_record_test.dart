@@ -26,8 +26,13 @@ void main() {
           device: MockBluetoothDevice(),
           startingValues: false,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: calorie));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: calorie,
+        ));
 
         expect(equipment.hasTotalCalorieCounting, true);
       });
@@ -46,10 +51,23 @@ void main() {
           device: MockBluetoothDevice(),
           startingValues: false,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: 0));
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: calorie));
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: 0));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: 0,
+        ));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: calorie,
+        ));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: 0,
+        ));
 
         expect(equipment.hasTotalCalorieCounting, true);
       });
@@ -67,10 +85,23 @@ void main() {
           device: MockBluetoothDevice(),
           startingValues: false,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: 0));
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: 0));
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: 0));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: 0,
+        ));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: 0,
+        ));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: 0,
+        ));
 
         expect(equipment.hasTotalCalorieCounting, false);
       });
@@ -118,9 +149,13 @@ void main() {
           elapsedMillis: 0,
           calories: 0,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        final record = equipment.processRecord(
-            RecordWithSport(sport: descriptor.defaultSport, caloriesPerHour: calPerHour));
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          caloriesPerHour: calPerHour,
+        ));
 
         final expected = (calPerHour / (60 * 60) * seconds * calorieFactor).floor();
         expect(record.calories, expected);
@@ -168,14 +203,17 @@ void main() {
           elapsedMillis: 0,
           calories: 0,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        final record =
-            equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, power: power));
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          power: power,
+        ));
 
-        expect(
-            record.calories,
-            ((150 + pow) * powerFactor * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault)
-                .floor());
+        final expected =
+            (150 + pow) * powerFactor * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault;
+        expect(record.calories, expected.floor());
       });
     });
   });
@@ -219,9 +257,13 @@ void main() {
           elapsedMillis: 0,
           calories: 0,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        final record = equipment
-            .processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: calories));
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: calories,
+        ));
 
         expect(record.calories, (calories * calorieFactor).round());
       });
@@ -267,6 +309,7 @@ void main() {
           elapsedMillis: 0,
           distance: 10,
         );
+        equipment.workoutState = WorkoutState.moving;
 
         final record =
             equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, speed: speed));
@@ -326,9 +369,13 @@ void main() {
           distance: min(adjustedRecord.distance!, 10),
           speed: 10,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        final record = equipment
-            .processRecord(RecordWithSport(sport: descriptor.defaultSport, distance: distance));
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          distance: distance,
+        ));
 
         expect(record.distance, closeTo(distance * powerFactor, displayEps));
       });
@@ -391,6 +438,7 @@ void main() {
           calorieFactor,
           extendTuning,
         );
+        equipment.workoutState = WorkoutState.moving;
 
         final record = equipment.processRecord(RecordWithSport(
           sport: descriptor.defaultSport,
@@ -462,6 +510,7 @@ void main() {
           calorieFactor,
           extendTuning,
         );
+        equipment.workoutState = WorkoutState.moving;
 
         final record = equipment.processRecord(RecordWithSport(
           sport: descriptor.defaultSport,

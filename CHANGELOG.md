@@ -1,3 +1,10 @@
+## 1.1.92
+
+* Workout will only start when the first movement is sensed
+* Moving time is accounted for besides elapsed time and persisted. UI switch tells which one is
+  primarily preferred on the measurement screen and the activities list. The workout details
+  displays both moving and elapsed time if they differ.
+
 ## 1.1.91
 
 * Enabling FTMS Cross Trainer, assigning it to Elliptical sport
