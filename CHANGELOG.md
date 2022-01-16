@@ -4,6 +4,8 @@
 * Moving time is accounted for besides elapsed time and persisted. UI switch tells which one is
   primarily preferred on the measurement screen and the activities list. The workout details
   displays both moving and elapsed time if they differ.
+* Cross Trainer support fixes
+* Two column layout size adjustment
 
 ## 1.1.91
 
