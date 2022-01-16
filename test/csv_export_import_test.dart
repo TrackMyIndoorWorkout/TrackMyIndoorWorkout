@@ -21,7 +21,10 @@ void main() {
   group('Migration CSV imports identically', () {
     final rnd = Random();
     getRandomInts(smallRepetition, 300, rnd).forEach((recordCount) {
+      recordCount += 20;
       test('$recordCount', () async {
+        final countChunk = recordCount ~/ 4;
+        final movingCount = recordCount - 2 * countChunk;
         await initPrefServiceForTest();
         final packageInfo = await PackageInfo.fromPlatform();
         Get.put<PackageInfo>(packageInfo);
@@ -50,7 +53,7 @@ void main() {
           end: oneSecondAgo.millisecondsSinceEpoch + recordCount * 1000,
           distance: distance,
           elapsed: recordCount,
-          movingTime: recordCount * 1000,
+          movingTime: movingCount * 1000,
           calories: calories,
           uploaded: rnd.nextBool(),
           suuntoUploaded: rnd.nextBool(),
@@ -76,24 +79,64 @@ void main() {
         );
 
         final recordIdOffset = rnd.nextInt(1000);
-        final records = List<ExportRecord>.generate(
-            recordCount,
-            (index) => ExportRecord(
-                  record: Record(
-                    id: recordIdOffset + index,
-                    activityId: activity.id,
-                    timeStamp: activity.start + index * 1000,
-                    distance: distancePerTick * index,
-                    elapsed: index,
-                    calories: (caloriesPerTick * index).round(),
-                    power: rnd.nextInt(500),
-                    speed: rnd.nextDouble() * 40.0,
-                    cadence: rnd.nextInt(120),
-                    heartRate: rnd.nextInt(180),
-                    elapsedMillis: index * 1000,
-                    sport: descriptor.defaultSport,
-                  ),
-                ));
+        final preRecords = List<ExportRecord>.generate(
+          countChunk,
+          (index) => ExportRecord(
+            record: Record(
+              id: recordIdOffset + index,
+              activityId: activity.id,
+              timeStamp: activity.start + index * 1000,
+              distance: 0.0,
+              elapsed: index,
+              calories: 0,
+              power: 0,
+              speed: 0.0,
+              cadence: 0,
+              heartRate: rnd.nextInt(180),
+              elapsedMillis: index * 1000,
+              sport: descriptor.defaultSport,
+            ),
+          ),
+        );
+        final movingRecords = List<ExportRecord>.generate(
+          movingCount,
+          (index) => ExportRecord(
+            record: Record(
+              id: recordIdOffset + index + countChunk,
+              activityId: activity.id,
+              timeStamp: activity.start + (index + countChunk) * 1000,
+              distance: distancePerTick * (index + countChunk),
+              elapsed: index + countChunk,
+              calories: (caloriesPerTick * (index + countChunk)).round(),
+              power: rnd.nextInt(500),
+              speed: rnd.nextDouble() * 40.0,
+              cadence: rnd.nextInt(120),
+              heartRate: rnd.nextInt(180),
+              elapsedMillis: index * 1000,
+              sport: descriptor.defaultSport,
+            ),
+          ),
+        );
+        final postRecords = List<ExportRecord>.generate(
+          countChunk,
+          (index) => ExportRecord(
+            record: Record(
+              id: recordIdOffset + index + countChunk + movingCount,
+              activityId: activity.id,
+              timeStamp: activity.start + (index + countChunk + movingCount) * 1000,
+              distance: movingRecords.last.record.distance,
+              elapsed: index + countChunk + movingCount,
+              calories: movingRecords.last.record.calories,
+              power: 0,
+              speed: 0.0,
+              cadence: 0,
+              heartRate: rnd.nextInt(180),
+              elapsedMillis: (index + countChunk + movingCount) * 1000,
+              sport: descriptor.defaultSport,
+            ),
+          ),
+        );
+        final records = preRecords + movingRecords + postRecords;
         final exportModel = ExportModel(
           activity: activity,
           rawData: true,
