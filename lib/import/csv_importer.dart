@@ -61,6 +61,10 @@ class WorkoutRow {
       distance = (double.tryParse(values[3]) ?? 0.0) * (extendTuning ? tuneRatio : 1.0);
     }
   }
+
+  bool isMoving() {
+    return power > 0 || cadence > 0;
+  }
 }
 
 class CSVImporter {
@@ -228,7 +232,7 @@ class CSVImporter {
     var hrmCalorieFactor = 1.0;
     var hrBasedCalories = false;
     var powerFactor = 1.0;
-    var timeZone = await getTimeZone();
+    var timeZone = testing ? "America/Los_Angeles" : await getTimeZone();
     var suuntoUploaded = false;
     var suuntoBlobUrl = "";
     var suuntoWorkoutUrl = "";
@@ -238,6 +242,7 @@ class CSVImporter {
     var trainingPeaksUploaded = false;
     var trainingPeaksAthleteId = 0;
     var trainingPeaksWorkoutId = 0;
+    var movingTime = 0;
 
     if (_migration) {
       _linePointer++;
@@ -502,6 +507,18 @@ class CSVImporter {
 
         _linePointer++;
       }
+
+      if (_version > 2) {
+        final movingTimeLine = _lines[_linePointer].split(",");
+        if (movingTimeLine[0].trim() != movingTimeTag) {
+          message = "Couldn't parse $movingTimeTag";
+          return null;
+        }
+
+        movingTime = int.tryParse(movingTimeLine[1]) ?? 0;
+
+        _linePointer++;
+      }
     } else {
       DeviceDescriptor device = deviceMap[schwinnACPerfPlusFourCC]!;
       final factors = await database.getFactors(deviceId);
@@ -516,6 +533,10 @@ class CSVImporter {
       powerFactor = factors.item1;
       startTime = start!.millisecondsSinceEpoch;
       endTime = start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch;
+    }
+
+    if (movingTime == 0 && totalElapsed > 0) {
+      movingTime = totalElapsed * 1000;
     }
 
     if (!_findLine(rideDataTag)) {
@@ -550,6 +571,7 @@ class CSVImporter {
       end: endTime,
       distance: totalDistance,
       elapsed: totalElapsed,
+      movingTime: movingTime,
       calories: calories,
       startDateTime: start,
       uploaded: uploaded,
@@ -597,6 +619,7 @@ class CSVImporter {
           speed: double.tryParse(values[6]),
           cadence: int.tryParse(values[1]),
           heartRate: int.tryParse(values[2]),
+          sport: activity.sport,
         );
         await database.recordDao.insertRecord(record);
 
@@ -610,6 +633,7 @@ class CSVImporter {
       }
     } else {
       double secondsPerRow = totalElapsed / numRow;
+      int milliSecondsPerRow = (secondsPerRow * 1000).round();
       int secondsPerRowInt = secondsPerRow.round();
       int recordsPerRow = secondsPerRowInt * timeResolutionFactor;
       double milliSecondsPerRecord = secondsPerRow * 1000 / recordsPerRow;
@@ -619,6 +643,7 @@ class CSVImporter {
       int progressSteps = recordCount ~/ maxProgressSteps;
       int progressCounter = 0;
       int recordCounter = 0;
+      int movingTimeMillis = 0;
       double energy = 0;
       double distance = 0;
       double elapsed = 0;
@@ -733,9 +758,14 @@ class CSVImporter {
           }
         }
 
+        if (row.isMoving()) {
+          movingTimeMillis += milliSecondsPerRow;
+        }
+
         _linePointer++;
       }
 
+      activity.movingTime = movingTimeMillis;
       activity.distance = distance;
       activity.calories = energy.round();
     }
