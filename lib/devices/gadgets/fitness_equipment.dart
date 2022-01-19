@@ -97,8 +97,11 @@ class FitnessEquipment extends DeviceBase {
   Stream<RecordWithSport> get _listenToData async* {
     if (!attached || characteristic == null || descriptor == null) return;
 
-    await for (var byteString
-        in characteristic!.value.throttleTime(const Duration(milliseconds: ftmsDataThreshold))) {
+    await for (var byteString in characteristic!.value.throttleTime(
+      const Duration(milliseconds: ftmsDataThreshold),
+      leading: false,
+      trailing: true,
+    )) {
       if (!descriptor!.canDataProcessed(byteString)) continue;
       if (!measuring && !calibrating) continue;
 
