@@ -12,8 +12,11 @@ void main() {
     final rnd = Random();
     for (final sport in sports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu =
-            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgPower: true,);
+        final accu = StatisticsAccumulator(
+          si: rnd.nextBool(),
+          sport: sport,
+          calculateAvgPower: true,
+        );
         final count = rnd.nextInt(99) + 1;
         int sum = 0;
         int actualCount = 0;
@@ -64,8 +67,11 @@ void main() {
     final rnd = Random();
     for (final sport in sports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu =
-            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxPower: true,);
+        final accu = StatisticsAccumulator(
+          si: rnd.nextBool(),
+          sport: sport,
+          calculateMaxPower: true,
+        );
         final count = rnd.nextInt(99) + 1;
         int maximum = maxInit;
         getRandomInts(count, 100, rnd).forEach((number) {
@@ -162,8 +168,11 @@ void main() {
     final rnd = Random();
     for (final sport in sports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu =
-            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgSpeed: true,);
+        final accu = StatisticsAccumulator(
+          si: rnd.nextBool(),
+          sport: sport,
+          calculateAvgSpeed: true,
+        );
         var count = rnd.nextInt(99) + 1;
         double sum = 0.0;
         getRandomDoubles(count, 100, rnd).forEach((number) {
@@ -214,8 +223,11 @@ void main() {
     final rnd = Random();
     for (final sport in sports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu =
-            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxSpeed: true,);
+        final accu = StatisticsAccumulator(
+          si: rnd.nextBool(),
+          sport: sport,
+          calculateMaxSpeed: true,
+        );
         final count = rnd.nextInt(99) + 1;
         double maximum = maxInit.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
@@ -263,8 +275,11 @@ void main() {
     final rnd = Random();
     for (final sport in sports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu =
-            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinSpeed: true,);
+        final accu = StatisticsAccumulator(
+          si: rnd.nextBool(),
+          sport: sport,
+          calculateMinSpeed: true,
+        );
         final count = rnd.nextInt(99) + 1;
         double minimum = minInit.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {

@@ -81,7 +81,9 @@ class ExportModelForTests extends ExportModel {
 
 Future<void> initPrefServiceForTest() async {
   var prefDefaults = await getPrefDefaults();
-  final prefService =
-      await PrefServiceShared.init(prefix: preferencesPrefix, defaults: prefDefaults,);
+  final prefService = await PrefServiceShared.init(
+    prefix: preferencesPrefix,
+    defaults: prefDefaults,
+  );
   Get.put<BasePrefService>(prefService);
 }
