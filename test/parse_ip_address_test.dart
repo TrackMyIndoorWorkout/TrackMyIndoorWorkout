@@ -61,7 +61,7 @@ void main() {
 
   group('parseIpAddress random test', () {
     final rnd = Random();
-    for (var index in List.generate(repetition, (index) => index)) {
+    for (var index in List<int>.generate(repetition, (index) => index)) {
       final ipParts = getRandomInts(4, 320, rnd);
       final port = rnd.nextInt(81920);
       final valid = ipParts.fold<bool>(true, (prev, part) => prev && part < maxUint8) &&

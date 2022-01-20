@@ -195,7 +195,7 @@ void main() {
   });
 
   group('fitTimeStamp test', () {
-    1.to(smallRepetition).forEach((index) {
+    for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
       final testDateTime = mockDate(fitEpochDateTime);
       final expected =
           (testDateTime.millisecondsSinceEpoch - fitEpochDateTime.millisecondsSinceEpoch) ~/ 1000;
@@ -204,11 +204,11 @@ void main() {
 
         expect(timeStamp, expected);
       });
-    });
+    }
   });
 
   group('fitDateTime test', () {
-    1.to(smallRepetition).forEach((index) {
+    for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
       final testDateTime = mockDate(fitEpochDateTime);
       final expected =
           (testDateTime.millisecondsSinceEpoch - fitEpochDateTime.millisecondsSinceEpoch) ~/ 1000;
@@ -217,6 +217,6 @@ void main() {
 
         expect(timeStamp, expected);
       });
-    });
+    }
   });
 }

@@ -22,11 +22,6 @@ const sports = [
   ActivityType.elliptical,
 ];
 
-extension RangeExtension on int {
-  List<int> to(int maxInclusive, {int step = 1}) =>
-      [for (int i = this; i <= maxInclusive; i += step) i];
-}
-
 List<int> getRandomInts(int count, int max, Random source) {
   return List<int>.generate(count, (index) => source.nextInt(max));
 }
@@ -87,6 +82,6 @@ class ExportModelForTests extends ExportModel {
 Future<void> initPrefServiceForTest() async {
   var prefDefaults = await getPrefDefaults();
   final prefService =
-      await PrefServiceShared.init(prefix: preferencesPrefix, defaults: prefDefaults);
+      await PrefServiceShared.init(prefix: preferencesPrefix, defaults: prefDefaults,);
   Get.put<BasePrefService>(prefService);
 }
