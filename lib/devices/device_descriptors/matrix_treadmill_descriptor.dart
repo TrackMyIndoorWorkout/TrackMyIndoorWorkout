@@ -48,7 +48,7 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
     flag = advanceFlag(flag); // Average Pace
     flag = processExpandedEnergyFlag(flag, partial: true);
     flag = advanceFlag(flag); // Heart Rate
-    flag = advanceFlag(flag); // Metabolic Equivalent
+    flag = skipFlag(flag, size: 1); // Metabolic Equivalent
     flag = advanceFlag(flag); // Elapsed Time
     flag = advanceFlag(flag); // Remaining Time
     flag = advanceFlag(flag); // Force on Belt and Power
