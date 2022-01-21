@@ -80,6 +80,7 @@ abstract class DeviceDescriptor {
 
   void initFlag() {
     clearMetrics();
+    featuresFlag = -1;
     byteCounter = flagByteSize;
   }
 
