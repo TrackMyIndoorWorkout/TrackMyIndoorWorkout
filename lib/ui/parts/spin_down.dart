@@ -169,7 +169,11 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     _weightDataSubscription = _weightData?.value
-        .throttleTime(const Duration(milliseconds: spinDownThreshold))
+        .throttleTime(
+      const Duration(milliseconds: spinDownThreshold),
+      leading: false,
+      trailing: true,
+    )
         .listen((response) async {
       if (response.length == 1 && _calibrationState == CalibrationState.weightSubmitting) {
         if (response[0] != weightSuccessOpcode) {
@@ -219,7 +223,11 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     _controlPointSubscription = _controlPoint?.value
-        .throttleTime(const Duration(milliseconds: spinDownThreshold))
+        .throttleTime(
+      const Duration(milliseconds: spinDownThreshold),
+      leading: false,
+      trailing: true,
+    )
         .listen((data) async {
       if (data.length == 1) {
         if (data[0] != spinDownOpcode) {
@@ -404,7 +412,11 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     _statusSubscription = _fitnessMachineStatus?.value
-        .throttleTime(const Duration(milliseconds: ftmsStatusThreshold))
+        .throttleTime(
+      const Duration(milliseconds: ftmsStatusThreshold),
+      leading: false,
+      trailing: true,
+    )
         .listen((status) {
       if (status.length == 2 && status[0] == spinDownStatus) {
         if (status[1] == spinDownStatusSuccess) {

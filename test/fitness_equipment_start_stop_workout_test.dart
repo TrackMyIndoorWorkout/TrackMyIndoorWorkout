@@ -65,10 +65,17 @@ void main() {
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
-        equipment.lastRecord =
-            Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, calories: 0);
-        equipment
-            .processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: calories));
+        equipment.lastRecord = Record(
+          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          elapsedMillis: 0,
+          calories: 0,
+        );
+        equipment.workoutState = WorkoutState.moving;
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: calories,
+        ));
 
         expect(equipment.lastPositiveCalories, closeTo(calories, eps));
 

@@ -7,6 +7,7 @@ import '../../preferences/instant_measurement_start.dart';
 import '../../preferences/instant_scan.dart';
 import '../../preferences/instant_upload.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
+import '../../preferences/moving_or_elapsed_time.dart';
 import '../../preferences/multi_sport_device_support.dart';
 import '../../preferences/scan_duration.dart';
 import '../../preferences/simpler_ui.dart';
@@ -54,6 +55,11 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         title: Text(distanceResolution),
         subtitle: Text(distanceResolutionDescription),
         pref: distanceResolutionTag,
+      ),
+      const PrefCheckbox(
+        title: Text(movingOrElapsedTime),
+        subtitle: Text(movingOrElapsedTimeDescription),
+        pref: movingOrElapsedTimeTag,
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(

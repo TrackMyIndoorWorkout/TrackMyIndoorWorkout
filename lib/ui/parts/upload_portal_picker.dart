@@ -143,7 +143,6 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                               ),
                               onPressed: () async {
                                 final workoutUrl = widget.activity.workoutUrl(e.value.name);
-                                debugPrint("Workout URL: $workoutUrl");
                                 if (await canLaunch(workoutUrl)) {
                                   launch(workoutUrl);
                                 } else {

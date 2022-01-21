@@ -132,8 +132,6 @@ abstract class Upload {
     AppDatabase database,
   ) async {
     if (activity.suuntoWorkoutUrl.isNotEmpty) {
-      debugPrint("uploadId ${activity.suuntoUploadIdentifier}");
-      debugPrint("blobUrl ${activity.suuntoBlobUrl}");
       return 200;
     }
 
@@ -145,7 +143,6 @@ abstract class Upload {
     );
 
     final statusBody = uploadStatusResponse.body;
-    debugPrint("status body: $statusBody");
     if (uploadStatusResponse.statusCode < 200 || uploadStatusResponse.statusCode >= 300) {
       debugPrint('Error while getting upload status');
     } else {
@@ -157,7 +154,6 @@ abstract class Upload {
         if (urlEndIndex > 0) {
           final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
           activity.markSuuntoUploaded(webUrl);
-          debugPrint("SUUNTO workout URL: $webUrl");
           await database.activityDao.updateActivity(activity);
         }
       }
