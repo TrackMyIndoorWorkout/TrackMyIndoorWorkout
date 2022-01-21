@@ -137,8 +137,10 @@ void main() {
       ),
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
-      test("$sum", () async {
+      test("$sum ${testPair.data.length}", () async {
         final treadmill = deviceMap[matrixTreadmillFourCC]!;
+        treadmill.initFlag();
+        expect(treadmill.canDataProcessed(testPair.data), true);
         treadmill.stopWorkout();
 
         final record = treadmill.stubRecord(testPair.data)!;

@@ -156,8 +156,10 @@ void main() {
       ),
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
-      test("$sum", () async {
+      test("$sum ${testPair.data.length}", () async {
         final bike = deviceMap[schwinnICBikeFourCC]!;
+        bike. initFlag();
+        expect(bike.canDataProcessed(testPair.data), true);
         bike.stopWorkout();
 
         final record = bike.stubRecord(testPair.data)!;
