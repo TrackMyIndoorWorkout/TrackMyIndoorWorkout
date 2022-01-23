@@ -107,9 +107,11 @@ void main() {
       ),
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
-      test("$sum", () async {
+      test("$sum ${testPair.data.length}", () async {
         await initPrefServiceForTest();
         final xTrainer = deviceMap[genericFTMSCrossTrainerFourCC]!;
+        xTrainer.initFlag();
+        expect(xTrainer.canDataProcessed(testPair.data), true);
         xTrainer.stopWorkout();
 
         final record = xTrainer.stubRecord(testPair.data)!;

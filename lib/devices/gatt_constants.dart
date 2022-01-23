@@ -4,6 +4,7 @@ const treadmillUuid = '2acd';
 const indoorBikeUuid = '2ad2';
 const rowerDeviceUuid = '2ad1';
 const crossTrainerUuid = '2ace';
+const machineFeatureUuid = '2acc';
 const deviceNameUuid = '2a00';
 const appearanceUuid = '2a01';
 const modelNumberUuid = '2a24';
@@ -23,6 +24,11 @@ const heartRateMeasurementUuid = '2a37';
 
 const cyclingCadenceServiceUuid = '1816';
 const cyclingCadenceMeasurementUuid = '2a5b';
+const cyclingCadenceFeaturesUuid = '2a5c';
+
+const cyclingPowerServiceUuid = '1818';
+const cyclingPowerMeasurementUuid = '2a63';
+const cyclingPowerFeatureUuid = '2a65';
 
 const runningCadenceServiceUuid = '1814';
 const runningCadenceMeasurementUuid = '2a53';

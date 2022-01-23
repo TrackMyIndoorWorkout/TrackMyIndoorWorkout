@@ -41,11 +41,16 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   @override
   bool canDataProcessed(List<int> data) {
     final dataLength = data.length;
-    if (byteCounter <= 0) {
+    if (byteCounter <= flagByteSize) {
       preProcessFlag(data);
     }
 
-    return byteCounter > 2 ? dataLength == byteCounter : dataLength > 2;
+    return byteCounter >= flagByteSize && dataLength == byteCounter;
+  }
+
+  int advanceFlag(int flag) {
+    flag ~/= 2;
+    return flag;
   }
 
   int skipFlag(int flag, {int size = 2}) {
@@ -53,8 +58,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       byteCounter += size;
     }
 
-    flag ~/= 2;
-    return flag;
+    return advanceFlag(flag);
   }
 
   int processSpeedFlag(int flag) {
@@ -65,8 +69,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       byteCounter += 2;
     }
 
-    flag ~/= 2;
-    return flag;
+    return advanceFlag(flag);
   }
 
   int processCadenceFlag(int flag) {
@@ -76,8 +79,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       byteCounter += 2;
     }
 
-    flag ~/= 2;
-    return flag;
+    return advanceFlag(flag);
   }
 
   int processTotalDistanceFlag(int flag) {
@@ -87,8 +89,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       byteCounter += 3;
     }
 
-    flag ~/= 2;
-    return flag;
+    return advanceFlag(flag);
   }
 
   int processPowerFlag(int flag) {
@@ -98,11 +99,10 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       byteCounter += 2;
     }
 
-    flag ~/= 2;
-    return flag;
+    return advanceFlag(flag);
   }
 
-  int processExpandedEnergyFlag(int flag) {
+  int processExpandedEnergyFlag(int flag, {bool partial = false}) {
     if (flag % 2 == 1) {
       // Total Energy: UInt16
       caloriesMetric = ShortMetricDescriptor(
@@ -112,22 +112,23 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       );
       // Energy / hour UInt16
       byteCounter += 2;
-      caloriesPerHourMetric = ShortMetricDescriptor(
-        lsb: byteCounter,
-        msb: byteCounter + 1,
-        optional: true,
-      );
-      // Energy / minute UInt8
-      byteCounter += 2;
-      caloriesPerMinuteMetric = ByteMetricDescriptor(
-        lsb: byteCounter,
-        optional: true,
-      );
-      byteCounter++;
+      if (!partial) {
+        caloriesPerHourMetric = ShortMetricDescriptor(
+          lsb: byteCounter,
+          msb: byteCounter + 1,
+          optional: true,
+        );
+        // Energy / minute UInt8
+        byteCounter += 2;
+        caloriesPerMinuteMetric = ByteMetricDescriptor(
+          lsb: byteCounter,
+          optional: true,
+        );
+        byteCounter++;
+      }
     }
 
-    flag ~/= 2;
-    return flag;
+    return advanceFlag(flag);
   }
 
   int processHeartRateFlag(int flag) {
@@ -137,8 +138,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       byteCounter++;
     }
 
-    flag ~/= 2;
-    return flag;
+    return advanceFlag(flag);
   }
 
   int processElapsedTimeFlag(int flag) {
@@ -147,8 +147,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       byteCounter += 2;
     }
 
-    flag ~/= 2;
-    return flag;
+    return advanceFlag(flag);
   }
 
   int processStepMetricsFlag(int flag) {
@@ -160,7 +159,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       byteCounter += 2;
     }
 
-    flag ~/= 2;
-    return flag;
+    return advanceFlag(flag);
   }
 }

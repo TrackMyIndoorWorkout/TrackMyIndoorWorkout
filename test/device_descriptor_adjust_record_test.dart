@@ -8,7 +8,7 @@ import 'utils.dart';
 
 void main() {
   test('adjustRecord survives null values', () async {
-    final descriptor = deviceMap["SIC4"]!;
+    final descriptor = deviceMap[schwinnICBikeFourCC]!;
     final record = RecordWithSport(sport: descriptor.defaultSport);
     final rnd = Random();
     final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
@@ -27,7 +27,7 @@ void main() {
   group('adjustRecord adjusts power', () {
     final rnd = Random();
     getRandomInts(smallRepetition, 500, rnd).forEach((pow) {
-      final descriptor = deviceMap["SIC4"]!;
+      final descriptor = deviceMap[schwinnICBikeFourCC]!;
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final extendTuning = rnd.nextBool();
@@ -46,7 +46,7 @@ void main() {
   group('adjustRecord adjusts extended metrics', () {
     final rnd = Random();
     getRandomInts(smallRepetition, 500, rnd).forEach((power) {
-      final descriptor = deviceMap["SIC4"]!;
+      final descriptor = deviceMap[schwinnICBikeFourCC]!;
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final speed = rnd.nextDouble() * 20.0;
@@ -74,7 +74,7 @@ void main() {
   group('adjustRecord does not adjust extended metrics if not extendTuning', () {
     final rnd = Random();
     getRandomInts(smallRepetition, 500, rnd).forEach((power) {
-      final descriptor = deviceMap["SIC4"]!;
+      final descriptor = deviceMap[schwinnICBikeFourCC]!;
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final speed = rnd.nextDouble() * 20.0;
@@ -102,7 +102,7 @@ void main() {
   group('adjustRecord adjusts calories', () {
     final rnd = Random();
     getRandomInts(smallRepetition, 1000, rnd).forEach((calories) {
-      final descriptor = deviceMap["SIC4"]!;
+      final descriptor = deviceMap[schwinnICBikeFourCC]!;
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final extendTuning = rnd.nextBool();

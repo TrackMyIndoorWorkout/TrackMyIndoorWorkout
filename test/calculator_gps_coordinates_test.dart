@@ -300,7 +300,7 @@ void main() {
       final d =
           track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
       test("${track.radiusBoost} $lengthFactor $d", () async {
-        for (final distance in 1.to((trackLength * 2).round())) {
+        for (var distance in List<int>.generate((trackLength * 2).round(), (index) => index)) {
           final calculator = TrackCalculator(track: track);
 
           final markerA = calculator.gpsCoordinates(distance.toDouble());
