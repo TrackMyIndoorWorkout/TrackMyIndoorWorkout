@@ -36,15 +36,14 @@ void main() {
 
   group("Record constructor fills speed properly if random running pace is present:", () {
     final rnd = Random();
-    1.to(repetition).forEach((input) {
-      final randomPace = rnd.nextDouble() * 20;
+    for (var randomPace in getRandomDoubles(repetition, 20, rnd)) {
       final expected = 60 / randomPace;
       for (var sport in [ActivityType.run, ActivityType.virtualRun]) {
         test("$randomPace -> $expected", () async {
           expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, eps));
         });
       }
-    });
+    }
   });
 
   group("Record constructor fills speed properly if paddling pace is present:", () {
@@ -74,14 +73,13 @@ void main() {
 
   group("Record constructor fills speed properly if random paddling pace is present:", () {
     final rnd = Random();
-    1.to(repetition).forEach((input) {
-      final randomPace = rnd.nextDouble() * 360;
+    for (var randomPace in getRandomDoubles(repetition, 360, rnd)) {
       final expected = 30.0 / (randomPace / 60.0);
       for (var sport in [ActivityType.kayaking, ActivityType.canoeing, ActivityType.rowing]) {
         test("$randomPace -> $expected", () async {
           expect(RecordWithSport(pace: randomPace, sport: sport).speed, closeTo(expected, eps));
         });
       }
-    });
+    }
   });
 }

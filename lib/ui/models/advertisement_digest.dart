@@ -1,3 +1,4 @@
+import '../../devices/company_registry.dart';
 import '../../devices/gatt_constants.dart';
 import '../../utils/constants.dart';
 import '../../utils/machine_type.dart';
@@ -5,6 +6,7 @@ import '../../utils/machine_type.dart';
 class AdvertisementDigest {
   final String id;
   final List<String> serviceUuids;
+  final List<int> companyIds;
   final String manufacturer;
   final int txPower;
   final MachineType machineType;
@@ -12,6 +14,7 @@ class AdvertisementDigest {
   AdvertisementDigest({
     required this.id,
     required this.serviceUuids,
+    required this.companyIds,
     required this.manufacturer,
     required this.txPower,
     required this.machineType,
@@ -33,5 +36,10 @@ class AdvertisementDigest {
     }
 
     return ActivityType.ride;
+  }
+
+  bool needsMatrixSpecialTreatment() {
+    return companyIds.contains(CompanyRegistry.matrixIncKey) ||
+        companyIds.contains(CompanyRegistry.johnsonHealthTechKey);
   }
 }

@@ -11,6 +11,7 @@ class AdvertisementCache {
     _advertisementMap[id] = AdvertisementDigest(
       id: id,
       serviceUuids: scanResult.serviceUuids,
+      companyIds: scanResult.advertisementData.manufacturerData.keys.toList(growable: false),
       manufacturer: scanResult.manufacturerName(),
       txPower: scanResult.advertisementData.txPowerLevel ?? -120,
       machineType: scanResult.getMachineType(),

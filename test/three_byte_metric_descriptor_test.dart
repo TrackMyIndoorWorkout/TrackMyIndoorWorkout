@@ -31,8 +31,8 @@ void main() {
 
   group('ThreeByteMetricDescriptor calculates measurement as expected', () {
     final rnd = Random();
-    for (final _ in 1.to(repetition)) {
-      final len = rnd.nextInt(99) + 5;
+    for (var lenMinusFive in getRandomInts(repetition, 99, rnd)) {
+      final len = lenMinusFive + 5;
       final data = getRandomInts(len, maxUint8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 1 ? (lsbLocation < len - 2 ? rnd.nextBool() : false) : true;

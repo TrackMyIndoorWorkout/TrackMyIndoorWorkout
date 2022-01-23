@@ -5,7 +5,7 @@ import 'utils.dart';
 
 void main() {
   group("hydrate should initialize dt based on timeStamp:", () {
-    1.to(smallRepetition).forEach((input) {
+    for (var input in List<int>.generate(smallRepetition, (index) => index)) {
       final randomDateTime = mockDate();
       for (final sport in sports) {
         test("$input -> $randomDateTime", () {
@@ -15,7 +15,7 @@ void main() {
           expect(record.dt, randomDateTime);
         });
       }
-    });
+    }
   });
 
   group('Constructor initializes dt', () {

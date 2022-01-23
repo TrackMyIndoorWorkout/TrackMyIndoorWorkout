@@ -16,7 +16,7 @@ void main() {
   test('startWorkout blanks out leftover lastRecord', () async {
     final rnd = Random();
     await initPrefServiceForTest();
-    final descriptor = deviceMap["SIC4"]!;
+    final descriptor = deviceMap[schwinnICBikeFourCC]!;
     final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
     equipment.lastRecord = RecordWithSport.getRandom(descriptor.defaultSport, rnd);
 
@@ -47,7 +47,7 @@ void main() {
         await initPrefServiceForTest();
         final hrBasedCalories = rnd.nextBool();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
