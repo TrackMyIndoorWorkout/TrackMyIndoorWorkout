@@ -20,14 +20,14 @@ abstract class ComplexSensor extends SensorBase {
   Stream<RecordWithSport> get _listenToData async* {
     if (!attached || characteristic == null) return;
 
-    await for (var byteString in characteristic!.value.throttleTime(
+    await for (var byteList in characteristic!.value.throttleTime(
       const Duration(milliseconds: sensorDataThreshold),
       leading: false,
       trailing: true,
     )) {
-      if (!canMeasurementProcessed(byteString)) continue;
+      if (!canMeasurementProcessed(byteList)) continue;
 
-      record = processMeasurement(byteString);
+      record = processMeasurement(byteList);
       yield record!;
     }
   }

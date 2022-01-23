@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:rxdart/rxdart.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
@@ -24,6 +23,7 @@ import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/hr_based_calories.dart';
+import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../bluetooth_device_ex.dart';
 import '../gatt_constants.dart';
@@ -31,7 +31,7 @@ import 'device_base.dart';
 import 'heart_rate_monitor.dart';
 import 'running_cadence_sensor.dart';
 
-typedef RecordHandlerFunction = Function(Record data);
+typedef RecordHandlerFunction = Function(RecordWithSport data);
 
 // State Machine for #231 and #235
 // (intelligent start and elapsed time tracking)
@@ -44,6 +44,7 @@ enum WorkoutState {
 
 class FitnessEquipment extends DeviceBase {
   DeviceDescriptor? descriptor;
+  Map<int, DataHandler> dataHandlers = {};
   String? manufacturerName;
   double _residueCalories = 0.0;
   int _lastPositiveCadence = 0; // #101
@@ -55,7 +56,7 @@ class FitnessEquipment extends DeviceBase {
   int _startingElapsed = 0;
   bool hasTotalCalorieCounting = false;
   Timer? _timer;
-  late Record lastRecord;
+  late RecordWithSport lastRecord;
   HeartRateMonitor? heartRateMonitor;
   RunningCadenceSensor? _runningCadenceSensor;
   String _heartRateGapWorkaround = heartRateGapWorkaroundDefault;
@@ -80,6 +81,11 @@ class FitnessEquipment extends DeviceBase {
   bool _equipmentDiscovery = false;
   bool _extendTuning = false;
 
+  // For Throttling + deduplication #234
+  final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
+  Map<int, RecordWithSport> _listDeduplicationMap = {};
+  Timer? _throttleTimer;
+
   FitnessEquipment({this.descriptor, device, this.startingValues = true})
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
@@ -93,21 +99,49 @@ class FitnessEquipment extends DeviceBase {
   String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
   double get residueCalories => _residueCalories;
   double get lastPositiveCalories => _lastPositiveCalories;
+  bool get shouldMerge => dataHandlers.length > 1;
 
-  Stream<RecordWithSport> get _listenToData async* {
+  int keySelector(List<int> l) {
+    if (l.isEmpty) {
+      return 0;
+    }
+
+    if (l.length == 1) {
+      return l[0];
+    }
+
+    return l[1] * 256 + l[0];
+  }
+
+  Stream<List<RecordWithSport>> get _listenToData async* {
     if (!attached || characteristic == null || descriptor == null) return;
 
-    await for (var byteString in characteristic!.value.throttleTime(
-      const Duration(milliseconds: ftmsDataThreshold),
-      leading: false,
-      trailing: true,
-    )) {
-      if (!descriptor!.canDataProcessed(byteString)) continue;
+    await for (final byteList in characteristic!.value) {
       if (!measuring && !calibrating) continue;
 
-      final record = descriptor!.stubRecord(byteString);
+      final key = keySelector(byteList);
+      if (key <= 0) continue;
+
+      if (!dataHandlers.containsKey(key)) {
+        dataHandlers[key] = DataHandler(flagByteSize: descriptor!.flagByteSize);
+      }
+
+      final dataHandler = dataHandlers[key]!;
+      if (!dataHandler.isDataProcessable(byteList)) continue;
+
+      final record = dataHandler.stubRecord(byteList);
       if (record == null) continue;
-      yield record;
+
+      _listDeduplicationMap[key] = record;
+
+      final shouldYield = !(_throttleTimer?.isActive ?? false);
+      _throttleTimer ??= Timer(_throttleDuration, () => {_throttleTimer = null});
+
+      if (shouldYield) {
+        final values = _listDeduplicationMap.values.toList(growable: false);
+        _listDeduplicationMap = {};
+        yield values;
+      }
     }
   }
 
@@ -116,7 +150,7 @@ class FitnessEquipment extends DeviceBase {
       _timer = Timer(
         const Duration(seconds: 1),
         () {
-          final record = processRecord(RecordWithSport.getRandom(sport, _random));
+          final record = processRecord([RecordWithSport.getRandom(sport, _random)]);
           recordHandlerFunction(record);
           pumpData(recordHandlerFunction);
         },
@@ -157,6 +191,7 @@ class FitnessEquipment extends DeviceBase {
     _activity = activity;
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
     workoutState = WorkoutState.waitingForFirstMove;
+    dataHandlers = {};
     readConfiguration();
   }
 
@@ -216,14 +251,16 @@ class FitnessEquipment extends DeviceBase {
     _extendTuning = extendTuning;
   }
 
-  Record processRecord(RecordWithSport stub) {
+  RecordWithSport processRecord(List<RecordWithSport> stubs) {
     final now = DateTime.now();
     // State Machine for #231 and #235
     // (intelligent start and elapsed time tracking)
+    bool isNotMoving = stubs.fold(true, (prev, element) => prev && element.isNotMoving());
     if (workoutState == WorkoutState.waitingForFirstMove) {
-      if (stub.isNotMoving()) {
-        return stub;
+      if (isNotMoving) {
+        return stubs.isNotEmpty ? stubs[0] : lastRecord;
       } else {
+        dataHandlers = {};
         workoutState = WorkoutState.moving;
         if (_activity != null) {
           _activity!.startDateTime = now;
@@ -235,7 +272,7 @@ class FitnessEquipment extends DeviceBase {
         }
       }
     } else {
-      if (stub.isNotMoving()) {
+      if (isNotMoving) {
         if (workoutState == WorkoutState.moving) {
           workoutState = WorkoutState.justStopped;
         } else if (workoutState == WorkoutState.justStopped) {
@@ -246,9 +283,44 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    if (descriptor != null) {
-      stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
+    RecordWithSport? stub0;
+    if (stubs.isEmpty) {
+      return lastRecord;
+    } else if (stubs.length == 1) {
+      if (descriptor != null) {
+        stub0 = descriptor!.adjustRecord(stubs[0], powerFactor, calorieFactor, _extendTuning);
+      } else {
+        stub0 = stubs[0];
+      }
+    } else if (stubs.length > 1) {
+      if (descriptor != null) {
+        stub0 = stubs.reversed.skip(1).fold<RecordWithSport>(
+            stubs[0],
+            (prev, element) => prev.merge(
+                  descriptor!.adjustRecord(
+                    element,
+                    powerFactor,
+                    calorieFactor,
+                    _extendTuning,
+                  ),
+                  _cadenceGapWorkaround,
+                  _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
+                ));
+      } else {
+        stub0 = stubs.reversed.skip(1).fold<RecordWithSport>(
+            stubs[0],
+            (prev, element) => prev.merge(
+                  element,
+                  _cadenceGapWorkaround,
+                  _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
+                ));
+      }
     }
+
+    final stub = shouldMerge
+        ? stub0!.merge(lastRecord, _cadenceGapWorkaround,
+            _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue)
+        : stub0!;
 
     int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
     double elapsed = elapsedMillis / 1000.0;
@@ -522,6 +594,7 @@ class FitnessEquipment extends DeviceBase {
     _startingCalories = 0.0;
     _startingDistance = 0.0;
     _startingElapsed = 0;
+    dataHandlers = {};
     lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
   }
 

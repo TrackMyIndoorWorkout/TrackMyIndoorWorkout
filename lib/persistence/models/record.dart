@@ -138,10 +138,10 @@ class Record {
 
   bool isNotMoving() {
     return (power ?? 0) == 0 &&
-        (speed ?? 0.0) == 0.0 &&
+        (speed ?? 0.0) < 0.0 &&
         (pace ?? 0.0) == 0.0 &&
-        (caloriesPerHour ?? 0.0) == 0.0 &&
-        (caloriesPerMinute ?? 0.0) == 0.0 &&
+        (caloriesPerHour ?? 0.0) < eps &&
+        (caloriesPerMinute ?? 0.0) < eps &&
         (cadence ?? 0) == 0;
   }
 
@@ -267,5 +267,22 @@ class RecordWithSport extends Record {
       heartRate: 60 + random.nextInt(120),
       sport: sport,
     );
+  }
+
+  RecordWithSport merge(RecordWithSport record, bool mergeCadence, bool mergeHr) {
+    distance ??= record.distance;
+    elapsed ??= record.elapsed;
+    calories ??= record.calories;
+    power ??= record.power;
+    speed ??= record.speed;
+    if (mergeCadence) {
+      cadence ??= record.cadence;
+    }
+
+    if (mergeHr) {
+      heartRate ??= record.heartRate;
+    }
+
+    return this;
   }
 }
