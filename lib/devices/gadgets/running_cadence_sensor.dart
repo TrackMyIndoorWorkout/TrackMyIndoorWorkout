@@ -35,7 +35,7 @@ class RunningCadenceSensor extends ComplexSensor {
 
       // Has Instantaneous stride length? (first bit)
       if (flag % 2 == 1) {
-        // Skip it, we are not interested in strode length
+        // Skip it, we are not interested in stride length
         expectedLength += 2; // 16 bit uint, 1/100 m
       }
 

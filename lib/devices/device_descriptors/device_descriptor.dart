@@ -25,6 +25,7 @@ abstract class DeviceDescriptor {
   String? dataCharacteristicId;
   final bool antPlus;
 
+  final int flagByteSize;
   int featuresFlag = -1;
   int byteCounter = 0;
 
@@ -57,6 +58,7 @@ abstract class DeviceDescriptor {
     this.dataServiceId,
     this.dataCharacteristicId,
     this.antPlus = false,
+    this.flagByteSize = 2,
     this.canMeasureHeartRate = true,
     this.heartRateByteIndex,
     this.canMeasureCalories = true,
@@ -76,19 +78,28 @@ abstract class DeviceDescriptor {
 
   bool canDataProcessed(List<int> data);
 
-  void processFlag(int flag) {
+  void initFlag() {
     clearMetrics();
-    byteCounter = 2;
+    featuresFlag = -1;
+    byteCounter = flagByteSize;
   }
 
-  RecordWithSport? stubRecord(List<int> data) {
-    if (data.length > 2) {
+  void processFlag(int flag) {
+    initFlag();
+  }
+
+  void preProcessFlag(List<int> data) {
+    if (data.length > flagByteSize) {
       var flag = data[0] + maxUint8 * data[1];
       if (flag != featuresFlag) {
         featuresFlag = flag;
         processFlag(flag);
       }
     }
+  }
+
+  RecordWithSport? stubRecord(List<int> data) {
+    preProcessFlag(data);
 
     return null;
   }

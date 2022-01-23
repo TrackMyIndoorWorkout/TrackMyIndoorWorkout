@@ -20,14 +20,19 @@ void main() {
       final calorie = calorieBase + 100;
       test('$calorie', () async {
         await initPrefServiceForTest();
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
           startingValues: false,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: calorie));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: calorie,
+        ));
 
         expect(equipment.hasTotalCalorieCounting, true);
       });
@@ -40,16 +45,29 @@ void main() {
       calorie++;
       test('$calorie', () async {
         await initPrefServiceForTest();
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
           startingValues: false,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: 0));
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: calorie));
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: 0));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: 0,
+        ));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: calorie,
+        ));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: 0,
+        ));
 
         expect(equipment.hasTotalCalorieCounting, true);
       });
@@ -61,16 +79,29 @@ void main() {
     getRandomInts(smallRepetition, 500, rnd).forEach((calorie) {
       test('$calorie', () async {
         await initPrefServiceForTest();
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
           startingValues: false,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: 0));
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: 0));
-        equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: 0));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: 0,
+        ));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: 0,
+        ));
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: 0,
+        ));
 
         expect(equipment.hasTotalCalorieCounting, false);
       });
@@ -90,7 +121,7 @@ void main() {
       test('$calPerHour $powerFactor $calorieFactor', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: seconds));
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
@@ -118,9 +149,13 @@ void main() {
           elapsedMillis: 0,
           calories: 0,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        final record = equipment.processRecord(
-            RecordWithSport(sport: descriptor.defaultSport, caloriesPerHour: calPerHour));
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          caloriesPerHour: calPerHour,
+        ));
 
         final expected = (calPerHour / (60 * 60) * seconds * calorieFactor).floor();
         expect(record.calories, expected);
@@ -131,7 +166,7 @@ void main() {
   group('processRecord calculates calories from power', () {
     final rnd = Random();
     getRandomDoubles(smallRepetition, 150, rnd).forEach((pow) {
-      final descriptor = deviceMap["SIC4"]!;
+      final descriptor = deviceMap[schwinnICBikeFourCC]!;
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
       final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
@@ -168,14 +203,17 @@ void main() {
           elapsedMillis: 0,
           calories: 0,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        final record =
-            equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, power: power));
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          power: power,
+        ));
 
-        expect(
-            record.calories,
-            ((150 + pow) * powerFactor * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault)
-                .floor());
+        final expected =
+            (150 + pow) * powerFactor * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault;
+        expect(record.calories, expected.floor());
       });
     });
   });
@@ -191,7 +229,7 @@ void main() {
       test('$calories', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
@@ -219,9 +257,13 @@ void main() {
           elapsedMillis: 0,
           calories: 0,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        final record = equipment
-            .processRecord(RecordWithSport(sport: descriptor.defaultSport, calories: calories));
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: calories,
+        ));
 
         expect(record.calories, (calories * calorieFactor).round());
       });
@@ -239,7 +281,7 @@ void main() {
       test('$speed', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
@@ -267,6 +309,7 @@ void main() {
           elapsedMillis: 0,
           distance: 10,
         );
+        equipment.workoutState = WorkoutState.moving;
 
         final record =
             equipment.processRecord(RecordWithSport(sport: descriptor.defaultSport, speed: speed));
@@ -288,7 +331,7 @@ void main() {
       test('$distance', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
@@ -326,9 +369,13 @@ void main() {
           distance: min(adjustedRecord.distance!, 10),
           speed: 10,
         );
+        equipment.workoutState = WorkoutState.moving;
 
-        final record = equipment
-            .processRecord(RecordWithSport(sport: descriptor.defaultSport, distance: distance));
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          distance: distance,
+        ));
 
         expect(record.distance, closeTo(distance * powerFactor, displayEps));
       });
@@ -348,7 +395,7 @@ void main() {
       test('$distance $calories $speed', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
@@ -391,6 +438,7 @@ void main() {
           calorieFactor,
           extendTuning,
         );
+        equipment.workoutState = WorkoutState.moving;
 
         final record = equipment.processRecord(RecordWithSport(
           sport: descriptor.defaultSport,
@@ -419,7 +467,7 @@ void main() {
       test('$distance $calories $speed', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
@@ -462,6 +510,7 @@ void main() {
           calorieFactor,
           extendTuning,
         );
+        equipment.workoutState = WorkoutState.moving;
 
         final record = equipment.processRecord(RecordWithSport(
           sport: descriptor.defaultSport,
@@ -493,7 +542,7 @@ void main() {
       test('$distance $calories $speed', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
@@ -558,7 +607,7 @@ void main() {
       test('$distance $calories $speed', () async {
         await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,

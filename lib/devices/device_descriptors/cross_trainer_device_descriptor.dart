@@ -28,6 +28,7 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
           model: model,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
+          flagByteSize: 3,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
         );
@@ -36,22 +37,25 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
   @override
   void processFlag(int flag) {
     super.processFlag(flag);
+    // LifePro FlexStride Pro
+    // 12 0000 1100 instant speed, total distance, cadence (step rate)
+    // 33 0010 0001 instant power, elapsed time
     // negated first bit!
-    flag = processSpeedFlag(flag, true); // Instant
-    flag = processSpeedFlag(flag, false); // Average (fallback)
+    flag = processSpeedFlag(flag);
+    flag = skipFlag(flag); // Average Speed
     flag = processTotalDistanceFlag(flag);
     flag = processStepMetricsFlag(flag);
-    flag = processStrideCountFlag(flag);
-    flag = processElevationGainMetricsFlag(flag);
-    flag = processInclinationAndRampAngleFlag(flag);
-    flag = processResistanceLevelFlag(flag);
-    flag = processPowerFlag(flag); // Instant
-    flag = processPowerFlag(flag); // Average (fallback)
+    flag = skipFlag(flag); // Stride Count
+    flag = skipFlag(flag, size: 4); // Positive and Negative Elevation Gain
+    flag = skipFlag(flag, size: 4); // Inclination and Ramp Angle
+    flag = skipFlag(flag); // Resistance Level
+    flag = processPowerFlag(flag);
+    flag = skipFlag(flag); // Average Power
     flag = processExpandedEnergyFlag(flag);
     flag = processHeartRateFlag(flag);
-    flag = processMetabolicEquivalentFlag(flag);
+    flag = skipFlag(flag, size: 1); // Metabolic Equivalent
     flag = processElapsedTimeFlag(flag);
-    flag = processRemainingTimeFlag(flag);
+    flag = skipFlag(flag); // Remaining Time
   }
 
   @override

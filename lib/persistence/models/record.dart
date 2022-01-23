@@ -7,6 +7,7 @@ import '../../utils/display.dart';
 import 'activity.dart';
 
 const recordsTableName = 'records';
+const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
 
 @Entity(tableName: recordsTableName, foreignKeys: [
   ForeignKey(
@@ -47,6 +48,8 @@ class Record {
   double? caloriesPerHour;
   @ignore
   double? caloriesPerMinute;
+  @ignore
+  int movingTime = 0; // ms
 
   Record({
     this.id,
@@ -131,6 +134,73 @@ class Record {
 
   DisplayRecord display() {
     return DisplayRecord(this);
+  }
+
+  bool isNotMoving() {
+    return (power ?? 0) == 0 &&
+        (speed ?? 0.0) == 0.0 &&
+        (pace ?? 0.0) == 0.0 &&
+        (caloriesPerHour ?? 0.0) == 0.0 &&
+        (caloriesPerMinute ?? 0.0) == 0.0 &&
+        (cadence ?? 0) == 0;
+  }
+
+  bool isEmpty() {
+    return isNotMoving() && (distance ?? 0.0) == 0.0 && (elapsed ?? 0) == 0 && (calories ?? 0) == 0;
+  }
+
+  void cumulativeDistanceEnforcement(Record lastRecord) {
+    if (distance != null && lastRecord.distance != null) {
+      if (!testing) {
+        assert(distance! >= lastRecord.distance!);
+      }
+
+      if (distance! < lastRecord.distance!) {
+        distance = lastRecord.distance;
+      }
+    }
+  }
+
+  void cumulativeElapsedTimeEnforcement(Record lastRecord) {
+    if (elapsed != null && lastRecord.elapsed != null) {
+      if (!testing) {
+        assert(elapsed! >= lastRecord.elapsed!);
+      }
+
+      if (elapsed! < lastRecord.elapsed!) {
+        elapsed = lastRecord.elapsed;
+      }
+    }
+  }
+
+  void cumulativeMovingTimeEnforcement(Record lastRecord) {
+    if (!testing) {
+      assert(movingTime >= lastRecord.movingTime);
+    }
+
+    if (movingTime < lastRecord.movingTime) {
+      movingTime = lastRecord.movingTime;
+    }
+  }
+
+  void cumulativeCaloriesEnforcement(Record lastRecord) {
+    if (calories != null && lastRecord.calories != null) {
+      if (!testing) {
+        assert(calories! >= lastRecord.calories!);
+      }
+
+      if (calories! < lastRecord.calories!) {
+        calories = lastRecord.calories;
+      }
+    }
+  }
+
+  void cumulativeMetricsEnforcements(Record lastRecord) {
+    // Ensure that cumulative fields cannot decrease over time
+    cumulativeDistanceEnforcement(lastRecord);
+    cumulativeElapsedTimeEnforcement(lastRecord);
+    cumulativeMovingTimeEnforcement(lastRecord);
+    cumulativeCaloriesEnforcement(lastRecord);
   }
 }
 

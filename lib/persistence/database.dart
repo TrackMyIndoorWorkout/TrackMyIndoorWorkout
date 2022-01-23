@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:floor/floor.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
@@ -23,7 +24,7 @@ import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 16, entities: [
+@Database(version: 17, entities: [
   Activity,
   Record,
   DeviceUsage,
@@ -33,6 +34,7 @@ part 'database.g.dart'; // the generated code is in that file
 ])
 abstract class AppDatabase extends FloorDatabase {
   static bool additional15to16Migration = false;
+  static bool additional16to17Migration = false;
 
   ActivityDao get activityDao;
   RecordDao get recordDao;
@@ -144,12 +146,59 @@ abstract class AppDatabase extends FloorDatabase {
   /// in those cases a 4.0 (earlier 3.6) will be implicit.
   Future<void> correctCalorieFactors() async {
     AppDatabase.additional15to16Migration = false;
-    for (var activity in await activityDao.findAllActivities()) {
-      final deviceDescriptor = activity.deviceDescriptor();
-      if (!deviceDescriptor.canMeasureCalories && activity.calorieFactor > 1.0) {
-        activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
-        activityDao.updateActivity(activity);
+    try {
+      Map<String, bool> noCalorieDevices = {};
+      for (var activity in await activityDao.findAllActivities()) {
+        final deviceDescriptor = activity.deviceDescriptor();
+        if (!deviceDescriptor.canMeasureCalories) {
+          noCalorieDevices.assign(activity.deviceId, true);
+          if (activity.calorieFactor > 1.0) {
+            activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
+            await activityDao.updateActivity(activity);
+          }
+        }
       }
+
+      for (var calorieTune in await calorieTuneDao.findAllCalorieTunes()) {
+        if (noCalorieDevices.containsKey(calorieTune.mac) ||
+            calorieTune.calorieFactor > DeviceDescriptor.oldPowerCalorieFactorDefault - 1.0) {
+          calorieTune.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
+          await calorieTuneDao.updateCalorieTune(calorieTune);
+        }
+      }
+    } on Exception catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+  }
+
+  /// Initialize moving time by the elapsed time for existing Activities.
+  /// We could infer the elapsed time by analyzing the Record time stamps
+  /// and moving statuses, but let's not put in computation for now
+  Future<void> initializeExistingActivityMovingTimes() async {
+    AppDatabase.additional16to17Migration = false;
+    try {
+      for (var activity in await activityDao.findAllActivities()) {
+        if (activity.elapsed > 0) {
+          activity.movingTime = activity.elapsed * 1000;
+          await activityDao.updateActivity(activity);
+        }
+      }
+    } on Exception catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+
+    try {
+      for (var workoutSummary in await workoutSummaryDao.findAllWorkoutSummaries()) {
+        if (workoutSummary.elapsed > 0) {
+          workoutSummary.movingTime = workoutSummary.elapsed * 1000;
+          await workoutSummaryDao.updateWorkoutSummary(workoutSummary);
+        }
+      }
+    } on Exception catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
     }
   }
 }
@@ -277,4 +326,13 @@ final migration15to16 = Migration(15, 16, (database) async {
       "ALTER TABLE `$activitiesTableName` ADD COLUMN `hrm_calorie_factor` REAL NOT NULL DEFAULT 1.0");
 
   AppDatabase.additional15to16Migration = true;
+});
+
+final migration16to17 = Migration(16, 17, (database) async {
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `moving_time` INTEGER NOT NULL DEFAULT 0");
+  await database.execute(
+      "ALTER TABLE `$workoutSummariesTableName` ADD COLUMN `moving_time` INTEGER NOT NULL DEFAULT 0");
+
+  AppDatabase.additional16to17Migration = true;
 });

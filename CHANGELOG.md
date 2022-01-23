@@ -1,3 +1,41 @@
+## 1.1.92
+
+* Workout will only start when the first movement is sensed
+* Moving time is accounted for besides elapsed time and persisted. UI switch tells which one is
+  primarily preferred on the measurement screen and the activities list. The workout details
+  displays both moving and elapsed time if they differ.
+* Cross Trainer support fixes
+* Two column layout size adjustment
+* Workout migration import fix
+
+## 1.1.91
+
+* Enabling FTMS Cross Trainer, assigning it to Elliptical sport
+
+## 1.1.90
+
+* Measurement row configuration UI for graph height (1/4, 1/3, 1/2) and expanded/collapsed state
+* More natural 1-based zone index display instead of 0-based
+
+## 1.1.89
+
+* Adding lap counter display option (center of track or in leaderboard as well)
+* Adding preferences slider to shrink fonts on the Recording, Activity and Workout Details screens
+* Adding simple fixed two column layout for landscape mode with explicit preferences switch
+
+## 1.1.88
+
+* Hotfix: Calorie factor adjuster data migration could lock up
+
+## 1.1.87
+
+* Fix: power based calorie counting factor won't interfere (skyrocket) the HR based calories
+* Fix: Default 4.0 power based calorie factor will be implicit and hidden
+  to make factors more uniform
+* Large code churn to get Continuous Integration going and preparation for contributions
+* GPLv3 license once the app will go open source
+* Recognize Bowflex C7 not as generic
+
 ## 1.1.86
 
 * Update the check-mark and open icons immediately when Strava upload finishes

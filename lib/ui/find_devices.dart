@@ -89,9 +89,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
       migration13to14,
       migration14to15,
       migration15to16,
+      migration16to17,
     ]).build();
     if (AppDatabase.additional15to16Migration) {
       await database.correctCalorieFactors();
+    }
+
+    if (AppDatabase.additional16to17Migration) {
+      await database.initializeExistingActivityMovingTimes();
     }
 
     Get.put<AppDatabase>(database, permanent: true);
@@ -187,8 +192,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
-    if (descriptor == null && advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
-      descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+    // Or other dedicated workarounds
+    if (descriptor == null) {
+      if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
+        descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+      } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
+        if (advertisementDigest.machineType == MachineType.treadmill) {
+          descriptor = deviceMap[matrixTreadmillFourCC];
+        } else if (advertisementDigest.machineType == MachineType.indoorBike) {
+          descriptor = deviceMap[matrixBikeFourCC];
+        }
+      }
     }
 
     final database = Get.find<AppDatabase>();

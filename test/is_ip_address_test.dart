@@ -59,7 +59,7 @@ void main() {
 
   group('isIpAddress random test', () {
     final rnd = Random();
-    for (var index in List.generate(repetition, (index) => index)) {
+    for (var index in List<int>.generate(repetition, (index) => index)) {
       final ipParts = getRandomInts(4, 320, rnd);
       final expected =
           ipParts.fold<bool>(true, (prev, part) => prev && part < maxUint8) && ipParts[0] > 0;

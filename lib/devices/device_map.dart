@@ -3,6 +3,8 @@ import '../utils/constants.dart';
 import 'device_descriptors/cross_trainer_device_descriptor.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
+import 'device_descriptors/matrix_bike_descriptor.dart';
+import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/precor_spinner_chrono_power.dart';
 import 'device_descriptors/rower_device_descriptor.dart';
 import 'device_descriptors/schwinn_ac_performance_plus.dart';
@@ -14,8 +16,10 @@ const schwinnICBikeFourCC = "SIC4";
 const bowflexC7BikeFourCC = "BFC7";
 const schwinnUprightBikeFourCC = "S130";
 const schwinnACPerfPlusFourCC = "SAP+";
+const matrixBikeFourCC = "MxBk";
 const kayakProGenesisPortFourCC = "KPro";
 const npeRunnFourCC = "RUNN";
+const matrixTreadmillFourCC = "MxTm";
 const genericFTMSBikeFourCC = "GRid";
 const genericFTMSTreadmillFourCC = "GRun";
 const genericFTMSKayakFourCC = "GKay";
@@ -57,6 +61,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     model: "SCH BIKE",
   ),
   schwinnACPerfPlusFourCC: SchwinnACPerformancePlus(),
+  matrixBikeFourCC: MatrixBikeDescriptor(),
   kayakProGenesisPortFourCC: RowerDeviceDescriptor(
     defaultSport: ActivityType.kayaking,
     fourCC: kayakProGenesisPortFourCC,
@@ -64,7 +69,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "KayakPro Compact",
     namePrefixes: ["KayakPro", "KP"],
     manufacturerPrefix: "North Pole Engineering",
-    manufacturerFitId: northPoleEengineeringFitId,
+    manufacturerFitId: northPoleEngineeringFitId,
     model: "64",
     canMeasureHeartRate: false,
   ),
@@ -74,9 +79,10 @@ Map<String, DeviceDescriptor> deviceMap = {
     modelName: "Generic Treadmill",
     namePrefixes: ["RUNN"],
     manufacturerPrefix: "North Pole Engineering",
-    manufacturerFitId: northPoleEengineeringFitId,
+    manufacturerFitId: northPoleEngineeringFitId,
     model: "77",
   ),
+  matrixTreadmillFourCC: MatrixTreadmillDescriptor(),
   genericFTMSTreadmillFourCC: TreadmillDeviceDescriptor(
     fourCC: genericFTMSTreadmillFourCC,
     vendorName: "Unknown",
@@ -139,6 +145,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturerFitId: stravaFitId,
     model: "Generic Swim Ergometer",
   ),
+  // Delete this?
   genericFTMSEllipticalFourCC: RowerDeviceDescriptor(
     defaultSport: ActivityType.elliptical,
     isMultiSport: false,
@@ -175,7 +182,7 @@ DeviceDescriptor genericDescriptorForSport(String sport) {
   } else if (sport == ActivityType.swim) {
     return deviceMap[genericFTMSSwimFourCC]!;
   } else if (sport == ActivityType.elliptical) {
-    return deviceMap[genericFTMSEllipticalFourCC]!;
+    return deviceMap[genericFTMSCrossTrainerFourCC]!;
   }
 
   return deviceMap[genericFTMSBikeFourCC]!;

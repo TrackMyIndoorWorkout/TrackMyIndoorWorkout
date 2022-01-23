@@ -43,6 +43,7 @@ void main() {
     expect(rower.timeMetric, isNotNull);
     expect(rower.caloriesPerHourMetric, isNotNull);
     expect(rower.caloriesPerMinuteMetric, isNotNull); // It's there but mute
+    expect(rower.heartRateByteIndex, null);
   });
 
   group('Rower Device interprets KayakPro data properly', () {
@@ -169,9 +170,11 @@ void main() {
       ),
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
-      test("$sum", () async {
+      test("$sum ${testPair.data.length}", () async {
         await initPrefServiceForTest();
         final rower = deviceMap[kayakProGenesisPortFourCC]!;
+        rower.initFlag();
+        expect(rower.canDataProcessed(testPair.data), true);
         rower.stopWorkout();
 
         final record = rower.stubRecord(testPair.data)!;

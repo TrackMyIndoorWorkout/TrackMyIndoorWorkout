@@ -29,11 +29,14 @@ import '../preferences/instant_upload.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
+import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/preferences_spec.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
+import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/zone_index_display_coloring.dart';
@@ -95,8 +98,12 @@ class RecordingState extends State<RecordingScreen> {
   bool _measuring = false;
   int _pointCount = 0;
   ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
+  double? _mediaSizeMin;
+  double? _mediaHeight;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
+  double _sizeAdjust = 1.0;
+  bool _landscape = false;
   TextStyle _measurementStyle = const TextStyle();
   TextStyle _unitStyle = const TextStyle();
   Color _chartTextColor = Colors.black;
@@ -120,8 +127,10 @@ class RecordingState extends State<RecordingScreen> {
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _simplerUi = simplerUiSlowDefault;
+  bool _twoColumnLayout = twoColumnLayoutDefault;
   bool _instantUpload = instantUploadDefault;
   bool _uxDebug = appDebugModeDefault;
+  bool _movingOrElapsedTime = movingOrElapsedTimeDefault;
 
   Timer? _dataGapWatchdog;
   int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
@@ -135,6 +144,7 @@ class RecordingState extends State<RecordingScreen> {
   List<int?> _zoneIndexes = [];
   double _distance = 0.0;
   int _elapsed = 0;
+  int _movingTime = 0;
 
   String _targetHrMode = targetHeartRateModeDefault;
   Tuple2<double, double> _targetHrBounds = const Tuple2(0, 0);
@@ -193,7 +203,7 @@ class RecordingState extends State<RecordingScreen> {
   void amendZoneToValue(int valueIndex, int value) {
     if (_preferencesSpecs[valueIndex].indexDisplay) {
       int zoneIndex = _preferencesSpecs[valueIndex].binIndex(value);
-      _values[valueIndex + 1] += " Z$zoneIndex";
+      _values[valueIndex + 1] += " Z${zoneIndex + 1}";
       if (_zoneIndexColoring) {
         _zoneIndexes[valueIndex] = zoneIndex;
       }
@@ -242,6 +252,7 @@ class RecordingState extends State<RecordingScreen> {
     await _fitnessEquipment?.attach();
     setState(() {
       _elapsed = 0;
+      _movingTime = 0;
       _distance = 0.0;
       _lapCount = 0;
       _measuring = true;
@@ -260,12 +271,13 @@ class RecordingState extends State<RecordingScreen> {
         );
       }
 
-      if (_measuring && (_fitnessEquipment?.measuring ?? false)) {
+      final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
+      if (_measuring &&
+          (workoutState == WorkoutState.moving || workoutState == WorkoutState.justStopped) &&
+          (_fitnessEquipment?.measuring ?? false)) {
         if (!_uxDebug) {
           await _database.recordDao.insertRecord(record);
         }
-
-        _fitnessEquipment?.lastRecord = record;
 
         setState(() {
           if (!_simplerUi) {
@@ -281,6 +293,7 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           _elapsed = record.elapsed ?? 0;
+          _movingTime = record.movingTime.round();
           if (record.heartRate != null &&
               (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
             _heartRate = record.heartRate;
@@ -314,11 +327,7 @@ class RecordingState extends State<RecordingScreen> {
   void _onToggleDetails(int index) {
     setState(() {
       _expandedState[index] = _rowControllers[index].expanded;
-      final expandedStateStr =
-          List<String>.generate(_expandedState.length, (index) => _expandedState[index] ? "1" : "0")
-              .join("");
-      final prefService = Get.find<BasePrefService>();
-      prefService.set<String>(measurementPanelsExpandedTag, expandedStateStr);
+      applyExpandedStates(_expandedState);
     });
   }
 
@@ -345,10 +354,7 @@ class RecordingState extends State<RecordingScreen> {
   void _rotateChartHeight(int index) {
     setState(() {
       _expandedHeights[index] = (_expandedHeights[index] + 1) % 3;
-      final expandedHeightStr = List<String>.generate(
-          _expandedHeights.length, (index) => _expandedHeights[index].toString()).join("");
-      final prefService = Get.find<BasePrefService>();
-      prefService.set<String>(measurementDetailSizeTag, expandedHeightStr);
+      applyDetailSizes(_expandedHeights);
     });
   }
 
@@ -418,9 +424,14 @@ class RecordingState extends State<RecordingScreen> {
       fontFamily: fontFamily,
       color: _themeManager.getBlueColor(),
     );
+    final prefService = Get.find<BasePrefService>();
+    final sizeAdjustInt =
+        prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
+    if (sizeAdjustInt != 100) {
+      _sizeAdjust = sizeAdjustInt / 100.0;
+    }
     _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 1.4);
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
-    final prefService = Get.find<BasePrefService>();
     prefService.set<String>(
       lastEquipmentIdTagPrefix + PreferencesSpec.sport2Sport(widget.sport),
       widget.device.id.id,
@@ -446,6 +457,9 @@ class RecordingState extends State<RecordingScreen> {
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
+    _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
+    _movingOrElapsedTime =
+        prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
     _instantUpload = prefService.get<bool>(instantUploadTag) ?? instantUploadDefault;
     _pointCount = min(60, size.width ~/ 2);
     final now = DateTime.now();
@@ -505,7 +519,7 @@ class RecordingState extends State<RecordingScreen> {
     _chartTextColor = _themeManager.getProtagonistColor();
     _chartLabelStyle = TextStyle(
       fontFamily: fontFamily,
-      fontSize: 11,
+      fontSize: 11 * _sizeAdjust,
       color: _chartTextColor,
     );
     _expandableThemeData = ExpandableThemeData(
@@ -737,10 +751,12 @@ class RecordingState extends State<RecordingScreen> {
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
+    final last = _fitnessEquipment?.lastRecord;
     _activity!.finish(
-      _fitnessEquipment?.lastRecord.distance,
-      _fitnessEquipment?.lastRecord.elapsed,
-      _fitnessEquipment?.lastRecord.calories,
+      last?.distance,
+      last?.elapsed,
+      last?.calories,
+      last?.movingTime ?? 0,
     );
     _fitnessEquipment?.stopWorkout();
 
@@ -855,11 +871,11 @@ class RecordingState extends State<RecordingScreen> {
       return 1;
     }
 
-    if (_elapsed == 0) {
+    if (_movingTime == 0) {
       return null;
     }
 
-    final averageSpeed = _elapsed > 0 ? _distance / _elapsed * DeviceDescriptor.ms2kmh : 0.0;
+    final averageSpeed = _movingTime > 0 ? _distance / _movingTime * DeviceDescriptor.ms2kmh : 0.0;
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
@@ -1000,7 +1016,7 @@ class RecordingState extends State<RecordingScreen> {
     final length = leaderboard.length;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 2}", false));
@@ -1009,7 +1025,7 @@ class RecordingState extends State<RecordingScreen> {
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 1}", false));
@@ -1018,7 +1034,7 @@ class RecordingState extends State<RecordingScreen> {
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
-      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 1}", false));
@@ -1027,7 +1043,7 @@ class RecordingState extends State<RecordingScreen> {
 
     // Following dot after the follower (if any)
     if (rank < length) {
-      final distance = leaderboard[rank].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank].distanceAtTime(_movingTime);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 2}", false));
@@ -1069,14 +1085,14 @@ class RecordingState extends State<RecordingScreen> {
     final length = leaderboard.length;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
       rows.add(_getLeaderboardInfoText(rank - 2, distance, true));
       rows.add(const Divider(height: 1));
     }
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
       rows.add(_getLeaderboardInfoText(rank - 1, distance, true));
       rows.add(const Divider(height: 1));
     }
@@ -1091,14 +1107,14 @@ class RecordingState extends State<RecordingScreen> {
     // Following dot (following directly) if any
     if (rank - 1 < length) {
       rows.add(const Divider(height: 1));
-      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
       rows.add(_getLeaderboardInfoText(rank + 1, distance, false));
     }
 
     // Following dot after the follower (if any)
     if (rank < length) {
       rows.add(const Divider(height: 1));
-      final distance = leaderboard[rank].distanceAtTime(_elapsed);
+      final distance = leaderboard[rank].distanceAtTime(_movingTime);
       rows.add(_getLeaderboardInfoText(rank + 2, distance, false));
     }
 
@@ -1115,10 +1131,18 @@ class RecordingState extends State<RecordingScreen> {
   Widget build(BuildContext context) {
     const separatorHeight = 1.0;
 
-    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
-      _mediaWidth = mediaWidth;
-      _sizeDefault = mediaWidth / 8;
+    final size = Get.mediaQuery.size;
+    if (size.width != _mediaWidth || size.height != _mediaHeight) {
+      _mediaWidth = size.width;
+      _mediaHeight = size.height;
+      _landscape = _mediaWidth! > _mediaHeight!;
+    }
+
+    final mediaSizeMin =
+        _landscape && _twoColumnLayout ? _mediaWidth! / 2 : min(_mediaWidth!, _mediaHeight!);
+    if (_mediaSizeMin == null || (_mediaSizeMin! - mediaSizeMin).abs() > eps) {
+      _mediaSizeMin = mediaSizeMin;
+      _sizeDefault = mediaSizeMin / 8 * _sizeAdjust;
       _measurementStyle = TextStyle(
         fontFamily: fontFamily,
         fontSize: _sizeDefault,
@@ -1148,7 +1172,8 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final _timeDisplay = Duration(seconds: _elapsed).toDisplay();
+    final _timeDisplay =
+        Duration(seconds: _movingOrElapsedTime ? _movingTime ~/ 1000 : _elapsed).toDisplay();
 
     List<Widget> rows = [
       Row(
@@ -1253,7 +1278,7 @@ class RecordingState extends State<RecordingScreen> {
         );
         if (entry.value.metric == "hr" && _targetHrMode != targetHeartRateModeNone) {
           int zoneIndex =
-              targetHrState == TargetHrState.off ? 0 : entry.value.binIndex(_heartRate ?? 0);
+              targetHrState == TargetHrState.off ? 0 : entry.value.binIndex(_heartRate ?? 0) + 1;
           String targetText = _getTargetHrText(targetHrState);
           targetText = "Z$zoneIndex $targetText";
           extra = Column(
@@ -1345,15 +1370,15 @@ class RecordingState extends State<RecordingScreen> {
             if (rankInfo != null) {
               markers.add(rankInfo);
             }
-          } else if (_displayLapCounter) {
-            markers.add(Center(
-              child: Text("Lap $_lapCount", style: _measurementStyle),
-            ));
           }
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
           selfMarkerColor = _getPaceLightColor(_deviceRank, _sportRank, background: true).value;
+        } else if (_displayLapCounter) {
+          markers.add(Center(
+            child: Text("Lap $_lapCount", style: _measurementStyle),
+          ));
         }
 
         markers.add(_getTrackMarker(
@@ -1373,6 +1398,149 @@ class RecordingState extends State<RecordingScreen> {
         );
       }
     }
+
+    final body = _landscape && _twoColumnLayout
+        ? GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio: _mediaWidth! / _mediaHeight! / 2,
+            physics: const NeverScrollableScrollPhysics(),
+            semanticChildCount: 2,
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    rows[0],
+                    const Divider(height: separatorHeight),
+                    rows[1],
+                    const Divider(height: separatorHeight),
+                    ColoredBox(
+                      color: _getZoneColor(metricIndex: 0, background: true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[2],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[0],
+                        controller: _rowControllers[0],
+                      ),
+                    ),
+                    const Divider(height: separatorHeight),
+                    ColoredBox(
+                      color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[3],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[1],
+                        controller: _rowControllers[1],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ColoredBox(
+                      color: _getZoneColor(metricIndex: 2, background: true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[4],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[2],
+                        controller: _rowControllers[2],
+                      ),
+                    ),
+                    const Divider(height: separatorHeight),
+                    ColoredBox(
+                      color: _getTargetHrColor(targetHrState, true),
+                      child: ExpandablePanel(
+                        theme: _expandableThemeData,
+                        header: rows[5],
+                        collapsed: Container(),
+                        expanded: _simplerUi ? Container() : extras[3],
+                        controller: _rowControllers[3],
+                      ),
+                    ),
+                    const Divider(height: separatorHeight),
+                    ExpandablePanel(
+                      theme: _expandableThemeData,
+                      header: rows[6],
+                      collapsed: Container(),
+                      expanded: _simplerUi ? Container() : extras[4],
+                      controller: _rowControllers[4],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        : SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                rows[0],
+                const Divider(height: separatorHeight),
+                rows[1],
+                const Divider(height: separatorHeight),
+                ColoredBox(
+                  color: _getZoneColor(metricIndex: 0, background: true),
+                  child: ExpandablePanel(
+                    theme: _expandableThemeData,
+                    header: rows[2],
+                    collapsed: Container(),
+                    expanded: _simplerUi ? Container() : extras[0],
+                    controller: _rowControllers[0],
+                  ),
+                ),
+                const Divider(height: separatorHeight),
+                ColoredBox(
+                  color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
+                  child: ExpandablePanel(
+                    theme: _expandableThemeData,
+                    header: rows[3],
+                    collapsed: Container(),
+                    expanded: _simplerUi ? Container() : extras[1],
+                    controller: _rowControllers[1],
+                  ),
+                ),
+                const Divider(height: separatorHeight),
+                ColoredBox(
+                  color: _getZoneColor(metricIndex: 2, background: true),
+                  child: ExpandablePanel(
+                    theme: _expandableThemeData,
+                    header: rows[4],
+                    collapsed: Container(),
+                    expanded: _simplerUi ? Container() : extras[2],
+                    controller: _rowControllers[2],
+                  ),
+                ),
+                const Divider(height: separatorHeight),
+                ColoredBox(
+                  color: _getTargetHrColor(targetHrState, true),
+                  child: ExpandablePanel(
+                    theme: _expandableThemeData,
+                    header: rows[5],
+                    collapsed: Container(),
+                    expanded: _simplerUi ? Container() : extras[3],
+                    controller: _rowControllers[3],
+                  ),
+                ),
+                const Divider(height: separatorHeight),
+                ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[6],
+                  collapsed: Container(),
+                  expanded: _simplerUi ? Container() : extras[4],
+                  controller: _rowControllers[4],
+                ),
+              ],
+            ),
+          );
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -1427,69 +1595,7 @@ class RecordingState extends State<RecordingScreen> {
                   ),
                 ],
               ),
-              body: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    rows[0],
-                    const Divider(height: separatorHeight),
-                    rows[1],
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getZoneColor(metricIndex: 0, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[2],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[0],
-                        controller: _rowControllers[0],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[3],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[1],
-                        controller: _rowControllers[1],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getZoneColor(metricIndex: 2, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[4],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[2],
-                        controller: _rowControllers[2],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getTargetHrColor(targetHrState, true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[5],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[3],
-                        controller: _rowControllers[3],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ExpandablePanel(
-                      theme: _expandableThemeData,
-                      header: rows[6],
-                      collapsed: Container(),
-                      expanded: _simplerUi ? Container() : extras[4],
-                      controller: _rowControllers[4],
-                    ),
-                  ],
-                ),
-              ),
+              body: body,
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               floatingActionButton: CircularFabMenu(
                 fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
@@ -1582,7 +1688,7 @@ class RecordingState extends State<RecordingScreen> {
                         _activity!.hrmId = hrmId;
                         _activity!.hrmCalorieFactor =
                             await _database.calorieFactorValue(hrmId, true);
-                        _database.activityDao.updateActivity(_activity!);
+                        await _database.activityDao.updateActivity(_activity!);
                       }
                     },
                   ),

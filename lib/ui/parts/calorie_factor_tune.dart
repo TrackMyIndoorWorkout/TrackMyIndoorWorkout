@@ -7,13 +7,15 @@ import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class CalorieFactorTuneBottomSheet extends StatefulWidget {
-  final String deviceId;
-  final double oldCalorieFactor;
-  final bool hrBased;
+  late final String deviceId;
+  late final double oldCalorieFactor;
+  late final bool hrBased;
 
-  const CalorieFactorTuneBottomSheet(
-      {Key? key, required this.deviceId, required this.oldCalorieFactor, required this.hrBased})
-      : super(key: key);
+  CalorieFactorTuneBottomSheet({Key? key, required CalorieTune calorieTune}) : super(key: key) {
+    deviceId = calorieTune.mac;
+    oldCalorieFactor = calorieTune.calorieFactor;
+    hrBased = calorieTune.hrBased;
+  }
 
   @override
   CalorieFactorTuneBottomSheetState createState() => CalorieFactorTuneBottomSheetState();

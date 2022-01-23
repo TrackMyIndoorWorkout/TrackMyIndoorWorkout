@@ -190,7 +190,7 @@ void main() {
         expect(accu.cadenceCount, 0);
         expect(accu.maxCadence, maxInit);
         expect(accu.minCadence, minInit);
-        expect(accu.avgSpeed, count > 0 ? sum / count : 0);
+        expect(accu.avgSpeed, closeTo(count > 0 ? sum / count : 0, eps));
       });
     }
   });
@@ -227,7 +227,7 @@ void main() {
         expect(accu.minPower, minInit);
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
-        expect(accu.maxSpeed, maximum);
+        expect(accu.maxSpeed, closeTo(maximum, eps));
         expect(accu.minSpeed, minInit.toDouble());
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
@@ -274,7 +274,7 @@ void main() {
         expect(accu.speedSum, 0);
         expect(accu.speedCount, 0);
         expect(accu.maxSpeed, maxInit.toDouble());
-        expect(accu.minSpeed, minimum);
+        expect(accu.minSpeed, closeTo(minimum, eps));
         expect(accu.heartRateSum, 0);
         expect(accu.heartRateCount, 0);
         expect(accu.maxHeartRate, maxInit);
@@ -351,7 +351,9 @@ void main() {
       int maximum = maxInit;
       getRandomInts(count, 100, rnd).forEach((number) {
         accu.processRecord(RecordWithSport(heartRate: number, sport: sport));
-        maximum = max(number, maximum);
+        if (number > 0) {
+          maximum = max(number, maximum);
+        }
       });
       test("$count ($sport) -> $maximum", () async {
         expect(accu.si, si);
@@ -650,8 +652,8 @@ void main() {
         if (hrs[index] > 0) {
           hrCount++;
           minHr = min(hrs[index], minHr);
+          maxHr = max(hrs[index], maxHr);
         }
-        maxHr = max(hrs[index], maxHr);
         return index;
       });
       test("$count ($sport) -> $powerSum, $maxPower, $minPower, $speedSum, $maxSpeed, $minSpeed",

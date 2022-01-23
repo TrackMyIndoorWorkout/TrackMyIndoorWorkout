@@ -22,6 +22,8 @@ import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/measurement_font_size_adjust.dart';
+import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -56,9 +58,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _leaderboardFeature = leaderboardFeatureDefault;
+  bool _movingOrElapsedTime = movingOrElapsedTimeDefault;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeDefault2 = 10.0;
+  double _sizeAdjust = 1.0;
   TextStyle _measurementStyle = const TextStyle();
   TextStyle _textStyle = const TextStyle();
   TextStyle _headerStyle = const TextStyle();
@@ -77,8 +81,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
+    _movingOrElapsedTime =
+        prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
+    final sizeAdjustInt =
+        prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
+    if (sizeAdjustInt != 100) {
+      _sizeAdjust = sizeAdjustInt / 100.0;
+    }
   }
 
   ActivityExport getExporter(String format) {
@@ -241,7 +252,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
-      _sizeDefault = _mediaWidth! / 7;
+      _sizeDefault = _mediaWidth! / 7 * _sizeAdjust;
       _sizeDefault2 = _sizeDefault / 1.5;
 
       _measurementStyle = TextStyle(
@@ -471,7 +482,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                             children: [
                               _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
                               const Spacer(),
-                              Text(activity.elapsedString, style: _measurementStyle),
+                              Text(
+                                _movingOrElapsedTime
+                                    ? activity.movingTimeString
+                                    : activity.elapsedString,
+                                style: _measurementStyle,
+                              ),
                             ],
                           ),
                           Row(

@@ -108,7 +108,7 @@ class StatisticsAccumulator {
       }
     }
 
-    if (exportRecord.record.heartRate != null && exportRecord.record.heartRate! > 0) {
+    if ((exportRecord.record.heartRate ?? 0) > 0) {
       if (calculateAvgHeartRate) {
         heartRateSum += exportRecord.record.heartRate!;
         heartRateCount++;

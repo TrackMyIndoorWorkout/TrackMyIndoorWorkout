@@ -11,6 +11,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../preferences/distance_resolution.dart';
+import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/preferences_spec.dart';
 import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
@@ -52,6 +53,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeDefault2 = 10.0;
+  double _sizeAdjust = 1.0;
   TextStyle _measurementStyle = const TextStyle();
   TextStyle _textStyle = const TextStyle();
   TextStyle _unitStyle = const TextStyle();
@@ -320,9 +322,14 @@ class RecordsScreenState extends State<RecordsScreen> {
     widget.activity.hydrate();
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
+    final sizeAdjustInt =
+        prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
+    if (sizeAdjustInt != 100) {
+      _sizeAdjust = sizeAdjustInt / 100.0;
+    }
     _chartLabelStyle = TextStyle(
       fontFamily: fontFamily,
-      fontSize: 11,
+      fontSize: 11 * _sizeAdjust,
       color: _chartTextColor,
     );
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
@@ -345,7 +352,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   List<charts.CircularSeries<HistogramData, String>> _getPowerHistogram() {
     return <charts.CircularSeries<HistogramData, String>>[
       charts.PieSeries<HistogramData, String>(
-        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index + 1} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
         dataSource: _tileConfigurations["power"]!.histogram,
         explode: true,
@@ -376,7 +383,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.CircularSeries<HistogramData, String>>[
       charts.PieSeries<HistogramData, String>(
         dataSource: _tileConfigurations["speed"]!.histogram,
-        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index + 1} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
         explode: true,
         dataLabelSettings: charts.DataLabelSettings(
@@ -406,7 +413,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.CircularSeries<HistogramData, String>>[
       charts.PieSeries<HistogramData, String>(
         dataSource: _tileConfigurations["cadence"]!.histogram,
-        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index + 1} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
         explode: true,
         dataLabelSettings: charts.DataLabelSettings(
@@ -436,7 +443,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     return <charts.CircularSeries<HistogramData, String>>[
       charts.PieSeries<HistogramData, String>(
         dataSource: _tileConfigurations["hr"]!.histogram,
-        xValueMapper: (HistogramData data, int index) => 'Z${data.index} ${data.percent}%',
+        xValueMapper: (HistogramData data, int index) => 'Z${data.index + 1} ${data.percent}%',
         yValueMapper: (HistogramData data, _) => data.percent,
         explode: true,
         dataLabelSettings: charts.DataLabelSettings(
@@ -455,7 +462,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
-      _sizeDefault = mediaWidth / 7;
+      _sizeDefault = mediaWidth / 7 * _sizeAdjust;
       _sizeDefault2 = _sizeDefault / 1.5;
       _measurementStyle = TextStyle(
         fontFamily: fontFamily,
@@ -466,6 +473,115 @@ class RecordsScreenState extends State<RecordsScreen> {
       );
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
+
+    final header = [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _themeManager.getBlueIcon(getIcon(widget.activity.sport), _sizeDefault),
+          Expanded(
+            child: TextOneLine(
+              widget.activity.deviceName,
+              style: _textStyle,
+              textAlign: TextAlign.right,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+          const Spacer(),
+          Text(
+            widget.activity.movingTimeString,
+            style: _measurementStyle,
+          ),
+        ],
+      ),
+    ];
+    if (widget.activity.movingTime ~/ 1000 < widget.activity.elapsed) {
+      header.addAll([
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const Spacer(),
+            Text(
+              "(Moving Time)",
+              style: _unitStyle,
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+            const Spacer(),
+            Text(
+              widget.activity.elapsedString,
+              style: _measurementStyle,
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const Spacer(),
+            Text(
+              "(Total Time)",
+              style: _unitStyle,
+            ),
+          ],
+        ),
+      ]);
+    }
+
+    header.addAll([
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
+          const Spacer(),
+          Text(
+            widget.activity.distanceString(_si, _highRes),
+            style: _measurementStyle,
+          ),
+          SizedBox(
+            width: _sizeDefault,
+            child: Text(
+              distanceUnit(_si, _highRes),
+              style: _unitStyle,
+            ),
+          ),
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
+          const Spacer(),
+          Text(
+            '${widget.activity.calories}',
+            style: _measurementStyle,
+          ),
+          SizedBox(
+            width: _sizeDefault,
+            child: Text(
+              'cal',
+              style: _unitStyle,
+            ),
+          ),
+        ],
+      ),
+    ]);
 
     return Scaffold(
       appBar: AppBar(
@@ -485,75 +601,7 @@ class RecordsScreenState extends State<RecordsScreen> {
               loadingBuilder: CustomListLoading.defaultBuilder,
               header: Card(
                 elevation: 6,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(getIcon(widget.activity.sport), _sizeDefault),
-                        Expanded(
-                          child: TextOneLine(
-                            widget.activity.deviceName,
-                            style: _textStyle,
-                            textAlign: TextAlign.right,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-                        const Spacer(),
-                        Text(
-                          widget.activity.elapsedString,
-                          style: _measurementStyle,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-                        const Spacer(),
-                        Text(
-                          widget.activity.distanceString(_si, _highRes),
-                          style: _measurementStyle,
-                        ),
-                        SizedBox(
-                          width: _sizeDefault,
-                          child: Text(
-                            distanceUnit(_si, _highRes),
-                            style: _unitStyle,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-                        const Spacer(),
-                        Text(
-                          '${widget.activity.calories}',
-                          style: _measurementStyle,
-                        ),
-                        SizedBox(
-                          width: _sizeDefault,
-                          child: Text(
-                            'cal',
-                            style: _unitStyle,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                child: Column(children: header),
               ),
               adapter: StaticListAdapter(data: _tiles),
               itemBuilder: (context, index, item) {

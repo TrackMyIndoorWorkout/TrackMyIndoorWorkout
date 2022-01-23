@@ -40,11 +40,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
           icon: _themeManager.getActionIcon(Icons.edit, size),
           onPressed: () async {
             final result = await Get.bottomSheet(
-              CalorieFactorTuneBottomSheet(
-                deviceId: calorieTune.mac,
-                oldCalorieFactor: calorieTune.calorieFactor,
-                hrBased: calorieTune.hrBased,
-              ),
+              CalorieFactorTuneBottomSheet(calorieTune: calorieTune),
               enableDrag: false,
             );
             if (result != null) {

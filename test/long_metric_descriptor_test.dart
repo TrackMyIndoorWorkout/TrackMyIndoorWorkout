@@ -37,8 +37,8 @@ void main() {
 
   group('LongMetricDescriptor calculates measurement as expected', () {
     final rnd = Random();
-    1.to(repetition).forEach((input) {
-      final len = rnd.nextInt(99) + 6;
+    for (var lenMinusSix in getRandomInts(repetition, 99, rnd)) {
+      final len = lenMinusSix + 6;
       final data = getRandomInts(len, maxUint8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 2 ? (lsbLocation < len - 3 ? rnd.nextBool() : false) : true;
@@ -67,6 +67,6 @@ void main() {
 
         expect(desc.getMeasurementValue(data), closeTo(expected, eps));
       });
-    });
+    }
   });
 }

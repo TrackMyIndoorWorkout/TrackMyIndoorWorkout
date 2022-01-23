@@ -41,18 +41,18 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   void processFlag(int flag) {
     super.processFlag(flag);
     // negated first bit!
-    flag = processSpeedFlag(flag, true); // Instant
-    flag = processSpeedFlag(flag, false); // Average (fallback)
+    flag = processSpeedFlag(flag);
+    flag = skipFlag(flag); // Average Speed
     flag = processTotalDistanceFlag(flag);
-    flag = processInclinationFlag(flag); // skip Inclination and Ramp Angle
-    flag = processElevationGainFlag(flag); // skip + and - Elevation Gain
-    flag = processPaceFlag(flag); // Instant
-    flag = processPaceFlag(flag); // Average (fallback)
+    flag = skipFlag(flag, size: 4); // Inclination and Ramp Angle
+    flag = skipFlag(flag, size: 4); // Positive and Negative Elevation Gain
+    flag = processPaceFlag(flag);
+    flag = skipFlag(flag, size: 1); // Average Pace
     flag = processExpandedEnergyFlag(flag);
     flag = processHeartRateFlag(flag);
-    flag = processMetabolicEquivalentFlag(flag);
+    flag = skipFlag(flag, size: 1); // Metabolic Equivalent
     flag = processElapsedTimeFlag(flag);
-    flag = processRemainingTimeFlag(flag);
+    flag = skipFlag(flag); // Remaining Time
     flag = processForceAndPowerFlag(flag);
   }
 
@@ -85,43 +85,25 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   @override
   void stopWorkout() {}
 
-  int processInclinationFlag(int flag) {
-    if (flag % 2 == 1) {
-      // SInt16 Inclination, SInt16 Ramp Angle Setting
-      byteCounter += 4;
-    }
-    flag ~/= 2;
-    return flag;
-  }
-
-  int processElevationGainFlag(int flag) {
-    if (flag % 2 == 1) {
-      // UInt16 Positive Elevation Gain, UInt16 Negative Elevation Gain
-      byteCounter += 4;
-    }
-    flag ~/= 2;
-    return flag;
-  }
-
   int processPaceFlag(int flag) {
     if (flag % 2 == 1) {
-      // UInt16, km/min with 0.1 resolution
-      paceMetric ??= ByteMetricDescriptor(lsb: byteCounter, divider: 10.0);
+      // UInt8, km/min with 0.1 resolution
+      paceMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 10.0);
       byteCounter += 1;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   int processForceAndPowerFlag(int flag) {
     if (flag % 2 == 1) {
       byteCounter += 2; // Skip force on belt: SInt16, Newton
       // SInt16, Watts
-      powerMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
+      powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   double? getPace(List<int> data) {

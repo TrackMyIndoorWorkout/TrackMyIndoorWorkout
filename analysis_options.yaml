@@ -4,6 +4,3 @@ include: package:flutter_lints/flutter.yaml
 # https://dart.dev/guides/language/analysis-options
 linter:
   rules:
-
-analyzer:
-  exclude: [test/**.mocks.dart]

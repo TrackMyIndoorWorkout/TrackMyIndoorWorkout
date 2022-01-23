@@ -11,7 +11,7 @@ String paceString(double pace) {
 }
 
 void main() {
-  group("paceString formats as expected:", () {
+  group("paceString formats as expected (fixed samples):", () {
     const List<Tuple2<double, String>> paces = [
       Tuple2<double, String>(0.0, "0:00"),
       Tuple2<double, String>(0.5, "0:30"),
@@ -35,14 +35,15 @@ void main() {
         expect(paceString(pacePair.item1), expected);
       });
     }
+  });
 
+  group("paceString formats as expected (random samples):", () {
     final rnd = Random();
-    1.to(repetition).forEach((input) {
-      final randomPace = rnd.nextDouble() * 100;
+    for (var randomPace in getRandomDoubles(repetition, 100, rnd)) {
       final expected = paceString(randomPace);
       test("$randomPace -> $expected", () async {
         expect(paceString(randomPace), expected);
       });
-    });
+    }
   });
 }
