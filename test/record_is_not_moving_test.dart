@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -12,6 +14,7 @@ class TestPair {
 
 void main() {
   group('Record isNotMoving works as expected', () {
+    final rnd = Random();
     for (final testPair in [
       TestPair(
         comment: "power moves",
@@ -164,6 +167,10 @@ void main() {
       ),
     ]) {
       test(testPair.comment, () async {
+        final record = testPair.record;
+        record.elapsed = rnd.nextInt(600);
+        record.distance = rnd.nextDouble() * 1000.0;
+        record.calories = rnd.nextInt(600);
         expect(testPair.record.isNotMoving(), testPair.expected);
       });
     }
