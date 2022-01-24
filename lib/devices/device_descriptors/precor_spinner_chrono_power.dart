@@ -31,6 +31,11 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
         );
 
   @override
+  PrecorSpinnerChronoPower spawn() {
+    return PrecorSpinnerChronoPower();
+  }
+
+  @override
   bool canDataProcessed(List<int> data) {
     if (data.length != 19) return false;
 

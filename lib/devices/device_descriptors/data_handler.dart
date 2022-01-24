@@ -4,7 +4,7 @@ import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 
-class DataHandler {
+abstract class DataHandler {
   final int flagByteSize;
   int featuresFlag = -1;
   int byteCounter = 0;
@@ -31,6 +31,8 @@ class DataHandler {
     this.cadenceMetric,
     this.distanceMetric,
   });
+
+  DataHandler spawn();
 
   bool isDataProcessable(List<int> data) {
     if (byteCounter <= flagByteSize) {

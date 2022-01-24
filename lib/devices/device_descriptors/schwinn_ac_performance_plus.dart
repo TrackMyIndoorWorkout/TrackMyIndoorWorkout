@@ -24,6 +24,11 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
         );
 
   @override
+  SchwinnACPerformancePlus spawn() {
+    return SchwinnACPerformancePlus();
+  }
+
+  @override
   bool canDataProcessed(List<int> data) {
     return false;
   }

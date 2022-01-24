@@ -34,6 +34,24 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
           canMeasureCalories: canMeasureCalories,
         );
 
+  @override
+  IndoorBikeDeviceDescriptor spawn() {
+    return IndoorBikeDeviceDescriptor(
+      fourCC: fourCC,
+      vendorName: vendorName,
+      modelName: modelName,
+      namePrefixes: namePrefixes,
+      manufacturerPrefix: manufacturerPrefix,
+      manufacturerFitId: manufacturerFitId,
+      model: model,
+      dataServiceId: dataServiceId,
+      dataCharacteristicId: dataCharacteristicId,
+      canMeasureHeartRate: canMeasureHeartRate,
+      heartRateByteIndex: heartRateByteIndex,
+      canMeasureCalories: canMeasureCalories,
+    );
+  }
+
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.indoor_bike_data.xml
   @override
   void processFlag(int flag) {
