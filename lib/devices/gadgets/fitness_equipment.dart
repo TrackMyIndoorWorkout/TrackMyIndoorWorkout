@@ -256,7 +256,6 @@ class FitnessEquipment extends DeviceBase {
     // State Machine for #231 and #235
     // (intelligent start and elapsed time tracking)
     bool isNotMoving = stubs.fold(true, (prev, element) => prev && element.isNotMoving());
-    debugPrint("state $workoutState, isNotMoving: $isNotMoving, stubs ${stubs.length}, dataHs ${dataHandlers.length}");
     if (workoutState == WorkoutState.waitingForFirstMove) {
       if (isNotMoving) {
         return stubs.isNotEmpty ? stubs[0] : lastRecord;

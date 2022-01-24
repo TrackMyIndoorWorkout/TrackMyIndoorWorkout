@@ -138,7 +138,7 @@ class Record {
 
   bool isNotMoving() {
     return (power ?? 0) == 0 &&
-        (speed ?? 0.0) < 0.0 &&
+        (speed ?? 0.0) < eps &&
         (pace ?? 0.0) == 0.0 &&
         (caloriesPerHour ?? 0.0) < eps &&
         (caloriesPerMinute ?? 0.0) < eps &&
