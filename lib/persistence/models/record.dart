@@ -145,10 +145,6 @@ class Record {
         (cadence ?? 0) == 0;
   }
 
-  bool isEmpty() {
-    return isNotMoving() && (distance ?? 0.0) == 0.0 && (elapsed ?? 0) == 0 && (calories ?? 0) == 0;
-  }
-
   void cumulativeDistanceEnforcement(Record lastRecord) {
     if (distance != null && lastRecord.distance != null) {
       if (!testing) {
