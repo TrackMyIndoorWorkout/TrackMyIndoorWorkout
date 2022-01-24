@@ -9,7 +9,7 @@ import 'package:pref/pref.dart';
 import '../../export/activity_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/database.dart';
-import '../../preferences/training_peaks_upload_visibility.dart';
+import '../../preferences/training_peaks_upload_public.dart';
 import '../../utils/constants.dart';
 
 import 'constants.dart';
