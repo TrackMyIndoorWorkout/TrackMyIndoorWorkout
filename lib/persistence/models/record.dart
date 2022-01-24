@@ -238,7 +238,7 @@ class RecordWithSport extends Record {
           caloriesPerMinute: caloriesPerMinute,
         );
 
-  static RecordWithSport getBlank(String sport, bool uxDebug, Random random) {
+  static RecordWithSport getBlank(String sport) {
     return RecordWithSport(
       timeStamp: 0,
       distance: 0.0,

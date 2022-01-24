@@ -93,7 +93,7 @@ class FitnessEquipment extends DeviceBase {
           device: device,
         ) {
     readConfiguration();
-    lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
+    lastRecord = RecordWithSport.getBlank(sport);
   }
 
   String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
@@ -189,7 +189,7 @@ class FitnessEquipment extends DeviceBase {
 
   void setActivity(Activity activity) {
     _activity = activity;
-    lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
+    lastRecord = RecordWithSport.getBlank(sport);
     workoutState = WorkoutState.waitingForFirstMove;
     dataHandlers = {};
     readConfiguration();
@@ -595,7 +595,7 @@ class FitnessEquipment extends DeviceBase {
     _startingDistance = 0.0;
     _startingElapsed = 0;
     dataHandlers = {};
-    lastRecord = RecordWithSport.getBlank(sport, uxDebug, _random);
+    lastRecord = RecordWithSport.getBlank(sport);
   }
 
   void stopWorkout() {

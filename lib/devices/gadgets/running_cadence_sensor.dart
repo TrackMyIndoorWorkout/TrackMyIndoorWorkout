@@ -57,7 +57,7 @@ class RunningCadenceSensor extends ComplexSensor {
   @override
   RecordWithSport processMeasurement(List<int> data) {
     if (!canMeasurementProcessed(data)) {
-      return RecordWithSport.getBlank(ActivityType.run, uxDebug, random);
+      return RecordWithSport.getBlank(ActivityType.run);
     }
 
     return RecordWithSport(
