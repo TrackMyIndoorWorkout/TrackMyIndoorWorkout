@@ -5,9 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:pref/pref.dart';
 import '../../export/activity_export.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/database.dart';
+import '../../preferences/training_peaks_upload_visibility.dart';
 import '../../utils/constants.dart';
 
 import 'constants.dart';
@@ -62,6 +64,8 @@ abstract class Upload {
       "User-Agent": "$clientId/1.0",
     });
 
+    final prefService = Get.find<BasePrefService>();
+    final workoutPublic = prefService.get<bool>(trainingPeaksUploadPublicTag) ?? trainingPeaksUploadPublicDefault;
     final persistenceValues = exporter.getPersistenceValues(activity, true);
     String fileContentString = base64.encode(fileContent);
     String contentString = '{"UploadClient": "$appName",'
@@ -71,6 +75,7 @@ abstract class Upload {
         '"Comment": "${persistenceValues["description"]}",'
         '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.startDateTime!)}",'
         '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.startDateTime!)}",'
+        '"SetWorkoutPublic": $workoutPublic,'
         '"Type": "${trainingPeaksSport(activity.sport)}"}';
     const uploadUrl = tpProductionApiUrlBase + uploadPath;
     final uploadResponse = await http.post(
