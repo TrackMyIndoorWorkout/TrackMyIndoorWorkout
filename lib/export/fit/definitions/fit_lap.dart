@@ -24,6 +24,7 @@ class FitLap extends FitDefinitionMessage {
       FitField(5, FitBaseTypes.sint32Type), // EndPositionLat
       FitField(6, FitBaseTypes.sint32Type), // EndPositionLong
       FitField(7, FitBaseTypes.uint32Type), // TotalElapsedTime (1/1000s)
+      FitField(8, FitBaseTypes.uint32Type), // TotalTimerTime (1/1000s)
       FitField(9, FitBaseTypes.uint32Type), // TotalDistance (1/100 m)
       FitField(11, FitBaseTypes.uint16Type), // TotalCalories (kcal)
       FitField(13, FitBaseTypes.uint16Type), // AvgSpeed (1/1000 m/s)
@@ -58,6 +59,7 @@ class FitLap extends FitDefinitionMessage {
     data.addGpsCoordinate(last.latitude);
     data.addGpsCoordinate(last.longitude);
     data.addLong(model.activity.elapsed * 1000);
+    data.addLong(model.activity.movingTime);
     data.addLong((model.activity.distance * 100).ceil());
     data.addShort(model.activity.calories > 0
         ? model.activity.calories

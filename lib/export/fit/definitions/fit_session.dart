@@ -93,7 +93,7 @@ class FitSession extends FitDefinitionMessage {
     data.addByte(fitSport.item2);
     data.addLong(model.activity.elapsed * 1000);
     if (exportTarget == ExportTarget.regular) {
-      data.addLong(model.activity.elapsed * 1000);
+      data.addLong(model.activity.movingTime);
     }
 
     data.addLong((model.activity.distance * 100).ceil());
