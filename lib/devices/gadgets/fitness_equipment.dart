@@ -114,7 +114,7 @@ class FitnessEquipment extends DeviceBase {
     return l[1] * 256 + l[0];
   }
 
-  Stream<List<RecordWithSport>> get _listenToData async* {
+  Stream<RecordWithSport> get _listenToData async* {
     if (!attached || characteristic == null || descriptor == null) return;
 
     await for (final byteList in characteristic!.value) {
@@ -138,10 +138,19 @@ class FitnessEquipment extends DeviceBase {
       if (shouldYield) {
         final values = _listDeduplicationMap.entries
             .map((entry) => dataHandlers[entry.key]!.stubRecord(entry.value))
-            .whereNotNull()
-            .toList(growable: false);
+            .whereNotNull();
+
         _listDeduplicationMap = {};
-        yield values;
+        if (values.isEmpty) continue;
+
+        yield values.skip(1).fold<RecordWithSport>(
+              values.first,
+              (prev, element) => prev.merge(
+                element,
+                _cadenceGapWorkaround,
+                _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
+              ),
+            );
       }
     }
   }
@@ -151,15 +160,15 @@ class FitnessEquipment extends DeviceBase {
       _timer = Timer(
         const Duration(seconds: 1),
         () {
-          final record = processRecord([RecordWithSport.getRandom(sport, _random)]);
+          final record = processRecord(RecordWithSport.getRandom(sport, _random));
           recordHandlerFunction(record);
           pumpData(recordHandlerFunction);
         },
       );
     } else {
       _runningCadenceSensor?.pumpData(null);
-      subscription = _listenToData.listen((recordStubs) {
-        final record = processRecord(recordStubs);
+      subscription = _listenToData.listen((recordStub) {
+        final record = processRecord(recordStub);
         recordHandlerFunction(record);
       });
     }
@@ -252,14 +261,14 @@ class FitnessEquipment extends DeviceBase {
     _extendTuning = extendTuning;
   }
 
-  RecordWithSport processRecord(List<RecordWithSport> stubs) {
+  RecordWithSport processRecord(RecordWithSport stub) {
     final now = DateTime.now();
     // State Machine for #231 and #235
     // (intelligent start and elapsed time tracking)
-    bool isNotMoving = stubs.fold(true, (prev, element) => prev && element.isNotMoving());
+    bool isNotMoving = stub.isNotMoving();
     if (workoutState == WorkoutState.waitingForFirstMove) {
       if (isNotMoving) {
-        return stubs.isNotEmpty ? stubs[0] : lastRecord;
+        return lastRecord;
       } else {
         dataHandlers = {};
         workoutState = WorkoutState.moving;
@@ -284,44 +293,17 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    RecordWithSport? stub0;
-    if (stubs.isEmpty) {
-      return lastRecord;
-    } else if (stubs.length == 1) {
-      if (descriptor != null) {
-        stub0 = descriptor!.adjustRecord(stubs[0], powerFactor, calorieFactor, _extendTuning);
-      } else {
-        stub0 = stubs[0];
-      }
-    } else if (stubs.length > 1) {
-      if (descriptor != null) {
-        stub0 = stubs.reversed.skip(1).fold<RecordWithSport>(
-            stubs[0],
-            (prev, element) => prev.merge(
-                  descriptor!.adjustRecord(
-                    element,
-                    powerFactor,
-                    calorieFactor,
-                    _extendTuning,
-                  ),
-                  _cadenceGapWorkaround,
-                  _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
-                ));
-      } else {
-        stub0 = stubs.reversed.skip(1).fold<RecordWithSport>(
-            stubs[0],
-            (prev, element) => prev.merge(
-                  element,
-                  _cadenceGapWorkaround,
-                  _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
-                ));
-      }
+    if (descriptor != null) {
+      stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
     }
 
-    final stub = shouldMerge
-        ? stub0!.merge(lastRecord, _cadenceGapWorkaround,
-            _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue)
-        : stub0!;
+    if (shouldMerge) {
+      stub.merge(
+        lastRecord,
+        _cadenceGapWorkaround,
+        _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
+      );
+    }
 
     int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
     double elapsed = elapsedMillis / 1000.0;

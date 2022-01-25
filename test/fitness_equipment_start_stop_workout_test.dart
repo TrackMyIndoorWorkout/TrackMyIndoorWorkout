@@ -72,13 +72,11 @@ void main() {
           sport: descriptor.defaultSport,
         );
         equipment.workoutState = WorkoutState.moving;
-        equipment.processRecord([
-          RecordWithSport(
-            sport: descriptor.defaultSport,
-            speed: 8.0,
-            calories: calories,
-          )
-        ]);
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: calories,
+        ));
 
         expect(equipment.lastPositiveCalories, closeTo(calories, eps));
 
