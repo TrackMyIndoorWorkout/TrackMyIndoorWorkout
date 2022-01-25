@@ -65,7 +65,8 @@ abstract class Upload {
     });
 
     final prefService = Get.find<BasePrefService>();
-    final workoutPublic = prefService.get<bool>(trainingPeaksUploadPublicTag) ?? trainingPeaksUploadPublicDefault;
+    final workoutPublic =
+        prefService.get<bool>(trainingPeaksUploadPublicTag) ?? trainingPeaksUploadPublicDefault;
     final persistenceValues = exporter.getPersistenceValues(activity, true);
     String fileContentString = base64.encode(fileContent);
     String contentString = '{"UploadClient": "$appName",'
