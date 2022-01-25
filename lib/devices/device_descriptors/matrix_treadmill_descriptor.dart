@@ -16,9 +16,7 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
         );
 
   @override
-  MatrixTreadmillDescriptor spawn() {
-    return MatrixTreadmillDescriptor();
-  }
+  MatrixTreadmillDescriptor clone() => MatrixTreadmillDescriptor();
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override

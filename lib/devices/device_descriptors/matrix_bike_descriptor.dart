@@ -16,9 +16,7 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
         );
 
   @override
-  MatrixBikeDescriptor spawn() {
-    return MatrixBikeDescriptor();
-  }
+  MatrixBikeDescriptor clone() => MatrixBikeDescriptor();
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override

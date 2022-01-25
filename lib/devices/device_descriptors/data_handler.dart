@@ -32,7 +32,7 @@ abstract class DataHandler {
     this.distanceMetric,
   });
 
-  DataHandler spawn();
+  DataHandler clone();
 
   bool isDataProcessable(List<int> data);
 

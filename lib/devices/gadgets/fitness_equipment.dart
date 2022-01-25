@@ -123,7 +123,7 @@ class FitnessEquipment extends DeviceBase {
       if (key <= 0) continue;
 
       if (!dataHandlers.containsKey(key)) {
-        dataHandlers[key] = descriptor!.spawn();
+        dataHandlers[key] = descriptor!.clone();
       }
 
       final dataHandler = dataHandlers[key]!;

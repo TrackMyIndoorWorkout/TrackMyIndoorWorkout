@@ -24,9 +24,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
         );
 
   @override
-  SchwinnACPerformancePlus spawn() {
-    return SchwinnACPerformancePlus();
-  }
+  SchwinnACPerformancePlus clone() => SchwinnACPerformancePlus();
 
   @override
   bool isDataProcessable(List<int> data) {

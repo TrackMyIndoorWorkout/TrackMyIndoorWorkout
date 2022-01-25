@@ -37,21 +37,19 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
         );
 
   @override
-  TreadmillDeviceDescriptor spawn() {
-    return TreadmillDeviceDescriptor(
-      fourCC: fourCC,
-      vendorName: vendorName,
-      modelName: modelName,
-      namePrefixes: namePrefixes,
-      manufacturerPrefix: manufacturerPrefix,
-      manufacturerFitId: manufacturerFitId,
-      model: model,
-      dataServiceId: dataServiceId,
-      dataCharacteristicId: dataCharacteristicId,
-      canMeasureHeartRate: canMeasureHeartRate,
-      heartRateByteIndex: heartRateByteIndex,
-    );
-  }
+  TreadmillDeviceDescriptor clone() => TreadmillDeviceDescriptor(
+        fourCC: fourCC,
+        vendorName: vendorName,
+        modelName: modelName,
+        namePrefixes: namePrefixes,
+        manufacturerPrefix: manufacturerPrefix,
+        manufacturerFitId: manufacturerFitId,
+        model: model,
+        dataServiceId: dataServiceId,
+        dataCharacteristicId: dataCharacteristicId,
+        canMeasureHeartRate: canMeasureHeartRate,
+        heartRateByteIndex: heartRateByteIndex,
+      );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override

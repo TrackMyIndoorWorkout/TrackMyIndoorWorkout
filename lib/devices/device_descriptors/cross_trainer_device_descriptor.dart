@@ -34,21 +34,19 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
         );
 
   @override
-  CrossTrainerDeviceDescriptor spawn() {
-    return CrossTrainerDeviceDescriptor(
-      fourCC: fourCC,
-      vendorName: vendorName,
-      modelName: modelName,
-      namePrefixes: namePrefixes,
-      manufacturerPrefix: manufacturerPrefix,
-      manufacturerFitId: manufacturerFitId,
-      model: model,
-      dataServiceId: dataServiceId,
-      dataCharacteristicId: dataCharacteristicId,
-      canMeasureHeartRate: canMeasureHeartRate,
-      heartRateByteIndex: heartRateByteIndex,
-    );
-  }
+  CrossTrainerDeviceDescriptor clone() => CrossTrainerDeviceDescriptor(
+        fourCC: fourCC,
+        vendorName: vendorName,
+        modelName: modelName,
+        namePrefixes: namePrefixes,
+        manufacturerPrefix: manufacturerPrefix,
+        manufacturerFitId: manufacturerFitId,
+        model: model,
+        dataServiceId: dataServiceId,
+        dataCharacteristicId: dataCharacteristicId,
+        canMeasureHeartRate: canMeasureHeartRate,
+        heartRateByteIndex: heartRateByteIndex,
+      );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.cross_trainer_data.xml
   @override
