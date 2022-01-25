@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/instant_upload.dart';
+import '../../preferences/training_peaks_upload_public.dart';
 import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/preferences.dart';
@@ -75,6 +76,11 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
         title: Text(instantUpload),
         subtitle: Text(instantUploadDescription),
         pref: instantUploadTag,
+      ),
+      const PrefCheckbox(
+        title: Text(trainingPeaksUploadPublic),
+        subtitle: Text(trainingPeaksUploadPublicDescription),
+        pref: trainingPeaksUploadPublicTag,
       ),
       const PrefLabel(
         title: Text("Available Integrations:"),

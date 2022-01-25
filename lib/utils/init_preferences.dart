@@ -34,6 +34,7 @@ import '../preferences/simpler_ui.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
+import '../preferences/training_peaks_upload_public.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
@@ -103,6 +104,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     measurementFontSizeAdjustTag: measurementFontSizeAdjustDefault,
     twoColumnLayoutTag: twoColumnLayoutDefault,
     movingOrElapsedTimeTag: movingOrElapsedTimeDefault,
+    trainingPeaksUploadPublicTag: trainingPeaksUploadPublicDefault,
   };
 
   for (var sport in PreferencesSpec.sportPrefixes) {
