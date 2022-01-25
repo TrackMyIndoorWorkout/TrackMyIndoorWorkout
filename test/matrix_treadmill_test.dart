@@ -140,7 +140,7 @@ void main() {
       test("$sum ${testPair.data.length}", () async {
         final treadmill = deviceMap[matrixTreadmillFourCC]!;
         treadmill.initFlag();
-        expect(treadmill.canDataProcessed(testPair.data), true);
+        expect(treadmill.isDataProcessable(testPair.data), true);
         treadmill.stopWorkout();
 
         final record = treadmill.stubRecord(testPair.data)!;

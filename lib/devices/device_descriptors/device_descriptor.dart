@@ -67,8 +67,6 @@ abstract class DeviceDescriptor extends DataHandler {
 
   void stopWorkout();
 
-  bool canDataProcessed(List<int> data);
-
   RecordWithSport adjustRecord(
     RecordWithSport record,
     double powerFactor,

@@ -111,7 +111,7 @@ void main() {
         await initPrefServiceForTest();
         final xTrainer = deviceMap[genericFTMSCrossTrainerFourCC]!;
         xTrainer.initFlag();
-        expect(xTrainer.canDataProcessed(testPair.data), true);
+        expect(xTrainer.isDataProcessable(testPair.data), true);
         xTrainer.stopWorkout();
 
         final record = xTrainer.stubRecord(testPair.data)!;

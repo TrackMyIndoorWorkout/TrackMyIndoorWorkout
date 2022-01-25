@@ -34,14 +34,7 @@ abstract class DataHandler {
 
   DataHandler spawn();
 
-  bool isDataProcessable(List<int> data) {
-    if (byteCounter <= flagByteSize) {
-      preProcessFlag(data);
-    }
-
-    final dataLength = data.length;
-    return byteCounter >= flagByteSize && dataLength == byteCounter;
-  }
+  bool isDataProcessable(List<int> data);
 
   void initFlag() {
     clearMetrics();
