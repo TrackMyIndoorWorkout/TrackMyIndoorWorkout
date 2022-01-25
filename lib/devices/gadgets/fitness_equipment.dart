@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -83,7 +84,7 @@ class FitnessEquipment extends DeviceBase {
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
-  Map<int, RecordWithSport> _listDeduplicationMap = {};
+  Map<int, List<int>> _listDeduplicationMap = {};
   Timer? _throttleTimer;
 
   FitnessEquipment({this.descriptor, device, this.startingValues = true})
@@ -129,16 +130,16 @@ class FitnessEquipment extends DeviceBase {
       final dataHandler = dataHandlers[key]!;
       if (!dataHandler.isDataProcessable(byteList)) continue;
 
-      final record = dataHandler.stubRecord(byteList);
-      if (record == null) continue;
-
-      _listDeduplicationMap[key] = record;
+      _listDeduplicationMap[key] = byteList;
 
       final shouldYield = !(_throttleTimer?.isActive ?? false);
       _throttleTimer ??= Timer(_throttleDuration, () => {_throttleTimer = null});
 
       if (shouldYield) {
-        final values = _listDeduplicationMap.values.toList(growable: false);
+        final values = _listDeduplicationMap.entries
+            .map((entry) => dataHandlers[entry.key]!.stubRecord(entry.value))
+            .whereNotNull()
+            .toList(growable: false);
         _listDeduplicationMap = {};
         yield values;
       }
@@ -157,8 +158,8 @@ class FitnessEquipment extends DeviceBase {
       );
     } else {
       _runningCadenceSensor?.pumpData(null);
-      subscription = _listenToData.listen((recordStub) {
-        final record = processRecord(recordStub);
+      subscription = _listenToData.listen((recordStubs) {
+        final record = processRecord(recordStubs);
         recordHandlerFunction(record);
       });
     }
