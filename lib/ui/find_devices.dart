@@ -267,7 +267,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (deviceUsage == null || multiSportSupport) {
         final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
         final sportPick = await Get.bottomSheet(
-          SportPickerBottomSheet(initialSport: initialSport, allSports: false),
+          SportPickerBottomSheet(sportChoices: waterSports, initialSport: initialSport),
           isDismissible: false,
           enableDrag: false,
         );

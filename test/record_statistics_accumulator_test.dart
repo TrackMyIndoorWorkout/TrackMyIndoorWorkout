@@ -9,7 +9,7 @@ import 'utils.dart';
 void main() {
   group('StatisticsAccumulator calculates avg power when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgPower: true);
       var count = rnd.nextInt(99) + 1;
       double sum = 0.0;
@@ -58,7 +58,7 @@ void main() {
 
   group('StatisticsAccumulator calculates max power when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxPower: true);
       final count = rnd.nextInt(99) + 1;
       int maximum = maxInit;
@@ -102,7 +102,7 @@ void main() {
 
   group('StatisticsAccumulator calculates min power when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final accu = StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinPower: true);
       final count = rnd.nextInt(99) + 1;
       int minimum = minInit;
@@ -146,7 +146,7 @@ void main() {
 
   group('StatisticsAccumulator calculates avg speed when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(si: si, sport: sport, calculateAvgSpeed: true);
       var count = rnd.nextInt(99) + 1;
@@ -197,7 +197,7 @@ void main() {
 
   group('StatisticsAccumulator calculates max speed when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(si: si, sport: sport, calculateMaxSpeed: true);
       final count = rnd.nextInt(99) + 1;
@@ -243,7 +243,7 @@ void main() {
 
   group('StatisticsAccumulator calculates min speed when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(si: si, sport: sport, calculateMinSpeed: true);
       final count = rnd.nextInt(99) + 1;
@@ -289,7 +289,7 @@ void main() {
 
   group('StatisticsAccumulator calculates avg hr when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(
         si: si,
@@ -344,7 +344,7 @@ void main() {
 
   group('StatisticsAccumulator calculates max hr when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(si: si, sport: sport, calculateMaxHeartRate: true);
       final count = rnd.nextInt(99) + 1;
@@ -392,7 +392,7 @@ void main() {
 
   group('StatisticsAccumulator calculates min hr when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(si: si, sport: sport, calculateMinHeartRate: true);
       final count = rnd.nextInt(99) + 1;
@@ -440,7 +440,7 @@ void main() {
 
   group('StatisticsAccumulator calculates avg cadence when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(si: si, sport: sport, calculateAvgCadence: true);
       var count = rnd.nextInt(99) + 1;
@@ -491,7 +491,7 @@ void main() {
 
   group('StatisticsAccumulator calculates max cadence when max requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(si: si, sport: sport, calculateMaxCadence: true);
       final count = rnd.nextInt(99) + 1;
@@ -537,7 +537,7 @@ void main() {
 
   group('StatisticsAccumulator calculates min cadence when min requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(si: si, sport: sport, calculateMinCadence: true);
       final count = rnd.nextInt(99) + 1;
@@ -583,7 +583,7 @@ void main() {
 
   group('StatisticsAccumulator calculates everything when all requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final si = rnd.nextBool();
       final accu = StatisticsAccumulator(
         si: si,

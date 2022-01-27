@@ -192,7 +192,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
           icon: _themeManager.getActionIcon(Icons.edit, size),
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
-              SportPickerBottomSheet(initialSport: activity.sport, allSports: true),
+              SportPickerBottomSheet(sportChoices: allSports, initialSport: activity.sport),
               enableDrag: false,
             );
             if (sportPick != null) {

@@ -65,3 +65,20 @@ class ActivityType {
   static const String workout = "Workout";
   static const String yoga = "Yoga";
 }
+
+const waterSports = [
+  ActivityType.kayaking,
+  ActivityType.canoeing,
+  ActivityType.rowing,
+  ActivityType.swim,
+];
+
+const allSports = [
+  ActivityType.ride,
+  ActivityType.run,
+  ActivityType.elliptical,
+  ActivityType.kayaking,
+  ActivityType.canoeing,
+  ActivityType.rowing,
+  ActivityType.swim,
+];
