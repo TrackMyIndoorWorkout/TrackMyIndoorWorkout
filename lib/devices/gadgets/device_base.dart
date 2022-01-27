@@ -106,18 +106,21 @@ abstract class DeviceBase {
     return discoverCore();
   }
 
-  String? inferSportFromCharacteristicsId() {
-    if (characteristicsId == treadmillUuid) {
-      return ActivityType.run;
+  List<String> inferSportsFromCharacteristicsIds() {
+    List<String> sports = [];
+    if (characteristicsId == treadmillUuid ||
+        characteristicsId == stepClimberUuid ||
+        characteristicsId == stairClimberUuid) {
+      sports.add(ActivityType.run);
     } else if (characteristicsId == precorMeasurementUuid || characteristicsId == indoorBikeUuid) {
-      return ActivityType.ride;
+      sports.add(ActivityType.ride);
     } else if (characteristicsId == rowerDeviceUuid) {
-      return ActivityType.rowing;
+      sports.addAll(waterSports);
     } else if (characteristicsId == crossTrainerUuid) {
-      return ActivityType.elliptical;
+      sports.add(ActivityType.elliptical);
     }
 
-    return null;
+    return sports;
   }
 
   Future<void> attach() async {

@@ -1,14 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/company_registry.dart';
 import 'package:track_my_indoor_exercise/ui/models/advertisement_digest.dart';
-import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/machine_type.dart';
 
-class MachineTestPair {
-  final MachineType machineType;
-  final String sport;
+class FtmsTestPair {
+  final List<MachineType> machineTypes;
+  final bool expected;
 
-  const MachineTestPair({required this.machineType, required this.sport});
+  const FtmsTestPair({required this.machineTypes, required this.expected});
 }
 
 class CompanyTestPair {
@@ -19,25 +18,40 @@ class CompanyTestPair {
 }
 
 void main() {
-  group('AdvertisementDigest infers sport as expected from MachineType', () {
+  group('isMultiFtms works as expected', () {
     for (final testPair in [
-      const MachineTestPair(machineType: MachineType.indoorBike, sport: ActivityType.ride),
-      const MachineTestPair(machineType: MachineType.treadmill, sport: ActivityType.run),
-      const MachineTestPair(machineType: MachineType.rower, sport: ActivityType.kayaking),
-      const MachineTestPair(machineType: MachineType.crossTrainer, sport: ActivityType.elliptical),
-      const MachineTestPair(machineType: MachineType.stepClimber, sport: ActivityType.ride),
+      const FtmsTestPair(machineTypes: [MachineType.notFitnessMachine], expected: false),
+      const FtmsTestPair(machineTypes: [MachineType.indoorBike], expected: false),
+      const FtmsTestPair(machineTypes: [MachineType.treadmill], expected: false),
+      const FtmsTestPair(machineTypes: [MachineType.rower], expected: false),
+      const FtmsTestPair(machineTypes: [MachineType.crossTrainer], expected: false),
+      const FtmsTestPair(machineTypes: [MachineType.stepClimber], expected: false),
+      const FtmsTestPair(machineTypes: [MachineType.stairClimber], expected: false),
+      const FtmsTestPair(machineTypes: [MachineType.multiFtms], expected: false),
+      const FtmsTestPair(
+          machineTypes: [MachineType.indoorBike, MachineType.treadmill, MachineType.crossTrainer],
+          expected: true),
+      const FtmsTestPair(
+          machineTypes: [MachineType.stepClimber, MachineType.stairClimber], expected: true),
+      const FtmsTestPair(machineTypes: [MachineType.rower, MachineType.treadmill], expected: true),
+      const FtmsTestPair(
+          machineTypes: [MachineType.notFitnessMachine, MachineType.treadmill], expected: false),
+      const FtmsTestPair(
+          machineTypes: [MachineType.multiFtms, MachineType.treadmill], expected: false),
     ]) {
-      test("${testPair.machineType} -> ${testPair.sport}", () async {
+      test("${testPair.machineTypes} -> ${testPair.expected}", () async {
         final advertisementDigest = AdvertisementDigest(
           id: "",
           serviceUuids: [],
           companyIds: [],
           manufacturer: "",
           txPower: 0,
-          machineType: testPair.machineType,
+          machineTypesByte: testPair.machineTypes.first.bit,
+          machineType: testPair.machineTypes.first,
+          machineTypes: testPair.machineTypes,
         );
 
-        expect(advertisementDigest.fitnessMachineSport(), testPair.sport);
+        expect(advertisementDigest.isMultiFtms(), testPair.expected);
       });
     }
   });
@@ -55,7 +69,9 @@ void main() {
           companyIds: [testPair.companyId],
           manufacturer: "",
           txPower: 0,
+          machineTypesByte: MachineType.treadmill.bit,
           machineType: MachineType.treadmill,
+          machineTypes: [MachineType.treadmill],
         );
 
         expect(advertisementDigest.needsMatrixSpecialTreatment(), testPair.expected);

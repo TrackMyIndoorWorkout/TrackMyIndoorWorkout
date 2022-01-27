@@ -214,14 +214,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
     FitnessEquipment? fitnessEquipment;
 
     // Step 3. Try to infer from DeviceUsage, FTMS advertisement service data or characteristics
+    bool pickedAlready = false;
     if (descriptor == null) {
       if (deviceUsage != null) {
         descriptor = genericDescriptorForSport(deviceUsage.sport);
       } else {
         String? inferredSport;
-        if (advertisementDigest.machineType != MachineType.notFitnessMachine) {
+        if (advertisementDigest.machineType.isFtms) {
           // Determine FTMS sport by Service Data bits
-          inferredSport = advertisementDigest.fitnessMachineSport();
+          inferredSport = advertisementDigest.machineType.sport;
         } else if (advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
           // Determine FTMS sport by analyzing 0x1826 service's characteristics
           setState(() {
@@ -231,7 +232,22 @@ class FindDevicesState extends State<FindDevicesScreen> {
           fitnessEquipment = FitnessEquipment(device: device);
           final success = await fitnessEquipment.connectOnDemand(identify: true);
           if (success && fitnessEquipment.characteristicsId != null) {
-            inferredSport = fitnessEquipment.inferSportFromCharacteristicsId();
+            final inferredSports = fitnessEquipment.inferSportsFromCharacteristicsIds();
+            if (inferredSports.isNotEmpty) {
+              if (inferredSports.length == 1) {
+                inferredSport = inferredSports.first;
+              } else {
+                inferredSport = await Get.bottomSheet(
+                  SportPickerBottomSheet(
+                    sportChoices: inferredSports,
+                    initialSport: inferredSports.first,
+                  ),
+                  isDismissible: false,
+                  enableDrag: false,
+                );
+                pickedAlready = inferredSport != null;
+              }
+            }
           }
         }
 
@@ -261,7 +277,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     final prefService = Get.find<BasePrefService>();
 
-    if (descriptor.isMultiSport) {
+    if (descriptor.isMultiSport && !pickedAlready) {
       final multiSportSupport =
           prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;
       if (deviceUsage == null || multiSportSupport) {
