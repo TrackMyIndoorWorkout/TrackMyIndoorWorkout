@@ -17,14 +17,14 @@ dependencies:
   device_info: ^2.0.3
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^4.3.1
+  file_picker: ^4.3.3
   floor: ^1.2.0
   flutter_blue:
     git:
       url: https://github.com/CsabaConsulting/flutter_blue.git
   flutter_native_timezone: ^2.0.0
   flutter_spinbox: ^0.8.0
-  flutter_svg: ^1.0.1
+  flutter_svg: ^1.0.3
   get: ^4.6.1
   http: ^0.13.4
   http_parser: ^4.0.0
@@ -35,7 +35,7 @@ dependencies:
   overlay_tutorial: ^2.1.1
   package_info_plus: ^1.3.0
   permission_handler: 8.1.6
-  pref: ^2.4.0
+  pref: ^2.5.0
   progress_indicators: ^1.0.0
   rxdart: ^0.27.3
   share_files_and_screenshot_widgets: ^1.0.6
@@ -44,7 +44,7 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/spinner_input.git
   sqflite: ^2.0.2
-  syncfusion_flutter_charts: ^19.4.42
+  syncfusion_flutter_charts: ^19.4.47
   tuple: ^2.0.0
   uni_links: ^0.5.1
   url_launcher: ^6.0.18
