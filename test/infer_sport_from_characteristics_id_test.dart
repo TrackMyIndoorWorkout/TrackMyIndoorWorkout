@@ -10,28 +10,28 @@ import 'utils.dart';
 
 class TestPair {
   final String characteristicsId;
-  final String? sport;
+  final List<String> sports;
 
-  const TestPair({required this.characteristicsId, required this.sport});
+  const TestPair({required this.characteristicsId, required this.sports});
 }
 
 @GenerateMocks([BluetoothDevice])
 void main() {
   group('DeviceBase infers sport as expected from characteristics ID', () {
     for (final testPair in [
-      const TestPair(characteristicsId: treadmillUuid, sport: ActivityType.run),
-      const TestPair(characteristicsId: precorMeasurementUuid, sport: ActivityType.ride),
-      const TestPair(characteristicsId: indoorBikeUuid, sport: ActivityType.ride),
-      const TestPair(characteristicsId: rowerDeviceUuid, sport: ActivityType.rowing),
-      const TestPair(characteristicsId: crossTrainerUuid, sport: ActivityType.elliptical),
-      const TestPair(characteristicsId: heartRateMeasurementUuid, sport: null)
+      const TestPair(characteristicsId: treadmillUuid, sports: [ActivityType.run]),
+      const TestPair(characteristicsId: precorMeasurementUuid, sports: [ActivityType.ride]),
+      const TestPair(characteristicsId: indoorBikeUuid, sports: [ActivityType.ride]),
+      const TestPair(characteristicsId: rowerDeviceUuid, sports: waterSports),
+      const TestPair(characteristicsId: crossTrainerUuid, sports: [ActivityType.elliptical]),
+      const TestPair(characteristicsId: heartRateMeasurementUuid, sports: [])
     ]) {
-      test("${testPair.characteristicsId} -> ${testPair.sport}", () async {
+      test("${testPair.characteristicsId} -> ${testPair.sports}", () async {
         await initPrefServiceForTest();
         final hrm = HeartRateMonitor(MockBluetoothDevice());
         hrm.characteristicsId = testPair.characteristicsId;
 
-        expect(hrm.inferSportFromCharacteristicsId(), testPair.sport);
+        expect(hrm.inferSportsFromCharacteristicsIds(), testPair.sports);
       });
     }
   });
