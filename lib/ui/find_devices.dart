@@ -12,6 +12,7 @@ import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt_constants.dart';
+import '../devices/gatt_maps.dart';
 import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
 import '../preferences/auto_connect.dart';
@@ -246,6 +247,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   enableDrag: false,
                 );
                 pickedAlready = inferredSport != null;
+                fitnessEquipment.setCharacteristicById(sportToUuid[inferredSport]!);
               }
             }
           }
