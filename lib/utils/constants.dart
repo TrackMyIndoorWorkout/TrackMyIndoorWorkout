@@ -12,6 +12,7 @@ const km2mi = 0.621371;
 const mi2km = 1 / km2mi;
 const m2mile = km2mi / 1000.0;
 const m2yard = 1.09361;
+const thousandYardsInMeters = 1000.0 / m2yard;
 const notAvailable = "N/A";
 const emptyMeasurement = "--";
 const httpsPort = 443;
@@ -64,3 +65,20 @@ class ActivityType {
   static const String workout = "Workout";
   static const String yoga = "Yoga";
 }
+
+const waterSports = [
+  ActivityType.kayaking,
+  ActivityType.canoeing,
+  ActivityType.rowing,
+  ActivityType.swim,
+];
+
+const allSports = [
+  ActivityType.ride,
+  ActivityType.run,
+  ActivityType.elliptical,
+  ActivityType.kayaking,
+  ActivityType.canoeing,
+  ActivityType.rowing,
+  ActivityType.swim,
+];

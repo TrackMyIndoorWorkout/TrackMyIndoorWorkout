@@ -72,7 +72,31 @@ extension ScanResultEx on ScanResult {
     return nameStrings.join(', ');
   }
 
-  MachineType getMachineType() {
+  int getFtmsServiceDataMachineByte() {
+    for (MapEntry<String, List<int>> entry in advertisementData.serviceData.entries) {
+      if (entry.key.uuidString() == fitnessMachineUuid) {
+        final serviceData = entry.value;
+        if (serviceData.length > 2 && serviceData[0] >= 1) {
+          return serviceData[1];
+        }
+      }
+    }
+
+    return 0;
+  }
+
+  List<MachineType> getFtmsServiceDataMachineTypes(int ftmsServiceDataMachineByte) {
+    List<MachineType> machineTypes = [];
+    for (final machineType in MachineType.values) {
+      if (ftmsServiceDataMachineByte & machineType.bit >= 1) {
+        machineTypes.add(machineType);
+      }
+    }
+
+    return machineTypes;
+  }
+
+  MachineType getMachineType(List<MachineType>? ftmsServiceDataMachineTypes) {
     if (serviceUuids.contains(precorServiceUuid)) {
       return MachineType.indoorBike;
     }
@@ -85,52 +109,18 @@ extension ScanResultEx on ScanResult {
       return MachineType.notFitnessMachine;
     }
 
-    for (MapEntry<String, List<int>> entry in advertisementData.serviceData.entries) {
-      if (entry.key.uuidString() == fitnessMachineUuid) {
-        final serviceData = entry.value;
-        if (serviceData.length > 2 && serviceData[0] >= 1) {
-          for (final machineType in MachineType.values) {
-            if (serviceData[1] & machineType.bit >= 1) {
-              return machineType;
-            }
-          }
-        }
-      }
+    ftmsServiceDataMachineTypes ??= getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte());
+    if (ftmsServiceDataMachineTypes.isEmpty) {
+      return MachineType.notFitnessMachine;
     }
 
-    return MachineType.notFitnessMachine;
-  }
-
-  IconData getEquipmentIcon() {
-    final machineType = getMachineType();
-
-    var icon = Icons.help;
-    switch (machineType) {
-      case MachineType.indoorBike:
-        icon = Icons.directions_bike;
-        break;
-      case MachineType.treadmill:
-        icon = Icons.directions_run;
-        break;
-      case MachineType.rower:
-        icon = Icons.kayaking;
-        break;
-      case MachineType.heartRateMonitor:
-        icon = Icons.favorite;
-        break;
-      case MachineType.crossTrainer:
-        icon = Icons.downhill_skiing;
-        break;
-      case MachineType.stepClimber:
-        icon = Icons.stairs;
-        break;
-      case MachineType.stairClimber:
-        icon = Icons.stairs;
-        break;
-      default:
-        icon = Icons.help;
+    if (ftmsServiceDataMachineTypes.length == 1) {
+      return ftmsServiceDataMachineTypes.first;
     }
 
-    return icon;
+    return MachineType.multiFtms;
   }
+
+  IconData getEquipmentIcon([List<MachineType> ftmsServiceDataMachineTypes = const []]) =>
+      getMachineType(ftmsServiceDataMachineTypes).icon;
 }

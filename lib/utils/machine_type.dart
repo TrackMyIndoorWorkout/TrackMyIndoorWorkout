@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import '../utils/constants.dart';
+
 enum MachineType {
   notFitnessMachine,
   indoorBike,
@@ -7,6 +10,7 @@ enum MachineType {
   stepClimber,
   stairClimber,
   heartRateMonitor,
+  multiFtms,
 }
 
 extension MachineTypeEx on MachineType {
@@ -27,5 +31,56 @@ extension MachineTypeEx on MachineType {
       default:
         return 0;
     }
+  }
+
+  String get sport {
+    switch (this) {
+      case MachineType.indoorBike:
+        return ActivityType.ride;
+      case MachineType.treadmill:
+        return ActivityType.run;
+      case MachineType.crossTrainer:
+        return ActivityType.elliptical;
+      case MachineType.stepClimber:
+        return ActivityType.run;
+      case MachineType.stairClimber:
+        return ActivityType.run;
+      case MachineType.rower:
+        return ActivityType.kayaking;
+      default:
+        return "";
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case MachineType.indoorBike:
+        return Icons.directions_bike;
+      case MachineType.treadmill:
+        return Icons.directions_run;
+      case MachineType.rower:
+        return Icons.kayaking;
+      case MachineType.heartRateMonitor:
+        return Icons.favorite;
+      case MachineType.crossTrainer:
+        return Icons.downhill_skiing;
+      case MachineType.stepClimber:
+        return Icons.stairs;
+      case MachineType.stairClimber:
+        return Icons.stairs;
+      default:
+        return Icons.help;
+    }
+  }
+
+  bool get isFtms {
+    return [
+      MachineType.indoorBike,
+      MachineType.treadmill,
+      MachineType.rower,
+      MachineType.crossTrainer,
+      MachineType.stepClimber,
+      MachineType.stairClimber,
+    ].contains(this);
   }
 }

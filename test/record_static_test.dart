@@ -3,11 +3,10 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
-import 'utils.dart';
 
 void main() {
   group("Record getBlank provides blank:", () {
-    for (final sport in sports) {
+    for (final sport in allSports) {
       test("for $sport", () async {
         final blank = RecordWithSport.getBlank(sport);
         expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
@@ -30,7 +29,7 @@ void main() {
 
   group("Record getRandom provides random:", () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       test("for $sport", () async {
         final random = RecordWithSport.getRandom(sport, rnd);
         expect(random.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));

@@ -9,7 +9,7 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
           vendorName: "Matrix",
           modelName: "Matrix Bike",
           namePrefixes: ["CTM", "Johnson", "Matrix"],
-          manufacturerPrefix: "Johnson Health Tech",
+          manufacturerPrefix: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Bike",
           canMeasureHeartRate: false,

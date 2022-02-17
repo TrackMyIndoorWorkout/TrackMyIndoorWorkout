@@ -10,7 +10,7 @@ import 'utils.dart';
 void main() {
   group('StatisticsAccumulator calculates avg power when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
@@ -65,7 +65,7 @@ void main() {
 
   group('StatisticsAccumulator calculates max power when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
@@ -117,7 +117,7 @@ void main() {
 
   group('StatisticsAccumulator calculates min power when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinPower: true);
@@ -166,7 +166,7 @@ void main() {
 
   group('StatisticsAccumulator calculates avg speed when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
@@ -221,7 +221,7 @@ void main() {
 
   group('StatisticsAccumulator calculates max speed when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
@@ -273,7 +273,7 @@ void main() {
 
   group('StatisticsAccumulator calculates min speed when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
@@ -325,7 +325,7 @@ void main() {
 
   group('StatisticsAccumulator calculates avg hr when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgHeartRate: true);
@@ -377,7 +377,7 @@ void main() {
 
   group('StatisticsAccumulator calculates max hr when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxHeartRate: true);
@@ -426,7 +426,7 @@ void main() {
 
   group('StatisticsAccumulator calculates min hr when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinHeartRate: true);
@@ -475,7 +475,7 @@ void main() {
 
   group('StatisticsAccumulator calculates avg cadence when requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgCadence: true);
@@ -527,7 +527,7 @@ void main() {
 
   group('StatisticsAccumulator initializes max cadence when max requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxCadence: true);
@@ -576,7 +576,7 @@ void main() {
 
   group('StatisticsAccumulator initializes min cadence when min requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinCadence: true);
@@ -625,7 +625,7 @@ void main() {
 
   group('StatisticsAccumulator initializes everything when all requested', () {
     final rnd = Random();
-    for (final sport in sports) {
+    for (final sport in allSports) {
       for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),

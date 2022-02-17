@@ -12,16 +12,6 @@ import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 const smallRepetition = 10;
 const repetition = 50;
 
-const sports = [
-  ActivityType.ride,
-  ActivityType.run,
-  ActivityType.kayaking,
-  ActivityType.canoeing,
-  ActivityType.rowing,
-  ActivityType.swim,
-  ActivityType.elliptical,
-];
-
 List<int> getRandomInts(int count, int max, Random source) {
   return List<int>.generate(count, (index) => source.nextInt(max));
 }
@@ -31,7 +21,7 @@ List<double> getRandomDoubles(int count, double max, Random source) {
 }
 
 String getRandomSport() {
-  return sports[Random().nextInt(sports.length)];
+  return allSports[Random().nextInt(allSports.length)];
 }
 
 class ExportModelForTests extends ExportModel {
