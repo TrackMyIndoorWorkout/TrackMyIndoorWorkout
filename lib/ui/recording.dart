@@ -875,7 +875,9 @@ class RecordingState extends State<RecordingScreen> {
       return null;
     }
 
-    final averageSpeed = _movingTime > 0 ? _distance / _movingTime * DeviceDescriptor.ms2kmh : 0.0;
+    // #252 moving is in milliseconds, so 1000 multiplier is needed!!
+    final averageSpeed =
+        _movingTime > 0 ? _distance * 1000.0 / _movingTime * DeviceDescriptor.ms2kmh : 0.0;
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
