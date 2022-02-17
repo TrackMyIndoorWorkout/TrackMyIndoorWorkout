@@ -5,8 +5,8 @@ publish_to: "none"
 version: 1.1.92+92
 
 environment:
-  sdk: ">=2.15.0 <3.0.0"
-  flutter: ">=2.8.1"
+  sdk: ">=2.16.0 <3.0.0"
+  flutter: ">=2.10.1"
 
 dependencies:
   assorted_layout_widgets: ^5.5.0
@@ -17,7 +17,7 @@ dependencies:
   device_info: ^2.0.3
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^4.3.3
+  file_picker: ^4.4.0
   floor: ^1.2.0
   flutter_blue:
     git:
@@ -33,18 +33,18 @@ dependencies:
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
   overlay_tutorial: ^2.1.1
-  package_info_plus: ^1.3.0
+  package_info_plus: ^1.3.1
   permission_handler: 8.1.6
   pref: ^2.5.0
   progress_indicators: ^1.0.0
   rxdart: ^0.27.3
   share_files_and_screenshot_widgets: ^1.0.6
-  soundpool: ^2.2.0
+  soundpool: ^2.3.0
   spinner_input:
     git:
       url: https://github.com/CsabaConsulting/spinner_input.git
   sqflite: ^2.0.2
-  syncfusion_flutter_charts: ^19.4.48
+  syncfusion_flutter_charts: ^19.4.52
   tuple: ^2.0.0
   uni_links: ^0.5.1
   url_launcher: ^6.0.18
