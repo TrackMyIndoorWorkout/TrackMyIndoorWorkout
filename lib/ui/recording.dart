@@ -1065,7 +1065,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Widget _getLeaderboardInfoText(int rank, double distance, bool lead) {
-    final distanceString = distanceByUnit(distance - _distance, _si, _highRes);
+    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
     var rankText = "";
     if (_displayLapCounter) {
       final lapCount = (distance / _trackLength).floor();
