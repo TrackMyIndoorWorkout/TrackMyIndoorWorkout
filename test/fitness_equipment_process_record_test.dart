@@ -144,10 +144,11 @@ void main() {
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
-        equipment.lastRecord = Record(
+        equipment.lastRecord = RecordWithSport(
           timeStamp: oneSecondAgo.millisecondsSinceEpoch,
           elapsedMillis: 0,
           calories: 0,
+          sport: descriptor.defaultSport,
         );
         equipment.workoutState = WorkoutState.moving;
 
@@ -198,10 +199,11 @@ void main() {
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
-        equipment.lastRecord = Record(
+        equipment.lastRecord = RecordWithSport(
           timeStamp: oneSecondAgo.millisecondsSinceEpoch,
           elapsedMillis: 0,
           calories: 0,
+          sport: descriptor.defaultSport,
         );
         equipment.workoutState = WorkoutState.moving;
 
@@ -252,10 +254,11 @@ void main() {
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
-        equipment.lastRecord = Record(
+        equipment.lastRecord = RecordWithSport(
           timeStamp: oneSecondAgo.millisecondsSinceEpoch,
           elapsedMillis: 0,
           calories: 0,
+          sport: descriptor.defaultSport,
         );
         equipment.workoutState = WorkoutState.moving;
 
@@ -304,10 +307,11 @@ void main() {
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
-        equipment.lastRecord = Record(
+        equipment.lastRecord = RecordWithSport(
           timeStamp: oneSecondAgo.millisecondsSinceEpoch,
           elapsedMillis: 0,
-          distance: 10,
+          distance: 10.0,
+          sport: descriptor.defaultSport,
         );
         equipment.workoutState = WorkoutState.moving;
 
@@ -363,11 +367,12 @@ void main() {
           calorieFactor,
           true,
         );
-        equipment.lastRecord = Record(
+        equipment.lastRecord = RecordWithSport(
           timeStamp: oneSecondAgo.millisecondsSinceEpoch,
           elapsedMillis: 0,
-          distance: min(adjustedRecord.distance!, 10),
-          speed: 10,
+          distance: min(adjustedRecord.distance!, 10.0),
+          speed: 10.0,
+          sport: descriptor.defaultSport,
         );
         equipment.workoutState = WorkoutState.moving;
 

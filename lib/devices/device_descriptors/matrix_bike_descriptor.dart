@@ -15,6 +15,9 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
           canMeasureHeartRate: false,
         );
 
+  @override
+  MatrixBikeDescriptor clone() => MatrixBikeDescriptor();
+
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
   void processFlag(int flag) {

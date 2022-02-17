@@ -138,15 +138,11 @@ class Record {
 
   bool isNotMoving() {
     return (power ?? 0) == 0 &&
-        (speed ?? 0.0) == 0.0 &&
+        (speed ?? 0.0) < eps &&
         (pace ?? 0.0) == 0.0 &&
-        (caloriesPerHour ?? 0.0) == 0.0 &&
-        (caloriesPerMinute ?? 0.0) == 0.0 &&
+        (caloriesPerHour ?? 0.0) < eps &&
+        (caloriesPerMinute ?? 0.0) < eps &&
         (cadence ?? 0) == 0;
-  }
-
-  bool isEmpty() {
-    return isNotMoving() && (distance ?? 0.0) == 0.0 && (elapsed ?? 0) == 0 && (calories ?? 0) == 0;
   }
 
   void cumulativeDistanceEnforcement(Record lastRecord) {
@@ -242,7 +238,7 @@ class RecordWithSport extends Record {
           caloriesPerMinute: caloriesPerMinute,
         );
 
-  static RecordWithSport getBlank(String sport, bool uxDebug, Random random) {
+  static RecordWithSport getBlank(String sport) {
     return RecordWithSport(
       timeStamp: 0,
       distance: 0.0,
@@ -267,5 +263,22 @@ class RecordWithSport extends Record {
       heartRate: 60 + random.nextInt(120),
       sport: sport,
     );
+  }
+
+  RecordWithSport merge(RecordWithSport record, bool mergeCadence, bool mergeHr) {
+    distance ??= record.distance;
+    elapsed ??= record.elapsed;
+    calories ??= record.calories;
+    power ??= record.power;
+    speed ??= record.speed;
+    if (mergeCadence) {
+      cadence ??= record.cadence;
+    }
+
+    if (mergeHr) {
+      heartRate ??= record.heartRate;
+    }
+
+    return this;
   }
 }
