@@ -416,7 +416,7 @@ class RecordingState extends State<RecordingScreen> {
     size = widget.size;
 
     Wakelock.enable();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
@@ -667,7 +667,7 @@ class RecordingState extends State<RecordingScreen> {
   @override
   void dispose() {
     Wakelock.disable();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
 
     super.dispose();
   }
