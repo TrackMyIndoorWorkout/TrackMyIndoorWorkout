@@ -26,8 +26,8 @@ void main() {
 
   group('ByteMetricDescriptor calculates measurement as expected', () {
     final rnd = Random();
-    for (var rep in 1.to(repetition)) {
-      final len = rnd.nextInt(99) + 1;
+    for (var lenMinusOne in getRandomInts(repetition, 99, rnd)) {
+      final len = lenMinusOne + 1;
       final data = getRandomInts(len, maxUint8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final divider = rnd.nextDouble() * 1024;
@@ -35,7 +35,7 @@ void main() {
       final expected =
           optional && data[lsbLocation] == maxUint8 - 1 ? null : data[lsbLocation] / divider;
 
-      test("$rep.: ($lsbLocation) ${data[lsbLocation]} / $divider -> $expected", () async {
+      test("$lsbLocation ${data[lsbLocation]} / $divider -> $expected", () async {
         final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider, optional: optional);
 
         expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, eps));

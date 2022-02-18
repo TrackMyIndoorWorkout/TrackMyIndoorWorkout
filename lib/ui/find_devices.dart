@@ -12,6 +12,7 @@ import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt_constants.dart';
+import '../devices/gatt_maps.dart';
 import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
 import '../preferences/auto_connect.dart';
@@ -192,8 +193,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
-    if (descriptor == null && advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
-      descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+    // Or other dedicated workarounds
+    if (descriptor == null) {
+      if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
+        descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+      } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
+        if (advertisementDigest.machineType == MachineType.treadmill) {
+          descriptor = deviceMap[matrixTreadmillFourCC];
+        } else if (advertisementDigest.machineType == MachineType.indoorBike) {
+          descriptor = deviceMap[matrixBikeFourCC];
+        }
+      }
     }
 
     final database = Get.find<AppDatabase>();
@@ -205,14 +215,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
     FitnessEquipment? fitnessEquipment;
 
     // Step 3. Try to infer from DeviceUsage, FTMS advertisement service data or characteristics
+    bool pickedAlready = false;
     if (descriptor == null) {
       if (deviceUsage != null) {
         descriptor = genericDescriptorForSport(deviceUsage.sport);
       } else {
         String? inferredSport;
-        if (advertisementDigest.machineType != MachineType.notFitnessMachine) {
+        if (advertisementDigest.machineType.isFtms) {
           // Determine FTMS sport by Service Data bits
-          inferredSport = advertisementDigest.fitnessMachineSport();
+          inferredSport = advertisementDigest.machineType.sport;
         } else if (advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
           // Determine FTMS sport by analyzing 0x1826 service's characteristics
           setState(() {
@@ -222,7 +233,23 @@ class FindDevicesState extends State<FindDevicesScreen> {
           fitnessEquipment = FitnessEquipment(device: device);
           final success = await fitnessEquipment.connectOnDemand(identify: true);
           if (success && fitnessEquipment.characteristicsId != null) {
-            inferredSport = fitnessEquipment.inferSportFromCharacteristicsId();
+            final inferredSports = fitnessEquipment.inferSportsFromCharacteristicsIds();
+            if (inferredSports.isNotEmpty) {
+              if (inferredSports.length == 1) {
+                inferredSport = inferredSports.first;
+              } else {
+                inferredSport = await Get.bottomSheet(
+                  SportPickerBottomSheet(
+                    sportChoices: inferredSports,
+                    initialSport: inferredSports.first,
+                  ),
+                  isDismissible: false,
+                  enableDrag: false,
+                );
+                pickedAlready = inferredSport != null;
+                fitnessEquipment.setCharacteristicById(sportToUuid[inferredSport]!);
+              }
+            }
           }
         }
 
@@ -252,13 +279,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     final prefService = Get.find<BasePrefService>();
 
-    if (descriptor.isMultiSport) {
+    if (descriptor.isMultiSport && !pickedAlready) {
       final multiSportSupport =
           prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;
       if (deviceUsage == null || multiSportSupport) {
         final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
         final sportPick = await Get.bottomSheet(
-          SportPickerBottomSheet(initialSport: initialSport, allSports: false),
+          SportPickerBottomSheet(sportChoices: waterSports, initialSport: initialSport),
           isDismissible: false,
           enableDrag: false,
         );

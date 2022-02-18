@@ -1,9 +1,22 @@
+## 1.1.93
+
+* Adding support: Stages SB 20, FlexStride Pro, Matrix TF50, Matrix R50, Sole E25
+* Moving time into FIT uploads (Strava, SUUNTO, Training Peaks)
+* Training Peaks upload default visibility switch
+* Leaderboard distance display is automatic high res / low res (m / km, yd / mi)
+* Handling machines which report themselves as multiple types
+* Fix calorie tunes for non heart rate based calorie counting
+* Fix leaderboard display
+
 ## 1.1.92
 
 * Workout will only start when the first movement is sensed
 * Moving time is accounted for besides elapsed time and persisted. UI switch tells which one is
   primarily preferred on the measurement screen and the activities list. The workout details
   displays both moving and elapsed time if they differ.
+* Cross Trainer support fixes
+* Two column layout size adjustment
+* Workout migration import fix
 
 ## 1.1.91
 

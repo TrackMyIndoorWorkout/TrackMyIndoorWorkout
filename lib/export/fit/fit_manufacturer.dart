@@ -1,8 +1,10 @@
 import 'package:edit_distance/edit_distance.dart';
+import '../../devices/device_map.dart';
 import 'fit_base_type.dart';
 
 const nautilusFitId = 14;
-const northPoleEengineeringFitId = 66;
+const northPoleEngineeringFitId = 66;
+const johnsonHealthTechId = 122;
 const precorFitId = 266;
 const stravaFitId = 265;
 
@@ -71,7 +73,7 @@ Map<int, String> fitManufacturer = {
   63: 'specialized',
   64: 'wtek',
   65: 'physical enterprises',
-  northPoleEengineeringFitId: 'north pole engineering',
+  northPoleEngineeringFitId: 'north pole engineering',
   67: 'bkool',
   68: 'cateye',
   69: 'stages cycling',
@@ -125,7 +127,7 @@ Map<int, String> fitManufacturer = {
   119: 'orangetheory',
   120: 'inpeak',
   121: 'kinetic',
-  122: 'johnson health tech',
+  johnsonHealthTechId: 'johnson health tech',
   123: 'polar electro',
   124: 'seesense',
   255: 'development',
@@ -172,6 +174,11 @@ Map<int, String> fitManufacturer = {
 int getFitManufacturer(String manufacturer) {
   if (manufacturer.trim().isEmpty) {
     return FitBaseTypes.uint16Type.invalidValue;
+  }
+
+  final matrixDescriptor = deviceMap[matrixTreadmillFourCC];
+  if (matrixDescriptor != null && manufacturer.startsWith(matrixDescriptor.manufacturerPrefix)) {
+    return johnsonHealthTechId;
   }
 
   var bestId = 0;

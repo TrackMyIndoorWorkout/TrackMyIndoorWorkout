@@ -82,7 +82,7 @@ abstract class AppDatabase extends FloorDatabase {
   }
 
   Future<CalorieTune?> findCalorieTuneByMac(String mac, bool hrBased) async {
-    if (!await hasCalorieTune(mac, true)) {
+    if (!await hasCalorieTune(mac, hrBased)) {
       return null;
     }
 

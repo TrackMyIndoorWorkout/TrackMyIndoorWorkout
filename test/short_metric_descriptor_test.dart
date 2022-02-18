@@ -30,8 +30,8 @@ void main() {
 
   group('ShortMetricDescriptor calculates measurement as expected', () {
     final rnd = Random();
-    1.to(repetition).forEach((input) {
-      final len = rnd.nextInt(99) + 2;
+    for (var lenMinusTwo in getRandomInts(repetition, 99, rnd)) {
+      final len = lenMinusTwo + 2;
       final data = getRandomInts(len, maxUint8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final larger = lsbLocation > 0 ? (lsbLocation < len - 1 ? rnd.nextBool() : false) : true;
@@ -48,6 +48,6 @@ void main() {
 
         expect(desc.getMeasurementValue(data), closeTo(expected, eps));
       });
-    });
+    }
   });
 }

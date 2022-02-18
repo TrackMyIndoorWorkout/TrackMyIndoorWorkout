@@ -12,21 +12,6 @@ import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 const smallRepetition = 10;
 const repetition = 50;
 
-const sports = [
-  ActivityType.ride,
-  ActivityType.run,
-  ActivityType.kayaking,
-  ActivityType.canoeing,
-  ActivityType.rowing,
-  ActivityType.swim,
-  ActivityType.elliptical,
-];
-
-extension RangeExtension on int {
-  List<int> to(int maxInclusive, {int step = 1}) =>
-      [for (int i = this; i <= maxInclusive; i += step) i];
-}
-
 List<int> getRandomInts(int count, int max, Random source) {
   return List<int>.generate(count, (index) => source.nextInt(max));
 }
@@ -36,7 +21,7 @@ List<double> getRandomDoubles(int count, double max, Random source) {
 }
 
 String getRandomSport() {
-  return sports[Random().nextInt(sports.length)];
+  return allSports[Random().nextInt(allSports.length)];
 }
 
 class ExportModelForTests extends ExportModel {
@@ -60,7 +45,7 @@ class ExportModelForTests extends ExportModel {
                 deviceId: "CAFEBAEBE",
                 hrmId: "",
                 start: 0,
-                fourCC: "SAP+",
+                fourCC: schwinnACPerfPlusFourCC,
                 sport: ActivityType.ride,
                 powerFactor: 1.0,
                 calorieFactor: 1.0,
@@ -70,7 +55,7 @@ class ExportModelForTests extends ExportModel {
                 timeZone: "America/Los_Angeles",
               ),
           rawData: rawData ?? false,
-          descriptor: descriptor ?? deviceMap["SAP+"]!,
+          descriptor: descriptor ?? deviceMap[schwinnACPerfPlusFourCC]!,
           author: author ?? 'Csaba Consulting',
           name: name ?? appName,
           swVersionMajor: swVersionMajor ?? "1",
@@ -86,7 +71,9 @@ class ExportModelForTests extends ExportModel {
 
 Future<void> initPrefServiceForTest() async {
   var prefDefaults = await getPrefDefaults();
-  final prefService =
-      await PrefServiceShared.init(prefix: preferencesPrefix, defaults: prefDefaults);
+  final prefService = await PrefServiceShared.init(
+    prefix: preferencesPrefix,
+    defaults: prefDefaults,
+  );
   Get.put<BasePrefService>(prefService);
 }

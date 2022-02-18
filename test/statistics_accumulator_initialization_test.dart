@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/statistics_accumulator.dart';
-import 'utils.dart';
 
 void main() {
   test('StatisticsAccumulator is empty after creation', () async {
@@ -183,7 +182,7 @@ void main() {
   });
 
   group('StatisticsAccumulator initializes max speed when max requested', () {
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final accu = StatisticsAccumulator(
         si: Random().nextBool(),
         sport: sport,
@@ -224,7 +223,7 @@ void main() {
   });
 
   group('StatisticsAccumulator initializes min speed when min requested', () {
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final accu = StatisticsAccumulator(
         si: Random().nextBool(),
         sport: sport,
@@ -481,7 +480,7 @@ void main() {
   });
 
   group('StatisticsAccumulator initializes everything when all requested', () {
-    for (final sport in sports) {
+    for (final sport in allSports) {
       final accu = StatisticsAccumulator(
         si: Random().nextBool(),
         sport: sport,

@@ -36,6 +36,21 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
           heartRateByteIndex: heartRateByteIndex,
         );
 
+  @override
+  TreadmillDeviceDescriptor clone() => TreadmillDeviceDescriptor(
+        fourCC: fourCC,
+        vendorName: vendorName,
+        modelName: modelName,
+        namePrefixes: namePrefixes,
+        manufacturerPrefix: manufacturerPrefix,
+        manufacturerFitId: manufacturerFitId,
+        model: model,
+        dataServiceId: dataServiceId,
+        dataCharacteristicId: dataCharacteristicId,
+        canMeasureHeartRate: canMeasureHeartRate,
+        heartRateByteIndex: heartRateByteIndex,
+      );
+
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
   void processFlag(int flag) {
@@ -91,8 +106,8 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       paceMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 10.0);
       byteCounter += 1;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   int processForceAndPowerFlag(int flag) {
@@ -102,8 +117,8 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   double? getPace(List<int> data) {

@@ -170,9 +170,11 @@ void main() {
       ),
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
-      test("$sum", () async {
+      test("$sum ${testPair.data.length}", () async {
         await initPrefServiceForTest();
         final rower = deviceMap[kayakProGenesisPortFourCC]!;
+        rower.initFlag();
+        expect(rower.isDataProcessable(testPair.data), true);
         rower.stopWorkout();
 
         final record = rower.stubRecord(testPair.data)!;

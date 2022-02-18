@@ -14,11 +14,14 @@ abstract class IntegerSensor extends SensorBase {
   Stream<int> get _listenToData async* {
     if (!attached || characteristic == null) return;
 
-    await for (var byteString
-        in characteristic!.value.throttleTime(const Duration(milliseconds: sensorDataThreshold))) {
-      if (!canMeasurementProcessed(byteString)) continue;
+    await for (var byteList in characteristic!.value.throttleTime(
+      const Duration(milliseconds: sensorDataThreshold),
+      leading: false,
+      trailing: true,
+    )) {
+      if (!canMeasurementProcessed(byteList)) continue;
 
-      metric = processMeasurement(byteString);
+      metric = processMeasurement(byteList);
       yield metric;
     }
   }

@@ -205,7 +205,7 @@ void main() {
       );
       final calculator = TrackCalculator(track: track);
       test("${track.radiusBoost} $lengthFactor", () async {
-        for (final distance in 1.to((trackLength * 2).round())) {
+        for (var distance in List<int>.generate((trackLength * 2).round(), (index) => index)) {
           final size = Size(
             minPixel + rnd.nextDouble() * maxPixel,
             minPixel + rnd.nextDouble() * maxPixel,
@@ -338,7 +338,7 @@ void main() {
       final unitDistance = calculator.trackRadius! / track.radius;
       final uDSquare = unitDistance * unitDistance;
       test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
-        for (final distance in 1.to((trackLength * 2).round())) {
+        for (var distance in List<int>.generate((trackLength * 2).round(), (index) => index)) {
           final markerA = calculator.trackMarker(distance.toDouble())!;
           final markerB = calculator.trackMarker((distance + 1).toDouble())!;
           final dx = markerA.dx - markerB.dx;

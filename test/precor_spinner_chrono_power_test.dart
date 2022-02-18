@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/precor_spinner_chrono_power.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -21,11 +20,10 @@ void main() {
   });
 
   test('Precor Spinner Chrono Power interprets Data flags properly', () async {
-    final bike = deviceMap[precorSpinnerChronoPowerFourCC] as PrecorSpinnerChronoPower;
+    final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
+    final data = [83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-    expect(
-        bike.canDataProcessed([83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), true);
-
+    expect(bike.isDataProcessable(data), true);
     expect(bike.speedMetric, isNotNull);
     expect(bike.cadenceMetric, isNotNull);
     expect(bike.distanceMetric, isNotNull);
@@ -202,6 +200,8 @@ void main() {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
         final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
+        expect(bike.isDataProcessable(testPair.data), true);
+
         final record = bike.stubRecord(testPair.data)!;
 
         expect(record.id, null);

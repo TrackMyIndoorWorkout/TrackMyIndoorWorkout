@@ -416,7 +416,7 @@ class RecordingState extends State<RecordingScreen> {
     size = widget.size;
 
     Wakelock.enable();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
@@ -667,7 +667,7 @@ class RecordingState extends State<RecordingScreen> {
   @override
   void dispose() {
     Wakelock.disable();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
 
     super.dispose();
   }
@@ -875,7 +875,9 @@ class RecordingState extends State<RecordingScreen> {
       return null;
     }
 
-    final averageSpeed = _movingTime > 0 ? _distance / _movingTime * DeviceDescriptor.ms2kmh : 0.0;
+    // #252 moving is in milliseconds, so 1000 multiplier is needed!!
+    final averageSpeed =
+        _movingTime > 0 ? _distance * 1000.0 / _movingTime * DeviceDescriptor.ms2kmh : 0.0;
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
@@ -1065,7 +1067,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Widget _getLeaderboardInfoText(int rank, double distance, bool lead) {
-    final distanceString = distanceByUnit(distance - _distance, _si, _highRes);
+    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
     var rankText = "";
     if (_displayLapCounter) {
       final lapCount = (distance / _trackLength).floor();

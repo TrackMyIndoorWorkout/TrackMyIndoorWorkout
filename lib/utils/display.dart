@@ -145,7 +145,11 @@ String distanceUnit(bool si, bool highRes) {
   }
 }
 
-String distanceByUnit(double distance, bool si, bool highRes) {
+String distanceByUnit(double distance, bool si, bool highRes, {bool autoRes = false}) {
+  if (autoRes) {
+    final hiResThresholdDistance = si ? 999 : thousandYardsInMeters - 1;
+    highRes = distance < hiResThresholdDistance;
+  }
   final distanceStr = distanceString(distance, si, highRes);
   final unitStr = distanceUnit(si, highRes);
   return '$distanceStr $unitStr';
