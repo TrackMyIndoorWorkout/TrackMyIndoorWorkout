@@ -88,7 +88,7 @@ extension ScanResultEx on ScanResult {
   List<MachineType> getFtmsServiceDataMachineTypes(int ftmsServiceDataMachineByte) {
     List<MachineType> machineTypes = [];
     for (final machineType in MachineType.values) {
-      if (ftmsServiceDataMachineByte & machineType.bit >= 1) {
+      if (machineType.bit > 0 && ftmsServiceDataMachineByte & machineType.bit >= 1) {
         machineTypes.add(machineType);
       }
     }
@@ -121,6 +121,6 @@ extension ScanResultEx on ScanResult {
     return MachineType.multiFtms;
   }
 
-  IconData getEquipmentIcon([List<MachineType> ftmsServiceDataMachineTypes = const []]) =>
+  IconData getEquipmentIcon([List<MachineType>? ftmsServiceDataMachineTypes]) =>
       getMachineType(ftmsServiceDataMachineTypes).icon;
 }
