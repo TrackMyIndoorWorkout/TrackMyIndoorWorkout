@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:mockito/annotations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/export/csv/csv_export.dart';
@@ -17,6 +18,7 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'database_utils.dart';
 import 'utils.dart';
 
+@GenerateMocks([PackageInfo])
 void main() {
   group('Migration CSV imports identically', () {
     final rnd = Random();
@@ -26,7 +28,12 @@ void main() {
         final countChunk = recordCount ~/ 4;
         final movingCount = recordCount - 2 * countChunk;
         await initPrefServiceForTest();
-        final packageInfo = await PackageInfo.fromPlatform();
+        final packageInfo = PackageInfo(
+          appName: "Track My Indoor Workout",
+          packageName: "dev.csaba.track_my_indoor_exercise",
+          buildNumber: "199",
+          version: "1.0.199",
+        );
         Get.put<PackageInfo>(packageInfo);
         final hasDB = Get.isRegistered<AppDatabase>();
         final database = hasDB ? Get.find<AppDatabase>() : InMemoryDatabase();
