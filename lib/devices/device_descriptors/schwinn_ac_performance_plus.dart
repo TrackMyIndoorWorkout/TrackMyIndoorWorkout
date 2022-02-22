@@ -33,6 +33,8 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
 
   @override
   void stopWorkout() {
+    // Kinda breaks the Liskov-Substitution Principle in SOLID
+    // TODO: solve it with Interface Segregation Principle
     throw UnsupportedError("ANT+ only device => import only");
   }
 }
