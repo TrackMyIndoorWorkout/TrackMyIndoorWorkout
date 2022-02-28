@@ -32,11 +32,6 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    lintOptions {
-        disable 'InvalidPackage'
-        checkReleaseBuilds false
-        abortOnError false
-    }
 
     defaultConfig {
         applicationId "dev.csaba.track_my_indoor_exercise"
@@ -58,6 +53,11 @@ android {
                 debugSymbolLevel 'FULL' // Use 'SYMBOL_TABLE' if full is too big
             }
         }
+    }
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+        disable 'InvalidPackage'
     }
 }
 
