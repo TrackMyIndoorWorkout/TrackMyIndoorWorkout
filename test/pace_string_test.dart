@@ -7,6 +7,15 @@ import 'utils.dart';
 String paceString(double pace) {
   final minutes = pace.truncate();
   final seconds = ((pace - minutes) * 60.0).truncate();
+  // final remainder = (pace - minutes - seconds / 60.0 * 1000000.0).truncate();
+  // final milliseconds = remainder ~/ 1000;
+  // final microseconds = remainder % 1000;
+  //
+  // final duration = Duration(minutes: minutes, seconds: seconds, milliseconds: milliseconds, microseconds: microseconds);
+  // String twoDigitMinutes = duration.inMinutes.remainder(60).toString();
+  // String twoDigitSeconds = duration.inSeconds.remainder(60).toString().padLeft(2, "0");
+  // return "$twoDigitMinutes:$twoDigitSeconds";
+
   return "$minutes:" + seconds.toString().padLeft(2, "0");
 }
 
@@ -24,6 +33,8 @@ void main() {
       Tuple2<double, String>(59.2, "59:12"),
       Tuple2<double, String>(59.5, "59:30"),
       Tuple2<double, String>(59.99, "59:59"),
+      Tuple2<double, String>(59.995928558, "59:59"),
+      Tuple2<double, String>(60.001900361, "60:00"),
       Tuple2<double, String>(60.0, "60:00"),
       Tuple2<double, String>(60.5, "60:30"),
       Tuple2<double, String>(80.0, "80:00"),

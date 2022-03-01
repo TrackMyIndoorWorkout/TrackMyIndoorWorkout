@@ -59,7 +59,7 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
     } else if (sport == ActivityType.swim) {
       pace /= 10.0;
     } else if (!si) {
-      pace /= km2mi;
+      pace /= km2miDisp;
     }
     return paceString(pace);
   }

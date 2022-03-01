@@ -43,11 +43,11 @@ class PreferencesSpec {
   static const zoneIndexDisplayDefault = false;
 
   static final slowSpeeds = {
-    ActivityType.ride: 4.0,
-    ActivityType.run: 2.0,
-    paddleSport: 1.0,
-    ActivityType.swim: 0.5,
-    ActivityType.elliptical: 1.0,
+    ActivityType.ride: 2.0,
+    ActivityType.run: 1.0,
+    paddleSport: 0.5,
+    ActivityType.swim: 0.25,
+    ActivityType.elliptical: 0.5,
   };
 
   static final _preferencesSpecsTemplate = [

@@ -9,6 +9,7 @@ const jToCal = 0.239006;
 const jToKCal = jToCal / 1000.0;
 const calToJ = 1 / jToCal;
 const km2mi = 0.621371;
+const km2miDisp = 0.621;
 const mi2km = 1 / km2mi;
 const m2mile = km2mi / 1000.0;
 const m2yard = 1.09361;
