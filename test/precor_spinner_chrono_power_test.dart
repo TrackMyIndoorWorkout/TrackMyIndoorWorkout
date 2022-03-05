@@ -23,7 +23,7 @@ void main() {
     final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
     final data = [83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-    expect(bike.canDataProcessed(data), true);
+    expect(bike.isDataProcessable(data), true);
     expect(bike.speedMetric, isNotNull);
     expect(bike.cadenceMetric, isNotNull);
     expect(bike.distanceMetric, isNotNull);
@@ -200,7 +200,7 @@ void main() {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
         final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
-        expect(bike.canDataProcessed(testPair.data), true);
+        expect(bike.isDataProcessable(testPair.data), true);
 
         final record = bike.stubRecord(testPair.data)!;
 

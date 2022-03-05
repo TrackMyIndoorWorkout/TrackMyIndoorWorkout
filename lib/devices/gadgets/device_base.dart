@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import '../../devices/gatt_maps.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
@@ -68,6 +69,18 @@ abstract class DeviceBase {
       return false;
     }
 
+    setCharacteristicById(characteristicsId);
+    return characteristic != null;
+  }
+
+  void setCharacteristicById(String? newCharacteristicsId) {
+    if (newCharacteristicsId != null &&
+        newCharacteristicsId == characteristicsId &&
+        characteristic != null) {
+      return;
+    }
+
+    characteristicsId = newCharacteristicsId;
     if (characteristicsId != null) {
       characteristic = _service!.characteristics
           .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
@@ -76,8 +89,6 @@ abstract class DeviceBase {
           .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
       characteristicsId = characteristic?.uuid.uuidString();
     }
-
-    return characteristic != null;
   }
 
   Future<bool> discover({bool retry = false}) async {
@@ -106,18 +117,29 @@ abstract class DeviceBase {
     return discoverCore();
   }
 
-  String? inferSportFromCharacteristicsId() {
-    if (characteristicsId == treadmillUuid) {
-      return ActivityType.run;
-    } else if (characteristicsId == precorMeasurementUuid || characteristicsId == indoorBikeUuid) {
-      return ActivityType.ride;
-    } else if (characteristicsId == rowerDeviceUuid) {
-      return ActivityType.rowing;
-    } else if (characteristicsId == crossTrainerUuid) {
-      return ActivityType.elliptical;
+  List<String> inferSportsFromCharacteristicsIds() {
+    if (discovered) {
+      return _service!.characteristics
+          .where((char) => ftmsSportCharacteristics.contains(char.uuid.uuidString()))
+          .map((char) => uuidToSport[char.uuid.uuidString()]!)
+          .toSet()
+          .toList(growable: false);
     }
 
-    return null;
+    List<String> sports = [];
+    if (characteristicsId == treadmillUuid ||
+        characteristicsId == stepClimberUuid ||
+        characteristicsId == stairClimberUuid) {
+      sports.add(ActivityType.run);
+    } else if (characteristicsId == precorMeasurementUuid || characteristicsId == indoorBikeUuid) {
+      sports.add(ActivityType.ride);
+    } else if (characteristicsId == rowerDeviceUuid) {
+      sports.addAll(waterSports);
+    } else if (characteristicsId == crossTrainerUuid) {
+      sports.add(ActivityType.elliptical);
+    }
+
+    return sports;
   }
 
   Future<void> attach() async {

@@ -49,6 +49,22 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           heartRateByteIndex: heartRateByteIndex,
         );
 
+  @override
+  RowerDeviceDescriptor clone() => RowerDeviceDescriptor(
+        defaultSport: defaultSport,
+        fourCC: fourCC,
+        vendorName: vendorName,
+        modelName: modelName,
+        namePrefixes: namePrefixes,
+        manufacturerPrefix: manufacturerPrefix,
+        manufacturerFitId: manufacturerFitId,
+        model: model,
+        dataServiceId: dataServiceId,
+        dataCharacteristicId: dataCharacteristicId,
+        canMeasureHeartRate: canMeasureHeartRate,
+        heartRateByteIndex: heartRateByteIndex,
+      );
+
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override
   void processFlag(int flag) {

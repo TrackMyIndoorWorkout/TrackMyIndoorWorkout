@@ -24,7 +24,7 @@ void main() {
         final bike = deviceMap[schwinnACPerfPlusFourCC]!;
         bike.initFlag();
 
-        expect(bike.canDataProcessed(data), false);
+        expect(bike.isDataProcessable(data), false);
       });
     }
   });

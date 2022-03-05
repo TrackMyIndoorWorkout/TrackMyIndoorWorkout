@@ -43,7 +43,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
           icon: _themeManager.getActionIcon(Icons.edit, size),
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
-              SportPickerBottomSheet(initialSport: deviceUsage.sport, allSports: true),
+              SportPickerBottomSheet(sportChoices: allSports, initialSport: deviceUsage.sport),
               enableDrag: false,
             );
             if (sportPick != null) {

@@ -39,12 +39,12 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         );
 
   @override
-  bool canDataProcessed(List<int> data) {
-    final dataLength = data.length;
+  bool isDataProcessable(List<int> data) {
     if (byteCounter <= flagByteSize) {
       preProcessFlag(data);
     }
 
+    final dataLength = data.length;
     return byteCounter >= flagByteSize && dataLength == byteCounter;
   }
 

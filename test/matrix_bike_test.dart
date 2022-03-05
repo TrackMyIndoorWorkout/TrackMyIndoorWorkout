@@ -108,7 +108,7 @@ void main() {
       test("$sum ${testPair.data.length}", () async {
         final bike = deviceMap[matrixBikeFourCC]!;
         bike.initFlag();
-        expect(bike.canDataProcessed(testPair.data), true);
+        expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();
 
         final record = bike.stubRecord(testPair.data)!;

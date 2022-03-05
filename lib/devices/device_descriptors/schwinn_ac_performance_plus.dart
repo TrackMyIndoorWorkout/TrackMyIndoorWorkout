@@ -20,16 +20,21 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           dataServiceId: null,
           dataCharacteristicId: null,
           antPlus: true,
-          canMeasureCalories: false,
+          canMeasureCalories: true, // #258 avoid over inflation
         );
 
   @override
-  bool canDataProcessed(List<int> data) {
+  SchwinnACPerformancePlus clone() => SchwinnACPerformancePlus();
+
+  @override
+  bool isDataProcessable(List<int> data) {
     return false;
   }
 
   @override
   void stopWorkout() {
+    // Kinda breaks the Liskov-Substitution Principle in SOLID
+    // TODO: solve it with Interface Segregation Principle
     throw UnsupportedError("ANT+ only device => import only");
   }
 }

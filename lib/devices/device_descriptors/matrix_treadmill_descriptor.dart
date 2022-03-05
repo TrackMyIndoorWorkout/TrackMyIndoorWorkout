@@ -9,11 +9,14 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
           vendorName: "Matrix",
           modelName: "Matrix Treadmill",
           namePrefixes: ["CTM", "Johnson", "Matrix"],
-          manufacturerPrefix: "Johnson Health Tech",
+          manufacturerPrefix: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Treadmill",
           canMeasureHeartRate: false,
         );
+
+  @override
+  MatrixTreadmillDescriptor clone() => MatrixTreadmillDescriptor();
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override

@@ -174,7 +174,7 @@ void main() {
         await initPrefServiceForTest();
         final rower = deviceMap[kayakProGenesisPortFourCC]!;
         rower.initFlag();
-        expect(rower.canDataProcessed(testPair.data), true);
+        expect(rower.isDataProcessable(testPair.data), true);
         rower.stopWorkout();
 
         final record = rower.stubRecord(testPair.data)!;

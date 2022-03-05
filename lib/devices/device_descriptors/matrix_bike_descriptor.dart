@@ -9,11 +9,14 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
           vendorName: "Matrix",
           modelName: "Matrix Bike",
           namePrefixes: ["CTM", "Johnson", "Matrix"],
-          manufacturerPrefix: "Johnson Health Tech",
+          manufacturerPrefix: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Bike",
           canMeasureHeartRate: false,
         );
+
+  @override
+  MatrixBikeDescriptor clone() => MatrixBikeDescriptor();
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override

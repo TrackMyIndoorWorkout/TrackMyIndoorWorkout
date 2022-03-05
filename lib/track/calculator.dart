@@ -65,6 +65,7 @@ class TrackCalculator {
   }
 
   Offset? trackMarker(double distance) {
+    // distance in meters
     if (trackSize == null || trackRadius == null) return null;
 
     final r = trackRadius!;

@@ -19,6 +19,7 @@ class FitActivity extends FitDefinitionMessage {
     ];
     if (exportTarget == ExportTarget.regular) {
       fields.addAll([
+        FitField(0, FitBaseTypes.uint32Type), // TotalTimerTime (1/1000s)
         FitField(1, FitBaseTypes.uint16Type), // NumSessions: 1
         FitField(2, FitBaseTypes.enumType), // Activity (Manual)
         FitField(3, FitBaseTypes.enumType), // Event (Activity)
@@ -35,6 +36,7 @@ class FitActivity extends FitDefinitionMessage {
     dummy.output = [localMessageType];
     dummy.addLong(FitSerializable.fitDateTime(model.activity.startDateTime!));
     if (exportTarget == ExportTarget.regular) {
+      dummy.addLong(model.activity.movingTime);
       dummy.addShort(1);
       dummy.addByte(FitActivityEnum.manual);
       dummy.addByte(FitEvent.activity);
