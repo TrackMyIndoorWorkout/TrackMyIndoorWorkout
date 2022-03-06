@@ -32,9 +32,16 @@ void main() async {
 
   final bluetoothStateString = await BluetoothEnable.enableBluetooth;
 
+  // TODO: Android 12 does nto need location permission any more
+  // Maybe even we can completely eliminate permission handler
+  // if (Platform.isAndroid) {
+  //   var androidInfo = await DeviceInfoPlugin().androidInfo;
+  //   if (androidInfo.version.sdkInt < 31) {
   await Future.delayed(const Duration(milliseconds: startupIntermittentDelay));
 
   final permissionState = await Permission.locationWhenInUse.request();
+  //   }
+  // }
 
   await Future.delayed(const Duration(milliseconds: startupIntermittentDelay));
 
