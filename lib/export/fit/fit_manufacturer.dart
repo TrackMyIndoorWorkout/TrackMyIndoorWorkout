@@ -190,15 +190,18 @@ int getFitManufacturer(String manufacturer) {
     final manufacturerCropped = manufacturerLower.length <= manufacturerEntry.value.length
         ? manufacturerLower
         : manufacturerLower.substring(0, manufacturerEntry.value.length - 1);
-    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, manufacturerEntry.value);
+    final entryCropped = manufacturerEntry.value.length <= manufacturerCropped.length
+        ? manufacturerEntry.value
+        : manufacturerEntry.value.substring(0, manufacturerCropped.length - 1);
+    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, entryCropped);
     if (distance < bestDistance) {
       bestDistance = distance;
       bestId = manufacturerEntry.key;
     }
   }
 
-  if (bestDistance > 0.1) {
-    bestId = FitBaseTypes.uint16Type.invalidValue;
+  if (bestDistance > 0.10) {
+    bestId = stravaFitId;
   }
 
   return bestId;

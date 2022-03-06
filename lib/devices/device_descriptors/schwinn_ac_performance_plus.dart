@@ -1,4 +1,4 @@
-import '../../export/fit/fit_base_type.dart';
+import '../../export/fit/fit_manufacturer.dart';
 import '../../utils/constants.dart';
 import '../device_map.dart';
 import 'device_descriptor.dart';
@@ -15,7 +15,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           modelName: "AC Performance Plus",
           namePrefixes: ["Schwinn AC Perf+"],
           manufacturerPrefix: "Schwinn",
-          manufacturerFitId: FitBaseTypes.uint16Type.invalidValue,
+          manufacturerFitId: stravaFitId,
           model: "Schwinn AC Perf+",
           dataServiceId: null,
           dataCharacteristicId: null,
