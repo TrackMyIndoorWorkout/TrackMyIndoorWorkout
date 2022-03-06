@@ -4,6 +4,7 @@ import 'fit_base_type.dart';
 
 const nautilusFitId = 14;
 const northPoleEngineeringFitId = 66;
+const stagesCyclingFitId = 69;
 const johnsonHealthTechId = 122;
 const precorFitId = 266;
 const stravaFitId = 265;
