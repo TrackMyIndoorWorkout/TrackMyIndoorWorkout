@@ -79,19 +79,19 @@ void main() {
     expect(bike.caloriesPerMinuteMetric, null);
     expect(bike.heartRateByteIndex, null);
   });
-/*
+
   group('Stages SB20 interprets FTMS Indoor Bike Data properly', () {
     for (final testPair in [
       TestPair(
-        data: [68, 2, 94, 11, 240, 0, 122, 0, 84],
+        data: [0, 0, 131, 6],
         record: RecordWithSport(
           distance: null,
           elapsed: null,
           calories: null,
-          power: 122,
-          speed: 29.1,
-          cadence: 120,
-          heartRate: 84,
+          power: null,
+          speed: 16.67,
+          cadence: null,
+          heartRate: 0,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -99,15 +99,15 @@ void main() {
         ),
       ),
       TestPair(
-        data: [68, 2, 154, 11, 250, 0, 128, 0, 101],
+        data: [0, 0, 233, 13],
         record: RecordWithSport(
           distance: null,
           elapsed: null,
           calories: null,
-          power: 128,
-          speed: 29.7,
-          cadence: 125,
-          heartRate: 101,
+          power: null,
+          speed: 35.61,
+          cadence: null,
+          heartRate: 0,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -115,15 +115,15 @@ void main() {
         ),
       ),
       TestPair(
-        data: [68, 2, 4, 16, 250, 0, 43, 1, 115],
+        data: [17, 0, 4, 1, 0],
         record: RecordWithSport(
-          distance: null,
+          distance: 260.0,
           elapsed: null,
           calories: null,
-          power: 299,
-          speed: 41.0,
-          cadence: 125,
-          heartRate: 115,
+          power: null,
+          speed: null,
+          cadence: null,
+          heartRate: 0,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -131,15 +131,15 @@ void main() {
         ),
       ),
       TestPair(
-        data: [68, 2, 160, 20, 106, 0, 117, 2, 117],
+        data: [17, 0, 181, 3, 0],
         record: RecordWithSport(
-          distance: null,
+          distance: 949.0,
           elapsed: null,
           calories: null,
-          power: 629,
-          speed: 52.8,
-          cadence: 53,
-          heartRate: 117,
+          power: null,
+          speed: null,
+          cadence: null,
+          heartRate: 0,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -147,15 +147,15 @@ void main() {
         ),
       ),
       TestPair(
-        data: [68, 2, 54, 21, 114, 0, 180, 2, 90],
+        data: [197, 0, 182, 0, 93, 2, 0, 0],
         record: RecordWithSport(
           distance: null,
           elapsed: null,
           calories: null,
-          power: 692,
-          speed: 54.3,
-          cadence: 57,
-          heartRate: 90,
+          power: 605,
+          speed: null,
+          cadence: 91,
+          heartRate: 0,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -163,31 +163,15 @@ void main() {
         ),
       ),
       TestPair(
-        data: [68, 2, 230, 20, 110, 0, 148, 2, 116],
+        data: [197, 0, 224, 0, 35, 3, 0, 0],
         record: RecordWithSport(
           distance: null,
           elapsed: null,
           calories: null,
-          power: 660,
-          speed: 53.5,
-          cadence: 55,
-          heartRate: 116,
-          pace: null,
-          sport: ActivityType.ride,
-          caloriesPerHour: null,
-          caloriesPerMinute: null,
-        ),
-      ),
-      TestPair(
-        data: [68, 2, 0, 0, 0, 0, 0, 0, 85],
-        record: RecordWithSport(
-          distance: null,
-          elapsed: null,
-          calories: null,
-          power: 0,
-          speed: 0.0,
-          cadence: 0,
-          heartRate: 85,
+          power: 803,
+          speed: null,
+          cadence: 112,
+          heartRate: 0,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -197,7 +181,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        final bike = deviceMap[schwinnICBikeFourCC]!;
+        final bike = deviceMap[stagesSB20FourCC]!;
         bike.initFlag();
         expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();
@@ -224,5 +208,4 @@ void main() {
       });
     }
   });
- */
 }
