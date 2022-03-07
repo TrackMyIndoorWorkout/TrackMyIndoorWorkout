@@ -94,8 +94,6 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
-    super.stubRecord(data);
-
     final pace = getPace(data);
 
     var strokeRate = getStrokeRate(data);

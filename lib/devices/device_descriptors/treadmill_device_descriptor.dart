@@ -73,8 +73,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
-    super.stubRecord(data);
-
     double? speed = getSpeed(data);
     double? pace = getPace(data); // km / minute
     speed ??= (pace ?? 0.0) * 60.0; // km / h

@@ -177,7 +177,7 @@ void main() {
         expect(rower.isDataProcessable(testPair.data), true);
         rower.stopWorkout();
 
-        final record = rower.stubRecord(testPair.data)!;
+        final record = rower.wrappedStubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);

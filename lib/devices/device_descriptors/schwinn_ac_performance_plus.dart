@@ -1,4 +1,5 @@
 import '../../export/fit/fit_manufacturer.dart';
+import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../device_map.dart';
 import 'device_descriptor.dart';
@@ -29,6 +30,13 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   @override
   bool isDataProcessable(List<int> data) {
     return false;
+  }
+
+  @override
+  RecordWithSport? stubRecord(List<int> data) {
+    // Kinda breaks the Liskov-Substitution Principle in SOLID
+    // TODO: solve it with Interface Segregation Principle
+    throw UnsupportedError("ANT+ only device => import only");
   }
 
   @override
