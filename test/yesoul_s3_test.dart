@@ -12,46 +12,66 @@ class TestPair {
 }
 
 void main() {
-  test('Schwinn IC4 constructor tests', () async {
-    final bike = deviceMap[schwinnICBikeFourCC]!;
+  test('Yesoul S3 constructor tests', () async {
+    final bike = deviceMap[yesoulS3FourCC]!;
 
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
-    expect(bike.fourCC, schwinnICBikeFourCC);
+    expect(bike.fourCC, yesoulS3FourCC);
   });
 
-  test('Schwinn IC4 interprets FTMS Indoor Bike Data flags properly', () async {
-    final bike = deviceMap[schwinnICBikeFourCC] as IndoorBikeDeviceDescriptor;
-    const lsb = 68;
-    const msb = 2;
+  test('Yesoul S3 interprets FTMS Indoor Bike Data 1 flags properly', () async {
+    final bike = deviceMap[yesoulS3FourCC] as IndoorBikeDeviceDescriptor;
+    const lsb = 0;
+    const msb = 8;
     const flag = maxUint8 * msb + lsb;
     bike.stopWorkout();
 
     bike.processFlag(flag);
 
     expect(bike.speedMetric, isNotNull);
-    expect(bike.cadenceMetric, isNotNull);
+    expect(bike.cadenceMetric, null);
     expect(bike.distanceMetric, null);
-    expect(bike.powerMetric, isNotNull);
+    expect(bike.powerMetric, null);
     expect(bike.caloriesMetric, null);
-    expect(bike.timeMetric, null);
+    expect(bike.timeMetric, isNotNull);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
-    expect(bike.heartRateByteIndex, isNotNull);
+    expect(bike.heartRateByteIndex, null);
   });
 
-  group('Schwinn IC4 interprets FTMS Indoor Bike Data properly', () {
+  test('Yesoul S3 interprets FTMS Indoor Bike Data 2 flags properly', () async {
+    final bike = deviceMap[yesoulS3FourCC] as IndoorBikeDeviceDescriptor;
+    const lsb = 245; // 0xF5
+    const msb = 1;
+    const flag = maxUint8 * msb + lsb;
+    bike.stopWorkout();
+
+    bike.processFlag(flag);
+
+    expect(bike.speedMetric, null);
+    expect(bike.cadenceMetric, isNotNull);
+    expect(bike.distanceMetric, isNotNull);
+    expect(bike.powerMetric, isNotNull);
+    expect(bike.caloriesMetric, isNotNull);
+    expect(bike.timeMetric, null);
+    expect(bike.caloriesPerHourMetric, isNotNull);
+    expect(bike.caloriesPerMinuteMetric, isNotNull);
+    expect(bike.heartRateByteIndex, null);
+  });
+
+  group('Yesoul S3 interprets FTMS Indoor Bike Data properly', () {
     for (final testPair in [
       TestPair(
-        data: [68, 2, 94, 11, 240, 0, 122, 0, 84],
+        data: [0, 8, 22, 10, 53, 0],
         record: RecordWithSport(
           distance: null,
-          elapsed: null,
+          elapsed: 53,
           calories: null,
-          power: 122,
-          speed: 29.1,
-          cadence: 120,
-          heartRate: 84,
+          power: null,
+          speed: 25.82,
+          cadence: null,
+          heartRate: 0,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -59,15 +79,15 @@ void main() {
         ),
       ),
       TestPair(
-        data: [68, 2, 154, 11, 250, 0, 128, 0, 101],
+        data: [0, 8, 40, 8, 119, 0],
         record: RecordWithSport(
           distance: null,
-          elapsed: null,
+          elapsed: 119,
           calories: null,
-          power: 128,
-          speed: 29.7,
-          cadence: 125,
-          heartRate: 101,
+          power: null,
+          speed: 20.88,
+          cadence: null,
+          heartRate: 0,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -75,79 +95,63 @@ void main() {
         ),
       ),
       TestPair(
-        data: [68, 2, 4, 16, 250, 0, 43, 1, 115],
+        data: [0, 8, 0, 0, 122, 0],
         record: RecordWithSport(
           distance: null,
-          elapsed: null,
+          elapsed: 122,
           calories: null,
-          power: 299,
-          speed: 41.0,
-          cadence: 125,
-          heartRate: 115,
-          pace: null,
-          sport: ActivityType.ride,
-          caloriesPerHour: null,
-          caloriesPerMinute: null,
-        ),
-      ),
-      TestPair(
-        data: [68, 2, 160, 20, 106, 0, 117, 2, 117],
-        record: RecordWithSport(
-          distance: null,
-          elapsed: null,
-          calories: null,
-          power: 629,
-          speed: 52.8,
-          cadence: 53,
-          heartRate: 117,
-          pace: null,
-          sport: ActivityType.ride,
-          caloriesPerHour: null,
-          caloriesPerMinute: null,
-        ),
-      ),
-      TestPair(
-        data: [68, 2, 54, 21, 114, 0, 180, 2, 90],
-        record: RecordWithSport(
-          distance: null,
-          elapsed: null,
-          calories: null,
-          power: 692,
-          speed: 54.3,
-          cadence: 57,
-          heartRate: 90,
-          pace: null,
-          sport: ActivityType.ride,
-          caloriesPerHour: null,
-          caloriesPerMinute: null,
-        ),
-      ),
-      TestPair(
-        data: [68, 2, 230, 20, 110, 0, 148, 2, 116],
-        record: RecordWithSport(
-          distance: null,
-          elapsed: null,
-          calories: null,
-          power: 660,
-          speed: 53.5,
-          cadence: 55,
-          heartRate: 116,
-          pace: null,
-          sport: ActivityType.ride,
-          caloriesPerHour: null,
-          caloriesPerMinute: null,
-        ),
-      ),
-      TestPair(
-        data: [68, 2, 0, 0, 0, 0, 0, 0, 85],
-        record: RecordWithSport(
-          distance: null,
-          elapsed: null,
-          calories: null,
-          power: 0,
+          power: null,
           speed: 0.0,
-          cadence: 0,
-          heartRate: 85,
+          cadence: null,
+          heartRate: 0,
+          pace: null,
+          sport: ActivityType.ride,
+          caloriesPerHour: null,
+          caloriesPerMinute: null,
+        ),
+      ),
+      TestPair(
+        data: [245, 1, 136, 0, 246, 0, 0, 53, 0, 107, 0, 71, 0, 4, 0, 255, 255, 255],
+        record: RecordWithSport(
+          distance: 246.0,
+          elapsed: null,
+          calories: 4,
+          power: 107,
+          speed: null,
+          cadence: 68,
+          heartRate: 0,
+          pace: null,
+          sport: ActivityType.ride,
+          caloriesPerHour: null,
+          caloriesPerMinute: null,
+        ),
+      ),
+      TestPair(
+        data: [245, 1, 134, 0, 253, 0, 0, 53, 0, 105, 0, 72, 0, 5, 0, 255, 255, 255],
+        record: RecordWithSport(
+          distance: 253.0,
+          elapsed: null,
+          calories: 5,
+          power: 105,
+          speed: null,
+          cadence: 67,
+          heartRate: 0,
+          pace: null,
+          sport: ActivityType.ride,
+          caloriesPerHour: null,
+          caloriesPerMinute: null,
+        ),
+      ),
+      TestPair(
+        data: [245, 1, 110, 0, 132, 2, 0, 52, 0, 76, 0, 87, 0, 13, 0, 255, 255, 255],
+        record: RecordWithSport(
+          distance: 644.0,
+          elapsed: null,
+          calories: 13,
+          power: 76,
+          speed: null,
+          cadence: 55,
+          heartRate: 0,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,

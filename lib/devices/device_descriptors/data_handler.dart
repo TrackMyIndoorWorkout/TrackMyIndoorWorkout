@@ -5,11 +5,14 @@ import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 
 abstract class DataHandler {
+  final bool hasFeatureFlags;
   final int flagByteSize;
   int featuresFlag = -1;
   int byteCounter = 0;
 
   int? heartRateByteIndex;
+
+  bool lastNotMoving = true;
 
   // Common metrics
   ShortMetricDescriptor? speedMetric;
@@ -22,6 +25,7 @@ abstract class DataHandler {
   ByteMetricDescriptor? caloriesPerMinuteMetric;
 
   DataHandler({
+    this.hasFeatureFlags = true,
     this.flagByteSize = 2,
     this.heartRateByteIndex,
     this.timeMetric,
@@ -56,10 +60,16 @@ abstract class DataHandler {
     }
   }
 
-  RecordWithSport? stubRecord(List<int> data) {
-    preProcessFlag(data);
+  RecordWithSport? stubRecord(List<int> data);
 
-    return null;
+  RecordWithSport? wrappedStubRecord(List<int> data) {
+    if (hasFeatureFlags) {
+      preProcessFlag(data);
+    }
+
+    final stub = stubRecord(data);
+    lastNotMoving = stub?.isNotMoving() ?? true;
+    return stub;
   }
 
   double? getSpeed(List<int> data) {

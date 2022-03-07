@@ -51,9 +51,11 @@ class FitnessEquipment extends DeviceBase {
   int _lastPositiveCadence = 0; // #101
   bool _cadenceGapWorkaround = cadenceGapWorkaroundDefault;
   double _lastPositiveCalories = 0.0; // #111
-  bool startingValues; // #197
+  bool firstCalories; // #197 #234 #259
   double _startingCalories = 0.0;
+  bool firstDistance; // #197 #234 #259
   double _startingDistance = 0.0;
+  bool firstTime; // #197 #234 #259
   int _startingElapsed = 0;
   bool hasTotalCalorieCounting = false;
   Timer? _timer;
@@ -87,7 +89,12 @@ class FitnessEquipment extends DeviceBase {
   Map<int, List<int>> _listDeduplicationMap = {};
   Timer? _throttleTimer;
 
-  FitnessEquipment({this.descriptor, device, this.startingValues = true})
+  FitnessEquipment(
+      {this.descriptor,
+      device,
+      this.firstCalories = true,
+      this.firstDistance = true,
+      this.firstTime = true})
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
           characteristicsId: descriptor?.dataCharacteristicId,
@@ -114,6 +121,42 @@ class FitnessEquipment extends DeviceBase {
     return l[1] * 256 + l[0];
   }
 
+  /// Data streaming with custom multi-type packet aware throttling logic
+  ///
+  /// Stages SB20, Yesoul S3 and several other machines don't gather up
+  /// all the relevant feature data into one packet, but instead supply
+  /// various packets with distinct features. For example:
+  /// * Stages has three packet types: 1. speed, 2. distance, 3.
+  ///   cadence + power
+  /// * Yesoul has two: 1. speed + elapsed time 2. cadence + distance +
+  ///   power + calories
+  ///
+  /// This behavior is fundamentally different than other machines like
+  /// Schwinn IC4 or Precor Spinner Chrono Power.
+  /// * With multi-type packets I cannot tell if the workout is stopped
+  ///   (like if I ony get a distance packet).
+  /// * Creating a stub record from fragments of features results in a
+  ///   spotty record. We'd need to fill the gaps from last known positive
+  ///   values.
+  /// * Since feature flags rotate we'd want to avoid the constant
+  ///   re-interpretation of feature bits and construction of metric mapping.
+  ///   So instead of having just one DataHandler (part of DeviceBase parent
+  ///   class) we'd manage a set of DataHandlers, basically caching the
+  ///   feature computation
+  /// * With need our own throttling, since the throttle logic should
+  ///   distinguish packets by features and should be able to gather the latest
+  ///   from each.
+  /// * As an extra win the throttling logic can already check the worthy-ness
+  ///   of a packet and drop it without disturbing the throttling (timer).
+  ///   Apparently Precor Spinner Chrono Power sometimes sprinkles in unworthy
+  ///   packets into the comm. If the throttle timing is in interference it could
+  ///   only pickup those unworthy packets so the app would be numb. With the
+  ///   worthy-ness check before anything else we could just yeet the garbage
+  ///   before it'd load or disturb anything.
+  /// * When it's time to yield we merge the various feature packets together.
+  ///   Merge logic simply sets a value if it's null. There's still extra care
+  ///   needed about first positive values and workout start and stop conditions
+  ///   in processRecord
   Stream<RecordWithSport> get _listenToData async* {
     if (!attached || characteristic == null || descriptor == null) return;
 
@@ -137,7 +180,7 @@ class FitnessEquipment extends DeviceBase {
 
       if (shouldYield) {
         final values = _listDeduplicationMap.entries
-            .map((entry) => dataHandlers[entry.key]!.stubRecord(entry.value))
+            .map((entry) => dataHandlers[entry.key]!.wrappedStubRecord(entry.value))
             .whereNotNull();
 
         _listDeduplicationMap = {};
@@ -145,11 +188,7 @@ class FitnessEquipment extends DeviceBase {
 
         yield values.skip(1).fold<RecordWithSport>(
               values.first,
-              (prev, element) => prev.merge(
-                element,
-                _cadenceGapWorkaround,
-                _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
-              ),
+              (prev, element) => prev.merge(element, true, true),
             );
       }
     }
@@ -209,6 +248,19 @@ class FitnessEquipment extends DeviceBase {
     await connect();
 
     return await discover(identify: identify);
+  }
+
+  /// Needed to check if any of the last seen data stubs for each
+  /// combination indicated movement. #234 #259
+  bool wasNotMoving() {
+    if (dataHandlers.isEmpty) {
+      return true;
+    }
+
+    return dataHandlers.values.skip(1).fold<bool>(
+          dataHandlers.values.first.lastNotMoving,
+          (prev, element) => prev && element.lastNotMoving,
+        );
   }
 
   @override
@@ -272,6 +324,7 @@ class FitnessEquipment extends DeviceBase {
       } else {
         dataHandlers = {};
         workoutState = WorkoutState.moving;
+        // Null activity should only happen in UX simulation mode
         if (_activity != null) {
           _activity!.startDateTime = now;
           _activity!.start = now.millisecondsSinceEpoch;
@@ -282,7 +335,14 @@ class FitnessEquipment extends DeviceBase {
         }
       }
     } else {
-      if (isNotMoving) {
+      // merged stub can be isNotMoving if due to timing interference
+      // only such packets gathered which don't contain moving data
+      // (such as distance, calories, elapsed time).
+      // The only way to be sure in case of multi packet type machines
+      // is to check if all of the data handlers report non movement.
+      // Once all types of packets indicate non movement we can be sure
+      // that the workout is stopped.
+      if (isNotMoving && wasNotMoving()) {
         if (workoutState == WorkoutState.moving) {
           workoutState = WorkoutState.justStopped;
         } else if (workoutState == WorkoutState.justStopped) {
@@ -336,8 +396,9 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #197
-    if (startingValues && stub.elapsed! > 2) {
+    if (firstTime && stub.elapsed! > 2) {
       _startingElapsed = stub.elapsed!;
+      firstTime = false;
     }
     // #197
     if (_startingElapsed > 0) {
@@ -393,8 +454,9 @@ class FitnessEquipment extends DeviceBase {
 
     // #197
     stub.distance ??= 0.0;
-    if (startingValues && stub.distance! >= 50.0) {
+    if (firstDistance && stub.distance! >= 50.0) {
       _startingDistance = stub.distance!;
+      firstDistance = false;
     }
     // #197
     if (_startingDistance > eps) {
@@ -506,8 +568,9 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #197
-    if (startingValues && calories >= 2.0) {
+    if (firstCalories && calories >= 2.0) {
       _startingCalories = calories;
+      firstCalories = false;
     }
     // #197
     if (_startingCalories > eps) {
@@ -520,11 +583,13 @@ class FitnessEquipment extends DeviceBase {
     stub.activityId = _activity?.id ?? 0;
     stub.sport = descriptor?.defaultSport ?? ActivityType.ride;
 
-    if (!startingValues) {
-      stub.cumulativeMetricsEnforcements(lastRecord);
-    }
+    stub.cumulativeMetricsEnforcements(
+      lastRecord,
+      forDistance: !firstDistance,
+      forTime: !firstTime,
+      forCalories: !firstCalories,
+    );
 
-    startingValues = false;
     lastRecord = stub;
     return stub;
   }
@@ -573,7 +638,9 @@ class FitnessEquipment extends DeviceBase {
     readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
-    startingValues = true;
+    firstCalories = true;
+    firstDistance = true;
+    firstTime = true;
     _startingCalories = 0.0;
     _startingDistance = 0.0;
     _startingElapsed = 0;

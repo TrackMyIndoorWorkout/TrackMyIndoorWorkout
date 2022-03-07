@@ -114,7 +114,7 @@ void main() {
         expect(xTrainer.isDataProcessable(testPair.data), true);
         xTrainer.stopWorkout();
 
-        final record = xTrainer.stubRecord(testPair.data)!;
+        final record = xTrainer.wrappedStubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);

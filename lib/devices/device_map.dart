@@ -17,6 +17,8 @@ const bowflexC7BikeFourCC = "BFC7";
 const schwinnUprightBikeFourCC = "S130";
 const schwinnACPerfPlusFourCC = "SAP+";
 const matrixBikeFourCC = "MxBk";
+const stagesSB20FourCC = "Stg2";
+const yesoulS3FourCC = "ysS3";
 const kayakProGenesisPortFourCC = "KPro";
 const npeRunnFourCC = "RUNN";
 const matrixTreadmillFourCC = "MxTm";
@@ -59,6 +61,24 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturerPrefix: "Nautilus",
     manufacturerFitId: nautilusFitId,
     model: "SCH BIKE",
+  ),
+  stagesSB20FourCC: IndoorBikeDeviceDescriptor(
+    fourCC: stagesSB20FourCC,
+    vendorName: "Stages Cycling",
+    modelName: "SB20",
+    namePrefixes: ["Stages Bike"],
+    manufacturerPrefix: "Stages",
+    manufacturerFitId: stagesCyclingFitId,
+    model: "SB20",
+  ),
+  yesoulS3FourCC: IndoorBikeDeviceDescriptor(
+    fourCC: yesoulS3FourCC,
+    vendorName: "Yesoul",
+    modelName: "S3",
+    namePrefixes: ["Yesoul"],
+    manufacturerPrefix: "Yesoul",
+    manufacturerFitId: stravaFitId,
+    model: "S3",
   ),
   schwinnACPerfPlusFourCC: SchwinnACPerformancePlus(),
   matrixBikeFourCC: MatrixBikeDescriptor(),

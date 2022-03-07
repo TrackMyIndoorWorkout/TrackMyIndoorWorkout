@@ -143,7 +143,7 @@ void main() {
         expect(treadmill.isDataProcessable(testPair.data), true);
         treadmill.stopWorkout();
 
-        final record = treadmill.stubRecord(testPair.data)!;
+        final record = treadmill.wrappedStubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);

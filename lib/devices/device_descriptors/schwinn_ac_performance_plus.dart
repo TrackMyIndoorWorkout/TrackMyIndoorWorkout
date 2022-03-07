@@ -1,4 +1,5 @@
-import '../../export/fit/fit_base_type.dart';
+import '../../export/fit/fit_manufacturer.dart';
+import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../device_map.dart';
 import 'device_descriptor.dart';
@@ -15,12 +16,12 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           modelName: "AC Performance Plus",
           namePrefixes: ["Schwinn AC Perf+"],
           manufacturerPrefix: "Schwinn",
-          manufacturerFitId: FitBaseTypes.uint16Type.invalidValue,
+          manufacturerFitId: stravaFitId,
           model: "Schwinn AC Perf+",
           dataServiceId: null,
           dataCharacteristicId: null,
           antPlus: true,
-          canMeasureCalories: false,
+          canMeasureCalories: true, // #258 avoid over inflation
         );
 
   @override
@@ -32,7 +33,16 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   }
 
   @override
+  RecordWithSport? stubRecord(List<int> data) {
+    // Kinda breaks the Liskov-Substitution Principle in SOLID
+    // TODO: solve it with Interface Segregation Principle
+    throw UnsupportedError("ANT+ only device => import only");
+  }
+
+  @override
   void stopWorkout() {
+    // Kinda breaks the Liskov-Substitution Principle in SOLID
+    // TODO: solve it with Interface Segregation Principle
     throw UnsupportedError("ANT+ only device => import only");
   }
 }

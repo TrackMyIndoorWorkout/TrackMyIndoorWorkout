@@ -202,7 +202,7 @@ void main() {
         final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
         expect(bike.isDataProcessable(testPair.data), true);
 
-        final record = bike.stubRecord(testPair.data)!;
+        final record = bike.wrappedStubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);

@@ -75,7 +75,6 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
-    super.stubRecord(data);
     return RecordWithSport(
       distance: getDistance(data),
       elapsed: getTime(data)?.toInt(),

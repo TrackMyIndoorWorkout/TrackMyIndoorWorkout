@@ -42,6 +42,7 @@ abstract class DeviceDescriptor extends DataHandler {
     this.antPlus = false,
     this.canMeasureHeartRate = true,
     this.canMeasureCalories = true,
+    hasFeatureFlags = true,
     flagByteSize = 2,
     heartRateByteIndex,
     timeMetric,
@@ -51,6 +52,7 @@ abstract class DeviceDescriptor extends DataHandler {
     cadenceMetric,
     distanceMetric,
   }) : super(
+          hasFeatureFlags: hasFeatureFlags,
           flagByteSize: flagByteSize,
           heartRateByteIndex: heartRateByteIndex,
           timeMetric: timeMetric,
