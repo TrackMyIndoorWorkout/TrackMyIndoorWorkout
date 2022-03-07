@@ -1,3 +1,9 @@
+## 1.1.94
+
+* Changes towards proper Stages SB20 and Yesoul S3 support which can also
+  help with many other machines
+* Fix for 4x calories reading inflation of Schwinn AC Perf+ CSV imported workouts
+
 ## 1.1.93
 
 * Adding support: Stages SB 20, FlexStride Pro, Matrix TF50, Matrix R50, Sole E25
