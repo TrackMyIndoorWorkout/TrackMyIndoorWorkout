@@ -51,9 +51,11 @@ class FitnessEquipment extends DeviceBase {
   int _lastPositiveCadence = 0; // #101
   bool _cadenceGapWorkaround = cadenceGapWorkaroundDefault;
   double _lastPositiveCalories = 0.0; // #111
-  bool startingValues; // #197
+  bool firstCalories; // #197 #234 #259
   double _startingCalories = 0.0;
+  bool firstDistance; // #197 #234 #259
   double _startingDistance = 0.0;
+  bool firstTime; // #197 #234 #259
   int _startingElapsed = 0;
   bool hasTotalCalorieCounting = false;
   Timer? _timer;
@@ -87,7 +89,12 @@ class FitnessEquipment extends DeviceBase {
   Map<int, List<int>> _listDeduplicationMap = {};
   Timer? _throttleTimer;
 
-  FitnessEquipment({this.descriptor, device, this.startingValues = true})
+  FitnessEquipment(
+      {this.descriptor,
+      device,
+      this.firstCalories = true,
+      this.firstDistance = true,
+      this.firstTime = true})
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
           characteristicsId: descriptor?.dataCharacteristicId,
@@ -243,6 +250,8 @@ class FitnessEquipment extends DeviceBase {
     return await discover(identify: identify);
   }
 
+  /// Needed to check if any of the last seen data stubs for each
+  /// combination indicated movement. #234 #259
   bool wasNotMoving() {
     if (dataHandlers.isEmpty) {
       return true;
@@ -387,8 +396,9 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #197
-    if (startingValues && stub.elapsed! > 2) {
+    if (firstTime && stub.elapsed! > 2) {
       _startingElapsed = stub.elapsed!;
+      firstTime = false;
     }
     // #197
     if (_startingElapsed > 0) {
@@ -444,8 +454,9 @@ class FitnessEquipment extends DeviceBase {
 
     // #197
     stub.distance ??= 0.0;
-    if (startingValues && stub.distance! >= 50.0) {
+    if (firstDistance && stub.distance! >= 50.0) {
       _startingDistance = stub.distance!;
+      firstDistance = false;
     }
     // #197
     if (_startingDistance > eps) {
@@ -557,8 +568,9 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #197
-    if (startingValues && calories >= 2.0) {
+    if (firstCalories && calories >= 2.0) {
       _startingCalories = calories;
+      firstCalories = false;
     }
     // #197
     if (_startingCalories > eps) {
@@ -571,11 +583,13 @@ class FitnessEquipment extends DeviceBase {
     stub.activityId = _activity?.id ?? 0;
     stub.sport = descriptor?.defaultSport ?? ActivityType.ride;
 
-    if (!startingValues) {
-      stub.cumulativeMetricsEnforcements(lastRecord);
-    }
+    stub.cumulativeMetricsEnforcements(
+      lastRecord,
+      forDistance: !firstDistance,
+      forTime: !firstTime,
+      forCalories: !firstCalories,
+    );
 
-    startingValues = false;
     lastRecord = stub;
     return stub;
   }
@@ -624,7 +638,9 @@ class FitnessEquipment extends DeviceBase {
     readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
-    startingValues = true;
+    firstCalories = true;
+    firstDistance = true;
+    firstTime = true;
     _startingCalories = 0.0;
     _startingDistance = 0.0;
     _startingElapsed = 0;

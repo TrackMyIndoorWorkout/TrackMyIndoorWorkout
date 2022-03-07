@@ -24,7 +24,7 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: false,
+          firstCalories: false,
         );
         equipment.workoutState = WorkoutState.moving;
 
@@ -49,7 +49,7 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: false,
+          firstCalories: false,
         );
         equipment.workoutState = WorkoutState.moving;
 
@@ -83,7 +83,7 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: false,
+          firstCalories: false,
         );
         equipment.workoutState = WorkoutState.moving;
 
@@ -140,7 +140,7 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: false,
+          firstCalories: false,
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
@@ -195,7 +195,7 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: false,
+          firstCalories: false,
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
@@ -250,7 +250,7 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: false,
+          firstCalories: false,
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
@@ -303,7 +303,7 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: false,
+          firstDistance: false,
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
@@ -354,7 +354,7 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: false,
+          firstDistance: false,
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
@@ -419,7 +419,9 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: false,
+          firstCalories: false,
+          firstDistance: false,
+          firstTime: false,
         );
         equipment.setActivity(activity);
         equipment.setFactors(
@@ -491,7 +493,9 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: false,
+          firstCalories: false,
+          firstDistance: false,
+          firstTime: false,
         );
         equipment.setActivity(activity);
         equipment.setFactors(
@@ -531,7 +535,7 @@ void main() {
     });
   });
 
-  group('processRecord recognizes startingValues initialization goes as expected', () {
+  group('processRecord recognizes first* initialization goes as expected', () {
     final rnd = Random();
     getRandomDoubles(repetition, 10000, rnd).forEach((distance) {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
@@ -566,7 +570,9 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: true,
+          firstCalories: true,
+          firstDistance: true,
+          firstTime: true,
         );
         equipment.setActivity(activity);
         equipment.setFactors(
@@ -594,7 +600,7 @@ void main() {
     });
   });
 
-  group('processRecord recognizes startingValues when start is at mid workout', () {
+  group('processRecord recognizes first* when start is at mid workout', () {
     final rnd = Random();
     getRandomDoubles(repetition, 10000, rnd).forEach((distance) {
       final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
@@ -631,7 +637,9 @@ void main() {
         final equipment = FitnessEquipment(
           descriptor: descriptor,
           device: MockBluetoothDevice(),
-          startingValues: true,
+          firstCalories: true,
+          firstDistance: true,
+          firstTime: true,
         );
         equipment.setActivity(activity);
         equipment.setFactors(

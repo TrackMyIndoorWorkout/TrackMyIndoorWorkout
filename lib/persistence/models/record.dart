@@ -191,12 +191,25 @@ class Record {
     }
   }
 
-  void cumulativeMetricsEnforcements(Record lastRecord) {
+  void cumulativeMetricsEnforcements(
+    Record lastRecord, {
+    bool forDistance = false,
+    bool forTime = false,
+    bool forCalories = false,
+  }) {
     // Ensure that cumulative fields cannot decrease over time
-    cumulativeDistanceEnforcement(lastRecord);
-    cumulativeElapsedTimeEnforcement(lastRecord);
-    cumulativeMovingTimeEnforcement(lastRecord);
-    cumulativeCaloriesEnforcement(lastRecord);
+    if (forDistance) {
+      cumulativeDistanceEnforcement(lastRecord);
+    }
+
+    if (forTime) {
+      cumulativeElapsedTimeEnforcement(lastRecord);
+      cumulativeMovingTimeEnforcement(lastRecord);
+    }
+
+    if (forCalories) {
+      cumulativeCaloriesEnforcement(lastRecord);
+    }
   }
 }
 
