@@ -47,8 +47,7 @@ class AboutScreenState extends State<AboutScreen> {
     });
 
     final prefService = Get.find<BasePrefService>();
-    _enforcedTimeZone =
-        prefService.get<String>(enforcedTimeZoneTag) ?? enforcedTimeZoneDefault;
+    _enforcedTimeZone = prefService.get<String>(enforcedTimeZoneTag) ?? enforcedTimeZoneDefault;
   }
 
   @override
@@ -72,16 +71,12 @@ class AboutScreenState extends State<AboutScreen> {
           children: [
             ..._valueWithTitle(title: 'Version:', value: _version),
             ..._valueWithTitle(title: 'Build#:', value: _buildNumber),
-            ..._valueWithTitle(
-                title: 'Detected Time Zone:', value: _detectedTimeZone),
-            ..._valueWithTitle(
-                title: 'Enforced Time Zone:', value: _enforcedTimeZone),
+            ..._valueWithTitle(title: 'Detected Time Zone:', value: _detectedTimeZone),
+            ..._valueWithTitle(title: 'Enforced Time Zone:', value: _enforcedTimeZone),
             const Divider(),
             _buttonWithLink(buttonText: "Quick Start", linkUrl: quickStartUrl),
-            _buttonWithLink(
-                buttonText: "Frequently Asked Questions", linkUrl: faqUrl),
-            _buttonWithLink(
-                buttonText: "Known Issues", linkUrl: knownIssuesUrl),
+            _buttonWithLink(buttonText: "Frequently Asked Questions", linkUrl: faqUrl),
+            _buttonWithLink(buttonText: "Known Issues", linkUrl: knownIssuesUrl),
             _buttonWithLink(buttonText: "Change Log", linkUrl: changeLogUrl),
           ],
         ),
@@ -89,9 +84,7 @@ class AboutScreenState extends State<AboutScreen> {
     );
   }
 
-  Widget _buttonWithLink(
-          {required String buttonText, required String linkUrl}) =>
-      Center(
+  Widget _buttonWithLink({required String buttonText, required String linkUrl}) => Center(
         child: ElevatedButton.icon(
           icon: const Icon(Icons.open_in_new),
           label: Text(buttonText),
@@ -105,9 +98,7 @@ class AboutScreenState extends State<AboutScreen> {
         ),
       );
 
-  List<Widget> _valueWithTitle(
-          {required String title, required String value}) =>
-      [
+  List<Widget> _valueWithTitle({required String title, required String value}) => [
         Flexible(
           child: Text(
             title,
