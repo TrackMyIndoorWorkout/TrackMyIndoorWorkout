@@ -47,7 +47,8 @@ class AboutScreenState extends State<AboutScreen> {
     });
 
     final prefService = Get.find<BasePrefService>();
-    _enforcedTimeZone = prefService.get<String>(enforcedTimeZoneTag) ?? enforcedTimeZoneDefault;
+    _enforcedTimeZone =
+        prefService.get<String>(enforcedTimeZoneTag) ?? enforcedTimeZoneDefault;
   }
 
   @override
@@ -69,134 +70,61 @@ class AboutScreenState extends State<AboutScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Flexible(
-              child: Text(
-                'Version:',
-                style: _fieldStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                _version,
-                style: _valueStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                'Build#:',
-                style: _fieldStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                _buildNumber,
-                style: _valueStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                'Detected Time Zone:',
-                style: _fieldStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                _detectedTimeZone,
-                style: _valueStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                'Enforced Time Zone:',
-                style: _fieldStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                _enforcedTimeZone,
-                style: _valueStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
+            ..._valueWithTitle(title: 'Version:', value: _version),
+            ..._valueWithTitle(title: 'Build#:', value: _buildNumber),
+            ..._valueWithTitle(
+                title: 'Detected Time Zone:', value: _detectedTimeZone),
+            ..._valueWithTitle(
+                title: 'Enforced Time Zone:', value: _enforcedTimeZone),
             const Divider(),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.open_in_new),
-                label: const Text("Quick Start"),
-                onPressed: () async {
-                  if (await canLaunch(quickStartUrl)) {
-                    launch(quickStartUrl);
-                  } else {
-                    Get.snackbar("Attention", "Cannot open URL");
-                  }
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.open_in_new),
-                label: const Text("Frequently Asked Questions"),
-                onPressed: () async {
-                  if (await canLaunch(faqUrl)) {
-                    launch(faqUrl);
-                  } else {
-                    Get.snackbar("Attention", "Cannot open URL");
-                  }
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.open_in_new),
-                label: const Text("Known Issues"),
-                onPressed: () async {
-                  if (await canLaunch(knownIssuesUrl)) {
-                    launch(knownIssuesUrl);
-                  } else {
-                    Get.snackbar("Attention", "Cannot open URL");
-                  }
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.open_in_new),
-                label: const Text("Change Log"),
-                onPressed: () async {
-                  if (await canLaunch(changeLogUrl)) {
-                    launch(changeLogUrl);
-                  } else {
-                    Get.snackbar("Attention", "Cannot open URL");
-                  }
-                },
-              ),
-            ),
+            _buttonWithLink(buttonText: "Quick Start", linkUrl: quickStartUrl),
+            _buttonWithLink(
+                buttonText: "Frequently Asked Questions", linkUrl: faqUrl),
+            _buttonWithLink(
+                buttonText: "Known Issues", linkUrl: knownIssuesUrl),
+            _buttonWithLink(buttonText: "Change Log", linkUrl: changeLogUrl),
           ],
         ),
       ),
     );
   }
+
+  Widget _buttonWithLink(
+          {required String buttonText, required String linkUrl}) =>
+      Center(
+        child: ElevatedButton.icon(
+          icon: const Icon(Icons.open_in_new),
+          label: Text(buttonText),
+          onPressed: () async {
+            if (await canLaunch(linkUrl)) {
+              launch(linkUrl);
+            } else {
+              Get.snackbar("Attention", "Cannot open URL");
+            }
+          },
+        ),
+      );
+
+  List<Widget> _valueWithTitle(
+          {required String title, required String value}) =>
+      [
+        Flexible(
+          child: Text(
+            title,
+            style: _fieldStyle,
+            maxLines: 10,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+        ),
+        Flexible(
+          child: Text(
+            value,
+            style: _valueStyle,
+            maxLines: 10,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+        )
+      ];
 }
