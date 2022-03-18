@@ -8,7 +8,7 @@ void main() {
   group("Record getBlank provides blank:", () {
     for (final sport in allSports) {
       test("for $sport", () async {
-        final blank = RecordWithSport.getBlank(sport);
+        final blank = RecordWithSport.getZero(sport);
         expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
         expect(blank.distance, closeTo(0.0, eps));
         expect(blank.elapsed, 0);

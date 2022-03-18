@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:floor/floor.dart';
+import 'package:flutter/foundation.dart';
 import '../../ui/models/display_record.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
@@ -147,7 +148,7 @@ class Record {
 
   void cumulativeDistanceEnforcement(Record lastRecord) {
     if (distance != null && lastRecord.distance != null) {
-      if (!testing) {
+      if (!testing && kDebugMode) {
         assert(distance! >= lastRecord.distance!);
       }
 
@@ -159,7 +160,7 @@ class Record {
 
   void cumulativeElapsedTimeEnforcement(Record lastRecord) {
     if (elapsed != null && lastRecord.elapsed != null) {
-      if (!testing) {
+      if (!testing && kDebugMode) {
         assert(elapsed! >= lastRecord.elapsed!);
       }
 
@@ -170,7 +171,7 @@ class Record {
   }
 
   void cumulativeMovingTimeEnforcement(Record lastRecord) {
-    if (!testing) {
+    if (!testing && kDebugMode) {
       assert(movingTime >= lastRecord.movingTime);
     }
 
@@ -181,7 +182,7 @@ class Record {
 
   void cumulativeCaloriesEnforcement(Record lastRecord) {
     if (calories != null && lastRecord.calories != null) {
-      if (!testing) {
+      if (!testing && kDebugMode) {
         assert(calories! >= lastRecord.calories!);
       }
 
@@ -251,7 +252,7 @@ class RecordWithSport extends Record {
           caloriesPerMinute: caloriesPerMinute,
         );
 
-  static RecordWithSport getBlank(String sport) {
+  static RecordWithSport getZero(String sport) {
     return RecordWithSport(
       timeStamp: 0,
       distance: 0.0,

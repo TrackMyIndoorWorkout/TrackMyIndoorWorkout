@@ -49,7 +49,7 @@ void main() {
       test(
           "$idx: $mergeCadence $mergeHr ${rndRecord.calories} ${rndRecord.power} ${rndRecord.speed} ${rndRecord.cadence} ${rndRecord.heartRate} ${rndRecord.distance} ${rndRecord.elapsed}",
           () async {
-        final blankRecord = RecordWithSport.getBlank(ActivityType.ride)
+        final blankRecord = RecordWithSport.getZero(ActivityType.ride)
           ..caloriesPerHour = 0.0
           ..caloriesPerMinute = 0.0;
         final merged = blankRecord.merge(rndRecord, mergeCadence, mergeHr);
@@ -132,7 +132,7 @@ void main() {
   group('Record merge does not override with zeros', () {
     final rnd = Random();
     for (var idx in List<int>.generate(smallRepetition, (index) => index)) {
-      final blankRecord = RecordWithSport.getBlank(ActivityType.ride)
+      final blankRecord = RecordWithSport.getZero(ActivityType.ride)
         ..caloriesPerHour = 0.0
         ..caloriesPerMinute = 0.0;
       final mergeCadence = rnd.nextBool();

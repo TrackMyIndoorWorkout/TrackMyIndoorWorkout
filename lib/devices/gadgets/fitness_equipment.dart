@@ -57,7 +57,9 @@ class FitnessEquipment extends DeviceBase {
   double _startingDistance = 0.0;
   bool firstTime; // #197 #234 #259
   int _startingElapsed = 0;
-  bool hasTotalCalorieCounting = false;
+  bool hasTotalCalorieReporting = false;
+  bool hasTotalDistanceReporting = false;
+  bool hasTotalTimeReporting = false;
   Timer? _timer;
   late RecordWithSport lastRecord;
   HeartRateMonitor? heartRateMonitor;
@@ -101,7 +103,7 @@ class FitnessEquipment extends DeviceBase {
           device: device,
         ) {
     readConfiguration();
-    lastRecord = RecordWithSport.getBlank(sport);
+    lastRecord = RecordWithSport.getZero(sport);
   }
 
   String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
@@ -184,7 +186,10 @@ class FitnessEquipment extends DeviceBase {
             .whereNotNull();
 
         _listDeduplicationMap = {};
-        if (values.isEmpty) continue;
+        if (values.isEmpty) {
+          debugPrint("Skipping!! !!");
+          continue;
+        }
 
         yield values.skip(1).fold<RecordWithSport>(
               values.first,
@@ -238,7 +243,7 @@ class FitnessEquipment extends DeviceBase {
 
   void setActivity(Activity activity) {
     _activity = activity;
-    lastRecord = RecordWithSport.getBlank(sport);
+    lastRecord = RecordWithSport.getZero(sport);
     workoutState = WorkoutState.waitingForFirstMove;
     dataHandlers = {};
     readConfiguration();
@@ -357,14 +362,6 @@ class FitnessEquipment extends DeviceBase {
       stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
     }
 
-    if (shouldMerge) {
-      stub.merge(
-        lastRecord,
-        _cadenceGapWorkaround,
-        _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
-      );
-    }
-
     int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
     double elapsed = elapsedMillis / 1000.0;
     // When the equipment supplied multiple data read per second but the Fitness Machine
@@ -372,7 +369,7 @@ class FitnessEquipment extends DeviceBase {
     // Therefore the FTMS elapsed time reading is kinda useless, causes problems.
     // With this fix the calorie zeroing bug is revealed. Calorie preserving workaround can be
     // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
-    final stubHasCalories = stub.calories != null && stub.calories! > 0;
+    final deviceReportsTotalCalories = stub.calories != null;
     final hrmRecord = heartRateMonitor?.record != null
         ? descriptor!.adjustRecord(
             heartRateMonitor!.record!,
@@ -381,9 +378,44 @@ class FitnessEquipment extends DeviceBase {
             _extendTuning,
           )
         : null;
-    final hrmHasCalories = (hrmRecord?.calories ?? 0) > 0;
-    hasTotalCalorieCounting = hasTotalCalorieCounting || stubHasCalories || hrmHasCalories;
-    if (hasTotalCalorieCounting && stub.elapsed != null && (stubHasCalories || hrmHasCalories)) {
+    final hrmReportsCalories = hrmRecord?.calories != null;
+    // All of these starting* and hasTotal* codes have to come before the (optional) merge
+    // and after tuning / factoring adjustments #197
+    hasTotalCalorieReporting =
+        hasTotalCalorieReporting || deviceReportsTotalCalories || hrmReportsCalories;
+    if (firstCalories && hasTotalCalorieReporting) {
+      if (_useHrmReportedCalories) {
+        if ((hrmRecord?.calories ?? 0) >= 1) {
+          _startingCalories = hrmRecord!.calories!.toDouble();
+          firstCalories = false;
+        }
+      } else if ((stub.calories ?? 0) >= 1) {
+        _startingCalories = stub.calories!.toDouble();
+        firstCalories = false;
+      }
+    }
+
+    hasTotalDistanceReporting |= stub.distance != null;
+    if (hasTotalDistanceReporting && firstDistance && (stub.distance ?? 0.0) >= 50.0) {
+      _startingDistance = stub.distance!;
+      firstDistance = false;
+    }
+
+    hasTotalTimeReporting |= stub.elapsed != null;
+    if (hasTotalTimeReporting && firstTime && (stub.elapsed ?? 0) > 2) {
+      _startingElapsed = stub.elapsed!;
+      firstTime = false;
+    }
+
+    if (shouldMerge) {
+      stub.merge(
+        lastRecord,
+        _cadenceGapWorkaround,
+        _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
+      );
+    }
+
+    if (hasTotalCalorieReporting && stub.elapsed != null) {
       elapsed = stub.elapsed!.toDouble();
     }
 
@@ -395,11 +427,6 @@ class FitnessEquipment extends DeviceBase {
       stub.elapsedMillis = elapsedMillis;
     }
 
-    // #197
-    if (firstTime && stub.elapsed! > 2) {
-      _startingElapsed = stub.elapsed!;
-      firstTime = false;
-    }
     // #197
     if (_startingElapsed > 0) {
       stub.elapsed = stub.elapsed! - _startingElapsed;
@@ -451,14 +478,17 @@ class FitnessEquipment extends DeviceBase {
 
     // #235
     stub.movingTime = lastRecord.movingTime + dTMillis;
+    // #197 After 2 seconds we assume all types of feature packets showed up
+    // and it should have been decided if there's total distance / calories
+    // time reporting or not
+    if (stub.movingTime >= 2000) {
+      firstDistance = false;
+      firstTime = false;
+      firstCalories = false;
+    }
 
     // #197
     stub.distance ??= 0.0;
-    if (firstDistance && stub.distance! >= 50.0) {
-      _startingDistance = stub.distance!;
-      firstDistance = false;
-    }
-    // #197
     if (_startingDistance > eps) {
       stub.distance = stub.distance! - _startingDistance;
     }
@@ -488,13 +518,11 @@ class FitnessEquipment extends DeviceBase {
     var calories1 = 0.0;
     if (stub.calories != null && stub.calories! > 0) {
       calories1 = stub.calories!.toDouble();
-      hasTotalCalorieCounting = true;
     }
 
     var calories2 = 0.0;
     if ((hrmRecord?.calories ?? 0) > 0) {
       calories2 = hrmRecord?.calories?.toDouble() ?? 0.0;
-      hasTotalCalorieCounting = true;
     }
 
     var calories = 0.0;
@@ -523,10 +551,10 @@ class FitnessEquipment extends DeviceBase {
       }
 
       // Supplement power from calories https://www.braydenwm.com/calburn.htm
-      if (stub.power == null || stub.power! < eps) {
-        if (stub.caloriesPerMinute != null && stub.caloriesPerMinute! > eps) {
+      if ((stub.power ?? 0) < eps) {
+        if ((stub.caloriesPerMinute ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
-        } else if (stub.caloriesPerHour != null && stub.caloriesPerHour! > eps) {
+        } else if ((stub.caloriesPerHour ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
         }
 
@@ -535,6 +563,7 @@ class FitnessEquipment extends DeviceBase {
         }
       }
 
+      // Should we only use power based calorie integration if sport == ActivityType.ride?
       if (deltaCalories < eps && stub.power != null && stub.power! > eps) {
         deltaCalories =
             stub.power! * dT * jToKCal * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault;
@@ -568,14 +597,10 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #197
-    if (firstCalories && calories >= 2.0) {
-      _startingCalories = calories;
-      firstCalories = false;
-    }
-    // #197
     if (_startingCalories > eps) {
-      // Only possible with hasTotalCalorieCounting
-      assert(hasTotalCalorieCounting);
+      if (kDebugMode) {
+        assert(hasTotalCalorieReporting);
+      }
       calories -= _startingCalories;
     }
 
@@ -645,7 +670,7 @@ class FitnessEquipment extends DeviceBase {
     _startingDistance = 0.0;
     _startingElapsed = 0;
     dataHandlers = {};
-    lastRecord = RecordWithSport.getBlank(sport);
+    lastRecord = RecordWithSport.getZero(sport);
   }
 
   void stopWorkout() {

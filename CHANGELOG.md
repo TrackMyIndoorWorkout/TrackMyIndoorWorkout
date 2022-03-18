@@ -1,3 +1,8 @@
+## 1.1.95
+
+* Attempting to fix distance stuck at 0.3mi (Schwinn IC4)
+* Attempting to fix calories stuck at 1 (Genesis Port)
+
 ## 1.1.94
 
 * Changes towards proper Stages SB20 and Yesoul S3 support which can also
