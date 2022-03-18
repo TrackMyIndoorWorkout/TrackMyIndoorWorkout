@@ -34,7 +34,7 @@ void main() {
           calories: calorie,
         ));
 
-        expect(equipment.hasTotalCalorieCounting, true);
+        expect(equipment.hasTotalCalorieReporting, true);
       });
     });
   });
@@ -69,7 +69,7 @@ void main() {
           calories: 0,
         ));
 
-        expect(equipment.hasTotalCalorieCounting, true);
+        expect(equipment.hasTotalCalorieReporting, true);
       });
     });
   });
@@ -87,23 +87,21 @@ void main() {
         );
         equipment.workoutState = WorkoutState.moving;
 
+        // calories: null
         equipment.processRecord(RecordWithSport(
           sport: descriptor.defaultSport,
           speed: 8.0,
-          calories: 0,
         ));
         equipment.processRecord(RecordWithSport(
           sport: descriptor.defaultSport,
           speed: 8.0,
-          calories: 0,
         ));
         equipment.processRecord(RecordWithSport(
           sport: descriptor.defaultSport,
           speed: 8.0,
-          calories: 0,
         ));
 
-        expect(equipment.hasTotalCalorieCounting, false);
+        expect(equipment.hasTotalCalorieReporting, false);
       });
     });
   });
@@ -120,14 +118,14 @@ void main() {
       const seconds = 60;
       test('$calPerHour $powerFactor $calorieFactor', () async {
         await initPrefServiceForTest();
-        final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: seconds));
+        final oneMinuteAgo = DateTime.now().subtract(const Duration(seconds: seconds));
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
           hrmId: "",
-          start: oneSecondAgo.millisecondsSinceEpoch,
-          startDateTime: oneSecondAgo,
+          start: oneMinuteAgo.millisecondsSinceEpoch,
+          startDateTime: oneMinuteAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.defaultSport,
           powerFactor: powerFactor,
@@ -145,7 +143,7 @@ void main() {
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneMinuteAgo.millisecondsSinceEpoch,
           elapsedMillis: 0,
           calories: 0,
           sport: descriptor.defaultSport,
