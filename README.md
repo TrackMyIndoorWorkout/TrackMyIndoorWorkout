@@ -28,3 +28,10 @@ The CI script executes the above `flutter format --line-length 100 .` and
 `flutter analize .` commands and then runs the unit tests. If any of them fails the CI is
 deemed broken. The best to avoid that is to execute those in a client-side
 [pre-push hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks).
+
+## License
+
+This work is dual-licensed under Apache 2.0 and GPL 3.0.
+You can choose between one of them if you use this work.
+
+`SPDX-License-Identifier: Apache-2.0 OR GPL-3.0`
