@@ -2,6 +2,7 @@
 
 * Foundations for optional debug logging to help remote debugging issues or
   supporting new fitness machines
+* The app grew large enough with this feature that it became multi-dex
 
 ## 1.1.95
 
