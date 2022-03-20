@@ -24,6 +24,7 @@ import '../preferences/instant_upload.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/moving_or_elapsed_time.dart';
@@ -40,6 +41,7 @@ import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
 import '../preferences/zone_index_display_coloring.dart';
+import '../utils/logging.dart';
 import 'constants.dart';
 
 void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService prefService) {
@@ -105,6 +107,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     twoColumnLayoutTag: twoColumnLayoutDefault,
     movingOrElapsedTimeTag: movingOrElapsedTimeDefault,
     trainingPeaksUploadPublicTag: trainingPeaksUploadPublicDefault,
+    logLevelTag: logLevelDefault,
   };
 
   for (var sport in PreferencesSpec.sportPrefixes) {
@@ -250,6 +253,11 @@ Future<BasePrefService> initPreferences() async {
       final slowSpeedString = prefService.get<String>(PreferencesSpec.slowSpeedTag(sport)) ?? "";
       PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? eps;
     }
+  }
+
+  final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+  if (logLevel != logLevelNone) {
+    await Logging.init(logLevel);
   }
 
   return prefService;

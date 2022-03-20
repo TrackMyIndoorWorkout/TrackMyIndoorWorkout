@@ -1,3 +1,8 @@
+## 1.1.96
+
+* Foundations for optional debug logging to help remote debugging issues or
+  supporting new fitness machines
+
 ## 1.1.95
 
 * Attempting to fix distance stuck at 0.3mi (Schwinn IC4)
