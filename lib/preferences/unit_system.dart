@@ -10,7 +10,6 @@ const unitSystemDescription =
 
 const imperialCountries = ["US", "UK", "LR", "MM"];
 
-
 bool getUnitSystemDefault() {
   final localeName = Platform.localeName;
   if (localeName.length < 5 || localeName[2] != "_") {
