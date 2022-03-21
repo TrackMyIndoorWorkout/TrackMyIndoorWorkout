@@ -17,7 +17,10 @@ class Logging {
     initialized = true;
     // We don't want to debug FlutterLogs itself
     // the system default is 2 (=all). 0 means none
-    // FlutterLogs.setDebugLevel(0);
+    if (!kDebugMode) {
+      FlutterLogs.setDebugLevel(0);
+    }
+
     final List<LogLevel> logLevels = logLevelThreshold == logLevelNone
         ? []
         : [LogLevel.INFO, LogLevel.WARNING, LogLevel.ERROR, LogLevel.SEVERE];
