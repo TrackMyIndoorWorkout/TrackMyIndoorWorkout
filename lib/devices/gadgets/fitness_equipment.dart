@@ -761,12 +761,14 @@ class FitnessEquipment extends DeviceBase {
       );
     }
 
-    stub.cumulativeMetricsEnforcements(
-      lastRecord,
-      forDistance: !firstDistance,
-      forTime: !firstTime,
-      forCalories: !firstCalories,
-    );
+    if (!uxDebug) {
+      stub.cumulativeMetricsEnforcements(
+        lastRecord,
+        forDistance: !firstDistance,
+        forTime: !firstTime,
+        forCalories: !firstCalories,
+      );
+    }
 
     if (_logLevel >= logLevelInfo) {
       Logging.log(
