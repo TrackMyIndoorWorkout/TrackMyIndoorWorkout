@@ -97,7 +97,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   void initState() {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _si = prefService.get<bool>(unitSystemTag) ?? getUnitSystemDefault();
     _rememberLastWeight =
         prefService.get<bool>(rememberAthleteBodyWeightTag) ?? rememberAthleteBodyWeightDefault;
     _preferencesWeight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;

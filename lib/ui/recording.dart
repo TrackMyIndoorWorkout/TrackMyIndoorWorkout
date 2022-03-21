@@ -454,7 +454,7 @@ class RecordingState extends State<RecordingScreen> {
       ),
     );
     _trackLength = trackLength * widget.descriptor.lengthFactor;
-    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _si = prefService.get<bool>(unitSystemTag) ?? getUnitSystemDefault();
     _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;

@@ -55,7 +55,7 @@ void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService 
 Future<Map<String, dynamic>> getPrefDefaults() async {
   Map<String, dynamic> prefDefaults = {
     preferencesVersionTag: preferencesVersionNext,
-    unitSystemTag: unitSystemDefault,
+    unitSystemTag: getUnitSystemDefault(),
     distanceResolutionTag: distanceResolutionDefault,
     instantScanTag: instantScanDefault,
     scanDurationTag: scanDurationDefault,
