@@ -460,7 +460,6 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
     if (descriptor != null) {
       stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
       if (_logLevel >= logLevelInfo) {
