@@ -36,7 +36,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   @override
   void initState() {
     super.initState();
-    _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? getUnitSystemDefault();
+    _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _textStyle = Get.textTheme.headline5!

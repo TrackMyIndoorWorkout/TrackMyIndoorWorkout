@@ -77,7 +77,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   void initState() {
     super.initState();
     final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(unitSystemTag) ?? getUnitSystemDefault();
+    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
