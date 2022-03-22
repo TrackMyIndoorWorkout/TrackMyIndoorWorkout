@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
-
 const unitSystem = "Unit System";
 const unitSystemTag = "unit_system";
 const unitSystemDefault = false;
@@ -17,6 +15,5 @@ bool getUnitSystemDefault() {
   }
 
   String deviceCountry = localeName.substring(3, 5);
-  debugPrint("Country: $deviceCountry");
   return !imperialCountries.contains(deviceCountry);
 }
