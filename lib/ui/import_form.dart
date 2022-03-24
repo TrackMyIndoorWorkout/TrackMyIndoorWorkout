@@ -64,6 +64,7 @@ class _ImportFormState extends State<ImportForm> {
             children: [
               TextFormField(
                 decoration: InputDecoration(
+                  filled: true,
                   labelText: '${widget.migration ? "Migration" : "MPower Echelon"} CSV File URL',
                   hintText: 'Paste the CSV file URL',
                   suffixIcon: ElevatedButton(
@@ -101,6 +102,7 @@ class _ImportFormState extends State<ImportForm> {
                 child: DateTimeField(
                   format: dateTimeFormat,
                   decoration: const InputDecoration(
+                    filled: true,
                     prefixIcon: Icon(Icons.access_time),
                     labelText: 'Workout Date & Time',
                     hintText: 'Pick date & time',
