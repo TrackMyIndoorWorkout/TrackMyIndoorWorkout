@@ -147,9 +147,9 @@ class FitnessEquipment extends DeviceBase {
     }
 
     final merged = values.skip(1).fold<RecordWithSport>(
-      values.first,
+          values.first,
           (prev, element) => prev.merge(element, true, true),
-    );
+        );
     if (_logLevel >= logLevelInfo) {
       Logging.log(
         _logLevel,
