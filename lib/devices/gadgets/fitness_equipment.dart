@@ -93,6 +93,7 @@ class FitnessEquipment extends DeviceBase {
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
   Map<int, List<int>> _listDeduplicationMap = {};
   Timer? _throttleTimer;
+  RecordHandlerFunction? _recordHandlerFunction;
 
   FitnessEquipment(
       {this.descriptor,
@@ -124,6 +125,41 @@ class FitnessEquipment extends DeviceBase {
     }
 
     return l[1] * 256 + l[0];
+  }
+
+  RecordWithSport? mergedToYield() {
+    final values = _listDeduplicationMap.entries
+        .map((entry) => dataHandlers[entry.key]!.wrappedStubRecord(entry.value))
+        .whereNotNull();
+
+    _listDeduplicationMap = {};
+    if (values.isEmpty) {
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "mergedToYield",
+          "Skipping!!",
+        );
+      }
+      return null;
+    }
+
+    final merged = values.skip(1).fold<RecordWithSport>(
+      values.first,
+          (prev, element) => prev.merge(element, true, true),
+    );
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "mergedToYield",
+        "merged $merged",
+      );
+    }
+    return merged;
   }
 
   /// Data streaming with custom multi-type packet aware throttling logic
@@ -196,76 +232,78 @@ class FitnessEquipment extends DeviceBase {
           "key $key byteList $byteList",
         );
       }
-      if (key <= 0) continue;
-
-      if (!dataHandlers.containsKey(key)) {
-        if (_logLevel >= logLevelInfo) {
-          Logging.log(
-            _logLevel,
-            logLevelInfo,
-            "FITNESS_EQUIPMENT",
-            "listenToData",
-            "Cloning handler for $key",
-          );
-        }
-        dataHandlers[key] = descriptor!.clone();
-      }
-
-      final dataHandler = dataHandlers[key]!;
-      if (!dataHandler.isDataProcessable(byteList)) continue;
-
-      _listDeduplicationMap[key] = byteList;
-
-      final shouldYield = !(_throttleTimer?.isActive ?? false);
-      if (_logLevel >= logLevelInfo) {
-        Logging.log(
-          _logLevel,
-          logLevelInfo,
-          "FITNESS_EQUIPMENT",
-          "listenToData",
-          "Processable, shouldYield $shouldYield",
-        );
-      }
-      _throttleTimer ??= Timer(_throttleDuration, () => {_throttleTimer = null});
-
-      if (shouldYield) {
-        final values = _listDeduplicationMap.entries
-            .map((entry) => dataHandlers[entry.key]!.wrappedStubRecord(entry.value))
-            .whereNotNull();
-
-        _listDeduplicationMap = {};
-        if (values.isEmpty) {
+      bool processable = false;
+      if (key > 0) {
+        if (!dataHandlers.containsKey(key)) {
           if (_logLevel >= logLevelInfo) {
             Logging.log(
               _logLevel,
               logLevelInfo,
               "FITNESS_EQUIPMENT",
               "listenToData",
-              "Skipping!!",
+              "Cloning handler for $key",
             );
           }
-          continue;
+          dataHandlers[key] = descriptor!.clone();
         }
 
-        final merged = values.skip(1).fold<RecordWithSport>(
-              values.first,
-              (prev, element) => prev.merge(element, true, true),
-            );
-        if (_logLevel >= logLevelInfo) {
-          Logging.log(
-            _logLevel,
-            logLevelInfo,
-            "FITNESS_EQUIPMENT",
-            "listenToData",
-            "merged $merged",
-          );
+        final dataHandler = dataHandlers[key]!;
+        processable = dataHandler.isDataProcessable(byteList);
+        if (processable) {
+          _listDeduplicationMap[key] = byteList;
         }
-        yield merged;
+      }
+
+      bool timerActive = _throttleTimer?.isActive ?? false;
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "listenToData",
+          "Processable $processable, timerActive $timerActive",
+        );
+      }
+      if (!timerActive) {
+        // Bad or useless data packets shouldn't count against rate limit.
+        // But now we let the code flow reach here so they can trigger
+        // a yield though.
+        if (key > 0 && processable) {
+          _throttleTimer ??= Timer(_throttleDuration, () {
+            _throttleTimer = null;
+            Logging.log(
+              _logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "listenToData",
+              "Timer expire induced handling",
+            );
+            if (_recordHandlerFunction != null) {
+              final merged = mergedToYield();
+              if (merged != null) {
+                pumpDataCore(merged);
+              }
+            }
+          });
+        }
+
+        final merged = mergedToYield();
+        if (merged != null) {
+          yield merged;
+        }
       }
     }
   }
 
+  void pumpDataCore(RecordWithSport recordStub) {
+    if (_recordHandlerFunction != null) {
+      final record = processRecord(recordStub);
+      _recordHandlerFunction!(record);
+    }
+  }
+
   void pumpData(RecordHandlerFunction recordHandlerFunction) {
+    _recordHandlerFunction = recordHandlerFunction;
     if (uxDebug) {
       _timer = Timer(
         const Duration(seconds: 1),
@@ -278,8 +316,7 @@ class FitnessEquipment extends DeviceBase {
     } else {
       _runningCadenceSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
-        final record = processRecord(recordStub);
-        recordHandlerFunction(record);
+        pumpDataCore(recordStub);
       });
     }
   }
@@ -757,7 +794,7 @@ class FitnessEquipment extends DeviceBase {
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "processRecord",
-        "stub before cumul $stub",
+        "stub before cumulative $stub",
       );
     }
 
@@ -776,7 +813,7 @@ class FitnessEquipment extends DeviceBase {
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "processRecord",
-        "stub after cumul $stub",
+        "stub after processable $stub",
       );
     }
 
