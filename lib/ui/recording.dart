@@ -1576,10 +1576,10 @@ class RecordingState extends State<RecordingScreen> {
                       radius: const Radius.circular(16.0),
                       overlayTutorialHints: <OverlayTutorialWidgetHint>[
                         OverlayTutorialWidgetHint(
-                          builder: (context, rect, rRect) {
+                          builder: (context, oRect) {
                             return Positioned(
-                              top: rRect.top + 8.0,
-                              right: Get.width - rRect.left + 4.0,
+                              top: (oRect.rRect?.top ?? 0.0) + 8.0,
+                              right: Get.width - (oRect.rRect?.left ?? 4.0) + 4.0,
                               child: Text("Help Overlay", style: _overlayStyle),
                             );
                           },
