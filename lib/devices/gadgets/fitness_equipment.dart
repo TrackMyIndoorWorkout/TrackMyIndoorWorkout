@@ -127,7 +127,7 @@ class FitnessEquipment extends DeviceBase {
     return l[1] * 256 + l[0];
   }
 
-  RecordWithSport? mergedToYield() {
+  RecordWithSport? _mergedForYield() {
     final values = _listDeduplicationMap.entries
         .map((entry) => dataHandlers[entry.key]!.wrappedStubRecord(entry.value))
         .whereNotNull();
@@ -160,6 +160,32 @@ class FitnessEquipment extends DeviceBase {
       );
     }
     return merged;
+  }
+
+  void _throttlingTimerCallback() {
+    _throttleTimer = null;
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "listenToData",
+        "Timer expire induced handling",
+      );
+    }
+    if (_recordHandlerFunction != null) {
+      final merged = _mergedForYield();
+      if (merged != null) {
+        // Since we processed this should also count against throttle
+        _startThrottlingTimer();
+        // No way to yield from here so imperatively pump
+        pumpDataCore(merged);
+      }
+    }
+  }
+
+  void _startThrottlingTimer() {
+    _throttleTimer ??= Timer(_throttleDuration, _throttlingTimerCallback);
   }
 
   /// Data streaming with custom multi-type packet aware throttling logic
@@ -269,25 +295,10 @@ class FitnessEquipment extends DeviceBase {
         // But now we let the code flow reach here so they can trigger
         // a yield though.
         if (key > 0 && processable) {
-          _throttleTimer ??= Timer(_throttleDuration, () {
-            _throttleTimer = null;
-            Logging.log(
-              _logLevel,
-              logLevelInfo,
-              "FITNESS_EQUIPMENT",
-              "listenToData",
-              "Timer expire induced handling",
-            );
-            if (_recordHandlerFunction != null) {
-              final merged = mergedToYield();
-              if (merged != null) {
-                pumpDataCore(merged);
-              }
-            }
-          });
+          _startThrottlingTimer();
         }
 
-        final merged = mergedToYield();
+        final merged = _mergedForYield();
         if (merged != null) {
           yield merged;
         }
