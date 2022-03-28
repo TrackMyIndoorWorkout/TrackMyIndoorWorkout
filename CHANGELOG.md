@@ -1,3 +1,10 @@
+## 1.1.98
+
+* Unit system will default to imperial only for US, UK, Myanmar and Liberia.
+  Every other country will default to metric upon the first start.
+* Further tuning of the data processing throttling logic. Please file an issue if you
+  come across any suspicious anomaly (such as stuck cumulative values, flickering).
+
 ## 1.1.97
 
 * Bugfix: cure accidental double application of calorie / power tunes
