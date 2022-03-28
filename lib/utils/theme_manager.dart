@@ -53,21 +53,21 @@ class ThemeManager {
         radius: const Radius.circular(16.0),
         overlayTutorialHints: <OverlayTutorialWidgetHint>[
           OverlayTutorialWidgetHint(
-            builder: (context, rect, rRect) {
+            builder: (context, oRect) {
               final annotation = Text(
                 text,
                 style: Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
               );
-              if (rRect.center.dx < Get.width / 2) {
+              if ((oRect.rRect?.center.dx ?? 0.0) < Get.width / 2) {
                 return Positioned(
-                  top: rRect.top + 4.0 + annotationYOffset,
-                  left: rRect.right + 4.0,
+                  top: (oRect.rRect?.top ?? 0.0) + 4.0 + annotationYOffset,
+                  left: (oRect.rRect?.right ?? 0.0) + 4.0,
                   child: annotation,
                 );
               } else {
                 return Positioned(
-                  top: rRect.top + 4.0 + annotationYOffset,
-                  right: Get.width - rRect.left + 4.0,
+                  top: (oRect.rRect?.top ?? 0.0) + 4.0 + annotationYOffset,
+                  right: Get.width - (oRect.rRect?.left ?? 4.0) + 4.0,
                   child: annotation,
                 );
               }

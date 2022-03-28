@@ -112,6 +112,7 @@ class RecordingState extends State<RecordingScreen> {
     fontSize: 11,
   );
   TextStyle _markerStyle = const TextStyle();
+  TextStyle _markerStyleSmall = const TextStyle();
   TextStyle _overlayStyle = const TextStyle();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(
     hasIcon: !simplerUiSlowDefault,
@@ -431,6 +432,7 @@ class RecordingState extends State<RecordingScreen> {
       _sizeAdjust = sizeAdjustInt / 100.0;
     }
     _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 1.4);
+    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 0.9);
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     prefService.set<String>(
       lastEquipmentIdTagPrefix + PreferencesSpec.sport2Sport(widget.sport),
@@ -1004,7 +1006,7 @@ class RecordingState extends State<RecordingScreen> {
         ),
         width: radius * 2,
         height: radius * 2,
-        child: Center(child: Text(text, style: _markerStyle)),
+        child: Center(child: Text(text, style: text.length > 2 ? _markerStyleSmall : _markerStyle)),
       ),
     );
   }
@@ -1574,10 +1576,10 @@ class RecordingState extends State<RecordingScreen> {
                       radius: const Radius.circular(16.0),
                       overlayTutorialHints: <OverlayTutorialWidgetHint>[
                         OverlayTutorialWidgetHint(
-                          builder: (context, rect, rRect) {
+                          builder: (context, oRect) {
                             return Positioned(
-                              top: rRect.top + 8.0,
-                              right: Get.width - rRect.left + 4.0,
+                              top: (oRect.rRect?.top ?? 0.0) + 8.0,
+                              right: Get.width - (oRect.rRect?.left ?? 4.0) + 4.0,
                               child: Text("Help Overlay", style: _overlayStyle),
                             );
                           },
