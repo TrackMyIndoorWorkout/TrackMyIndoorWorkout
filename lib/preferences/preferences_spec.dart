@@ -347,8 +347,8 @@ class PreferencesSpec {
     return i;
   }
 
-  static int determinePalette(int zoneLength) {
-    return max(5, min(7, zoneLength));
+  static int determinePalette(int boundLength) {
+    return max(5, min(7, boundLength + 1));
   }
 
   Color bgColorByBin(int bin, bool isLight) {
