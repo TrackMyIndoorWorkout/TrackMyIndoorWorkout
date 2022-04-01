@@ -18,7 +18,7 @@ const targetHrShortTitle = "Target HR";
 const slowSpeedPostfix = " Speed (kmh) Considered Too Slow to Display";
 const slowSpeedTagPrefix = "slow_speed_";
 
-class PreferencesSpec {
+class MetricSpec {
   static const thresholdCapital = " Threshold ";
   static const zonesCapital = " Zones (list of % of threshold)";
   static const paddleSport = "Paddle";
@@ -52,7 +52,7 @@ class PreferencesSpec {
   };
 
   static final _preferencesSpecsTemplate = [
-    PreferencesSpec(
+    MetricSpec(
       metric: metrics[0],
       title: "Power",
       unit: "W",
@@ -83,7 +83,7 @@ class PreferencesSpec {
       icon: Icons.bolt,
       indexDisplayDefault: false,
     ),
-    PreferencesSpec(
+    MetricSpec(
       metric: metrics[1],
       title: "Speed",
       unit: "mph",
@@ -114,7 +114,7 @@ class PreferencesSpec {
       icon: Icons.speed,
       indexDisplayDefault: false,
     ),
-    PreferencesSpec(
+    MetricSpec(
       metric: metrics[2],
       title: "Cadence",
       unit: "rpm",
@@ -145,7 +145,7 @@ class PreferencesSpec {
       icon: Icons.directions_bike,
       indexDisplayDefault: false,
     ),
-    PreferencesSpec(
+    MetricSpec(
       metric: metrics[3],
       title: "Heart Rate",
       unit: "bpm",
@@ -201,7 +201,7 @@ class PreferencesSpec {
 
   late List<charts.PlotBand> plotBands;
 
-  PreferencesSpec({
+  MetricSpec({
     required this.metric,
     required this.title,
     required this.unit,
@@ -374,9 +374,9 @@ class PreferencesSpec {
     return isLight ? darkFgPaletteDefaults[paletteSize]! : lightFgPaletteDefaults[paletteSize]!;
   }
 
-  static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
+  static List<MetricSpec> get preferencesSpecs => _preferencesSpecsTemplate;
 
-  static List<PreferencesSpec> getPreferencesSpecs(bool si, String sport) {
+  static List<MetricSpec> getPreferencesSpecs(bool si, String sport) {
     var prefSpecs = [...preferencesSpecs];
     prefSpecs[1].updateUnit(getSpeedUnit(si, sport));
     prefSpecs[1].title = speedTitle(sport);

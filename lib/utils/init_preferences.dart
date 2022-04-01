@@ -27,9 +27,9 @@ import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
+import '../preferences/metric_spec.dart';
 import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/multi_sport_device_support.dart';
-import '../preferences/preferences_spec.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/stroke_rate_smoothing.dart';
@@ -110,8 +110,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     logLevelTag: logLevelDefault,
   };
 
-  for (var sport in PreferencesSpec.sportPrefixes) {
-    for (var prefSpec in PreferencesSpec.preferencesSpecs) {
+  for (var sport in MetricSpec.sportPrefixes) {
+    for (var prefSpec in MetricSpec.preferencesSpecs) {
       prefDefaults.addAll({
         prefSpec.thresholdTag(sport): prefSpec.thresholdDefault(sport),
         prefSpec.zonesTag(sport): prefSpec.zonesDefault(sport),
@@ -121,13 +121,13 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     prefDefaults.addAll({lastEquipmentIdTagPrefix + sport: lastEquipmentIdDefault});
     if (sport != ActivityType.ride) {
       prefDefaults.addAll(
-          {PreferencesSpec.slowSpeedTag(sport): PreferencesSpec.slowSpeeds[sport].toString()});
+          {MetricSpec.slowSpeedTag(sport): MetricSpec.slowSpeeds[sport].toString()});
     }
   }
 
-  for (var prefSpec in PreferencesSpec.preferencesSpecs) {
+  for (var prefSpec in MetricSpec.preferencesSpecs) {
     prefDefaults.addAll({
-      "${prefSpec.metric}_${PreferencesSpec.zoneIndexDisplayTagPostfix}":
+      "${prefSpec.metric}_${MetricSpec.zoneIndexDisplayTagPostfix}":
           prefSpec.indexDisplayDefault
     });
   }
@@ -143,8 +143,8 @@ Future<BasePrefService> initPreferences() async {
 
   final prefVersion = prefService.get<int>(preferencesVersionTag) ?? preferencesVersionNext;
   if (prefVersion <= preferencesVersionSportThresholds) {
-    for (var prefSpec in PreferencesSpec.preferencesSpecs) {
-      final thresholdTag = PreferencesSpec.thresholdPrefix + prefSpec.metric;
+    for (var prefSpec in MetricSpec.preferencesSpecs) {
+      final thresholdTag = MetricSpec.thresholdPrefix + prefSpec.metric;
       var thresholdString = prefService.get<String>(thresholdTag) ?? "";
       if (prefSpec.metric == "speed") {
         final threshold = double.tryParse(thresholdString) ?? eps;
@@ -152,10 +152,10 @@ Future<BasePrefService> initPreferences() async {
       }
 
       await prefService.set<String>(prefSpec.thresholdTag(ActivityType.ride), thresholdString);
-      final zoneTag = prefSpec.metric + PreferencesSpec.zonesPostfix;
+      final zoneTag = prefSpec.metric + MetricSpec.zonesPostfix;
       await prefService.set<String>(
         prefSpec.zonesTag(ActivityType.ride),
-        prefService.get<String>(zoneTag) ?? PreferencesSpec.veryOldZoneBoundaries,
+        prefService.get<String>(zoneTag) ?? MetricSpec.veryOldZoneBoundaries,
       );
     }
   }
@@ -247,8 +247,8 @@ Future<BasePrefService> initPreferences() async {
   }
 
   if (prefVersion <= preferencesVersionZoneRefinementDefault) {
-    for (var sport in PreferencesSpec.sportPrefixes) {
-      for (var prefSpec in PreferencesSpec.preferencesSpecs) {
+    for (var sport in MetricSpec.sportPrefixes) {
+      for (var prefSpec in MetricSpec.preferencesSpecs) {
         final thresholdTag = prefSpec.thresholdTag(sport);
         final oldThresholdDefault = prefSpec.oldThresholdDefault(sport);
         final newThresholdDefault = prefSpec.thresholdDefault(sport);
@@ -271,10 +271,10 @@ Future<BasePrefService> initPreferences() async {
 
   await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
 
-  for (var sport in PreferencesSpec.sportPrefixes) {
+  for (var sport in MetricSpec.sportPrefixes) {
     if (sport != ActivityType.ride) {
-      final slowSpeedString = prefService.get<String>(PreferencesSpec.slowSpeedTag(sport)) ?? "";
-      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? eps;
+      final slowSpeedString = prefService.get<String>(MetricSpec.slowSpeedTag(sport)) ?? "";
+      MetricSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? eps;
     }
   }
 

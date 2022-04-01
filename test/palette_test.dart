@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:track_my_indoor_exercise/preferences/metric_spec.dart';
 import 'package:track_my_indoor_exercise/preferences/palettes.dart';
-import 'package:track_my_indoor_exercise/preferences/preferences_spec.dart';
 import 'package:tuple/tuple.dart';
 
 void main() {
@@ -56,7 +56,7 @@ void main() {
       const Tuple2<int, int>(9, 7),
     ]) {
       test('zone length ${intPair.item1} -> ${intPair.item2}', () async {
-        expect(PreferencesSpec.determinePalette(intPair.item1), intPair.item2);
+        expect(MetricSpec.determinePalette(intPair.item1), intPair.item2);
       });
     }
   });

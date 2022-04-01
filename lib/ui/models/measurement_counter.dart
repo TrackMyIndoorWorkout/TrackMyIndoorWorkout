@@ -1,7 +1,7 @@
 import 'dart:math';
 
+import '../../preferences/metric_spec.dart';
 import '../../persistence/models/record.dart';
-import '../../preferences/preferences_spec.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 
@@ -32,7 +32,7 @@ class MeasurementCounter {
     required this.sport,
   }) {
     if (sport != ActivityType.ride) {
-      final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)] ?? eps;
+      final slowSpeed = MetricSpec.slowSpeeds[MetricSpec.sport2Sport(sport)] ?? eps;
       slowPace = speedOrPace(slowSpeed, si, sport);
     } else {
       slowPace = 0.0;

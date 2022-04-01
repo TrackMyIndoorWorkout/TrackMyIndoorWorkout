@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/measurement_ui_state.dart';
-import '../../preferences/preferences_spec.dart';
+import '../../preferences/metric_spec.dart';
 import '../../utils/theme_manager.dart';
 
 class RowConfigurationDialog extends StatefulWidget {
@@ -39,7 +39,7 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
 
   @override
   Widget build(BuildContext context) {
-    var rowConfigs = PreferencesSpec.getRowConfigurations();
+    var rowConfigs = MetricSpec.getRowConfigurations();
     List<Widget> children = [
       Container(),
       Text("\u00BC", style: _textStyle),

@@ -12,7 +12,7 @@ import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/measurement_font_size_adjust.dart';
-import '../preferences/preferences_spec.dart';
+import '../preferences/metric_spec.dart';
 import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -48,7 +48,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   final List<String> _selectedValues = [];
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
-  List<PreferencesSpec> _preferencesSpecs = [];
+  List<MetricSpec> _preferencesSpecs = [];
 
   double? _mediaWidth;
   double _sizeDefault = 10.0;
@@ -318,7 +318,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.activity.sport);
+    _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.activity.sport);
     widget.activity.hydrate();
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();

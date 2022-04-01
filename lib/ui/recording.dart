@@ -31,8 +31,8 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
+import '../preferences/metric_spec.dart';
 import '../preferences/moving_or_elapsed_time.dart';
-import '../preferences/preferences_spec.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
@@ -121,7 +121,7 @@ class RecordingState extends State<RecordingScreen> {
   List<bool> _expandedState = [];
   final List<ExpandableController> _rowControllers = [];
   final List<int> _expandedHeights = [];
-  List<PreferencesSpec> _preferencesSpecs = [];
+  List<MetricSpec> _preferencesSpecs = [];
 
   Activity? _activity;
   AppDatabase _database = Get.find<AppDatabase>();
@@ -435,7 +435,7 @@ class RecordingState extends State<RecordingScreen> {
     _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 0.9);
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     prefService.set<String>(
-      lastEquipmentIdTagPrefix + PreferencesSpec.sport2Sport(widget.sport),
+      lastEquipmentIdTagPrefix + MetricSpec.sport2Sport(widget.sport),
       widget.device.id.id,
     );
     if (Get.isRegistered<FitnessEquipment>()) {
@@ -473,12 +473,12 @@ class RecordingState extends State<RecordingScreen> {
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
 
     if (widget.sport != ActivityType.ride) {
-      final slowPace = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(widget.sport)]!;
+      final slowPace = MetricSpec.slowSpeeds[MetricSpec.sport2Sport(widget.sport)]!;
       widget.descriptor.slowPace = slowPace;
       _fitnessEquipment?.slowPace = slowPace;
     }
 
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
+    _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
     for (var prefSpec in _preferencesSpecs) {
       prefSpec.calculateBounds(
         0,
