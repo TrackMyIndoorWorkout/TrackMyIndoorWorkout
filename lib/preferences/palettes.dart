@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 final sevenLightBgPalette = [
   Colors.lightBlueAccent.shade100,
   Colors.cyanAccent.shade100,
-  Colors.tealAccent.shade100,
-  Colors.limeAccent.shade100,
-  Colors.yellowAccent.shade100,
+  Colors.tealAccent.shade400,
+  Colors.limeAccent.shade400,
+  Colors.yellowAccent.shade200,
   Colors.redAccent.shade100,
   Colors.pinkAccent.shade100,
 ];
 
 final sevenDarkBgPalette = [
   Colors.indigo.shade900,
-  Colors.cyan.shade900,
+  Colors.cyan.shade800,
   Colors.teal.shade900,
-  Colors.green.shade900,
+  Colors.green.shade800,
   Colors.yellow.shade900,
   Colors.red.shade900,
   Colors.purple.shade900,
@@ -50,7 +50,7 @@ final fiveLightBgPalette = [
 
 final fiveDarkBgPalette = [
   Colors.indigo.shade900,
-  Colors.cyan.shade900,
+  Colors.cyan.shade800,
   Colors.green.shade900,
   Colors.yellow.shade900,
   Colors.red.shade900,
