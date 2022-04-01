@@ -23,6 +23,7 @@ class AboutScreenState extends State<AboutScreen> {
   static const faqUrl = "${hostUrl}2020/09/22/frequently-asked-questions.html";
   static const knownIssuesUrl = "${hostUrl}2020/09/26/known-issues.html";
   static const changeLogUrl = "${hostUrl}changelog";
+  static const attributionsUrl = "${hostUrl}attributions";
 
   late String _version;
   late String _buildNumber;
@@ -78,6 +79,7 @@ class AboutScreenState extends State<AboutScreen> {
             _buttonWithLink(buttonText: "Frequently Asked Questions", linkUrl: faqUrl),
             _buttonWithLink(buttonText: "Known Issues", linkUrl: knownIssuesUrl),
             _buttonWithLink(buttonText: "Change Log", linkUrl: changeLogUrl),
+            _buttonWithLink(buttonText: "Attributions", linkUrl: attributionsUrl),
           ],
         ),
       ),
