@@ -347,32 +347,31 @@ class PreferencesSpec {
     return i;
   }
 
-  Color bgColorByBin(int bin, bool isLight) {
-    if (zonePercents.length <= 5) {
-      bin = min(bin, 4);
-      return isLight ? fiveLightBgPalette[bin] : fiveDarkBgPalette[bin];
-    }
+  static int determinePalette(int zoneLength) {
+    return max(5, min(7, zoneLength));
+  }
 
-    bin = min(bin, 6);
-    return isLight ? sevenLightBgPalette[bin] : sevenDarkBgPalette[bin];
+  Color bgColorByBin(int bin, bool isLight) {
+    final paletteSize = determinePalette(zonePercents.length);
+    final binMax = paletteSize - 1;
+    bin = min(bin, binMax);
+    return isLight
+        ? lightBgPaletteDefaults[paletteSize]![bin]
+        : darkBgPaletteDefaults[paletteSize]![bin];
   }
 
   Color fgColorByBin(int bin, bool isLight) {
-    if (zonePercents.length <= 5) {
-      bin = min(bin, 4);
-      return isLight ? fiveLightFgPalette[bin] : fiveDarkFgPalette[bin];
-    }
-
-    bin = min(bin, 6);
-    return isLight ? sevenLightFgPalette[bin] : sevenDarkFgPalette[bin];
+    final paletteSize = determinePalette(zonePercents.length);
+    final binMax = paletteSize - 1;
+    bin = min(bin, binMax);
+    return isLight
+        ? lightFgPaletteDefaults[paletteSize]![bin]
+        : darkFgPaletteDefaults[paletteSize]![bin];
   }
 
   List<Color> getPiePalette(bool isLight) {
-    if (zonePercents.length <= 5) {
-      return isLight ? fiveDarkFgPalette : fiveLightFgPalette;
-    } else {
-      return isLight ? sevenDarkFgPalette : sevenLightFgPalette;
-    }
+    final paletteSize = determinePalette(zonePercents.length);
+    return isLight ? darkFgPaletteDefaults[paletteSize]! : lightFgPaletteDefaults[paletteSize]!;
   }
 
   static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
