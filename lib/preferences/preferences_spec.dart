@@ -41,6 +41,7 @@ class PreferencesSpec {
       "For extra HR zone display feature check out '$targetHrShortTitle' configuration "
       "in the upstream settings selection. For extra speed feedback check out leaderboard rank settings.";
   static const zoneIndexDisplayDefault = false;
+  static const veryOldZoneBoundaries = "55,75,90,105,120,150";
 
   static final slowSpeeds = {
     ActivityType.ride: 4.0,
@@ -56,14 +57,22 @@ class PreferencesSpec {
       title: "Power",
       unit: "W",
       thresholdTagPostfix: thresholdPrefix + metrics[0],
+      oldThresholdDefaultInts: {
+        sportPrefixes[0]: 300,
+        sportPrefixes[1]: 180,
+        sportPrefixes[2]: 100,
+        sportPrefixes[3]: 100,
+        sportPrefixes[4]: 180,
+      },
       thresholdDefaultInts: {
-        sportPrefixes[0]: 360,
-        sportPrefixes[1]: 360,
-        sportPrefixes[2]: 120,
-        sportPrefixes[3]: 120,
-        sportPrefixes[4]: 120,
+        sportPrefixes[0]: 320,
+        sportPrefixes[1]: 180,
+        sportPrefixes[2]: 100,
+        sportPrefixes[3]: 100,
+        sportPrefixes[4]: 180,
       },
       zonesTagPostfix: metrics[0] + zonesPostfix,
+      oldZoneDefaultInts: [55, 75, 90, 105, 120, 150],
       zonesDefaultInts: {
         sportPrefixes[0]: [55, 75, 90, 105, 120, 150],
         sportPrefixes[1]: [55, 75, 90, 105, 120, 150],
@@ -79,20 +88,28 @@ class PreferencesSpec {
       title: "Speed",
       unit: "mph",
       thresholdTagPostfix: thresholdPrefix + metrics[1],
-      thresholdDefaultInts: {
+      oldThresholdDefaultInts: {
         sportPrefixes[0]: 32,
         sportPrefixes[1]: 16,
         sportPrefixes[2]: 7,
         sportPrefixes[3]: 1,
         sportPrefixes[4]: 7,
       },
+      thresholdDefaultInts: {
+        sportPrefixes[0]: 27,
+        sportPrefixes[1]: 12,
+        sportPrefixes[2]: 7,
+        sportPrefixes[3]: 1,
+        sportPrefixes[4]: 7,
+      },
       zonesTagPostfix: metrics[1] + zonesPostfix,
+      oldZoneDefaultInts: [55, 75, 90, 105, 120, 150],
       zonesDefaultInts: {
-        sportPrefixes[0]: [55, 75, 90, 105, 120, 150],
-        sportPrefixes[1]: [55, 75, 90, 105, 120, 150],
-        sportPrefixes[2]: [55, 75, 90, 105, 120, 150],
-        sportPrefixes[3]: [55, 75, 90, 105, 120, 150],
-        sportPrefixes[4]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[0]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[1]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[2]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[3]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[4]: [77, 87, 94, 100, 104, 112],
       },
       icon: Icons.speed,
       indexDisplayDefault: false,
@@ -102,20 +119,28 @@ class PreferencesSpec {
       title: "Cadence",
       unit: "rpm",
       thresholdTagPostfix: thresholdPrefix + metrics[2],
-      thresholdDefaultInts: {
-        sportPrefixes[0]: 120,
+      oldThresholdDefaultInts: {
+        sportPrefixes[0]: 100,
         sportPrefixes[1]: 180,
         sportPrefixes[2]: 90,
         sportPrefixes[3]: 90,
         sportPrefixes[4]: 90,
       },
+      thresholdDefaultInts: {
+        sportPrefixes[0]: 100,
+        sportPrefixes[1]: 170,
+        sportPrefixes[2]: 85,
+        sportPrefixes[3]: 80,
+        sportPrefixes[4]: 150,
+      },
       zonesTagPostfix: metrics[2] + zonesPostfix,
+      oldZoneDefaultInts: [25, 37, 50, 75, 100, 120],
       zonesDefaultInts: {
         sportPrefixes[0]: [25, 37, 50, 75, 100, 120],
-        sportPrefixes[1]: [25, 37, 50, 75, 100, 120],
-        sportPrefixes[2]: [25, 37, 50, 75, 100, 120],
-        sportPrefixes[3]: [25, 37, 50, 75, 100, 120],
-        sportPrefixes[4]: [25, 37, 50, 75, 100, 120],
+        sportPrefixes[1]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[2]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[3]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[4]: [77, 87, 94, 100, 104, 112],
       },
       icon: Icons.directions_bike,
       indexDisplayDefault: false,
@@ -125,20 +150,28 @@ class PreferencesSpec {
       title: "Heart Rate",
       unit: "bpm",
       thresholdTagPostfix: thresholdPrefix + metrics[3],
-      thresholdDefaultInts: {
+      oldThresholdDefaultInts: {
         sportPrefixes[0]: 180,
         sportPrefixes[1]: 180,
         sportPrefixes[2]: 180,
         sportPrefixes[3]: 180,
         sportPrefixes[4]: 180,
       },
+      thresholdDefaultInts: {
+        sportPrefixes[0]: 153,
+        sportPrefixes[1]: 153,
+        sportPrefixes[2]: 153,
+        sportPrefixes[3]: 153,
+        sportPrefixes[4]: 153,
+      },
       zonesTagPostfix: metrics[3] + zonesPostfix,
+      oldZoneDefaultInts: [50, 60, 70, 80, 90, 100],
       zonesDefaultInts: {
-        sportPrefixes[0]: [50, 60, 70, 80, 90, 100],
-        sportPrefixes[1]: [50, 60, 70, 80, 90, 100],
-        sportPrefixes[2]: [50, 60, 70, 80, 90, 100],
-        sportPrefixes[3]: [50, 60, 70, 80, 90, 100],
-        sportPrefixes[4]: [50, 60, 70, 80, 90, 100],
+        sportPrefixes[0]: [80, 88, 92, 152, 156, 163],
+        sportPrefixes[1]: [80, 88, 92, 152, 156, 163],
+        sportPrefixes[2]: [80, 88, 92, 152, 156, 163],
+        sportPrefixes[3]: [80, 88, 92, 152, 156, 163],
+        sportPrefixes[4]: [80, 88, 92, 152, 156, 163],
       },
       icon: Icons.favorite,
       indexDisplayDefault: false,
@@ -150,8 +183,10 @@ class PreferencesSpec {
   String unit;
   String multiLineUnit = "";
   final String thresholdTagPostfix;
+  final Map<String, int> oldThresholdDefaultInts;
   final Map<String, int> thresholdDefaultInts;
   final String zonesTagPostfix;
+  final List<int> oldZoneDefaultInts;
   final Map<String, List<int>> zonesDefaultInts;
   final bool indexDisplayDefault;
   IconData icon;
@@ -171,8 +206,10 @@ class PreferencesSpec {
     required this.title,
     required this.unit,
     required this.thresholdTagPostfix,
+    required this.oldThresholdDefaultInts,
     required this.thresholdDefaultInts,
     required this.zonesTagPostfix,
+    required this.oldZoneDefaultInts,
     required this.zonesDefaultInts,
     required this.indexDisplayDefault,
     required this.icon,
@@ -199,12 +236,24 @@ class PreferencesSpec {
         : sport;
   }
 
+  String oldThresholdDefault(String sport) {
+    return oldThresholdDefaultInts[sport2Sport(sport)].toString();
+  }
+
   String thresholdDefault(String sport) {
     return thresholdDefaultInts[sport2Sport(sport)].toString();
   }
 
+  String intArrayToString(List<int> intArray) {
+    return intArray.map((z) => z.toString()).join(",");
+  }
+
+  String oldZoneDefault(String sport) {
+    return intArrayToString(oldZoneDefaultInts);
+  }
+
   String zonesDefault(String sport) {
-    return zonesDefaultInts[sport2Sport(sport)]!.map((z) => z.toString()).join(",");
+    return intArrayToString(zonesDefaultInts[sport2Sport(sport)]!);
   }
 
   String thresholdTag(String sport) {

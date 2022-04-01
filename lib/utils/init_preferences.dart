@@ -155,7 +155,7 @@ Future<BasePrefService> initPreferences() async {
       final zoneTag = prefSpec.metric + PreferencesSpec.zonesPostfix;
       await prefService.set<String>(
         prefSpec.zonesTag(ActivityType.ride),
-        prefService.get<String>(zoneTag) ?? "55,75,90,105,120,150",
+        prefService.get<String>(zoneTag) ?? PreferencesSpec.veryOldZoneBoundaries,
       );
     }
   }
@@ -243,6 +243,29 @@ Future<BasePrefService> initPreferences() async {
     final currentDefault = prefService.get<int>(dataStreamGapWatchdogIntTag);
     if (currentDefault == dataStreamGapWatchdogOldDefault) {
       await prefService.set<int>(dataStreamGapWatchdogIntTag, dataStreamGapWatchdogDefault);
+    }
+  }
+
+  if (prefVersion < preferencesVersionZoneRefinementDefault) {
+    for (var sport in PreferencesSpec.sportPrefixes) {
+      for (var prefSpec in PreferencesSpec.preferencesSpecs) {
+        final thresholdTag = prefSpec.thresholdTag(sport);
+        final oldThresholdDefault = prefSpec.oldThresholdDefault(sport);
+        final newThresholdDefault = prefSpec.thresholdDefault(sport);
+        final thresholdStr = prefService.get<String>(thresholdTag) ?? newThresholdDefault;
+        final zonesTag = prefSpec.zonesTag(sport);
+        final oldZoneDefault = prefSpec.oldZoneDefault(sport);
+        final newZonesDefault = prefSpec.zonesDefault(sport);
+        final zonesStr = prefService.get<String>(zonesTag) ?? newZonesDefault;
+        if (thresholdStr == oldThresholdDefault && zonesStr == oldZoneDefault) {
+          if (thresholdStr != oldThresholdDefault) {
+            prefService.set<String>(thresholdTag, newThresholdDefault);
+          }
+          if (zonesStr != oldZoneDefault) {
+            prefService.set<String>(zonesTag, newZonesDefault);
+          }
+        }
+      }
     }
   }
 
