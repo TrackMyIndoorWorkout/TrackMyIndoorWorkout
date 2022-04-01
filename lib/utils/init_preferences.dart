@@ -120,15 +120,14 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
 
     prefDefaults.addAll({lastEquipmentIdTagPrefix + sport: lastEquipmentIdDefault});
     if (sport != ActivityType.ride) {
-      prefDefaults.addAll(
-          {MetricSpec.slowSpeedTag(sport): MetricSpec.slowSpeeds[sport].toString()});
+      prefDefaults
+          .addAll({MetricSpec.slowSpeedTag(sport): MetricSpec.slowSpeeds[sport].toString()});
     }
   }
 
   for (var prefSpec in MetricSpec.preferencesSpecs) {
     prefDefaults.addAll({
-      "${prefSpec.metric}_${MetricSpec.zoneIndexDisplayTagPostfix}":
-          prefSpec.indexDisplayDefault
+      "${prefSpec.metric}_${MetricSpec.zoneIndexDisplayTagPostfix}": prefSpec.indexDisplayDefault
     });
   }
 

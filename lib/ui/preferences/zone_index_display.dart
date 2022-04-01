@@ -21,8 +21,8 @@ class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
       ),
     ];
 
-    indexDisplayPreferences.addAll(
-        MetricSpec.preferencesSpecs.where((spec) => spec.metric != "speed").map((prefSpec) {
+    indexDisplayPreferences
+        .addAll(MetricSpec.preferencesSpecs.where((spec) => spec.metric != "speed").map((prefSpec) {
       return PrefCheckbox(
         title: Text(prefSpec.zoneIndexText),
         subtitle: Text(prefSpec.zoneIndexDescription),

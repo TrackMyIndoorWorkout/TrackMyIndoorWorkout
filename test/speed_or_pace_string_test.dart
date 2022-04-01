@@ -154,8 +154,7 @@ void main() {
   });
 
   group("speedStringByUnit for metric system and elliptical sports w slowSpeed:", () {
-    final slowSpeed =
-        MetricSpec.slowSpeeds[MetricSpec.sport2Sport(ActivityType.elliptical)]!;
+    final slowSpeed = MetricSpec.slowSpeeds[MetricSpec.sport2Sport(ActivityType.elliptical)]!;
     for (final speed in speeds) {
       final pace = speed.abs() < displayEps ? 0.0 : 60.0 / speed;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
@@ -177,8 +176,7 @@ void main() {
   });
 
   group("speedStringByUnit for imperial system and elliptical sports w slowSpeed:", () {
-    final slowSpeed =
-        MetricSpec.slowSpeeds[MetricSpec.sport2Sport(ActivityType.elliptical)]!;
+    final slowSpeed = MetricSpec.slowSpeeds[MetricSpec.sport2Sport(ActivityType.elliptical)]!;
     for (final speed in speeds) {
       final pace = speed.abs() < displayEps ? 0.0 : 60.0 / speed / km2mi;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
