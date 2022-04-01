@@ -96,8 +96,8 @@ class PreferencesSpec {
         sportPrefixes[4]: 7,
       },
       thresholdDefaultInts: {
-        sportPrefixes[0]: 27,
-        sportPrefixes[1]: 12,
+        sportPrefixes[0]: 42,
+        sportPrefixes[1]: 14,
         sportPrefixes[2]: 7,
         sportPrefixes[3]: 1,
         sportPrefixes[4]: 7,
