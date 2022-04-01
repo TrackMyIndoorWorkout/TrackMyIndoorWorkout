@@ -1,4 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 
 class PaletteSpec {
   static final Map<int, List<Color>> lightBgPaletteDefaults = {
@@ -108,4 +111,101 @@ class PaletteSpec {
       Colors.redAccent,
     ],
   };
+
+  final Map<int, List<Color>> lightBgPalette = {7: [], 6: [], 5: []};
+  final Map<int, List<Color>> darkBgPalette = {7: [], 6: [], 5: []};
+  final Map<int, List<Color>> lightFgPalette = {7: [], 6: [], 5: []};
+  final Map<int, List<Color>> darkFgPalette = {7: [], 6: [], 5: []};
+
+  static Map<int, List<Color>> getDefaultPaletteSet(bool lightOrDark, bool fgOrBg) {
+    if (lightOrDark) {
+      if (fgOrBg) {
+        return lightFgPaletteDefaults;
+      } else {
+        return lightBgPaletteDefaults;
+      }
+    } else {
+      if (fgOrBg) {
+        return darkFgPaletteDefaults;
+      } else {
+        return darkBgPaletteDefaults;
+      }
+    }
+  }
+
+  static List<Color> getDefaultPalette(bool lightOrDark, bool fgOrBg, int paletteSize) {
+    return getDefaultPaletteSet(lightOrDark, fgOrBg)[paletteSize]!;
+  }
+
+  static String getDefaultPaletteString(bool lightOrDark, bool fgOrBg, int paletteSize) {
+    final colorArray = getDefaultPalette(lightOrDark, fgOrBg, paletteSize);
+    return colorArray.map((z) => z.toString()).join(",");
+  }
+
+  static String getPaletteTag(bool lightOrDark, bool fgOrBg, int paletteSize) {
+    return "palette_${lightOrDark ? 'light' : 'dark'}_${fgOrBg ? 'fg' : 'bg'}_$paletteSize";
+  }
+
+  Map<int, List<Color>> getPaletteSet(bool lightOrDark, bool fgOrBg) {
+    if (lightOrDark) {
+      if (fgOrBg) {
+        return lightFgPalette;
+      } else {
+        return lightBgPalette;
+      }
+    } else {
+      if (fgOrBg) {
+        return darkFgPalette;
+      } else {
+        return darkBgPalette;
+      }
+    }
+  }
+
+  List<Color> getPalette(bool lightOrDark, bool fgOrBg, int paletteSize) {
+    return getPaletteSet(lightOrDark, fgOrBg)[paletteSize]!;
+  }
+
+  void loadFromPreferences(BasePrefService prefService) {
+    for (final lightOrDark in [false, true]) {
+      for (final fgOrBg in [false, true]) {
+        for (final paletteSize in [5, 6, 7]) {
+          final tag = PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
+          final paletteStr = prefService.get<String>(tag) ?? "";
+          final palette = getPalette(lightOrDark, fgOrBg, paletteSize);
+          palette.clear();
+          paletteStr.split(",").forEachIndexed((index, colorStr) {
+            palette.add(Color(int.parse(colorStr)));
+          });
+        }
+      }
+    }
+  }
+
+  void saveToPreferences(
+    BasePrefService prefService,
+    bool lightOrDark,
+    bool fgOrBg,
+    int paletteSize,
+    Color color,
+    int colorIndex,
+  ) {
+    final palette = getPalette(lightOrDark, fgOrBg, paletteSize);
+    assert(colorIndex >= 0 && colorIndex < palette.length);
+    palette[colorIndex] = color;
+    final tag = PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
+    final paletteStr = palette.map((z) => z.toString()).join(",");
+    prefService.set<String>(tag, paletteStr);
+  }
+
+  static PaletteSpec getInstance(BasePrefService prefService) {
+    if (Get.isRegistered<PaletteSpec>()) {
+      return Get.find<PaletteSpec>();
+    }
+
+    final instance = PaletteSpec();
+    instance.loadFromPreferences(prefService);
+    Get.put<PaletteSpec>(instance, permanent: true);
+    return instance;
+  }
 }

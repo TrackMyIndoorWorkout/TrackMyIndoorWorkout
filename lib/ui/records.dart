@@ -7,12 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/metric_spec.dart';
+import '../persistence/models/activity.dart';
+import '../persistence/models/record.dart';
+import '../preferences/palette_spec.dart';
 import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -85,7 +86,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     tooltipDisplayMode: charts.TrackballDisplayMode.groupAllPoints,
   );
 
-  Future<void> extraInit() async {
+  Future<void> extraInit(BasePrefService prefService) async {
     final database = Get.find<AppDatabase>();
     _allRecords = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
 
@@ -306,6 +307,8 @@ class RecordsScreenState extends State<RecordsScreen> {
         tileConfig.histogramFn = _getHrHistogram;
       }
 
+      PaletteSpec.getInstance(prefService);
+
       _allRecords = [];
       _initialized = true;
     });
@@ -334,7 +337,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     );
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
-    extraInit();
+    extraInit(prefService);
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _getPowerData() {

@@ -30,6 +30,7 @@ import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
 import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/multi_sport_device_support.dart';
+import '../preferences/palette_spec.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/stroke_rate_smoothing.dart';
@@ -129,6 +130,17 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     prefDefaults.addAll({
       "${prefSpec.metric}_${MetricSpec.zoneIndexDisplayTagPostfix}": prefSpec.indexDisplayDefault
     });
+  }
+
+  for (final lightOrDark in [false, true]) {
+    for (final fgOrBg in [false, true]) {
+      for (final paletteSize in [5, 6, 7]) {
+        prefDefaults.addAll({
+          PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize):
+              PaletteSpec.getDefaultPaletteString(lightOrDark, fgOrBg, paletteSize)
+        });
+      }
+    }
   }
 
   return prefDefaults;

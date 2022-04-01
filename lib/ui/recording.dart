@@ -33,6 +33,7 @@ import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
 import '../preferences/moving_or_elapsed_time.dart';
+import '../preferences/palette_spec.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
@@ -486,6 +487,8 @@ class RecordingState extends State<RecordingScreen> {
         _isLight,
       );
     }
+
+    PaletteSpec.getInstance(prefService);
 
     _dataGapWatchdogTime =
         prefService.get<int>(dataStreamGapWatchdogIntTag) ?? dataStreamGapWatchdogDefault;
