@@ -7,7 +7,7 @@ import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import '../ui/models/row_configuration.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
-import 'palettes.dart';
+import 'palette_spec.dart';
 
 // https://stackoverflow.com/questions/57481767/dart-rounding-errors
 double decimalRound(double value, {int precision = 100}) {
@@ -356,8 +356,8 @@ class MetricSpec {
     final binMax = paletteSize - 1;
     bin = min(bin, binMax);
     return isLight
-        ? lightBgPaletteDefaults[paletteSize]![bin]
-        : darkBgPaletteDefaults[paletteSize]![bin];
+        ? PaletteSpec.lightBgPaletteDefaults[paletteSize]![bin]
+        : PaletteSpec.darkBgPaletteDefaults[paletteSize]![bin];
   }
 
   Color fgColorByBin(int bin, bool isLight) {
@@ -365,13 +365,15 @@ class MetricSpec {
     final binMax = paletteSize - 1;
     bin = min(bin, binMax);
     return isLight
-        ? lightFgPaletteDefaults[paletteSize]![bin]
-        : darkFgPaletteDefaults[paletteSize]![bin];
+        ? PaletteSpec.lightFgPaletteDefaults[paletteSize]![bin]
+        : PaletteSpec.darkFgPaletteDefaults[paletteSize]![bin];
   }
 
   List<Color> getPiePalette(bool isLight) {
     final paletteSize = determinePalette(zonePercents.length);
-    return isLight ? darkFgPaletteDefaults[paletteSize]! : lightFgPaletteDefaults[paletteSize]!;
+    return isLight
+        ? PaletteSpec.darkFgPaletteDefaults[paletteSize]!
+        : PaletteSpec.lightFgPaletteDefaults[paletteSize]!;
   }
 
   static List<MetricSpec> get preferencesSpecs => _preferencesSpecsTemplate;

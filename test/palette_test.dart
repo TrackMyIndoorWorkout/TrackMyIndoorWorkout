@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/preferences/metric_spec.dart';
-import 'package:track_my_indoor_exercise/preferences/palettes.dart';
+import 'package:track_my_indoor_exercise/preferences/palette_spec.dart';
 import 'package:tuple/tuple.dart';
 
 void main() {
   group('lightBgPaletteDefaults test', () {
-    for (var paletteEntry in lightBgPaletteDefaults.entries) {
+    for (var paletteEntry in PaletteSpec.lightBgPaletteDefaults.entries) {
       for (var color in paletteEntry.value) {
         test("palette ${paletteEntry.key} $color", () async {
           expect(color.toString().length, greaterThan(0));
@@ -15,7 +15,7 @@ void main() {
   });
 
   group('darkBgPaletteDefaults test', () {
-    for (var paletteEntry in darkBgPaletteDefaults.entries) {
+    for (var paletteEntry in PaletteSpec.darkBgPaletteDefaults.entries) {
       for (var color in paletteEntry.value) {
         test("palette ${paletteEntry.key} $color", () async {
           expect(color.toString().length, greaterThan(0));
@@ -25,7 +25,7 @@ void main() {
   });
 
   group('lightFgPaletteDefaults test', () {
-    for (var paletteEntry in lightFgPaletteDefaults.entries) {
+    for (var paletteEntry in PaletteSpec.lightFgPaletteDefaults.entries) {
       for (var color in paletteEntry.value) {
         test("palette ${paletteEntry.key} $color", () async {
           expect(color.toString().length, greaterThan(0));
@@ -35,7 +35,7 @@ void main() {
   });
 
   group('sevenDarkFgPalette test', () {
-    for (var paletteEntry in darkFgPaletteDefaults.entries) {
+    for (var paletteEntry in PaletteSpec.darkFgPaletteDefaults.entries) {
       for (var color in paletteEntry.value) {
         test("palette ${paletteEntry.key} $color", () async {
           expect(color.toString().length, greaterThan(0));
