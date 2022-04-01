@@ -142,7 +142,7 @@ Future<BasePrefService> initPreferences() async {
   Get.put<BasePrefService>(prefService, permanent: true);
 
   final prefVersion = prefService.get<int>(preferencesVersionTag) ?? preferencesVersionNext;
-  if (prefVersion < preferencesVersionSportThresholds) {
+  if (prefVersion <= preferencesVersionSportThresholds) {
     for (var prefSpec in PreferencesSpec.preferencesSpecs) {
       final thresholdTag = PreferencesSpec.thresholdPrefix + prefSpec.metric;
       var thresholdString = prefService.get<String>(thresholdTag) ?? "";
@@ -160,7 +160,7 @@ Future<BasePrefService> initPreferences() async {
     }
   }
 
-  if (prefVersion < preferencesVersionEquipmentRemembrancePerSport) {
+  if (prefVersion <= preferencesVersionEquipmentRemembrancePerSport) {
     final lastEquipmentId = prefService.get<String>(lastEquipmentIdTag) ?? "";
     if (lastEquipmentId.trim().isNotEmpty) {
       await prefService.set<String>(
@@ -170,7 +170,7 @@ Future<BasePrefService> initPreferences() async {
     }
   }
 
-  if (prefVersion < preferencesVersionSpinners) {
+  if (prefVersion <= preferencesVersionSpinners) {
     migrateStringIntegerPreference(
       strokeRateSmoothingTag,
       strokeRateSmoothingDefault,
@@ -225,7 +225,7 @@ Future<BasePrefService> initPreferences() async {
 
   String addressesString =
       prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
-  if (prefVersion < preferencesVersionDefaultingDataConnection) {
+  if (prefVersion <= preferencesVersionDefaultingDataConnection) {
     if (addressesString == dataConnectionAddressesOldDefault) {
       await prefService.set<String>(
         dataConnectionAddressesTag,
@@ -239,29 +239,29 @@ Future<BasePrefService> initPreferences() async {
     await prefService.set<int>(scanDurationTag, scanDurationDefault);
   }
 
-  if (prefVersion < preferencesVersionIncreaseWatchdogDefault) {
+  if (prefVersion <= preferencesVersionIncreaseWatchdogDefault) {
     final currentDefault = prefService.get<int>(dataStreamGapWatchdogIntTag);
     if (currentDefault == dataStreamGapWatchdogOldDefault) {
       await prefService.set<int>(dataStreamGapWatchdogIntTag, dataStreamGapWatchdogDefault);
     }
   }
 
-  if (prefVersion < preferencesVersionZoneRefinementDefault) {
+  if (prefVersion <= preferencesVersionZoneRefinementDefault) {
     for (var sport in PreferencesSpec.sportPrefixes) {
       for (var prefSpec in PreferencesSpec.preferencesSpecs) {
         final thresholdTag = prefSpec.thresholdTag(sport);
         final oldThresholdDefault = prefSpec.oldThresholdDefault(sport);
         final newThresholdDefault = prefSpec.thresholdDefault(sport);
-        final thresholdStr = prefService.get<String>(thresholdTag) ?? newThresholdDefault;
+        final thresholdStr = prefService.get<String>(thresholdTag) ?? oldThresholdDefault;
         final zonesTag = prefSpec.zonesTag(sport);
         final oldZoneDefault = prefSpec.oldZoneDefault(sport);
         final newZonesDefault = prefSpec.zonesDefault(sport);
-        final zonesStr = prefService.get<String>(zonesTag) ?? newZonesDefault;
+        final zonesStr = prefService.get<String>(zonesTag) ?? oldZoneDefault;
         if (thresholdStr == oldThresholdDefault && zonesStr == oldZoneDefault) {
-          if (thresholdStr != oldThresholdDefault) {
+          if (thresholdStr != newThresholdDefault) {
             prefService.set<String>(thresholdTag, newThresholdDefault);
           }
-          if (zonesStr != oldZoneDefault) {
+          if (zonesStr != newZonesDefault) {
             prefService.set<String>(zonesTag, newZonesDefault);
           }
         }
