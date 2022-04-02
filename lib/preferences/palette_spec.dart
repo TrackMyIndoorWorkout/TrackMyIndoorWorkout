@@ -6,6 +6,13 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'metric_spec.dart';
 
+extension ColorEx on Color {
+  String toRawString() {
+    return value.toRadixString(16).padLeft(8, '0');
+  }
+}
+
+
 class PaletteSpec {
   static final Map<int, List<Color>> lightBgPaletteDefaults = {
     7: [
@@ -142,7 +149,7 @@ class PaletteSpec {
 
   static String getDefaultPaletteString(bool lightOrDark, bool fgOrBg, int paletteSize) {
     final colorArray = getDefaultPalette(lightOrDark, fgOrBg, paletteSize);
-    return colorArray.map((z) => z.toString()).join(",");
+    return colorArray.map((z) => z.toRawString()).join(",");
   }
 
   static String getPaletteTag(bool lightOrDark, bool fgOrBg, int paletteSize) {
@@ -203,7 +210,8 @@ class PaletteSpec {
           final palette = getPalette(lightOrDark, fgOrBg, paletteSize);
           palette.clear();
           paletteStr.split(",").forEachIndexed((index, colorStr) {
-            palette.add(Color(int.parse(colorStr)));
+            final colorInt = int.parse(colorStr, radix: 16);
+            palette.add(Color(colorInt));
           });
         }
       }
@@ -222,7 +230,7 @@ class PaletteSpec {
     assert(colorIndex >= 0 && colorIndex < palette.length);
     palette[colorIndex] = color;
     final tag = PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
-    final paletteStr = palette.map((z) => z.toString()).join(",");
+    final paletteStr = palette.map((z) => z.toRawString()).join(",");
     prefService.set<String>(tag, paletteStr);
   }
 
