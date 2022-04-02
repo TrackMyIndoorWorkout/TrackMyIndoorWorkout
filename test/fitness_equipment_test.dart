@@ -25,8 +25,7 @@ main() {
       when(serviceMock.uuid).thenReturn(mockServiceGuid);
       when(serviceMock.characteristics).thenReturn([mockCharacteristic]);
       when(mockCharacteristic.uuid).thenReturn(mockCharacteristicGuid);
-      when(mockCharacteristic.read())
-          .thenAnswer((_) async => characteristicData);
+      when(mockCharacteristic.read()).thenAnswer((_) async => characteristicData);
       return serviceMock;
     }
 
@@ -34,8 +33,7 @@ main() {
         serviceUid: '00001826-0000-1000-8000-00805f9b34fb',
         characteristicUid: '00002ad2-0000-1000-8000-00805f9b34fb');
 
-    BluetoothService _mockDeviceInfoService(
-            {required String manufacturerName}) =>
+    BluetoothService _mockDeviceInfoService({required String manufacturerName}) =>
         _mockBluetoothService(
             serviceUid: '0000180a-0000-1000-8000-00805f9b34fb',
             characteristicUid: '00002a29-0000-1000-8000-00805f9b34fb',
@@ -44,14 +42,12 @@ main() {
     test('ignores case in manufacturer check', () async {
       final mockDevice = MockBluetoothDevice();
       final mockFtmsService = _mockFtmsService();
-      final mockDeviceInfoService =
-          _mockDeviceInfoService(manufacturerName: 'FUJISAN YESOUL');
+      final mockDeviceInfoService = _mockDeviceInfoService(manufacturerName: 'FUJISAN YESOUL');
       when(mockDevice.discoverServices())
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final deviceDescriptor = deviceMap[yesoulS3FourCC];
-      final equipment =
-          FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
+      final equipment = FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
       equipment.connected = true;
 
       expect(await equipment.discover(), true);

@@ -62,8 +62,7 @@ abstract class DeviceBase {
   bool discoverCore() {
     discovering = false;
     discovered = true;
-    _service = services
-        .firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
+    _service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
 
     if (_service == null) {
       characteristic = null;
@@ -86,8 +85,8 @@ abstract class DeviceBase {
       characteristic = _service!.characteristics
           .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
     } else {
-      characteristic = _service!.characteristics.firstWhereOrNull(
-          (ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
+      characteristic = _service!.characteristics
+          .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
       characteristicsId = characteristic?.uuid.uuidString();
     }
   }
@@ -124,8 +123,7 @@ abstract class DeviceBase {
   List<String> inferSportsFromCharacteristicsIds() {
     if (discovered) {
       return _service!.characteristics
-          .where((char) =>
-              ftmsSportCharacteristics.contains(char.uuid.uuidString()))
+          .where((char) => ftmsSportCharacteristics.contains(char.uuid.uuidString()))
           .map((char) => uuidToSport[char.uuid.uuidString()]!)
           .toSet()
           .toList(growable: false);
@@ -136,8 +134,7 @@ abstract class DeviceBase {
         characteristicsId == stepClimberUuid ||
         characteristicsId == stairClimberUuid) {
       sports.add(ActivityType.run);
-    } else if (characteristicsId == precorMeasurementUuid ||
-        characteristicsId == indoorBikeUuid) {
+    } else if (characteristicsId == precorMeasurementUuid || characteristicsId == indoorBikeUuid) {
       sports.add(ActivityType.ride);
     } else if (characteristicsId == rowerDeviceUuid) {
       sports.addAll(waterSports);
