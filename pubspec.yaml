@@ -22,11 +22,13 @@ dependencies:
   flutter_blue:
     git:
       url: https://github.com/CsabaConsulting/flutter_blue.git
+  flutter_circle_color_picker: ^0.3.0
   flutter_logs: ^2.1.5
   flutter_native_timezone: ^2.0.0
   flutter_spinbox: ^0.8.0
   flutter_svg: ^1.0.3
   get: ^4.6.1
+  group_button: ^4.8.0
   http: ^0.13.4
   http_parser: ^4.0.0
   internet_connection_checker: 0.0.1+3
