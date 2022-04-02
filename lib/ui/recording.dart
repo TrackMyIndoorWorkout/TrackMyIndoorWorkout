@@ -95,6 +95,7 @@ class RecordingState extends State<RecordingScreen> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   TrackCalculator? _trackCalculator;
+  PaletteSpec? _paletteSpec;
   double _trackLength = trackLength;
   bool _measuring = false;
   int _pointCount = 0;
@@ -479,16 +480,17 @@ class RecordingState extends State<RecordingScreen> {
       _fitnessEquipment?.slowPace = slowPace;
     }
 
+    _paletteSpec = PaletteSpec.getInstance(prefService);
+
     _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
     for (var prefSpec in _preferencesSpecs) {
       prefSpec.calculateBounds(
         0,
         decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
         _isLight,
+        _paletteSpec!,
       );
     }
-
-    PaletteSpec.getInstance(prefService);
 
     _dataGapWatchdogTime =
         prefService.get<int>(dataStreamGapWatchdogIntTag) ?? dataStreamGapWatchdogDefault;
@@ -866,9 +868,17 @@ class RecordingState extends State<RecordingScreen> {
       return background ? Colors.transparent : _themeManager.getProtagonistColor();
     }
 
-    return background
-        ? _preferencesSpecs[metricIndex].bgColorByBin(_zoneIndexes[metricIndex]!, _isLight)
-        : _preferencesSpecs[metricIndex].fgColorByBin(_zoneIndexes[metricIndex]!, _isLight);
+    if (background) {
+      return _paletteSpec?.bgColorByBin(
+              _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
+          PaletteSpec?.bgColorByBinDefault(
+              _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
+    }
+
+    return _paletteSpec?.fgColorByBin(
+            _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
+        PaletteSpec?.fgColorByBinDefault(
+            _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
   }
 
   int? _getRank(List<WorkoutSummary> leaderboard) {

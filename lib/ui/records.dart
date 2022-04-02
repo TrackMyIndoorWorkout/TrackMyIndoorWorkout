@@ -50,6 +50,7 @@ class RecordsScreenState extends State<RecordsScreen> {
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   List<MetricSpec> _preferencesSpecs = [];
+  PaletteSpec? _paletteSpec;
 
   double? _mediaWidth;
   double _sizeDefault = 10.0;
@@ -125,6 +126,8 @@ class RecordsScreenState extends State<RecordsScreen> {
         accu.processRecord(record);
       }
 
+      _paletteSpec = PaletteSpec.getInstance(prefService);
+
       if (measurementCounter.hasPower) {
         _tiles.add("power");
         _selectedTimes.add(emptyMeasurement);
@@ -141,6 +144,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           measurementCounter.minPower.toDouble(),
           measurementCounter.maxPower.toDouble(),
           _isLight,
+          _paletteSpec!,
         );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
@@ -168,6 +172,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           measurementCounter.minSpeed,
           measurementCounter.maxSpeed,
           _isLight,
+          _paletteSpec!,
         );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
@@ -195,6 +200,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           measurementCounter.minCadence.toDouble(),
           measurementCounter.maxCadence.toDouble(),
           _isLight,
+          _paletteSpec!,
         );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
@@ -222,6 +228,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           measurementCounter.minHr.toDouble(),
           measurementCounter.maxHr.toDouble(),
           _isLight,
+          _paletteSpec!,
         );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
@@ -306,8 +313,6 @@ class RecordsScreenState extends State<RecordsScreen> {
 
         tileConfig.histogramFn = _getHrHistogram;
       }
-
-      PaletteSpec.getInstance(prefService);
 
       _allRecords = [];
       _initialized = true;
@@ -713,7 +718,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                           margin: const EdgeInsets.all(0),
                           legend: charts.Legend(isVisible: true, textStyle: _pieChartLabelStyle),
                           series: _tileConfigurations[item]!.histogramFn!(),
-                          palette: _preferencesSpecs[index].getPiePalette(_isLight),
+                          palette: _paletteSpec?.getPiePalette(
+                                  _isLight, _preferencesSpecs[index]) ??
+                              PaletteSpec.getPiePaletteDefault(_isLight, _preferencesSpecs[index]),
                           tooltipBehavior: _tooltipBehavior,
                         ),
                       ),

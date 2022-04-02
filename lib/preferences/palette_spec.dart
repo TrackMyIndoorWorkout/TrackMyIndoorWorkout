@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'metric_spec.dart';
 
 class PaletteSpec {
   static final Map<int, List<Color>> lightBgPaletteDefaults = {
@@ -146,6 +149,31 @@ class PaletteSpec {
     return "palette_${lightOrDark ? 'light' : 'dark'}_${fgOrBg ? 'fg' : 'bg'}_$paletteSize";
   }
 
+  static Color bgColorByBinDefault(int bin, bool isLight, MetricSpec metricSpec) {
+    final paletteSize = determinePalette(metricSpec.zonePercents.length);
+    final binMax = paletteSize - 1;
+    bin = min(bin, binMax);
+    return isLight
+        ? PaletteSpec.lightBgPaletteDefaults[paletteSize]![bin]
+        : PaletteSpec.darkBgPaletteDefaults[paletteSize]![bin];
+  }
+
+  static Color fgColorByBinDefault(int bin, bool isLight, MetricSpec metricSpec) {
+    final paletteSize = determinePalette(metricSpec.zonePercents.length);
+    final binMax = paletteSize - 1;
+    bin = min(bin, binMax);
+    return isLight
+        ? PaletteSpec.lightFgPaletteDefaults[paletteSize]![bin]
+        : PaletteSpec.darkFgPaletteDefaults[paletteSize]![bin];
+  }
+
+  static List<Color> getPiePaletteDefault(bool isLight, MetricSpec metricSpec) {
+    final paletteSize = determinePalette(metricSpec.zonePercents.length);
+    return isLight
+        ? PaletteSpec.darkFgPaletteDefaults[paletteSize]!
+        : PaletteSpec.lightFgPaletteDefaults[paletteSize]!;
+  }
+
   Map<int, List<Color>> getPaletteSet(bool lightOrDark, bool fgOrBg) {
     if (lightOrDark) {
       if (fgOrBg) {
@@ -207,5 +235,28 @@ class PaletteSpec {
     instance.loadFromPreferences(prefService);
     Get.put<PaletteSpec>(instance, permanent: true);
     return instance;
+  }
+
+  static int determinePalette(int boundLength) {
+    return max(5, min(7, boundLength + 1));
+  }
+
+  Color bgColorByBin(int bin, bool isLight, MetricSpec metricSpec) {
+    final paletteSize = determinePalette(metricSpec.zonePercents.length);
+    final binMax = paletteSize - 1;
+    bin = min(bin, binMax);
+    return isLight ? lightBgPalette[paletteSize]![bin] : darkBgPalette[paletteSize]![bin];
+  }
+
+  Color fgColorByBin(int bin, bool isLight, MetricSpec metricSpec) {
+    final paletteSize = determinePalette(metricSpec.zonePercents.length);
+    final binMax = paletteSize - 1;
+    bin = min(bin, binMax);
+    return isLight ? lightFgPalette[paletteSize]![bin] : darkFgPalette[paletteSize]![bin];
+  }
+
+  List<Color> getPiePalette(bool isLight, MetricSpec metricSpec) {
+    final paletteSize = determinePalette(metricSpec.zonePercents.length);
+    return isLight ? darkFgPalette[paletteSize]! : lightFgPalette[paletteSize]!;
   }
 }

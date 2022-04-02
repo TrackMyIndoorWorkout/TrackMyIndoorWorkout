@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -295,7 +293,7 @@ class MetricSpec {
     indexDisplay = prefService.get<bool>(zoneIndexTag) ?? indexDisplayDefault;
   }
 
-  void calculateBounds(double minVal, double maxVal, bool isLight) {
+  void calculateBounds(double minVal, double maxVal, bool isLight, PaletteSpec paletteSpec) {
     zoneLower = [...zoneBounds];
     zoneUpper = [...zoneBounds];
 
@@ -325,7 +323,7 @@ class MetricSpec {
         isVisible: true,
         start: zoneLower[i],
         end: zoneUpper[i],
-        color: bgColorByBin(i, isLight),
+        color: paletteSpec.bgColorByBin(i, isLight, this),
         text: "${zoneLower[i]} - ${zoneUpper[i]}",
         textStyle: bandTextStyle,
         horizontalTextAlignment: charts.TextAnchor.start,
@@ -345,35 +343,6 @@ class MetricSpec {
     }
 
     return i;
-  }
-
-  static int determinePalette(int boundLength) {
-    return max(5, min(7, boundLength + 1));
-  }
-
-  Color bgColorByBin(int bin, bool isLight) {
-    final paletteSize = determinePalette(zonePercents.length);
-    final binMax = paletteSize - 1;
-    bin = min(bin, binMax);
-    return isLight
-        ? PaletteSpec.lightBgPaletteDefaults[paletteSize]![bin]
-        : PaletteSpec.darkBgPaletteDefaults[paletteSize]![bin];
-  }
-
-  Color fgColorByBin(int bin, bool isLight) {
-    final paletteSize = determinePalette(zonePercents.length);
-    final binMax = paletteSize - 1;
-    bin = min(bin, binMax);
-    return isLight
-        ? PaletteSpec.lightFgPaletteDefaults[paletteSize]![bin]
-        : PaletteSpec.darkFgPaletteDefaults[paletteSize]![bin];
-  }
-
-  List<Color> getPiePalette(bool isLight) {
-    final paletteSize = determinePalette(zonePercents.length);
-    return isLight
-        ? PaletteSpec.darkFgPaletteDefaults[paletteSize]!
-        : PaletteSpec.lightFgPaletteDefaults[paletteSize]!;
   }
 
   static List<MetricSpec> get preferencesSpecs => _preferencesSpecsTemplate;
