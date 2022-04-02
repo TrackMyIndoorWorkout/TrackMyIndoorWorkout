@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/app_debug_mode.dart';
@@ -90,7 +91,8 @@ class FitnessEquipment extends DeviceBase {
   int _logLevel = logLevelDefault;
 
   // For Throttling + deduplication #234
-  final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
+  final Duration _throttleDuration =
+      const Duration(milliseconds: ftmsDataThreshold);
   Map<int, List<int>> _listDeduplicationMap = {};
   Timer? _throttleTimer;
   RecordHandlerFunction? _recordHandlerFunction;
@@ -110,7 +112,8 @@ class FitnessEquipment extends DeviceBase {
     lastRecord = RecordWithSport.getZero(sport);
   }
 
-  String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
+  String get sport =>
+      _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
   double get residueCalories => _residueCalories;
   double get lastPositiveCalories => _lastPositiveCalories;
   bool get shouldMerge => dataHandlers.length > 1;
@@ -319,7 +322,8 @@ class FitnessEquipment extends DeviceBase {
       _timer = Timer(
         const Duration(seconds: 1),
         () {
-          final record = processRecord(RecordWithSport.getRandom(sport, _random));
+          final record =
+              processRecord(RecordWithSport.getRandom(sport, _random));
           recordHandlerFunction(record);
           pumpData(recordHandlerFunction);
         },
@@ -339,13 +343,14 @@ class FitnessEquipment extends DeviceBase {
   Future<void> additionalSensorsOnDemand() async {
     await refreshFactors();
 
-    if (_runningCadenceSensor != null && _runningCadenceSensor?.device?.id.id != device?.id.id) {
+    if (_runningCadenceSensor != null &&
+        _runningCadenceSensor?.device?.id.id != device?.id.id) {
       await _runningCadenceSensor?.detach();
       _runningCadenceSensor = null;
     }
     if (sport == ActivityType.run) {
-      if (services.firstWhereOrNull(
-              (service) => service.uuid.uuidString() == runningCadenceServiceUuid) !=
+      if (services.firstWhereOrNull((service) =>
+              service.uuid.uuidString() == runningCadenceServiceUuid) !=
           null) {
         _runningCadenceSensor = RunningCadenceSensor(device, powerFactor);
         _runningCadenceSensor?.services = services;
@@ -392,57 +397,11 @@ class FitnessEquipment extends DeviceBase {
     if (_equipmentDiscovery || descriptor == null) return false;
 
     _equipmentDiscovery = true;
-    // Check manufacturer name
+
     if (manufacturerName == null) {
-      final deviceInfo = BluetoothDeviceEx.filterService(services, deviceInformationUuid);
-      final nameCharacteristic =
-          BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, manufacturerNameUuid);
-      if (nameCharacteristic == null) {
-        return false;
-      }
-
-      try {
-        final nameBytes = await nameCharacteristic.read();
-        manufacturerName = String.fromCharCodes(nameBytes);
-      } on PlatformException catch (e, stack) {
-        if (_logLevel > logLevelNone) {
-          Logging.logException(
-            _logLevel,
-            "FITNESS_EQUIPMENT",
-            "discover",
-            "Could not read name",
-            e,
-            stack,
-          );
-        }
-
-        if (kDebugMode) {
-          debugPrint("$e");
-          debugPrintStack(stackTrace: stack, label: "trace:");
-        }
-
-        // 2nd try
-        try {
-          final nameBytes = await nameCharacteristic.read();
-          manufacturerName = String.fromCharCodes(nameBytes);
-        } on PlatformException catch (e, stack) {
-          if (_logLevel > logLevelNone) {
-            Logging.logException(
-              _logLevel,
-              "FITNESS_EQUIPMENT",
-              "discover",
-              "Could not read name 2nd try",
-              e,
-              stack,
-            );
-          }
-
-          if (kDebugMode) {
-            debugPrint("$e");
-            debugPrintStack(stackTrace: stack, label: "trace:");
-          }
-        }
-      }
+      final deviceInfo =
+          BluetoothDeviceEx.filterService(services, deviceInformationUuid);
+      getManufacturerName(deviceInfo);
     }
 
     _equipmentDiscovery = false;
@@ -450,8 +409,48 @@ class FitnessEquipment extends DeviceBase {
         descriptor!.manufacturerPrefix == "Unknown";
   }
 
+  Future<String?> getManufacturerName(deviceInfo) async {
+    final nameCharacteristic = BluetoothDeviceEx.filterCharacteristic(
+        deviceInfo?.characteristics, manufacturerNameUuid);
+    if (nameCharacteristic == null) {
+      return null;
+    }
+
+    return manufacturerName =
+        await readManufacturerNameFrom(nameCharacteristic) ??
+            await readManufacturerNameFrom(nameCharacteristic, secondTry: true);
+  }
+
+  Future<String?> readManufacturerNameFrom(
+      BluetoothCharacteristic nameCharacteristic,
+      {bool secondTry = false}) async {
+    try {
+      final nameBytes = await nameCharacteristic.read();
+      manufacturerName = String.fromCharCodes(nameBytes);
+      return manufacturerName;
+    } on PlatformException catch (e, stack) {
+      if (_logLevel > logLevelNone) {
+        Logging.logException(
+          _logLevel,
+          "FITNESS_EQUIPMENT",
+          "discover",
+          "Could not read name${secondTry ? ' 2nd try' : ''}",
+          e,
+          stack,
+        );
+      }
+
+      if (kDebugMode) {
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
+      return null;
+    }
+  }
+
   @visibleForTesting
-  void setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, extendTuning) {
+  void setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor,
+      extendTuning) {
     this.powerFactor = powerFactor;
     this.calorieFactor = calorieFactor;
     this.hrCalorieFactor = hrCalorieFactor;
@@ -509,7 +508,8 @@ class FitnessEquipment extends DeviceBase {
     }
 
     if (descriptor != null) {
-      stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
+      stub = descriptor!
+          .adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
       if (_logLevel >= logLevelInfo) {
         Logging.log(
           _logLevel,
@@ -542,7 +542,8 @@ class FitnessEquipment extends DeviceBase {
       );
     }
 
-    int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
+    int elapsedMillis =
+        now.difference(_activity?.startDateTime ?? now).inMilliseconds;
     double elapsed = elapsedMillis / 1000.0;
     // When the equipment supplied multiple data read per second but the Fitness Machine
     // standard only supplies second resolution elapsed time the delta time becomes zero
@@ -561,8 +562,9 @@ class FitnessEquipment extends DeviceBase {
     final hrmReportsCalories = hrmRecord?.calories != null;
     // All of these starting* and hasTotal* codes have to come before the (optional) merge
     // and after tuning / factoring adjustments #197
-    hasTotalCalorieReporting =
-        hasTotalCalorieReporting || deviceReportsTotalCalories || hrmReportsCalories;
+    hasTotalCalorieReporting = hasTotalCalorieReporting ||
+        deviceReportsTotalCalories ||
+        hrmReportsCalories;
     if (firstCalories && hasTotalCalorieReporting) {
       if (_useHrmReportedCalories) {
         if ((hrmRecord?.calories ?? 0) >= 1) {
@@ -576,7 +578,9 @@ class FitnessEquipment extends DeviceBase {
     }
 
     hasTotalDistanceReporting |= stub.distance != null;
-    if (hasTotalDistanceReporting && firstDistance && (stub.distance ?? 0.0) >= 50.0) {
+    if (hasTotalDistanceReporting &&
+        firstDistance &&
+        (stub.distance ?? 0.0) >= 50.0) {
       _startingDistance = stub.distance!;
       firstDistance = false;
     }
@@ -632,15 +636,18 @@ class FitnessEquipment extends DeviceBase {
         );
       }
 
-      if ((stub.cadence == null || stub.cadence == 0) && (rscRecord?.cadence ?? 0) > 0) {
+      if ((stub.cadence == null || stub.cadence == 0) &&
+          (rscRecord?.cadence ?? 0) > 0) {
         stub.cadence = rscRecord!.cadence;
       }
 
-      if ((stub.speed == null || stub.speed == 0) && (rscRecord?.speed ?? 0.0) > eps) {
+      if ((stub.speed == null || stub.speed == 0) &&
+          (rscRecord?.speed ?? 0.0) > eps) {
         stub.speed = rscRecord!.speed;
       }
 
-      if ((stub.distance == null || stub.distance == 0) && (rscRecord?.distance ?? 0.0) > eps) {
+      if ((stub.distance == null || stub.distance == 0) &&
+          (rscRecord?.distance ?? 0.0) > eps) {
         stub.distance = rscRecord!.distance;
       }
     }
@@ -673,7 +680,8 @@ class FitnessEquipment extends DeviceBase {
       stub.distance = stub.distance! - _startingDistance;
     }
 
-    if ((stub.heartRate == null || stub.heartRate == 0) && (hrmRecord?.heartRate ?? 0) > 0) {
+    if ((stub.heartRate == null || stub.heartRate == 0) &&
+        (hrmRecord?.heartRate ?? 0) > 0) {
       stub.heartRate = hrmRecord!.heartRate;
     }
 
@@ -708,34 +716,46 @@ class FitnessEquipment extends DeviceBase {
     var calories = 0.0;
     if (calories1 > eps &&
         (!_useHrmReportedCalories || calories2 < eps) &&
-        (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
+        (!_useHrBasedCalorieCounting ||
+            stub.heartRate == null ||
+            stub.heartRate == 0)) {
       calories = calories1;
     } else if (calories2 > eps &&
         (_useHrmReportedCalories || calories1 < eps) &&
-        (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
+        (!_useHrBasedCalorieCounting ||
+            stub.heartRate == null ||
+            stub.heartRate == 0)) {
       calories = calories2;
     } else {
       var deltaCalories = 0.0;
-      if (_useHrBasedCalorieCounting && stub.heartRate != null && stub.heartRate! > 0) {
-        stub.caloriesPerMinute =
-            hrBasedCaloriesPerMinute(stub.heartRate!, _weight, _age, _isMale, _vo2Max) *
-                hrCalorieFactor;
+      if (_useHrBasedCalorieCounting &&
+          stub.heartRate != null &&
+          stub.heartRate! > 0) {
+        stub.caloriesPerMinute = hrBasedCaloriesPerMinute(
+                stub.heartRate!, _weight, _age, _isMale, _vo2Max) *
+            hrCalorieFactor;
       }
 
-      if (deltaCalories < eps && stub.caloriesPerHour != null && stub.caloriesPerHour! > eps) {
+      if (deltaCalories < eps &&
+          stub.caloriesPerHour != null &&
+          stub.caloriesPerHour! > eps) {
         deltaCalories = stub.caloriesPerHour! / (60 * 60) * dT;
       }
 
-      if (deltaCalories < eps && stub.caloriesPerMinute != null && stub.caloriesPerMinute! > eps) {
+      if (deltaCalories < eps &&
+          stub.caloriesPerMinute != null &&
+          stub.caloriesPerMinute! > eps) {
         deltaCalories = stub.caloriesPerMinute! / 60 * dT;
       }
 
       // Supplement power from calories https://www.braydenwm.com/calburn.htm
       if ((stub.power ?? 0) < eps) {
         if ((stub.caloriesPerMinute ?? 0.0) > eps) {
-          stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
+          stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0)
+              .round(); // 60 * 1000 / 3600
         } else if ((stub.caloriesPerHour ?? 0.0) > eps) {
-          stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
+          stub.power =
+              (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
         }
 
         if (stub.power != null) {
@@ -745,8 +765,11 @@ class FitnessEquipment extends DeviceBase {
 
       // Should we only use power based calorie integration if sport == ActivityType.ride?
       if (deltaCalories < eps && stub.power != null && stub.power! > eps) {
-        deltaCalories =
-            stub.power! * dT * jToKCal * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault;
+        deltaCalories = stub.power! *
+            dT *
+            jToKCal *
+            calorieFactor *
+            DeviceDescriptor.powerCalorieFactorDefault;
       }
 
       _residueCalories += deltaCalories;
@@ -757,7 +780,10 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    if (stub.pace != null && stub.pace! > 0 && slowPace != null && stub.pace! < slowPace! ||
+    if (stub.pace != null &&
+            stub.pace! > 0 &&
+            slowPace != null &&
+            stub.pace! < slowPace! ||
         stub.speed != null && stub.speed! > eps) {
       // #101, #122
       if ((stub.cadence == null || stub.cadence == 0) &&
@@ -863,8 +889,8 @@ class FitnessEquipment extends DeviceBase {
     powerFactor = factors.item1;
     calorieFactor = factors.item2;
     hrCalorieFactor = factors.item3;
-    hrmCalorieFactor =
-        await database.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
+    hrmCalorieFactor = await database.calorieFactorValue(
+        heartRateMonitor?.device?.id.id ?? "", true);
 
     if (_logLevel >= logLevelInfo) {
       Logging.log(
@@ -882,26 +908,34 @@ class FitnessEquipment extends DeviceBase {
 
   void readConfiguration() {
     final prefService = Get.find<BasePrefService>();
-    _cadenceGapWorkaround =
-        prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
+    _cadenceGapWorkaround = prefService.get<bool>(cadenceGapWorkaroundTag) ??
+        cadenceGapWorkaroundDefault;
     uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
     _heartRateGapWorkaround =
-        prefService.get<String>(heartRateGapWorkaroundTag) ?? heartRateGapWorkaroundDefault;
-    _heartRateUpperLimit =
-        prefService.get<int>(heartRateUpperLimitIntTag) ?? heartRateUpperLimitDefault;
+        prefService.get<String>(heartRateGapWorkaroundTag) ??
+            heartRateGapWorkaroundDefault;
+    _heartRateUpperLimit = prefService.get<int>(heartRateUpperLimitIntTag) ??
+        heartRateUpperLimitDefault;
     _heartRateLimitingMethod =
-        prefService.get<String>(heartRateLimitingMethodTag) ?? heartRateLimitingMethodDefault;
-    _useHrmReportedCalories = prefService.get<bool>(useHrMonitorReportedCaloriesTag) ??
-        useHrMonitorReportedCaloriesDefault;
-    _useHrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
-        useHeartRateBasedCalorieCountingDefault;
-    _weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
+        prefService.get<String>(heartRateLimitingMethodTag) ??
+            heartRateLimitingMethodDefault;
+    _useHrmReportedCalories =
+        prefService.get<bool>(useHrMonitorReportedCaloriesTag) ??
+            useHrMonitorReportedCaloriesDefault;
+    _useHrBasedCalorieCounting =
+        prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
+            useHeartRateBasedCalorieCountingDefault;
+    _weight = prefService.get<int>(athleteBodyWeightIntTag) ??
+        athleteBodyWeightDefault;
     _age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
     _isMale =
-        (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) == athleteGenderMale;
+        (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) ==
+            athleteGenderMale;
     _vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
-    _useHrBasedCalorieCounting &= (_weight > athleteBodyWeightMin && _age > athleteAgeMin);
-    _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
+    _useHrBasedCalorieCounting &=
+        (_weight > athleteBodyWeightMin && _age > athleteAgeMin);
+    _extendTuning =
+        prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
 
     if (_logLevel >= logLevelInfo) {
