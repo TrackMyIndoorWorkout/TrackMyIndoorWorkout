@@ -408,11 +408,21 @@ class FitnessEquipment extends DeviceBase {
     return _checkManufacturerName();
   }
 
-  bool _checkManufacturerName() =>
-      manufacturerName!
-          .toLowerCase()
-          .contains(descriptor!.manufacturerPrefix.toLowerCase()) ||
-      descriptor!.manufacturerPrefix == "Unknown";
+  bool _checkManufacturerName() {
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "_checkManufacturerName",
+        "ensuring that manufacturer name ($manufacturerName) contains manufacturer prefix ${descriptor!.manufacturerPrefix}",
+      );
+    }
+    return manufacturerName!
+            .toLowerCase()
+            .contains(descriptor!.manufacturerPrefix.toLowerCase()) ||
+        descriptor!.manufacturerPrefix == "Unknown";
+  }
 
   Future<String?> _getManufacturerName(deviceInfo) async {
     final nameCharacteristic = BluetoothDeviceEx.filterCharacteristic(
