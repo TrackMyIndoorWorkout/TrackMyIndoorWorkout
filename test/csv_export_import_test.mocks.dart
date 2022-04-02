@@ -25,17 +25,22 @@ class MockPackageInfo extends _i1.Mock implements _i2.PackageInfo {
 
   @override
   String get appName =>
-      (super.noSuchMethod(Invocation.getter(#appName), returnValue: '') as String);
+      (super.noSuchMethod(Invocation.getter(#appName), returnValue: '')
+          as String);
   @override
   String get packageName =>
-      (super.noSuchMethod(Invocation.getter(#packageName), returnValue: '') as String);
+      (super.noSuchMethod(Invocation.getter(#packageName), returnValue: '')
+          as String);
   @override
   String get version =>
-      (super.noSuchMethod(Invocation.getter(#version), returnValue: '') as String);
+      (super.noSuchMethod(Invocation.getter(#version), returnValue: '')
+          as String);
   @override
   String get buildNumber =>
-      (super.noSuchMethod(Invocation.getter(#buildNumber), returnValue: '') as String);
+      (super.noSuchMethod(Invocation.getter(#buildNumber), returnValue: '')
+          as String);
   @override
   String get buildSignature =>
-      (super.noSuchMethod(Invocation.getter(#buildSignature), returnValue: '') as String);
+      (super.noSuchMethod(Invocation.getter(#buildSignature), returnValue: '')
+          as String);
 }
