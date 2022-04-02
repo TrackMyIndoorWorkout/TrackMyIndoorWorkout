@@ -12,7 +12,6 @@ extension ColorEx on Color {
   }
 }
 
-
 class PaletteSpec {
   static final Map<int, List<Color>> lightBgPaletteDefaults = {
     7: [
