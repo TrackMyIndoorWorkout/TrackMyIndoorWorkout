@@ -59,6 +59,9 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
               return;
             }
 
+            setState(() {
+              _palette[index] = color;
+            });
             _paletteSpec.saveToPreferences(
               _prefService,
               widget.lightOrDark,
