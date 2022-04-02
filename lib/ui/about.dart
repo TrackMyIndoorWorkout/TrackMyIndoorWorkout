@@ -14,7 +14,7 @@ class AboutScreen extends StatefulWidget {
   const AboutScreen({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => AboutScreenState();
+  AboutScreenState createState() => AboutScreenState();
 }
 
 class AboutScreenState extends State<AboutScreen> {

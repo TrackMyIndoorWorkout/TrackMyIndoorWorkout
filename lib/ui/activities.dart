@@ -49,7 +49,7 @@ class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({key, required this.hasLeaderboardData}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => ActivitiesScreenState();
+  ActivitiesScreenState createState() => ActivitiesScreenState();
 }
 
 class ActivitiesScreenState extends State<ActivitiesScreen> {

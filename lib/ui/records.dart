@@ -35,7 +35,7 @@ class RecordsScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => RecordsScreenState();
+  RecordsScreenState createState() => RecordsScreenState();
 }
 
 class RecordsScreenState extends State<RecordsScreen> {

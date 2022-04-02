@@ -87,7 +87,7 @@ class RecordingScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => RecordingState();
+  RecordingState createState() => RecordingState();
 }
 
 class RecordingState extends State<RecordingScreen> {

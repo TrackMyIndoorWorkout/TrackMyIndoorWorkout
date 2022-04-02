@@ -10,7 +10,7 @@ class RowConfigurationDialog extends StatefulWidget {
   const RowConfigurationDialog({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => RowConfigurationDialogState();
+  RowConfigurationDialogState createState() => RowConfigurationDialogState();
 }
 
 class RowConfigurationDialogState extends State<RowConfigurationDialog> {

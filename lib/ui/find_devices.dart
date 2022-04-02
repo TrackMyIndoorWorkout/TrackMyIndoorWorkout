@@ -41,7 +41,7 @@ class FindDevicesScreen extends StatefulWidget {
   const FindDevicesScreen({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => FindDevicesState();
+  FindDevicesState createState() => FindDevicesState();
 }
 
 class FindDevicesState extends State<FindDevicesScreen> {
