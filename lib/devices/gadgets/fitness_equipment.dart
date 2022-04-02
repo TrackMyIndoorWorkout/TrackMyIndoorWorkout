@@ -401,27 +401,32 @@ class FitnessEquipment extends DeviceBase {
     if (manufacturerName == null) {
       final deviceInfo =
           BluetoothDeviceEx.filterService(services, deviceInformationUuid);
-      getManufacturerName(deviceInfo);
+      await _getManufacturerName(deviceInfo);
     }
 
     _equipmentDiscovery = false;
-    return manufacturerName!.contains(descriptor!.manufacturerPrefix) ||
-        descriptor!.manufacturerPrefix == "Unknown";
+    return _checkManufacturerName();
   }
 
-  Future<String?> getManufacturerName(deviceInfo) async {
+  bool _checkManufacturerName() =>
+      manufacturerName!
+          .toLowerCase()
+          .contains(descriptor!.manufacturerPrefix.toLowerCase()) ||
+      descriptor!.manufacturerPrefix == "Unknown";
+
+  Future<String?> _getManufacturerName(deviceInfo) async {
     final nameCharacteristic = BluetoothDeviceEx.filterCharacteristic(
         deviceInfo?.characteristics, manufacturerNameUuid);
     if (nameCharacteristic == null) {
       return null;
     }
 
-    return manufacturerName =
-        await readManufacturerNameFrom(nameCharacteristic) ??
-            await readManufacturerNameFrom(nameCharacteristic, secondTry: true);
+    return manufacturerName = await _readManufacturerNameFrom(
+            nameCharacteristic) ??
+        await _readManufacturerNameFrom(nameCharacteristic, secondTry: true);
   }
 
-  Future<String?> readManufacturerNameFrom(
+  Future<String?> _readManufacturerNameFrom(
       BluetoothCharacteristic nameCharacteristic,
       {bool secondTry = false}) async {
     try {
