@@ -237,8 +237,8 @@ class PaletteSpec {
     return instance;
   }
 
-  static int determinePalette(int boundLength) {
-    return max(5, min(7, boundLength + 1));
+  static int determinePalette(int boundCount) {
+    return max(5, min(7, boundCount + 1));
   }
 
   Color bgColorByBin(int bin, bool isLight, MetricSpec metricSpec) {

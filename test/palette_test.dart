@@ -48,13 +48,13 @@ void main() {
       const Tuple2<int, int>(2, 5),
       const Tuple2<int, int>(3, 5),
       const Tuple2<int, int>(4, 5),
-      const Tuple2<int, int>(5, 5),
-      const Tuple2<int, int>(6, 6),
+      const Tuple2<int, int>(5, 6),
+      const Tuple2<int, int>(6, 7),
       const Tuple2<int, int>(7, 7),
       const Tuple2<int, int>(8, 7),
       const Tuple2<int, int>(9, 7),
     ]) {
-      test('zone length ${intPair.item1} -> ${intPair.item2}', () async {
+      test('bound count ${intPair.item1} -> ${intPair.item2}', () async {
         expect(PaletteSpec.determinePalette(intPair.item1), intPair.item2);
       });
     }
