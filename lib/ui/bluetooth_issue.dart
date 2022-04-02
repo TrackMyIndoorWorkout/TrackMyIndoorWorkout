@@ -15,7 +15,7 @@ class BluetoothIssueScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => BluetoothIssueScreenState();
+  BluetoothIssueScreenState createState() => BluetoothIssueScreenState();
 }
 
 class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {

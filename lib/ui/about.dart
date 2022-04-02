@@ -6,6 +6,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../preferences/enforced_time_zone.dart';
+import '../preferences/palette_spec.dart';
 import '../utils/constants.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class AboutScreen extends StatefulWidget {
   const AboutScreen({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => AboutScreenState();
+  AboutScreenState createState() => AboutScreenState();
 }
 
 class AboutScreenState extends State<AboutScreen> {
@@ -57,7 +58,18 @@ class AboutScreenState extends State<AboutScreen> {
     if (kDebugMode) {
       actions.add(IconButton(
         icon: const Icon(Icons.build),
-        onPressed: () async {},
+        onPressed: () async {
+          final prefService = Get.find<BasePrefService>();
+          for (final lightOrDark in [false, true]) {
+            for (final fgOrBg in [false, true]) {
+              for (final paletteSize in [5, 6, 7]) {
+                final tag = PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
+                final str = PaletteSpec.getDefaultPaletteString(lightOrDark, fgOrBg, paletteSize);
+                prefService.set<String>(tag, str);
+              }
+            }
+          }
+        },
       ));
     }
 

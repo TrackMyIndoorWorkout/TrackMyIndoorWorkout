@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../preferences/preferences_spec.dart';
+import '../preferences/metric_spec.dart';
 import 'constants.dart';
 
 double speedByUnitCore(double speed, bool si) {
@@ -45,7 +45,7 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
     if (speed.abs() < displayEps) return "0:00";
 
     if (limitSlowSpeed) {
-      final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)]!;
+      final slowSpeed = MetricSpec.slowSpeeds[MetricSpec.sport2Sport(sport)]!;
       if (speed < slowSpeed) {
         return "0:00";
       }

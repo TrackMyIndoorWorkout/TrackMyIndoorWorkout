@@ -20,7 +20,7 @@ class DeviceLeaderboardScreen extends StatefulWidget {
   const DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => DeviceLeaderboardScreenState();
+  DeviceLeaderboardScreenState createState() => DeviceLeaderboardScreenState();
 }
 
 class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {

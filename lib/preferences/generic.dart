@@ -6,7 +6,8 @@ const preferencesVersionEquipmentRemembrancePerSport = 2;
 const preferencesVersionSpinners = 3;
 const preferencesVersionDefaultingDataConnection = 4;
 const preferencesVersionIncreaseWatchdogDefault = 5;
-const preferencesVersionDefault = preferencesVersionIncreaseWatchdogDefault;
+const preferencesVersionZoneRefinementDefault = 6;
+const preferencesVersionDefault = preferencesVersionZoneRefinementDefault;
 const preferencesVersionNext = preferencesVersionDefault + 1;
 
 const intTagPostfix = "_int";

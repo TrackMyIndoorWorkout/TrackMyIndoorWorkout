@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
-import '../../preferences/preferences_spec.dart';
+import '../../preferences/metric_spec.dart';
 import '../../preferences/zone_index_display_coloring.dart';
 import 'preferences_base.dart';
 
@@ -13,7 +13,7 @@ class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> indexDisplayPreferences = [
-      const PrefLabel(title: Text(PreferencesSpec.zoneIndexDisplayExtraNote, maxLines: 10)),
+      const PrefLabel(title: Text(MetricSpec.zoneIndexDisplayExtraNote, maxLines: 10)),
       const PrefCheckbox(
         title: Text(zoneIndexDisplayColoring),
         subtitle: Text(zoneIndexDisplayColoringDescription),
@@ -21,8 +21,8 @@ class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
       ),
     ];
 
-    indexDisplayPreferences.addAll(
-        PreferencesSpec.preferencesSpecs.where((spec) => spec.metric != "speed").map((prefSpec) {
+    indexDisplayPreferences
+        .addAll(MetricSpec.preferencesSpecs.where((spec) => spec.metric != "speed").map((prefSpec) {
       return PrefCheckbox(
         title: Text(prefSpec.zoneIndexText),
         subtitle: Text(prefSpec.zoneIndexDescription),
