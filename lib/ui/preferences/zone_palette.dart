@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/palette_spec.dart';
+import '../../utils/constants.dart';
+import '../../utils/theme_manager.dart';
 import '../parts/color_picker.dart';
 
 class ZonePalettePreferencesScreen extends StatefulWidget {
@@ -29,15 +31,25 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
   late final PaletteSpec _paletteSpec;
   late final List<Color> _palette;
   double _sizeDefault = 10.0;
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _lightTextStyle = const TextStyle();
+  TextStyle _darkTextStyle = const TextStyle();
 
   @override
   void initState() {
     super.initState();
-
     _prefService = Get.find<BasePrefService>();
     _paletteSpec = Get.find<PaletteSpec>();
     _palette = _paletteSpec.getPalette(widget.lightOrDark, widget.fgOrBg, widget.size);
     _sizeDefault = Get.textTheme.headline5!.fontSize! * 2;
+    _lightTextStyle = Get.textTheme.headline4!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getProtagonistColor(),
+    );
+    _darkTextStyle = Get.textTheme.headline4!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getAntagonistColor(),
+    );
   }
 
   @override
@@ -72,9 +84,11 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
             );
           },
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Text("Z${index + 1}", style: _lightTextStyle),
+              Text("Z${index + 1}", style: _darkTextStyle),
               Icon(Icons.chevron_right, size: _sizeDefault),
             ],
           ),
