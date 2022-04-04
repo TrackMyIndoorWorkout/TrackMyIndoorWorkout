@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:group_button/group_button.dart';
+import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
+import '../../preferences/palette_spec.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
@@ -87,8 +89,52 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(Icons.arrow_forward, false, false, "", 0,
-          () => Get.back(result: Tuple3<bool, bool, int>(_lightOrDark, _fgOrBg, _size))),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueFab(
+                Icons.refresh,
+                false,
+                false,
+                "Reset",
+                0,
+                () => {
+                      Get.defaultDialog(
+                        title: 'Reset all colors to default!',
+                        middleText: 'Are you sure?',
+                        confirm: TextButton(
+                          child: const Text("Yes"),
+                          onPressed: () async {
+                            final prefService = Get.find<BasePrefService>();
+                            for (final lightOrDark in [false, true]) {
+                              for (final fgOrBg in [false, true]) {
+                                for (final paletteSize in [5, 6, 7]) {
+                                  final tag =
+                                      PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
+                                  final str = PaletteSpec.getDefaultPaletteString(
+                                      lightOrDark, fgOrBg, paletteSize);
+                                  prefService.set<String>(tag, str);
+                                }
+                              }
+                            }
+                            Get.close(1);
+                          },
+                        ),
+                        cancel: TextButton(
+                          child: const Text("No"),
+                          onPressed: () => Get.close(1),
+                        ),
+                      )
+                    }),
+            const SizedBox(width: 10, height: 10),
+            _themeManager.getGreenFab(Icons.arrow_forward, false, false, "", 0,
+                () => Get.back(result: Tuple3<bool, bool, int>(_lightOrDark, _fgOrBg, _size))),
+          ],
+        ),
+      ),
     );
   }
 }
