@@ -1308,15 +1308,21 @@ class RecordingState extends State<RecordingScreen> {
         var selfMarkerText = "";
         var selfMarkerColor = 0xFFFF0000;
         if (_rankTrackVisualization) {
-          Widget? rankInfo;
           markers.addAll(_markersForLeaderboard(_leaderboard, _selfRank));
           if (_selfRank != null) {
             selfMarkerText = _selfRank.toString();
           }
 
           if (_rankInfoOnTrack) {
-            rankInfo = Center(child: _infoForLeaderboard(_leaderboard, _selfRank, _selfRankString));
-            markers.add(rankInfo);
+            markers.add(
+              Center(
+                child: _infoForLeaderboard(
+                  _leaderboard,
+                  _selfRank,
+                  _selfRankString,
+                ),
+              ),
+            );
           }
 
           // Add red circle around the athlete marker to distinguish
