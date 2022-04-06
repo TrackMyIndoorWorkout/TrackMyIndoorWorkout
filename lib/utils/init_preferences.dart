@@ -89,8 +89,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     audioVolumeIntTag: audioVolumeDefault,
     leaderboardFeatureTag: leaderboardFeatureDefault,
     rankRibbonVisualizationTag: rankRibbonVisualizationDefault,
-    rankingForDeviceTag: rankingForDeviceDefault,
-    rankingForSportTag: rankingForSportDefault,
+    rankingForSportOrDeviceTag: rankingForSportOrDeviceDefault,
     rankTrackVisualizationTag: rankTrackVisualizationDefault,
     rankInfoOnTrackTag: rankInfoOnTrackDefault,
     themeSelectionTag: themeSelectionDefault,
@@ -277,6 +276,16 @@ Future<BasePrefService> initPreferences() async {
           }
         }
       }
+    }
+  }
+
+  if (prefVersion <= preferencesVersionExclusiveSportOrDeviceLeaderboard) {
+    final rankingForSport =
+        prefService.get<bool>(rankingForSportOldTag) ?? rankingForSportOldDefault;
+    final rankingForDevice =
+        prefService.get<bool>(rankingForDeviceOldTag) ?? rankingForDeviceOldDefault;
+    if (rankingForDevice && !rankingForSport) {
+      prefService.set<bool>(rankingForSportOrDeviceTag, !rankingForSportOrDeviceDefault);
     }
   }
 

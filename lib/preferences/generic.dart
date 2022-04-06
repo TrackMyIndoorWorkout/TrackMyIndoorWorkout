@@ -7,7 +7,8 @@ const preferencesVersionSpinners = 3;
 const preferencesVersionDefaultingDataConnection = 4;
 const preferencesVersionIncreaseWatchdogDefault = 5;
 const preferencesVersionZoneRefinementDefault = 6;
-const preferencesVersionDefault = preferencesVersionZoneRefinementDefault;
+const preferencesVersionExclusiveSportOrDeviceLeaderboard = 7;
+const preferencesVersionDefault = preferencesVersionExclusiveSportOrDeviceLeaderboard;
 const preferencesVersionNext = preferencesVersionDefault + 1;
 
 const intTagPostfix = "_int";

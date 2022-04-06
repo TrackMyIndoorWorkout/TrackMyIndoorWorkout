@@ -21,8 +21,16 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
           if (!value) {
             PrefService.of(context).set(rankRibbonVisualizationTag, false);
             PrefService.of(context).set(rankTrackVisualizationTag, false);
-            PrefService.of(context).set(rankingForDeviceTag, false);
-            PrefService.of(context).set(rankingForSportTag, false);
+          }
+        },
+      ),
+      PrefCheckbox(
+        title: const Text(rankingForSportOrDevice),
+        subtitle: const Text(rankingForSportOrDeviceDescription),
+        pref: rankingForSportOrDeviceTag,
+        onChange: (value) {
+          if (value) {
+            PrefService.of(context).set(leaderboardFeatureTag, true);
           }
         },
       ),
@@ -53,26 +61,6 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         onChange: (value) {
           if (value) {
             PrefService.of(context).set(rankTrackVisualizationTag, true);
-            PrefService.of(context).set(leaderboardFeatureTag, true);
-          }
-        },
-      ),
-      PrefCheckbox(
-        title: const Text(rankingForDevice),
-        subtitle: const Text(rankingForDeviceDescription),
-        pref: rankingForDeviceTag,
-        onChange: (value) {
-          if (value) {
-            PrefService.of(context).set(leaderboardFeatureTag, true);
-          }
-        },
-      ),
-      PrefCheckbox(
-        title: const Text(rankingForSport),
-        subtitle: const Text(rankingForSportDescription),
-        pref: rankingForSportTag,
-        onChange: (value) {
-          if (value) {
             PrefService.of(context).set(leaderboardFeatureTag, true);
           }
         },
