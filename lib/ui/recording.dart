@@ -7,6 +7,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:pref/pref.dart';
@@ -161,11 +162,12 @@ class RecordingState extends State<RecordingScreen> {
   bool _rankingForSportOrDevice = rankingForSportOrDeviceDefault;
   List<WorkoutSummary> _leaderboard = [];
   int? _selfRank;
-  String _selfRankString = "";
+  List<String> _selfRankString = [];
   bool _rankRibbonVisualization = rankRibbonVisualizationDefault;
   bool _rankTrackVisualization = rankTrackVisualizationDefault;
   bool _rankInfoOnTrack = rankInfoOnTrackDefault;
   bool _displayLapCounter = displayLapCounterDefault;
+  int _rankInfoColumnCount = 0;
   Color _darkRed = Colors.red;
   Color _darkGreen = Colors.green;
   Color _darkBlue = Colors.blue;
@@ -235,7 +237,7 @@ class RecordingState extends State<RecordingScreen> {
 
     if (_leaderboardFeature) {
       _selfRank = null;
-      _selfRankString = "";
+      _selfRankString = [];
       _leaderboard = _rankingForSportOrDevice
           ? await _database.workoutSummaryDao
               .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport)
@@ -611,11 +613,16 @@ class RecordingState extends State<RecordingScreen> {
     _rankingForSportOrDevice =
         prefService.get<bool>(rankingForSportOrDeviceTag) ?? rankingForSportOrDeviceDefault;
     _leaderboard = [];
-    _selfRankString = "";
+    _selfRankString = [];
     _rankTrackVisualization =
         prefService.get<bool>(rankTrackVisualizationTag) ?? rankTrackVisualizationDefault;
     _rankInfoOnTrack = prefService.get<bool>(rankInfoOnTrackTag) ?? rankInfoOnTrackDefault;
     _displayLapCounter = prefService.get<bool>(displayLapCounterTag) ?? displayLapCounterDefault;
+
+    _rankInfoColumnCount = 2;
+    if (_displayLapCounter) {
+      _rankInfoColumnCount += 1;
+    }
 
     final isLight = !_themeManager.isDark();
     _darkRed = isLight ? Colors.red.shade900 : Colors.redAccent.shade100;
@@ -903,8 +910,8 @@ class RecordingState extends State<RecordingScreen> {
     return _getRank(_leaderboard);
   }
 
-  String _getSelfRankString() {
-    return "#${_getRankString(_selfRank, _leaderboard)} (Self)";
+  List<String> _getSelfRankString() {
+    return ["#${_getRankString(_selfRank, _leaderboard)}", "(Self)"];
   }
 
   Color _getPaceLightColor(int? selfRank, {required bool background}) {
@@ -1047,7 +1054,7 @@ class RecordingState extends State<RecordingScreen> {
     return markers;
   }
 
-  Widget _getLeaderboardInfoTextCore(String text, bool lead) {
+  Widget _getLeaderboardInfoTextCell(String text, bool lead) {
     final bgColor = lead ? _lightGreen : _lightBlue;
     return ColoredBox(
       color: bgColor,
@@ -1058,66 +1065,105 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
-  Widget _getLeaderboardInfoText(int rank, double distance, bool lead) {
-    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
-    var rankText = "";
+  List<Widget> _getLeaderboardInfoText(int rank, double distance, bool lead) {
+    List<Widget> widgets = [];
+    widgets.add(_getLeaderboardInfoTextCell("#$rank", lead));
     if (_displayLapCounter) {
       final lapCount = (distance / _trackLength).floor();
-      rankText = "#$rank L$lapCount $distanceString";
-    } else {
-      rankText = "#$rank $distanceString";
+      widgets.add(_getLeaderboardInfoTextCell("L$lapCount", lead));
     }
-    return _getLeaderboardInfoTextCore(rankText, lead);
+    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
+    widgets.add(_getLeaderboardInfoTextCell(distanceString, lead));
+    return widgets;
   }
 
-  Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int? rank, String rankString) {
+  Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int? rank, List<String> rankString) {
     if (leaderboard.isEmpty || rank == null) {
-      return Text(rankString, style: _markerStyle);
+      var rankStringEx = rankString.join(" ");
+      if (_displayLapCounter) {
+        rankStringEx += " L$_lapCount";
+      }
+      return Text(rankStringEx, style: _markerStyle);
     }
 
-    List<Widget> rows = [];
+    String areaRow = "nav content";
+    if (_displayLapCounter) {
+      areaRow += " content";
+    }
+
+    int rowCount = 0;
+
+    List<Widget> cells = [];
     final length = leaderboard.length;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
       final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank - 2, distance, true));
-      rows.add(const Divider(height: 1));
+      cells.addAll(_getLeaderboardInfoText(rank - 2, distance, true));
+      rowCount++;
     }
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
       final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank - 1, distance, true));
-      rows.add(const Divider(height: 1));
+      cells.addAll(_getLeaderboardInfoText(rank - 1, distance, true));
+      rowCount++;
     }
 
-    var rankStringEx = rankString;
+    // Self section
+    final lead = rank <= 1;
+    cells.add(_getLeaderboardInfoTextCell(rankString[0], lead));
     if (_displayLapCounter) {
-      rankStringEx += " L$_lapCount";
+      cells.add(_getLeaderboardInfoTextCell("L$_lapCount", lead));
     }
-
-    rows.add(_getLeaderboardInfoTextCore(rankStringEx, rank <= 1));
+    cells.add(_getLeaderboardInfoTextCell(rankString[1], lead));
+    rowCount++;
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
-      rows.add(const Divider(height: 1));
       final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank + 1, distance, false));
+      cells.addAll(_getLeaderboardInfoText(rank + 1, distance, false));
+      rowCount++;
     }
 
     // Following dot after the follower (if any)
     if (rank < length) {
-      rows.add(const Divider(height: 1));
       final distance = leaderboard[rank].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank + 2, distance, false));
+      cells.addAll(_getLeaderboardInfoText(rank + 2, distance, false));
+      rowCount++;
     }
 
-    return IntrinsicWidth(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: rows,
+    final innerWidth = _trackCalculator!.trackSize!.width - 2 * (_trackCalculator!.trackOffset!.dx + _trackCalculator!.trackRadius! - thick);
+    final cellWidth = innerWidth / _rankInfoColumnCount;
+    final innerHeight = thick * (cells.length / _rankInfoColumnCount) * 2;
+    final cellHeight = thick * 2;
+    debugPrint("c $innerWidth $innerHeight $cellWidth $cellHeight");
+
+    List<TrackSize> rowSizes = [for(int i = 0; i < rowCount; i++) cellHeight.px];
+    String areaSpec = [for(int i = 0; i < rowCount; i++) areaRow].join("\n");
+    List<TrackSize> columnSpec = _displayLapCounter ? [auto, auto, 1.fr] : [auto, 1.fr];
+
+    return SizedBox(
+      width: innerWidth,
+      height: innerHeight,
+      child: LayoutGrid(
+        areas: areaSpec,
+        columnSizes: columnSpec,
+        rowSizes: rowSizes,
+        columnGap: 1,
+        rowGap: 1,
+        children: cells,
       ),
+      /* GridView.count(
+        primary: false,
+        shrinkWrap: true,
+        crossAxisSpacing: 1,
+        mainAxisSpacing: 1,
+        crossAxisCount: _rankInfoColumnCount,
+        childAspectRatio: cellWidth / cellHeight,
+        physics: const NeverScrollableScrollPhysics(),
+        // semanticChildCount: cells.length,
+        children: cells,
+      ),*/
     );
   }
 
@@ -1285,7 +1331,7 @@ class RecordingState extends State<RecordingScreen> {
             _rankRibbonVisualization) {
           List<Widget> extraExtras = [];
           final paceLightColor = _getPaceLightTextStyle(_selfRank);
-          extraExtras.add(Text(_selfRankString, style: paceLightColor));
+          extraExtras.add(Text(_selfRankString.join(" "), style: paceLightColor));
 
           if (widget.descriptor.defaultSport != ActivityType.ride) {
             extraExtras.add(Text("Speed ${_si ? 'km' : 'mi'}/h"));
