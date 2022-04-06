@@ -1095,16 +1095,17 @@ class RecordingState extends State<RecordingScreen> {
 
     List<Widget> cells = [];
     final length = leaderboard.length;
+    final elapsedMillis = _elapsed * 1000;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
+      final distance = leaderboard[rank - 3].distanceAtTime(elapsedMillis);
       cells.addAll(_getLeaderboardInfoText(rank - 2, distance, true));
       rowCount++;
     }
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
+      final distance = leaderboard[rank - 2].distanceAtTime(elapsedMillis);
       cells.addAll(_getLeaderboardInfoText(rank - 1, distance, true));
       rowCount++;
     }
@@ -1120,14 +1121,14 @@ class RecordingState extends State<RecordingScreen> {
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
-      final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
+      final distance = leaderboard[rank - 1].distanceAtTime(elapsedMillis);
       cells.addAll(_getLeaderboardInfoText(rank + 1, distance, false));
       rowCount++;
     }
 
     // Following dot after the follower (if any)
     if (rank < length) {
-      final distance = leaderboard[rank].distanceAtTime(_movingTime);
+      final distance = leaderboard[rank].distanceAtTime(elapsedMillis);
       cells.addAll(_getLeaderboardInfoText(rank + 2, distance, false));
       rowCount++;
     }
