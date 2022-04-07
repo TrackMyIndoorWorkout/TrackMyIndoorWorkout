@@ -65,8 +65,9 @@ class WorkoutSummary {
     return distanceByUnit(distance, si, highRes);
   }
 
-  double distanceAtTime(int movingTime) {
+  double distanceAtTime(int time) {
     // #252 movingTime is in milliseconds!!
-    return speed * DeviceDescriptor.kmh2ms * movingTime / 1000.0;
+    // But right now we use elapsed time
+    return speed * DeviceDescriptor.kmh2ms * time;
   }
 }

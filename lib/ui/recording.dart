@@ -885,9 +885,9 @@ class RecordingState extends State<RecordingScreen> {
       return null;
     }
 
-    // #252 moving is in milliseconds, so 1000 multiplier is needed!!
-    final averageSpeed =
-        _movingTime > 0 ? _distance * 1000.0 / _movingTime * DeviceDescriptor.ms2kmh : 0.0;
+    // #252 moving is in milliseconds, so 1000 multiplier is needed
+    // (but for now we use elapsed because other parts use elapsed as well)
+    final averageSpeed = _elapsed > 0 ? _distance / _elapsed * DeviceDescriptor.ms2kmh : 0.0;
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
@@ -1017,7 +1017,7 @@ class RecordingState extends State<RecordingScreen> {
     final length = leaderboard.length;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
+      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 2}", false));
@@ -1026,7 +1026,7 @@ class RecordingState extends State<RecordingScreen> {
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
+      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 1}", false));
@@ -1035,7 +1035,7 @@ class RecordingState extends State<RecordingScreen> {
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
-      final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
+      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 1}", false));
@@ -1044,7 +1044,7 @@ class RecordingState extends State<RecordingScreen> {
 
     // Following dot after the follower (if any)
     if (rank < length) {
-      final distance = leaderboard[rank].distanceAtTime(_movingTime);
+      final distance = leaderboard[rank].distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
         markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 2}", false));
@@ -1098,15 +1098,17 @@ class RecordingState extends State<RecordingScreen> {
     final elapsedMillis = _elapsed * 1000;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(elapsedMillis);
-      cells.addAll(_getLeaderboardInfoText(rank - 2, distance, true));
+      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
+      final speed = _avgSpeedOnTrack ? leaderboard[rank - 3].speedString(_si) : "";
+      cells.addAll(_getLeaderboardInfoText(rank - 2, distance, speed, true));
       rowCount++;
     }
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(elapsedMillis);
-      cells.addAll(_getLeaderboardInfoText(rank - 1, distance, true));
+      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
+      final speed = _avgSpeedOnTrack ? leaderboard[rank - 2].speedString(_si) : "";
+      cells.addAll(_getLeaderboardInfoText(rank - 1, distance, speed, true));
       rowCount++;
     }
 
@@ -1121,15 +1123,17 @@ class RecordingState extends State<RecordingScreen> {
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
-      final distance = leaderboard[rank - 1].distanceAtTime(elapsedMillis);
-      cells.addAll(_getLeaderboardInfoText(rank + 1, distance, false));
+      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
+      final speed = _avgSpeedOnTrack ? leaderboard[rank - 1].speedString(_si) : "";
+      cells.addAll(_getLeaderboardInfoText(rank + 1, distance, speed, false));
       rowCount++;
     }
 
     // Following dot after the follower (if any)
     if (rank < length) {
-      final distance = leaderboard[rank].distanceAtTime(elapsedMillis);
-      cells.addAll(_getLeaderboardInfoText(rank + 2, distance, false));
+      final distance = leaderboard[rank].distanceAtTime(_elapsed);
+      final speed = _avgSpeedOnTrack ? leaderboard[rank].speedString(_si) : "";
+      cells.addAll(_getLeaderboardInfoText(rank + 2, distance, speed, false));
       rowCount++;
     }
 
