@@ -161,12 +161,14 @@ class RecordingState extends State<RecordingScreen> {
   bool _leaderboardFeature = leaderboardFeatureDefault;
   bool _rankingForSportOrDevice = rankingForSportOrDeviceDefault;
   List<WorkoutSummary> _leaderboard = [];
-  int? _selfRank;
+  int _selfRank = 0;
+  double _selfAvgSpeed = 0.0;
   List<String> _selfRankString = [];
   bool _rankRibbonVisualization = rankRibbonVisualizationDefault;
   bool _rankTrackVisualization = rankTrackVisualizationDefault;
   bool _rankInfoOnTrack = rankInfoOnTrackDefault;
   bool _displayLapCounter = displayLapCounterDefault;
+  bool _avgSpeedOnTrack = avgSpeedOnTrackDefault;
   int _rankInfoColumnCount = 0;
   Color _darkRed = Colors.red;
   Color _darkGreen = Colors.green;
@@ -236,7 +238,8 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (_leaderboardFeature) {
-      _selfRank = null;
+      _selfRank = 0;
+      _selfAvgSpeed = 0.0;
       _selfRankString = [];
       _leaderboard = _rankingForSportOrDevice
           ? await _database.workoutSummaryDao
@@ -298,7 +301,9 @@ class RecordingState extends State<RecordingScreen> {
 
           if (_leaderboardFeature) {
             if (_rankingForSportOrDevice) {
-              _selfRank = _getSelfRank();
+              final selfRankTuple = _getSelfRank();
+              _selfRank = selfRankTuple.item1;
+              _selfAvgSpeed = selfRankTuple.item2;
               _selfRankString = _getSelfRankString();
             }
           }
@@ -618,9 +623,14 @@ class RecordingState extends State<RecordingScreen> {
         prefService.get<bool>(rankTrackVisualizationTag) ?? rankTrackVisualizationDefault;
     _rankInfoOnTrack = prefService.get<bool>(rankInfoOnTrackTag) ?? rankInfoOnTrackDefault;
     _displayLapCounter = prefService.get<bool>(displayLapCounterTag) ?? displayLapCounterDefault;
+    _avgSpeedOnTrack = prefService.get<bool>(avgSpeedOnTrackTag) ?? avgSpeedOnTrackDefault;
 
     _rankInfoColumnCount = 2;
     if (_displayLapCounter) {
+      _rankInfoColumnCount += 1;
+    }
+
+    if (_avgSpeedOnTrack) {
       _rankInfoColumnCount += 1;
     }
 
@@ -876,13 +886,9 @@ class RecordingState extends State<RecordingScreen> {
             _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
   }
 
-  int? _getRank(List<WorkoutSummary> leaderboard) {
-    if (leaderboard.isEmpty) {
-      return 1;
-    }
-
-    if (_movingTime == 0) {
-      return null;
+  Tuple2<int, double> _getRank(List<WorkoutSummary> leaderboard) {
+    if (_elapsed == 0) {
+      return const Tuple2<int, double>(0, 0.0);
     }
 
     // #252 moving is in milliseconds, so 1000 multiplier is needed
@@ -891,21 +897,21 @@ class RecordingState extends State<RecordingScreen> {
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
-        return rank;
+        return Tuple2<int, double>(rank, averageSpeed);
       }
 
       rank += 1;
     }
 
-    return rank;
+    return Tuple2<int, double>(rank, averageSpeed);
   }
 
-  String _getRankString(int? rank, List<WorkoutSummary> leaderboard) {
-    return rank == null ? emptyMeasurement : rank.toString();
+  String _getRankString(int rank, List<WorkoutSummary> leaderboard) {
+    return rank == 0 ? emptyMeasurement : rank.toString();
   }
 
-  int? _getSelfRank() {
-    if (!_leaderboardFeature) return null;
+  Tuple2<int, double> _getSelfRank() {
+    if (!_leaderboardFeature) return const Tuple2<int, double>(0, 0.0);
 
     return _getRank(_leaderboard);
   }
@@ -914,8 +920,8 @@ class RecordingState extends State<RecordingScreen> {
     return ["#${_getRankString(_selfRank, _leaderboard)}", "(Self)"];
   }
 
-  Color _getPaceLightColor(int? selfRank, {required bool background}) {
-    if (!_leaderboardFeature || selfRank == null) {
+  Color _getPaceLightColor(int selfRank, {required bool background}) {
+    if (!_leaderboardFeature || selfRank == 0) {
       return background ? Colors.transparent : _themeManager.getBlueColor();
     }
 
@@ -925,7 +931,7 @@ class RecordingState extends State<RecordingScreen> {
     return background ? _lightBlue : _darkBlue;
   }
 
-  TextStyle _getPaceLightTextStyle(int? selfRank) {
+  TextStyle _getPaceLightTextStyle(int selfRank) {
     if (!_leaderboardFeature) {
       return _measurementStyle;
     }
@@ -1008,9 +1014,9 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
-  List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int? rank) {
+  List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int rank) {
     List<Widget> markers = [];
-    if (leaderboard.isEmpty || rank == null || _trackCalculator == null) {
+    if (leaderboard.isEmpty || rank == 0 || _trackCalculator == null) {
       return markers;
     }
 
@@ -1059,26 +1065,31 @@ class RecordingState extends State<RecordingScreen> {
     return ColoredBox(
       color: bgColor,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
         child: Text(text, style: _markerStyle),
       ),
     );
   }
 
-  List<Widget> _getLeaderboardInfoText(int rank, double distance, bool lead) {
+  List<Widget> _getLeaderboardInfoText(int rank, double distance, String speed, bool lead) {
     List<Widget> widgets = [];
     widgets.add(_getLeaderboardInfoTextCell("#$rank", lead));
     if (_displayLapCounter) {
       final lapCount = (distance / _trackLength).floor();
       widgets.add(_getLeaderboardInfoTextCell("L$lapCount", lead));
     }
+
     final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
     widgets.add(_getLeaderboardInfoTextCell(distanceString, lead));
+    if (_avgSpeedOnTrack) {
+      widgets.add(_getLeaderboardInfoTextCell(speed, lead));
+    }
+
     return widgets;
   }
 
-  Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int? rank, List<String> rankString) {
-    if (leaderboard.isEmpty || rank == null) {
+  Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int rank, List<String> rankString) {
+    if (leaderboard.isEmpty || rank == 0) {
       var rankStringEx = rankString.join(" ");
       if (_displayLapCounter) {
         rankStringEx += " L$_lapCount";
@@ -1091,11 +1102,13 @@ class RecordingState extends State<RecordingScreen> {
       areaRow += " content";
     }
 
-    int rowCount = 0;
+    if (_avgSpeedOnTrack) {
+      areaRow += " content";
+    }
 
+    int rowCount = 0;
     List<Widget> cells = [];
     final length = leaderboard.length;
-    final elapsedMillis = _elapsed * 1000;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
       final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
@@ -1118,7 +1131,14 @@ class RecordingState extends State<RecordingScreen> {
     if (_displayLapCounter) {
       cells.add(_getLeaderboardInfoTextCell("L$_lapCount", lead));
     }
+
     cells.add(_getLeaderboardInfoTextCell(rankString[1], lead));
+    if (_avgSpeedOnTrack) {
+      final avgSpeedString =
+          WorkoutSummary.speedStringStatic(_si, _selfAvgSpeed, widget.descriptor.defaultSport);
+      cells.add(_getLeaderboardInfoTextCell(avgSpeedString, lead));
+    }
+
     rowCount++;
 
     // Following dot (following directly) if any
@@ -1137,15 +1157,20 @@ class RecordingState extends State<RecordingScreen> {
       rowCount++;
     }
 
-    final innerWidth = _trackCalculator!.trackSize!.width - 2 * (_trackCalculator!.trackOffset!.dx + _trackCalculator!.trackRadius! - thick);
+    final innerWidth = _trackCalculator!.trackSize!.width -
+        2 * (_trackCalculator!.trackOffset!.dx + _trackCalculator!.trackRadius! - thick);
     final cellWidth = innerWidth / _rankInfoColumnCount;
-    final innerHeight = thick * (cells.length / _rankInfoColumnCount) * 2;
-    final cellHeight = thick * 2;
-    debugPrint("c $innerWidth $innerHeight $cellWidth $cellHeight");
+    final innerHeight = (thick - 1) * (cells.length / _rankInfoColumnCount) * 2;
+    const cellHeight = (thick - 1) * 2;
+    debugPrint("c $_rankInfoColumnCount $innerWidth $innerHeight $cellWidth $cellHeight");
 
-    List<TrackSize> rowSizes = [for(int i = 0; i < rowCount; i++) cellHeight.px];
-    String areaSpec = [for(int i = 0; i < rowCount; i++) areaRow].join("\n");
-    List<TrackSize> columnSpec = _displayLapCounter ? [auto, auto, 1.fr] : [auto, 1.fr];
+    List<TrackSize> rowSizes = [for (int i = 0; i < rowCount; i++) cellHeight.px];
+    String areaSpec = [for (int i = 0; i < rowCount; i++) areaRow].join("\n");
+    List<TrackSize> columnSpec = _rankInfoColumnCount == 2
+        ? [auto, 1.fr]
+        : (_rankInfoColumnCount == 4
+            ? [auto, auto, 1.fr, 1.fr]
+            : (_displayLapCounter ? [auto, auto, 1.fr] : [auto, 1.fr, 1.fr]));
 
     return SizedBox(
       width: innerWidth,
@@ -1158,17 +1183,6 @@ class RecordingState extends State<RecordingScreen> {
         rowGap: 1,
         children: cells,
       ),
-      /* GridView.count(
-        primary: false,
-        shrinkWrap: true,
-        crossAxisSpacing: 1,
-        mainAxisSpacing: 1,
-        crossAxisCount: _rankInfoColumnCount,
-        childAspectRatio: cellWidth / cellHeight,
-        physics: const NeverScrollableScrollPhysics(),
-        // semanticChildCount: cells.length,
-        children: cells,
-      ),*/
     );
   }
 
@@ -1360,7 +1374,7 @@ class RecordingState extends State<RecordingScreen> {
         var selfMarkerColor = 0xFFFF0000;
         if (_rankTrackVisualization) {
           markers.addAll(_markersForLeaderboard(_leaderboard, _selfRank));
-          if (_selfRank != null) {
+          if (_selfRank > 0) {
             selfMarkerText = _selfRank.toString();
           }
 

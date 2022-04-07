@@ -55,10 +55,14 @@ class WorkoutSummary {
     speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.ms2kmh : 0.0;
   }
 
-  String speedString(bool si) {
+  static speedStringStatic(bool si, double speed, String sport) {
     final speedString = speedOrPaceString(speed, si, sport);
     final speedUnit = getSpeedUnit(si, sport);
     return '$speedString $speedUnit';
+  }
+
+  String speedString(bool si) {
+    return speedStringStatic(si, speed, sport);
   }
 
   String distanceStringWithUnit(bool si, bool highRes) {
