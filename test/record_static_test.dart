@@ -31,13 +31,15 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       test("for $sport", () async {
+        final speedLow = sport == ActivityType.run ? 8.0 : 30.0;
+        final speedHigh = sport == ActivityType.run ? 20.0 : 40.0;
         final random = RecordWithSport.getRandom(sport, rnd);
         expect(random.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
         expect(random.distance, null);
         expect(random.elapsed, null);
         expect(random.calories, inInclusiveRange(0, 1500));
         expect(random.power, inInclusiveRange(50, 550));
-        expect(random.speed, inInclusiveRange(30.0, 40.0));
+        expect(random.speed, inInclusiveRange(speedLow, speedHigh));
         expect(random.cadence, inInclusiveRange(30, 130));
         expect(random.heartRate, inInclusiveRange(60, 180));
         expect(random.elapsedMillis, null);
