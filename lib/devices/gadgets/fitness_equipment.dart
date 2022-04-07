@@ -413,8 +413,8 @@ class FitnessEquipment extends DeviceBase {
         "ensuring that manufacturer name ($manufacturerName) contains manufacturer prefix ${descriptor!.manufacturerPrefix}",
       );
     }
-    return manufacturerName!.toLowerCase().contains(descriptor!.manufacturerPrefix.toLowerCase()) ||
-        descriptor!.manufacturerPrefix == "Unknown";
+    return manufacturerName?.toLowerCase().contains(descriptor!.manufacturerPrefix.toLowerCase()) ??
+        false || descriptor!.manufacturerPrefix == "Unknown";
   }
 
   Future<String?> _getManufacturerName(deviceInfo) async {

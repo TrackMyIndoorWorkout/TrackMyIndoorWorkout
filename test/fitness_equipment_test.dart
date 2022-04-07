@@ -29,9 +29,10 @@ main() {
       return serviceMock;
     }
 
-    BluetoothService _mockFtmsService() => _mockBluetoothService(
-        serviceUid: '00001826-0000-1000-8000-00805f9b34fb',
-        characteristicUid: '00002ad2-0000-1000-8000-00805f9b34fb');
+    BluetoothService _mockFtmsService(
+            {String serviceUid = '00001826-0000-1000-8000-00805f9b34fb',
+            String characteristicUid = '00002ad2-0000-1000-8000-00805f9b34fb'}) =>
+        _mockBluetoothService(serviceUid: serviceUid, characteristicUid: characteristicUid);
 
     BluetoothService _mockDeviceInfoService({required String manufacturerName}) =>
         _mockBluetoothService(
@@ -52,6 +53,21 @@ main() {
 
       expect(await equipment.discover(), true);
       expect(equipment.manufacturerName, "FUJISAN YESOUL");
+    });
+
+    test('handles manufacturer name being null in manufacturer check', () async {
+      final mockDevice = MockBluetoothDevice();
+      const anotherUid = '00000000-0000-1000-8000-00805f9b34fb';
+      final mockFtmsService = _mockFtmsService(characteristicUid: anotherUid);
+      final mockDeviceInfoService = _mockDeviceInfoService(manufacturerName: 'FUJISAN YESOUL');
+      when(mockDevice.discoverServices())
+          .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
+
+      final deviceDescriptor = deviceMap[yesoulS3FourCC];
+      final equipment = FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
+      equipment.connected = true;
+
+      expect(await equipment.discover(), false);
     });
   });
 }
