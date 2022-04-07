@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:floor/floor.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../preferences/generic.dart';
+import '../../utils/constants.dart';
 import '../../utils/display.dart';
 
 const workoutSummariesTableName = 'workout_summary';
@@ -55,14 +58,22 @@ class WorkoutSummary {
     speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.ms2kmh : 0.0;
   }
 
-  static speedStringStatic(bool si, double speed, String sport) {
+  static String speedStringStatic(bool si, double speed, double? slowSpeed, String sport) {
+    if (sport != ActivityType.ride && slowSpeed != null) {
+      speed = max(speed, slowSpeed);
+    }
+
     final speedString = speedOrPaceString(speed, si, sport);
-    final speedUnit = getSpeedUnit(si, sport);
-    return '$speedString $speedUnit';
+    var speedUnit = getSpeedUnit(si, sport);
+    if (speedUnit.startsWith("min ")) {
+      speedUnit = speedUnit.substring(0, 3) + speedUnit.substring(4);
+    }
+    final retVal = '$speedString $speedUnit';
+    return retVal;
   }
 
-  String speedString(bool si) {
-    return speedStringStatic(si, speed, sport);
+  String speedString(bool si, double? slowSpeed) {
+    return speedStringStatic(si, speed, slowSpeed, sport);
   }
 
   String distanceStringWithUnit(bool si, bool highRes) {

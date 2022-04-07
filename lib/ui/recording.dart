@@ -92,6 +92,9 @@ class RecordingScreen extends StatefulWidget {
 }
 
 class RecordingState extends State<RecordingScreen> {
+  static const double _markerStyleSizeAdjust = 1.4;
+  static const double _markerStyleSmallSizeAdjust = 0.9;
+
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
@@ -430,8 +433,10 @@ class RecordingState extends State<RecordingScreen> {
     if (sizeAdjustInt != 100) {
       _sizeAdjust = sizeAdjustInt / 100.0;
     }
-    _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 1.4);
-    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 0.9);
+    _markerStyle =
+        _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: _markerStyleSizeAdjust);
+    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!,
+        fontSizeFactor: _markerStyleSmallSizeAdjust);
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     prefService.set<String>(
       lastEquipmentIdTagPrefix + MetricSpec.sport2Sport(widget.sport),
@@ -1066,7 +1071,7 @@ class RecordingState extends State<RecordingScreen> {
       color: bgColor,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
-        child: Text(text, style: _markerStyle),
+        child: Text(text, style: _markerStyleSmall),
       ),
     );
   }
@@ -1112,7 +1117,9 @@ class RecordingState extends State<RecordingScreen> {
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
       final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
-      final speed = _avgSpeedOnTrack ? leaderboard[rank - 3].speedString(_si) : "";
+      final speed = _avgSpeedOnTrack
+          ? leaderboard[rank - 3].speedString(_si, widget.descriptor.slowPace)
+          : "";
       cells.addAll(_getLeaderboardInfoText(rank - 2, distance, speed, true));
       rowCount++;
     }
@@ -1120,7 +1127,9 @@ class RecordingState extends State<RecordingScreen> {
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
       final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
-      final speed = _avgSpeedOnTrack ? leaderboard[rank - 2].speedString(_si) : "";
+      final speed = _avgSpeedOnTrack
+          ? leaderboard[rank - 2].speedString(_si, widget.descriptor.slowPace)
+          : "";
       cells.addAll(_getLeaderboardInfoText(rank - 1, distance, speed, true));
       rowCount++;
     }
@@ -1134,8 +1143,8 @@ class RecordingState extends State<RecordingScreen> {
 
     cells.add(_getLeaderboardInfoTextCell(rankString[1], lead));
     if (_avgSpeedOnTrack) {
-      final avgSpeedString =
-          WorkoutSummary.speedStringStatic(_si, _selfAvgSpeed, widget.descriptor.defaultSport);
+      final avgSpeedString = WorkoutSummary.speedStringStatic(
+          _si, _selfAvgSpeed, widget.descriptor.slowPace, widget.sport);
       cells.add(_getLeaderboardInfoTextCell(avgSpeedString, lead));
     }
 
@@ -1144,7 +1153,9 @@ class RecordingState extends State<RecordingScreen> {
     // Following dot (following directly) if any
     if (rank - 1 < length) {
       final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
-      final speed = _avgSpeedOnTrack ? leaderboard[rank - 1].speedString(_si) : "";
+      final speed = _avgSpeedOnTrack
+          ? leaderboard[rank - 1].speedString(_si, widget.descriptor.slowPace)
+          : "";
       cells.addAll(_getLeaderboardInfoText(rank + 1, distance, speed, false));
       rowCount++;
     }
@@ -1152,25 +1163,20 @@ class RecordingState extends State<RecordingScreen> {
     // Following dot after the follower (if any)
     if (rank < length) {
       final distance = leaderboard[rank].distanceAtTime(_elapsed);
-      final speed = _avgSpeedOnTrack ? leaderboard[rank].speedString(_si) : "";
+      final speed =
+          _avgSpeedOnTrack ? leaderboard[rank].speedString(_si, widget.descriptor.slowPace) : "";
       cells.addAll(_getLeaderboardInfoText(rank + 2, distance, speed, false));
       rowCount++;
     }
 
     final innerWidth = _trackCalculator!.trackSize!.width -
-        2 * (_trackCalculator!.trackOffset!.dx + _trackCalculator!.trackRadius! - thick);
-    final cellWidth = innerWidth / _rankInfoColumnCount;
-    final innerHeight = (thick - 1) * (cells.length / _rankInfoColumnCount) * 2;
-    const cellHeight = (thick - 1) * 2;
-    debugPrint("c $_rankInfoColumnCount $innerWidth $innerHeight $cellWidth $cellHeight");
+        2 * (_trackCalculator!.trackOffset!.dx + _trackCalculator!.trackRadius!);
+    const cellHeight = (thick * _markerStyleSmallSizeAdjust / _markerStyleSizeAdjust) * 2;
+    final innerHeight = cellHeight * rowCount;
 
     List<TrackSize> rowSizes = [for (int i = 0; i < rowCount; i++) cellHeight.px];
     String areaSpec = [for (int i = 0; i < rowCount; i++) areaRow].join("\n");
-    List<TrackSize> columnSpec = _rankInfoColumnCount == 2
-        ? [auto, 1.fr]
-        : (_rankInfoColumnCount == 4
-            ? [auto, auto, 1.fr, 1.fr]
-            : (_displayLapCounter ? [auto, auto, 1.fr] : [auto, 1.fr, 1.fr]));
+    List<TrackSize> columnSpec = [for (int i = 0; i < _rankInfoColumnCount; i++) auto];
 
     return SizedBox(
       width: innerWidth,
