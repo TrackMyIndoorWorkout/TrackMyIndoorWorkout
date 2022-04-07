@@ -70,6 +70,16 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(displayLapCounterDescription),
         pref: displayLapCounterTag,
       ),
+      PrefCheckbox(
+        title: const Text(avgSpeedOnTrack),
+        subtitle: const Text(avgSpeedOnTrackDescription),
+        pref: avgSpeedOnTrackTag,
+        onChange: (value) {
+          if (value) {
+            PrefService.of(context).set(leaderboardFeatureTag, true);
+          }
+        },
+      ),
     ];
 
     return Scaffold(

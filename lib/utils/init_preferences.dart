@@ -108,6 +108,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     movingOrElapsedTimeTag: movingOrElapsedTimeDefault,
     trainingPeaksUploadPublicTag: trainingPeaksUploadPublicDefault,
     logLevelTag: logLevelDefault,
+    avgSpeedOnTrackTag: avgSpeedOnTrackDefault,
   };
 
   for (var sport in MetricSpec.sportPrefixes) {
