@@ -69,5 +69,18 @@ main() {
 
       expect(await equipment.discover(), false);
     });
+
+    test('handles descriptor being null in manufacturer check', () async {
+      final mockDevice = MockBluetoothDevice();
+      final mockFtmsService = _mockFtmsService();
+      final mockDeviceInfoService = _mockDeviceInfoService(manufacturerName: 'FUJISAN YESOUL');
+      when(mockDevice.discoverServices())
+          .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
+
+      final equipment = FitnessEquipment(descriptor: null, device: mockDevice);
+      equipment.connected = true;
+
+      expect(await equipment.discover(), false);
+    });
   });
 }
