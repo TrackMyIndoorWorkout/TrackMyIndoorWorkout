@@ -64,15 +64,17 @@ class JsonWorkout {
       );
       sb.write('],');
     }
-    sb.write('"position": [');
-    sb.writeAll(
-      exportModel.records.map(
-        (r) => '[${r.elapsed(exportModel.activity)}, {"lat": ${r.latitude.toStringAsFixed(7)}, '
-            '"lng": ${r.longitude.toStringAsFixed(7)}, "elevation": ${exportModel.altitude}}]',
-      ),
-      ",",
-    );
-    sb.write(']');
+    if (!exportModel.rawData && exportModel.calculateGps) {
+      sb.write('"position": [');
+      sb.writeAll(
+        exportModel.records.map(
+          (r) => '[${r.elapsed(exportModel.activity)}, {"lat": ${r.latitude.toStringAsFixed(7)}, '
+              '"lng": ${r.longitude.toStringAsFixed(7)}, "elevation": ${exportModel.altitude}}]',
+        ),
+        ",",
+      );
+      sb.write(']');
+    }
     return sb.toString();
   }
 
