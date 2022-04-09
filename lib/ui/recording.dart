@@ -31,8 +31,9 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
+import '../preferences/metric_spec.dart';
 import '../preferences/moving_or_elapsed_time.dart';
-import '../preferences/preferences_spec.dart';
+import '../preferences/palette_spec.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
@@ -86,7 +87,7 @@ class RecordingScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => RecordingState();
+  RecordingState createState() => RecordingState();
 }
 
 class RecordingState extends State<RecordingScreen> {
@@ -94,6 +95,7 @@ class RecordingState extends State<RecordingScreen> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   TrackCalculator? _trackCalculator;
+  PaletteSpec? _paletteSpec;
   double _trackLength = trackLength;
   bool _measuring = false;
   int _pointCount = 0;
@@ -121,7 +123,7 @@ class RecordingState extends State<RecordingScreen> {
   List<bool> _expandedState = [];
   final List<ExpandableController> _rowControllers = [];
   final List<int> _expandedHeights = [];
-  List<PreferencesSpec> _preferencesSpecs = [];
+  List<MetricSpec> _preferencesSpecs = [];
 
   Activity? _activity;
   AppDatabase _database = Get.find<AppDatabase>();
@@ -156,14 +158,10 @@ class RecordingState extends State<RecordingScreen> {
   bool _targetHrAlerting = false;
   bool _hrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _leaderboardFeature = leaderboardFeatureDefault;
-  bool _rankingForDevice = rankingForDeviceDefault;
-  List<WorkoutSummary> _deviceLeaderboard = [];
-  int? _deviceRank;
-  String _deviceRankString = "";
-  bool _rankingForSport = rankingForSportDefault;
-  List<WorkoutSummary> _sportLeaderboard = [];
-  int? _sportRank;
-  String _sportRankString = "";
+  bool _rankingForSportOrDevice = rankingForSportOrDeviceDefault;
+  List<WorkoutSummary> _leaderboard = [];
+  int? _selfRank;
+  String _selfRankString = "";
   bool _rankRibbonVisualization = rankRibbonVisualizationDefault;
   bool _rankTrackVisualization = rankTrackVisualizationDefault;
   bool _rankInfoOnTrack = rankInfoOnTrackDefault;
@@ -235,17 +233,13 @@ class RecordingState extends State<RecordingScreen> {
       _activity!.id = id;
     }
 
-    if (_rankingForDevice) {
-      _deviceRank = null;
-      _deviceRankString = "";
-      _deviceLeaderboard =
-          await _database.workoutSummaryDao.findAllWorkoutSummariesByDevice(widget.device.id.id);
-    }
-    if (_rankingForSport) {
-      _sportRank = null;
-      _sportRankString = "";
-      _sportLeaderboard = await _database.workoutSummaryDao
-          .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport);
+    if (_leaderboardFeature) {
+      _selfRank = null;
+      _selfRankString = "";
+      _leaderboard = _rankingForSportOrDevice
+          ? await _database.workoutSummaryDao
+              .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport)
+          : await _database.workoutSummaryDao.findAllWorkoutSummariesByDevice(widget.device.id.id);
     }
 
     _fitnessEquipment?.setActivity(_activity!);
@@ -300,13 +294,11 @@ class RecordingState extends State<RecordingScreen> {
             _heartRate = record.heartRate;
           }
 
-          if (_rankingForDevice) {
-            _deviceRank = _getDeviceRank();
-            _deviceRankString = _getDeviceRankString();
-          }
-          if (_rankingForSport) {
-            _sportRank = _getSportRank();
-            _sportRankString = _getSportRankString();
+          if (_leaderboardFeature) {
+            if (_rankingForSportOrDevice) {
+              _selfRank = _getSelfRank();
+              _selfRankString = _getSelfRankString();
+            }
           }
 
           _values = [
@@ -435,7 +427,7 @@ class RecordingState extends State<RecordingScreen> {
     _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 0.9);
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     prefService.set<String>(
-      lastEquipmentIdTagPrefix + PreferencesSpec.sport2Sport(widget.sport),
+      lastEquipmentIdTagPrefix + MetricSpec.sport2Sport(widget.sport),
       widget.device.id.id,
     );
     if (Get.isRegistered<FitnessEquipment>()) {
@@ -473,17 +465,20 @@ class RecordingState extends State<RecordingScreen> {
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
 
     if (widget.sport != ActivityType.ride) {
-      final slowPace = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(widget.sport)]!;
+      final slowPace = MetricSpec.slowSpeeds[MetricSpec.sport2Sport(widget.sport)]!;
       widget.descriptor.slowPace = slowPace;
       _fitnessEquipment?.slowPace = slowPace;
     }
 
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
+    _paletteSpec = PaletteSpec.getInstance(prefService);
+
+    _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
     for (var prefSpec in _preferencesSpecs) {
       prefSpec.calculateBounds(
         0,
         decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
         _isLight,
+        _paletteSpec!,
       );
     }
 
@@ -613,12 +608,10 @@ class RecordingState extends State<RecordingScreen> {
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _rankRibbonVisualization =
         prefService.get<bool>(rankRibbonVisualizationTag) ?? rankRibbonVisualizationDefault;
-    _rankingForDevice = prefService.get<bool>(rankingForDeviceTag) ?? rankingForDeviceDefault;
-    _deviceLeaderboard = [];
-    _deviceRankString = "";
-    _rankingForSport = prefService.get<bool>(rankingForSportTag) ?? rankingForSportDefault;
-    _sportLeaderboard = [];
-    _sportRankString = "";
+    _rankingForSportOrDevice =
+        prefService.get<bool>(rankingForSportOrDeviceTag) ?? rankingForSportOrDeviceDefault;
+    _leaderboard = [];
+    _selfRankString = "";
     _rankTrackVisualization =
         prefService.get<bool>(rankTrackVisualizationTag) ?? rankTrackVisualizationDefault;
     _rankInfoOnTrack = prefService.get<bool>(rankInfoOnTrackTag) ?? rankInfoOnTrackDefault;
@@ -863,9 +856,17 @@ class RecordingState extends State<RecordingScreen> {
       return background ? Colors.transparent : _themeManager.getProtagonistColor();
     }
 
-    return background
-        ? _preferencesSpecs[metricIndex].bgColorByBin(_zoneIndexes[metricIndex]!, _isLight)
-        : _preferencesSpecs[metricIndex].fgColorByBin(_zoneIndexes[metricIndex]!, _isLight);
+    if (background) {
+      return _paletteSpec?.bgColorByBin(
+              _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
+          PaletteSpec?.bgColorByBinDefault(
+              _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
+    }
+
+    return _paletteSpec?.fgColorByBin(
+            _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
+        PaletteSpec?.fgColorByBinDefault(
+            _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
   }
 
   int? _getRank(List<WorkoutSummary> leaderboard) {
@@ -896,44 +897,33 @@ class RecordingState extends State<RecordingScreen> {
     return rank == null ? emptyMeasurement : rank.toString();
   }
 
-  int? _getDeviceRank() {
-    if (!_rankingForDevice) return null;
+  int? _getSelfRank() {
+    if (!_leaderboardFeature) return null;
 
-    return _getRank(_deviceLeaderboard);
+    return _getRank(_leaderboard);
   }
 
-  String _getDeviceRankString() {
-    return "#${_getRankString(_deviceRank, _deviceLeaderboard)} (Device)";
+  String _getSelfRankString() {
+    return "#${_getRankString(_selfRank, _leaderboard)} (Self)";
   }
 
-  int? _getSportRank() {
-    if (!_rankingForSport) return null;
-
-    return _getRank(_sportLeaderboard);
-  }
-
-  String _getSportRankString() {
-    return "#${_getRankString(_sportRank, _sportLeaderboard)} (${widget.descriptor.defaultSport})";
-  }
-
-  Color _getPaceLightColor(int? deviceRank, int? sportRank, {required bool background}) {
-    if (!_rankingForDevice && !_rankingForSport || deviceRank == null && sportRank == null) {
+  Color _getPaceLightColor(int? selfRank, {required bool background}) {
+    if (!_leaderboardFeature || selfRank == null) {
       return background ? Colors.transparent : _themeManager.getBlueColor();
     }
 
-    if (deviceRank != null && deviceRank <= 1 || sportRank != null && sportRank <= 1) {
+    if (selfRank <= 1) {
       return background ? _lightGreen : _darkGreen;
     }
     return background ? _lightBlue : _darkBlue;
   }
 
-  TextStyle _getPaceLightTextStyle(int? deviceRank, int? sportRank) {
-    if (!_rankingForDevice && !_rankingForSport) {
+  TextStyle _getPaceLightTextStyle(int? selfRank) {
+    if (!_leaderboardFeature) {
       return _measurementStyle;
     }
 
-    return _measurementStyle.apply(
-        color: _getPaceLightColor(deviceRank, sportRank, background: false));
+    return _measurementStyle.apply(color: _getPaceLightColor(selfRank, background: false));
   }
 
   TargetHrState _getTargetHrState() {
@@ -1197,8 +1187,8 @@ class RecordingState extends State<RecordingScreen> {
     for (var entry in _rowConfig.asMap().entries) {
       var measurementStyle = _measurementStyle;
 
-      if (entry.key == 2 && (_rankingForDevice || _rankingForSport)) {
-        measurementStyle = _getPaceLightTextStyle(_deviceRank, _sportRank);
+      if (entry.key == 2 && _leaderboardFeature) {
+        measurementStyle = _getPaceLightTextStyle(_selfRank);
       }
 
       if (entry.key == 4 && _targetHrMode != targetHeartRateModeNone || _zoneIndexes[3] != null) {
@@ -1291,18 +1281,11 @@ class RecordingState extends State<RecordingScreen> {
             children: [Text(targetText, style: targetHrTextStyle), extra],
           );
         } else if (entry.value.metric == "speed" &&
-            _rankRibbonVisualization &&
-            (_rankingForDevice || _rankingForSport)) {
+            _leaderboardFeature &&
+            _rankRibbonVisualization) {
           List<Widget> extraExtras = [];
-          if (_rankingForDevice) {
-            final devicePaceLightColor = _getPaceLightTextStyle(_deviceRank, null);
-            extraExtras.add(Text(_deviceRankString, style: devicePaceLightColor));
-          }
-
-          if (_rankingForSport) {
-            final devicePaceLightColor = _getPaceLightTextStyle(null, _sportRank);
-            extraExtras.add(Text(_sportRankString, style: devicePaceLightColor));
-          }
+          final paceLightColor = _getPaceLightTextStyle(_selfRank);
+          extraExtras.add(Text(_selfRankString, style: paceLightColor));
 
           if (widget.descriptor.defaultSport != ActivityType.ride) {
             extraExtras.add(Text("Speed ${_si ? 'km' : 'mi'}/h"));
@@ -1324,61 +1307,27 @@ class RecordingState extends State<RecordingScreen> {
       if (markerPosition != null) {
         var selfMarkerText = "";
         var selfMarkerColor = 0xFFFF0000;
-        if (_rankTrackVisualization && (_rankingForDevice || _rankingForSport)) {
-          Widget? rankInfo;
-          Widget? deviceRankInfo;
-          if (_rankingForDevice) {
-            markers.addAll(_markersForLeaderboard(_deviceLeaderboard, _deviceRank));
-            if (_deviceRank != null) {
-              selfMarkerText = _deviceRank.toString();
-            }
-
-            if (_rankInfoOnTrack) {
-              deviceRankInfo =
-                  _infoForLeaderboard(_deviceLeaderboard, _deviceRank, _deviceRankString);
-              if (!_rankingForSport) {
-                rankInfo = Center(child: deviceRankInfo);
-              }
-            }
-          }
-
-          Widget? sportRankInfo;
-          if (_rankingForSport) {
-            markers.addAll(_markersForLeaderboard(_sportLeaderboard, _sportRank));
-            if (_sportRank != null && _deviceRank == null) {
-              selfMarkerText = _sportRank.toString();
-            }
-
-            if (_rankInfoOnTrack) {
-              sportRankInfo = _infoForLeaderboard(_sportLeaderboard, _sportRank, _sportRankString);
-              if (!_rankingForDevice) {
-                rankInfo = Center(child: sportRankInfo);
-              }
-            }
+        if (_rankTrackVisualization) {
+          markers.addAll(_markersForLeaderboard(_leaderboard, _selfRank));
+          if (_selfRank != null) {
+            selfMarkerText = _selfRank.toString();
           }
 
           if (_rankInfoOnTrack) {
-            if (_rankingForDevice &&
-                deviceRankInfo != null &&
-                _rankingForDevice &&
-                sportRankInfo != null) {
-              rankInfo = Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [deviceRankInfo, Container(width: 2), sportRankInfo],
+            markers.add(
+              Center(
+                child: _infoForLeaderboard(
+                  _leaderboard,
+                  _selfRank,
+                  _selfRankString,
                 ),
-              );
-            }
-
-            if (rankInfo != null) {
-              markers.add(rankInfo);
-            }
+              ),
+            );
           }
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = _getPaceLightColor(_deviceRank, _sportRank, background: true).value;
+          selfMarkerColor = _getPaceLightColor(_selfRank, background: true).value;
         } else if (_displayLapCounter) {
           markers.add(Center(
             child: Text("Lap $_lapCount", style: _measurementStyle),
@@ -1431,7 +1380,7 @@ class RecordingState extends State<RecordingScreen> {
                     ),
                     const Divider(height: separatorHeight),
                     ColoredBox(
-                      color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
+                      color: _getPaceLightColor(_selfRank, background: true),
                       child: ExpandablePanel(
                         theme: _expandableThemeData,
                         header: rows[3],
@@ -1503,7 +1452,7 @@ class RecordingState extends State<RecordingScreen> {
                 ),
                 const Divider(height: separatorHeight),
                 ColoredBox(
-                  color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
+                  color: _getPaceLightColor(_selfRank, background: true),
                   child: ExpandablePanel(
                     theme: _expandableThemeData,
                     header: rows[3],

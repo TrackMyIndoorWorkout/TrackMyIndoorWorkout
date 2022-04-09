@@ -22,7 +22,7 @@ class TrackMyIndoorExerciseApp extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => TrackMyIndoorExerciseAppState();
+  TrackMyIndoorExerciseAppState createState() => TrackMyIndoorExerciseAppState();
 }
 
 class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {

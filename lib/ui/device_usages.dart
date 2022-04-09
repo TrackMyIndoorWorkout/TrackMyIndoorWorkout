@@ -15,7 +15,7 @@ class DeviceUsagesScreen extends StatefulWidget {
   const DeviceUsagesScreen({key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => DeviceUsagesScreenState();
+  DeviceUsagesScreenState createState() => DeviceUsagesScreenState();
 }
 
 class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {

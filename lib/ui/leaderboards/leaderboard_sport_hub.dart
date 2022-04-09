@@ -10,7 +10,7 @@ class LeaderboardSportHubScreen extends StatefulWidget {
   const LeaderboardSportHubScreen({Key? key, required this.sports}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => LeaderboardSportHubScreenState();
+  LeaderboardSportHubScreenState createState() => LeaderboardSportHubScreenState();
 }
 
 class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {

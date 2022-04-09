@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -7,7 +5,7 @@ import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import '../ui/models/row_configuration.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
-import 'palettes.dart';
+import 'palette_spec.dart';
 
 // https://stackoverflow.com/questions/57481767/dart-rounding-errors
 double decimalRound(double value, {int precision = 100}) {
@@ -18,7 +16,7 @@ const targetHrShortTitle = "Target HR";
 const slowSpeedPostfix = " Speed (kmh) Considered Too Slow to Display";
 const slowSpeedTagPrefix = "slow_speed_";
 
-class PreferencesSpec {
+class MetricSpec {
   static const thresholdCapital = " Threshold ";
   static const zonesCapital = " Zones (list of % of threshold)";
   static const paddleSport = "Paddle";
@@ -41,6 +39,7 @@ class PreferencesSpec {
       "For extra HR zone display feature check out '$targetHrShortTitle' configuration "
       "in the upstream settings selection. For extra speed feedback check out leaderboard rank settings.";
   static const zoneIndexDisplayDefault = false;
+  static const veryOldZoneBoundaries = "55,75,90,105,120,150";
 
   static final slowSpeeds = {
     ActivityType.ride: 4.0,
@@ -51,19 +50,27 @@ class PreferencesSpec {
   };
 
   static final _preferencesSpecsTemplate = [
-    PreferencesSpec(
+    MetricSpec(
       metric: metrics[0],
       title: "Power",
       unit: "W",
       thresholdTagPostfix: thresholdPrefix + metrics[0],
+      oldThresholdDefaultInts: {
+        sportPrefixes[0]: 300,
+        sportPrefixes[1]: 180,
+        sportPrefixes[2]: 100,
+        sportPrefixes[3]: 100,
+        sportPrefixes[4]: 180,
+      },
       thresholdDefaultInts: {
-        sportPrefixes[0]: 360,
-        sportPrefixes[1]: 360,
-        sportPrefixes[2]: 120,
-        sportPrefixes[3]: 120,
-        sportPrefixes[4]: 120,
+        sportPrefixes[0]: 320,
+        sportPrefixes[1]: 180,
+        sportPrefixes[2]: 100,
+        sportPrefixes[3]: 100,
+        sportPrefixes[4]: 180,
       },
       zonesTagPostfix: metrics[0] + zonesPostfix,
+      oldZoneDefaultInts: [55, 75, 90, 105, 120, 150],
       zonesDefaultInts: {
         sportPrefixes[0]: [55, 75, 90, 105, 120, 150],
         sportPrefixes[1]: [55, 75, 90, 105, 120, 150],
@@ -74,71 +81,95 @@ class PreferencesSpec {
       icon: Icons.bolt,
       indexDisplayDefault: false,
     ),
-    PreferencesSpec(
+    MetricSpec(
       metric: metrics[1],
       title: "Speed",
       unit: "mph",
       thresholdTagPostfix: thresholdPrefix + metrics[1],
-      thresholdDefaultInts: {
+      oldThresholdDefaultInts: {
         sportPrefixes[0]: 32,
         sportPrefixes[1]: 16,
         sportPrefixes[2]: 7,
         sportPrefixes[3]: 1,
         sportPrefixes[4]: 7,
       },
+      thresholdDefaultInts: {
+        sportPrefixes[0]: 42,
+        sportPrefixes[1]: 14,
+        sportPrefixes[2]: 7,
+        sportPrefixes[3]: 1,
+        sportPrefixes[4]: 7,
+      },
       zonesTagPostfix: metrics[1] + zonesPostfix,
+      oldZoneDefaultInts: [55, 75, 90, 105, 120, 150],
       zonesDefaultInts: {
-        sportPrefixes[0]: [55, 75, 90, 105, 120, 150],
-        sportPrefixes[1]: [55, 75, 90, 105, 120, 150],
-        sportPrefixes[2]: [55, 75, 90, 105, 120, 150],
-        sportPrefixes[3]: [55, 75, 90, 105, 120, 150],
-        sportPrefixes[4]: [55, 75, 90, 105, 120, 150],
+        sportPrefixes[0]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[1]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[2]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[3]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[4]: [77, 87, 94, 100, 104, 112],
       },
       icon: Icons.speed,
       indexDisplayDefault: false,
     ),
-    PreferencesSpec(
+    MetricSpec(
       metric: metrics[2],
       title: "Cadence",
       unit: "rpm",
       thresholdTagPostfix: thresholdPrefix + metrics[2],
-      thresholdDefaultInts: {
-        sportPrefixes[0]: 120,
+      oldThresholdDefaultInts: {
+        sportPrefixes[0]: 100,
         sportPrefixes[1]: 180,
         sportPrefixes[2]: 90,
         sportPrefixes[3]: 90,
         sportPrefixes[4]: 90,
       },
+      thresholdDefaultInts: {
+        sportPrefixes[0]: 100,
+        sportPrefixes[1]: 170,
+        sportPrefixes[2]: 85,
+        sportPrefixes[3]: 80,
+        sportPrefixes[4]: 150,
+      },
       zonesTagPostfix: metrics[2] + zonesPostfix,
+      oldZoneDefaultInts: [25, 37, 50, 75, 100, 120],
       zonesDefaultInts: {
         sportPrefixes[0]: [25, 37, 50, 75, 100, 120],
-        sportPrefixes[1]: [25, 37, 50, 75, 100, 120],
-        sportPrefixes[2]: [25, 37, 50, 75, 100, 120],
-        sportPrefixes[3]: [25, 37, 50, 75, 100, 120],
-        sportPrefixes[4]: [25, 37, 50, 75, 100, 120],
+        sportPrefixes[1]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[2]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[3]: [77, 87, 94, 100, 104, 112],
+        sportPrefixes[4]: [77, 87, 94, 100, 104, 112],
       },
       icon: Icons.directions_bike,
       indexDisplayDefault: false,
     ),
-    PreferencesSpec(
+    MetricSpec(
       metric: metrics[3],
       title: "Heart Rate",
       unit: "bpm",
       thresholdTagPostfix: thresholdPrefix + metrics[3],
-      thresholdDefaultInts: {
+      oldThresholdDefaultInts: {
         sportPrefixes[0]: 180,
         sportPrefixes[1]: 180,
         sportPrefixes[2]: 180,
         sportPrefixes[3]: 180,
         sportPrefixes[4]: 180,
       },
+      thresholdDefaultInts: {
+        sportPrefixes[0]: 153,
+        sportPrefixes[1]: 153,
+        sportPrefixes[2]: 153,
+        sportPrefixes[3]: 153,
+        sportPrefixes[4]: 153,
+      },
       zonesTagPostfix: metrics[3] + zonesPostfix,
+      oldZoneDefaultInts: [50, 60, 70, 80, 90, 100],
       zonesDefaultInts: {
-        sportPrefixes[0]: [50, 60, 70, 80, 90, 100],
-        sportPrefixes[1]: [50, 60, 70, 80, 90, 100],
-        sportPrefixes[2]: [50, 60, 70, 80, 90, 100],
-        sportPrefixes[3]: [50, 60, 70, 80, 90, 100],
-        sportPrefixes[4]: [50, 60, 70, 80, 90, 100],
+        sportPrefixes[0]: [80, 88, 92, 152, 156, 163],
+        sportPrefixes[1]: [80, 88, 92, 152, 156, 163],
+        sportPrefixes[2]: [80, 88, 92, 152, 156, 163],
+        sportPrefixes[3]: [80, 88, 92, 152, 156, 163],
+        sportPrefixes[4]: [80, 88, 92, 152, 156, 163],
       },
       icon: Icons.favorite,
       indexDisplayDefault: false,
@@ -150,8 +181,10 @@ class PreferencesSpec {
   String unit;
   String multiLineUnit = "";
   final String thresholdTagPostfix;
+  final Map<String, int> oldThresholdDefaultInts;
   final Map<String, int> thresholdDefaultInts;
   final String zonesTagPostfix;
+  final List<int> oldZoneDefaultInts;
   final Map<String, List<int>> zonesDefaultInts;
   final bool indexDisplayDefault;
   IconData icon;
@@ -166,13 +199,15 @@ class PreferencesSpec {
 
   late List<charts.PlotBand> plotBands;
 
-  PreferencesSpec({
+  MetricSpec({
     required this.metric,
     required this.title,
     required this.unit,
     required this.thresholdTagPostfix,
+    required this.oldThresholdDefaultInts,
     required this.thresholdDefaultInts,
     required this.zonesTagPostfix,
+    required this.oldZoneDefaultInts,
     required this.zonesDefaultInts,
     required this.indexDisplayDefault,
     required this.icon,
@@ -199,12 +234,24 @@ class PreferencesSpec {
         : sport;
   }
 
+  String oldThresholdDefault(String sport) {
+    return oldThresholdDefaultInts[sport2Sport(sport)].toString();
+  }
+
   String thresholdDefault(String sport) {
     return thresholdDefaultInts[sport2Sport(sport)].toString();
   }
 
+  String intArrayToString(List<int> intArray) {
+    return intArray.map((z) => z.toString()).join(",");
+  }
+
+  String oldZoneDefault(String sport) {
+    return intArrayToString(oldZoneDefaultInts);
+  }
+
   String zonesDefault(String sport) {
-    return zonesDefaultInts[sport2Sport(sport)]!.map((z) => z.toString()).join(",");
+    return intArrayToString(zonesDefaultInts[sport2Sport(sport)]!);
   }
 
   String thresholdTag(String sport) {
@@ -246,7 +293,7 @@ class PreferencesSpec {
     indexDisplay = prefService.get<bool>(zoneIndexTag) ?? indexDisplayDefault;
   }
 
-  void calculateBounds(double minVal, double maxVal, bool isLight) {
+  void calculateBounds(double minVal, double maxVal, bool isLight, PaletteSpec paletteSpec) {
     zoneLower = [...zoneBounds];
     zoneUpper = [...zoneBounds];
 
@@ -276,7 +323,7 @@ class PreferencesSpec {
         isVisible: true,
         start: zoneLower[i],
         end: zoneUpper[i],
-        color: bgColorByBin(i, isLight),
+        color: paletteSpec.bgColorByBin(i, isLight, this),
         text: "${zoneLower[i]} - ${zoneUpper[i]}",
         textStyle: bandTextStyle,
         horizontalTextAlignment: charts.TextAnchor.start,
@@ -298,37 +345,9 @@ class PreferencesSpec {
     return i;
   }
 
-  Color bgColorByBin(int bin, bool isLight) {
-    if (zonePercents.length <= 5) {
-      bin = min(bin, 4);
-      return isLight ? fiveLightBgPalette[bin] : fiveDarkBgPalette[bin];
-    }
+  static List<MetricSpec> get preferencesSpecs => _preferencesSpecsTemplate;
 
-    bin = min(bin, 6);
-    return isLight ? sevenLightBgPalette[bin] : sevenDarkBgPalette[bin];
-  }
-
-  Color fgColorByBin(int bin, bool isLight) {
-    if (zonePercents.length <= 5) {
-      bin = min(bin, 4);
-      return isLight ? fiveLightFgPalette[bin] : fiveDarkFgPalette[bin];
-    }
-
-    bin = min(bin, 6);
-    return isLight ? sevenLightFgPalette[bin] : sevenDarkFgPalette[bin];
-  }
-
-  List<Color> getPiePalette(bool isLight) {
-    if (zonePercents.length <= 5) {
-      return isLight ? fiveDarkFgPalette : fiveLightFgPalette;
-    } else {
-      return isLight ? sevenDarkFgPalette : sevenLightFgPalette;
-    }
-  }
-
-  static List<PreferencesSpec> get preferencesSpecs => _preferencesSpecsTemplate;
-
-  static List<PreferencesSpec> getPreferencesSpecs(bool si, String sport) {
+  static List<MetricSpec> getPreferencesSpecs(bool si, String sport) {
     var prefSpecs = [...preferencesSpecs];
     prefSpecs[1].updateUnit(getSpeedUnit(si, sport));
     prefSpecs[1].title = speedTitle(sport);

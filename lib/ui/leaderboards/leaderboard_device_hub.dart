@@ -11,7 +11,7 @@ class LeaderboardDeviceHubScreen extends StatefulWidget {
   const LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => LeaderboardDeviceHubScreenState();
+  LeaderboardDeviceHubScreenState createState() => LeaderboardDeviceHubScreenState();
 }
 
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {

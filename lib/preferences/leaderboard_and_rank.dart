@@ -11,16 +11,17 @@ const rankRibbonVisualizationDescription =
     "Should the app provide UI feedback by ribbons above the speed graph. "
     "Blue color means behind the top leaderboard, green marks record pace.";
 
-const rankingForDevice = "Ranking Based on the Actual Device";
-const rankingForDeviceTag = "ranking_for_device";
-const rankingForDeviceDefault = false;
-const rankingForDeviceDescription = "Should the app display ranking for the particular device. "
-    "This affects both the ribbon type and the track visualization.";
+// Obsolete, converted to exclusive rankingForSportOrDevice
+const rankingForDeviceOldTag = "ranking_for_device";
+const rankingForDeviceOldDefault = false;
+const rankingForSportOldTag = "ranking_for_sport";
+const rankingForSportOldDefault = false;
 
-const rankingForSport = "Ranking Based on the Whole Sport";
-const rankingForSportTag = "ranking_for_sport";
-const rankingForSportDefault = false;
-const rankingForSportDescription = "Should the app display ranking for all devices for the sport. "
+const rankingForSportOrDevice = "Rank For Sport or Device";
+const rankingForSportOrDeviceTag = "ranking_for_sport_or_device";
+const rankingForSportOrDeviceDefault = true;
+const rankingForSportOrDeviceDescription = "On: Ranking based on all devices for the sport. "
+    "Off: Ranking based on the particular machine only. "
     "This affects both the ribbon type and the track visualization.";
 
 const rankTrackVisualization = "Visualize Rank Positions on the Track";
