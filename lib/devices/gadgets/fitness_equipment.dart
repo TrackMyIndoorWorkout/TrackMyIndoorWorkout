@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/app_debug_mode.dart';
@@ -392,62 +393,68 @@ class FitnessEquipment extends DeviceBase {
     if (_equipmentDiscovery || descriptor == null) return false;
 
     _equipmentDiscovery = true;
-    // Check manufacturer name
+
     if (manufacturerName == null) {
       final deviceInfo = BluetoothDeviceEx.filterService(services, deviceInformationUuid);
-      final nameCharacteristic =
-          BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, manufacturerNameUuid);
-      if (nameCharacteristic == null) {
-        return false;
-      }
-
-      try {
-        final nameBytes = await nameCharacteristic.read();
-        manufacturerName = String.fromCharCodes(nameBytes);
-      } on PlatformException catch (e, stack) {
-        if (_logLevel > logLevelNone) {
-          Logging.logException(
-            _logLevel,
-            "FITNESS_EQUIPMENT",
-            "discover",
-            "Could not read name",
-            e,
-            stack,
-          );
-        }
-
-        if (kDebugMode) {
-          debugPrint("$e");
-          debugPrintStack(stackTrace: stack, label: "trace:");
-        }
-
-        // 2nd try
-        try {
-          final nameBytes = await nameCharacteristic.read();
-          manufacturerName = String.fromCharCodes(nameBytes);
-        } on PlatformException catch (e, stack) {
-          if (_logLevel > logLevelNone) {
-            Logging.logException(
-              _logLevel,
-              "FITNESS_EQUIPMENT",
-              "discover",
-              "Could not read name 2nd try",
-              e,
-              stack,
-            );
-          }
-
-          if (kDebugMode) {
-            debugPrint("$e");
-            debugPrintStack(stackTrace: stack, label: "trace:");
-          }
-        }
-      }
+      await _getManufacturerName(deviceInfo);
     }
 
     _equipmentDiscovery = false;
-    return manufacturerName!.contains(descriptor!.manufacturerPrefix) ||
-        descriptor!.manufacturerPrefix == "Unknown";
+    return _checkManufacturerName();
+  }
+
+  bool _checkManufacturerName() {
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "_checkManufacturerName",
+        "ensuring that manufacturer name ($manufacturerName) contains manufacturer prefix ${descriptor!.manufacturerPrefix}",
+      );
+    }
+    if (descriptor!.manufacturerPrefix == "Unknown") {
+      return true;
+    }
+    return manufacturerName?.toLowerCase().contains(descriptor!.manufacturerPrefix.toLowerCase()) ??
+        false;
+  }
+
+  Future<String?> _getManufacturerName(deviceInfo) async {
+    final nameCharacteristic =
+        BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, manufacturerNameUuid);
+    if (nameCharacteristic == null) {
+      return null;
+    }
+
+    return manufacturerName = await _readManufacturerNameFrom(nameCharacteristic) ??
+        await _readManufacturerNameFrom(nameCharacteristic, secondTry: true);
+  }
+
+  Future<String?> _readManufacturerNameFrom(BluetoothCharacteristic nameCharacteristic,
+      {bool secondTry = false}) async {
+    try {
+      final nameBytes = await nameCharacteristic.read();
+      manufacturerName = String.fromCharCodes(nameBytes);
+      return manufacturerName;
+    } on PlatformException catch (e, stack) {
+      if (_logLevel > logLevelNone) {
+        Logging.logException(
+          _logLevel,
+          "FITNESS_EQUIPMENT",
+          "discover",
+          "Could not read name${secondTry ? ' 2nd try' : ''}",
+          e,
+          stack,
+        );
+      }
+
+      if (kDebugMode) {
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
+      return null;
+    }
   }
 
   @visibleForTesting
