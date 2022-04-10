@@ -6,7 +6,10 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:pref/pref.dart';
 import '../import/csv_importer.dart';
+import '../persistence/database.dart';
+import '../preferences/leaderboard_and_rank.dart';
 
 typedef SetProgress = void Function(double progress);
 
@@ -28,11 +31,14 @@ class _ImportFormState extends State<ImportForm> {
   double _progressValue = 0.0;
   double _sizeDefault = 10.0;
   final TextEditingController _textController = TextEditingController();
+  bool _leaderboardFeature = leaderboardFeatureDefault;
 
   @override
   void initState() {
     super.initState();
     _sizeDefault = Get.textTheme.headline2!.fontSize!;
+    final prefService = Get.find<BasePrefService>();
+    _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
   }
 
   void setProgress(double progress) {
@@ -164,12 +170,18 @@ class _ImportFormState extends State<ImportForm> {
                             File file = File(_filePath!);
                             String contents = await file.readAsString();
                             final importer = CSVImporter(_activityDateTime);
-                            var activity = await importer.import(contents, setProgress);
+                            final activity = await importer.import(contents, setProgress);
                             setState(() {
                               _isLoading = false;
                             });
                             if (activity != null) {
                               Get.snackbar("Success", "Workout imported!");
+                              if (_leaderboardFeature) {
+                                final deviceDescriptor = activity.deviceDescriptor();
+                                final workoutSummary = activity.getWorkoutSummary(deviceDescriptor.manufacturerPrefix);
+                                final database = Get.find<AppDatabase>();
+                                await database.workoutSummaryDao.insertWorkoutSummary(workoutSummary);
+                              }
                             } else {
                               Get.snackbar(
                                   "Failure", "Problem while importing: ${importer.message}");
