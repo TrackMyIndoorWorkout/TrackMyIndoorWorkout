@@ -9,43 +9,63 @@ import 'package:track_my_indoor_exercise/preferences/heart_rate_gap_workaround.d
 import 'package:track_my_indoor_exercise/preferences/heart_rate_limiting.dart';
 
 void main() {
-  test('FitDataRecord has the expected global message number', () async {
-    final dataRecord = FitDataRecord(
-      0,
-      0,
-      heartRateGapWorkaroundDefault,
-      heartRateUpperLimitDefault,
-      heartRateLimitingMethodDefault,
-    );
+  group('FitDataRecord has the expected global message number', () {
+    for (var withGps in [true, false]) {
+      test('With GPS $withGps', () async {
+        final dataRecord = FitDataRecord(
+          0,
+          0,
+          heartRateGapWorkaroundDefault,
+          heartRateUpperLimitDefault,
+          heartRateLimitingMethodDefault,
+          withGps,
+        );
 
-    expect(dataRecord.globalMessageNumber, FitMessage.record);
+        expect(dataRecord.globalMessageNumber, FitMessage.record);
+      });
+    }
   });
 
-  test('FitDataRecord data has the expected length', () async {
-    final rng = Random();
-    final dataRecord = FitDataRecord(
-      0,
-      0,
-      heartRateGapWorkaroundDefault,
-      heartRateUpperLimitDefault,
-      heartRateLimitingMethodDefault,
-    );
-    final now = DateTime.now();
-    final exportRecord = ExportRecord(
-      latitude: rng.nextDouble(),
-      longitude: rng.nextDouble(),
-      record: Record(
-        timeStamp: now.millisecondsSinceEpoch,
-        power: 0,
-        speed: 0.0,
-        cadence: 0,
-        heartRate: 0,
-      ),
-    );
+  group('FitDataRecord data has the expected length', () {
+    for (var withGps in [true, false]) {
+      test('With GPS $withGps', () async {
+        final rng = Random();
+        final dataRecord = FitDataRecord(
+          0,
+          0,
+          heartRateGapWorkaroundDefault,
+          heartRateUpperLimitDefault,
+          heartRateLimitingMethodDefault,
+          withGps,
+        );
+        final now = DateTime.now();
+        final exportRecord = withGps
+            ? ExportRecord(
+                latitude: rng.nextDouble(),
+                longitude: rng.nextDouble(),
+                record: Record(
+                  timeStamp: now.millisecondsSinceEpoch,
+                  power: 0,
+                  speed: 0.0,
+                  cadence: 0,
+                  heartRate: 0,
+                ),
+              )
+            : ExportRecord(
+                record: Record(
+                  timeStamp: now.millisecondsSinceEpoch,
+                  power: 0,
+                  speed: 0.0,
+                  cadence: 0,
+                  heartRate: 0,
+                ),
+              );
 
-    final output = dataRecord.serializeData(exportRecord);
-    final expected = dataRecord.fields.fold<int>(0, (accu, field) => accu + field.size);
+        final output = dataRecord.serializeData(exportRecord);
+        final expected = dataRecord.fields.fold<int>(0, (accu, field) => accu + field.size);
 
-    expect(output.length, expected + 1);
+        expect(output.length, expected + 1);
+      });
+    }
   });
 }

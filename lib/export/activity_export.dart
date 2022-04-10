@@ -63,27 +63,30 @@ abstract class ActivityExport {
     Record record,
     Activity activity,
     TrackCalculator calculator,
+    bool calculateGps,
     bool rawData,
   ) {
     record.distance ??= 0.0;
-
-    Offset gps = record.distance != null && !rawData
-        ? calculator.gpsCoordinates(record.distance!)
-        : const Offset(0, 0);
 
     if (!rawData && record.speed != null) {
       record.speed = record.speed! * DeviceDescriptor.kmh2ms;
     }
 
-    return ExportRecord(record: record)
-      ..longitude = gps.dx
-      ..latitude = gps.dy;
+    final exportRecord = ExportRecord(record: record);
+    if (record.distance != null && !rawData && calculateGps) {
+      Offset gps = calculator.gpsCoordinates(record.distance!);
+      exportRecord.longitude = gps.dx;
+      exportRecord.latitude = gps.dy;
+    }
+
+    return exportRecord;
   }
 
   Future<List<int>> getExport(
     Activity activity,
     List<Record> records,
     bool rawData,
+    bool calculateGps,
     bool compress,
     int exportTarget,
   ) async {
@@ -92,7 +95,7 @@ abstract class ActivityExport {
     final track = getDefaultTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     final exportRecords = records.map((r) {
-      final record = recordToExport(r, activity, calculator, rawData);
+      final record = recordToExport(r, activity, calculator, calculateGps, rawData);
 
       if (!rawData) {
         if ((record.record.speed ?? 0.0) > eps) {
@@ -139,6 +142,7 @@ abstract class ActivityExport {
     ExportModel exportModel = ExportModel(
       activity: activity,
       rawData: rawData,
+      calculateGps: calculateGps,
       descriptor: descriptor,
       author: 'Csaba Consulting',
       name: appName,

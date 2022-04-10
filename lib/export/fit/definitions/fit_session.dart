@@ -13,9 +13,11 @@ import '../fit_serializable.dart';
 import '../fit_sport.dart';
 
 class FitSession extends FitDefinitionMessage {
-  int exportTarget;
+  final int exportTarget;
+  final bool outputGps;
 
-  FitSession(localMessageType, this.exportTarget) : super(localMessageType, FitMessage.session) {
+  FitSession(localMessageType, this.exportTarget, this.outputGps)
+      : super(localMessageType, FitMessage.session) {
     fields = [
       FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
     ];
@@ -30,7 +32,7 @@ class FitSession extends FitDefinitionMessage {
     fields.add(
       FitField(2, FitBaseTypes.uint32Type), // StartTime
     );
-    if (exportTarget == ExportTarget.regular) {
+    if (exportTarget == ExportTarget.regular && outputGps) {
       fields.addAll([
         FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
         FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
@@ -53,6 +55,7 @@ class FitSession extends FitDefinitionMessage {
       FitField(20, FitBaseTypes.uint16Type), // AvgPower (Watts)
       FitField(21, FitBaseTypes.uint16Type), // MaxPower (Watts)
     ]);
+
     if (exportTarget == ExportTarget.regular) {
       fields.add(
         FitField(28, FitBaseTypes.enumType), // Trigger (Activity End)
@@ -76,7 +79,7 @@ class FitSession extends FitDefinitionMessage {
     }
 
     data.addLong(FitSerializable.fitTimeStamp(first.record.timeStamp));
-    if (exportTarget == ExportTarget.regular) {
+    if (exportTarget == ExportTarget.regular && outputGps) {
       data.addGpsCoordinate(first.latitude);
       data.addGpsCoordinate(first.longitude);
     }

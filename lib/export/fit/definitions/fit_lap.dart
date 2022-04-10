@@ -12,17 +12,27 @@ import '../fit_serializable.dart';
 import '../fit_sport.dart';
 
 class FitLap extends FitDefinitionMessage {
-  FitLap(localMessageType) : super(localMessageType, FitMessage.lap) {
+  final bool outputGps;
+
+  FitLap(localMessageType, this.outputGps) : super(localMessageType, FitMessage.lap) {
     fields = [
       FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
       FitField(253, FitBaseTypes.uint32Type), // Timestamp (Lap end time)
       FitField(0, FitBaseTypes.enumType), // Event
       FitField(1, FitBaseTypes.enumType), // EventType
       FitField(2, FitBaseTypes.uint32Type), // StartTime
-      FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
-      FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
-      FitField(5, FitBaseTypes.sint32Type), // EndPositionLat
-      FitField(6, FitBaseTypes.sint32Type), // EndPositionLong
+    ];
+
+    if (outputGps) {
+      fields.addAll([
+        FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
+        FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
+        FitField(5, FitBaseTypes.sint32Type), // EndPositionLat
+        FitField(6, FitBaseTypes.sint32Type), // EndPositionLong
+      ]);
+    }
+
+    fields.addAll([
       FitField(7, FitBaseTypes.uint32Type), // TotalElapsedTime (1/1000s)
       FitField(8, FitBaseTypes.uint32Type), // TotalTimerTime (1/1000s)
       FitField(9, FitBaseTypes.uint32Type), // TotalDistance (1/100 m)
@@ -38,7 +48,7 @@ class FitLap extends FitDefinitionMessage {
       FitField(24, FitBaseTypes.enumType), // LapTrigger
       FitField(25, FitBaseTypes.enumType), // Sport
       FitField(39, FitBaseTypes.enumType), // Sub-Sport
-    ];
+    ]);
   }
 
   @override
@@ -54,10 +64,12 @@ class FitLap extends FitDefinitionMessage {
     data.addByte(FitEvent.lap);
     data.addByte(FitEventType.stop);
     data.addLong(FitSerializable.fitTimeStamp(first.record.timeStamp));
-    data.addGpsCoordinate(first.latitude);
-    data.addGpsCoordinate(first.longitude);
-    data.addGpsCoordinate(last.latitude);
-    data.addGpsCoordinate(last.longitude);
+    if (outputGps) {
+      data.addGpsCoordinate(first.latitude);
+      data.addGpsCoordinate(first.longitude);
+      data.addGpsCoordinate(last.latitude);
+      data.addGpsCoordinate(last.longitude);
+    }
     data.addLong(model.activity.elapsed * 1000);
     data.addLong(model.activity.movingTime);
     data.addLong((model.activity.distance * 100).ceil());

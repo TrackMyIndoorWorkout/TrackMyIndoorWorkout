@@ -11,50 +11,56 @@ import 'utils.dart';
 
 void main() {
   group('FitSession has the expected global message number', () {
-    for (var exportTarget in [
-      const Tuple2<int, String>(ExportTarget.regular, "regular"),
-      const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
-    ]) {
-      test('for ${exportTarget.item2}', () async {
-        final session = FitSession(0, exportTarget.item1);
+    for (var withGps in [true, false]) {
+      for (var exportTarget in [
+        const Tuple2<int, String>(ExportTarget.regular, "regular"),
+        const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
+      ]) {
+        test('for ${exportTarget.item2}', () async {
+          final session = FitSession(0, exportTarget.item1, withGps);
 
-        expect(session.globalMessageNumber, FitMessage.session);
-      });
+          expect(session.globalMessageNumber, FitMessage.session);
+        });
+      }
     }
   });
 
   group('FitSession data has the expected length', () {
-    for (var exportTarget in [
-      const Tuple2<int, String>(ExportTarget.regular, "regular"),
-      const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
-    ]) {
-      test('for ${exportTarget.item2}', () async {
-        final rng = Random();
-        final session = FitSession(0, exportTarget.item1);
-        final now = DateTime.now();
-        final exportRecord = ExportRecord(
-          latitude: rng.nextDouble(),
-          longitude: rng.nextDouble(),
-          record: Record(
-            timeStamp: now.millisecondsSinceEpoch,
-          ),
-        );
+    for (var withGps in [true, false]) {
+      for (var exportTarget in [
+        const Tuple2<int, String>(ExportTarget.regular, "regular"),
+        const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
+      ]) {
+        test('for ${exportTarget.item2}', () async {
+          final rng = Random();
+          final session = FitSession(0, exportTarget.item1, withGps);
+          final now = DateTime.now();
+          final exportRecord = withGps
+              ? ExportRecord(
+                  latitude: rng.nextDouble(),
+                  longitude: rng.nextDouble(),
+                  record: Record(
+                    timeStamp: now.millisecondsSinceEpoch,
+                  ),
+                )
+              : ExportRecord(record: Record(timeStamp: now.millisecondsSinceEpoch));
 
-        final exportModel = ExportModelForTests(records: [exportRecord])
-          ..averageSpeed = 0.0
-          ..maximumSpeed = 0.0
-          ..averageHeartRate = 0
-          ..maximumHeartRate = 0
-          ..averageCadence = 0
-          ..maximumCadence = 0
-          ..averagePower = 0.0
-          ..maximumPower = 0;
+          final exportModel = ExportModelForTests(records: [exportRecord])
+            ..averageSpeed = 0.0
+            ..maximumSpeed = 0.0
+            ..averageHeartRate = 0
+            ..maximumHeartRate = 0
+            ..averageCadence = 0
+            ..maximumCadence = 0
+            ..averagePower = 0.0
+            ..maximumPower = 0;
 
-        final output = session.serializeData(exportModel);
-        final expected = session.fields.fold<int>(0, (accu, field) => accu + field.size);
+          final output = session.serializeData(exportModel);
+          final expected = session.fields.fold<int>(0, (accu, field) => accu + field.size);
 
-        expect(output.length, expected + 1);
-      });
+          expect(output.length, expected + 1);
+        });
+      }
     }
   });
 }

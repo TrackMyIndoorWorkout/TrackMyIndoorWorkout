@@ -49,21 +49,13 @@ Map<String, int> underArmourSport = {
 };
 
 int toUnderArmourSport(String sport) {
-  if (sport == ActivityType.swim) {
-    sport = "Swim";
-  } else if (sport == ActivityType.canoeing) {
+  if (sport == ActivityType.canoeing) {
     sport = ActivityType.kayaking;
-  } else if (sport == ActivityType.run) {
-    sport = "Run";
-  } else if (sport == ActivityType.ride) {
-    sport = "Ride";
-  } else if (sport == ActivityType.elliptical) {
-    sport = "Elliptical";
   }
 
   if (!underArmourSport.containsKey(sport)) {
-    sport = "Workout";
+    sport = ActivityType.workout;
   }
 
-  return underArmourSport[sport] ?? underArmourSport["Workout"]!;
+  return underArmourSport[sport] ?? underArmourSport[ActivityType.workout]!;
 }

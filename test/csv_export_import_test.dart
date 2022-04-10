@@ -147,6 +147,7 @@ void main() {
         final exportModel = ExportModel(
           activity: activity,
           rawData: true,
+          calculateGps: false,
           descriptor: descriptor,
           author: "Csaba Consulting",
           name: appName,

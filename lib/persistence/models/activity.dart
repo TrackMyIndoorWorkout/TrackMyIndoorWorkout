@@ -3,6 +3,9 @@ import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../devices/device_map.dart';
 import '../../preferences/generic.dart';
 import '../../upload/constants.dart';
+import '../../upload/strava/constants.dart';
+import '../../upload/training_peaks/constants.dart';
+import '../../upload/under_armour/constants.dart';
 import '../../utils/display.dart' as display;
 import 'workout_summary.dart';
 
@@ -176,12 +179,12 @@ class Activity {
       case suuntoChoice:
         return "$suuntoWorkoutUrl$suuntoUploadIdentifier";
       case underArmourChoice:
-        return "https://www.mapmyrun.com/workout/$uaWorkoutId";
+        return "$underArmourWorkoutUrlBase$uaWorkoutId";
       case trainingPeaksChoice:
-        return "https://app.trainingpeaks.com/";
+        return trainingPeaksPortalUrl;
       case stravaChoice:
       default:
-        return "https://sports-tracker.com/";
+        return stravaUrl;
     }
   }
 

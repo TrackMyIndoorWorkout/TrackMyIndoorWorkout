@@ -29,7 +29,7 @@ class StravaService implements UploadService {
   }
 
   @override
-  Future<int> upload(Activity activity, List<Record> records) async {
+  Future<int> upload(Activity activity, List<Record> records, bool calculateGps) async {
     if (records.isEmpty) {
       return StravaStatusCode.statusJsonIsEmpty;
     }
@@ -39,6 +39,7 @@ class StravaService implements UploadService {
       activity,
       records,
       false,
+      calculateGps,
       true,
       ExportTarget.regular,
     );
