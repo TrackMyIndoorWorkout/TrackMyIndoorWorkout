@@ -14,3 +14,5 @@ const underArmourAccessTokenTag = "underArmour_accessToken";
 const underArmourRefreshTokenTag = "underArmour_refreshToken";
 const underArmourExpiresAtTag = "underArmour_expire";
 const underArmourTokenScopeTag = "underArmour_scope";
+
+const underArmourWorkoutUrlBase = "https://www.mapmyrun.com/workout/";

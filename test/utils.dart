@@ -28,6 +28,7 @@ class ExportModelForTests extends ExportModel {
   ExportModelForTests({
     activity,
     rawData,
+    calculateGps,
     descriptor,
     author,
     name,
@@ -55,6 +56,7 @@ class ExportModelForTests extends ExportModel {
                 timeZone: "America/Los_Angeles",
               ),
           rawData: rawData ?? false,
+          calculateGps: calculateGps ?? true,
           descriptor: descriptor ?? deviceMap[schwinnACPerfPlusFourCC]!,
           author: author ?? 'Csaba Consulting',
           name: name ?? appName,
