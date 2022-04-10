@@ -31,41 +31,41 @@ class JsonWorkout {
           "[${r.elapsed(exportModel.activity)}, ${(r.record.distance ?? 0.0).toStringAsFixed(2)}]"),
       ",",
     );
-    sb.write('],');
-    sb.write('"speed": [');
+    sb.write(']');
+    sb.write(',"speed": [');
     sb.writeAll(
       exportModel.records.map((r) =>
           "[${r.elapsed(exportModel.activity)}, ${((r.record.speed ?? 0.0) * DeviceDescriptor.kmh2ms).toStringAsFixed(2)}]"),
       ",",
     );
-    sb.write('],');
+    sb.write(']');
     if (measurementCounter.hasPower) {
-      sb.write('"power": [');
+      sb.write(',"power": [');
       sb.writeAll(
         exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.power}]"),
         ",",
       );
-      sb.write('],');
+      sb.write(']');
     }
     if (measurementCounter.hasCadence) {
-      sb.write('"cadence": [');
+      sb.write(',"cadence": [');
       sb.writeAll(
         exportModel.records.map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.cadence}]"),
         ",",
       );
-      sb.write('],');
+      sb.write(']');
     }
     if (measurementCounter.hasHeartRate) {
-      sb.write('"heartrate": [');
+      sb.write(',"heartrate": [');
       sb.writeAll(
         exportModel.records
             .map((r) => "[${r.elapsed(exportModel.activity)}, ${r.record.heartRate}]"),
         ",",
       );
-      sb.write('],');
+      sb.write(']');
     }
     if (!exportModel.rawData && exportModel.calculateGps) {
-      sb.write('"position": [');
+      sb.write(',"position": [');
       sb.writeAll(
         exportModel.records.map(
           (r) => '[${r.elapsed(exportModel.activity)}, {"lat": ${r.latitude.toStringAsFixed(7)}, '
