@@ -178,9 +178,11 @@ class _ImportFormState extends State<ImportForm> {
                               Get.snackbar("Success", "Workout imported!");
                               if (_leaderboardFeature) {
                                 final deviceDescriptor = activity.deviceDescriptor();
-                                final workoutSummary = activity.getWorkoutSummary(deviceDescriptor.manufacturerPrefix);
+                                final workoutSummary =
+                                    activity.getWorkoutSummary(deviceDescriptor.manufacturerPrefix);
                                 final database = Get.find<AppDatabase>();
-                                await database.workoutSummaryDao.insertWorkoutSummary(workoutSummary);
+                                await database.workoutSummaryDao
+                                    .insertWorkoutSummary(workoutSummary);
                               }
                             } else {
                               Get.snackbar(
