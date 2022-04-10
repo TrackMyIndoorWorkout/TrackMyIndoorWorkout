@@ -13,3 +13,5 @@ const uploadsEndpoint = suuntoApiUrl + "upload";
 const suuntoAccessTokenTag = "suunto_accessToken";
 const suuntoRefreshTokenTag = "suunto_refreshToken";
 const suuntoExpiresAtTag = "suunto_expire";
+
+const suuntoPortalUrl = "https://sports-tracker.com/";

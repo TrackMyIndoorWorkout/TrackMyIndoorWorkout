@@ -16,3 +16,5 @@ const trainingPeaksAccessTokenTag = "trainingPeaks_accessToken";
 const trainingPeaksRefreshTokenTag = "trainingPeaks_refreshToken";
 const trainingPeaksExpiresAtTag = "trainingPeaks_expire";
 const trainingPeaksTokenScopeTag = "trainingPeaks_scope";
+
+const trainingPeaksPortalUrl = "https://app.trainingpeaks.com/";
