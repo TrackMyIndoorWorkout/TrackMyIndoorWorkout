@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/lap_counter.dart';
 import '../../preferences/leaderboard_and_rank.dart';
+import '../../preferences/show_pacer.dart';
 import 'preferences_base.dart';
 
 class LeaderboardPreferencesScreen extends PreferencesScreenBase {
@@ -74,6 +75,16 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         title: const Text(avgSpeedOnTrack),
         subtitle: const Text(avgSpeedOnTrackDescription),
         pref: avgSpeedOnTrackTag,
+        onChange: (value) {
+          if (value) {
+            PrefService.of(context).set(leaderboardFeatureTag, true);
+          }
+        },
+      ),
+      PrefCheckbox(
+        title: const Text(showPacer),
+        subtitle: const Text(showPacerDescription),
+        pref: showPacerTag,
         onChange: (value) {
           if (value) {
             PrefService.of(context).set(leaderboardFeatureTag, true);
