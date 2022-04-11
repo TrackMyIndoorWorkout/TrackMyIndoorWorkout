@@ -1,7 +1,7 @@
 import '../utils/constants.dart';
 import 'sport_spec.dart';
 
-const slowSpeedPostfix = " Speed (kmh) Considered Too Slow to Display";
+const slowSpeedPostfix = " Slow Speed (kmh): the Speed Considered Too Slow to Display";
 const slowSpeedTagPrefix = "slow_speed_";
 
 class SpeedSpec {
