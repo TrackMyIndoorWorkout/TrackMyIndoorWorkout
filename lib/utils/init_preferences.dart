@@ -125,7 +125,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
 
     prefDefaults.addAll({lastEquipmentIdTagPrefix + sport: lastEquipmentIdDefault});
     if (sport != ActivityType.ride) {
-      prefDefaults.addAll({SpeedSpec.slowSpeedTag(sport): SpeedSpec.slowSpeeds[sport].toString()});
+      prefDefaults
+          .addAll({SpeedSpec.slowSpeedTag(sport): SpeedSpec.slowSpeedDefaults[sport].toString()});
     }
   }
 
@@ -297,8 +298,10 @@ Future<BasePrefService> initPreferences() async {
 
   for (var sport in SportSpec.sportPrefixes) {
     if (sport != ActivityType.ride) {
-      final slowSpeedString = prefService.get<String>(SpeedSpec.slowSpeedTag(sport)) ?? "";
-      SpeedSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? eps;
+      final slowSpeedString = prefService.get<String>(SpeedSpec.slowSpeedTag(sport)) ??
+          SpeedSpec.slowSpeedDefaults[sport].toString();
+      SpeedSpec.slowSpeeds[sport] =
+          double.tryParse(slowSpeedString) ?? SpeedSpec.slowSpeedDefaults[sport];
     }
   }
 
