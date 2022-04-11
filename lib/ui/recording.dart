@@ -176,7 +176,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _displayLapCounter = displayLapCounterDefault;
   bool _avgSpeedOnTrack = avgSpeedOnTrackDefault;
   bool _showPacer = showPacerDefault;
-  double _pacerSpeed = 0.0;
+  WorkoutSummary? _pacerWorkout;
   int _rankInfoColumnCount = 0;
   Color _darkRed = Colors.red;
   Color _darkGreen = Colors.green;
@@ -253,6 +253,20 @@ class RecordingState extends State<RecordingScreen> {
           ? await _database.workoutSummaryDao
               .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport)
           : await _database.workoutSummaryDao.findAllWorkoutSummariesByDevice(widget.device.id.id);
+
+      if (_showPacer && _pacerWorkout != null) {
+        int insertionPoint = 0;
+        while (insertionPoint < _leaderboard.length &&
+            _leaderboard[insertionPoint].speed > _pacerWorkout!.speed) {
+          insertionPoint++;
+        }
+
+        if (insertionPoint < _leaderboard.length) {
+          _leaderboard.insert(insertionPoint, _pacerWorkout!);
+        } else {
+          _leaderboard.add(_pacerWorkout!);
+        }
+      }
     }
 
     _fitnessEquipment?.setActivity(_activity!);
@@ -488,7 +502,8 @@ class RecordingState extends State<RecordingScreen> {
     }
     _showPacer = prefService.get<bool>(showPacerTag) ?? showPacerDefault;
     if (_showPacer) {
-      _pacerSpeed = SpeedSpec.pacerSpeeds[SportSpec.sport2Sport(widget.sport)]!;
+      final pacerSpeed = SpeedSpec.pacerSpeeds[SportSpec.sport2Sport(widget.sport)]!;
+      _pacerWorkout = WorkoutSummary.getPacerWorkout(pacerSpeed, widget.sport);
     }
 
     _paletteSpec = PaletteSpec.getInstance(prefService);
@@ -1028,54 +1043,67 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
-  List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int rank) {
-    List<Widget> markers = [];
-    if (_showPacer) {
-      final distance = _pacerSpeed * DeviceDescriptor.kmh2ms * _elapsed;
-      final position = _trackCalculator?.trackMarker(distance);
-      if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF000000, "PC", false));
-      }
+  bool _addLeaderboardTrackMarker(
+    int markerColor,
+    WorkoutSummary workoutSummary,
+    int rank,
+    List<Widget> markers,
+  ) {
+    final distance = workoutSummary.distanceAtTime(_elapsed);
+    final position = _trackCalculator?.trackMarker(distance);
+    final isPacer = workoutSummary.isPacer;
+    if (position != null) {
+      markers.add(_getTrackMarker(
+        position,
+        isPacer ? pacerColor : markerColor,
+        isPacer ? pacerText : "$rank",
+        false,
+      ));
     }
 
+    return isPacer;
+  }
+
+  List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int rank) {
+    List<Widget> markers = [];
     if (leaderboard.isEmpty || rank == 0 || _trackCalculator == null) {
       return markers;
     }
 
+    bool wasPacer = false;
     final length = leaderboard.length;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
-      final position = _trackCalculator?.trackMarker(distance);
-      if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 2}", false));
-      }
+      final isPacer =
+          _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 3], rank - 2, markers);
+      wasPacer = wasPacer || isPacer;
     }
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
-      final position = _trackCalculator?.trackMarker(distance);
-      if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 1}", false));
-      }
+      final isPacer =
+          _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 2], rank - 1, markers);
+      wasPacer = wasPacer || isPacer;
     }
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
-      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
-      final position = _trackCalculator?.trackMarker(distance);
-      if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 1}", false));
-      }
+      final isPacer =
+          _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank - 1], rank + 1, markers);
+      wasPacer = wasPacer || isPacer;
     }
 
     // Following dot after the follower (if any)
     if (rank < length) {
-      final distance = leaderboard[rank].distanceAtTime(_elapsed);
+      final isPacer = _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank], rank + 2, markers);
+      wasPacer = wasPacer || isPacer;
+    }
+
+    if (!wasPacer && _showPacer && _pacerWorkout != null) {
+      final distance = _pacerWorkout!.distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 2}", false));
+        markers.add(_getTrackMarker(position, pacerColor, pacerText, false));
       }
     }
 

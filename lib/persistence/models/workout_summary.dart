@@ -7,6 +7,7 @@ import '../../utils/constants.dart';
 import '../../utils/display.dart';
 
 const workoutSummariesTableName = 'workout_summary';
+const pacerIdentifier = "Pacer";
 
 @Entity(
   tableName: workoutSummariesTableName,
@@ -40,6 +41,7 @@ class WorkoutSummary {
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
   String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();
+  bool get isPacer => manufacturer == pacerIdentifier;
 
   WorkoutSummary({
     this.id,
@@ -84,5 +86,18 @@ class WorkoutSummary {
     // #252 movingTime is in milliseconds!!
     // But right now we use elapsed time
     return speed * DeviceDescriptor.kmh2ms * time;
+  }
+
+  static WorkoutSummary getPacerWorkout(double pacerSpeed, String sport) {
+    return WorkoutSummary(
+      deviceName: pacerIdentifier,
+      deviceId: pacerIdentifier,
+      manufacturer: pacerIdentifier,
+      start: DateTime.now().millisecondsSinceEpoch,
+      distance: 0.0,
+      elapsed: 0,
+      movingTime: 0,
+      sport: sport,
+    );
   }
 }
