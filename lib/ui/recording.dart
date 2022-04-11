@@ -36,6 +36,8 @@ import '../preferences/metric_spec.dart';
 import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/simpler_ui.dart';
+import '../preferences/speed_spec.dart';
+import '../preferences/sport_spec.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/two_column_layout.dart';
@@ -439,7 +441,7 @@ class RecordingState extends State<RecordingScreen> {
         fontSizeFactor: _markerStyleSmallSizeAdjust);
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     prefService.set<String>(
-      lastEquipmentIdTagPrefix + MetricSpec.sport2Sport(widget.sport),
+      lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),
       widget.device.id.id,
     );
     if (Get.isRegistered<FitnessEquipment>()) {
@@ -477,7 +479,7 @@ class RecordingState extends State<RecordingScreen> {
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
 
     if (widget.sport != ActivityType.ride) {
-      final slowPace = MetricSpec.slowSpeeds[MetricSpec.sport2Sport(widget.sport)]!;
+      final slowPace = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
       widget.descriptor.slowPace = slowPace;
       _fitnessEquipment?.slowPace = slowPace;
     }

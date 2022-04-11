@@ -19,10 +19,10 @@ import '../preferences/device_filtering.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/log_level.dart';
-import '../preferences/metric_spec.dart';
 import '../persistence/models/device_usage.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/scan_duration.dart';
+import '../preferences/sport_spec.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/logging.dart';
@@ -167,7 +167,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _instantScan = prefService.get<bool>(instantScanTag) ?? instantScanDefault;
     _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
     _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
-    for (var sport in MetricSpec.sportPrefixes) {
+    for (var sport in SportSpec.sportPrefixes) {
       final lastEquipmentId = prefService.get<String>(lastEquipmentIdTagPrefix + sport) ?? "";
       if (lastEquipmentId.isNotEmpty) {
         _lastEquipmentIds.add(lastEquipmentId);

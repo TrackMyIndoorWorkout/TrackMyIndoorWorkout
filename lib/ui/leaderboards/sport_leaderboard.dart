@@ -7,7 +7,8 @@ import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
 import '../../utils/constants.dart';
 import '../../persistence/database.dart';
-import '../../preferences/metric_spec.dart';
+import '../../preferences/speed_spec.dart';
+import '../../preferences/sport_spec.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/generic.dart';
@@ -47,7 +48,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     if (widget.sport != ActivityType.ride) {
-      _slowSpeed = MetricSpec.slowSpeeds[MetricSpec.sport2Sport(widget.sport)]!;
+      _slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
     }
   }
 

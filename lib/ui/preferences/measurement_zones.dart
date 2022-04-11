@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/metric_spec.dart';
+import '../../preferences/speed_spec.dart';
 import '../../utils/constants.dart';
 import 'preferences_base.dart';
 
@@ -68,7 +69,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
       zonePreferences.addAll([
         PrefText(
           label: sport + slowSpeedPostfix,
-          pref: MetricSpec.slowSpeedTag(sport),
+          pref: SpeedSpec.slowSpeedTag(sport),
           validator: (str) {
             if (str == null || !isNumber(str, 0.01, -1)) {
               return "Slow speed has to be positive";
@@ -79,7 +80,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
           onChange: (str) {
             final slowSpeed = double.tryParse(str);
             if (slowSpeed != null) {
-              MetricSpec.slowSpeeds[sport] = slowSpeed;
+              SpeedSpec.slowSpeeds[sport] = slowSpeed;
             }
           },
         ),
