@@ -35,6 +35,7 @@ import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
 import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/palette_spec.dart';
+import '../preferences/show_pacer.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
@@ -174,6 +175,8 @@ class RecordingState extends State<RecordingScreen> {
   bool _rankInfoOnTrack = rankInfoOnTrackDefault;
   bool _displayLapCounter = displayLapCounterDefault;
   bool _avgSpeedOnTrack = avgSpeedOnTrackDefault;
+  bool _showPacer = showPacerDefault;
+  double _pacerSpeed = 0.0;
   int _rankInfoColumnCount = 0;
   Color _darkRed = Colors.red;
   Color _darkGreen = Colors.green;
@@ -482,6 +485,10 @@ class RecordingState extends State<RecordingScreen> {
       final slowPace = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
       widget.descriptor.slowPace = slowPace;
       _fitnessEquipment?.slowPace = slowPace;
+    }
+    _showPacer = prefService.get<bool>(showPacerTag) ?? showPacerDefault;
+    if (_showPacer) {
+      _pacerSpeed = SpeedSpec.pacerSpeeds[SportSpec.sport2Sport(widget.sport)]!;
     }
 
     _paletteSpec = PaletteSpec.getInstance(prefService);
@@ -1023,6 +1030,14 @@ class RecordingState extends State<RecordingScreen> {
 
   List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int rank) {
     List<Widget> markers = [];
+    if (_showPacer) {
+      final distance = _pacerSpeed * DeviceDescriptor.kmh2ms * _elapsed;
+      final position = _trackCalculator?.trackMarker(distance);
+      if (position != null) {
+        markers.add(_getTrackMarker(position, 0xFF000000, "PC", false));
+      }
+    }
+
     if (leaderboard.isEmpty || rank == 0 || _trackCalculator == null) {
       return markers;
     }
