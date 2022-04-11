@@ -87,6 +87,33 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
       ]);
     }
 
+    zonePreferences.addAll([
+      PrefText(
+        label: sport + pacerSpeedPostfix,
+        pref: SpeedSpec.pacerSpeedTag(sport),
+        validator: (str) {
+          if (str == null || !isNumber(str, 0.01, -1)) {
+            return "Pacer speed has to be positive";
+          }
+
+          if (sport != ActivityType.ride) {
+            final pacerSpeed = double.tryParse(str);
+            if (pacerSpeed != null && pacerSpeed < (SpeedSpec.slowSpeeds[sport] ?? 0.0)) {
+              return "Pacer speed must be faster than 'Slow Speed' (see above)";
+            }
+          }
+
+          return null;
+        },
+        onChange: (str) {
+          final pacerSpeed = double.tryParse(str);
+          if (pacerSpeed != null) {
+            SpeedSpec.slowSpeeds[sport] = pacerSpeed;
+          }
+        },
+      ),
+    ]);
+
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: PrefPage(children: zonePreferences),

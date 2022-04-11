@@ -128,6 +128,9 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
       prefDefaults
           .addAll({SpeedSpec.slowSpeedTag(sport): SpeedSpec.slowSpeedDefaults[sport].toString()});
     }
+
+    prefDefaults
+        .addAll({SpeedSpec.pacerSpeedTag(sport): SpeedSpec.pacerSpeedDefaults[sport].toString()});
   }
 
   for (var prefSpec in MetricSpec.preferencesSpecs) {
@@ -303,6 +306,11 @@ Future<BasePrefService> initPreferences() async {
       SpeedSpec.slowSpeeds[sport] =
           double.tryParse(slowSpeedString) ?? SpeedSpec.slowSpeedDefaults[sport];
     }
+
+    final pacerSpeedString = prefService.get<String>(SpeedSpec.pacerSpeedTag(sport)) ??
+        SpeedSpec.pacerSpeedDefaults[sport].toString();
+    SpeedSpec.pacerSpeeds[sport] =
+        double.tryParse(pacerSpeedString) ?? SpeedSpec.pacerSpeedDefaults[sport];
   }
 
   final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
