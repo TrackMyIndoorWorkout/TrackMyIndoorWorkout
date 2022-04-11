@@ -4,6 +4,8 @@
 * Revising some zone threshold and boundary defaults
 * Revising a few default zone colors to differ more by contrast / color
 * Making zone colors configurable (5 / 6 / 7 zones, light / dark theme, foreground / background)
+* Making sport and device based leaderboards mutually exclusive. More info is coming and we won't
+  have space for both at the same time.
 
 ## 1.1.99
 
