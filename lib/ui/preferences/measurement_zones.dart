@@ -75,6 +75,13 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
               return "Slow speed has to be positive";
             }
 
+            if (sport != ActivityType.ride) {
+              final slowSpeed = double.tryParse(str);
+              if (slowSpeed != null && slowSpeed > (SpeedSpec.pacerSpeeds[sport] ?? 0.0)) {
+                return "Slow speed must be slower than 'Pacer Speed' (see below)";
+              }
+            }
+
             return null;
           },
           onChange: (str) {
