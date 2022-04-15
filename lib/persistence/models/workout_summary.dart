@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:floor/floor.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../preferences/generic.dart';
+import '../../utils/constants.dart';
 import '../../utils/display.dart';
 
 const workoutSummariesTableName = 'workout_summary';
+const pacerIdentifier = "Pacer";
 
 @Entity(
   tableName: workoutSummariesTableName,
@@ -37,6 +41,7 @@ class WorkoutSummary {
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
   String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();
+  bool get isPacer => manufacturer == pacerIdentifier;
 
   WorkoutSummary({
     this.id,
@@ -55,18 +60,44 @@ class WorkoutSummary {
     speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.ms2kmh : 0.0;
   }
 
-  String speedString(bool si) {
+  static String speedStringStatic(bool si, double speed, double? slowSpeed, String sport) {
+    if (sport != ActivityType.ride && slowSpeed != null) {
+      speed = max(speed, slowSpeed);
+    }
+
     final speedString = speedOrPaceString(speed, si, sport);
-    final speedUnit = getSpeedUnit(si, sport);
-    return '$speedString $speedUnit';
+    var speedUnit = getSpeedUnit(si, sport);
+    if (speedUnit.startsWith("min ")) {
+      speedUnit = speedUnit.substring(0, 3) + speedUnit.substring(4);
+    }
+    final retVal = '$speedString $speedUnit';
+    return retVal;
+  }
+
+  String speedString(bool si, double? slowSpeed) {
+    return speedStringStatic(si, speed, slowSpeed, sport);
   }
 
   String distanceStringWithUnit(bool si, bool highRes) {
     return distanceByUnit(distance, si, highRes);
   }
 
-  double distanceAtTime(int movingTime) {
+  double distanceAtTime(int time) {
     // #252 movingTime is in milliseconds!!
-    return speed * DeviceDescriptor.kmh2ms * movingTime / 1000.0;
+    // But right now we use elapsed time
+    return speed * DeviceDescriptor.kmh2ms * time;
+  }
+
+  static WorkoutSummary getPacerWorkout(double pacerSpeed, String sport) {
+    return WorkoutSummary(
+      deviceName: pacerIdentifier,
+      deviceId: pacerIdentifier,
+      manufacturer: pacerIdentifier,
+      start: DateTime.now().millisecondsSinceEpoch,
+      distance: 0.0,
+      elapsed: 0,
+      movingTime: 0,
+      sport: sport,
+    )..speed = pacerSpeed;
   }
 }

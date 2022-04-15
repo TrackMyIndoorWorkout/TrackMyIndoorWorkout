@@ -268,11 +268,14 @@ class RecordWithSport extends Record {
   }
 
   static RecordWithSport getRandom(String sport, Random random) {
+    final spd = sport == ActivityType.run
+        ? 8.0 + random.nextDouble() * 12.0
+        : 30.0 + random.nextDouble() * 10.0;
     return RecordWithSport(
       timeStamp: DateTime.now().millisecondsSinceEpoch,
       calories: random.nextInt(1500),
       power: 50 + random.nextInt(500),
-      speed: 30.0 + random.nextDouble() * 10.0,
+      speed: spd,
       cadence: 30 + random.nextInt(100),
       heartRate: 60 + random.nextInt(120),
       sport: sport,
