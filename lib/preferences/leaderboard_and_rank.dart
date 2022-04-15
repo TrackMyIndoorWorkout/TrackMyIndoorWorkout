@@ -42,7 +42,7 @@ const rankInfoOnTrackDescription =
 
 const avgSpeedOnTrack = "Display average speed at the center of the track";
 const avgSpeedOnTrackTag = "avg_speed_on_track";
-const avgSpeedOnTrackDefault = false;
+const avgSpeedOnTrackDefault = true;
 const avgSpeedOnTrackDescription =
     "On: Average speeds will be displayed for the current effort and the other"
     "leaderboard positions listed.";
