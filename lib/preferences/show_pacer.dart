@@ -7,4 +7,4 @@ const showPacerDescription =
     "per sport within the Zone Preferences";
 
 const pacerColor = 0xFF000000; // Black
-const pacerText = "PC";
+const pacerText = "P";

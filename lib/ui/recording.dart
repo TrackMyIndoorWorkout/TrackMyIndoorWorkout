@@ -1080,28 +1080,28 @@ class RecordingState extends State<RecordingScreen> {
       if (rank > 2 && rank - 3 < length) {
         final isPacer =
             _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 3], rank - 2, markers);
-        wasPacer = wasPacer || isPacer;
+        wasPacer |= isPacer;
       }
 
       // Preceding dot (chasing directly) if any
       if (rank > 1 && rank - 2 < length) {
         final isPacer =
             _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 2], rank - 1, markers);
-        wasPacer = wasPacer || isPacer;
+        wasPacer |= isPacer;
       }
 
       // Following dot (following directly) if any
       if (rank - 1 < length) {
         final isPacer =
             _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank - 1], rank + 1, markers);
-        wasPacer = wasPacer || isPacer;
+        wasPacer |= isPacer;
       }
 
       // Following dot after the follower (if any)
       if (rank < length) {
         final isPacer =
             _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank], rank + 2, markers);
-        wasPacer = wasPacer || isPacer;
+        wasPacer |= isPacer;
       }
     }
 
@@ -1116,8 +1116,7 @@ class RecordingState extends State<RecordingScreen> {
     return markers;
   }
 
-  Widget _getLeaderboardInfoTextCell(String text, bool lead) {
-    final bgColor = lead ? _lightGreen : _lightBlue;
+  Widget _getLeaderboardInfoTextCellCore(String text, Color bgColor) {
     return ColoredBox(
       color: bgColor,
       child: Padding(
@@ -1125,6 +1124,36 @@ class RecordingState extends State<RecordingScreen> {
         child: Text(text, style: _markerStyleSmall),
       ),
     );
+  }
+
+  List<Widget> _getPacerInfoText() {
+    List<Widget> widgets = [];
+    if (!_showPacer || _pacerWorkout == null) {
+      return widgets;
+    }
+
+    widgets.add(_getLeaderboardInfoTextCellCore("Pacer", Colors.grey));
+    final distance = _pacerWorkout!.distanceAtTime(_elapsed);
+
+    if (_displayLapCounter) {
+      final lapCount = (distance / _trackLength).floor();
+      widgets.add(_getLeaderboardInfoTextCellCore("L$lapCount", Colors.grey));
+    }
+
+    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
+    widgets.add(_getLeaderboardInfoTextCellCore(distanceString, Colors.grey));
+    if (_avgSpeedOnTrack) {
+      final speedString = _pacerWorkout!.speedString(_si, widget.descriptor.slowPace);
+
+      widgets.add(_getLeaderboardInfoTextCellCore(speedString, Colors.grey));
+    }
+
+    return widgets;
+  }
+
+  Widget _getLeaderboardInfoTextCell(String text, bool lead) {
+    final bgColor = lead ? _lightGreen : _lightBlue;
+    return _getLeaderboardInfoTextCellCore(text, bgColor);
   }
 
   List<Widget> _getLeaderboardInfoText(int rank, double distance, String speed, bool lead) {
@@ -1165,24 +1194,37 @@ class RecordingState extends State<RecordingScreen> {
     int rowCount = 0;
     List<Widget> cells = [];
     final length = leaderboard.length;
+    bool wasPacer = false;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
+      final isPacer = leaderboard[rank - 3].isPacer;
+      if (_showPacer && !isPacer && _pacerWorkout!.speed > leaderboard[rank - 3].speed) {
+        cells.addAll(_getPacerInfoText());
+        rowCount++;
+        wasPacer = true;
+      }
+
       final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
       final speed = _avgSpeedOnTrack
           ? leaderboard[rank - 3].speedString(_si, widget.descriptor.slowPace)
           : "";
-      cells.addAll(_getLeaderboardInfoText(rank - 2, distance, speed, true));
+      cells.addAll(
+          isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank - 2, distance, speed, true));
       rowCount++;
+      wasPacer |= isPacer;
     }
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
+      final isPacer = leaderboard[rank - 2].isPacer;
       final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
       final speed = _avgSpeedOnTrack
           ? leaderboard[rank - 2].speedString(_si, widget.descriptor.slowPace)
           : "";
-      cells.addAll(_getLeaderboardInfoText(rank - 1, distance, speed, true));
+      cells.addAll(
+          isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank - 1, distance, speed, true));
       rowCount++;
+      wasPacer |= isPacer;
     }
 
     // Self section
@@ -1203,27 +1245,41 @@ class RecordingState extends State<RecordingScreen> {
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
+      final isPacer = leaderboard[rank - 1].isPacer;
       final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
       final speed = _avgSpeedOnTrack
           ? leaderboard[rank - 1].speedString(_si, widget.descriptor.slowPace)
           : "";
-      cells.addAll(_getLeaderboardInfoText(rank + 1, distance, speed, false));
+      cells.addAll(isPacer
+          ? _getPacerInfoText()
+          : _getLeaderboardInfoText(rank + 1, distance, speed, false));
       rowCount++;
+      wasPacer |= isPacer;
     }
 
     // Following dot after the follower (if any)
     if (rank < length) {
+      final isPacer = leaderboard[rank].isPacer;
       final distance = leaderboard[rank].distanceAtTime(_elapsed);
       final speed =
           _avgSpeedOnTrack ? leaderboard[rank].speedString(_si, widget.descriptor.slowPace) : "";
-      cells.addAll(_getLeaderboardInfoText(rank + 2, distance, speed, false));
+      cells.addAll(isPacer
+          ? _getPacerInfoText()
+          : _getLeaderboardInfoText(rank + 2, distance, speed, false));
       rowCount++;
+      wasPacer |= isPacer;
+    }
+
+    if (_showPacer && !wasPacer && _pacerWorkout!.speed < leaderboard[rank].speed) {
+      cells.addAll(_getPacerInfoText());
+      rowCount++;
+      wasPacer = true;
     }
 
     final innerWidth = _trackCalculator!.trackSize!.width -
         2 * (_trackCalculator!.trackOffset!.dx + _trackCalculator!.trackRadius!);
     const cellHeight = (thick * _markerStyleSmallSizeAdjust / _markerStyleSizeAdjust) * 2;
-    final innerHeight = cellHeight * rowCount;
+    final innerHeight = (cellHeight + 1) * rowCount;
 
     List<TrackSize> rowSizes = [for (int i = 0; i < rowCount; i++) cellHeight.px];
     String areaSpec = [for (int i = 0; i < rowCount; i++) areaRow].join("\n");
