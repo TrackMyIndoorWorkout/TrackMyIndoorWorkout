@@ -245,27 +245,32 @@ class RecordingState extends State<RecordingScreen> {
       _activity!.id = id;
     }
 
-    if (_leaderboardFeature) {
+    if (_leaderboardFeature || _showPacer) {
       _selfRank = 0;
       _selfAvgSpeed = 0.0;
       _selfRankString = [];
-      _leaderboard = _rankingForSportOrDevice
-          ? await _database.workoutSummaryDao
-              .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport)
-          : await _database.workoutSummaryDao.findAllWorkoutSummariesByDevice(widget.device.id.id);
+      if (_leaderboardFeature) {
+        _leaderboard = _rankingForSportOrDevice
+            ? await _database.workoutSummaryDao
+                .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport)
+            : await _database.workoutSummaryDao
+                .findAllWorkoutSummariesByDevice(widget.device.id.id);
 
-      if (_showPacer && _pacerWorkout != null) {
-        int insertionPoint = 0;
-        while (insertionPoint < _leaderboard.length &&
-            _leaderboard[insertionPoint].speed > _pacerWorkout!.speed) {
-          insertionPoint++;
-        }
+        if (_showPacer && _pacerWorkout != null) {
+          int insertionPoint = 0;
+          while (insertionPoint < _leaderboard.length &&
+              _leaderboard[insertionPoint].speed > _pacerWorkout!.speed) {
+            insertionPoint++;
+          }
 
-        if (insertionPoint < _leaderboard.length) {
-          _leaderboard.insert(insertionPoint, _pacerWorkout!);
-        } else {
-          _leaderboard.add(_pacerWorkout!);
+          if (insertionPoint < _leaderboard.length) {
+            _leaderboard.insert(insertionPoint, _pacerWorkout!);
+          } else {
+            _leaderboard.add(_pacerWorkout!);
+          }
         }
+      } else if (_pacerWorkout != null) {
+        _leaderboard = [_pacerWorkout!];
       }
     }
 
@@ -321,13 +326,11 @@ class RecordingState extends State<RecordingScreen> {
             _heartRate = record.heartRate;
           }
 
-          if (_leaderboardFeature) {
-            if (_rankingForSportOrDevice) {
-              final selfRankTuple = _getSelfRank();
-              _selfRank = selfRankTuple.item1;
-              _selfAvgSpeed = selfRankTuple.item2;
-              _selfRankString = _getSelfRankString();
-            }
+          if (_leaderboardFeature || _showPacer) {
+            final selfRankTuple = _getSelfRank();
+            _selfRank = selfRankTuple.item1;
+            _selfAvgSpeed = selfRankTuple.item2;
+            _selfRankString = _getSelfRankString();
           }
 
           _values = [
@@ -940,7 +943,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Tuple2<int, double> _getSelfRank() {
-    if (!_leaderboardFeature) return const Tuple2<int, double>(0, 0.0);
+    if (!_leaderboardFeature && !_showPacer) return const Tuple2<int, double>(0, 0.0);
 
     return _getRank(_leaderboard);
   }
@@ -1071,32 +1074,35 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     bool wasPacer = false;
-    final length = leaderboard.length;
-    // Preceding dot ahead of the preceding (if any)
-    if (rank > 2 && rank - 3 < length) {
-      final isPacer =
-          _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 3], rank - 2, markers);
-      wasPacer = wasPacer || isPacer;
-    }
+    if (_rankTrackVisualization) {
+      final length = leaderboard.length;
+      // Preceding dot ahead of the preceding (if any)
+      if (rank > 2 && rank - 3 < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 3], rank - 2, markers);
+        wasPacer = wasPacer || isPacer;
+      }
 
-    // Preceding dot (chasing directly) if any
-    if (rank > 1 && rank - 2 < length) {
-      final isPacer =
-          _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 2], rank - 1, markers);
-      wasPacer = wasPacer || isPacer;
-    }
+      // Preceding dot (chasing directly) if any
+      if (rank > 1 && rank - 2 < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 2], rank - 1, markers);
+        wasPacer = wasPacer || isPacer;
+      }
 
-    // Following dot (following directly) if any
-    if (rank - 1 < length) {
-      final isPacer =
-          _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank - 1], rank + 1, markers);
-      wasPacer = wasPacer || isPacer;
-    }
+      // Following dot (following directly) if any
+      if (rank - 1 < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank - 1], rank + 1, markers);
+        wasPacer = wasPacer || isPacer;
+      }
 
-    // Following dot after the follower (if any)
-    if (rank < length) {
-      final isPacer = _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank], rank + 2, markers);
-      wasPacer = wasPacer || isPacer;
+      // Following dot after the follower (if any)
+      if (rank < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank], rank + 2, markers);
+        wasPacer = wasPacer || isPacer;
+      }
     }
 
     if (!wasPacer && _showPacer && _pacerWorkout != null) {
@@ -1423,13 +1429,13 @@ class RecordingState extends State<RecordingScreen> {
       if (markerPosition != null) {
         var selfMarkerText = "";
         var selfMarkerColor = 0xFFFF0000;
-        if (_rankTrackVisualization) {
+        if (_rankTrackVisualization || _showPacer) {
           markers.addAll(_markersForLeaderboard(_leaderboard, _selfRank));
           if (_selfRank > 0) {
             selfMarkerText = _selfRank.toString();
           }
 
-          if (_rankInfoOnTrack) {
+          if (_rankInfoOnTrack || _showPacer) {
             markers.add(
               Center(
                 child: _infoForLeaderboard(
