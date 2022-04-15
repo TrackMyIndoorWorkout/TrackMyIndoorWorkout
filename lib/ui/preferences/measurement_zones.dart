@@ -108,7 +108,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
         onChange: (str) {
           final pacerSpeed = double.tryParse(str);
           if (pacerSpeed != null) {
-            SpeedSpec.slowSpeeds[sport] = pacerSpeed;
+            SpeedSpec.pacerSpeeds[sport] = pacerSpeed;
           }
         },
       ),
