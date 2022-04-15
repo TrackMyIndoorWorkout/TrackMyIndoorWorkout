@@ -98,6 +98,6 @@ class WorkoutSummary {
       elapsed: 0,
       movingTime: 0,
       sport: sport,
-    );
+    )..speed = pacerSpeed;
   }
 }
