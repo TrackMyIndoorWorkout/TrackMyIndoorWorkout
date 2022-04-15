@@ -8,6 +8,7 @@ import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
+import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
@@ -33,6 +34,9 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
+import '../preferences/show_pacer.dart';
+import '../preferences/speed_spec.dart';
+import '../preferences/sport_spec.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
@@ -108,9 +112,12 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     movingOrElapsedTimeTag: movingOrElapsedTimeDefault,
     trainingPeaksUploadPublicTag: trainingPeaksUploadPublicDefault,
     logLevelTag: logLevelDefault,
+    calculateGpsTag: calculateGpsDefault,
+    avgSpeedOnTrackTag: avgSpeedOnTrackDefault,
+    showPacerTag: showPacerDefault,
   };
 
-  for (var sport in MetricSpec.sportPrefixes) {
+  for (var sport in SportSpec.sportPrefixes) {
     for (var prefSpec in MetricSpec.preferencesSpecs) {
       prefDefaults.addAll({
         prefSpec.thresholdTag(sport): prefSpec.thresholdDefault(sport),
@@ -121,8 +128,11 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     prefDefaults.addAll({lastEquipmentIdTagPrefix + sport: lastEquipmentIdDefault});
     if (sport != ActivityType.ride) {
       prefDefaults
-          .addAll({MetricSpec.slowSpeedTag(sport): MetricSpec.slowSpeeds[sport].toString()});
+          .addAll({SpeedSpec.slowSpeedTag(sport): SpeedSpec.slowSpeedDefaults[sport].toString()});
     }
+
+    prefDefaults
+        .addAll({SpeedSpec.pacerSpeedTag(sport): SpeedSpec.pacerSpeedDefaults[sport].toString()});
   }
 
   for (var prefSpec in MetricSpec.preferencesSpecs) {
@@ -257,7 +267,7 @@ Future<BasePrefService> initPreferences() async {
   }
 
   if (prefVersion <= preferencesVersionZoneRefinementDefault) {
-    for (var sport in MetricSpec.sportPrefixes) {
+    for (var sport in SportSpec.sportPrefixes) {
       for (var prefSpec in MetricSpec.preferencesSpecs) {
         final thresholdTag = prefSpec.thresholdTag(sport);
         final oldThresholdDefault = prefSpec.oldThresholdDefault(sport);
@@ -291,11 +301,18 @@ Future<BasePrefService> initPreferences() async {
 
   await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
 
-  for (var sport in MetricSpec.sportPrefixes) {
+  for (var sport in SportSpec.sportPrefixes) {
     if (sport != ActivityType.ride) {
-      final slowSpeedString = prefService.get<String>(MetricSpec.slowSpeedTag(sport)) ?? "";
-      MetricSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? eps;
+      final slowSpeedString = prefService.get<String>(SpeedSpec.slowSpeedTag(sport)) ??
+          SpeedSpec.slowSpeedDefaults[sport].toString();
+      SpeedSpec.slowSpeeds[sport] =
+          double.tryParse(slowSpeedString) ?? SpeedSpec.slowSpeedDefaults[sport];
     }
+
+    final pacerSpeedString = prefService.get<String>(SpeedSpec.pacerSpeedTag(sport)) ??
+        SpeedSpec.pacerSpeedDefaults[sport].toString();
+    SpeedSpec.pacerSpeeds[sport] =
+        double.tryParse(pacerSpeedString) ?? SpeedSpec.pacerSpeedDefaults[sport];
   }
 
   final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;

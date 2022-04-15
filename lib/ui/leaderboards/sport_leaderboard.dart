@@ -7,6 +7,8 @@ import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
 import '../../utils/constants.dart';
 import '../../persistence/database.dart';
+import '../../preferences/speed_spec.dart';
+import '../../preferences/sport_spec.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/generic.dart';
@@ -32,6 +34,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   TextStyle _textStyle2 = const TextStyle();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
+  double? _slowSpeed;
 
   @override
   void initState() {
@@ -44,6 +47,9 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    if (widget.sport != ActivityType.ride) {
+      _slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
+    }
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
@@ -113,7 +119,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
           final timeStamp = DateTime.fromMillisecondsSinceEpoch(workoutSummary.start);
           final dateString = DateFormat.yMd().format(timeStamp);
           final timeString = DateFormat.Hms().format(timeStamp);
-          final speedString = workoutSummary.speedString(_si);
+          final speedString = workoutSummary.speedString(_si, _slowSpeed);
           final distanceString = workoutSummary.distanceStringWithUnit(_si, _highRes);
           final timeDisplay = Duration(seconds: workoutSummary.elapsed).toDisplay();
           return Card(

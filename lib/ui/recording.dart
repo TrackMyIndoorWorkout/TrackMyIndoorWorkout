@@ -7,6 +7,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:pref/pref.dart';
@@ -34,7 +35,10 @@ import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
 import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/palette_spec.dart';
+import '../preferences/show_pacer.dart';
 import '../preferences/simpler_ui.dart';
+import '../preferences/speed_spec.dart';
+import '../preferences/sport_spec.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/two_column_layout.dart';
@@ -91,6 +95,9 @@ class RecordingScreen extends StatefulWidget {
 }
 
 class RecordingState extends State<RecordingScreen> {
+  static const double _markerStyleSizeAdjust = 1.4;
+  static const double _markerStyleSmallSizeAdjust = 0.9;
+
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
@@ -160,12 +167,17 @@ class RecordingState extends State<RecordingScreen> {
   bool _leaderboardFeature = leaderboardFeatureDefault;
   bool _rankingForSportOrDevice = rankingForSportOrDeviceDefault;
   List<WorkoutSummary> _leaderboard = [];
-  int? _selfRank;
-  String _selfRankString = "";
+  int _selfRank = 0;
+  double _selfAvgSpeed = 0.0;
+  List<String> _selfRankString = [];
   bool _rankRibbonVisualization = rankRibbonVisualizationDefault;
   bool _rankTrackVisualization = rankTrackVisualizationDefault;
   bool _rankInfoOnTrack = rankInfoOnTrackDefault;
   bool _displayLapCounter = displayLapCounterDefault;
+  bool _avgSpeedOnTrack = avgSpeedOnTrackDefault;
+  bool _showPacer = showPacerDefault;
+  WorkoutSummary? _pacerWorkout;
+  int _rankInfoColumnCount = 0;
   Color _darkRed = Colors.red;
   Color _darkGreen = Colors.green;
   Color _darkBlue = Colors.blue;
@@ -233,13 +245,33 @@ class RecordingState extends State<RecordingScreen> {
       _activity!.id = id;
     }
 
-    if (_leaderboardFeature) {
-      _selfRank = null;
-      _selfRankString = "";
-      _leaderboard = _rankingForSportOrDevice
-          ? await _database.workoutSummaryDao
-              .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport)
-          : await _database.workoutSummaryDao.findAllWorkoutSummariesByDevice(widget.device.id.id);
+    if (_leaderboardFeature || _showPacer) {
+      _selfRank = 0;
+      _selfAvgSpeed = 0.0;
+      _selfRankString = [];
+      if (_leaderboardFeature) {
+        _leaderboard = _rankingForSportOrDevice
+            ? await _database.workoutSummaryDao
+                .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport)
+            : await _database.workoutSummaryDao
+                .findAllWorkoutSummariesByDevice(widget.device.id.id);
+
+        if (_showPacer && _pacerWorkout != null) {
+          int insertionPoint = 0;
+          while (insertionPoint < _leaderboard.length &&
+              _leaderboard[insertionPoint].speed > _pacerWorkout!.speed) {
+            insertionPoint++;
+          }
+
+          if (insertionPoint < _leaderboard.length) {
+            _leaderboard.insert(insertionPoint, _pacerWorkout!);
+          } else {
+            _leaderboard.add(_pacerWorkout!);
+          }
+        }
+      } else if (_pacerWorkout != null) {
+        _leaderboard = [_pacerWorkout!];
+      }
     }
 
     _fitnessEquipment?.setActivity(_activity!);
@@ -294,11 +326,11 @@ class RecordingState extends State<RecordingScreen> {
             _heartRate = record.heartRate;
           }
 
-          if (_leaderboardFeature) {
-            if (_rankingForSportOrDevice) {
-              _selfRank = _getSelfRank();
-              _selfRankString = _getSelfRankString();
-            }
+          if (_leaderboardFeature || _showPacer) {
+            final selfRankTuple = _getSelfRank();
+            _selfRank = selfRankTuple.item1;
+            _selfAvgSpeed = selfRankTuple.item2;
+            _selfRankString = _getSelfRankString();
           }
 
           _values = [
@@ -423,11 +455,13 @@ class RecordingState extends State<RecordingScreen> {
     if (sizeAdjustInt != 100) {
       _sizeAdjust = sizeAdjustInt / 100.0;
     }
-    _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 1.4);
-    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 0.9);
+    _markerStyle =
+        _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: _markerStyleSizeAdjust);
+    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!,
+        fontSizeFactor: _markerStyleSmallSizeAdjust);
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     prefService.set<String>(
-      lastEquipmentIdTagPrefix + MetricSpec.sport2Sport(widget.sport),
+      lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),
       widget.device.id.id,
     );
     if (Get.isRegistered<FitnessEquipment>()) {
@@ -465,9 +499,14 @@ class RecordingState extends State<RecordingScreen> {
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
 
     if (widget.sport != ActivityType.ride) {
-      final slowPace = MetricSpec.slowSpeeds[MetricSpec.sport2Sport(widget.sport)]!;
+      final slowPace = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
       widget.descriptor.slowPace = slowPace;
       _fitnessEquipment?.slowPace = slowPace;
+    }
+    _showPacer = prefService.get<bool>(showPacerTag) ?? showPacerDefault;
+    if (_showPacer) {
+      final pacerSpeed = SpeedSpec.pacerSpeeds[SportSpec.sport2Sport(widget.sport)]!;
+      _pacerWorkout = WorkoutSummary.getPacerWorkout(pacerSpeed, widget.sport);
     }
 
     _paletteSpec = PaletteSpec.getInstance(prefService);
@@ -611,11 +650,21 @@ class RecordingState extends State<RecordingScreen> {
     _rankingForSportOrDevice =
         prefService.get<bool>(rankingForSportOrDeviceTag) ?? rankingForSportOrDeviceDefault;
     _leaderboard = [];
-    _selfRankString = "";
+    _selfRankString = [];
     _rankTrackVisualization =
         prefService.get<bool>(rankTrackVisualizationTag) ?? rankTrackVisualizationDefault;
     _rankInfoOnTrack = prefService.get<bool>(rankInfoOnTrackTag) ?? rankInfoOnTrackDefault;
     _displayLapCounter = prefService.get<bool>(displayLapCounterTag) ?? displayLapCounterDefault;
+    _avgSpeedOnTrack = prefService.get<bool>(avgSpeedOnTrackTag) ?? avgSpeedOnTrackDefault;
+
+    _rankInfoColumnCount = 2;
+    if (_displayLapCounter) {
+      _rankInfoColumnCount += 1;
+    }
+
+    if (_avgSpeedOnTrack) {
+      _rankInfoColumnCount += 1;
+    }
 
     final isLight = !_themeManager.isDark();
     _darkRed = isLight ? Colors.red.shade900 : Colors.redAccent.shade100;
@@ -869,46 +918,42 @@ class RecordingState extends State<RecordingScreen> {
             _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
   }
 
-  int? _getRank(List<WorkoutSummary> leaderboard) {
-    if (leaderboard.isEmpty) {
-      return 1;
+  Tuple2<int, double> _getRank(List<WorkoutSummary> leaderboard) {
+    if (_elapsed == 0) {
+      return const Tuple2<int, double>(0, 0.0);
     }
 
-    if (_movingTime == 0) {
-      return null;
-    }
-
-    // #252 moving is in milliseconds, so 1000 multiplier is needed!!
-    final averageSpeed =
-        _movingTime > 0 ? _distance * 1000.0 / _movingTime * DeviceDescriptor.ms2kmh : 0.0;
+    // #252 moving is in milliseconds, so 1000 multiplier is needed
+    // (but for now we use elapsed because other parts use elapsed as well)
+    final averageSpeed = _elapsed > 0 ? _distance / _elapsed * DeviceDescriptor.ms2kmh : 0.0;
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
-        return rank;
+        return Tuple2<int, double>(rank, averageSpeed);
       }
 
       rank += 1;
     }
 
-    return rank;
+    return Tuple2<int, double>(rank, averageSpeed);
   }
 
-  String _getRankString(int? rank, List<WorkoutSummary> leaderboard) {
-    return rank == null ? emptyMeasurement : rank.toString();
+  String _getRankString(int rank, List<WorkoutSummary> leaderboard) {
+    return rank == 0 ? emptyMeasurement : rank.toString();
   }
 
-  int? _getSelfRank() {
-    if (!_leaderboardFeature) return null;
+  Tuple2<int, double> _getSelfRank() {
+    if (!_leaderboardFeature && !_showPacer) return const Tuple2<int, double>(0, 0.0);
 
     return _getRank(_leaderboard);
   }
 
-  String _getSelfRankString() {
-    return "#${_getRankString(_selfRank, _leaderboard)} (Self)";
+  List<String> _getSelfRankString() {
+    return ["#${_getRankString(_selfRank, _leaderboard)}", "(Self)"];
   }
 
-  Color _getPaceLightColor(int? selfRank, {required bool background}) {
-    if (!_leaderboardFeature || selfRank == null) {
+  Color _getPaceLightColor(int selfRank, {required bool background}) {
+    if (!_leaderboardFeature || selfRank == 0) {
       return background ? Colors.transparent : _themeManager.getBlueColor();
     }
 
@@ -918,7 +963,7 @@ class RecordingState extends State<RecordingScreen> {
     return background ? _lightBlue : _darkBlue;
   }
 
-  TextStyle _getPaceLightTextStyle(int? selfRank) {
+  TextStyle _getPaceLightTextStyle(int selfRank) {
     if (!_leaderboardFeature) {
       return _measurementStyle;
     }
@@ -1001,122 +1046,255 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
-  List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int? rank) {
+  bool _addLeaderboardTrackMarker(
+    int markerColor,
+    WorkoutSummary workoutSummary,
+    int rank,
+    List<Widget> markers,
+  ) {
+    final distance = workoutSummary.distanceAtTime(_elapsed);
+    final position = _trackCalculator?.trackMarker(distance);
+    final isPacer = workoutSummary.isPacer;
+    if (position != null) {
+      markers.add(_getTrackMarker(
+        position,
+        isPacer ? pacerColor : markerColor,
+        isPacer ? pacerText : "$rank",
+        false,
+      ));
+    }
+
+    return isPacer;
+  }
+
+  List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int rank) {
     List<Widget> markers = [];
-    if (leaderboard.isEmpty || rank == null || _trackCalculator == null) {
+    if (leaderboard.isEmpty || rank == 0 || _trackCalculator == null) {
       return markers;
     }
 
-    final length = leaderboard.length;
-    // Preceding dot ahead of the preceding (if any)
-    if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
-      final position = _trackCalculator?.trackMarker(distance);
-      if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 2}", false));
+    bool wasPacer = false;
+    if (_rankTrackVisualization) {
+      final length = leaderboard.length;
+      // Preceding dot ahead of the preceding (if any)
+      if (rank > 2 && rank - 3 < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 3], rank - 2, markers);
+        wasPacer |= isPacer;
+      }
+
+      // Preceding dot (chasing directly) if any
+      if (rank > 1 && rank - 2 < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 2], rank - 1, markers);
+        wasPacer |= isPacer;
+      }
+
+      // Following dot (following directly) if any
+      if (rank - 1 < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank - 1], rank + 1, markers);
+        wasPacer |= isPacer;
+      }
+
+      // Following dot after the follower (if any)
+      if (rank < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank], rank + 2, markers);
+        wasPacer |= isPacer;
       }
     }
 
-    // Preceding dot (chasing directly) if any
-    if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
+    if (!wasPacer && _showPacer && _pacerWorkout != null) {
+      final distance = _pacerWorkout!.distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 1}", false));
-      }
-    }
-
-    // Following dot (following directly) if any
-    if (rank - 1 < length) {
-      final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
-      final position = _trackCalculator?.trackMarker(distance);
-      if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 1}", false));
-      }
-    }
-
-    // Following dot after the follower (if any)
-    if (rank < length) {
-      final distance = leaderboard[rank].distanceAtTime(_movingTime);
-      final position = _trackCalculator?.trackMarker(distance);
-      if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 2}", false));
+        markers.add(_getTrackMarker(position, pacerColor, pacerText, false));
       }
     }
 
     return markers;
   }
 
-  Widget _getLeaderboardInfoTextCore(String text, bool lead) {
-    final bgColor = lead ? _lightGreen : _lightBlue;
+  Widget _getLeaderboardInfoTextCellCore(String text, Color bgColor) {
     return ColoredBox(
       color: bgColor,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 4.0),
-        child: Text(text, style: _markerStyle),
+        padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
+        child: Text(text, style: _markerStyleSmall),
       ),
     );
   }
 
-  Widget _getLeaderboardInfoText(int rank, double distance, bool lead) {
-    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
-    var rankText = "";
+  List<Widget> _getPacerInfoText() {
+    List<Widget> widgets = [];
+    if (!_showPacer || _pacerWorkout == null) {
+      return widgets;
+    }
+
+    widgets.add(_getLeaderboardInfoTextCellCore("Pacer", Colors.grey));
+    final distance = _pacerWorkout!.distanceAtTime(_elapsed);
+
     if (_displayLapCounter) {
       final lapCount = (distance / _trackLength).floor();
-      rankText = "#$rank L$lapCount $distanceString";
-    } else {
-      rankText = "#$rank $distanceString";
+      widgets.add(_getLeaderboardInfoTextCellCore("L$lapCount", Colors.grey));
     }
-    return _getLeaderboardInfoTextCore(rankText, lead);
+
+    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
+    widgets.add(_getLeaderboardInfoTextCellCore(distanceString, Colors.grey));
+    if (_avgSpeedOnTrack) {
+      final speedString = _pacerWorkout!.speedString(_si, widget.descriptor.slowPace);
+
+      widgets.add(_getLeaderboardInfoTextCellCore(speedString, Colors.grey));
+    }
+
+    return widgets;
   }
 
-  Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int? rank, String rankString) {
-    if (leaderboard.isEmpty || rank == null) {
-      return Text(rankString, style: _markerStyle);
+  Widget _getLeaderboardInfoTextCell(String text, bool lead) {
+    final bgColor = lead ? _lightGreen : _lightBlue;
+    return _getLeaderboardInfoTextCellCore(text, bgColor);
+  }
+
+  List<Widget> _getLeaderboardInfoText(int rank, double distance, String speed, bool lead) {
+    List<Widget> widgets = [];
+    widgets.add(_getLeaderboardInfoTextCell("#$rank", lead));
+    if (_displayLapCounter) {
+      final lapCount = (distance / _trackLength).floor();
+      widgets.add(_getLeaderboardInfoTextCell("L$lapCount", lead));
     }
 
-    List<Widget> rows = [];
+    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
+    widgets.add(_getLeaderboardInfoTextCell(distanceString, lead));
+    if (_avgSpeedOnTrack) {
+      widgets.add(_getLeaderboardInfoTextCell(speed, lead));
+    }
+
+    return widgets;
+  }
+
+  Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int rank, List<String> rankString) {
+    if (leaderboard.isEmpty || rank == 0) {
+      var rankStringEx = rankString.join(" ");
+      if (_displayLapCounter) {
+        rankStringEx += " L$_lapCount";
+      }
+      return Text(rankStringEx, style: _markerStyle);
+    }
+
+    String areaRow = "nav content";
+    if (_displayLapCounter) {
+      areaRow += " content";
+    }
+
+    if (_avgSpeedOnTrack) {
+      areaRow += " content";
+    }
+
+    int rowCount = 0;
+    List<Widget> cells = [];
     final length = leaderboard.length;
+    bool wasPacer = false;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank - 2, distance, true));
-      rows.add(const Divider(height: 1));
+      final isPacer = leaderboard[rank - 3].isPacer;
+      if (_showPacer && !isPacer && _pacerWorkout!.speed > leaderboard[rank - 3].speed) {
+        cells.addAll(_getPacerInfoText());
+        rowCount++;
+        wasPacer = true;
+      }
+
+      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
+      final speed = _avgSpeedOnTrack
+          ? leaderboard[rank - 3].speedString(_si, widget.descriptor.slowPace)
+          : "";
+      cells.addAll(
+          isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank - 2, distance, speed, true));
+      rowCount++;
+      wasPacer |= isPacer;
     }
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank - 1, distance, true));
-      rows.add(const Divider(height: 1));
+      final isPacer = leaderboard[rank - 2].isPacer;
+      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
+      final speed = _avgSpeedOnTrack
+          ? leaderboard[rank - 2].speedString(_si, widget.descriptor.slowPace)
+          : "";
+      cells.addAll(
+          isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank - 1, distance, speed, true));
+      rowCount++;
+      wasPacer |= isPacer;
     }
 
-    var rankStringEx = rankString;
+    // Self section
+    final lead = rank <= 1;
+    cells.add(_getLeaderboardInfoTextCell(rankString[0], lead));
     if (_displayLapCounter) {
-      rankStringEx += " L$_lapCount";
+      cells.add(_getLeaderboardInfoTextCell("L$_lapCount", lead));
     }
 
-    rows.add(_getLeaderboardInfoTextCore(rankStringEx, rank <= 1));
+    cells.add(_getLeaderboardInfoTextCell(rankString[1], lead));
+    if (_avgSpeedOnTrack) {
+      final avgSpeedString = WorkoutSummary.speedStringStatic(
+          _si, _selfAvgSpeed, widget.descriptor.slowPace, widget.sport);
+      cells.add(_getLeaderboardInfoTextCell(avgSpeedString, lead));
+    }
+
+    rowCount++;
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
-      rows.add(const Divider(height: 1));
-      final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank + 1, distance, false));
+      final isPacer = leaderboard[rank - 1].isPacer;
+      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
+      final speed = _avgSpeedOnTrack
+          ? leaderboard[rank - 1].speedString(_si, widget.descriptor.slowPace)
+          : "";
+      cells.addAll(isPacer
+          ? _getPacerInfoText()
+          : _getLeaderboardInfoText(rank + 1, distance, speed, false));
+      rowCount++;
+      wasPacer |= isPacer;
     }
 
     // Following dot after the follower (if any)
     if (rank < length) {
-      rows.add(const Divider(height: 1));
-      final distance = leaderboard[rank].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank + 2, distance, false));
+      final isPacer = leaderboard[rank].isPacer;
+      final distance = leaderboard[rank].distanceAtTime(_elapsed);
+      final speed =
+          _avgSpeedOnTrack ? leaderboard[rank].speedString(_si, widget.descriptor.slowPace) : "";
+      cells.addAll(isPacer
+          ? _getPacerInfoText()
+          : _getLeaderboardInfoText(rank + 2, distance, speed, false));
+      rowCount++;
+      wasPacer |= isPacer;
     }
 
-    return IntrinsicWidth(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: rows,
+    if (_showPacer && !wasPacer && _pacerWorkout!.speed < leaderboard[rank].speed) {
+      cells.addAll(_getPacerInfoText());
+      rowCount++;
+      wasPacer = true;
+    }
+
+    final innerWidth = _trackCalculator!.trackSize!.width -
+        2 * (_trackCalculator!.trackOffset!.dx + _trackCalculator!.trackRadius!);
+    const cellHeight = (thick * _markerStyleSmallSizeAdjust / _markerStyleSizeAdjust) * 2;
+    final innerHeight = (cellHeight + 1) * rowCount;
+
+    List<TrackSize> rowSizes = [for (int i = 0; i < rowCount; i++) cellHeight.px];
+    String areaSpec = [for (int i = 0; i < rowCount; i++) areaRow].join("\n");
+    List<TrackSize> columnSpec = [for (int i = 0; i < _rankInfoColumnCount; i++) auto];
+
+    return SizedBox(
+      width: innerWidth,
+      height: innerHeight,
+      child: LayoutGrid(
+        areas: areaSpec,
+        columnSizes: columnSpec,
+        rowSizes: rowSizes,
+        columnGap: 1,
+        rowGap: 1,
+        children: cells,
       ),
     );
   }
@@ -1285,7 +1463,7 @@ class RecordingState extends State<RecordingScreen> {
             _rankRibbonVisualization) {
           List<Widget> extraExtras = [];
           final paceLightColor = _getPaceLightTextStyle(_selfRank);
-          extraExtras.add(Text(_selfRankString, style: paceLightColor));
+          extraExtras.add(Text(_selfRankString.join(" "), style: paceLightColor));
 
           if (widget.descriptor.defaultSport != ActivityType.ride) {
             extraExtras.add(Text("Speed ${_si ? 'km' : 'mi'}/h"));
@@ -1307,13 +1485,13 @@ class RecordingState extends State<RecordingScreen> {
       if (markerPosition != null) {
         var selfMarkerText = "";
         var selfMarkerColor = 0xFFFF0000;
-        if (_rankTrackVisualization) {
+        if (_rankTrackVisualization || _showPacer) {
           markers.addAll(_markersForLeaderboard(_leaderboard, _selfRank));
-          if (_selfRank != null) {
+          if (_selfRank > 0) {
             selfMarkerText = _selfRank.toString();
           }
 
-          if (_rankInfoOnTrack) {
+          if (_rankInfoOnTrack || _showPacer) {
             markers.add(
               Center(
                 child: _infoForLeaderboard(

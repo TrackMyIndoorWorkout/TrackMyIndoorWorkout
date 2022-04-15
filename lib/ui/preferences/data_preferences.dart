@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/database.dart';
 import '../../preferences/audio_volume.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
+import '../../preferences/calculate_gps.dart';
+import '../../persistence/database.dart';
 import '../../preferences/data_stream_gap_sound_effect.dart';
 import '../../preferences/data_stream_gap_watchdog_time.dart';
 import '../../preferences/extend_tuning.dart';
@@ -25,6 +26,12 @@ class DataPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> dataPreferences = [
+      const PrefTitle(title: Text("Workout")),
+      const PrefCheckbox(
+        title: Text(calculateGps),
+        subtitle: Text(calculateGpsDescription),
+        pref: calculateGpsTag,
+      ),
       const PrefTitle(title: Text("Tuning")),
       const PrefCheckbox(
         title: Text(extendTuning),

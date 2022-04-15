@@ -20,6 +20,7 @@ import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
+import '../preferences/calculate_gps.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
@@ -59,6 +60,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   bool _highRes = distanceResolutionDefault;
   bool _leaderboardFeature = leaderboardFeatureDefault;
   bool _movingOrElapsedTime = movingOrElapsedTimeDefault;
+  bool _calculateGps = calculateGpsDefault;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeDefault2 = 10.0;
@@ -83,6 +85,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _movingOrElapsedTime =
         prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
+    _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     final sizeAdjustInt =
@@ -144,6 +147,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
             activity,
             records,
             formatPick == "CSV",
+            _calculateGps,
             false,
             ExportTarget.regular,
           );

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
-import '../../preferences/metric_spec.dart';
 import '../../preferences/palette_spec.dart';
+import '../../preferences/sport_spec.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import '../parts/palette_picker.dart';
@@ -41,7 +41,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final items = MetricSpec.sportPrefixes.map((sport) {
+    final items = SportSpec.sportPrefixes.map((sport) {
       return Container(
         padding: const EdgeInsets.all(5.0),
         margin: const EdgeInsets.all(5.0),

@@ -32,10 +32,17 @@ const rankTrackVisualizationDescription =
     "(blue color) of the current effort is displayed. Both positions have a the rank "
     "number inside their dot.";
 
-const rankInfoOnTrack = "Display rank information at the center of the track (on top of positions)";
+const rankInfoOnTrack = "Display rank information at the center of the track";
 const rankInfoOnTrackTag = "rank_info_on_track";
 const rankInfoOnTrackDefault = true;
 const rankInfoOnTrackDescription =
     "On: when rank position is enabled this switch will display extra information "
     "in the middle of the track: it'll list the preceding and following positions "
-    "along with the distance compared to the athlete's current position";
+    "along with the distance compared to the athlete's current position.";
+
+const avgSpeedOnTrack = "Display average speed at the center of the track";
+const avgSpeedOnTrackTag = "avg_speed_on_track";
+const avgSpeedOnTrackDefault = false;
+const avgSpeedOnTrackDescription =
+    "On: Average speeds will be displayed for the current effort and the other"
+    "leaderboard positions listed.";

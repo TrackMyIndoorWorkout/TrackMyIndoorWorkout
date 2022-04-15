@@ -1,9 +1,17 @@
+## 1.1.101
+
+* Ability to turn off GPS data from uploads and exports
+* Ability to specify pacer with a fixed speed (per sport, speed in km/h)
+* Ability to display average speed on the leaderboard info section (center of the track)
+
 ## 1.1.100
 
 * Fixing manufacturer name check which fixes Yesoul S3 support as well (by Sebastian Kutschbach)
 * Revising some zone threshold and boundary defaults
 * Revising a few default zone colors to differ more by contrast / color
 * Making zone colors configurable (5 / 6 / 7 zones, light / dark theme, foreground / background)
+* Making sport and device based leaderboards mutually exclusive. More info is coming and we won't
+  have space for both at the same time.
 
 ## 1.1.99
 

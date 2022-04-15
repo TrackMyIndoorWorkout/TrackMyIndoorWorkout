@@ -13,6 +13,7 @@ class FitDataRecord extends FitDefinitionMessage {
   final String heartRateGapWorkaround;
   final int heartRateUpperLimit;
   final String heartRateLimitingMethod;
+  final bool outputGps;
 
   FitDataRecord(
     localMessageType,
@@ -20,18 +21,27 @@ class FitDataRecord extends FitDefinitionMessage {
     this.heartRateGapWorkaround,
     this.heartRateUpperLimit,
     this.heartRateLimitingMethod,
+    this.outputGps,
   ) : super(localMessageType, FitMessage.record) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
-      FitField(0, FitBaseTypes.sint32Type), // PositionLat
-      FitField(1, FitBaseTypes.sint32Type), // PositionLong
-      FitField(2, FitBaseTypes.uint16Type), // Altitude
+    ];
+
+    if (outputGps) {
+      fields.addAll([
+        FitField(0, FitBaseTypes.sint32Type), // PositionLat
+        FitField(1, FitBaseTypes.sint32Type), // PositionLong
+        FitField(2, FitBaseTypes.uint16Type), // Altitude
+      ]);
+    }
+
+    fields.addAll([
       FitField(3, FitBaseTypes.uint8Type), // HeartRate (bpm)
       FitField(4, FitBaseTypes.uint8Type), // Cadence (rpm or spm?)
       FitField(5, FitBaseTypes.uint32Type), // Distance (1/100 m)
       FitField(6, FitBaseTypes.uint16Type), // Speed (1/1000 m/s)
       FitField(7, FitBaseTypes.uint16Type), // Power (Watts)
-    ];
+    ]);
   }
 
   @override
@@ -44,9 +54,11 @@ class FitDataRecord extends FitDefinitionMessage {
         ? DateTime.fromMillisecondsSinceEpoch(model.record.timeStamp!)
         : DateTime.now();
     data.addLong(FitSerializable.fitDateTime(dateTime));
-    data.addGpsCoordinate(model.latitude);
-    data.addGpsCoordinate(model.longitude);
-    data.addShort(((altitude + 500) * 5).round());
+    if (outputGps) {
+      data.addGpsCoordinate(model.latitude);
+      data.addGpsCoordinate(model.longitude);
+      data.addShort(((altitude + 500) * 5).round());
+    }
 
     if (model.record.heartRate != null) {
       if (model.record.heartRate == 0 &&

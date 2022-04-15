@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/metric_spec.dart';
+import '../../preferences/speed_spec.dart';
 import '../../utils/constants.dart';
 import 'preferences_base.dart';
 
@@ -68,10 +69,17 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
       zonePreferences.addAll([
         PrefText(
           label: sport + slowSpeedPostfix,
-          pref: MetricSpec.slowSpeedTag(sport),
+          pref: SpeedSpec.slowSpeedTag(sport),
           validator: (str) {
             if (str == null || !isNumber(str, 0.01, -1)) {
               return "Slow speed has to be positive";
+            }
+
+            if (sport != ActivityType.ride) {
+              final slowSpeed = double.tryParse(str);
+              if (slowSpeed != null && slowSpeed > (SpeedSpec.pacerSpeeds[sport] ?? 0.0)) {
+                return "Slow speed must be slower than 'Pacer Speed' (see below)";
+              }
             }
 
             return null;
@@ -79,12 +87,39 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
           onChange: (str) {
             final slowSpeed = double.tryParse(str);
             if (slowSpeed != null) {
-              MetricSpec.slowSpeeds[sport] = slowSpeed;
+              SpeedSpec.slowSpeeds[sport] = slowSpeed;
             }
           },
         ),
       ]);
     }
+
+    zonePreferences.addAll([
+      PrefText(
+        label: sport + pacerSpeedPostfix,
+        pref: SpeedSpec.pacerSpeedTag(sport),
+        validator: (str) {
+          if (str == null || !isNumber(str, 0.01, -1)) {
+            return "Pacer speed has to be positive";
+          }
+
+          if (sport != ActivityType.ride) {
+            final pacerSpeed = double.tryParse(str);
+            if (pacerSpeed != null && pacerSpeed < (SpeedSpec.slowSpeeds[sport] ?? 0.0)) {
+              return "Pacer speed must be faster than 'Slow Speed' (see above)";
+            }
+          }
+
+          return null;
+        },
+        onChange: (str) {
+          final pacerSpeed = double.tryParse(str);
+          if (pacerSpeed != null) {
+            SpeedSpec.pacerSpeeds[sport] = pacerSpeed;
+          }
+        },
+      ),
+    ]);
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
