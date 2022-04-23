@@ -177,6 +177,8 @@ class RecordingState extends State<RecordingScreen> {
   bool _avgSpeedOnTrack = avgSpeedOnTrackDefault;
   bool _showPacer = showPacerDefault;
   WorkoutSummary? _pacerWorkout;
+  final _averageSpeeds = ListQueue<double>();
+  double _averageSpeedSum = 0.0;
   int _rankInfoColumnCount = 0;
   Color _darkRed = Colors.red;
   Color _darkGreen = Colors.green;
@@ -249,6 +251,8 @@ class RecordingState extends State<RecordingScreen> {
       _selfRank = 0;
       _selfAvgSpeed = 0.0;
       _selfRankString = [];
+      _averageSpeeds.clear();
+      _averageSpeedSum = 0.0;
       if (_leaderboardFeature) {
         _leaderboard = _rankingForSportOrDevice
             ? await _database.workoutSummaryDao
@@ -925,7 +929,23 @@ class RecordingState extends State<RecordingScreen> {
 
     // #252 moving is in milliseconds, so 1000 multiplier is needed
     // (but for now we use elapsed because other parts use elapsed as well)
-    final averageSpeed = _elapsed > 0 ? _distance / _elapsed * DeviceDescriptor.ms2kmh : 0.0;
+    double averageSpeed = 0.0;
+    if (_elapsed > 0) {
+      // #236 smooth signal of average speeds by average over a rolling window
+      averageSpeed = _distance / _elapsed * DeviceDescriptor.ms2kmh;
+      if (_averageSpeeds.isEmpty) {
+        _averageSpeeds.addAll(
+            [for (var i = 0; i < averageSpeedSmoothingWindowSizeDefault; ++i) averageSpeed]);
+        _averageSpeedSum = averageSpeed * averageSpeedSmoothingWindowSizeDefault;
+      } else {
+        _averageSpeeds.add(averageSpeed);
+        _averageSpeedSum += averageSpeed;
+        _averageSpeedSum -= _averageSpeeds.first;
+        _averageSpeeds.removeFirst();
+        averageSpeed = _averageSpeedSum / _averageSpeeds.length;
+      }
+    }
+
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {

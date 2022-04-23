@@ -46,3 +46,5 @@ const avgSpeedOnTrackDefault = true;
 const avgSpeedOnTrackDescription =
     "On: Average speeds will be displayed for the current effort and the other"
     "leaderboard positions listed.";
+
+const averageSpeedSmoothingWindowSizeDefault = 4;
