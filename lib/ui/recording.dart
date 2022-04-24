@@ -107,9 +107,9 @@ class RecordingState extends State<RecordingScreen> {
   bool _measuring = false;
   int _pointCount = 0;
   ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
-  double? _mediaSizeMin;
-  double? _mediaHeight;
-  double? _mediaWidth;
+  double _mediaSizeMin = 0;
+  double _mediaHeight = 0;
+  double _mediaWidth = 0;
   double _sizeDefault = 10.0;
   double _sizeAdjust = 1.0;
   bool _landscape = false;
@@ -1327,12 +1327,12 @@ class RecordingState extends State<RecordingScreen> {
     if (size.width != _mediaWidth || size.height != _mediaHeight) {
       _mediaWidth = size.width;
       _mediaHeight = size.height;
-      _landscape = _mediaWidth! > _mediaHeight!;
+      _landscape = _mediaWidth > _mediaHeight;
     }
 
     final mediaSizeMin =
-        _landscape && _twoColumnLayout ? _mediaWidth! / 2 : min(_mediaWidth!, _mediaHeight!);
-    if (_mediaSizeMin == null || (_mediaSizeMin! - mediaSizeMin).abs() > eps) {
+        _landscape && _twoColumnLayout ? _mediaWidth / 2 : min(_mediaWidth, _mediaHeight);
+    if (_mediaSizeMin < eps || (_mediaSizeMin - mediaSizeMin).abs() > eps) {
       _mediaSizeMin = mediaSizeMin;
       _sizeDefault = mediaSizeMin / 8 * _sizeAdjust;
       _measurementStyle = TextStyle(
@@ -1553,7 +1553,7 @@ class RecordingState extends State<RecordingScreen> {
     final body = _landscape && _twoColumnLayout
         ? GridView.count(
             crossAxisCount: 2,
-            childAspectRatio: _mediaWidth! / _mediaHeight! / 2,
+            childAspectRatio: _mediaWidth / _mediaHeight / 2,
             physics: const NeverScrollableScrollPhysics(),
             semanticChildCount: 2,
             children: [
@@ -1749,7 +1749,9 @@ class RecordingState extends State<RecordingScreen> {
               body: body,
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               floatingActionButton: CircularFabMenu(
-                fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+                key: _fabKey,
+                fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
+                    color: _themeManager.getAntagonistColor()),
                 fabOpenColor: _themeManager.getBlueColor(),
                 fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
                 fabCloseColor: _themeManager.getBlueColor(),
