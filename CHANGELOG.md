@@ -1,3 +1,8 @@
+## 1.1.102
+
+* Decrease Leaderboard flicker (jump back-and-forth) effect especially the first few minutes
+* Introduce lock screen feature
+
 ## 1.1.101
 
 * Ability to turn off GPS data from uploads and exports
