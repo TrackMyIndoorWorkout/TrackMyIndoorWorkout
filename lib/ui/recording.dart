@@ -1728,7 +1728,7 @@ class RecordingState extends State<RecordingScreen> {
                   _isLocked = false;
                 });
               }, _unlockKeys[i])
-            : _themeManager.getBlueFabWKey(Icons.lock, true, true, "", 0, null, _unlockKeys[i]);
+            : _themeManager.getBlueFabWKey(Icons.adjust, true, true, "", 0, null, _unlockKeys[i]);
         menuButtons.add(button);
       }
     } else {
