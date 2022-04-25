@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
@@ -97,6 +98,7 @@ class RecordingScreen extends StatefulWidget {
 class RecordingState extends State<RecordingScreen> {
   static const double _markerStyleSizeAdjust = 1.4;
   static const double _markerStyleSmallSizeAdjust = 0.9;
+  static const int _unlockChoices = 6;
 
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
@@ -107,9 +109,9 @@ class RecordingState extends State<RecordingScreen> {
   bool _measuring = false;
   int _pointCount = 0;
   ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
-  double? _mediaSizeMin;
-  double? _mediaHeight;
-  double? _mediaWidth;
+  double _mediaSizeMin = 0;
+  double _mediaHeight = 0;
+  double _mediaWidth = 0;
   double _sizeDefault = 10.0;
   double _sizeAdjust = 1.0;
   bool _landscape = false;
@@ -177,6 +179,8 @@ class RecordingState extends State<RecordingScreen> {
   bool _avgSpeedOnTrack = avgSpeedOnTrackDefault;
   bool _showPacer = showPacerDefault;
   WorkoutSummary? _pacerWorkout;
+  final _averageSpeeds = ListQueue<double>();
+  double _averageSpeedSum = 0.0;
   int _rankInfoColumnCount = 0;
   Color _darkRed = Colors.red;
   Color _darkGreen = Colors.green;
@@ -192,6 +196,12 @@ class RecordingState extends State<RecordingScreen> {
   bool _zoneIndexColoring = false;
   bool _tutorialVisible = false;
   int _lapCount = 0;
+  bool _isLocked = false;
+  int _unlockButtonIndex = 0;
+  final Random _rng = Random();
+  final List<GlobalKey> _unlockKeys = [];
+  final GlobalKey<CircularFabMenuState> _fabKey = GlobalKey();
+  int _unlockKey = -2;
 
   Future<void> _connectOnDemand() async {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
@@ -249,6 +259,8 @@ class RecordingState extends State<RecordingScreen> {
       _selfRank = 0;
       _selfAvgSpeed = 0.0;
       _selfRankString = [];
+      _averageSpeeds.clear();
+      _averageSpeedSum = 0.0;
       if (_leaderboardFeature) {
         _leaderboard = _rankingForSportOrDevice
             ? await _database.workoutSummaryDao
@@ -680,6 +692,12 @@ class RecordingState extends State<RecordingScreen> {
     _initializeHeartRateMonitor();
     _connectOnDemand();
     _database = Get.find<AppDatabase>();
+    _isLocked = false;
+    _unlockButtonIndex = 0;
+    if (_unlockKeys.isEmpty) {
+      _unlockKeys.addAll([for (var i = 0; i < _unlockChoices; ++i) GlobalKey()]);
+    }
+    _unlockKey = -2;
   }
 
   _preDispose() async {
@@ -925,7 +943,23 @@ class RecordingState extends State<RecordingScreen> {
 
     // #252 moving is in milliseconds, so 1000 multiplier is needed
     // (but for now we use elapsed because other parts use elapsed as well)
-    final averageSpeed = _elapsed > 0 ? _distance / _elapsed * DeviceDescriptor.ms2kmh : 0.0;
+    double averageSpeed = 0.0;
+    if (_elapsed > 0) {
+      // #236 smooth signal of average speeds by average over a rolling window
+      averageSpeed = _distance / _elapsed * DeviceDescriptor.ms2kmh;
+      if (_averageSpeeds.isEmpty) {
+        _averageSpeeds.addAll(
+            [for (var i = 0; i < averageSpeedSmoothingWindowSizeDefault; ++i) averageSpeed]);
+        _averageSpeedSum = averageSpeed * averageSpeedSmoothingWindowSizeDefault;
+      } else {
+        _averageSpeeds.add(averageSpeed);
+        _averageSpeedSum += averageSpeed;
+        _averageSpeedSum -= _averageSpeeds.first;
+        _averageSpeeds.removeFirst();
+        averageSpeed = _averageSpeedSum / _averageSpeeds.length;
+      }
+    }
+
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
@@ -1299,6 +1333,18 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
+  bool hitTest(GlobalKey globalKey, Offset globalPosition) {
+    final RenderObject? renderObject = globalKey.currentContext?.findRenderObject();
+    if (renderObject != null && renderObject is RenderBox) {
+      final RenderBox renderBox = renderObject;
+      final pos = renderBox.globalToLocal(globalPosition);
+      final hitTestResult = BoxHitTestResult();
+      return renderBox.hitTest(hitTestResult, position: pos);
+    }
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     const separatorHeight = 1.0;
@@ -1307,12 +1353,12 @@ class RecordingState extends State<RecordingScreen> {
     if (size.width != _mediaWidth || size.height != _mediaHeight) {
       _mediaWidth = size.width;
       _mediaHeight = size.height;
-      _landscape = _mediaWidth! > _mediaHeight!;
+      _landscape = _mediaWidth > _mediaHeight;
     }
 
     final mediaSizeMin =
-        _landscape && _twoColumnLayout ? _mediaWidth! / 2 : min(_mediaWidth!, _mediaHeight!);
-    if (_mediaSizeMin == null || (_mediaSizeMin! - mediaSizeMin).abs() > eps) {
+        _landscape && _twoColumnLayout ? _mediaWidth / 2 : min(_mediaWidth, _mediaHeight);
+    if (_mediaSizeMin < eps || (_mediaSizeMin - mediaSizeMin).abs() > eps) {
       _mediaSizeMin = mediaSizeMin;
       _sizeDefault = mediaSizeMin / 8 * _sizeAdjust;
       _measurementStyle = TextStyle(
@@ -1533,7 +1579,7 @@ class RecordingState extends State<RecordingScreen> {
     final body = _landscape && _twoColumnLayout
         ? GridView.count(
             crossAxisCount: 2,
-            childAspectRatio: _mediaWidth! / _mediaHeight! / 2,
+            childAspectRatio: _mediaWidth / _mediaHeight / 2,
             physics: const NeverScrollableScrollPhysics(),
             semanticChildCount: 2,
             children: [
@@ -1673,9 +1719,175 @@ class RecordingState extends State<RecordingScreen> {
             ),
           );
 
+    final List<Widget> menuButtons = [];
+    if (_isLocked) {
+      for (var i = 0; i < _unlockChoices; ++i) {
+        final button = i == _unlockButtonIndex
+            ? _themeManager.getGreenFabWKey(Icons.lock_open, true, true, "", 0, () {
+                setState(() {
+                  _isLocked = false;
+                });
+              }, _unlockKeys[i])
+            : _themeManager.getBlueFabWKey(Icons.adjust, true, true, "", 0, null, _unlockKeys[i]);
+        menuButtons.add(button);
+      }
+    } else {
+      menuButtons.addAll([
+        _themeManager.getTutorialFab(
+          _tutorialVisible,
+          () async {
+            setState(() {
+              _tutorialVisible = !_tutorialVisible;
+            });
+          },
+        ),
+      ]);
+
+      if (_measuring) {
+        menuButtons.add(_themeManager
+            .getGreenFab(Icons.lock_open, true, _tutorialVisible, "Lock Screen", 0, () {
+          _unlockButtonIndex = _rng.nextInt(_unlockChoices);
+          _fabKey.currentState?.close();
+          setState(() {
+            _isLocked = true;
+          });
+        }));
+      } else {
+        menuButtons.addAll([
+          _themeManager.getBlueFab(Icons.cloud_upload, true, _tutorialVisible, "Upload Workout", 8,
+              () async {
+            await _workoutUpload(false);
+          }),
+          _themeManager.getBlueFab(
+            Icons.list_alt,
+            true,
+            _tutorialVisible,
+            "Workout List",
+            0,
+            () async {
+              final hasLeaderboardData = await _database.hasLeaderboardData();
+              Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+            },
+          ),
+          _themeManager.getBlueFab(
+            Icons.battery_unknown,
+            true,
+            _tutorialVisible,
+            "Battery & Extras",
+            8,
+            () async {
+              Get.bottomSheet(
+                const BatteryStatusBottomSheet(),
+                enableDrag: false,
+              );
+            },
+          ),
+          _themeManager.getBlueFab(
+            Icons.build,
+            true,
+            _tutorialVisible,
+            "Calibration",
+            0,
+            () async {
+              if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
+                Get.snackbar("Error", "Not compatible with the calibration method");
+              } else {
+                Get.bottomSheet(
+                  const SpinDownBottomSheet(),
+                  isDismissible: false,
+                  enableDrag: false,
+                );
+              }
+            },
+          ),
+        ]);
+      }
+
+      menuButtons.addAll([
+        _themeManager.getBlueFab(
+          Icons.favorite,
+          true,
+          _tutorialVisible,
+          "HRM Pairing",
+          -10,
+          () async {
+            await Get.bottomSheet(
+              const HeartRateMonitorPairingBottomSheet(),
+              isDismissible: false,
+              enableDrag: false,
+            );
+            String hrmId = await _initializeHeartRateMonitor();
+            if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
+              _activity!.hrmId = hrmId;
+              _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true);
+              await _database.activityDao.updateActivity(_activity!);
+            }
+          },
+        ),
+        _themeManager.getBlueFab(
+          _measuring ? Icons.stop : Icons.play_arrow,
+          true,
+          _tutorialVisible,
+          "Start / Stop Workout",
+          -20,
+          () async {
+            if (_measuring) {
+              await _stopMeasurement(false);
+            } else {
+              await _startMeasurement();
+            }
+          },
+        ),
+      ]);
+    }
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: GestureDetector(
+        behavior: HitTestBehavior.deferToChild,
+        onTapUp: (details) {
+          if (!_isLocked) return;
+
+          for (var i = 0; i < _unlockChoices; ++i) {
+            if (hitTest(_unlockKeys[i], details.globalPosition)) {
+              if (_unlockKey == i && _unlockKey == _unlockButtonIndex) {
+                _fabKey.currentState?.close();
+                setState(() {
+                  _isLocked = false;
+                });
+              } else {
+                _unlockKey = -2;
+              }
+              return;
+            }
+          }
+
+          if (hitTest(_fabKey, details.globalPosition)) {
+            if (_unlockKey == -1 && _fabKey.currentState != null) {
+              if (_fabKey.currentState!.isOpen) {
+                _fabKey.currentState?.close();
+              } else {
+                _fabKey.currentState?.open();
+              }
+            }
+            return;
+          }
+        },
+        onTapDown: (details) {
+          if (!_isLocked) return;
+
+          for (var i = 0; i < _unlockChoices; ++i) {
+            if (hitTest(_unlockKeys[i], details.globalPosition)) {
+              _unlockKey = i;
+              return;
+            }
+          }
+
+          if (hitTest(_fabKey, details.globalPosition)) {
+            _unlockKey = -1;
+            return;
+          }
+        },
         onTap: _tutorialVisible
             ? () {
                 setState(() {
@@ -1684,10 +1896,10 @@ class RecordingState extends State<RecordingScreen> {
               }
             : null,
         child: OverlayTutorialScope(
-          enabled: _tutorialVisible,
-          overlayColor: Colors.green.withOpacity(.8),
+          enabled: _tutorialVisible || _isLocked,
+          overlayColor: _isLocked ? Colors.transparent : Colors.green.withOpacity(.8),
           child: AbsorbPointer(
-            absorbing: _tutorialVisible,
+            absorbing: _tutorialVisible || _isLocked,
             ignoringSemantics: true,
             child: Scaffold(
               appBar: AppBar(
@@ -1729,115 +1941,14 @@ class RecordingState extends State<RecordingScreen> {
               body: body,
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               floatingActionButton: CircularFabMenu(
-                fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+                key: _fabKey,
+                fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
+                    color: _themeManager.getAntagonistColor()),
                 fabOpenColor: _themeManager.getBlueColor(),
                 fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
                 fabCloseColor: _themeManager.getBlueColor(),
                 ringColor: _themeManager.getBlueColorInverse(),
-                children: [
-                  _themeManager.getTutorialFab(
-                    _tutorialVisible,
-                    () async {
-                      setState(() {
-                        _tutorialVisible = !_tutorialVisible;
-                      });
-                    },
-                  ),
-                  _themeManager.getBlueFab(
-                      Icons.cloud_upload, true, _tutorialVisible, "Upload Workout", 8, () async {
-                    if (_measuring) {
-                      Get.snackbar("Warning", "Cannot upload while measurement is under progress");
-                      return;
-                    }
-
-                    await _workoutUpload(false);
-                  }),
-                  _themeManager.getBlueFab(
-                    Icons.list_alt,
-                    true,
-                    _tutorialVisible,
-                    "Workout List",
-                    0,
-                    () async {
-                      if (_measuring) {
-                        Get.snackbar(
-                            "Warning", "Cannot navigate while measurement is under progress");
-                      } else {
-                        final hasLeaderboardData = await _database.hasLeaderboardData();
-                        Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
-                      }
-                    },
-                  ),
-                  _themeManager.getBlueFab(
-                    Icons.battery_unknown,
-                    true,
-                    _tutorialVisible,
-                    "Battery & Extras",
-                    8,
-                    () async {
-                      Get.bottomSheet(
-                        const BatteryStatusBottomSheet(),
-                        enableDrag: false,
-                      );
-                    },
-                  ),
-                  _themeManager.getBlueFab(
-                    Icons.build,
-                    true,
-                    _tutorialVisible,
-                    "Calibration",
-                    0,
-                    () async {
-                      if (_measuring) {
-                        Get.snackbar(
-                            "Warning", "Cannot calibrate while measurement is under progress");
-                      } else if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
-                        Get.snackbar("Error", "Not compatible with the calibration method");
-                      } else {
-                        Get.bottomSheet(
-                          const SpinDownBottomSheet(),
-                          isDismissible: false,
-                          enableDrag: false,
-                        );
-                      }
-                    },
-                  ),
-                  _themeManager.getBlueFab(
-                    Icons.favorite,
-                    true,
-                    _tutorialVisible,
-                    "HRM Pairing",
-                    -10,
-                    () async {
-                      await Get.bottomSheet(
-                        const HeartRateMonitorPairingBottomSheet(),
-                        isDismissible: false,
-                        enableDrag: false,
-                      );
-                      String hrmId = await _initializeHeartRateMonitor();
-                      if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
-                        _activity!.hrmId = hrmId;
-                        _activity!.hrmCalorieFactor =
-                            await _database.calorieFactorValue(hrmId, true);
-                        await _database.activityDao.updateActivity(_activity!);
-                      }
-                    },
-                  ),
-                  _themeManager.getBlueFab(
-                    _measuring ? Icons.stop : Icons.play_arrow,
-                    true,
-                    _tutorialVisible,
-                    "Start / Stop Workout",
-                    -20,
-                    () async {
-                      if (_measuring) {
-                        await _stopMeasurement(false);
-                      } else {
-                        await _startMeasurement();
-                      }
-                    },
-                  ),
-                ],
+                children: menuButtons,
               ),
             ),
           ),

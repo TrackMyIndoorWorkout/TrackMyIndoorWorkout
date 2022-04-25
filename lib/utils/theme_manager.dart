@@ -163,8 +163,11 @@ class ThemeManager {
     String overlayText,
     int annotationYOffset,
     VoidCallback? onPressed,
+    GlobalKey? key,
   ) {
+    key ??= GlobalKey();
     final fab = FloatingActionButton(
+      key: key,
       heroTag: null,
       child: widget,
       foregroundColor: foregroundColor,
@@ -200,6 +203,30 @@ class ThemeManager {
       overlayText,
       annotationYOffset,
       onPressed,
+      null,
+    );
+  }
+
+  Widget getIconFabWKey(
+    Color color,
+    IconData icon,
+    bool wrapInHole,
+    bool overlayEnabled,
+    String overlayText,
+    int annotationYOffset,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return _getFabCore(
+      getAntagonistColor(),
+      color,
+      Icon(icon),
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+      key,
     );
   }
 
@@ -241,6 +268,48 @@ class ThemeManager {
     );
   }
 
+  Widget getBlueFabWKey(
+    IconData icon,
+    bool wrapInHole,
+    bool overlayEnabled,
+    String overlayText,
+    int annotationYOffset,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return getIconFabWKey(
+      getBlueColor(),
+      icon,
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+      key,
+    );
+  }
+
+  Widget getGreenFabWKey(
+    IconData icon,
+    bool wrapInHole,
+    bool overlayEnabled,
+    String overlayText,
+    int annotationYOffset,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return getIconFabWKey(
+      getGreenColor(),
+      icon,
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+      key,
+    );
+  }
+
   Widget getGreenGenericFab(
     Widget widget,
     wrapInHole,
@@ -258,6 +327,7 @@ class ThemeManager {
       overlayText,
       annotationYOffset,
       onPressed,
+      null,
     );
   }
 
@@ -276,6 +346,7 @@ class ThemeManager {
       "",
       0,
       () {},
+      null,
     );
   }
 
@@ -295,6 +366,7 @@ class ThemeManager {
       overlayText,
       annotationYOffset,
       onPressed,
+      null,
     );
   }
 
