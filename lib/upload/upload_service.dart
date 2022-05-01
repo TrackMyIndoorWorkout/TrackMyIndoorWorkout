@@ -3,6 +3,8 @@ import 'package:pref/pref.dart';
 
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
+import 'google_fit/constants.dart';
+import 'google_fit/google_fit_service.dart';
 import 'strava/constants.dart';
 import 'strava/strava_service.dart';
 import 'suunto/constants.dart';
@@ -42,6 +44,12 @@ abstract class UploadService {
               ? Get.find<TrainingPeaksService>()
               : Get.put<TrainingPeaksService>(TrainingPeaksService(), permanent: true);
         }
+      case googleFitChoice:
+        {
+          return Get.isRegistered<GoogleFitService>()
+              ? Get.find<GoogleFitService>()
+              : Get.put<GoogleFitService>(GoogleFitService(), permanent: true);
+        }
       case stravaChoice:
       default:
         {
@@ -66,6 +74,10 @@ abstract class UploadService {
       case trainingPeaksChoice:
         {
           return prefService.get<String>(trainingPeaksAccessTokenTag)?.isNotEmpty ?? false;
+        }
+      case googleFitChoice:
+        {
+          return prefService.get<String>(googleFitAccessTokenTag)?.isNotEmpty ?? false;
         }
       case stravaChoice:
       default:

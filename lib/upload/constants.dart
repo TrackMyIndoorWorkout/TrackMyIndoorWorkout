@@ -5,12 +5,14 @@ const stravaChoice = "Strava";
 const suuntoChoice = "SUUNTO";
 const underArmourChoice = "MapMyFitness";
 const trainingPeaksChoice = "TrainingPeaks";
+const googleFitChoice = "GoogleFit";
 
 const List<String> portalNames = [
   stravaChoice,
   suuntoChoice,
   underArmourChoice,
   trainingPeaksChoice,
+  googleFitChoice,
 ];
 
 const List<String> portalLogos = [
@@ -18,12 +20,13 @@ const List<String> portalLogos = [
   "suunto.svg",
   "under-armour-2line.svg",
   "training-peaks-2line.svg",
+  "google-fit.svg",
 ];
 
 class PortalChoiceDescriptor {
   final String name;
   final String assetName;
-  final Color color;
+  final Color? color;
   final double heightMultiplier;
 
   PortalChoiceDescriptor(this.name, this.assetName, this.color, this.heightMultiplier);
@@ -53,6 +56,12 @@ List<PortalChoiceDescriptor> getPortalChoices(ThemeManager themeManager) {
       portalNames[3],
       "assets/${portalLogos[3]}",
       themeManager.getBlueColor(),
+      1.5,
+    ),
+    PortalChoiceDescriptor(
+      portalNames[4],
+      "assets/${portalLogos[4]}",
+      null,
       1.5,
     ),
   ];

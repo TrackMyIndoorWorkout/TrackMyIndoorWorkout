@@ -3,6 +3,7 @@ import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../devices/device_map.dart';
 import '../../preferences/generic.dart';
 import '../../upload/constants.dart';
+import '../../upload/google_fit/constants.dart';
 import '../../upload/strava/constants.dart';
 import '../../upload/training_peaks/constants.dart';
 import '../../upload/under_armour/constants.dart';
@@ -182,6 +183,8 @@ class Activity {
         return "$underArmourWorkoutUrlBase$uaWorkoutId";
       case trainingPeaksChoice:
         return trainingPeaksPortalUrl;
+      case googleFitChoice:
+        return googleFitWebUrl;
       case stravaChoice:
       default:
         return stravaUrl;

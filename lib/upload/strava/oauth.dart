@@ -347,7 +347,6 @@ abstract class Auth {
     var answer = StravaToken();
 
     debugPrint('Entering getStravaToken!!');
-    // Put your own secret in secret.dart
     final params =
         '?client_id=$clientID&client_secret=$secret&code=$code&grant_type=authorization_code';
     final urlToken = tokenEndpoint + params;
