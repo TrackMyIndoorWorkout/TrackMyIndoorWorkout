@@ -38,6 +38,9 @@ const runningCadenceMeasurementUuid = '2a53';
 const precorServiceUuid = 'ee07';
 const precorMeasurementUuid = 'e01d';
 
+const schwinnX70ServiceUuid = '8980';
+const schwinnX70MeasurementUuid = '82a0';
+
 const userDataServiceUuid = '181c';
 const weightCharacteristicUuid = '2a98';
 const weightSuccessOpcode = 0x13;

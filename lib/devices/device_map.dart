@@ -8,6 +8,7 @@ import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/precor_spinner_chrono_power.dart';
 import 'device_descriptors/rower_device_descriptor.dart';
 import 'device_descriptors/schwinn_ac_performance_plus.dart';
+import 'device_descriptors/schwinn_x70.dart';
 import 'device_descriptors/treadmill_device_descriptor.dart';
 
 const mPowerImportDeviceId = "MPowerImport";
@@ -16,6 +17,7 @@ const schwinnICBikeFourCC = "SIC4";
 const bowflexC7BikeFourCC = "BFC7";
 const schwinnUprightBikeFourCC = "S130";
 const schwinnACPerfPlusFourCC = "SAP+";
+const schwinnX70BikeFourCC = "SX70"; // 170, 270, 570u
 const matrixBikeFourCC = "MxBk";
 const stagesSB20FourCC = "Stg2";
 const yesoulS3FourCC = "ysS3";
@@ -62,6 +64,7 @@ Map<String, DeviceDescriptor> deviceMap = {
     manufacturerFitId: nautilusFitId,
     model: "SCH BIKE",
   ),
+  schwinnX70BikeFourCC: SchwinnX70(),
   stagesSB20FourCC: IndoorBikeDeviceDescriptor(
     fourCC: stagesSB20FourCC,
     vendorName: "Stages Cycling",
