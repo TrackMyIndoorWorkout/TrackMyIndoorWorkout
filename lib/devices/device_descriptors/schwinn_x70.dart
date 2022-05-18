@@ -2,6 +2,7 @@ import '../../export/fit/fit_manufacturer.dart';
 import '../../utils/constants.dart';
 import '../device_map.dart';
 import '../gatt_constants.dart';
+import '../metric_descriptors/six_byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
@@ -15,19 +16,15 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor {
           vendorName: "Schwinn",
           modelName: "SCHWINN 170/270",
           namePrefixes: ["SCHWINN 170", "SCHWINN 270", "SCHWINN 570"],
-          manufacturerPrefix: "Nautilus",
+          manufacturerPrefix: "Nautilus", // "SCHWINN 170/270"
           manufacturerFitId: nautilusFitId,
-          model: "1",
+          model: "",
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
-          canMeasureHeartRate: true,
-          heartRateByteIndex: 5,
+          canMeasureHeartRate: false,
           timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4),
-          caloriesMetric: ShortMetricDescriptor(lsb: 13, msb: 14),
-          speedMetric: ShortMetricDescriptor(lsb: 6, msb: 7, divider: 100.0),
-          powerMetric: ShortMetricDescriptor(lsb: 17, msb: 18),
-          cadenceMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 10.0),
-          distanceMetric: ThreeByteMetricDescriptor(lsb: 10, msb: 12),
+          caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15),
+          cadenceMetric: ThreeByteMetricDescriptor(lsb: 4, msb: 6, divider: 1.0),
         );
 
   @override
@@ -46,4 +43,9 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor {
 
   @override
   void stopWorkout() {}
+
+  double? getCadence(List<int> data) {
+    //
+    return cadenceMetric?.getMeasurementValue(data);
+  }
 }
