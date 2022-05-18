@@ -1,27 +1,29 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/metric_descriptors/three_byte_metric_descriptor.dart';
+import 'package:track_my_indoor_exercise/devices/metric_descriptors/four_byte_metric_descriptor.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
-  group('optional ThreeByteMetricDescriptor returns null if the value is max', () {
+  group('optional FourByteMetricDescriptor returns null if the value is max', () {
     final rnd = Random();
     for (var divider in getRandomDoubles(repetition, 1024, rnd)) {
       final len = rnd.nextInt(99) + 5;
       final data = getRandomInts(len, maxUint8, rnd);
       final larger = rnd.nextBool();
-      final lsbLocation = rnd.nextInt(len - 2) + (larger ? 0 : 2);
-      final msbLocation = larger ? lsbLocation + 2 : lsbLocation - 2;
+      final lsbLocation = rnd.nextInt(len - 3) + (larger ? 0 : 3);
+      final msbLocation = larger ? lsbLocation + 3 : lsbLocation - 3;
+      final dir = larger ? 1 : -1;
       data[lsbLocation] = maxByte;
-      data[(lsbLocation + msbLocation) ~/ 2] = maxByte;
+      data[lsbLocation + dir] = maxByte;
+      data[msbLocation - dir] = maxByte;
       data[msbLocation] = maxByte;
       divider = rnd.nextDouble() * 4;
       const expected = 0.0;
 
       test("$divider -> $expected", () async {
-        final desc = ThreeByteMetricDescriptor(
+        final desc = FourByteMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: true);
 
         expect(desc.getMeasurementValue(data), null);
@@ -35,23 +37,27 @@ void main() {
       final len = lenMinusFive + 5;
       final data = getRandomInts(len, maxUint8, rnd);
       final larger = rnd.nextBool();
-      final lsbLocation = rnd.nextInt(len - 2) + (larger ? 0 : 2);
-      final msbLocation = larger ? lsbLocation + 2 : lsbLocation - 2;
-      final midLocation = (lsbLocation + msbLocation) ~/ 2;
+      final lsbLocation = rnd.nextInt(len - 3) + (larger ? 0 : 3);
+      final msbLocation = larger ? lsbLocation + 3 : lsbLocation - 3;
+      final dir = larger ? 1 : -1;
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
       final expected = (optional &&
               data[lsbLocation] == maxByte &&
-              data[midLocation] == maxByte &&
+              data[lsbLocation + dir] == maxByte &&
+              data[msbLocation - dir] == maxByte &&
               data[msbLocation] == maxByte)
           ? 0
-          : (data[lsbLocation] + maxUint8 * (data[midLocation] + maxUint8 * data[msbLocation])) /
+          : (data[lsbLocation] +
+                  maxUint8 *
+                      (data[lsbLocation + dir] +
+                          maxUint8 * (data[msbLocation - dir] + maxUint8 * data[msbLocation]))) /
               divider;
 
       test(
-          "(${data[lsbLocation]}, ${data[midLocation]}, ${data[msbLocation]}) / $divider -> $expected",
+          "(${data[lsbLocation]}, ${data[lsbLocation + dir]}, ${data[msbLocation - dir]}, ${data[msbLocation]}) / $divider -> $expected",
           () async {
-        final desc = ThreeByteMetricDescriptor(
+        final desc = FourByteMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);
 
         expect(desc.getMeasurementValue(data), closeTo(expected, eps));
