@@ -22,8 +22,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor {
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
           canMeasureHeartRate: false,
-          timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4),
-          caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15),
+          timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4, divider: 1024.0),
+          caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 256.0),
           cadenceMetric: ThreeByteMetricDescriptor(lsb: 4, msb: 6, divider: 1.0),
         );
 
