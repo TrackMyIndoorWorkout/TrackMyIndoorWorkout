@@ -21,6 +21,7 @@ const maxByte = 255;
 const maxUint16 = 65536;
 const maxUint24 = maxUint8 * maxUint16;
 const maxUint32 = maxUint16 * maxUint16;
+const maxUint48 = maxUint24 * maxUint24;
 const degToFitGps = 11930464.711111111; // 2 ^ 32 / 360
 const fontFamily = "RobotoMono";
 const fontSizeFactor = 1.2;
