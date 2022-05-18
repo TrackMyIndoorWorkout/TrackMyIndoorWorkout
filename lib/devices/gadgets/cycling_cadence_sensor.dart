@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import '../../utils/constants.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../gatt_constants.dart';
 import 'cadence_data.dart';
@@ -11,8 +12,8 @@ class CyclingCadenceSensor extends IntegerSensor {
   static const int eventTimeOverflow = 64; // Overflows every 64 seconds
 
   // Secondary (Crank cadence) metrics
-  ShortMetricDescriptor? revolutionsMetric;
-  ShortMetricDescriptor? revolutionTime;
+  MetricDescriptor? revolutionsMetric;
+  MetricDescriptor? revolutionTime;
   ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
 
   CyclingCadenceSensor(device)
