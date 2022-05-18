@@ -6,6 +6,7 @@ const rowerDeviceUuid = '2ad1';
 const crossTrainerUuid = '2ace';
 const stairClimberUuid = '2ad0';
 const stepClimberUuid = '2acf';
+/*
 const machineFeatureUuid = '2acc';
 const deviceNameUuid = '2a00';
 const appearanceUuid = '2a01';
@@ -14,6 +15,7 @@ const serialNumberUuid = '2a25';
 const firmwareRevisionUuid = '2a26';
 const hardwareRevisionUuid = '2a27';
 const softwareRevisionUuid = '2a28';
+*/
 const manufacturerNameUuid = '2a29';
 
 const ftmsSportCharacteristics = [treadmillUuid, indoorBikeUuid, rowerDeviceUuid, crossTrainerUuid];
