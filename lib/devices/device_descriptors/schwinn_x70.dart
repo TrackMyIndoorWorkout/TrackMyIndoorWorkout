@@ -25,6 +25,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor {
           timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4, divider: 1024.0),
           caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 256.0),
           cadenceMetric: ThreeByteMetricDescriptor(lsb: 4, msb: 6, divider: 1.0),
+          // TODO: resistance level metric for power calculations
         );
 
   @override
@@ -44,8 +45,9 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor {
   @override
   void stopWorkout() {}
 
+  @override
   double? getCadence(List<int> data) {
-    //
+    // TODO: convert from revolution to cadence
     return cadenceMetric?.getMeasurementValue(data);
   }
 }
