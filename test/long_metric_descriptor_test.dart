@@ -8,22 +8,18 @@ import 'utils.dart';
 void main() {
   group('optional LongMetricDescriptor returns null if the value is max', () {
     final rnd = Random();
-    getRandomDoubles(repetition, 1024, rnd).forEach((divider) {
+    for (var divider in getRandomDoubles(repetition, 1024, rnd)) {
       final len = rnd.nextInt(99) + 6;
       final data = getRandomInts(len, maxUint8, rnd);
-      final lsbLocation = rnd.nextInt(len);
-      final larger = lsbLocation > 2 ? (lsbLocation < len - 3 ? rnd.nextBool() : false) : true;
+      final larger = rnd.nextBool();
+      final lsbLocation = rnd.nextInt(len - 3) + (larger ? 0 : 3);
       final msbLocation = larger ? lsbLocation + 3 : lsbLocation - 3;
+      final dir = larger ? 1 : -1;
       data[lsbLocation] = maxByte;
-      if (larger) {
-        data[lsbLocation + 1] = maxByte;
-        data[lsbLocation + 2] = maxByte;
-      } else {
-        data[msbLocation + 1] = maxByte;
-        data[msbLocation + 2] = maxByte;
-      }
+      data[lsbLocation + dir] = maxByte;
+      data[msbLocation - dir] = maxByte;
       data[msbLocation] = maxByte;
-      final divider = rnd.nextDouble() * 4;
+      divider = rnd.nextDouble() * 4;
       const expected = 0.0;
 
       test("$divider -> $expected", () async {
@@ -32,7 +28,7 @@ void main() {
 
         expect(desc.getMeasurementValue(data), null);
       });
-    });
+    }
   });
 
   group('LongMetricDescriptor calculates measurement as expected', () {
@@ -40,27 +36,26 @@ void main() {
     for (var lenMinusSix in getRandomInts(repetition, 99, rnd)) {
       final len = lenMinusSix + 6;
       final data = getRandomInts(len, maxUint8, rnd);
-      final lsbLocation = rnd.nextInt(len);
-      final larger = lsbLocation > 2 ? (lsbLocation < len - 3 ? rnd.nextBool() : false) : true;
-      final midLocation1 = larger ? lsbLocation + 1 : lsbLocation - 1;
-      final midLocation2 = larger ? lsbLocation + 2 : lsbLocation - 2;
+      final larger = rnd.nextBool();
+      final lsbLocation = rnd.nextInt(len - 3) + (larger ? 0 : 3);
       final msbLocation = larger ? lsbLocation + 3 : lsbLocation - 3;
+      final dir = larger ? 1 : -1;
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
       final expected = (optional &&
-              data[lsbLocation] == maxByte &&
-              data[midLocation1] == maxByte &&
-              data[midLocation2] == maxByte &&
-              data[msbLocation] == maxByte)
+          data[lsbLocation] == maxByte &&
+          data[lsbLocation + dir] == maxByte &&
+          data[msbLocation - dir] == maxByte &&
+          data[msbLocation] == maxByte)
           ? 0
           : (data[lsbLocation] +
-                  maxUint8 *
-                      (data[midLocation1] +
-                          maxUint8 * (data[midLocation2] + maxUint8 * data[msbLocation]))) /
-              divider;
+          maxUint8 *
+              (data[lsbLocation + dir] +
+                  maxUint8 * (data[msbLocation - dir] + maxUint8 * data[msbLocation]))) /
+          divider;
 
       test(
-          "($lsbLocation $msbLocation) ${data[lsbLocation]} ${data[msbLocation]} $divider -> $expected",
+          "(${data[lsbLocation]}, ${data[lsbLocation + dir]}, ${data[msbLocation - dir]}, ${data[msbLocation]}) / $divider -> $expected",
           () async {
         final desc = LongMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);
