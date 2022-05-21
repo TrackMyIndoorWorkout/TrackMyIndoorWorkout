@@ -43,16 +43,16 @@ void main() {
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
       final expected = (optional &&
-          data[lsbLocation] == maxByte &&
-          data[lsbLocation + dir] == maxByte &&
-          data[msbLocation - dir] == maxByte &&
-          data[msbLocation] == maxByte)
+              data[lsbLocation] == maxByte &&
+              data[lsbLocation + dir] == maxByte &&
+              data[msbLocation - dir] == maxByte &&
+              data[msbLocation] == maxByte)
           ? 0
           : (data[lsbLocation] +
-          maxUint8 *
-              (data[lsbLocation + dir] +
-                  maxUint8 * (data[msbLocation - dir] + maxUint8 * data[msbLocation]))) /
-          divider;
+                  maxUint8 *
+                      (data[lsbLocation + dir] +
+                          maxUint8 * (data[msbLocation - dir] + maxUint8 * data[msbLocation]))) /
+              divider;
 
       test(
           "(${data[lsbLocation]}, ${data[lsbLocation + dir]}, ${data[msbLocation - dir]}, ${data[msbLocation]}) / $divider -> $expected",
