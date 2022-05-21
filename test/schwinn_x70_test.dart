@@ -36,11 +36,12 @@ void main() {
 
   group('Schwinn 270 interprets Data properly', () {
     for (final testPair in [
+      // 15:34:57.050
       TestPair(
         data: [17, 32, 0, 160, 5, 0, 0, 226, 111, 253, 76, 96, 17, 0, 0, 0, 4],
         record: RecordWithSport(
           distance: null,
-          elapsed: 1,
+          elapsed: 63,
           calories: 4448,
           power: null,
           speed: null,
@@ -50,13 +51,15 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          elapsedMillis: 63358,
         ),
       ),
+      // 15:35:08.115
       TestPair(
         data: [17, 32, 0, 96, 12, 0, 0, 224, 114, 42, 187, 92, 44, 0, 0, 0, 4],
         record: RecordWithSport(
           distance: null,
-          elapsed: 3,
+          elapsed: 10,
           calories: 11356,
           power: null,
           speed: null,
@@ -66,13 +69,15 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          elapsedMillis: 10611,
         ),
       ),
+      // 15:35:20.899
       TestPair(
         data: [17, 32, 0, 96, 19, 0, 0, 12, 121, 94, 148, 75, 72, 0, 0, 0, 4],
         record: RecordWithSport(
           distance: null,
-          elapsed: 4,
+          elapsed: 23,
           calories: 18507,
           power: null,
           speed: null,
@@ -82,6 +87,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          elapsedMillis: 23618,
         ),
       ),
     ]) {
@@ -109,6 +115,7 @@ void main() {
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.elapsedMillis, testPair.record.elapsedMillis);
       });
     }
   });
@@ -119,7 +126,7 @@ void main() {
         data: [17, 32, 0, 0, 245, 248, 0, 0, 32, 101, 33, 102, 0, 0, 0, 0, 7],
         record: RecordWithSport(
           distance: null,
-          elapsed: 61,
+          elapsed: 25,
           calories: 102,
           power: null,
           speed: null,
@@ -129,13 +136,14 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          elapsedMillis: 25281,
         ),
       ),
       TestPair(
         data: [17, 32, 0, 0, 127, 251, 0, 0, 89, 135, 112, 164, 139, 8, 0, 0, 10],
         record: RecordWithSport(
           distance: null,
-          elapsed: 31,
+          elapsed: 33,
           calories: 560036,
           power: null,
           speed: null,
@@ -145,13 +153,14 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          elapsedMillis: 33836,
         ),
       ),
       TestPair(
         data: [17, 32, 0, 64, 250, 253, 0, 0, 110, 62, 64, 109, 40, 17, 0, 0, 11],
         record: RecordWithSport(
           distance: null,
-          elapsed: 62,
+          elapsed: 15,
           calories: 1124461,
           power: null,
           speed: null,
@@ -161,6 +170,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          elapsedMillis: 15607,
         ),
       ),
     ]) {
@@ -188,6 +198,7 @@ void main() {
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.elapsedMillis, testPair.record.elapsedMillis);
       });
     }
   });
