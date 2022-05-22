@@ -62,6 +62,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin {
     // TODO: convert power form calories
     final elapsed = getTime(data);
     final elapsedMillis = ((elapsed ?? 0.0) * 1000.0).toInt();
+    addCadenceData(elapsed, getCadence(data)?.toInt());
     final record = RecordWithSport(
       distance: getDistance(data),
       elapsed: elapsed?.toInt(),

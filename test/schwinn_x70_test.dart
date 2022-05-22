@@ -45,8 +45,8 @@ void main() {
           calories: 4448,
           power: null,
           speed: null,
-          cadence: 5,
-          heartRate: 0,
+          cadence: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -63,8 +63,8 @@ void main() {
           calories: 11356,
           power: null,
           speed: null,
-          cadence: 12,
-          heartRate: 0,
+          cadence: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -81,8 +81,8 @@ void main() {
           calories: 18507,
           power: null,
           speed: null,
-          cadence: 19,
-          heartRate: 0,
+          cadence: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -123,6 +123,7 @@ void main() {
   group('Schwinn 570u interprets Data properly', () {
     for (final testPair in [
       TestPair(
+        // 18:56:52.831
         data: [17, 32, 0, 0, 245, 248, 0, 0, 32, 101, 33, 102, 0, 0, 0, 0, 7],
         record: RecordWithSport(
           distance: null,
@@ -130,8 +131,8 @@ void main() {
           calories: 102,
           power: null,
           speed: null,
-          cadence: 63733,
-          heartRate: 0,
+          cadence: 2520,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -139,6 +140,7 @@ void main() {
           elapsedMillis: 25281,
         ),
       ),
+      // 19:05:28.798
       TestPair(
         data: [17, 32, 0, 0, 127, 251, 0, 0, 89, 135, 112, 164, 139, 8, 0, 0, 10],
         record: RecordWithSport(
@@ -147,8 +149,8 @@ void main() {
           calories: 560036,
           power: null,
           speed: null,
-          cadence: 64383,
-          heartRate: 0,
+          cadence: 1902,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -156,6 +158,44 @@ void main() {
           elapsedMillis: 33836,
         ),
       ),
+      // 19:05:34.035
+      TestPair(
+        data: [17, 32, 0, 0, 133, 251, 0, 128, 63, 156, 32, 243, 160, 8, 0, 0, 10],
+        record: RecordWithSport(
+          distance: null,
+          elapsed: 39,
+          calories: 565491,
+          power: null,
+          speed: null,
+          cadence: 1648,
+          heartRate: null,
+          pace: null,
+          sport: ActivityType.ride,
+          caloriesPerHour: null,
+          caloriesPerMinute: null,
+          elapsedMillis: 39061,
+        ),
+      ),
+      // Glitch happened here
+      // 19:06:20.093
+      TestPair(
+        data: [17, 32, 0, 64, 133, 251, 0, 0, 135, 82, 128, 190, 161, 8, 0, 0, 10],
+        record: RecordWithSport(
+          distance: null,
+          elapsed: 20,
+          calories: 565694,
+          power: null,
+          speed: null,
+          cadence: 3120,
+          heartRate: null,
+          pace: null,
+          sport: ActivityType.ride,
+          caloriesPerHour: null,
+          caloriesPerMinute: null,
+          elapsedMillis: 20631,
+        ),
+      ),
+      // 19:14:42.015
       TestPair(
         data: [17, 32, 0, 64, 250, 253, 0, 0, 110, 62, 64, 109, 40, 17, 0, 0, 11],
         record: RecordWithSport(
@@ -164,8 +204,8 @@ void main() {
           calories: 1124461,
           power: null,
           speed: null,
-          cadence: 65018,
-          heartRate: 0,
+          cadence: 4165,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -178,6 +218,7 @@ void main() {
       test("$sum", () async {
         final bike = deviceMap[schwinnX70BikeFourCC]!;
         expect(bike.isDataProcessable(testPair.data), true);
+        bike.stopWorkout();
 
         final record = bike.wrappedStubRecord(testPair.data)!;
 
