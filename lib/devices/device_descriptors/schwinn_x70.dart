@@ -2,6 +2,7 @@ import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../device_map.dart';
+import '../gadgets/cadence_mixin.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
@@ -10,9 +11,7 @@ import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
 
-const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
-
-class SchwinnX70 extends FixedLayoutDeviceDescriptor {
+class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin {
   MetricDescriptor? resistanceMetric;
 
   SchwinnX70()
@@ -34,6 +33,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor {
           cadenceMetric: ThreeByteMetricDescriptor(lsb: 4, msb: 6, divider: 1.0),
         ) {
     resistanceMetric = ByteMetricDescriptor(lsb: 16);
+    initCadence(10, 64, maxUint24);
   }
 
   @override
@@ -47,41 +47,31 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor {
     for (int i = 0; i < measurementPrefix.length; i++) {
       if (data[i] != measurementPrefix[i]) return false;
     }
+
     return true;
   }
 
   @override
-  void stopWorkout() {}
-
-  @override
-  double? getCadence(List<int> data) {
-    // TODO: convert from revolution to cadence
-    return cadenceMetric?.getMeasurementValue(data);
-  }
-
-  @override
-  double? getCalories(List<int> data) {
-    // TODO: convert power form calories
-    return caloriesMetric?.getMeasurementValue(data);
+  void stopWorkout() {
+    clearCadenceData();
   }
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
+    // TODO: convert from revolution to cadence
+    // TODO: convert power form calories
     final elapsed = getTime(data);
+    final elapsedMillis = ((elapsed ?? 0.0) * 1000.0).toInt();
     final record = RecordWithSport(
       distance: getDistance(data),
       elapsed: elapsed?.toInt(),
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
-      cadence: getCadence(data)?.toInt(),
-      heartRate: getHeartRate(data)?.toInt(),
+      cadence: computeCadence(),
+      // heartRate: getHeartRate(data)?.toInt(),
       sport: defaultSport,
-    );
-
-    if (testing) {
-      record.elapsedMillis = ((elapsed ?? 0.0) * 1000.0).toInt();
-    }
+    )..elapsedMillis = elapsedMillis;
 
     return record;
   }
