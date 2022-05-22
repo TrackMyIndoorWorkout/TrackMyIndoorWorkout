@@ -70,7 +70,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin {
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
       cadence: computeCadence(),
-      // heartRate: getHeartRate(data)?.toInt(),
+      heartRate: getHeartRate(data)?.toInt(),
       sport: defaultSport,
     )..elapsedMillis = elapsedMillis;
 
