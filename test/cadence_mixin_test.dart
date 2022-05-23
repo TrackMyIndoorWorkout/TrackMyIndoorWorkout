@@ -49,7 +49,9 @@ void main() {
       final deltaRevolutions = getRandomInts(len, 100, rnd);
       final timeSum = deltaTimes.sum;
       final revolutionSum = deltaRevolutions.sum;
-      test("len $len, 0. (${deltaTimes.first}, ${deltaRevolutions.first}) $len. ($timeSum, $revolutionSum)", () async {
+      test(
+          "len $len, 0. (${deltaTimes.first}, ${deltaRevolutions.first}) $len. ($timeSum, $revolutionSum)",
+          () async {
         final cadenceMixin = CadenceMixin();
         var cumulativeTime = 0.0;
         var cumulativeRevolution = 0;
@@ -60,7 +62,8 @@ void main() {
         }
 
         expect(cadenceMixin.cadenceData.length, len);
-        expect(cadenceMixin.computeCadence(), (revolutionSum - deltaRevolutions.first) ~/ (timeSum - deltaTimes.first));
+        expect(cadenceMixin.computeCadence(),
+            (revolutionSum - deltaRevolutions.first) ~/ (timeSum - deltaTimes.first));
       });
     }
   });
