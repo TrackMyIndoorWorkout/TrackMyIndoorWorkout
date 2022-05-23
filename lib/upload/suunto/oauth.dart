@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'constants.dart';
 import 'suunto_token.dart';
@@ -103,7 +104,7 @@ abstract class Auth {
 
     StreamSubscription? sub;
 
-    launch(oAuth2Url, forceWebView: false, forceSafariVC: false, enableJavaScript: true);
+    launchUrlString(oAuth2Url);
 
     //--------  NOT working yet on web
     debugPrint('Running on iOS or Android');
@@ -124,7 +125,7 @@ abstract class Auth {
 
         debugPrint('code $code, error $error');
 
-        closeWebView();
+        closeInAppWebView();
         onCodeReceived.add(code);
 
         debugPrint('Got the new code: $code');

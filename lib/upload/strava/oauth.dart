@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'strava_status_code.dart';
 import 'constants.dart';
@@ -122,11 +123,7 @@ abstract class Auth {
     StreamSubscription? sub;
 
     // closeWebView();
-    launch(reqAuth,
-        forceWebView: false,
-        // forceWebView: true,
-        forceSafariVC: false,
-        enableJavaScript: true);
+    launchUrlString(reqAuth);
 
     //--------  NOT working yet on web
     if (kIsWeb) {
@@ -158,7 +155,7 @@ abstract class Auth {
 
           debugPrint('code $code, error $error');
 
-          closeWebView();
+          closeInAppWebView();
           onCodeReceived.add(code);
 
           debugPrint('Got the new code: $code');
