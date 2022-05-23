@@ -19,7 +19,6 @@ void main() {
     getRandomInts(smallRepetition, 400, rnd).forEach((calorieBase) {
       final calorie = calorieBase + 100;
       test('$calorie', () async {
-        await initPrefServiceForTest();
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final equipment = FitnessEquipment(
           descriptor: descriptor,
@@ -44,7 +43,6 @@ void main() {
     getRandomInts(smallRepetition, 500, rnd).forEach((calorie) {
       calorie++;
       test('$calorie', () async {
-        await initPrefServiceForTest();
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final equipment = FitnessEquipment(
           descriptor: descriptor,
@@ -78,7 +76,6 @@ void main() {
     final rnd = Random();
     getRandomInts(smallRepetition, 500, rnd).forEach((calorie) {
       test('$calorie', () async {
-        await initPrefServiceForTest();
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final equipment = FitnessEquipment(
           descriptor: descriptor,
@@ -117,7 +114,6 @@ void main() {
       final hrBasedCalories = rnd.nextBool();
       const seconds = 60;
       test('$calPerHour $powerFactor $calorieFactor', () async {
-        await initPrefServiceForTest();
         final oneMinuteAgo = DateTime.now().subtract(const Duration(seconds: seconds));
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
@@ -173,7 +169,6 @@ void main() {
       final hrBasedCalories = rnd.nextBool();
       final power = ((150 + pow) / jToKCal).floor();
       test('$power', () async {
-        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
@@ -227,7 +222,6 @@ void main() {
       final hrmCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final hrBasedCalories = rnd.nextBool();
       test('$calories', () async {
-        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
@@ -280,7 +274,6 @@ void main() {
       final hrmCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final hrBasedCalories = rnd.nextBool();
       test('$speed', () async {
-        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
@@ -331,7 +324,6 @@ void main() {
       final hrmCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
       final hrBasedCalories = rnd.nextBool();
       test('$distance', () async {
-        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
@@ -396,7 +388,6 @@ void main() {
       final calories = (rnd.nextDouble() * 1000.0).round();
 
       test('$distance $calories $speed', () async {
-        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
@@ -470,7 +461,6 @@ void main() {
       final calories = (rnd.nextDouble() * 1000.0).round();
 
       test('$distance $calories $speed', () async {
-        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
@@ -547,7 +537,6 @@ void main() {
       final calories = (rnd.nextDouble() * 1000.0).round() + 100;
 
       test('$distance $calories $speed', () async {
-        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(
@@ -614,7 +603,6 @@ void main() {
       final deltaDistance = rnd.nextDouble() * 20.0 + 5.0;
 
       test('$distance $calories $speed', () async {
-        await initPrefServiceForTest();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = deviceMap[schwinnICBikeFourCC]!;
         final activity = Activity(

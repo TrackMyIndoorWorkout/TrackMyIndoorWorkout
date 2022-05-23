@@ -80,9 +80,7 @@ class CSVImporter with PowerSpeedMixin {
   bool _migration = false;
   int _version = csvVersion;
 
-  CSVImporter(this.start) {
-    initPower2SpeedConstants();
-  }
+  CSVImporter(this.start);
 
   bool _findLine(String lead) {
     while (_linePointer < _lines.length && !_lines[_linePointer].startsWith(lead)) {
@@ -93,6 +91,7 @@ class CSVImporter with PowerSpeedMixin {
   }
 
   Future<Activity?> import(String csv, SetProgress setProgress) async {
+    await initPower2SpeedConstants();
     LineSplitter lineSplitter = const LineSplitter();
     _lines = lineSplitter.convert(csv);
     if (_lines.length < 20) {

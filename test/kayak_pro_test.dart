@@ -4,8 +4,6 @@ import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
-import 'utils.dart';
-
 class TestPair {
   final List<int> data;
   final RecordWithSport record;
@@ -27,7 +25,6 @@ void main() {
     const lsb = 44;
     const msb = 9;
     const flag = maxUint8 * msb + lsb;
-    await initPrefServiceForTest();
     rower.stopWorkout();
 
     rower.processFlag(flag);
@@ -171,7 +168,6 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        await initPrefServiceForTest();
         final rower = deviceMap[kayakProGenesisPortFourCC]!;
         rower.initFlag();
         expect(rower.isDataProcessable(testPair.data), true);

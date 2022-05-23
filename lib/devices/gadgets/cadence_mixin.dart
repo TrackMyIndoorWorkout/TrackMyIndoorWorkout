@@ -65,16 +65,16 @@ class CadenceMixin {
   }
 
   int computeCadence() {
-    if (cadenceData.isEmpty) {
+    if (cadenceData.length <= 1) {
       return 0;
     }
 
     final firstData = cadenceData.first;
-    if (cadenceData.length == 1) {
-      return firstData.revolutions ~/ firstData.time;
+    final lastData = cadenceData.last;
+    if ((lastData.time - firstData.time).abs() < displayEps) {
+      return 0;
     }
 
-    final lastData = cadenceData.last;
     return (lastData.revolutions - firstData.revolutions) ~/ (lastData.time - firstData.time);
   }
 

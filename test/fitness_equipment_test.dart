@@ -4,15 +4,16 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 import 'fitness_equipment_test.mocks.dart';
-import 'utils.dart';
 
 @GenerateMocks([BluetoothDevice, BluetoothService, BluetoothCharacteristic])
 main() {
   setUpAll(() async {
     await initPrefServiceForTest();
   });
+
   group('discover', () {
     BluetoothService _mockBluetoothService(
         {required String serviceUid,

@@ -62,8 +62,12 @@ void main() {
         }
 
         expect(cadenceMixin.cadenceData.length, len);
-        expect(cadenceMixin.computeCadence(),
-            (revolutionSum - deltaRevolutions.first) ~/ (timeSum - deltaTimes.first));
+        final cadence = cadenceMixin.computeCadence();
+        if (len == 1) {
+          expect(cadence, 0);
+        } else {
+          expect(cadence, (revolutionSum - deltaRevolutions.first) ~/ (timeSum - deltaTimes.first));
+        }
       });
     }
   });

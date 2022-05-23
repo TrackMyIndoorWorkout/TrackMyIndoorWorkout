@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 import '../preferences/athlete_body_weight.dart';
 import 'constants.dart';
@@ -21,7 +22,11 @@ class PowerSpeedMixin {
   static double fRolling = 0.0;
   static final Map<int, double> _velocityForPowerDict = <int, double>{};
 
-  void initPower2SpeedConstants() {
+  Future<void> initPower2SpeedConstants() async {
+    if (testing) {
+      await initPrefServiceForTest();
+    }
+
     final prefService = Get.find<BasePrefService>();
     final bikeWeightNewest = prefService.get<int>(athleteBodyWeightIntTag) ?? bikerWeightDefault;
     if (bikeWeightNewest != bikerWeight) {

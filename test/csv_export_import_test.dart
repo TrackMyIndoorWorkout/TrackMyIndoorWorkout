@@ -15,6 +15,7 @@ import 'package:track_my_indoor_exercise/persistence/database.dart';
 import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'database_utils.dart';
 import 'utils.dart';
 

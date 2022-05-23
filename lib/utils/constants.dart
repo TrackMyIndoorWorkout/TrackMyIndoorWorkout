@@ -1,3 +1,5 @@
+const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
+
 const eps = 1e-6;
 const displayEps = 1e-4;
 const minInit = 10000;

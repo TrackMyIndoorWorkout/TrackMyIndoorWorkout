@@ -8,8 +8,6 @@ import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'runn_rsc_test.mocks.dart';
 
-import 'utils.dart';
-
 class TestPair {
   final List<int> data;
   final RecordWithSport record;
@@ -30,7 +28,6 @@ void main() {
   });
 
   test('Runn RSC Device interprets flags properly', () async {
-    await initPrefServiceForTest();
     final runnRsc = RunningCadenceSensor(MockBluetoothDevice(), 1.0);
 
     final canProcess = runnRsc.canMeasurementProcessed(sampleData);
@@ -62,7 +59,6 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        await initPrefServiceForTest();
         final runnRsc = RunningCadenceSensor(MockBluetoothDevice(), 1.0);
 
         final record = runnRsc.processMeasurement(testPair.data);
