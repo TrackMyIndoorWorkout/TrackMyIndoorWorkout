@@ -9,11 +9,14 @@ environment:
   flutter: ">=3.0.1"
 
 dependencies:
-  assorted_layout_widgets: ^5.5.0
+  assorted_layout_widgets: ^6.0.0
   bluetooth_enable:
     git:
       url: https://github.com/CsabaConsulting/bluetooth_enable.git
-  datetime_picker_formfield: ^2.0.0
+  datetime_picker_formfield:
+    git:
+      url: https://github.com/tainanfochesatto/datetime_picker_formfield.git
+      ref: fix-widgets-binding-warning
   device_info: ^2.0.3
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
@@ -36,7 +39,7 @@ dependencies:
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
-  overlay_tutorial: ^2.2.2
+  overlay_tutorial: ^3.0.0
   package_info_plus: ^1.3.1
   permission_handler: 8.1.6
   pref: ^2.5.0
