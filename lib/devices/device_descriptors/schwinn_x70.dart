@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
+import '../../utils/power_speed_mixin.dart';
 import '../device_map.dart';
 import '../gadgets/cadence_mixin.dart';
 import '../gatt_constants.dart';
@@ -11,8 +14,19 @@ import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
 
-class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin {
+class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpeedMixin {
   MetricDescriptor? resistanceMetric;
+  // From https://github.com/ursoft/connectivity-samples/blob/main/BluetoothLeGatt/Application/src/main/java/com/example/android/bluetoothlegatt/BluetoothLeService.java
+  static const List<double> resistancePowerFactor = [
+    0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, // 11-13
+    0.75, 0.91, 1.07, // 14-16
+    1.23, 1.39, 1.55, // 17-19
+    1.72, 1.88, 2.04, // 20-22
+    2.20, 2.36, 2.52 // 23-25
+  ];
+  int lastTime = -1;
+  int? lastCalories;
+  RecordWithSport? lastRecord;
 
   SchwinnX70()
       : super(
@@ -34,6 +48,9 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin {
         ) {
     resistanceMetric = ByteMetricDescriptor(lsb: 16);
     initCadence(10, 64, maxUint24);
+    initPower2SpeedConstants();
+    lastTime = -1;
+    lastCalories;
   }
 
   @override
@@ -58,21 +75,43 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin {
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
-    // TODO: convert from revolution to cadence
-    // TODO: convert power form calories
     final elapsed = getTime(data);
     final elapsedMillis = ((elapsed ?? 0.0) * 1000.0).toInt();
+    final calories = getCalories(data)?.toInt();
     addCadenceData(elapsed, getCadence(data)?.toInt());
+
+    if (lastTime < 0) {
+      lastTime = elapsedMillis;
+      lastCalories = calories;
+      return RecordWithSport.getZero(defaultSport);
+    }
+
+    if (elapsedMillis == lastTime) {
+      return lastRecord ?? RecordWithSport.getZero(defaultSport);
+    }
+
+    final resistance = max((resistanceMetric?.getMeasurementValue(data)?.toInt() ?? 1) - 1, 0);
+    final deltaCalories = (calories ?? 0) - (lastCalories ?? 0);
+    var deltaTime = elapsedMillis - lastTime;
+    if (deltaTime < 0) {
+      deltaTime += 64000;
+    }
+
+    // Custom way from
+    // https://github.com/ursoft/connectivity-samples/blob/main/BluetoothLeGatt/Application/src/main/java/com/example/android/bluetoothlegatt/BluetoothLeService.java
+    final power = (deltaCalories / deltaTime * 0.42 * resistancePowerFactor[resistance]).toInt();
+    final speed = velocityForPower(power);
     final record = RecordWithSport(
-      distance: getDistance(data),
+      distance: null,
       elapsed: elapsed?.toInt(),
-      calories: getCalories(data)?.toInt(),
-      power: getPower(data)?.toInt(),
-      speed: getSpeed(data),
+      calories: calories,
+      power: power,
+      speed: speed,
       cadence: computeCadence(),
-      heartRate: getHeartRate(data)?.toInt(),
+      heartRate: 0,
       sport: defaultSport,
     )..elapsedMillis = elapsedMillis;
+    lastRecord = record;
 
     return record;
   }
