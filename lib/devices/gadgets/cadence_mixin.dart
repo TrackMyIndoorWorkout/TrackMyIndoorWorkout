@@ -17,9 +17,19 @@ class CadenceMixin {
   }
 
   void addCadenceData(double? time, int? revolutions) {
+    final nonNullTime = time ?? 0.0;
+    final nonNullRevolutions = revolutions ?? 0;
+    if (cadenceData.isNotEmpty) {
+      // Prevent duplicate recording
+      final last = cadenceData.last;
+      if ((last.time - nonNullTime).abs() < eps && last.revolutions == nonNullRevolutions) {
+        return;
+      }
+    }
+
     cadenceData.add(CadenceData(
-      time: time ?? 0.0,
-      revolutions: revolutions ?? 0,
+      time: nonNullTime,
+      revolutions: nonNullRevolutions,
     ));
 
     processData();
