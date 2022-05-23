@@ -4,7 +4,6 @@ import 'package:pref/pref.dart';
 import '../preferences/athlete_body_weight.dart';
 import 'constants.dart';
 
-
 class PowerSpeedMixin {
   static const energy2speed = 5.28768241564455E-05;
   static const epsilon = 0.001;

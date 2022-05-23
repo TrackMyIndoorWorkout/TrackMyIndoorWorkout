@@ -1,7 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_x70.dart';
 import 'package:track_my_indoor_exercise/devices/device_map.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+
+import 'utils.dart';
 
 class TestPair {
   final List<int> data;
@@ -12,6 +15,7 @@ class TestPair {
 
 void main() {
   test('Schwinn X70 constructor tests', () async {
+    await initPrefServiceForTest();
     final bike = deviceMap[schwinnX70BikeFourCC]!;
 
     expect(bike.canMeasureHeartRate, false);
@@ -20,6 +24,7 @@ void main() {
   });
 
   test('Schwinn X70 interprets Data flags properly', () async {
+    await initPrefServiceForTest();
     final bike = deviceMap[schwinnX70BikeFourCC]!;
     final data = [17, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -43,8 +48,8 @@ void main() {
           distance: null,
           elapsed: 63,
           calories: 4448,
-          power: null,
-          speed: null,
+          power: 17,
+          speed: 3.362092859714128,
           cadence: 0,
           heartRate: 0,
           pace: null,
@@ -61,9 +66,9 @@ void main() {
           distance: null,
           elapsed: 10,
           calories: 11356,
-          power: null,
-          speed: null,
-          cadence: 0,
+          power: 269,
+          speed: 11.64962077806205,
+          cadence: 1,
           heartRate: 0,
           pace: null,
           sport: ActivityType.ride,
@@ -79,8 +84,8 @@ void main() {
           distance: null,
           elapsed: 23,
           calories: 18507,
-          power: null,
-          speed: null,
+          power: 197,
+          speed: 10.368096652615558,
           cadence: 0,
           heartRate: 0,
           pace: null,
@@ -93,8 +98,12 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap[schwinnX70BikeFourCC]!;
+        await initPrefServiceForTest();
+        final bike = deviceMap[schwinnX70BikeFourCC] as SchwinnX70;
         expect(bike.isDataProcessable(testPair.data), true);
+        bike.stopWorkout();
+        bike.lastTime = 0;
+        bike.lastCalories = 0;
 
         final record = bike.wrappedStubRecord(testPair.data)!;
 
@@ -106,7 +115,11 @@ void main() {
         expect(record.elapsed, testPair.record.elapsed);
         expect(record.calories, testPair.record.calories);
         expect(record.power, testPair.record.power);
-        expect(record.speed, testPair.record.speed);
+        if (record.speed == null) {
+          expect(testPair.record.speed, null);
+        } else {
+          expect(record.speed!, closeTo(testPair.record.speed!, eps));
+        }
         expect(record.cadence, testPair.record.cadence);
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
@@ -129,8 +142,8 @@ void main() {
           distance: null,
           elapsed: 25,
           calories: 102,
-          power: null,
-          speed: null,
+          power: 1,
+          speed: 0.2912890998493666,
           cadence: 2520,
           heartRate: 0,
           pace: null,
@@ -147,8 +160,8 @@ void main() {
           distance: null,
           elapsed: 33,
           calories: 560036,
-          power: null,
-          speed: null,
+          power: 4170,
+          speed: 30.383824745545116,
           cadence: 1902,
           heartRate: 0,
           pace: null,
@@ -165,8 +178,8 @@ void main() {
           distance: null,
           elapsed: 39,
           calories: 565491,
-          power: null,
-          speed: null,
+          power: 3648,
+          speed: 29.036218786755185,
           cadence: 1648,
           heartRate: 0,
           pace: null,
@@ -184,8 +197,8 @@ void main() {
           distance: null,
           elapsed: 20,
           calories: 565694,
-          power: null,
-          speed: null,
+          power: 6909,
+          speed: 36.03976194650819,
           cadence: 3120,
           heartRate: 0,
           pace: null,
@@ -202,8 +215,8 @@ void main() {
           distance: null,
           elapsed: 15,
           calories: 1124461,
-          power: null,
-          speed: null,
+          power: 18156,
+          speed: 49.87566708487227,
           cadence: 4165,
           heartRate: 0,
           pace: null,
@@ -216,9 +229,12 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap[schwinnX70BikeFourCC]!;
+        await initPrefServiceForTest();
+        final bike = deviceMap[schwinnX70BikeFourCC] as SchwinnX70;
         expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();
+        bike.lastTime = 0;
+        bike.lastCalories = 0;
 
         final record = bike.wrappedStubRecord(testPair.data)!;
 
@@ -230,7 +246,11 @@ void main() {
         expect(record.elapsed, testPair.record.elapsed);
         expect(record.calories, testPair.record.calories);
         expect(record.power, testPair.record.power);
-        expect(record.speed, testPair.record.speed);
+        if (record.speed == null) {
+          expect(testPair.record.speed, null);
+        } else {
+          expect(record.speed!, closeTo(testPair.record.speed!, eps));
+        }
         expect(record.cadence, testPair.record.cadence);
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);

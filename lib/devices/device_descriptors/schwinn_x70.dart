@@ -99,7 +99,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
 
     // Custom way from
     // https://github.com/ursoft/connectivity-samples/blob/main/BluetoothLeGatt/Application/src/main/java/com/example/android/bluetoothlegatt/BluetoothLeService.java
-    final power = (deltaCalories / deltaTime * 0.42 * resistancePowerFactor[resistance]).toInt();
+    final power =
+        (deltaCalories * 1000.0 / deltaTime * 0.42 * resistancePowerFactor[resistance]).toInt();
     final speed = velocityForPower(power);
     final record = RecordWithSport(
       distance: null,
