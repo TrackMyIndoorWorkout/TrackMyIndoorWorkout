@@ -59,8 +59,8 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
               isRadio: true,
               buttons: const ["Dark", "Light"],
               maxSelected: 1,
-              options: _groupButtonOptions,
-              onSelected: (i, selected) =>
+              options: _groupButtonOptions!,
+              onSelected: (_, i, selected) =>
                   _lightOrDark = (i == 1 && selected || i == 0 && !selected),
             ),
             Text("Fg./Bg.:", style: _textStyle),
@@ -69,8 +69,8 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
               isRadio: true,
               buttons: const ["Foregr.", "Backgr."],
               maxSelected: 1,
-              options: _groupButtonOptions,
-              onSelected: (i, selected) => _fgOrBg = (i == 1 && selected || i == 0 && !selected),
+              options: _groupButtonOptions!,
+              onSelected: (_, i, selected) => _fgOrBg = (i == 1 && selected || i == 0 && !selected),
             ),
             Text("Size:", style: _textStyle),
             GroupButton(
@@ -78,8 +78,8 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
               isRadio: true,
               buttons: const ["5", "6", "7"],
               maxSelected: 1,
-              options: _groupButtonOptions,
-              onSelected: (i, selected) {
+              options: _groupButtonOptions!,
+              onSelected: (_, i, selected) {
                 if (selected) {
                   _size = i + 5;
                 }
