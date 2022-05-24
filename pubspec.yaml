@@ -13,6 +13,7 @@ dependencies:
   bluetooth_enable:
     git:
       url: https://github.com/CsabaConsulting/bluetooth_enable.git
+  collection: ^1.16.0
   datetime_picker_formfield:
     git:
       url: https://github.com/tainanfochesatto/datetime_picker_formfield.git
@@ -41,6 +42,7 @@ dependencies:
   loading_overlay: ^0.3.0
   overlay_tutorial: ^3.0.0
   package_info_plus: ^1.4.2
+  path_provider: ^2.0.10
   permission_handler: 8.1.6
   pref: ^2.6.0
   progress_indicators: ^1.0.0
@@ -55,6 +57,7 @@ dependencies:
   tuple: ^2.0.0
   uni_links: ^0.5.1
   url_launcher: ^6.0.18
+  vector_math: ^2.1.2
   wakelock: ^0.6.1+2
   flutter:
     sdk: flutter
