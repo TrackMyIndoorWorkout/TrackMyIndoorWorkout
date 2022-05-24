@@ -69,7 +69,7 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
 String paceString(double pace) {
   final minutes = pace.truncate();
   final seconds = ((pace - minutes) * 60.0).truncate();
-  return "$minutes:" + seconds.toString().padLeft(2, "0");
+  return "$minutes:${seconds.toString().padLeft(2, "0")}";
 }
 
 String getSpeedUnit(bool si, String sport) {

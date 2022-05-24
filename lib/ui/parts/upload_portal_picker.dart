@@ -54,8 +54,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
       return false;
     }
 
-    final AppDatabase _database = Get.find<AppDatabase>();
-    final records = await _database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
+    final AppDatabase database = Get.find<AppDatabase>();
+    final records = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
 
     final statusCode = await uploadService.upload(widget.activity, records, _calculateGps);
     final finalResult =

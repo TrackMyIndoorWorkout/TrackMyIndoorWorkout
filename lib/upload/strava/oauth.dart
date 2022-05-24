@@ -245,16 +245,16 @@ abstract class Auth {
     // Use the refresh token to get a new access token
     if (isExpired && storedBefore) {
       // token != null || token != "null"
-      RefreshAnswer _refreshAnswer =
+      RefreshAnswer refreshAnswer =
           await _getNewAccessToken(clientId, secret, tokenStored.refreshToken ?? "0");
       // Update with new values if HTTP status code is 200
-      if (_refreshAnswer.fault != null &&
-          _refreshAnswer.fault!.statusCode >= 200 &&
-          _refreshAnswer.fault!.statusCode < 300) {
+      if (refreshAnswer.fault != null &&
+          refreshAnswer.fault!.statusCode >= 200 &&
+          refreshAnswer.fault!.statusCode < 300) {
         await _saveToken(
-          _refreshAnswer.accessToken,
-          _refreshAnswer.refreshToken,
-          _refreshAnswer.expiresAt,
+          refreshAnswer.accessToken,
+          refreshAnswer.refreshToken,
+          refreshAnswer.expiresAt,
           scope,
         );
       } else {
