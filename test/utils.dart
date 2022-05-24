@@ -1,6 +1,7 @@
 import 'dart:math';
 
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_ac_performance_plus.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
 import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -53,7 +54,7 @@ class ExportModelForTests extends ExportModel {
               ),
           rawData: rawData ?? false,
           calculateGps: calculateGps ?? true,
-          descriptor: descriptor ?? deviceMap[schwinnACPerfPlusFourCC]!,
+          descriptor: descriptor ?? SchwinnACPerformancePlus(),
           author: author ?? 'Csaba Consulting',
           name: name ?? appName,
           swVersionMajor: swVersionMajor ?? "1",

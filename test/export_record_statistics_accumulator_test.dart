@@ -697,7 +697,8 @@ void main() {
           }
           return index;
         });
-        test("$i. $sport, $count -> $powerSum, $maxPower, $minPower, $speedSum, $maxSpeed, $minSpeed",
+        test(
+            "$i. $sport, $count -> $powerSum, $maxPower, $minPower, $speedSum, $maxSpeed, $minSpeed",
             () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, true);

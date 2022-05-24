@@ -4,7 +4,7 @@ import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../../utils/power_speed_mixin.dart';
-import '../device_map.dart';
+import '../device_fourcc.dart';
 import '../gadgets/cadence_mixin.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';

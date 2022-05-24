@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/cross_trainer_device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
@@ -13,7 +13,7 @@ class TestPair {
 
 void main() {
   test('LifePro FlexStride Pro Device constructor tests', () async {
-    final xTrainer = deviceMap[genericFTMSCrossTrainerFourCC]!;
+    final xTrainer = DeviceFactory.getGenericFTMSCrossTrainer();
 
     expect(xTrainer.canMeasureHeartRate, true);
     expect(xTrainer.defaultSport, ActivityType.elliptical);
@@ -21,7 +21,7 @@ void main() {
   });
 
   test('Cross Trainer Device interprets LifePro FlexStride Pro flags properly', () async {
-    final xTrainer = deviceMap[genericFTMSCrossTrainerFourCC] as CrossTrainerDeviceDescriptor;
+    final xTrainer = DeviceFactory.getGenericFTMSCrossTrainer();
     const lsb = 12;
     const msb = 33;
     const flag = maxUint8 * msb + lsb;
@@ -105,7 +105,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        final xTrainer = deviceMap[genericFTMSCrossTrainerFourCC]!;
+        final xTrainer = DeviceFactory.getGenericFTMSCrossTrainer();
         xTrainer.initFlag();
         expect(xTrainer.isDataProcessable(testPair.data), true);
         xTrainer.stopWorkout();

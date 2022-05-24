@@ -2,10 +2,12 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/running_cadence_sensor.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'runn_rsc_test.mocks.dart';
 
 class TestPair {
@@ -19,12 +21,16 @@ const sampleData = [0, 145, 1, 187];
 
 @GenerateMocks([BluetoothDevice])
 void main() {
-  test('Runn RSC constructor tests', () async {
-    final rower = deviceMap[npeRunnFourCC]!;
+  setUpAll(() async {
+    await initPrefServiceForTest();
+  });
 
-    expect(rower.canMeasureHeartRate, false);
-    expect(rower.defaultSport, ActivityType.run);
-    expect(rower.fourCC, npeRunnFourCC);
+  test('Runn RSC constructor tests', () async {
+    final treadmill = DeviceFactory.getNpeRunn();
+
+    expect(treadmill.canMeasureHeartRate, false);
+    expect(treadmill.defaultSport, ActivityType.run);
+    expect(treadmill.fourCC, npeRunnFourCC);
   });
 
   test('Runn RSC Device interprets flags properly', () async {

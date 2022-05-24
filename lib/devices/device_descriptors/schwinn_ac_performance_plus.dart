@@ -1,7 +1,7 @@
 import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
-import '../device_map.dart';
+import '../device_fourcc.dart';
 import 'device_descriptor.dart';
 
 class SchwinnACPerformancePlus extends DeviceDescriptor {

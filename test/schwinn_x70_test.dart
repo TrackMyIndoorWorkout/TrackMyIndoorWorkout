@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_x70.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
@@ -13,7 +13,7 @@ class TestPair {
 
 void main() {
   test('Schwinn X70 constructor tests', () async {
-    final bike = deviceMap[schwinnX70BikeFourCC]!;
+    final bike = SchwinnX70();
 
     expect(bike.canMeasureHeartRate, false);
     expect(bike.defaultSport, ActivityType.ride);
@@ -21,7 +21,7 @@ void main() {
   });
 
   test('Schwinn X70 interprets Data flags properly', () async {
-    final bike = deviceMap[schwinnX70BikeFourCC]!;
+    final bike = SchwinnX70();
     final data = [17, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     expect(bike.isDataProcessable(data), true);
@@ -94,7 +94,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap[schwinnX70BikeFourCC] as SchwinnX70;
+        final bike = SchwinnX70();
         expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();
         bike.lastTime = 0;
@@ -224,7 +224,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap[schwinnX70BikeFourCC] as SchwinnX70;
+        final bike = SchwinnX70();
         expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();
         bike.lastTime = 0;
