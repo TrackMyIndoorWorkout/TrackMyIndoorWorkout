@@ -222,6 +222,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (descriptor == null) {
       if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
         descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+      } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
+        descriptor = deviceMap[schwinnX70BikeFourCC];
       } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
         if (advertisementDigest.machineType == MachineType.treadmill) {
           descriptor = deviceMap[matrixTreadmillFourCC];
