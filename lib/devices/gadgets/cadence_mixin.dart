@@ -75,7 +75,13 @@ class CadenceMixin {
       return 0;
     }
 
-    return (lastData.revolutions - firstData.revolutions) ~/ (lastData.time - firstData.time);
+    var secondsDiff = lastData.time - firstData.time;
+    // Check overflow
+    if (secondsDiff < 0) {
+      secondsDiff += eventTimeOverflow;
+    }
+
+    return (lastData.revolutions - firstData.revolutions) * 60 ~/ secondsDiff;
   }
 
   void clearCadenceData() {

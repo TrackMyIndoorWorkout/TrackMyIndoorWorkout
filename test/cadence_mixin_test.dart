@@ -46,7 +46,7 @@ void main() {
     for (var lenMinusOne in getRandomInts(smallRepetition, 10, rnd)) {
       final len = lenMinusOne + 1;
       final deltaTimes = getRandomDoubles(len, 1.5, rnd);
-      final deltaRevolutions = getRandomInts(len, 100, rnd);
+      final deltaRevolutions = getRandomInts(len, 2, rnd);
       final timeSum = deltaTimes.sum;
       final revolutionSum = deltaRevolutions.sum;
       test(
@@ -66,7 +66,8 @@ void main() {
         if (len == 1) {
           expect(cadence, 0);
         } else {
-          expect(cadence, (revolutionSum - deltaRevolutions.first) ~/ (timeSum - deltaTimes.first));
+          expect(cadence,
+              (revolutionSum - deltaRevolutions.first) * 60 ~/ (timeSum - deltaTimes.first));
         }
       });
     }

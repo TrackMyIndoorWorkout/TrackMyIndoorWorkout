@@ -43,7 +43,7 @@ void main() {
         record: RecordWithSport(
           distance: null,
           elapsed: 63,
-          calories: 4448,
+          calories: 0,
           power: 17,
           speed: 3.362092859714128,
           cadence: 0,
@@ -61,7 +61,7 @@ void main() {
         record: RecordWithSport(
           distance: null,
           elapsed: 10,
-          calories: 11356,
+          calories: 1,
           power: 269,
           speed: 11.64962077806205,
           cadence: 0,
@@ -79,7 +79,7 @@ void main() {
         record: RecordWithSport(
           distance: null,
           elapsed: 23,
-          calories: 18507,
+          calories: 2,
           power: 197,
           speed: 10.368096652615558,
           cadence: 0,
@@ -136,7 +136,7 @@ void main() {
         record: RecordWithSport(
           distance: null,
           elapsed: 25,
-          calories: 102,
+          calories: 0,
           power: 1,
           speed: 0.2912890998493666,
           cadence: 0,
@@ -154,7 +154,7 @@ void main() {
         record: RecordWithSport(
           distance: null,
           elapsed: 33,
-          calories: 560036,
+          calories: 68,
           power: 4170,
           speed: 30.383824745545116,
           cadence: 0,
@@ -172,7 +172,7 @@ void main() {
         record: RecordWithSport(
           distance: null,
           elapsed: 39,
-          calories: 565491,
+          calories: 69,
           power: 3648,
           speed: 29.036218786755185,
           cadence: 0,
@@ -191,7 +191,7 @@ void main() {
         record: RecordWithSport(
           distance: null,
           elapsed: 20,
-          calories: 565694,
+          calories: 69,
           power: 6909,
           speed: 36.03976194650819,
           cadence: 0,
@@ -209,7 +209,7 @@ void main() {
         record: RecordWithSport(
           distance: null,
           elapsed: 15,
-          calories: 1124461,
+          calories: 137,
           power: 18156,
           speed: 49.87566708487227,
           cadence: 0,
