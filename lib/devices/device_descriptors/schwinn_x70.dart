@@ -25,7 +25,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     2.20, 2.36, 2.52 // 23-25
   ];
   int lastTime = -1;
-  int? lastCalories;
+  int? lastCalories = -1;
+  double lastPower = -1.0;
   RecordWithSport? lastRecord;
 
   SchwinnX70()
@@ -50,7 +51,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     initCadence(10, 64, maxUint24);
     initPower2SpeedConstants();
     lastTime = -1;
-    lastCalories;
+    lastCalories = -1;
+    lastPower = -1.0;
   }
 
   @override
@@ -84,9 +86,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       lastTime = elapsedMillis;
       lastCalories = calories;
       return RecordWithSport.getZero(defaultSport);
-    }
-
-    if (elapsedMillis == lastTime) {
+    } else if (elapsedMillis == lastTime) {
       return lastRecord ?? RecordWithSport.getZero(defaultSport);
     }
 
@@ -99,14 +99,25 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
 
     // Custom way from
     // https://github.com/ursoft/connectivity-samples/blob/main/BluetoothLeGatt/Application/src/main/java/com/example/android/bluetoothlegatt/BluetoothLeService.java
-    final power =
-        (deltaCalories * 1000.0 / deltaTime * 0.42 * resistancePowerFactor[resistance]).toInt();
-    final speed = velocityForPower(power);
+    final power = (deltaCalories * 1000.0 / deltaTime * 0.42 * resistancePowerFactor[resistance]);
+
+    if (lastPower == -1.0 || (lastPower - power).abs() < 100.0) {
+      lastPower = power;
+    } else {
+      lastPower += (power - lastPower) / 2.0;
+    }
+
+    if (lastPower < 0) {
+      lastPower = 1.0;
+    }
+
+    final integerPower = lastPower.toInt();
+    final speed = velocityForPower(integerPower);
     final record = RecordWithSport(
       distance: null,
       elapsed: testing ? elapsed?.toInt() : null,
       calories: calories != null ? calories ~/ 8192 : null,
-      power: power,
+      power: integerPower,
       speed: speed,
       cadence: computeCadence(),
       heartRate: 0,
