@@ -104,14 +104,18 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     final speed = velocityForPower(power);
     final record = RecordWithSport(
       distance: null,
-      elapsed: elapsed?.toInt(),
+      elapsed: testing ? elapsed?.toInt() : null,
       calories: calories != null ? calories ~/ 8192 : null,
       power: power,
       speed: speed,
       cadence: computeCadence(),
       heartRate: 0,
       sport: defaultSport,
-    )..elapsedMillis = elapsedMillis;
+    );
+    if (testing) {
+      record.elapsedMillis = elapsedMillis;
+    }
+
     lastRecord = record;
 
     return record;
