@@ -15,6 +15,7 @@ void main() {
     final fixtureFile = File("${dir.path}/test/fixtures/schwinn_270_session.yaml");
     final yamlContent = fixtureFile.readAsStringSync();
     final fixture = loadYaml(yamlContent);
+    // String content = "session:\n";
 
     bool first = true;
     for (final element in fixture["session"].nodes) {
@@ -28,6 +29,15 @@ void main() {
       expect(bike.isDataProcessable(data), true);
 
       final record = bike.wrappedStubRecord(data)!;
+      // content += "  - element:\n";
+      // content += '    timeStamp: "${element["timeStamp"]}"\n';
+      // content += "    data: ${data.toString()}\n";
+      // content += "    elapsed: ${record.elapsed}\n";
+      // content += "    calories: ${record.calories}\n";
+      // content += "    power: ${record.power}\n";
+      // content += "    speed: ${record.speed!.toStringAsFixed(4)}\n";
+      // content += "    cadence: ${record.cadence}\n";
+      // content += "    elapsedMillis: ${record.elapsedMillis}\n";
 
       final expected = RecordWithSport(
         distance: first ? 0.0 : null,
@@ -65,5 +75,8 @@ void main() {
 
       first = false;
     }
+
+    // File f = File('results.yaml');
+    // f.writeAsStringSync(content);
   });
 }
