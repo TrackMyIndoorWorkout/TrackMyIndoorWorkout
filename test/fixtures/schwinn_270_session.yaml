@@ -5,7 +5,7 @@ session:
     elapsed: 0
     calories: 0
     power: 0
-    speed: 0.0000
+    speed: 0.0
     cadence: 0
     elapsedMillis: 0
   - element:
@@ -14,7 +14,7 @@ session:
     elapsed: 63
     calories: 0
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 0
     elapsedMillis: 63536
   - element:
@@ -23,7 +23,7 @@ session:
     elapsed: 63
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 0
     elapsedMillis: 63723
   - element:
@@ -32,7 +32,7 @@ session:
     elapsed: 63
     calories: 0
     power: 166
-    speed: 9.7123
+    speed: 10.4621
     cadence: 107
     elapsedMillis: 63915
   - element:
@@ -41,7 +41,7 @@ session:
     elapsed: 0
     calories: 0
     power: 167
-    speed: 9.7348
+    speed: 10.4830
     cadence: 81
     elapsedMillis: 96
   - element:
@@ -50,7 +50,7 @@ session:
     elapsed: 0
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 65
     elapsedMillis: 269
   - element:
@@ -59,7 +59,7 @@ session:
     elapsed: 0
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 55
     elapsedMillis: 447
   - element:
@@ -68,7 +68,7 @@ session:
     elapsed: 0
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 47
     elapsedMillis: 627
   - element:
@@ -77,7 +77,7 @@ session:
     elapsed: 0
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 41
     elapsedMillis: 807
   - element:
@@ -86,7 +86,7 @@ session:
     elapsed: 0
     calories: 0
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 37
     elapsedMillis: 978
   - element:
@@ -95,7 +95,7 @@ session:
     elapsed: 1
     calories: 0
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 33
     elapsedMillis: 1163
   - element:
@@ -104,7 +104,7 @@ session:
     elapsed: 1
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 60
     elapsedMillis: 1349
   - element:
@@ -113,7 +113,7 @@ session:
     elapsed: 1
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 55
     elapsedMillis: 1531
   - element:
@@ -122,7 +122,7 @@ session:
     elapsed: 1
     calories: 0
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 51
     elapsedMillis: 1705
   - element:
@@ -131,7 +131,7 @@ session:
     elapsed: 1
     calories: 0
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 47
     elapsedMillis: 1886
   - element:
@@ -140,7 +140,7 @@ session:
     elapsed: 2
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 44
     elapsedMillis: 2071
   - element:
@@ -149,7 +149,7 @@ session:
     elapsed: 2
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 41
     elapsedMillis: 2255
   - element:
@@ -158,7 +158,7 @@ session:
     elapsed: 2
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 39
     elapsedMillis: 2432
   - element:
@@ -167,7 +167,7 @@ session:
     elapsed: 2
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 36
     elapsedMillis: 2616
   - element:
@@ -176,7 +176,7 @@ session:
     elapsed: 2
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 52
     elapsedMillis: 2804
   - element:
@@ -185,7 +185,7 @@ session:
     elapsed: 2
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 49
     elapsedMillis: 2991
   - element:
@@ -194,7 +194,7 @@ session:
     elapsed: 3
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 47
     elapsedMillis: 3170
   - element:
@@ -203,7 +203,7 @@ session:
     elapsed: 3
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 45
     elapsedMillis: 3353
   - element:
@@ -212,7 +212,7 @@ session:
     elapsed: 3
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 43
     elapsedMillis: 3537
   - element:
@@ -221,7 +221,7 @@ session:
     elapsed: 3
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 41
     elapsedMillis: 3715
   - element:
@@ -230,7 +230,7 @@ session:
     elapsed: 3
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 39
     elapsedMillis: 3884
   - element:
@@ -239,7 +239,7 @@ session:
     elapsed: 4
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 38
     elapsedMillis: 4061
   - element:
@@ -248,7 +248,7 @@ session:
     elapsed: 4
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 49
     elapsedMillis: 4243
   - element:
@@ -257,7 +257,7 @@ session:
     elapsed: 4
     calories: 0
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 47
     elapsedMillis: 4420
   - element:
@@ -266,7 +266,7 @@ session:
     elapsed: 4
     calories: 0
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 45
     elapsedMillis: 4591
   - element:
@@ -275,7 +275,7 @@ session:
     elapsed: 4
     calories: 0
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 44
     elapsedMillis: 4765
   - element:
@@ -284,7 +284,7 @@ session:
     elapsed: 4
     calories: 1
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 42
     elapsedMillis: 4943
   - element:
@@ -293,7 +293,7 @@ session:
     elapsed: 5
     calories: 1
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 41
     elapsedMillis: 5118
   - element:
@@ -302,7 +302,7 @@ session:
     elapsed: 5
     calories: 1
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 40
     elapsedMillis: 5285
   - element:
@@ -311,7 +311,7 @@ session:
     elapsed: 5
     calories: 1
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 39
     elapsedMillis: 5460
   - element:
@@ -320,7 +320,7 @@ session:
     elapsed: 5
     calories: 1
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 47
     elapsedMillis: 5641
   - element:
@@ -329,7 +329,7 @@ session:
     elapsed: 5
     calories: 1
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 46
     elapsedMillis: 5827
   - element:
@@ -338,7 +338,7 @@ session:
     elapsed: 6
     calories: 1
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 45
     elapsedMillis: 6009
   - element:
@@ -347,7 +347,7 @@ session:
     elapsed: 6
     calories: 1
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 43
     elapsedMillis: 6199
   - element:
@@ -356,7 +356,7 @@ session:
     elapsed: 6
     calories: 1
     power: 169
-    speed: 9.7794
+    speed: 10.5247
     cadence: 42
     elapsedMillis: 6395
   - element:
@@ -365,7 +365,7 @@ session:
     elapsed: 6
     calories: 1
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 41
     elapsedMillis: 6597
   - element:
@@ -374,7 +374,7 @@ session:
     elapsed: 6
     calories: 1
     power: 168
-    speed: 9.7571
+    speed: 10.5039
     cadence: 40
     elapsedMillis: 6828
   - element:
@@ -383,7 +383,7 @@ session:
     elapsed: 7
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 36
     elapsedMillis: 7489
   - element:
@@ -392,7 +392,7 @@ session:
     elapsed: 8
     calories: 1
     power: 157
-    speed: 9.5058
+    speed: 10.2695
     cadence: 41
     elapsedMillis: 8043
   - element:
@@ -401,7 +401,7 @@ session:
     elapsed: 8
     calories: 1
     power: 155
-    speed: 9.4587
+    speed: 10.2257
     cadence: 39
     elapsedMillis: 8372
   - element:
@@ -410,7 +410,7 @@ session:
     elapsed: 8
     calories: 1
     power: 155
-    speed: 9.4587
+    speed: 10.2257
     cadence: 38
     elapsedMillis: 8678
   - element:
@@ -419,7 +419,7 @@ session:
     elapsed: 9
     calories: 1
     power: 152
-    speed: 9.3874
+    speed: 10.1593
     cadence: 36
     elapsedMillis: 9136
   - element:
@@ -428,7 +428,7 @@ session:
     elapsed: 9
     calories: 1
     power: 152
-    speed: 9.3874
+    speed: 10.1593
     cadence: 36
     elapsedMillis: 9339
   - element:
@@ -437,7 +437,7 @@ session:
     elapsed: 9
     calories: 1
     power: 153
-    speed: 9.4113
+    speed: 10.1815
     cadence: 36
     elapsedMillis: 9537
   - element:
@@ -446,7 +446,7 @@ session:
     elapsed: 9
     calories: 1
     power: 153
-    speed: 9.4113
+    speed: 10.1815
     cadence: 30
     elapsedMillis: 9734
   - element:
@@ -455,7 +455,7 @@ session:
     elapsed: 9
     calories: 1
     power: 153
-    speed: 9.4113
+    speed: 10.1815
     cadence: 30
     elapsedMillis: 9919
   - element:
@@ -464,7 +464,7 @@ session:
     elapsed: 10
     calories: 1
     power: 153
-    speed: 9.4113
+    speed: 10.1815
     cadence: 36
     elapsedMillis: 10089
   - element:
@@ -473,7 +473,7 @@ session:
     elapsed: 10
     calories: 1
     power: 154
-    speed: 9.4350
+    speed: 10.2036
     cadence: 36
     elapsedMillis: 10263
   - element:
@@ -482,7 +482,7 @@ session:
     elapsed: 10
     calories: 1
     power: 154
-    speed: 9.4350
+    speed: 10.2036
     cadence: 36
     elapsedMillis: 10440
   - element:
@@ -491,7 +491,7 @@ session:
     elapsed: 10
     calories: 1
     power: 154
-    speed: 9.4350
+    speed: 10.2036
     cadence: 36
     elapsedMillis: 10611
   - element:
@@ -500,7 +500,7 @@ session:
     elapsed: 10
     calories: 1
     power: 155
-    speed: 9.4587
+    speed: 10.2257
     cadence: 36
     elapsedMillis: 10774
   - element:
@@ -509,7 +509,7 @@ session:
     elapsed: 10
     calories: 1
     power: 155
-    speed: 9.4587
+    speed: 10.2257
     cadence: 36
     elapsedMillis: 10942
   - element:
@@ -518,7 +518,7 @@ session:
     elapsed: 11
     calories: 1
     power: 155
-    speed: 9.4587
+    speed: 10.2257
     cadence: 36
     elapsedMillis: 11114
   - element:
@@ -527,7 +527,7 @@ session:
     elapsed: 11
     calories: 1
     power: 155
-    speed: 9.4587
+    speed: 10.2257
     cadence: 30
     elapsedMillis: 11287
   - element:
@@ -536,7 +536,7 @@ session:
     elapsed: 11
     calories: 1
     power: 156
-    speed: 9.4823
+    speed: 10.2476
     cadence: 36
     elapsedMillis: 11453
   - element:
@@ -545,7 +545,7 @@ session:
     elapsed: 11
     calories: 1
     power: 156
-    speed: 9.4823
+    speed: 10.2476
     cadence: 36
     elapsedMillis: 11625
   - element:
@@ -554,7 +554,7 @@ session:
     elapsed: 11
     calories: 1
     power: 156
-    speed: 9.4823
+    speed: 10.2476
     cadence: 36
     elapsedMillis: 11802
   - element:
@@ -563,7 +563,7 @@ session:
     elapsed: 11
     calories: 1
     power: 156
-    speed: 9.4823
+    speed: 10.2476
     cadence: 36
     elapsedMillis: 11979
   - element:
@@ -572,7 +572,7 @@ session:
     elapsed: 12
     calories: 1
     power: 156
-    speed: 9.4823
+    speed: 10.2476
     cadence: 36
     elapsedMillis: 12148
   - element:
@@ -581,7 +581,7 @@ session:
     elapsed: 12
     calories: 1
     power: 157
-    speed: 9.5058
+    speed: 10.2695
     cadence: 36
     elapsedMillis: 12321
   - element:
@@ -590,7 +590,7 @@ session:
     elapsed: 12
     calories: 1
     power: 157
-    speed: 9.5058
+    speed: 10.2695
     cadence: 36
     elapsedMillis: 12498
   - element:
@@ -599,7 +599,7 @@ session:
     elapsed: 12
     calories: 1
     power: 157
-    speed: 9.5058
+    speed: 10.2695
     cadence: 30
     elapsedMillis: 12670
   - element:
@@ -608,7 +608,7 @@ session:
     elapsed: 12
     calories: 1
     power: 157
-    speed: 9.5058
+    speed: 10.2695
     cadence: 36
     elapsedMillis: 12835
   - element:
@@ -617,7 +617,7 @@ session:
     elapsed: 13
     calories: 1
     power: 157
-    speed: 9.5058
+    speed: 10.2695
     cadence: 36
     elapsedMillis: 13009
   - element:
@@ -626,7 +626,7 @@ session:
     elapsed: 13
     calories: 1
     power: 158
-    speed: 9.5291
+    speed: 10.2912
     cadence: 36
     elapsedMillis: 13186
   - element:
@@ -635,7 +635,7 @@ session:
     elapsed: 13
     calories: 1
     power: 158
-    speed: 9.5291
+    speed: 10.2912
     cadence: 36
     elapsedMillis: 13357
   - element:
@@ -644,7 +644,7 @@ session:
     elapsed: 13
     calories: 1
     power: 158
-    speed: 9.5291
+    speed: 10.2912
     cadence: 36
     elapsedMillis: 13517
   - element:
@@ -653,7 +653,7 @@ session:
     elapsed: 13
     calories: 1
     power: 158
-    speed: 9.5291
+    speed: 10.2912
     cadence: 36
     elapsedMillis: 13681
   - element:
@@ -662,7 +662,7 @@ session:
     elapsed: 13
     calories: 1
     power: 158
-    speed: 9.5291
+    speed: 10.2912
     cadence: 36
     elapsedMillis: 13848
   - element:
@@ -671,7 +671,7 @@ session:
     elapsed: 14
     calories: 1
     power: 159
-    speed: 9.5524
+    speed: 10.3129
     cadence: 36
     elapsedMillis: 14011
   - element:
@@ -680,7 +680,7 @@ session:
     elapsed: 14
     calories: 1
     power: 159
-    speed: 9.5524
+    speed: 10.3129
     cadence: 36
     elapsedMillis: 14167
   - element:
@@ -689,7 +689,7 @@ session:
     elapsed: 14
     calories: 1
     power: 159
-    speed: 9.5524
+    speed: 10.3129
     cadence: 36
     elapsedMillis: 14332
   - element:
@@ -698,7 +698,7 @@ session:
     elapsed: 14
     calories: 1
     power: 159
-    speed: 9.5524
+    speed: 10.3129
     cadence: 36
     elapsedMillis: 14499
   - element:
@@ -707,7 +707,7 @@ session:
     elapsed: 14
     calories: 1
     power: 159
-    speed: 9.5524
+    speed: 10.3129
     cadence: 36
     elapsedMillis: 14665
   - element:
@@ -716,7 +716,7 @@ session:
     elapsed: 14
     calories: 1
     power: 160
-    speed: 9.5755
+    speed: 10.3345
     cadence: 36
     elapsedMillis: 14824
   - element:
@@ -725,7 +725,7 @@ session:
     elapsed: 14
     calories: 1
     power: 160
-    speed: 9.5755
+    speed: 10.3345
     cadence: 36
     elapsedMillis: 14988
   - element:
@@ -734,7 +734,7 @@ session:
     elapsed: 15
     calories: 1
     power: 160
-    speed: 9.5755
+    speed: 10.3345
     cadence: 36
     elapsedMillis: 15156
   - element:
@@ -743,7 +743,7 @@ session:
     elapsed: 15
     calories: 1
     power: 160
-    speed: 9.5755
+    speed: 10.3345
     cadence: 36
     elapsedMillis: 15322
   - element:
@@ -752,7 +752,7 @@ session:
     elapsed: 15
     calories: 1
     power: 160
-    speed: 9.5755
+    speed: 10.3345
     cadence: 36
     elapsedMillis: 15482
   - element:
@@ -761,7 +761,7 @@ session:
     elapsed: 15
     calories: 1
     power: 160
-    speed: 9.5755
+    speed: 10.3345
     cadence: 36
     elapsedMillis: 15648
   - element:
@@ -770,7 +770,7 @@ session:
     elapsed: 15
     calories: 1
     power: 160
-    speed: 9.5755
+    speed: 10.3345
     cadence: 36
     elapsedMillis: 15821
   - element:
@@ -779,7 +779,7 @@ session:
     elapsed: 15
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 36
     elapsedMillis: 15993
   - element:
@@ -788,7 +788,7 @@ session:
     elapsed: 16
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 36
     elapsedMillis: 16157
   - element:
@@ -797,7 +797,7 @@ session:
     elapsed: 16
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 36
     elapsedMillis: 16325
   - element:
@@ -806,7 +806,7 @@ session:
     elapsed: 16
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 36
     elapsedMillis: 16496
   - element:
@@ -815,7 +815,7 @@ session:
     elapsed: 16
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 36
     elapsedMillis: 16666
   - element:
@@ -824,7 +824,7 @@ session:
     elapsed: 16
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 44
     elapsedMillis: 16830
   - element:
@@ -833,7 +833,7 @@ session:
     elapsed: 17
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 44
     elapsedMillis: 17003
   - element:
@@ -842,7 +842,7 @@ session:
     elapsed: 17
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 43
     elapsedMillis: 17181
   - element:
@@ -851,7 +851,7 @@ session:
     elapsed: 17
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 42
     elapsedMillis: 17361
   - element:
@@ -860,7 +860,7 @@ session:
     elapsed: 17
     calories: 1
     power: 161
-    speed: 9.5986
+    speed: 10.3560
     cadence: 37
     elapsedMillis: 17564
   - element:
@@ -869,7 +869,7 @@ session:
     elapsed: 18
     calories: 2
     power: 155
-    speed: 9.4587
+    speed: 10.2257
     cadence: 37
     elapsedMillis: 18694
   - element:
@@ -878,7 +878,7 @@ session:
     elapsed: 20
     calories: 2
     power: 146
-    speed: 9.2415
+    speed: 10.0238
     cadence: 30
     elapsedMillis: 20417
   - element:
@@ -887,7 +887,7 @@ session:
     elapsed: 20
     calories: 2
     power: 145
-    speed: 9.2168
+    speed: 10.0009
     cadence: 30
     elapsedMillis: 20851
   - element:
@@ -896,7 +896,7 @@ session:
     elapsed: 21
     calories: 2
     power: 145
-    speed: 9.2168
+    speed: 10.0009
     cadence: 36
     elapsedMillis: 21149
   - element:
@@ -905,7 +905,7 @@ session:
     elapsed: 21
     calories: 2
     power: 145
-    speed: 9.2168
+    speed: 10.0009
     cadence: 30
     elapsedMillis: 21433
   - element:
@@ -914,7 +914,7 @@ session:
     elapsed: 21
     calories: 2
     power: 145
-    speed: 9.2168
+    speed: 10.0009
     cadence: 30
     elapsedMillis: 21673
   - element:
@@ -923,7 +923,7 @@ session:
     elapsed: 21
     calories: 2
     power: 145
-    speed: 9.2168
+    speed: 10.0009
     cadence: 30
     elapsedMillis: 21877
   - element:
@@ -932,7 +932,7 @@ session:
     elapsed: 22
     calories: 2
     power: 145
-    speed: 9.2168
+    speed: 10.0009
     cadence: 30
     elapsedMillis: 22084
   - element:
@@ -941,7 +941,7 @@ session:
     elapsed: 22
     calories: 2
     power: 145
-    speed: 9.2168
+    speed: 10.0009
     cadence: 30
     elapsedMillis: 22294
   - element:
@@ -950,7 +950,7 @@ session:
     elapsed: 22
     calories: 2
     power: 145
-    speed: 9.2168
+    speed: 10.0009
     cadence: 30
     elapsedMillis: 22492
   - element:
@@ -959,7 +959,7 @@ session:
     elapsed: 22
     calories: 2
     power: 146
-    speed: 9.2415
+    speed: 10.0238
     cadence: 24
     elapsedMillis: 22673
   - element:
@@ -968,7 +968,7 @@ session:
     elapsed: 22
     calories: 2
     power: 146
-    speed: 9.2415
+    speed: 10.0238
     cadence: 30
     elapsedMillis: 22860
   - element:
@@ -977,7 +977,7 @@ session:
     elapsed: 23
     calories: 2
     power: 145
-    speed: 9.2168
+    speed: 10.0009
     cadence: 30
     elapsedMillis: 23259
   - element:
@@ -986,7 +986,7 @@ session:
     elapsed: 23
     calories: 2
     power: 145
-    speed: 9.2168
+    speed: 10.0009
     cadence: 30
     elapsedMillis: 23443
   - element:
@@ -995,6 +995,6 @@ session:
     elapsed: 23
     calories: 2
     power: 146
-    speed: 9.2415
+    speed: 10.0238
     cadence: 30
     elapsedMillis: 23618
