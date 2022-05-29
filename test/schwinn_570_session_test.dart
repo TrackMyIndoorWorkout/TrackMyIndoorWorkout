@@ -9,8 +9,9 @@ import 'package:yaml/yaml.dart';
 void main() {
   group('Schwinn 570 recording evaluation', () {
     for (final fixtureFileName in [
-      "schwinn_570_session_part1.yaml",
-      "schwinn_570_session_part2.yaml",
+      "schwinn_570_session1_part1.yaml",
+      "schwinn_570_session1_part2.yaml",
+      "schwinn_570_session2.yaml",
     ]) {
       test('file $fixtureFileName', () {
         SchwinnX70 bike = SchwinnX70();
@@ -81,7 +82,7 @@ void main() {
           first = false;
         }
 
-        // File f = File('result_$fixtureFileName.yaml');
+        // File f = File('result_$fixtureFileName');
         // f.writeAsStringSync(content);
       });
     }

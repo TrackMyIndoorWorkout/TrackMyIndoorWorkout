@@ -24,8 +24,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     1.72, 1.88, 2.04, // 20-22
     2.20, 2.36, 2.52 // 23-25
   ];
-  int lastTime = -1;
-  int? lastCalories = -1;
+  double lastTime = -1.0;
+  double lastCalories = -1.0;
   double lastPower = -1.0;
   RecordWithSport? lastRecord;
 
@@ -43,15 +43,15 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
           canMeasureHeartRate: false,
-          timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1024.0),
-          caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 256.0),
+          timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1.0),
+          caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 1.0),
           cadenceMetric: ThreeByteMetricDescriptor(lsb: 4, msb: 6, divider: 1.0),
         ) {
     resistanceMetric = ByteMetricDescriptor(lsb: 16);
     initCadence(10, 64, maxUint24);
     initPower2SpeedConstants();
-    lastTime = -1;
-    lastCalories = -1;
+    lastTime = -1.0;
+    lastCalories = -1.0;
     lastPower = -1.0;
   }
 
@@ -77,29 +77,31 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
-    final elapsed = getTime(data);
-    final elapsedMillis = ((elapsed ?? 0.0) * 1000.0).toInt();
-    final calories = getCalories(data)?.toInt();
-    addCadenceData(elapsed, getCadence(data)?.toInt());
+    final time = getTime(data);
+    final calories = getCalories(data);
 
     if (lastTime < 0) {
-      lastTime = elapsedMillis;
-      lastCalories = calories;
+      lastTime = time!;
+      lastCalories = calories!;
+      lastPower = 0.0;
       return RecordWithSport.getZero(defaultSport);
-    } else if (elapsedMillis == lastTime) {
+    } else if (time == lastTime) {
       return lastRecord ?? RecordWithSport.getZero(defaultSport);
     }
 
+    addCadenceData(time! / 1024, getCadence(data)?.toInt());
     final resistance = max((resistanceMetric?.getMeasurementValue(data)?.toInt() ?? 1) - 1, 0);
-    final deltaCalories = (calories ?? 0) - (lastCalories ?? 0);
-    var deltaTime = elapsedMillis - lastTime;
+    final deltaCalories = max(calories! - lastCalories, 0);
+    lastCalories = calories;
+    var deltaTime = time - lastTime;
+    lastTime = time;
     if (deltaTime < 0) {
-      deltaTime += 64000;
+      deltaTime += 65536;
     }
 
     // Custom way from
     // https://github.com/ursoft/connectivity-samples/blob/main/BluetoothLeGatt/Application/src/main/java/com/example/android/bluetoothlegatt/BluetoothLeService.java
-    final power = (deltaCalories * 1000.0 / deltaTime * 0.42 * resistancePowerFactor[resistance]);
+    final power = (deltaCalories / deltaTime * 0.42 * resistancePowerFactor[resistance]);
 
     if (lastPower == -1.0 || (lastPower - power).abs() < 100.0) {
       lastPower = power;
@@ -111,12 +113,12 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       lastPower = 1.0;
     }
 
-    final integerPower = lastPower.toInt();
+    final integerPower = (lastPower * 2.0).toInt();
     final speed = velocityForPower(integerPower);
     final record = RecordWithSport(
       distance: null,
-      elapsed: testing ? elapsed?.toInt() : null,
-      calories: calories != null ? calories ~/ 8192 : null,
+      elapsed: testing ? time ~/ 1024 : null,
+      calories: calories ~/ 2097152,
       power: integerPower,
       speed: speed,
       cadence: computeCadence(),
@@ -124,7 +126,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       sport: defaultSport,
     );
     if (testing) {
-      record.elapsedMillis = elapsedMillis;
+      record.elapsedMillis = time ~/ 1.024;
     }
 
     lastRecord = record;
