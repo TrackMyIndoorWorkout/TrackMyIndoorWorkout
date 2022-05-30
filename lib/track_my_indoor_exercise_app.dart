@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pref/pref.dart';
@@ -47,7 +47,7 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
         darkTheme: ThemeData.dark(),
         themeMode: _themeManager!.getThemeMode(),
         home: StreamBuilder<BluetoothState>(
-          stream: FlutterBlue.instance.state,
+          stream: FlutterBluePlus.instance.state,
           initialData: widget.blueOn ? BluetoothState.on : BluetoothState.unknown,
           builder: (streamContext, streamSnapshot) {
             return FutureBuilder<PermissionStatus>(

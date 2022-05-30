@@ -1,6 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_blue/flutter_blue.dart' hide LogLevel;
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide LogLevel;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -70,7 +70,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   @override
   void dispose() {
     if (_isScanning) {
-      FlutterBlue.instance.stopScan();
+      FlutterBluePlus.instance.stopScan();
     }
 
     _heartRateMonitor?.detach();
@@ -140,7 +140,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _scannedDevices.clear();
     _isScanning = true;
     _autoConnectLatch = true;
-    FlutterBlue.instance
+    FlutterBluePlus.instance
         .startScan(timeout: Duration(seconds: _scanDuration))
         .whenComplete(() => {_isScanning = false});
   }
@@ -466,7 +466,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     ],
                   ),
                   child: StreamBuilder<bool>(
-                    stream: FlutterBlue.instance.isScanning,
+                    stream: FlutterBluePlus.instance.isScanning,
                     initialData: _instantScan,
                     builder: (c, snapshot) {
                       if (snapshot.data == null || snapshot.data!) {
@@ -640,7 +640,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       0,
                                       () async {
                                         if (_isScanning) {
-                                          await FlutterBlue.instance.stopScan();
+                                          await FlutterBluePlus.instance.stopScan();
                                           await Future.delayed(
                                               const Duration(milliseconds: uiIntermittentDelay));
                                         }
@@ -676,7 +676,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   ),
                   const Divider(),
                   StreamBuilder<List<ScanResult>>(
-                    stream: FlutterBlue.instance.scanResults,
+                    stream: FlutterBluePlus.instance.scanResults,
                     initialData: const [],
                     builder: (c, snapshot) => snapshot.data == null
                         ? Container()
@@ -696,7 +696,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
                               if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {
                                 if (_isScanning) {
-                                  FlutterBlue.instance.stopScan().whenComplete(() async {
+                                  FlutterBluePlus.instance.stopScan().whenComplete(() async {
                                     await Future.delayed(
                                         const Duration(milliseconds: uiIntermittentDelay));
                                   });
@@ -707,7 +707,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 result: r,
                                 onEquipmentTap: () async {
                                   if (_isScanning) {
-                                    await FlutterBlue.instance.stopScan();
+                                    await FlutterBluePlus.instance.stopScan();
                                     await Future.delayed(
                                         const Duration(milliseconds: uiIntermittentDelay));
                                   }
@@ -851,7 +851,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   },
                 ),
                 StreamBuilder<bool>(
-                  stream: FlutterBlue.instance.isScanning,
+                  stream: FlutterBluePlus.instance.isScanning,
                   initialData: _instantScan,
                   builder: (c, snapshot) {
                     if (snapshot.data == null) {
@@ -865,7 +865,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         -8,
                         () async {
                           if (_isScanning) {
-                            await FlutterBlue.instance.stopScan();
+                            await FlutterBluePlus.instance.stopScan();
                             await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
                           }
                         },

@@ -1,6 +1,6 @@
 import 'package:bluetooth_enable_fork/bluetooth_enable_fork.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -21,8 +21,8 @@ void main() async {
 
   Get.put<AdvertisementCache>(AdvertisementCache(), permanent: true);
 
-  var blueAvailable = await FlutterBlue.instance.isAvailable;
-  var blueOn = await FlutterBlue.instance.isOn;
+  var blueAvailable = await FlutterBluePlus.instance.isAvailable;
+  var blueOn = await FlutterBluePlus.instance.isOn;
 
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
     Get.put<PackageInfo>(packageInfo, permanent: true);
@@ -45,8 +45,8 @@ void main() async {
 
   await Future.delayed(const Duration(milliseconds: startupIntermittentDelay));
 
-  blueAvailable = await FlutterBlue.instance.isAvailable;
-  blueOn = await FlutterBlue.instance.isOn;
+  blueAvailable = await FlutterBluePlus.instance.isAvailable;
+  blueOn = await FlutterBluePlus.instance.isOn;
 
   runApp(
     TrackMyIndoorExerciseApp(

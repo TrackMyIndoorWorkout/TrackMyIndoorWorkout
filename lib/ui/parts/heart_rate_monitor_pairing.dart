@@ -1,6 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -32,7 +32,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
 
   @override
   void dispose() {
-    FlutterBlue.instance.stopScan();
+    FlutterBluePlus.instance.stopScan();
     super.dispose();
   }
 
@@ -44,7 +44,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     _scanResults.clear();
     _isScanning = true;
 
-    FlutterBlue.instance
+    FlutterBluePlus.instance
         .startScan(timeout: Duration(seconds: _scanDuration))
         .whenComplete(() => {_isScanning = false});
   }
@@ -114,7 +114,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
             ),
             const Divider(),
             StreamBuilder<List<ScanResult>>(
-              stream: FlutterBlue.instance.scanResults,
+              stream: FlutterBluePlus.instance.scanResults,
               initialData: const [],
               builder: (c, snapshot) => snapshot.data == null
                   ? Container()
@@ -216,7 +216,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
             _themeManager.getBlueFab(
                 Icons.clear, false, false, "Close", 0, () => Get.back(result: true)),
             StreamBuilder<bool>(
-              stream: FlutterBlue.instance.isScanning,
+              stream: FlutterBluePlus.instance.isScanning,
               initialData: true,
               builder: (c, snapshot) {
                 if (snapshot.data == null || snapshot.data!) {
