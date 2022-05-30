@@ -24,9 +24,10 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     1.72, 1.88, 2.04, // 20-22
     2.20, 2.36, 2.52 // 23-25
   ];
-  double lastTime = -1.0;
-  double lastCalories = -1.0;
-  double lastPower = -1.0;
+  late double lastTime;
+  late double lastCalories;
+  late double lastPower;
+  late DateTime lastRxTime;
   RecordWithSport? lastRecord;
 
   SchwinnX70()
@@ -53,6 +54,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     lastTime = -1.0;
     lastCalories = -1.0;
     lastPower = -1.0;
+    lastRxTime = DateTime.now();
   }
 
   @override
@@ -79,11 +81,14 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   RecordWithSport? stubRecord(List<int> data) {
     final time = getTime(data);
     final calories = getCalories(data);
-
-    if (lastTime < 0) {
+    final rxTime = DateTime.now();
+    final duration = rxTime.difference(lastRxTime);
+    lastRxTime = rxTime;
+    if (lastTime < 0 || duration.inSeconds > 63) {
       lastTime = time!;
       lastCalories = calories!;
       lastPower = 0.0;
+      lastRecord = null;
       return RecordWithSport.getZero(defaultSport);
     } else if (time == lastTime) {
       return lastRecord ?? RecordWithSport.getZero(defaultSport);
