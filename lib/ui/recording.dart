@@ -537,7 +537,8 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
-    _circuitWorkout = (prefService.get<int>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
+    _circuitWorkout =
+        (prefService.get<int>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
     _dataGapWatchdogTime =
         prefService.get<int>(dataStreamGapWatchdogIntTag) ?? dataStreamGapWatchdogDefault;
     _dataGapSoundEffect =
