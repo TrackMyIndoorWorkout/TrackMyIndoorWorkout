@@ -26,7 +26,7 @@ class Logging {
         : [LogLevel.INFO, LogLevel.WARNING, LogLevel.ERROR, LogLevel.SEVERE];
     await FlutterLogs.initLogs(
       logLevelsEnabled: logLevels,
-      timeStampFormat: TimeStampFormat.TIME_FORMAT_READABLE,
+      timeStampFormat: TimeStampFormat.TIME_FORMAT_READABLE_2,
       directoryStructure: DirectoryStructure.FOR_DATE,
       logTypesEnabled: [fileName],
       logFileExtension: LogFileExtension.TXT,
