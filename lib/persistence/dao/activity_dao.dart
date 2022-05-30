@@ -14,7 +14,7 @@ abstract class ActivityDao {
 
   @Query(
       'SELECT * FROM `$activitiesTableName` WHERE `deviceId` = :deviceId and `end` = 0 ORDER BY `start` DESC')
-  Future<List<Activity>> findUnfinishedActivities(int deviceId);
+  Future<List<Activity>> findUnfinishedActivities(String deviceId);
 
   @insert
   Future<int> insertActivity(Activity activity);
