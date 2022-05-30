@@ -39,8 +39,8 @@ class InMemoryActivityDao extends ActivityDao {
   }
 
   @override
-  Stream<Activity?> findActivityById(int id) {
-    throw UnimplementedError();
+  Stream<Activity?> findActivityById(int id) async* {
+    yield activities.firstWhereOrNull((element) => element.id == id);
   }
 
   @override
