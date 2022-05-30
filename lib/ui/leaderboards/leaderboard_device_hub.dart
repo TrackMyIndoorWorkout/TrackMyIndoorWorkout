@@ -6,12 +6,12 @@ import '../../utils/constants.dart';
 import 'device_leaderboard.dart';
 
 class LeaderboardDeviceHubScreen extends StatefulWidget {
-  final List<Tuple2<String, String>> devices;
+  final List<Tuple3<String, String, String>> devices;
 
   const LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => LeaderboardDeviceHubScreenState();
+  LeaderboardDeviceHubScreenState createState() => LeaderboardDeviceHubScreenState();
 }
 
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {

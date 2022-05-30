@@ -1,9 +1,10 @@
 import 'package:edit_distance/edit_distance.dart';
-import '../../devices/device_map.dart';
+import '../../devices/device_descriptors/matrix_treadmill_descriptor.dart';
 import 'fit_base_type.dart';
 
 const nautilusFitId = 14;
 const northPoleEngineeringFitId = 66;
+const stagesCyclingFitId = 69;
 const johnsonHealthTechId = 122;
 const precorFitId = 266;
 const stravaFitId = 265;
@@ -176,8 +177,8 @@ int getFitManufacturer(String manufacturer) {
     return FitBaseTypes.uint16Type.invalidValue;
   }
 
-  final matrixDescriptor = deviceMap[matrixTreadmillFourCC];
-  if (matrixDescriptor != null && manufacturer.startsWith(matrixDescriptor.manufacturerPrefix)) {
+  final matrixDescriptor = MatrixTreadmillDescriptor();
+  if (manufacturer.startsWith(matrixDescriptor.manufacturerPrefix)) {
     return johnsonHealthTechId;
   }
 
@@ -189,15 +190,18 @@ int getFitManufacturer(String manufacturer) {
     final manufacturerCropped = manufacturerLower.length <= manufacturerEntry.value.length
         ? manufacturerLower
         : manufacturerLower.substring(0, manufacturerEntry.value.length - 1);
-    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, manufacturerEntry.value);
+    final entryCropped = manufacturerEntry.value.length <= manufacturerCropped.length
+        ? manufacturerEntry.value
+        : manufacturerEntry.value.substring(0, manufacturerCropped.length - 1);
+    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, entryCropped);
     if (distance < bestDistance) {
       bestDistance = distance;
       bestId = manufacturerEntry.key;
     }
   }
 
-  if (bestDistance > 0.1) {
-    bestId = FitBaseTypes.uint16Type.invalidValue;
+  if (bestDistance > 0.10) {
+    bestId = stravaFitId;
   }
 
   return bestId;

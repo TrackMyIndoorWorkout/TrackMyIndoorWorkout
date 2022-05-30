@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/preferences/preferences_spec.dart';
+import 'package:track_my_indoor_exercise/preferences/metric_spec.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
-import 'utils.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 void main() {
   group('getPreferencesSpecs finishes for various sports', () {
@@ -10,9 +10,9 @@ void main() {
         test('$sport SI $si', () async {
           await initPrefServiceForTest();
 
-          final specList = PreferencesSpec.getPreferencesSpecs(si, sport);
+          final specList = MetricSpec.getPreferencesSpecs(si, sport);
 
-          expect(specList.length, PreferencesSpec.preferencesSpecs.length);
+          expect(specList.length, MetricSpec.preferencesSpecs.length);
         });
       }
     }

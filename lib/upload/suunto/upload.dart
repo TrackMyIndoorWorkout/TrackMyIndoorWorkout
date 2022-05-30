@@ -135,7 +135,7 @@ abstract class Upload {
       return 200;
     }
 
-    final statusUri = Uri.parse(uploadsEndpoint + "/${activity.suuntoUploadIdentifier}");
+    final statusUri = Uri.parse("$uploadsEndpoint/${activity.suuntoUploadIdentifier}");
 
     final uploadStatusResponse = await http.get(
       statusUri,

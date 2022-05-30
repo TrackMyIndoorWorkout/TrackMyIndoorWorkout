@@ -1,3 +1,55 @@
+## 1.1.102
+
+* Decrease Leaderboard flicker (jump back-and-forth) effect especially the first few minutes
+* Introduce lock screen feature
+
+## 1.1.101
+
+* Ability to turn off GPS data from uploads and exports
+* Ability to specify pacer with a fixed speed (per sport, speed in km/h)
+* Ability to display average speed on the leaderboard info section (center of the track)
+
+## 1.1.100
+
+* Fixing manufacturer name check which fixes Yesoul S3 support as well (by Sebastian Kutschbach)
+* Revising some zone threshold and boundary defaults
+* Revising a few default zone colors to differ more by contrast / color
+* Making zone colors configurable (5 / 6 / 7 zones, light / dark theme, foreground / background)
+* Making sport and device based leaderboards mutually exclusive. More info is coming and we won't
+  have space for both at the same time.
+
+## 1.1.99
+
+* Adding attributions link to About page.
+
+## 1.1.98
+
+* Unit system will default to imperial only for US, UK, Myanmar and Liberia.
+  Every other country will default to metric upon the first start.
+* Further tuning of the data processing throttling logic. Please file an issue if you
+  come across any suspicious anomaly (such as stuck cumulative values, flickering).
+
+## 1.1.97
+
+* Bugfix: cure accidental double application of calorie / power tunes
+
+## 1.1.96
+
+* Foundations for optional debug logging to help remote debugging issues or
+  supporting new fitness machines
+* The app grew large enough with this feature that it became multi-dex
+
+## 1.1.95
+
+* Attempting to fix distance stuck at 0.3mi (Schwinn IC4)
+* Attempting to fix calories stuck at 1 (Genesis Port)
+
+## 1.1.94
+
+* Changes towards proper Stages SB20 and Yesoul S3 support which can also
+  help with many other machines
+* Fix for 4x calories reading inflation of Schwinn AC Perf+ CSV imported workouts
+
 ## 1.1.93
 
 * Adding support: Stages SB 20, FlexStride Pro, Matrix TF50, Matrix R50, Sole E25

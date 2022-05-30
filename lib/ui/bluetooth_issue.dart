@@ -15,7 +15,7 @@ class BluetoothIssueScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => BluetoothIssueScreenState();
+  BluetoothIssueScreenState createState() => BluetoothIssueScreenState();
 }
 
 class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
@@ -28,7 +28,8 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
     super.initState();
     locationState = widget.locationState;
     _textStyle = Get.textTheme.headline6!.apply(color: Colors.white);
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      // TODO: Android does not need this any more
       if (locationState != PermissionStatus.granted && locationState != PermissionStatus.limited) {
         final locationTake2 = await Permission.locationWhenInUse.request();
         setState(() {

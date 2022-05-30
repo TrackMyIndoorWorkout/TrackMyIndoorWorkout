@@ -8,6 +8,7 @@ import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
+import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
@@ -24,13 +25,18 @@ import '../preferences/instant_upload.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
+import '../preferences/metric_spec.dart';
 import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/multi_sport_device_support.dart';
-import '../preferences/preferences_spec.dart';
+import '../preferences/palette_spec.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
+import '../preferences/show_pacer.dart';
+import '../preferences/speed_spec.dart';
+import '../preferences/sport_spec.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
@@ -40,6 +46,7 @@ import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
 import '../preferences/zone_index_display_coloring.dart';
+import '../utils/logging.dart';
 import 'constants.dart';
 
 void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService prefService) {
@@ -53,7 +60,7 @@ void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService 
 Future<Map<String, dynamic>> getPrefDefaults() async {
   Map<String, dynamic> prefDefaults = {
     preferencesVersionTag: preferencesVersionNext,
-    unitSystemTag: unitSystemDefault,
+    unitSystemTag: getUnitSystemDefault(),
     distanceResolutionTag: distanceResolutionDefault,
     instantScanTag: instantScanDefault,
     scanDurationTag: scanDurationDefault,
@@ -86,8 +93,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     audioVolumeIntTag: audioVolumeDefault,
     leaderboardFeatureTag: leaderboardFeatureDefault,
     rankRibbonVisualizationTag: rankRibbonVisualizationDefault,
-    rankingForDeviceTag: rankingForDeviceDefault,
-    rankingForSportTag: rankingForSportDefault,
+    rankingForSportOrDeviceTag: rankingForSportOrDeviceDefault,
     rankTrackVisualizationTag: rankTrackVisualizationDefault,
     rankInfoOnTrackTag: rankInfoOnTrackDefault,
     themeSelectionTag: themeSelectionDefault,
@@ -105,10 +111,14 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     twoColumnLayoutTag: twoColumnLayoutDefault,
     movingOrElapsedTimeTag: movingOrElapsedTimeDefault,
     trainingPeaksUploadPublicTag: trainingPeaksUploadPublicDefault,
+    logLevelTag: logLevelDefault,
+    calculateGpsTag: calculateGpsDefault,
+    avgSpeedOnTrackTag: avgSpeedOnTrackDefault,
+    showPacerTag: showPacerDefault,
   };
 
-  for (var sport in PreferencesSpec.sportPrefixes) {
-    for (var prefSpec in PreferencesSpec.preferencesSpecs) {
+  for (var sport in SportSpec.sportPrefixes) {
+    for (var prefSpec in MetricSpec.preferencesSpecs) {
       prefDefaults.addAll({
         prefSpec.thresholdTag(sport): prefSpec.thresholdDefault(sport),
         prefSpec.zonesTag(sport): prefSpec.zonesDefault(sport),
@@ -117,16 +127,29 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
 
     prefDefaults.addAll({lastEquipmentIdTagPrefix + sport: lastEquipmentIdDefault});
     if (sport != ActivityType.ride) {
-      prefDefaults.addAll(
-          {PreferencesSpec.slowSpeedTag(sport): PreferencesSpec.slowSpeeds[sport].toString()});
+      prefDefaults
+          .addAll({SpeedSpec.slowSpeedTag(sport): SpeedSpec.slowSpeedDefaults[sport].toString()});
     }
+
+    prefDefaults
+        .addAll({SpeedSpec.pacerSpeedTag(sport): SpeedSpec.pacerSpeedDefaults[sport].toString()});
   }
 
-  for (var prefSpec in PreferencesSpec.preferencesSpecs) {
+  for (var prefSpec in MetricSpec.preferencesSpecs) {
     prefDefaults.addAll({
-      "${prefSpec.metric}_${PreferencesSpec.zoneIndexDisplayTagPostfix}":
-          prefSpec.indexDisplayDefault
+      "${prefSpec.metric}_${MetricSpec.zoneIndexDisplayTagPostfix}": prefSpec.indexDisplayDefault
     });
+  }
+
+  for (final lightOrDark in [false, true]) {
+    for (final fgOrBg in [false, true]) {
+      for (final paletteSize in [5, 6, 7]) {
+        prefDefaults.addAll({
+          PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize):
+              PaletteSpec.getDefaultPaletteString(lightOrDark, fgOrBg, paletteSize)
+        });
+      }
+    }
   }
 
   return prefDefaults;
@@ -139,9 +162,9 @@ Future<BasePrefService> initPreferences() async {
   Get.put<BasePrefService>(prefService, permanent: true);
 
   final prefVersion = prefService.get<int>(preferencesVersionTag) ?? preferencesVersionNext;
-  if (prefVersion < preferencesVersionSportThresholds) {
-    for (var prefSpec in PreferencesSpec.preferencesSpecs) {
-      final thresholdTag = PreferencesSpec.thresholdPrefix + prefSpec.metric;
+  if (prefVersion <= preferencesVersionSportThresholds) {
+    for (var prefSpec in MetricSpec.preferencesSpecs) {
+      final thresholdTag = MetricSpec.thresholdPrefix + prefSpec.metric;
       var thresholdString = prefService.get<String>(thresholdTag) ?? "";
       if (prefSpec.metric == "speed") {
         final threshold = double.tryParse(thresholdString) ?? eps;
@@ -149,15 +172,15 @@ Future<BasePrefService> initPreferences() async {
       }
 
       await prefService.set<String>(prefSpec.thresholdTag(ActivityType.ride), thresholdString);
-      final zoneTag = prefSpec.metric + PreferencesSpec.zonesPostfix;
+      final zoneTag = prefSpec.metric + MetricSpec.zonesPostfix;
       await prefService.set<String>(
         prefSpec.zonesTag(ActivityType.ride),
-        prefService.get<String>(zoneTag) ?? "55,75,90,105,120,150",
+        prefService.get<String>(zoneTag) ?? MetricSpec.veryOldZoneBoundaries,
       );
     }
   }
 
-  if (prefVersion < preferencesVersionEquipmentRemembrancePerSport) {
+  if (prefVersion <= preferencesVersionEquipmentRemembrancePerSport) {
     final lastEquipmentId = prefService.get<String>(lastEquipmentIdTag) ?? "";
     if (lastEquipmentId.trim().isNotEmpty) {
       await prefService.set<String>(
@@ -167,7 +190,7 @@ Future<BasePrefService> initPreferences() async {
     }
   }
 
-  if (prefVersion < preferencesVersionSpinners) {
+  if (prefVersion <= preferencesVersionSpinners) {
     migrateStringIntegerPreference(
       strokeRateSmoothingTag,
       strokeRateSmoothingDefault,
@@ -222,7 +245,7 @@ Future<BasePrefService> initPreferences() async {
 
   String addressesString =
       prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
-  if (prefVersion < preferencesVersionDefaultingDataConnection) {
+  if (prefVersion <= preferencesVersionDefaultingDataConnection) {
     if (addressesString == dataConnectionAddressesOldDefault) {
       await prefService.set<String>(
         dataConnectionAddressesTag,
@@ -236,21 +259,75 @@ Future<BasePrefService> initPreferences() async {
     await prefService.set<int>(scanDurationTag, scanDurationDefault);
   }
 
-  if (prefVersion < preferencesVersionIncreaseWatchdogDefault) {
+  if (prefVersion <= preferencesVersionIncreaseWatchdogDefault) {
     final currentDefault = prefService.get<int>(dataStreamGapWatchdogIntTag);
     if (currentDefault == dataStreamGapWatchdogOldDefault) {
       await prefService.set<int>(dataStreamGapWatchdogIntTag, dataStreamGapWatchdogDefault);
     }
   }
 
-  await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
-
-  for (var sport in PreferencesSpec.sportPrefixes) {
-    if (sport != ActivityType.ride) {
-      final slowSpeedString = prefService.get<String>(PreferencesSpec.slowSpeedTag(sport)) ?? "";
-      PreferencesSpec.slowSpeeds[sport] = double.tryParse(slowSpeedString) ?? eps;
+  if (prefVersion <= preferencesVersionZoneRefinementDefault) {
+    for (var sport in SportSpec.sportPrefixes) {
+      for (var prefSpec in MetricSpec.preferencesSpecs) {
+        final thresholdTag = prefSpec.thresholdTag(sport);
+        final oldThresholdDefault = prefSpec.oldThresholdDefault(sport);
+        final newThresholdDefault = prefSpec.thresholdDefault(sport);
+        final thresholdStr = prefService.get<String>(thresholdTag) ?? oldThresholdDefault;
+        final zonesTag = prefSpec.zonesTag(sport);
+        final oldZoneDefault = prefSpec.oldZoneDefault(sport);
+        final newZonesDefault = prefSpec.zonesDefault(sport);
+        final zonesStr = prefService.get<String>(zonesTag) ?? oldZoneDefault;
+        if (thresholdStr == oldThresholdDefault && zonesStr == oldZoneDefault) {
+          if (thresholdStr != newThresholdDefault) {
+            prefService.set<String>(thresholdTag, newThresholdDefault);
+          }
+          if (zonesStr != newZonesDefault) {
+            prefService.set<String>(zonesTag, newZonesDefault);
+          }
+        }
+      }
     }
   }
 
+  if (prefVersion <= preferencesVersionExclusiveSportOrDeviceLeaderboard) {
+    final rankingForSport =
+        prefService.get<bool>(rankingForSportOldTag) ?? rankingForSportOldDefault;
+    final rankingForDevice =
+        prefService.get<bool>(rankingForDeviceOldTag) ?? rankingForDeviceOldDefault;
+    if (rankingForDevice && !rankingForSport) {
+      prefService.set<bool>(rankingForSportOrDeviceTag, !rankingForSportOrDeviceDefault);
+    }
+  }
+
+  await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
+
+  for (var sport in SportSpec.sportPrefixes) {
+    if (sport != ActivityType.ride) {
+      final slowSpeedString = prefService.get<String>(SpeedSpec.slowSpeedTag(sport)) ??
+          SpeedSpec.slowSpeedDefaults[sport].toString();
+      SpeedSpec.slowSpeeds[sport] =
+          double.tryParse(slowSpeedString) ?? SpeedSpec.slowSpeedDefaults[sport];
+    }
+
+    final pacerSpeedString = prefService.get<String>(SpeedSpec.pacerSpeedTag(sport)) ??
+        SpeedSpec.pacerSpeedDefaults[sport].toString();
+    SpeedSpec.pacerSpeeds[sport] =
+        double.tryParse(pacerSpeedString) ?? SpeedSpec.pacerSpeedDefaults[sport];
+  }
+
+  final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+  if (logLevel != logLevelNone) {
+    await Logging.init(logLevel);
+  }
+
   return prefService;
+}
+
+Future<void> initPrefServiceForTest() async {
+  var prefDefaults = await getPrefDefaults();
+  final prefService = await PrefServiceShared.init(
+    prefix: preferencesPrefix,
+    defaults: prefDefaults,
+  );
+  Get.put<BasePrefService>(prefService);
 }

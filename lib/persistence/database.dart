@@ -6,7 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
-import '../devices/device_map.dart';
+import '../devices/device_fourcc.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
@@ -127,17 +127,20 @@ abstract class AppDatabase extends FloorDatabase {
     return result.map((row) => row['sport'].toString()).toList(growable: false);
   }
 
-  Future<List<Tuple2<String, String>>> findDistinctWorkoutSummaryDevices() async {
-    final result = await database
-        .rawQuery("SELECT DISTINCT `device_id`, `device_name` FROM `$workoutSummariesTableName`");
+  Future<List<Tuple3<String, String, String>>> findDistinctWorkoutSummaryDevices() async {
+    final result = await database.rawQuery(
+        "SELECT DISTINCT `device_id`, `device_name`, `sport` FROM `$workoutSummariesTableName`");
 
     if (result.isEmpty) {
       return [];
     }
 
     return result
-        .map((row) =>
-            Tuple2<String, String>(row['device_id'] as String, row['device_name'] as String))
+        .map((row) => Tuple3<String, String, String>(
+              row['device_id'] as String,
+              row['device_name'] as String,
+              row['sport'] as String,
+            ))
         .toList(growable: false);
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../preferences/preferences_spec.dart';
+import '../preferences/speed_spec.dart';
+import '../preferences/sport_spec.dart';
 import 'constants.dart';
 
 double speedByUnitCore(double speed, bool si) {
@@ -45,7 +45,7 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
     if (speed.abs() < displayEps) return "0:00";
 
     if (limitSlowSpeed) {
-      final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)]!;
+      final slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(sport)]!;
       if (speed < slowSpeed) {
         return "0:00";
       }
@@ -69,7 +69,7 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
 String paceString(double pace) {
   final minutes = pace.truncate();
   final seconds = ((pace - minutes) * 60.0).truncate();
-  return "$minutes:" + seconds.toString().padLeft(2, "0");
+  return "$minutes:${seconds.toString().padLeft(2, "0")}";
 }
 
 String getSpeedUnit(bool si, String sport) {

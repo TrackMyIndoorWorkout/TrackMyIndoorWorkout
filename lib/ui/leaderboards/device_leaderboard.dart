@@ -10,17 +10,19 @@ import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/generic.dart';
+import '../../preferences/speed_spec.dart';
+import '../../preferences/sport_spec.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class DeviceLeaderboardScreen extends StatefulWidget {
-  final Tuple2<String, String> device;
+  final Tuple3<String, String, String> device;
 
   const DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => DeviceLeaderboardScreenState();
+  DeviceLeaderboardScreenState createState() => DeviceLeaderboardScreenState();
 }
 
 class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
@@ -33,6 +35,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
   TextStyle _textStyle2 = const TextStyle();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
+  double? _slowSpeed;
 
   @override
   void initState() {
@@ -45,6 +48,9 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    if (widget.device.item3 != ActivityType.ride) {
+      _slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.device.item3)]!;
+    }
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
@@ -114,7 +120,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
           final timeStamp = DateTime.fromMillisecondsSinceEpoch(workoutSummary.start);
           final dateString = DateFormat.yMd().format(timeStamp);
           final timeString = DateFormat.Hms().format(timeStamp);
-          final speedString = workoutSummary.speedString(_si);
+          final speedString = workoutSummary.speedString(_si, _slowSpeed);
           final distanceString = workoutSummary.distanceStringWithUnit(_si, _highRes);
           final timeDisplay = Duration(seconds: workoutSummary.elapsed).toDisplay();
           return Card(

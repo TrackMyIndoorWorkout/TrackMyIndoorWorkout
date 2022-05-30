@@ -8,6 +8,7 @@ import 'export_record.dart';
 class ExportModel {
   Activity activity;
   bool rawData;
+  bool calculateGps;
   double averageSpeed = 0.0; // in m/s
   double maximumSpeed = 0.0; // in m/s
   double minimumSpeed = 0.0; // in m/s
@@ -41,6 +42,7 @@ class ExportModel {
   ExportModel({
     required this.activity,
     required this.rawData,
+    required this.calculateGps,
     required this.descriptor,
     required this.author,
     required this.name,

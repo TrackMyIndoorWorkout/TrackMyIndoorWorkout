@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/matrix_bike_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
@@ -21,7 +21,7 @@ class TestPair {
 
 void main() {
   test('Matrix Bike constructor tests', () async {
-    final bike = deviceMap[matrixBikeFourCC]!;
+    final bike = MatrixBikeDescriptor();
 
     expect(bike.canMeasureHeartRate, false);
     expect(bike.defaultSport, ActivityType.ride);
@@ -34,7 +34,7 @@ void main() {
       const FlagBytes(lsb: 254, msb: 29, description: "during workout"),
     ]) {
       test(flagBytes.description, () async {
-        final bike = deviceMap[matrixBikeFourCC] as MatrixBikeDescriptor;
+        final bike = MatrixBikeDescriptor();
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
         bike.stopWorkout();
 
@@ -106,12 +106,12 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        final bike = deviceMap[matrixBikeFourCC]!;
+        final bike = MatrixBikeDescriptor();
         bike.initFlag();
         expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();
 
-        final record = bike.stubRecord(testPair.data)!;
+        final record = bike.wrappedStubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);

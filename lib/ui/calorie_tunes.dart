@@ -13,7 +13,7 @@ class CalorieTunesScreen extends StatefulWidget {
   const CalorieTunesScreen({key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => CalorieTunesScreenState();
+  CalorieTunesScreenState createState() => CalorieTunesScreenState();
 }
 
 class CalorieTunesScreenState extends State<CalorieTunesScreen> {

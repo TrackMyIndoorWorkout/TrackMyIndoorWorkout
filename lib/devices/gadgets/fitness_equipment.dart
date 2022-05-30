@@ -4,26 +4,29 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/database.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/record.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
+import '../../persistence/database.dart';
 import '../../preferences/extend_tuning.dart';
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
+import '../../preferences/log_level.dart';
+import '../../persistence/models/activity.dart';
+import '../../persistence/models/record.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/hr_based_calories.dart';
+import '../../utils/logging.dart';
 import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../bluetooth_device_ex.dart';
@@ -51,11 +54,15 @@ class FitnessEquipment extends DeviceBase {
   int _lastPositiveCadence = 0; // #101
   bool _cadenceGapWorkaround = cadenceGapWorkaroundDefault;
   double _lastPositiveCalories = 0.0; // #111
-  bool startingValues; // #197
+  bool firstCalories; // #197 #234 #259
   double _startingCalories = 0.0;
+  bool firstDistance; // #197 #234 #259
   double _startingDistance = 0.0;
+  bool firstTime; // #197 #234 #259
   int _startingElapsed = 0;
-  bool hasTotalCalorieCounting = false;
+  bool hasTotalCalorieReporting = false;
+  bool hasTotalDistanceReporting = false;
+  bool hasTotalTimeReporting = false;
   Timer? _timer;
   late RecordWithSport lastRecord;
   HeartRateMonitor? heartRateMonitor;
@@ -81,20 +88,27 @@ class FitnessEquipment extends DeviceBase {
   double? slowPace;
   bool _equipmentDiscovery = false;
   bool _extendTuning = false;
+  int _logLevel = logLevelDefault;
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
   Map<int, List<int>> _listDeduplicationMap = {};
   Timer? _throttleTimer;
+  RecordHandlerFunction? _recordHandlerFunction;
 
-  FitnessEquipment({this.descriptor, device, this.startingValues = true})
+  FitnessEquipment(
+      {this.descriptor,
+      device,
+      this.firstCalories = true,
+      this.firstDistance = true,
+      this.firstTime = true})
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
           characteristicsId: descriptor?.dataCharacteristicId,
           device: device,
         ) {
     readConfiguration();
-    lastRecord = RecordWithSport.getBlank(sport);
+    lastRecord = RecordWithSport.getZero(sport);
   }
 
   String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
@@ -114,48 +128,194 @@ class FitnessEquipment extends DeviceBase {
     return l[1] * 256 + l[0];
   }
 
-  Stream<RecordWithSport> get _listenToData async* {
-    if (!attached || characteristic == null || descriptor == null) return;
+  RecordWithSport? _mergedForYield() {
+    final values = _listDeduplicationMap.entries
+        .map((entry) => dataHandlers[entry.key]!.wrappedStubRecord(entry.value))
+        .whereNotNull();
 
-    await for (final byteList in characteristic!.value) {
-      if (!measuring && !calibrating) continue;
-
-      final key = keySelector(byteList);
-      if (key <= 0) continue;
-
-      if (!dataHandlers.containsKey(key)) {
-        dataHandlers[key] = descriptor!.clone();
+    _listDeduplicationMap = {};
+    if (values.isEmpty) {
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "mergedToYield",
+          "Skipping!!",
+        );
       }
+      return null;
+    }
 
-      final dataHandler = dataHandlers[key]!;
-      if (!dataHandler.isDataProcessable(byteList)) continue;
+    final merged = values.skip(1).fold<RecordWithSport>(
+          values.first,
+          (prev, element) => prev.merge(element, true, true),
+        );
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "mergedToYield",
+        "merged $merged",
+      );
+    }
+    return merged;
+  }
 
-      _listDeduplicationMap[key] = byteList;
-
-      final shouldYield = !(_throttleTimer?.isActive ?? false);
-      _throttleTimer ??= Timer(_throttleDuration, () => {_throttleTimer = null});
-
-      if (shouldYield) {
-        final values = _listDeduplicationMap.entries
-            .map((entry) => dataHandlers[entry.key]!.stubRecord(entry.value))
-            .whereNotNull();
-
-        _listDeduplicationMap = {};
-        if (values.isEmpty) continue;
-
-        yield values.skip(1).fold<RecordWithSport>(
-              values.first,
-              (prev, element) => prev.merge(
-                element,
-                _cadenceGapWorkaround,
-                _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
-              ),
-            );
+  void _throttlingTimerCallback() {
+    _throttleTimer = null;
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "listenToData",
+        "Timer expire induced handling",
+      );
+    }
+    if (_recordHandlerFunction != null) {
+      final merged = _mergedForYield();
+      if (merged != null) {
+        // Since we processed this should also count against throttle
+        _startThrottlingTimer();
+        // No way to yield from here so imperatively pump
+        pumpDataCore(merged);
       }
     }
   }
 
+  void _startThrottlingTimer() {
+    _throttleTimer ??= Timer(_throttleDuration, _throttlingTimerCallback);
+  }
+
+  /// Data streaming with custom multi-type packet aware throttling logic
+  ///
+  /// Stages SB20, Yesoul S3 and several other machines don't gather up
+  /// all the relevant feature data into one packet, but instead supply
+  /// various packets with distinct features. For example:
+  /// * Stages has three packet types: 1. speed, 2. distance, 3.
+  ///   cadence + power
+  /// * Yesoul has two: 1. speed + elapsed time 2. cadence + distance +
+  ///   power + calories
+  ///
+  /// This behavior is fundamentally different than other machines like
+  /// Schwinn IC4 or Precor Spinner Chrono Power.
+  /// * With multi-type packets I cannot tell if the workout is stopped
+  ///   (like if I ony get a distance packet).
+  /// * Creating a stub record from fragments of features results in a
+  ///   spotty record. We'd need to fill the gaps from last known positive
+  ///   values.
+  /// * Since feature flags rotate we'd want to avoid the constant
+  ///   re-interpretation of feature bits and construction of metric mapping.
+  ///   So instead of having just one DataHandler (part of DeviceBase parent
+  ///   class) we'd manage a set of DataHandlers, basically caching the
+  ///   feature computation
+  /// * With need our own throttling, since the throttle logic should
+  ///   distinguish packets by features and should be able to gather the latest
+  ///   from each.
+  /// * As an extra win the throttling logic can already check the worthy-ness
+  ///   of a packet and drop it without disturbing the throttling (timer).
+  ///   Apparently Precor Spinner Chrono Power sometimes sprinkles in unworthy
+  ///   packets into the comm. If the throttle timing is in interference it could
+  ///   only pickup those unworthy packets so the app would be numb. With the
+  ///   worthy-ness check before anything else we could just yeet the garbage
+  ///   before it'd load or disturb anything.
+  /// * When it's time to yield we merge the various feature packets together.
+  ///   Merge logic simply sets a value if it's null. There's still extra care
+  ///   needed about first positive values and workout start and stop conditions
+  ///   in processRecord
+  Stream<RecordWithSport> get _listenToData async* {
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "listenToData",
+        "attached $attached characteristic $characteristic descriptor $descriptor",
+      );
+    }
+    if (!attached || characteristic == null || descriptor == null) return;
+
+    await for (final byteList in characteristic!.value) {
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "listenToData",
+          "measuring $measuring calibrating $calibrating",
+        );
+      }
+      if (!measuring && !calibrating) continue;
+
+      final key = keySelector(byteList);
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "listenToData",
+          "key $key byteList $byteList",
+        );
+      }
+      bool processable = false;
+      if (key > 0) {
+        if (!dataHandlers.containsKey(key)) {
+          if (_logLevel >= logLevelInfo) {
+            Logging.log(
+              _logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "listenToData",
+              "Cloning handler for $key",
+            );
+          }
+          dataHandlers[key] = descriptor!.clone();
+        }
+
+        final dataHandler = dataHandlers[key]!;
+        processable = dataHandler.isDataProcessable(byteList);
+        if (processable) {
+          _listDeduplicationMap[key] = byteList;
+        }
+      }
+
+      bool timerActive = _throttleTimer?.isActive ?? false;
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "listenToData",
+          "Processable $processable, timerActive $timerActive",
+        );
+      }
+      if (!timerActive) {
+        // Bad or useless data packets shouldn't count against rate limit.
+        // But now we let the code flow reach here so they can trigger
+        // a yield though.
+        if (key > 0 && processable) {
+          _startThrottlingTimer();
+        }
+
+        final merged = _mergedForYield();
+        if (merged != null) {
+          yield merged;
+        }
+      }
+    }
+  }
+
+  void pumpDataCore(RecordWithSport recordStub) {
+    if (_recordHandlerFunction != null) {
+      final record = processRecord(recordStub);
+      _recordHandlerFunction!(record);
+    }
+  }
+
   void pumpData(RecordHandlerFunction recordHandlerFunction) {
+    _recordHandlerFunction = recordHandlerFunction;
     if (uxDebug) {
       _timer = Timer(
         const Duration(seconds: 1),
@@ -168,8 +328,7 @@ class FitnessEquipment extends DeviceBase {
     } else {
       _runningCadenceSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
-        final record = processRecord(recordStub);
-        recordHandlerFunction(record);
+        pumpDataCore(recordStub);
       });
     }
   }
@@ -199,7 +358,7 @@ class FitnessEquipment extends DeviceBase {
 
   void setActivity(Activity activity) {
     _activity = activity;
-    lastRecord = RecordWithSport.getBlank(sport);
+    lastRecord = RecordWithSport.getZero(sport);
     workoutState = WorkoutState.waitingForFirstMove;
     dataHandlers = {};
     readConfiguration();
@@ -209,6 +368,19 @@ class FitnessEquipment extends DeviceBase {
     await connect();
 
     return await discover(identify: identify);
+  }
+
+  /// Needed to check if any of the last seen data stubs for each
+  /// combination indicated movement. #234 #259
+  bool wasNotMoving() {
+    if (dataHandlers.isEmpty) {
+      return true;
+    }
+
+    return dataHandlers.values.skip(1).fold<bool>(
+          dataHandlers.values.first.lastNotMoving,
+          (prev, element) => prev && element.lastNotMoving,
+        );
   }
 
   @override
@@ -221,35 +393,68 @@ class FitnessEquipment extends DeviceBase {
     if (_equipmentDiscovery || descriptor == null) return false;
 
     _equipmentDiscovery = true;
-    // Check manufacturer name
+
     if (manufacturerName == null) {
       final deviceInfo = BluetoothDeviceEx.filterService(services, deviceInformationUuid);
-      final nameCharacteristic =
-          BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, manufacturerNameUuid);
-      if (nameCharacteristic == null) {
-        return false;
-      }
-
-      try {
-        final nameBytes = await nameCharacteristic.read();
-        manufacturerName = String.fromCharCodes(nameBytes);
-      } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-        // 2nd try
-        try {
-          final nameBytes = await nameCharacteristic.read();
-          manufacturerName = String.fromCharCodes(nameBytes);
-        } on PlatformException catch (e, stack) {
-          debugPrint("$e");
-          debugPrintStack(stackTrace: stack, label: "trace:");
-        }
-      }
+      await _getManufacturerName(deviceInfo);
     }
 
     _equipmentDiscovery = false;
-    return manufacturerName!.contains(descriptor!.manufacturerPrefix) ||
-        descriptor!.manufacturerPrefix == "Unknown";
+    return _checkManufacturerName();
+  }
+
+  bool _checkManufacturerName() {
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "_checkManufacturerName",
+        "ensuring that manufacturer name ($manufacturerName) contains manufacturer prefix ${descriptor!.manufacturerPrefix}",
+      );
+    }
+    if (descriptor!.manufacturerPrefix == "Unknown") {
+      return true;
+    }
+    return manufacturerName?.toLowerCase().contains(descriptor!.manufacturerPrefix.toLowerCase()) ??
+        false;
+  }
+
+  Future<String?> _getManufacturerName(deviceInfo) async {
+    final nameCharacteristic =
+        BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, manufacturerNameUuid);
+    if (nameCharacteristic == null) {
+      return null;
+    }
+
+    return manufacturerName = await _readManufacturerNameFrom(nameCharacteristic) ??
+        await _readManufacturerNameFrom(nameCharacteristic, secondTry: true);
+  }
+
+  Future<String?> _readManufacturerNameFrom(BluetoothCharacteristic nameCharacteristic,
+      {bool secondTry = false}) async {
+    try {
+      final nameBytes = await nameCharacteristic.read();
+      manufacturerName = String.fromCharCodes(nameBytes);
+      return manufacturerName;
+    } on PlatformException catch (e, stack) {
+      if (_logLevel > logLevelNone) {
+        Logging.logException(
+          _logLevel,
+          "FITNESS_EQUIPMENT",
+          "discover",
+          "Could not read name${secondTry ? ' 2nd try' : ''}",
+          e,
+          stack,
+        );
+      }
+
+      if (kDebugMode) {
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
+      return null;
+    }
   }
 
   @visibleForTesting
@@ -266,12 +471,22 @@ class FitnessEquipment extends DeviceBase {
     // State Machine for #231 and #235
     // (intelligent start and elapsed time tracking)
     bool isNotMoving = stub.isNotMoving();
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "processRecord",
+        "workoutState $workoutState isNotMoving $isNotMoving",
+      );
+    }
     if (workoutState == WorkoutState.waitingForFirstMove) {
       if (isNotMoving) {
         return lastRecord;
       } else {
         dataHandlers = {};
         workoutState = WorkoutState.moving;
+        // Null activity should only happen in UX simulation mode
         if (_activity != null) {
           _activity!.startDateTime = now;
           _activity!.start = now.millisecondsSinceEpoch;
@@ -282,7 +497,14 @@ class FitnessEquipment extends DeviceBase {
         }
       }
     } else {
-      if (isNotMoving) {
+      // merged stub can be isNotMoving if due to timing interference
+      // only such packets gathered which don't contain moving data
+      // (such as distance, calories, elapsed time).
+      // The only way to be sure in case of multi packet type machines
+      // is to check if all of the data handlers report non movement.
+      // Once all types of packets indicate non movement we can be sure
+      // that the workout is stopped.
+      if (isNotMoving && wasNotMoving()) {
         if (workoutState == WorkoutState.moving) {
           workoutState = WorkoutState.justStopped;
         } else if (workoutState == WorkoutState.justStopped) {
@@ -295,13 +517,35 @@ class FitnessEquipment extends DeviceBase {
 
     if (descriptor != null) {
       stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "processRecord",
+          "adjusted stub $stub",
+        );
+      }
     }
 
-    if (shouldMerge) {
-      stub.merge(
-        lastRecord,
-        _cadenceGapWorkaround,
-        _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "processRecord",
+        "_residueCalories $_residueCalories, "
+            "_lastPositiveCadence $_lastPositiveCadence, "
+            "_lastPositiveCalories $_lastPositiveCalories, "
+            "firstCalories $firstCalories, "
+            "_startingCalories $_startingCalories, "
+            "firstDistance $firstDistance, "
+            "_startingDistance $_startingDistance, "
+            "firstTime $firstTime, "
+            "_startingElapsed $_startingElapsed, "
+            "hasTotalCalorieReporting $hasTotalCalorieReporting, "
+            "hasTotalDistanceReporting $hasTotalDistanceReporting, "
+            "hasTotalTimeReporting $hasTotalTimeReporting",
       );
     }
 
@@ -312,7 +556,7 @@ class FitnessEquipment extends DeviceBase {
     // Therefore the FTMS elapsed time reading is kinda useless, causes problems.
     // With this fix the calorie zeroing bug is revealed. Calorie preserving workaround can be
     // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
-    final stubHasCalories = stub.calories != null && stub.calories! > 0;
+    final deviceReportsTotalCalories = stub.calories != null;
     final hrmRecord = heartRateMonitor?.record != null
         ? descriptor!.adjustRecord(
             heartRateMonitor!.record!,
@@ -321,9 +565,44 @@ class FitnessEquipment extends DeviceBase {
             _extendTuning,
           )
         : null;
-    final hrmHasCalories = (hrmRecord?.calories ?? 0) > 0;
-    hasTotalCalorieCounting = hasTotalCalorieCounting || stubHasCalories || hrmHasCalories;
-    if (hasTotalCalorieCounting && stub.elapsed != null && (stubHasCalories || hrmHasCalories)) {
+    final hrmReportsCalories = hrmRecord?.calories != null;
+    // All of these starting* and hasTotal* codes have to come before the (optional) merge
+    // and after tuning / factoring adjustments #197
+    hasTotalCalorieReporting =
+        hasTotalCalorieReporting || deviceReportsTotalCalories || hrmReportsCalories;
+    if (firstCalories && hasTotalCalorieReporting) {
+      if (_useHrmReportedCalories) {
+        if ((hrmRecord?.calories ?? 0) >= 1) {
+          _startingCalories = hrmRecord!.calories!.toDouble();
+          firstCalories = false;
+        }
+      } else if ((stub.calories ?? 0) >= 1) {
+        _startingCalories = stub.calories!.toDouble();
+        firstCalories = false;
+      }
+    }
+
+    hasTotalDistanceReporting |= stub.distance != null;
+    if (hasTotalDistanceReporting && firstDistance && (stub.distance ?? 0.0) >= 50.0) {
+      _startingDistance = stub.distance!;
+      firstDistance = false;
+    }
+
+    hasTotalTimeReporting |= stub.elapsed != null;
+    if (hasTotalTimeReporting && firstTime && (stub.elapsed ?? 0) > 2) {
+      _startingElapsed = stub.elapsed!;
+      firstTime = false;
+    }
+
+    if (shouldMerge) {
+      stub.merge(
+        lastRecord,
+        _cadenceGapWorkaround,
+        _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
+      );
+    }
+
+    if (hasTotalCalorieReporting && stub.elapsed != null) {
       elapsed = stub.elapsed!.toDouble();
     }
 
@@ -335,10 +614,6 @@ class FitnessEquipment extends DeviceBase {
       stub.elapsedMillis = elapsedMillis;
     }
 
-    // #197
-    if (startingValues && stub.elapsed! > 2) {
-      _startingElapsed = stub.elapsed!;
-    }
     // #197
     if (_startingElapsed > 0) {
       stub.elapsed = stub.elapsed! - _startingElapsed;
@@ -390,13 +665,17 @@ class FitnessEquipment extends DeviceBase {
 
     // #235
     stub.movingTime = lastRecord.movingTime + dTMillis;
+    // #197 After 2 seconds we assume all types of feature packets showed up
+    // and it should have been decided if there's total distance / calories
+    // time reporting or not
+    if (stub.movingTime >= 2000) {
+      firstDistance = false;
+      firstTime = false;
+      firstCalories = false;
+    }
 
     // #197
     stub.distance ??= 0.0;
-    if (startingValues && stub.distance! >= 50.0) {
-      _startingDistance = stub.distance!;
-    }
-    // #197
     if (_startingDistance > eps) {
       stub.distance = stub.distance! - _startingDistance;
     }
@@ -426,13 +705,11 @@ class FitnessEquipment extends DeviceBase {
     var calories1 = 0.0;
     if (stub.calories != null && stub.calories! > 0) {
       calories1 = stub.calories!.toDouble();
-      hasTotalCalorieCounting = true;
     }
 
     var calories2 = 0.0;
     if ((hrmRecord?.calories ?? 0) > 0) {
       calories2 = hrmRecord?.calories?.toDouble() ?? 0.0;
-      hasTotalCalorieCounting = true;
     }
 
     var calories = 0.0;
@@ -461,10 +738,10 @@ class FitnessEquipment extends DeviceBase {
       }
 
       // Supplement power from calories https://www.braydenwm.com/calburn.htm
-      if (stub.power == null || stub.power! < eps) {
-        if (stub.caloriesPerMinute != null && stub.caloriesPerMinute! > eps) {
+      if ((stub.power ?? 0) < eps) {
+        if ((stub.caloriesPerMinute ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
-        } else if (stub.caloriesPerHour != null && stub.caloriesPerHour! > eps) {
+        } else if ((stub.caloriesPerHour ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
         }
 
@@ -473,6 +750,7 @@ class FitnessEquipment extends DeviceBase {
         }
       }
 
+      // Should we only use power based calorie integration if sport == ActivityType.ride?
       if (deltaCalories < eps && stub.power != null && stub.power! > eps) {
         deltaCalories =
             stub.power! * dT * jToKCal * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault;
@@ -506,13 +784,21 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #197
-    if (startingValues && calories >= 2.0) {
-      _startingCalories = calories;
-    }
-    // #197
     if (_startingCalories > eps) {
-      // Only possible with hasTotalCalorieCounting
-      assert(hasTotalCalorieCounting);
+      if (kDebugMode) {
+        assert(hasTotalCalorieReporting);
+      }
+
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "processRecord",
+          "starting calorie adj $calories - $_startingCalories",
+        );
+      }
+
       calories -= _startingCalories;
     }
 
@@ -520,11 +806,56 @@ class FitnessEquipment extends DeviceBase {
     stub.activityId = _activity?.id ?? 0;
     stub.sport = descriptor?.defaultSport ?? ActivityType.ride;
 
-    if (!startingValues) {
-      stub.cumulativeMetricsEnforcements(lastRecord);
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "processRecord",
+        "stub before cumulative $stub",
+      );
     }
 
-    startingValues = false;
+    if (!uxDebug) {
+      stub.cumulativeMetricsEnforcements(
+        lastRecord,
+        forDistance: !firstDistance,
+        forTime: !firstTime,
+        forCalories: !firstCalories,
+      );
+    }
+
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "processRecord",
+        "stub after processable $stub",
+      );
+    }
+
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "processRecord",
+        "_residueCalories $_residueCalories, "
+            "_lastPositiveCadence $_lastPositiveCadence, "
+            "_lastPositiveCalories $_lastPositiveCalories, "
+            "firstCalories $firstCalories, "
+            "_startingCalories $_startingCalories, "
+            "firstDistance $firstDistance, "
+            "_startingDistance $_startingDistance, "
+            "firstTime $firstTime, "
+            "_startingElapsed $_startingElapsed, "
+            "hasTotalCalorieReporting $hasTotalCalorieReporting, "
+            "hasTotalDistanceReporting $hasTotalDistanceReporting, "
+            "hasTotalTimeReporting $hasTotalTimeReporting",
+      );
+    }
+
     lastRecord = stub;
     return stub;
   }
@@ -541,6 +872,19 @@ class FitnessEquipment extends DeviceBase {
     hrCalorieFactor = factors.item3;
     hrmCalorieFactor =
         await database.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
+
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "refreshFactors",
+        "powerFactor $powerFactor, "
+            "calorieFactor $calorieFactor, "
+            "hrCalorieFactor $hrCalorieFactor, "
+            "hrmCalorieFactor $hrmCalorieFactor",
+      );
+    }
   }
 
   void readConfiguration() {
@@ -565,6 +909,30 @@ class FitnessEquipment extends DeviceBase {
     _vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
     _useHrBasedCalorieCounting &= (_weight > athleteBodyWeightMin && _age > athleteAgeMin);
     _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
+    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+
+    if (_logLevel >= logLevelInfo) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "readConfiguration",
+        "cadenceGapWorkaround $_cadenceGapWorkaround, "
+            "uxDebug $uxDebug, "
+            "heartRateGapWorkaround $_heartRateGapWorkaround, "
+            "heartRateUpperLimit $_heartRateUpperLimit, "
+            "heartRateLimitingMethod $_heartRateLimitingMethod, "
+            "useHrmReportedCalories $_useHrmReportedCalories, "
+            "useHrBasedCalorieCounting $_useHrBasedCalorieCounting, "
+            "weight $_weight, "
+            "age $_age, "
+            "isMale $_isMale, "
+            "vo2Max $_vo2Max, "
+            "useHrBasedCalorieCounting $_useHrBasedCalorieCounting, "
+            "extendTuning $_extendTuning, "
+            "logLevel $_logLevel",
+      );
+    }
 
     refreshFactors();
   }
@@ -573,12 +941,14 @@ class FitnessEquipment extends DeviceBase {
     readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
-    startingValues = true;
+    firstCalories = true;
+    firstDistance = true;
+    firstTime = true;
     _startingCalories = 0.0;
     _startingDistance = 0.0;
     _startingElapsed = 0;
     dataHandlers = {};
-    lastRecord = RecordWithSport.getBlank(sport);
+    lastRecord = RecordWithSport.getZero(sport);
   }
 
   void stopWorkout() {

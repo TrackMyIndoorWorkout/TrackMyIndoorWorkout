@@ -4,14 +4,15 @@ import '../device_descriptors/device_descriptor.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/long_metric_descriptor.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import 'complex_sensor.dart';
 
 class RunningCadenceSensor extends ComplexSensor {
   // Running cadence metrics
-  ShortMetricDescriptor? speedMetric;
-  ByteMetricDescriptor? cadenceMetric;
-  LongMetricDescriptor? distanceMetric;
+  MetricDescriptor? speedMetric;
+  MetricDescriptor? cadenceMetric;
+  MetricDescriptor? distanceMetric;
 
   RunningCadenceSensor(device, powerFactor)
       : super(runningCadenceServiceUuid, runningCadenceMeasurementUuid, device);
@@ -57,7 +58,7 @@ class RunningCadenceSensor extends ComplexSensor {
   @override
   RecordWithSport processMeasurement(List<int> data) {
     if (!canMeasurementProcessed(data)) {
-      return RecordWithSport.getBlank(ActivityType.run);
+      return RecordWithSport.getZero(ActivityType.run);
     }
 
     return RecordWithSport(

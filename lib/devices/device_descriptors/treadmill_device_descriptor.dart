@@ -2,11 +2,12 @@ import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import 'fitness_machine_descriptor.dart';
 
 class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
-  ByteMetricDescriptor? paceMetric;
+  MetricDescriptor? paceMetric;
 
   TreadmillDeviceDescriptor({
     required fourCC,
@@ -73,8 +74,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
-    super.stubRecord(data);
-
     double? speed = getSpeed(data);
     double? pace = getPace(data); // km / minute
     speed ??= (pace ?? 0.0) * 60.0; // km / h

@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
@@ -5,8 +6,10 @@ import 'dart:math';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:pref/pref.dart';
@@ -31,9 +34,13 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
+import '../preferences/metric_spec.dart';
 import '../preferences/moving_or_elapsed_time.dart';
-import '../preferences/preferences_spec.dart';
+import '../preferences/palette_spec.dart';
+import '../preferences/show_pacer.dart';
 import '../preferences/simpler_ui.dart';
+import '../preferences/speed_spec.dart';
+import '../preferences/sport_spec.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/two_column_layout.dart';
@@ -86,21 +93,26 @@ class RecordingScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => RecordingState();
+  RecordingState createState() => RecordingState();
 }
 
 class RecordingState extends State<RecordingScreen> {
+  static const double _markerStyleSizeAdjust = 1.4;
+  static const double _markerStyleSmallSizeAdjust = 0.9;
+  static const int _unlockChoices = 6;
+
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   TrackCalculator? _trackCalculator;
+  PaletteSpec? _paletteSpec;
   double _trackLength = trackLength;
   bool _measuring = false;
   int _pointCount = 0;
   ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
-  double? _mediaSizeMin;
-  double? _mediaHeight;
-  double? _mediaWidth;
+  double _mediaSizeMin = 0;
+  double _mediaHeight = 0;
+  double _mediaWidth = 0;
   double _sizeDefault = 10.0;
   double _sizeAdjust = 1.0;
   bool _landscape = false;
@@ -112,6 +124,7 @@ class RecordingState extends State<RecordingScreen> {
     fontSize: 11,
   );
   TextStyle _markerStyle = const TextStyle();
+  TextStyle _markerStyleSmall = const TextStyle();
   TextStyle _overlayStyle = const TextStyle();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(
     hasIcon: !simplerUiSlowDefault,
@@ -120,7 +133,7 @@ class RecordingState extends State<RecordingScreen> {
   List<bool> _expandedState = [];
   final List<ExpandableController> _rowControllers = [];
   final List<int> _expandedHeights = [];
-  List<PreferencesSpec> _preferencesSpecs = [];
+  List<MetricSpec> _preferencesSpecs = [];
 
   Activity? _activity;
   AppDatabase _database = Get.find<AppDatabase>();
@@ -155,18 +168,21 @@ class RecordingState extends State<RecordingScreen> {
   bool _targetHrAlerting = false;
   bool _hrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _leaderboardFeature = leaderboardFeatureDefault;
-  bool _rankingForDevice = rankingForDeviceDefault;
-  List<WorkoutSummary> _deviceLeaderboard = [];
-  int? _deviceRank;
-  String _deviceRankString = "";
-  bool _rankingForSport = rankingForSportDefault;
-  List<WorkoutSummary> _sportLeaderboard = [];
-  int? _sportRank;
-  String _sportRankString = "";
+  bool _rankingForSportOrDevice = rankingForSportOrDeviceDefault;
+  List<WorkoutSummary> _leaderboard = [];
+  int _selfRank = 0;
+  double _selfAvgSpeed = 0.0;
+  List<String> _selfRankString = [];
   bool _rankRibbonVisualization = rankRibbonVisualizationDefault;
   bool _rankTrackVisualization = rankTrackVisualizationDefault;
   bool _rankInfoOnTrack = rankInfoOnTrackDefault;
   bool _displayLapCounter = displayLapCounterDefault;
+  bool _avgSpeedOnTrack = avgSpeedOnTrackDefault;
+  bool _showPacer = showPacerDefault;
+  WorkoutSummary? _pacerWorkout;
+  final _averageSpeeds = ListQueue<double>();
+  double _averageSpeedSum = 0.0;
+  int _rankInfoColumnCount = 0;
   Color _darkRed = Colors.red;
   Color _darkGreen = Colors.green;
   Color _darkBlue = Colors.blue;
@@ -181,6 +197,12 @@ class RecordingState extends State<RecordingScreen> {
   bool _zoneIndexColoring = false;
   bool _tutorialVisible = false;
   int _lapCount = 0;
+  bool _isLocked = false;
+  int _unlockButtonIndex = 0;
+  final Random _rng = Random();
+  final List<GlobalKey> _unlockKeys = [];
+  final GlobalKey<CircularFabMenuState> _fabKey = GlobalKey();
+  int _unlockKey = -2;
 
   Future<void> _connectOnDemand() async {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
@@ -234,17 +256,35 @@ class RecordingState extends State<RecordingScreen> {
       _activity!.id = id;
     }
 
-    if (_rankingForDevice) {
-      _deviceRank = null;
-      _deviceRankString = "";
-      _deviceLeaderboard =
-          await _database.workoutSummaryDao.findAllWorkoutSummariesByDevice(widget.device.id.id);
-    }
-    if (_rankingForSport) {
-      _sportRank = null;
-      _sportRankString = "";
-      _sportLeaderboard = await _database.workoutSummaryDao
-          .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport);
+    if (_leaderboardFeature || _showPacer) {
+      _selfRank = 0;
+      _selfAvgSpeed = 0.0;
+      _selfRankString = [];
+      _averageSpeeds.clear();
+      _averageSpeedSum = 0.0;
+      if (_leaderboardFeature) {
+        _leaderboard = _rankingForSportOrDevice
+            ? await _database.workoutSummaryDao
+                .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport)
+            : await _database.workoutSummaryDao
+                .findAllWorkoutSummariesByDevice(widget.device.id.id);
+
+        if (_showPacer && _pacerWorkout != null) {
+          int insertionPoint = 0;
+          while (insertionPoint < _leaderboard.length &&
+              _leaderboard[insertionPoint].speed > _pacerWorkout!.speed) {
+            insertionPoint++;
+          }
+
+          if (insertionPoint < _leaderboard.length) {
+            _leaderboard.insert(insertionPoint, _pacerWorkout!);
+          } else {
+            _leaderboard.add(_pacerWorkout!);
+          }
+        }
+      } else if (_pacerWorkout != null) {
+        _leaderboard = [_pacerWorkout!];
+      }
     }
 
     _fitnessEquipment?.setActivity(_activity!);
@@ -299,13 +339,11 @@ class RecordingState extends State<RecordingScreen> {
             _heartRate = record.heartRate;
           }
 
-          if (_rankingForDevice) {
-            _deviceRank = _getDeviceRank();
-            _deviceRankString = _getDeviceRankString();
-          }
-          if (_rankingForSport) {
-            _sportRank = _getSportRank();
-            _sportRankString = _getSportRankString();
+          if (_leaderboardFeature || _showPacer) {
+            final selfRankTuple = _getSelfRank();
+            _selfRank = selfRankTuple.item1;
+            _selfAvgSpeed = selfRankTuple.item2;
+            _selfRankString = _getSelfRankString();
           }
 
           _values = [
@@ -430,10 +468,13 @@ class RecordingState extends State<RecordingScreen> {
     if (sizeAdjustInt != 100) {
       _sizeAdjust = sizeAdjustInt / 100.0;
     }
-    _markerStyle = _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: 1.4);
+    _markerStyle =
+        _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: _markerStyleSizeAdjust);
+    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!,
+        fontSizeFactor: _markerStyleSmallSizeAdjust);
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     prefService.set<String>(
-      lastEquipmentIdTagPrefix + PreferencesSpec.sport2Sport(widget.sport),
+      lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),
       widget.device.id.id,
     );
     if (Get.isRegistered<FitnessEquipment>()) {
@@ -471,17 +512,25 @@ class RecordingState extends State<RecordingScreen> {
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
 
     if (widget.sport != ActivityType.ride) {
-      final slowPace = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(widget.sport)]!;
+      final slowPace = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
       widget.descriptor.slowPace = slowPace;
       _fitnessEquipment?.slowPace = slowPace;
     }
+    _showPacer = prefService.get<bool>(showPacerTag) ?? showPacerDefault;
+    if (_showPacer) {
+      final pacerSpeed = SpeedSpec.pacerSpeeds[SportSpec.sport2Sport(widget.sport)]!;
+      _pacerWorkout = WorkoutSummary.getPacerWorkout(pacerSpeed, widget.sport);
+    }
 
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
+    _paletteSpec = PaletteSpec.getInstance(prefService);
+
+    _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
     for (var prefSpec in _preferencesSpecs) {
       prefSpec.calculateBounds(
         0,
         decimalRound(prefSpec.threshold * (prefSpec.zonePercents.last + 15) / 100.0),
         _isLight,
+        _paletteSpec!,
       );
     }
 
@@ -611,16 +660,24 @@ class RecordingState extends State<RecordingScreen> {
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _rankRibbonVisualization =
         prefService.get<bool>(rankRibbonVisualizationTag) ?? rankRibbonVisualizationDefault;
-    _rankingForDevice = prefService.get<bool>(rankingForDeviceTag) ?? rankingForDeviceDefault;
-    _deviceLeaderboard = [];
-    _deviceRankString = "";
-    _rankingForSport = prefService.get<bool>(rankingForSportTag) ?? rankingForSportDefault;
-    _sportLeaderboard = [];
-    _sportRankString = "";
+    _rankingForSportOrDevice =
+        prefService.get<bool>(rankingForSportOrDeviceTag) ?? rankingForSportOrDeviceDefault;
+    _leaderboard = [];
+    _selfRankString = [];
     _rankTrackVisualization =
         prefService.get<bool>(rankTrackVisualizationTag) ?? rankTrackVisualizationDefault;
     _rankInfoOnTrack = prefService.get<bool>(rankInfoOnTrackTag) ?? rankInfoOnTrackDefault;
     _displayLapCounter = prefService.get<bool>(displayLapCounterTag) ?? displayLapCounterDefault;
+    _avgSpeedOnTrack = prefService.get<bool>(avgSpeedOnTrackTag) ?? avgSpeedOnTrackDefault;
+
+    _rankInfoColumnCount = 2;
+    if (_displayLapCounter) {
+      _rankInfoColumnCount += 1;
+    }
+
+    if (_avgSpeedOnTrack) {
+      _rankInfoColumnCount += 1;
+    }
 
     final isLight = !_themeManager.isDark();
     _darkRed = isLight ? Colors.red.shade900 : Colors.redAccent.shade100;
@@ -636,6 +693,12 @@ class RecordingState extends State<RecordingScreen> {
     _initializeHeartRateMonitor();
     _connectOnDemand();
     _database = Get.find<AppDatabase>();
+    _isLocked = false;
+    _unlockButtonIndex = 0;
+    if (_unlockKeys.isEmpty) {
+      _unlockKeys.addAll([for (var i = 0; i < _unlockChoices; ++i) GlobalKey()]);
+    }
+    _unlockKey = -2;
   }
 
   _preDispose() async {
@@ -861,77 +924,86 @@ class RecordingState extends State<RecordingScreen> {
       return background ? Colors.transparent : _themeManager.getProtagonistColor();
     }
 
-    return background
-        ? _preferencesSpecs[metricIndex].bgColorByBin(_zoneIndexes[metricIndex]!, _isLight)
-        : _preferencesSpecs[metricIndex].fgColorByBin(_zoneIndexes[metricIndex]!, _isLight);
+    if (background) {
+      return _paletteSpec?.bgColorByBin(
+              _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
+          PaletteSpec?.bgColorByBinDefault(
+              _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
+    }
+
+    return _paletteSpec?.fgColorByBin(
+            _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
+        PaletteSpec?.fgColorByBinDefault(
+            _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
   }
 
-  int? _getRank(List<WorkoutSummary> leaderboard) {
-    if (leaderboard.isEmpty) {
-      return 1;
+  Tuple2<int, double> _getRank(List<WorkoutSummary> leaderboard) {
+    if (_elapsed == 0) {
+      return const Tuple2<int, double>(0, 0.0);
     }
 
-    if (_movingTime == 0) {
-      return null;
+    // #252 moving is in milliseconds, so 1000 multiplier is needed
+    // (but for now we use elapsed because other parts use elapsed as well)
+    double averageSpeed = 0.0;
+    if (_elapsed > 0) {
+      // #236 smooth signal of average speeds by average over a rolling window
+      averageSpeed = _distance / _elapsed * DeviceDescriptor.ms2kmh;
+      if (_averageSpeeds.isEmpty) {
+        _averageSpeeds.addAll(
+            [for (var i = 0; i < averageSpeedSmoothingWindowSizeDefault; ++i) averageSpeed]);
+        _averageSpeedSum = averageSpeed * averageSpeedSmoothingWindowSizeDefault;
+      } else {
+        _averageSpeeds.add(averageSpeed);
+        _averageSpeedSum += averageSpeed;
+        _averageSpeedSum -= _averageSpeeds.first;
+        _averageSpeeds.removeFirst();
+        averageSpeed = _averageSpeedSum / _averageSpeeds.length;
+      }
     }
 
-    // #252 moving is in milliseconds, so 1000 multiplier is needed!!
-    final averageSpeed =
-        _movingTime > 0 ? _distance * 1000.0 / _movingTime * DeviceDescriptor.ms2kmh : 0.0;
     var rank = 1;
     for (final entry in leaderboard) {
       if (averageSpeed > entry.speed) {
-        return rank;
+        return Tuple2<int, double>(rank, averageSpeed);
       }
 
       rank += 1;
     }
 
-    return rank;
+    return Tuple2<int, double>(rank, averageSpeed);
   }
 
-  String _getRankString(int? rank, List<WorkoutSummary> leaderboard) {
-    return rank == null ? emptyMeasurement : rank.toString();
+  String _getRankString(int rank, List<WorkoutSummary> leaderboard) {
+    return rank == 0 ? emptyMeasurement : rank.toString();
   }
 
-  int? _getDeviceRank() {
-    if (!_rankingForDevice) return null;
+  Tuple2<int, double> _getSelfRank() {
+    if (!_leaderboardFeature && !_showPacer) return const Tuple2<int, double>(0, 0.0);
 
-    return _getRank(_deviceLeaderboard);
+    return _getRank(_leaderboard);
   }
 
-  String _getDeviceRankString() {
-    return "#${_getRankString(_deviceRank, _deviceLeaderboard)} (Device)";
+  List<String> _getSelfRankString() {
+    return ["#${_getRankString(_selfRank, _leaderboard)}", "(Self)"];
   }
 
-  int? _getSportRank() {
-    if (!_rankingForSport) return null;
-
-    return _getRank(_sportLeaderboard);
-  }
-
-  String _getSportRankString() {
-    return "#${_getRankString(_sportRank, _sportLeaderboard)} (${widget.descriptor.defaultSport})";
-  }
-
-  Color _getPaceLightColor(int? deviceRank, int? sportRank, {required bool background}) {
-    if (!_rankingForDevice && !_rankingForSport || deviceRank == null && sportRank == null) {
+  Color _getPaceLightColor(int selfRank, {required bool background}) {
+    if (!_leaderboardFeature || selfRank == 0) {
       return background ? Colors.transparent : _themeManager.getBlueColor();
     }
 
-    if (deviceRank != null && deviceRank <= 1 || sportRank != null && sportRank <= 1) {
+    if (selfRank <= 1) {
       return background ? _lightGreen : _darkGreen;
     }
     return background ? _lightBlue : _darkBlue;
   }
 
-  TextStyle _getPaceLightTextStyle(int? deviceRank, int? sportRank) {
-    if (!_rankingForDevice && !_rankingForSport) {
+  TextStyle _getPaceLightTextStyle(int selfRank) {
+    if (!_leaderboardFeature) {
       return _measurementStyle;
     }
 
-    return _measurementStyle.apply(
-        color: _getPaceLightColor(deviceRank, sportRank, background: false));
+    return _measurementStyle.apply(color: _getPaceLightColor(selfRank, background: false));
   }
 
   TargetHrState _getTargetHrState() {
@@ -1004,129 +1076,274 @@ class RecordingState extends State<RecordingScreen> {
         ),
         width: radius * 2,
         height: radius * 2,
-        child: Center(child: Text(text, style: _markerStyle)),
+        child: Center(child: Text(text, style: text.length > 2 ? _markerStyleSmall : _markerStyle)),
       ),
     );
   }
 
-  List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int? rank) {
+  bool _addLeaderboardTrackMarker(
+    int markerColor,
+    WorkoutSummary workoutSummary,
+    int rank,
+    List<Widget> markers,
+  ) {
+    final distance = workoutSummary.distanceAtTime(_elapsed);
+    final position = _trackCalculator?.trackMarker(distance);
+    final isPacer = workoutSummary.isPacer;
+    if (position != null) {
+      markers.add(_getTrackMarker(
+        position,
+        isPacer ? pacerColor : markerColor,
+        isPacer ? pacerText : "$rank",
+        false,
+      ));
+    }
+
+    return isPacer;
+  }
+
+  List<Widget> _markersForLeaderboard(List<WorkoutSummary> leaderboard, int rank) {
     List<Widget> markers = [];
-    if (leaderboard.isEmpty || rank == null || _trackCalculator == null) {
+    if (leaderboard.isEmpty || rank == 0 || _trackCalculator == null) {
       return markers;
     }
 
-    final length = leaderboard.length;
-    // Preceding dot ahead of the preceding (if any)
-    if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
-      final position = _trackCalculator?.trackMarker(distance);
-      if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 2}", false));
+    bool wasPacer = false;
+    if (_rankTrackVisualization) {
+      final length = leaderboard.length;
+      // Preceding dot ahead of the preceding (if any)
+      if (rank > 2 && rank - 3 < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 3], rank - 2, markers);
+        wasPacer |= isPacer;
+      }
+
+      // Preceding dot (chasing directly) if any
+      if (rank > 1 && rank - 2 < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 2], rank - 1, markers);
+        wasPacer |= isPacer;
+      }
+
+      // Following dot (following directly) if any
+      if (rank - 1 < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank - 1], rank + 1, markers);
+        wasPacer |= isPacer;
+      }
+
+      // Following dot after the follower (if any)
+      if (rank < length) {
+        final isPacer =
+            _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank], rank + 2, markers);
+        wasPacer |= isPacer;
       }
     }
 
-    // Preceding dot (chasing directly) if any
-    if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
+    if (!wasPacer && _showPacer && _pacerWorkout != null) {
+      final distance = _pacerWorkout!.distanceAtTime(_elapsed);
       final position = _trackCalculator?.trackMarker(distance);
       if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF00FF00, "${rank - 1}", false));
-      }
-    }
-
-    // Following dot (following directly) if any
-    if (rank - 1 < length) {
-      final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
-      final position = _trackCalculator?.trackMarker(distance);
-      if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 1}", false));
-      }
-    }
-
-    // Following dot after the follower (if any)
-    if (rank < length) {
-      final distance = leaderboard[rank].distanceAtTime(_movingTime);
-      final position = _trackCalculator?.trackMarker(distance);
-      if (position != null) {
-        markers.add(_getTrackMarker(position, 0xFF0000FF, "${rank + 2}", false));
+        markers.add(_getTrackMarker(position, pacerColor, pacerText, false));
       }
     }
 
     return markers;
   }
 
-  Widget _getLeaderboardInfoTextCore(String text, bool lead) {
-    final bgColor = lead ? _lightGreen : _lightBlue;
+  Widget _getLeaderboardInfoTextCellCore(String text, Color bgColor) {
     return ColoredBox(
       color: bgColor,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 4.0),
-        child: Text(text, style: _markerStyle),
+        padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
+        child: Text(text, style: _markerStyleSmall),
       ),
     );
   }
 
-  Widget _getLeaderboardInfoText(int rank, double distance, bool lead) {
-    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
-    var rankText = "";
+  List<Widget> _getPacerInfoText() {
+    List<Widget> widgets = [];
+    if (!_showPacer || _pacerWorkout == null) {
+      return widgets;
+    }
+
+    widgets.add(_getLeaderboardInfoTextCellCore("Pacer", Colors.grey));
+    final distance = _pacerWorkout!.distanceAtTime(_elapsed);
+
     if (_displayLapCounter) {
       final lapCount = (distance / _trackLength).floor();
-      rankText = "#$rank L$lapCount $distanceString";
-    } else {
-      rankText = "#$rank $distanceString";
+      widgets.add(_getLeaderboardInfoTextCellCore("L$lapCount", Colors.grey));
     }
-    return _getLeaderboardInfoTextCore(rankText, lead);
+
+    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
+    widgets.add(_getLeaderboardInfoTextCellCore(distanceString, Colors.grey));
+    if (_avgSpeedOnTrack) {
+      final speedString = _pacerWorkout!.speedString(_si, widget.descriptor.slowPace);
+
+      widgets.add(_getLeaderboardInfoTextCellCore(speedString, Colors.grey));
+    }
+
+    return widgets;
   }
 
-  Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int? rank, String rankString) {
-    if (leaderboard.isEmpty || rank == null) {
-      return Text(rankString, style: _markerStyle);
+  Widget _getLeaderboardInfoTextCell(String text, bool lead) {
+    final bgColor = lead ? _lightGreen : _lightBlue;
+    return _getLeaderboardInfoTextCellCore(text, bgColor);
+  }
+
+  List<Widget> _getLeaderboardInfoText(int rank, double distance, String speed, bool lead) {
+    List<Widget> widgets = [];
+    widgets.add(_getLeaderboardInfoTextCell("#$rank", lead));
+    if (_displayLapCounter) {
+      final lapCount = (distance / _trackLength).floor();
+      widgets.add(_getLeaderboardInfoTextCell("L$lapCount", lead));
     }
 
-    List<Widget> rows = [];
+    final distanceString = distanceByUnit(distance - _distance, _si, _highRes, autoRes: true);
+    widgets.add(_getLeaderboardInfoTextCell(distanceString, lead));
+    if (_avgSpeedOnTrack) {
+      widgets.add(_getLeaderboardInfoTextCell(speed, lead));
+    }
+
+    return widgets;
+  }
+
+  Widget _infoForLeaderboard(List<WorkoutSummary> leaderboard, int rank, List<String> rankString) {
+    if (leaderboard.isEmpty || rank == 0) {
+      var rankStringEx = rankString.join(" ");
+      if (_displayLapCounter) {
+        rankStringEx += " L$_lapCount";
+      }
+      return Text(rankStringEx, style: _markerStyle);
+    }
+
+    String areaRow = "nav content";
+    if (_displayLapCounter) {
+      areaRow += " content";
+    }
+
+    if (_avgSpeedOnTrack) {
+      areaRow += " content";
+    }
+
+    int rowCount = 0;
+    List<Widget> cells = [];
     final length = leaderboard.length;
+    bool wasPacer = false;
     // Preceding dot ahead of the preceding (if any)
     if (rank > 2 && rank - 3 < length) {
-      final distance = leaderboard[rank - 3].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank - 2, distance, true));
-      rows.add(const Divider(height: 1));
+      final isPacer = leaderboard[rank - 3].isPacer;
+      if (_showPacer && !isPacer && _pacerWorkout!.speed > leaderboard[rank - 3].speed) {
+        cells.addAll(_getPacerInfoText());
+        rowCount++;
+        wasPacer = true;
+      }
+
+      final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
+      final speed = _avgSpeedOnTrack
+          ? leaderboard[rank - 3].speedString(_si, widget.descriptor.slowPace)
+          : "";
+      cells.addAll(
+          isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank - 2, distance, speed, true));
+      rowCount++;
+      wasPacer |= isPacer;
     }
 
     // Preceding dot (chasing directly) if any
     if (rank > 1 && rank - 2 < length) {
-      final distance = leaderboard[rank - 2].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank - 1, distance, true));
-      rows.add(const Divider(height: 1));
+      final isPacer = leaderboard[rank - 2].isPacer;
+      final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
+      final speed = _avgSpeedOnTrack
+          ? leaderboard[rank - 2].speedString(_si, widget.descriptor.slowPace)
+          : "";
+      cells.addAll(
+          isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank - 1, distance, speed, true));
+      rowCount++;
+      wasPacer |= isPacer;
     }
 
-    var rankStringEx = rankString;
+    // Self section
+    final lead = rank <= 1;
+    cells.add(_getLeaderboardInfoTextCell(rankString[0], lead));
     if (_displayLapCounter) {
-      rankStringEx += " L$_lapCount";
+      cells.add(_getLeaderboardInfoTextCell("L$_lapCount", lead));
     }
 
-    rows.add(_getLeaderboardInfoTextCore(rankStringEx, rank <= 1));
+    cells.add(_getLeaderboardInfoTextCell(rankString[1], lead));
+    if (_avgSpeedOnTrack) {
+      final avgSpeedString = WorkoutSummary.speedStringStatic(
+          _si, _selfAvgSpeed, widget.descriptor.slowPace, widget.sport);
+      cells.add(_getLeaderboardInfoTextCell(avgSpeedString, lead));
+    }
+
+    rowCount++;
 
     // Following dot (following directly) if any
     if (rank - 1 < length) {
-      rows.add(const Divider(height: 1));
-      final distance = leaderboard[rank - 1].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank + 1, distance, false));
+      final isPacer = leaderboard[rank - 1].isPacer;
+      final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
+      final speed = _avgSpeedOnTrack
+          ? leaderboard[rank - 1].speedString(_si, widget.descriptor.slowPace)
+          : "";
+      cells.addAll(isPacer
+          ? _getPacerInfoText()
+          : _getLeaderboardInfoText(rank + 1, distance, speed, false));
+      rowCount++;
+      wasPacer |= isPacer;
     }
 
     // Following dot after the follower (if any)
     if (rank < length) {
-      rows.add(const Divider(height: 1));
-      final distance = leaderboard[rank].distanceAtTime(_movingTime);
-      rows.add(_getLeaderboardInfoText(rank + 2, distance, false));
+      final isPacer = leaderboard[rank].isPacer;
+      final distance = leaderboard[rank].distanceAtTime(_elapsed);
+      final speed =
+          _avgSpeedOnTrack ? leaderboard[rank].speedString(_si, widget.descriptor.slowPace) : "";
+      cells.addAll(isPacer
+          ? _getPacerInfoText()
+          : _getLeaderboardInfoText(rank + 2, distance, speed, false));
+      rowCount++;
+      wasPacer |= isPacer;
     }
 
-    return IntrinsicWidth(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: rows,
+    if (_showPacer && !wasPacer && _pacerWorkout!.speed < leaderboard[rank].speed) {
+      cells.addAll(_getPacerInfoText());
+      rowCount++;
+      wasPacer = true;
+    }
+
+    final innerWidth = _trackCalculator!.trackSize!.width -
+        2 * (_trackCalculator!.trackOffset!.dx + _trackCalculator!.trackRadius!);
+    const cellHeight = (thick * _markerStyleSmallSizeAdjust / _markerStyleSizeAdjust) * 2;
+    final innerHeight = (cellHeight + 1) * rowCount;
+
+    List<TrackSize> rowSizes = [for (int i = 0; i < rowCount; i++) cellHeight.px];
+    String areaSpec = [for (int i = 0; i < rowCount; i++) areaRow].join("\n");
+    List<TrackSize> columnSpec = [for (int i = 0; i < _rankInfoColumnCount; i++) auto];
+
+    return SizedBox(
+      width: innerWidth,
+      height: innerHeight,
+      child: LayoutGrid(
+        areas: areaSpec,
+        columnSizes: columnSpec,
+        rowSizes: rowSizes,
+        columnGap: 1,
+        rowGap: 1,
+        children: cells,
       ),
     );
+  }
+
+  bool hitTest(GlobalKey globalKey, Offset globalPosition) {
+    final RenderObject? renderObject = globalKey.currentContext?.findRenderObject();
+    if (renderObject != null && renderObject is RenderBox) {
+      final RenderBox renderBox = renderObject;
+      final pos = renderBox.globalToLocal(globalPosition);
+      final hitTestResult = BoxHitTestResult();
+      return renderBox.hitTest(hitTestResult, position: pos);
+    }
+
+    return false;
   }
 
   @override
@@ -1137,12 +1354,12 @@ class RecordingState extends State<RecordingScreen> {
     if (size.width != _mediaWidth || size.height != _mediaHeight) {
       _mediaWidth = size.width;
       _mediaHeight = size.height;
-      _landscape = _mediaWidth! > _mediaHeight!;
+      _landscape = _mediaWidth > _mediaHeight;
     }
 
     final mediaSizeMin =
-        _landscape && _twoColumnLayout ? _mediaWidth! / 2 : min(_mediaWidth!, _mediaHeight!);
-    if (_mediaSizeMin == null || (_mediaSizeMin! - mediaSizeMin).abs() > eps) {
+        _landscape && _twoColumnLayout ? _mediaWidth / 2 : min(_mediaWidth, _mediaHeight);
+    if (_mediaSizeMin < eps || (_mediaSizeMin - mediaSizeMin).abs() > eps) {
       _mediaSizeMin = mediaSizeMin;
       _sizeDefault = mediaSizeMin / 8 * _sizeAdjust;
       _measurementStyle = TextStyle(
@@ -1174,7 +1391,7 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final _timeDisplay =
+    final timeDisplay =
         Duration(seconds: _movingOrElapsedTime ? _movingTime ~/ 1000 : _elapsed).toDisplay();
 
     List<Widget> rows = [
@@ -1183,7 +1400,7 @@ class RecordingState extends State<RecordingScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-          Text(_timeDisplay, style: _measurementStyle),
+          Text(timeDisplay, style: _measurementStyle),
           SizedBox(width: _sizeDefault / 4),
         ],
       ),
@@ -1195,8 +1412,8 @@ class RecordingState extends State<RecordingScreen> {
     for (var entry in _rowConfig.asMap().entries) {
       var measurementStyle = _measurementStyle;
 
-      if (entry.key == 2 && (_rankingForDevice || _rankingForSport)) {
-        measurementStyle = _getPaceLightTextStyle(_deviceRank, _sportRank);
+      if (entry.key == 2 && _leaderboardFeature) {
+        measurementStyle = _getPaceLightTextStyle(_selfRank);
       }
 
       if (entry.key == 4 && _targetHrMode != targetHeartRateModeNone || _zoneIndexes[3] != null) {
@@ -1289,18 +1506,11 @@ class RecordingState extends State<RecordingScreen> {
             children: [Text(targetText, style: targetHrTextStyle), extra],
           );
         } else if (entry.value.metric == "speed" &&
-            _rankRibbonVisualization &&
-            (_rankingForDevice || _rankingForSport)) {
+            _leaderboardFeature &&
+            _rankRibbonVisualization) {
           List<Widget> extraExtras = [];
-          if (_rankingForDevice) {
-            final devicePaceLightColor = _getPaceLightTextStyle(_deviceRank, null);
-            extraExtras.add(Text(_deviceRankString, style: devicePaceLightColor));
-          }
-
-          if (_rankingForSport) {
-            final devicePaceLightColor = _getPaceLightTextStyle(null, _sportRank);
-            extraExtras.add(Text(_sportRankString, style: devicePaceLightColor));
-          }
+          final paceLightColor = _getPaceLightTextStyle(_selfRank);
+          extraExtras.add(Text(_selfRankString.join(" "), style: paceLightColor));
 
           if (widget.descriptor.defaultSport != ActivityType.ride) {
             extraExtras.add(Text("Speed ${_si ? 'km' : 'mi'}/h"));
@@ -1322,61 +1532,27 @@ class RecordingState extends State<RecordingScreen> {
       if (markerPosition != null) {
         var selfMarkerText = "";
         var selfMarkerColor = 0xFFFF0000;
-        if (_rankTrackVisualization && (_rankingForDevice || _rankingForSport)) {
-          Widget? rankInfo;
-          Widget? deviceRankInfo;
-          if (_rankingForDevice) {
-            markers.addAll(_markersForLeaderboard(_deviceLeaderboard, _deviceRank));
-            if (_deviceRank != null) {
-              selfMarkerText = _deviceRank.toString();
-            }
-
-            if (_rankInfoOnTrack) {
-              deviceRankInfo =
-                  _infoForLeaderboard(_deviceLeaderboard, _deviceRank, _deviceRankString);
-              if (!_rankingForSport) {
-                rankInfo = Center(child: deviceRankInfo);
-              }
-            }
+        if (_rankTrackVisualization || _showPacer) {
+          markers.addAll(_markersForLeaderboard(_leaderboard, _selfRank));
+          if (_selfRank > 0) {
+            selfMarkerText = _selfRank.toString();
           }
 
-          Widget? sportRankInfo;
-          if (_rankingForSport) {
-            markers.addAll(_markersForLeaderboard(_sportLeaderboard, _sportRank));
-            if (_sportRank != null && _deviceRank == null) {
-              selfMarkerText = _sportRank.toString();
-            }
-
-            if (_rankInfoOnTrack) {
-              sportRankInfo = _infoForLeaderboard(_sportLeaderboard, _sportRank, _sportRankString);
-              if (!_rankingForDevice) {
-                rankInfo = Center(child: sportRankInfo);
-              }
-            }
-          }
-
-          if (_rankInfoOnTrack) {
-            if (_rankingForDevice &&
-                deviceRankInfo != null &&
-                _rankingForDevice &&
-                sportRankInfo != null) {
-              rankInfo = Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [deviceRankInfo, Container(width: 2), sportRankInfo],
+          if (_rankInfoOnTrack || _showPacer) {
+            markers.add(
+              Center(
+                child: _infoForLeaderboard(
+                  _leaderboard,
+                  _selfRank,
+                  _selfRankString,
                 ),
-              );
-            }
-
-            if (rankInfo != null) {
-              markers.add(rankInfo);
-            }
+              ),
+            );
           }
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = _getPaceLightColor(_deviceRank, _sportRank, background: true).value;
+          selfMarkerColor = _getPaceLightColor(_selfRank, background: true).value;
         } else if (_displayLapCounter) {
           markers.add(Center(
             child: Text("Lap $_lapCount", style: _measurementStyle),
@@ -1404,7 +1580,7 @@ class RecordingState extends State<RecordingScreen> {
     final body = _landscape && _twoColumnLayout
         ? GridView.count(
             crossAxisCount: 2,
-            childAspectRatio: _mediaWidth! / _mediaHeight! / 2,
+            childAspectRatio: _mediaWidth / _mediaHeight / 2,
             physics: const NeverScrollableScrollPhysics(),
             semanticChildCount: 2,
             children: [
@@ -1429,7 +1605,7 @@ class RecordingState extends State<RecordingScreen> {
                     ),
                     const Divider(height: separatorHeight),
                     ColoredBox(
-                      color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
+                      color: _getPaceLightColor(_selfRank, background: true),
                       child: ExpandablePanel(
                         theme: _expandableThemeData,
                         header: rows[3],
@@ -1501,7 +1677,7 @@ class RecordingState extends State<RecordingScreen> {
                 ),
                 const Divider(height: separatorHeight),
                 ColoredBox(
-                  color: _getPaceLightColor(_deviceRank, _sportRank, background: true),
+                  color: _getPaceLightColor(_selfRank, background: true),
                   child: ExpandablePanel(
                     theme: _expandableThemeData,
                     header: rows[3],
@@ -1544,9 +1720,175 @@ class RecordingState extends State<RecordingScreen> {
             ),
           );
 
+    final List<Widget> menuButtons = [];
+    if (_isLocked) {
+      for (var i = 0; i < _unlockChoices; ++i) {
+        final button = i == _unlockButtonIndex
+            ? _themeManager.getGreenFabWKey(Icons.lock_open, true, true, "", 0, () {
+                setState(() {
+                  _isLocked = false;
+                });
+              }, _unlockKeys[i])
+            : _themeManager.getBlueFabWKey(Icons.adjust, true, true, "", 0, null, _unlockKeys[i]);
+        menuButtons.add(button);
+      }
+    } else {
+      menuButtons.addAll([
+        _themeManager.getTutorialFab(
+          _tutorialVisible,
+          () async {
+            setState(() {
+              _tutorialVisible = !_tutorialVisible;
+            });
+          },
+        ),
+      ]);
+
+      if (_measuring) {
+        menuButtons.add(_themeManager
+            .getGreenFab(Icons.lock_open, true, _tutorialVisible, "Lock Screen", 0, () {
+          _unlockButtonIndex = _rng.nextInt(_unlockChoices);
+          _fabKey.currentState?.close();
+          setState(() {
+            _isLocked = true;
+          });
+        }));
+      } else {
+        menuButtons.addAll([
+          _themeManager.getBlueFab(Icons.cloud_upload, true, _tutorialVisible, "Upload Workout", 8,
+              () async {
+            await _workoutUpload(false);
+          }),
+          _themeManager.getBlueFab(
+            Icons.list_alt,
+            true,
+            _tutorialVisible,
+            "Workout List",
+            0,
+            () async {
+              final hasLeaderboardData = await _database.hasLeaderboardData();
+              Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+            },
+          ),
+          _themeManager.getBlueFab(
+            Icons.battery_unknown,
+            true,
+            _tutorialVisible,
+            "Battery & Extras",
+            8,
+            () async {
+              Get.bottomSheet(
+                const BatteryStatusBottomSheet(),
+                enableDrag: false,
+              );
+            },
+          ),
+          _themeManager.getBlueFab(
+            Icons.build,
+            true,
+            _tutorialVisible,
+            "Calibration",
+            0,
+            () async {
+              if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
+                Get.snackbar("Error", "Not compatible with the calibration method");
+              } else {
+                Get.bottomSheet(
+                  const SpinDownBottomSheet(),
+                  isDismissible: false,
+                  enableDrag: false,
+                );
+              }
+            },
+          ),
+        ]);
+      }
+
+      menuButtons.addAll([
+        _themeManager.getBlueFab(
+          Icons.favorite,
+          true,
+          _tutorialVisible,
+          "HRM Pairing",
+          -10,
+          () async {
+            await Get.bottomSheet(
+              const HeartRateMonitorPairingBottomSheet(),
+              isDismissible: false,
+              enableDrag: false,
+            );
+            String hrmId = await _initializeHeartRateMonitor();
+            if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
+              _activity!.hrmId = hrmId;
+              _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true);
+              await _database.activityDao.updateActivity(_activity!);
+            }
+          },
+        ),
+        _themeManager.getBlueFab(
+          _measuring ? Icons.stop : Icons.play_arrow,
+          true,
+          _tutorialVisible,
+          "Start / Stop Workout",
+          -20,
+          () async {
+            if (_measuring) {
+              await _stopMeasurement(false);
+            } else {
+              await _startMeasurement();
+            }
+          },
+        ),
+      ]);
+    }
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: GestureDetector(
+        behavior: HitTestBehavior.deferToChild,
+        onTapUp: (details) {
+          if (!_isLocked) return;
+
+          for (var i = 0; i < _unlockChoices; ++i) {
+            if (hitTest(_unlockKeys[i], details.globalPosition)) {
+              if (_unlockKey == i && _unlockKey == _unlockButtonIndex) {
+                _fabKey.currentState?.close();
+                setState(() {
+                  _isLocked = false;
+                });
+              } else {
+                _unlockKey = -2;
+              }
+              return;
+            }
+          }
+
+          if (hitTest(_fabKey, details.globalPosition)) {
+            if (_unlockKey == -1 && _fabKey.currentState != null) {
+              if (_fabKey.currentState!.isOpen) {
+                _fabKey.currentState?.close();
+              } else {
+                _fabKey.currentState?.open();
+              }
+            }
+            return;
+          }
+        },
+        onTapDown: (details) {
+          if (!_isLocked) return;
+
+          for (var i = 0; i < _unlockChoices; ++i) {
+            if (hitTest(_unlockKeys[i], details.globalPosition)) {
+              _unlockKey = i;
+              return;
+            }
+          }
+
+          if (hitTest(_fabKey, details.globalPosition)) {
+            _unlockKey = -1;
+            return;
+          }
+        },
         onTap: _tutorialVisible
             ? () {
                 setState(() {
@@ -1555,10 +1897,10 @@ class RecordingState extends State<RecordingScreen> {
               }
             : null,
         child: OverlayTutorialScope(
-          enabled: _tutorialVisible,
-          overlayColor: Colors.green.withOpacity(.8),
+          enabled: _tutorialVisible || _isLocked,
+          overlayColor: _isLocked ? Colors.transparent : Colors.green.withOpacity(.8),
           child: AbsorbPointer(
-            absorbing: _tutorialVisible,
+            absorbing: _tutorialVisible || _isLocked,
             ignoringSemantics: true,
             child: Scaffold(
               appBar: AppBar(
@@ -1574,10 +1916,10 @@ class RecordingState extends State<RecordingScreen> {
                       radius: const Radius.circular(16.0),
                       overlayTutorialHints: <OverlayTutorialWidgetHint>[
                         OverlayTutorialWidgetHint(
-                          builder: (context, rect, rRect) {
+                          builder: (context, oRect) {
                             return Positioned(
-                              top: rRect.top + 8.0,
-                              right: Get.width - rRect.left + 4.0,
+                              top: (oRect.rRect?.top ?? 0.0) + 8.0,
+                              right: Get.width - (oRect.rRect?.left ?? 4.0) + 4.0,
                               child: Text("Help Overlay", style: _overlayStyle),
                             );
                           },
@@ -1600,115 +1942,14 @@ class RecordingState extends State<RecordingScreen> {
               body: body,
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               floatingActionButton: CircularFabMenu(
-                fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+                key: _fabKey,
+                fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
+                    color: _themeManager.getAntagonistColor()),
                 fabOpenColor: _themeManager.getBlueColor(),
                 fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
                 fabCloseColor: _themeManager.getBlueColor(),
                 ringColor: _themeManager.getBlueColorInverse(),
-                children: [
-                  _themeManager.getTutorialFab(
-                    _tutorialVisible,
-                    () async {
-                      setState(() {
-                        _tutorialVisible = !_tutorialVisible;
-                      });
-                    },
-                  ),
-                  _themeManager.getBlueFab(
-                      Icons.cloud_upload, true, _tutorialVisible, "Upload Workout", 8, () async {
-                    if (_measuring) {
-                      Get.snackbar("Warning", "Cannot upload while measurement is under progress");
-                      return;
-                    }
-
-                    await _workoutUpload(false);
-                  }),
-                  _themeManager.getBlueFab(
-                    Icons.list_alt,
-                    true,
-                    _tutorialVisible,
-                    "Workout List",
-                    0,
-                    () async {
-                      if (_measuring) {
-                        Get.snackbar(
-                            "Warning", "Cannot navigate while measurement is under progress");
-                      } else {
-                        final hasLeaderboardData = await _database.hasLeaderboardData();
-                        Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
-                      }
-                    },
-                  ),
-                  _themeManager.getBlueFab(
-                    Icons.battery_unknown,
-                    true,
-                    _tutorialVisible,
-                    "Battery & Extras",
-                    8,
-                    () async {
-                      Get.bottomSheet(
-                        const BatteryStatusBottomSheet(),
-                        enableDrag: false,
-                      );
-                    },
-                  ),
-                  _themeManager.getBlueFab(
-                    Icons.build,
-                    true,
-                    _tutorialVisible,
-                    "Calibration",
-                    0,
-                    () async {
-                      if (_measuring) {
-                        Get.snackbar(
-                            "Warning", "Cannot calibrate while measurement is under progress");
-                      } else if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
-                        Get.snackbar("Error", "Not compatible with the calibration method");
-                      } else {
-                        Get.bottomSheet(
-                          const SpinDownBottomSheet(),
-                          isDismissible: false,
-                          enableDrag: false,
-                        );
-                      }
-                    },
-                  ),
-                  _themeManager.getBlueFab(
-                    Icons.favorite,
-                    true,
-                    _tutorialVisible,
-                    "HRM Pairing",
-                    -10,
-                    () async {
-                      await Get.bottomSheet(
-                        const HeartRateMonitorPairingBottomSheet(),
-                        isDismissible: false,
-                        enableDrag: false,
-                      );
-                      String hrmId = await _initializeHeartRateMonitor();
-                      if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
-                        _activity!.hrmId = hrmId;
-                        _activity!.hrmCalorieFactor =
-                            await _database.calorieFactorValue(hrmId, true);
-                        await _database.activityDao.updateActivity(_activity!);
-                      }
-                    },
-                  ),
-                  _themeManager.getBlueFab(
-                    _measuring ? Icons.stop : Icons.play_arrow,
-                    true,
-                    _tutorialVisible,
-                    "Start / Stop Workout",
-                    -20,
-                    () async {
-                      if (_measuring) {
-                        await _stopMeasurement(false);
-                      } else {
-                        await _startMeasurement();
-                      }
-                    },
-                  ),
-                ],
+                children: menuButtons,
               ),
             ),
           ),

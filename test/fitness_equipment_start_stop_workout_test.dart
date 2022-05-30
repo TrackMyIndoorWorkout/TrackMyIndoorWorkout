@@ -3,11 +3,13 @@ import 'dart:math';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
 import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'utils.dart';
 import 'fitness_equipment_process_record_test.mocks.dart';
 
@@ -16,7 +18,7 @@ void main() {
   test('startWorkout blanks out leftover lastRecord', () async {
     final rnd = Random();
     await initPrefServiceForTest();
-    final descriptor = deviceMap[schwinnICBikeFourCC]!;
+    final descriptor = DeviceFactory.getSchwinnIcBike();
     final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
     equipment.lastRecord = RecordWithSport.getRandom(descriptor.defaultSport, rnd);
 
@@ -44,10 +46,9 @@ void main() {
     final rnd = Random();
     getRandomInts(smallRepetition, 300, rnd).forEach((calories) {
       test('$calories', () async {
-        await initPrefServiceForTest();
         final hrBasedCalories = rnd.nextBool();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
-        final descriptor = deviceMap[schwinnICBikeFourCC]!;
+        final descriptor = DeviceFactory.getSchwinnIcBike();
         final activity = Activity(
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,

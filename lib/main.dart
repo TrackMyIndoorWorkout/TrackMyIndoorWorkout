@@ -32,19 +32,28 @@ void main() async {
 
   final bluetoothStateString = await BluetoothEnable.enableBluetooth;
 
+  // TODO: Android 12 does not need location permission any more
+  // Maybe even we can completely eliminate permission handler
+  // if (Platform.isAndroid) {
+  //   var androidInfo = await DeviceInfoPlugin().androidInfo;
+  //   if (androidInfo.version.sdkInt < 31) {
   await Future.delayed(const Duration(milliseconds: startupIntermittentDelay));
 
   final permissionState = await Permission.locationWhenInUse.request();
+  //   }
+  // }
 
   await Future.delayed(const Duration(milliseconds: startupIntermittentDelay));
 
   blueAvailable = await FlutterBlue.instance.isAvailable;
   blueOn = await FlutterBlue.instance.isOn;
 
-  runApp(TrackMyIndoorExerciseApp(
-    prefService: prefService,
-    blueOn: blueAvailable && blueOn,
-    bluetoothStateString: bluetoothStateString,
-    permissionState: permissionState,
-  ));
+  runApp(
+    TrackMyIndoorExerciseApp(
+      prefService: prefService,
+      blueOn: blueAvailable && blueOn,
+      bluetoothStateString: bluetoothStateString,
+      permissionState: permissionState,
+    ),
+  );
 }

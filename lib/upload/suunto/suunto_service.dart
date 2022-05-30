@@ -31,7 +31,7 @@ class SuuntoService implements UploadService {
   }
 
   @override
-  Future<int> upload(Activity activity, List<Record> records) async {
+  Future<int> upload(Activity activity, List<Record> records, bool calculateGps) async {
     if (records.isEmpty) {
       return 0;
     }
@@ -41,6 +41,7 @@ class SuuntoService implements UploadService {
       activity,
       records,
       false,
+      calculateGps,
       false,
       ExportTarget.suunto,
     );

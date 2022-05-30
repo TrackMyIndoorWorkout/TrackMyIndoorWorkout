@@ -17,10 +17,10 @@ class BatteryStatusBottomSheet extends StatefulWidget {
   const BatteryStatusBottomSheet({Key? key}) : super(key: key);
 
   @override
-  _BatteryStatusBottomSheetState createState() => _BatteryStatusBottomSheetState();
+  BatteryStatusBottomSheetState createState() => BatteryStatusBottomSheetState();
 }
 
-class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
+class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   String _hrmBatteryLevel = notAvailable;

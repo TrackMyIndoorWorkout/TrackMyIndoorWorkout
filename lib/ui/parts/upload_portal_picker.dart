@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/activity.dart';
+import '../../preferences/calculate_gps.dart';
 import '../../upload/constants.dart';
 import '../../upload/strava/strava_status_code.dart';
 import '../../upload/upload_service.dart';
@@ -22,6 +24,7 @@ class UploadPortalPickerBottomSheet extends StatefulWidget {
 class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomSheet> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _largerTextStyle = const TextStyle();
+  bool _calculateGps = calculateGpsDefault;
   bool uploadInProgress = false;
   Map<String, bool> uploadStates = {};
 
@@ -29,6 +32,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   void initState() {
     super.initState();
     _largerTextStyle = Get.textTheme.headline4!.apply(color: _themeManager.getProtagonistColor());
+    final prefService = Get.find<BasePrefService>();
+    _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     for (final portalName in portalNames) {
       uploadStates[portalName] = widget.activity.isUploaded(portalName);
     }
@@ -49,10 +54,10 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
       return false;
     }
 
-    final AppDatabase _database = Get.find<AppDatabase>();
-    final records = await _database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
+    final AppDatabase database = Get.find<AppDatabase>();
+    final records = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
 
-    final statusCode = await uploadService.upload(widget.activity, records);
+    final statusCode = await uploadService.upload(widget.activity, records, _calculateGps);
     final finalResult =
         statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300;
     final resultMessage = finalResult
@@ -143,8 +148,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                               ),
                               onPressed: () async {
                                 final workoutUrl = widget.activity.workoutUrl(e.value.name);
-                                if (await canLaunch(workoutUrl)) {
-                                  launch(workoutUrl);
+                                if (await canLaunchUrlString(workoutUrl)) {
+                                  launchUrlString(workoutUrl);
                                 } else {
                                   Get.snackbar("Attention", "Cannot open URL");
                                 }

@@ -7,12 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
 import '../persistence/database.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/measurement_font_size_adjust.dart';
-import '../preferences/preferences_spec.dart';
+import '../preferences/metric_spec.dart';
+import '../persistence/models/activity.dart';
+import '../persistence/models/record.dart';
+import '../preferences/palette_spec.dart';
 import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -34,7 +35,7 @@ class RecordsScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => RecordsScreenState();
+  RecordsScreenState createState() => RecordsScreenState();
 }
 
 class RecordsScreenState extends State<RecordsScreen> {
@@ -48,7 +49,8 @@ class RecordsScreenState extends State<RecordsScreen> {
   final List<String> _selectedValues = [];
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
-  List<PreferencesSpec> _preferencesSpecs = [];
+  List<MetricSpec> _preferencesSpecs = [];
+  PaletteSpec? _paletteSpec;
 
   double? _mediaWidth;
   double _sizeDefault = 10.0;
@@ -85,7 +87,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     tooltipDisplayMode: charts.TrackballDisplayMode.groupAllPoints,
   );
 
-  Future<void> extraInit() async {
+  Future<void> extraInit(BasePrefService prefService) async {
     final database = Get.find<AppDatabase>();
     _allRecords = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
 
@@ -124,6 +126,8 @@ class RecordsScreenState extends State<RecordsScreen> {
         accu.processRecord(record);
       }
 
+      _paletteSpec = PaletteSpec.getInstance(prefService);
+
       if (measurementCounter.hasPower) {
         _tiles.add("power");
         _selectedTimes.add(emptyMeasurement);
@@ -140,6 +144,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           measurementCounter.minPower.toDouble(),
           measurementCounter.maxPower.toDouble(),
           _isLight,
+          _paletteSpec!,
         );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
@@ -167,6 +172,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           measurementCounter.minSpeed,
           measurementCounter.maxSpeed,
           _isLight,
+          _paletteSpec!,
         );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
@@ -194,6 +200,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           measurementCounter.minCadence.toDouble(),
           measurementCounter.maxCadence.toDouble(),
           _isLight,
+          _paletteSpec!,
         );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
@@ -221,6 +228,7 @@ class RecordsScreenState extends State<RecordsScreen> {
           measurementCounter.minHr.toDouble(),
           measurementCounter.maxHr.toDouble(),
           _isLight,
+          _paletteSpec!,
         );
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
@@ -318,7 +326,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
-    _preferencesSpecs = PreferencesSpec.getPreferencesSpecs(_si, widget.activity.sport);
+    _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.activity.sport);
     widget.activity.hydrate();
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
@@ -334,7 +342,7 @@ class RecordsScreenState extends State<RecordsScreen> {
     );
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
-    extraInit();
+    extraInit(prefService);
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _getPowerData() {
@@ -710,7 +718,9 @@ class RecordsScreenState extends State<RecordsScreen> {
                           margin: const EdgeInsets.all(0),
                           legend: charts.Legend(isVisible: true, textStyle: _pieChartLabelStyle),
                           series: _tileConfigurations[item]!.histogramFn!(),
-                          palette: _preferencesSpecs[index].getPiePalette(_isLight),
+                          palette: _paletteSpec?.getPiePalette(
+                                  _isLight, _preferencesSpecs[index]) ??
+                              PaletteSpec.getPiePaletteDefault(_isLight, _preferencesSpecs[index]),
                           tooltipBehavior: _tooltipBehavior,
                         ),
                       ),

@@ -51,7 +51,8 @@ class FitExport extends ActivityExport {
     localMessageType++;
 
     // 4. Session
-    final session = FitSession(localMessageType, exportModel.exportTarget);
+    final session =
+        FitSession(localMessageType, exportModel.exportTarget, exportModel.calculateGps);
     body.output.addAll(session.binarySerialize());
     body.output.addAll(session.serializeData(exportModel));
     localMessageType++;
@@ -63,6 +64,7 @@ class FitExport extends ActivityExport {
       heartRateGapWorkaround,
       heartRateUpperLimit,
       heartRateLimitingMethod,
+      exportModel.calculateGps,
     );
     body.output.addAll(dataRecord.binarySerialize());
     for (var record in exportModel.records) {

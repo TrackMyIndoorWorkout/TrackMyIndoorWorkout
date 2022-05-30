@@ -107,7 +107,10 @@ class TCXExport extends ActivityExport {
   void addTrackPoint(ExportRecord record, ExportModel exportModel) {
     _sb.writeln("<Trackpoint>");
     addElement('Time', timeStampString(record.record.timeStamp));
-    addPosition(record.latitude.toStringAsFixed(7), record.longitude.toStringAsFixed(7));
+    if (!exportModel.rawData && exportModel.calculateGps) {
+      addPosition(record.latitude.toStringAsFixed(7), record.longitude.toStringAsFixed(7));
+    }
+
     addElement('AltitudeMeters', exportModel.altitude.toString());
     addElement('DistanceMeters', (record.record.distance ?? 0.0).toStringAsFixed(2));
     if (record.record.cadence != null) {
@@ -189,9 +192,9 @@ class TCXExport extends ActivityExport {
   ///       </HeartRateBpm>
   ///
   void addHeartRate(int? heartRate) {
-    int _heartRate = heartRate ?? 0;
+    int nonNullHeartRate = heartRate ?? 0;
     _sb.writeln("""                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
-                <Value>${_heartRate.toString()}</Value>
+                <Value>${nonNullHeartRate.toString()}</Value>
               </HeartRateBpm>""");
   }
 

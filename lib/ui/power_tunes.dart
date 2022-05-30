@@ -13,7 +13,7 @@ class PowerTunesScreen extends StatefulWidget {
   const PowerTunesScreen({key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => PowerTunesScreenState();
+  PowerTunesScreenState createState() => PowerTunesScreenState();
 }
 
 class PowerTunesScreenState extends State<PowerTunesScreen> {

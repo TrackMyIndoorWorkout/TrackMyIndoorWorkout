@@ -20,7 +20,7 @@ class PreferencesHubScreen extends StatefulWidget {
   const PreferencesHubScreen({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => PreferencesHubScreenState();
+  PreferencesHubScreenState createState() => PreferencesHubScreenState();
 }
 
 class PreferencesHubScreenState extends State<PreferencesHubScreen> {
@@ -42,8 +42,13 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final integrationsKey =
-        "integrations${portalNames.asMap().entries.map((e) => UploadService.isIntegrationEnabled(e.value) ? "1" : "0").toList().join("_")}";
+    final keyPart = portalNames
+        .asMap()
+        .entries
+        .map((e) => UploadService.isIntegrationEnabled(e.value) ? "1" : "0")
+        .toList()
+        .join("_");
+    final integrationsKey = "integrations$keyPart";
     return Scaffold(
       appBar: AppBar(title: const Text('Preferences')),
       body: SingleChildScrollView(

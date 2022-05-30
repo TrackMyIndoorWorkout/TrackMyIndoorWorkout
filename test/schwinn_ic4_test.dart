@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/indoor_bike_device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
@@ -13,7 +13,7 @@ class TestPair {
 
 void main() {
   test('Schwinn IC4 constructor tests', () async {
-    final bike = deviceMap[schwinnICBikeFourCC]!;
+    final bike = DeviceFactory.getSchwinnIcBike();
 
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
@@ -21,7 +21,7 @@ void main() {
   });
 
   test('Schwinn IC4 interprets FTMS Indoor Bike Data flags properly', () async {
-    final bike = deviceMap[schwinnICBikeFourCC] as IndoorBikeDeviceDescriptor;
+    final bike = DeviceFactory.getSchwinnIcBike();
     const lsb = 68;
     const msb = 2;
     const flag = maxUint8 * msb + lsb;
@@ -157,12 +157,12 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        final bike = deviceMap[schwinnICBikeFourCC]!;
+        final bike = DeviceFactory.getSchwinnIcBike();
         bike.initFlag();
         expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();
 
-        final record = bike.stubRecord(testPair.data)!;
+        final record = bike.wrappedStubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);

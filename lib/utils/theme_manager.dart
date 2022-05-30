@@ -53,21 +53,21 @@ class ThemeManager {
         radius: const Radius.circular(16.0),
         overlayTutorialHints: <OverlayTutorialWidgetHint>[
           OverlayTutorialWidgetHint(
-            builder: (context, rect, rRect) {
+            builder: (context, oRect) {
               final annotation = Text(
                 text,
                 style: Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
               );
-              if (rRect.center.dx < Get.width / 2) {
+              if ((oRect.rRect?.center.dx ?? 0.0) < Get.width / 2) {
                 return Positioned(
-                  top: rRect.top + 4.0 + annotationYOffset,
-                  left: rRect.right + 4.0,
+                  top: (oRect.rRect?.top ?? 0.0) + 4.0 + annotationYOffset,
+                  left: (oRect.rRect?.right ?? 0.0) + 4.0,
                   child: annotation,
                 );
               } else {
                 return Positioned(
-                  top: rRect.top + 4.0 + annotationYOffset,
-                  right: Get.width - rRect.left + 4.0,
+                  top: (oRect.rRect?.top ?? 0.0) + 4.0 + annotationYOffset,
+                  right: Get.width - (oRect.rRect?.left ?? 4.0) + 4.0,
                   child: annotation,
                 );
               }
@@ -163,13 +163,16 @@ class ThemeManager {
     String overlayText,
     int annotationYOffset,
     VoidCallback? onPressed,
+    GlobalKey? key,
   ) {
+    key ??= GlobalKey();
     final fab = FloatingActionButton(
+      key: key,
       heroTag: null,
-      child: widget,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
       onPressed: onPressed,
+      child: widget,
     );
 
     return wrapInHole
@@ -200,6 +203,30 @@ class ThemeManager {
       overlayText,
       annotationYOffset,
       onPressed,
+      null,
+    );
+  }
+
+  Widget getIconFabWKey(
+    Color color,
+    IconData icon,
+    bool wrapInHole,
+    bool overlayEnabled,
+    String overlayText,
+    int annotationYOffset,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return _getFabCore(
+      getAntagonistColor(),
+      color,
+      Icon(icon),
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+      key,
     );
   }
 
@@ -241,6 +268,48 @@ class ThemeManager {
     );
   }
 
+  Widget getBlueFabWKey(
+    IconData icon,
+    bool wrapInHole,
+    bool overlayEnabled,
+    String overlayText,
+    int annotationYOffset,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return getIconFabWKey(
+      getBlueColor(),
+      icon,
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+      key,
+    );
+  }
+
+  Widget getGreenFabWKey(
+    IconData icon,
+    bool wrapInHole,
+    bool overlayEnabled,
+    String overlayText,
+    int annotationYOffset,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return getIconFabWKey(
+      getGreenColor(),
+      icon,
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+      key,
+    );
+  }
+
   Widget getGreenGenericFab(
     Widget widget,
     wrapInHole,
@@ -258,6 +327,7 @@ class ThemeManager {
       overlayText,
       annotationYOffset,
       onPressed,
+      null,
     );
   }
 
@@ -276,6 +346,7 @@ class ThemeManager {
       "",
       0,
       () {},
+      null,
     );
   }
 
@@ -295,6 +366,7 @@ class ThemeManager {
       overlayText,
       annotationYOffset,
       onPressed,
+      null,
     );
   }
 
