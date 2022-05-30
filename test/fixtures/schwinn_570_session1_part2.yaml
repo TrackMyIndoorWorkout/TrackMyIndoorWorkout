@@ -5,7 +5,7 @@ session:
     elapsed: 0
     calories: 0
     power: 0
-    speed: 0.0000
+    speed: 0.0
     cadence: 0
     elapsedMillis: 0
   - element:
