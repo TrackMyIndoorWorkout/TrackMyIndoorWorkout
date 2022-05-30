@@ -8,6 +8,7 @@ import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_fourcc.dart';
 import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
@@ -221,6 +222,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (descriptor == null) {
       if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
         descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+      } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
+        descriptor = deviceMap[schwinnX70BikeFourCC];
       } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
         if (advertisementDigest.machineType == MachineType.treadmill) {
           descriptor = deviceMap[matrixTreadmillFourCC];
@@ -497,7 +500,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           }
                         } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
                           if (_fitnessEquipment != null) {
-                            WidgetsBinding.instance?.addPostFrameCallback((_) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
                               goToRecording(
                                 _fitnessEquipment!.device!,
                                 BluetoothDeviceState.connected,
@@ -506,7 +509,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             });
                           } else {
                             if (_filterDevices && _scannedDevices.length == 1) {
-                              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
                                 goToRecording(
                                   _scannedDevices.first,
                                   BluetoothDeviceState.disconnected,
@@ -526,7 +529,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       .txPower
                                       .compareTo(_advertisementCache.getEntry(b.id.id)!.txPower);
                                 });
-                                WidgetsBinding.instance?.addPostFrameCallback((_) {
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
                                   goToRecording(
                                       lasts.last, BluetoothDeviceState.disconnected, false);
                                 });

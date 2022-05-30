@@ -19,10 +19,10 @@ class ImportForm extends StatefulWidget {
   const ImportForm({Key? key, required this.migration}) : super(key: key);
 
   @override
-  _ImportFormState createState() => _ImportFormState();
+  ImportFormState createState() => ImportFormState();
 }
 
-class _ImportFormState extends State<ImportForm> {
+class ImportFormState extends State<ImportForm> {
   final dateTimeFormat = DateFormat("yyyy-MM-dd HH:mm");
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _filePath;
@@ -56,12 +56,12 @@ class _ImportFormState extends State<ImportForm> {
       body: LoadingOverlay(
         isLoading: _isLoading,
         progressIndicator: SizedBox(
+          height: _sizeDefault * 2,
+          width: _sizeDefault * 2,
           child: CircularProgressIndicator(
             strokeWidth: _sizeDefault,
             value: _progressValue,
           ),
-          height: _sizeDefault * 2,
-          width: _sizeDefault * 2,
         ),
         child: Form(
           key: _formKey,
@@ -101,10 +101,11 @@ class _ImportFormState extends State<ImportForm> {
                 }),
               ),
               Visibility(
-                child: const SizedBox(height: 24),
                 visible: !widget.migration,
+                child: const SizedBox(height: 24),
               ),
               Visibility(
+                visible: !widget.migration,
                 child: DateTimeField(
                   format: dateTimeFormat,
                   decoration: const InputDecoration(
@@ -140,7 +141,6 @@ class _ImportFormState extends State<ImportForm> {
                     _activityDateTime = value;
                   }),
                 ),
-                visible: !widget.migration,
               ),
               const SizedBox(height: 24),
               Row(

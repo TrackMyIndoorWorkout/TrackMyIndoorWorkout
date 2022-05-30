@@ -6,7 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mockito/annotations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/export/csv/csv_export.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
@@ -15,6 +16,7 @@ import 'package:track_my_indoor_exercise/persistence/database.dart';
 import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'database_utils.dart';
 import 'utils.dart';
 
@@ -46,7 +48,7 @@ void main() {
         }
 
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"]!;
+        final descriptor = DeviceFactory.getSchwinnIcBike();
         final calories = rnd.nextInt(1000);
         final caloriesPerTick = calories / recordCount;
         final distance = rnd.nextDouble() * 10000;

@@ -192,9 +192,9 @@ class TCXExport extends ActivityExport {
   ///       </HeartRateBpm>
   ///
   void addHeartRate(int? heartRate) {
-    int _heartRate = heartRate ?? 0;
+    int nonNullHeartRate = heartRate ?? 0;
     _sb.writeln("""                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
-                <Value>${_heartRate.toString()}</Value>
+                <Value>${nonNullHeartRate.toString()}</Value>
               </HeartRateBpm>""");
   }
 

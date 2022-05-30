@@ -1,10 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/rower_device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
-
-import 'utils.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 class TestPair {
   final List<int> data;
@@ -14,8 +13,12 @@ class TestPair {
 }
 
 void main() {
+  setUpAll(() async {
+    await initPrefServiceForTest();
+  });
+
   test('KayakPro Rower Device constructor tests', () async {
-    final rower = deviceMap[kayakProGenesisPortFourCC]!;
+    final rower = DeviceFactory.getKayaPro();
 
     expect(rower.canMeasureHeartRate, false);
     expect(rower.defaultSport, ActivityType.kayaking);
@@ -23,11 +26,10 @@ void main() {
   });
 
   test('Rower Device interprets KayakPro flags properly', () async {
-    final rower = deviceMap[kayakProGenesisPortFourCC] as RowerDeviceDescriptor;
+    final rower = DeviceFactory.getKayaPro();
     const lsb = 44;
     const msb = 9;
     const flag = maxUint8 * msb + lsb;
-    await initPrefServiceForTest();
     rower.stopWorkout();
 
     rower.processFlag(flag);
@@ -171,8 +173,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        await initPrefServiceForTest();
-        final rower = deviceMap[kayakProGenesisPortFourCC]!;
+        final rower = DeviceFactory.getKayaPro();
         rower.initFlag();
         expect(rower.isDataProcessable(testPair.data), true);
         rower.stopWorkout();

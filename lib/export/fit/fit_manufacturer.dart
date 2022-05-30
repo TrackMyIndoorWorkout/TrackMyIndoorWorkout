@@ -1,5 +1,5 @@
 import 'package:edit_distance/edit_distance.dart';
-import '../../devices/device_map.dart';
+import '../../devices/device_descriptors/matrix_treadmill_descriptor.dart';
 import 'fit_base_type.dart';
 
 const nautilusFitId = 14;
@@ -177,8 +177,8 @@ int getFitManufacturer(String manufacturer) {
     return FitBaseTypes.uint16Type.invalidValue;
   }
 
-  final matrixDescriptor = deviceMap[matrixTreadmillFourCC];
-  if (matrixDescriptor != null && manufacturer.startsWith(matrixDescriptor.manufacturerPrefix)) {
+  final matrixDescriptor = MatrixTreadmillDescriptor();
+  if (manufacturer.startsWith(matrixDescriptor.manufacturerPrefix)) {
     return johnsonHealthTechId;
   }
 

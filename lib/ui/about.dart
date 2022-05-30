@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../utils/constants.dart';
 
@@ -91,8 +91,8 @@ class AboutScreenState extends State<AboutScreen> {
           icon: const Icon(Icons.open_in_new),
           label: Text(buttonText),
           onPressed: () async {
-            if (await canLaunch(linkUrl)) {
-              launch(linkUrl);
+            if (await canLaunchUrlString(linkUrl)) {
+              launchUrlString(linkUrl);
             } else {
               Get.snackbar("Attention", "Cannot open URL");
             }

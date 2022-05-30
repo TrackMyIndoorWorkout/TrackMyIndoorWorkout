@@ -1,0 +1,1000 @@
+session:
+  - element:
+    timeStamp: "15:34:57.050"
+    data: [17, 32, 0, 160, 5, 0, 0, 226, 111, 253, 76, 96, 17, 0, 0, 0, 4]
+    elapsed: 0
+    calories: 0
+    power: 0
+    speed: 0.0
+    cadence: 0
+    elapsedMillis: 0
+  - element:
+    timeStamp: "15:34:57.239"
+    data: [17, 32, 0, 192, 5, 0, 0, 42, 37, 254, 27, 216, 17, 0, 0, 0, 4]
+    elapsed: 63
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 0
+    elapsedMillis: 63536
+  - element:
+    timeStamp: "15:34:57.427"
+    data: [17, 32, 0, 224, 5, 0, 0, 240, 229, 254, 21, 84, 18, 0, 0, 0, 4]
+    elapsed: 63
+    calories: 0
+    power: 83
+    speed: 8.3038
+    cadence: 0
+    elapsedMillis: 63723
+  - element:
+    timeStamp: "15:34:57.614"
+    data: [17, 32, 0, 0, 6, 0, 0, 20, 169, 255, 229, 208, 18, 0, 0, 0, 4]
+    elapsed: 63
+    calories: 0
+    power: 82
+    speed: 8.2703
+    cadence: 158
+    elapsedMillis: 63915
+  - element:
+    timeStamp: "15:34:57.801"
+    data: [17, 32, 0, 32, 6, 0, 0, 172, 99, 0, 166, 74, 19, 0, 0, 0, 4]
+    elapsed: 0
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 107
+    elapsedMillis: 96
+  - element:
+    timeStamp: "15:34:57.991"
+    data: [17, 32, 0, 64, 6, 0, 0, 32, 20, 1, 168, 192, 19, 0, 0, 0, 4]
+    elapsed: 0
+    calories: 0
+    power: 86
+    speed: 8.4026
+    cadence: 81
+    elapsedMillis: 269
+  - element:
+    timeStamp: "15:34:58.139"
+    data: [17, 32, 0, 96, 6, 0, 0, 44, 202, 1, 191, 56, 20, 0, 0, 0, 4]
+    elapsed: 0
+    calories: 0
+    power: 85
+    speed: 8.3699
+    cadence: 65
+    elapsedMillis: 447
+  - element:
+    timeStamp: "15:34:58.362"
+    data: [17, 32, 0, 128, 6, 0, 0, 232, 131, 2, 48, 178, 20, 0, 0, 0, 4]
+    elapsed: 0
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 54
+    elapsedMillis: 627
+  - element:
+    timeStamp: "15:34:58.512"
+    data: [17, 32, 0, 160, 6, 0, 0, 8, 59, 3, 173, 42, 21, 0, 0, 0, 4]
+    elapsed: 0
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 47
+    elapsedMillis: 807
+  - element:
+    timeStamp: "15:34:58.699"
+    data: [17, 32, 0, 192, 6, 0, 0, 36, 234, 3, 45, 160, 21, 0, 0, 0, 4]
+    elapsed: 0
+    calories: 0
+    power: 86
+    speed: 8.4026
+    cadence: 41
+    elapsedMillis: 978
+  - element:
+    timeStamp: "15:34:58.852"
+    data: [17, 32, 0, 224, 6, 0, 0, 200, 167, 4, 8, 27, 22, 0, 0, 0, 4]
+    elapsed: 1
+    calories: 0
+    power: 83
+    speed: 8.3038
+    cadence: 36
+    elapsedMillis: 1163
+  - element:
+    timeStamp: "15:34:59.077"
+    data: [17, 32, 0, 0, 7, 0, 0, 204, 102, 5, 97, 150, 22, 0, 0, 0, 4]
+    elapsed: 1
+    calories: 0
+    power: 83
+    speed: 8.3038
+    cadence: 66
+    elapsedMillis: 1349
+  - element:
+    timeStamp: "15:34:59.227"
+    data: [17, 32, 0, 32, 7, 0, 0, 180, 32, 6, 227, 15, 23, 0, 0, 0, 4]
+    elapsed: 1
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 60
+    elapsedMillis: 1531
+  - element:
+    timeStamp: "15:34:59.413"
+    data: [17, 32, 0, 64, 7, 0, 0, 108, 210, 6, 95, 134, 23, 0, 0, 0, 4]
+    elapsed: 1
+    calories: 0
+    power: 85
+    speed: 8.3699
+    cadence: 55
+    elapsedMillis: 1705
+  - element:
+    timeStamp: "15:34:59.600"
+    data: [17, 32, 0, 96, 7, 0, 0, 176, 140, 7, 2, 0, 24, 0, 0, 0, 4]
+    elapsed: 1
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 51
+    elapsedMillis: 1886
+  - element:
+    timeStamp: "15:34:59.788"
+    data: [17, 32, 0, 128, 7, 0, 0, 148, 73, 8, 152, 122, 24, 0, 0, 0, 4]
+    elapsed: 2
+    calories: 0
+    power: 83
+    speed: 8.3038
+    cadence: 47
+    elapsedMillis: 2071
+  - element:
+    timeStamp: "15:34:59.975"
+    data: [17, 32, 0, 160, 7, 0, 0, 132, 6, 9, 50, 245, 24, 0, 0, 0, 4]
+    elapsed: 2
+    calories: 0
+    power: 83
+    speed: 8.3038
+    cadence: 44
+    elapsedMillis: 2255
+  - element:
+    timeStamp: "15:35:00.162"
+    data: [17, 32, 0, 192, 7, 0, 0, 60, 187, 9, 204, 108, 25, 0, 0, 0, 4]
+    elapsed: 2
+    calories: 0
+    power: 85
+    speed: 8.3699
+    cadence: 41
+    elapsedMillis: 2432
+  - element:
+    timeStamp: "15:35:00.314"
+    data: [17, 32, 0, 224, 7, 0, 0, 36, 119, 10, 7, 231, 25, 0, 0, 0, 4]
+    elapsed: 2
+    calories: 0
+    power: 83
+    speed: 8.3038
+    cadence: 38
+    elapsedMillis: 2616
+  - element:
+    timeStamp: "15:35:00.502"
+    data: [17, 32, 0, 0, 8, 0, 0, 52, 56, 11, 27, 99, 26, 0, 0, 0, 4]
+    elapsed: 2
+    calories: 0
+    power: 82
+    speed: 8.2703
+    cadence: 55
+    elapsedMillis: 2804
+  - element:
+    timeStamp: "15:35:00.689"
+    data: [17, 32, 0, 32, 8, 0, 0, 172, 247, 11, 158, 222, 26, 0, 0, 0, 4]
+    elapsed: 2
+    calories: 0
+    power: 83
+    speed: 8.3038
+    cadence: 52
+    elapsedMillis: 2991
+  - element:
+    timeStamp: "15:35:00.879"
+    data: [17, 32, 0, 64, 8, 0, 0, 16, 175, 12, 52, 87, 27, 0, 0, 0, 4]
+    elapsed: 3
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 49
+    elapsedMillis: 3170
+  - element:
+    timeStamp: "15:35:01.064"
+    data: [17, 32, 0, 96, 8, 0, 0, 28, 106, 13, 32, 209, 27, 0, 0, 0, 4]
+    elapsed: 3
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 47
+    elapsedMillis: 3353
+  - element:
+    timeStamp: "15:35:01.252"
+    data: [17, 32, 0, 128, 8, 0, 0, 248, 38, 14, 179, 75, 28, 0, 0, 0, 4]
+    elapsed: 3
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 44
+    elapsedMillis: 3537
+  - element:
+    timeStamp: "15:35:01.400"
+    data: [17, 32, 0, 160, 8, 0, 0, 208, 221, 14, 22, 196, 28, 0, 0, 0, 4]
+    elapsed: 3
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 43
+    elapsedMillis: 3715
+  - element:
+    timeStamp: "15:35:01.591"
+    data: [17, 32, 0, 192, 8, 0, 0, 36, 138, 15, 136, 56, 29, 0, 0, 0, 4]
+    elapsed: 3
+    calories: 0
+    power: 86
+    speed: 8.4026
+    cadence: 41
+    elapsedMillis: 3884
+  - element:
+    timeStamp: "15:35:01.776"
+    data: [17, 32, 0, 224, 8, 0, 0, 248, 63, 16, 139, 176, 29, 0, 0, 0, 4]
+    elapsed: 4
+    calories: 0
+    power: 85
+    speed: 8.3699
+    cadence: 39
+    elapsedMillis: 4061
+  - element:
+    timeStamp: "15:35:01.963"
+    data: [17, 32, 0, 0, 9, 0, 0, 8, 249, 16, 190, 41, 30, 0, 0, 0, 4]
+    elapsed: 4
+    calories: 0
+    power: 84
+    speed: 8.3370
+    cadence: 50
+    elapsedMillis: 4243
+  - element:
+    timeStamp: "15:35:02.152"
+    data: [17, 32, 0, 32, 9, 0, 0, 148, 175, 17, 5, 162, 30, 0, 0, 0, 4]
+    elapsed: 4
+    calories: 0
+    power: 85
+    speed: 8.3699
+    cadence: 49
+    elapsedMillis: 4420
+  - element:
+    timeStamp: "15:35:02.303"
+    data: [17, 32, 0, 64, 9, 0, 0, 48, 94, 18, 85, 23, 31, 0, 0, 0, 4]
+    elapsed: 4
+    calories: 0
+    power: 86
+    speed: 8.4026
+    cadence: 47
+    elapsedMillis: 4591
+  - element:
+    timeStamp: "15:35:02.489"
+    data: [17, 32, 0, 96, 9, 0, 0, 128, 16, 19, 9, 142, 31, 0, 0, 0, 4]
+    elapsed: 4
+    calories: 0
+    power: 86
+    speed: 8.4026
+    cadence: 45
+    elapsedMillis: 4765
+  - element:
+    timeStamp: "15:35:02.640"
+    data: [17, 32, 0, 128, 9, 0, 0, 80, 198, 19, 10, 6, 32, 0, 0, 0, 4]
+    elapsed: 4
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 44
+    elapsedMillis: 4943
+  - element:
+    timeStamp: "15:35:02.826"
+    data: [17, 32, 0, 160, 9, 0, 0, 148, 121, 20, 26, 125, 32, 0, 0, 0, 4]
+    elapsed: 5
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 42
+    elapsedMillis: 5118
+  - element:
+    timeStamp: "15:35:02.975"
+    data: [17, 32, 0, 192, 9, 0, 0, 152, 36, 21, 11, 241, 32, 0, 0, 0, 4]
+    elapsed: 5
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 41
+    elapsedMillis: 5285
+  - element:
+    timeStamp: "15:35:03.204"
+    data: [17, 32, 0, 224, 9, 0, 0, 20, 216, 21, 47, 104, 33, 0, 0, 0, 4]
+    elapsed: 5
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 40
+    elapsedMillis: 5460
+  - element:
+    timeStamp: "15:35:03.355"
+    data: [17, 32, 0, 0, 10, 0, 0, 196, 145, 22, 156, 225, 33, 0, 0, 0, 4]
+    elapsed: 5
+    calories: 1
+    power: 84
+    speed: 8.3370
+    cadence: 49
+    elapsedMillis: 5641
+  - element:
+    timeStamp: "15:35:03.539"
+    data: [17, 32, 0, 32, 10, 0, 0, 200, 79, 23, 154, 92, 34, 0, 0, 0, 4]
+    elapsed: 5
+    calories: 1
+    power: 83
+    speed: 8.3038
+    cadence: 47
+    elapsedMillis: 5827
+  - element:
+    timeStamp: "15:35:03.727"
+    data: [17, 32, 0, 64, 10, 0, 0, 76, 10, 24, 84, 214, 34, 0, 0, 0, 4]
+    elapsed: 6
+    calories: 1
+    power: 83
+    speed: 8.3038
+    cadence: 46
+    elapsedMillis: 6009
+  - element:
+    timeStamp: "15:35:03.915"
+    data: [17, 32, 0, 96, 10, 0, 0, 180, 204, 24, 226, 82, 35, 0, 0, 0, 4]
+    elapsed: 6
+    calories: 1
+    power: 82
+    speed: 8.2703
+    cadence: 45
+    elapsedMillis: 6199
+  - element:
+    timeStamp: "15:35:04.102"
+    data: [17, 32, 0, 128, 10, 0, 0, 220, 149, 25, 204, 209, 35, 0, 0, 0, 4]
+    elapsed: 6
+    calories: 1
+    power: 81
+    speed: 8.2365
+    cadence: 43
+    elapsedMillis: 6395
+  - element:
+    timeStamp: "15:35:04.327"
+    data: [17, 32, 0, 160, 10, 0, 0, 4, 100, 26, 108, 82, 36, 0, 0, 0, 4]
+    elapsed: 6
+    calories: 1
+    power: 80
+    speed: 8.2025
+    cadence: 42
+    elapsedMillis: 6597
+  - element:
+    timeStamp: "15:35:04.515"
+    data: [17, 32, 0, 192, 10, 0, 0, 236, 80, 27, 252, 220, 36, 0, 0, 0, 4]
+    elapsed: 6
+    calories: 1
+    power: 75
+    speed: 8.0279
+    cadence: 41
+    elapsedMillis: 6828
+  - element:
+    timeStamp: "15:35:05.195"
+    data: [17, 32, 0, 224, 10, 0, 0, 156, 245, 29, 211, 183, 37, 0, 0, 0, 4]
+    elapsed: 7
+    calories: 1
+    power: 41
+    speed: 6.5641
+    cadence: 37
+    elapsedMillis: 7489
+  - element:
+    timeStamp: "15:35:05.756"
+    data: [17, 32, 0, 0, 11, 0, 0, 24, 45, 32, 121, 133, 38, 0, 0, 0, 4]
+    elapsed: 8
+    calories: 1
+    power: 46
+    speed: 6.8208
+    cadence: 42
+    elapsedMillis: 8043
+  - element:
+    timeStamp: "15:35:06.093"
+    data: [17, 32, 0, 32, 11, 0, 0, 8, 125, 33, 101, 42, 39, 0, 0, 0, 4]
+    elapsed: 8
+    calories: 1
+    power: 63
+    speed: 7.5746
+    cadence: 40
+    elapsedMillis: 8372
+  - element:
+    timeStamp: "15:35:06.389"
+    data: [17, 32, 0, 64, 11, 0, 0, 12, 183, 34, 28, 202, 39, 0, 0, 0, 4]
+    elapsed: 8
+    calories: 1
+    power: 65
+    speed: 7.6539
+    cadence: 39
+    elapsedMillis: 8678
+  - element:
+    timeStamp: "15:35:06.654"
+    data: [17, 32, 0, 96, 11, 0, 0, 164, 140, 36, 40, 137, 40, 0, 0, 0, 4]
+    elapsed: 9
+    calories: 1
+    power: 52
+    speed: 7.1053
+    cadence: 37
+    elapsedMillis: 9136
+  - element:
+    timeStamp: "15:35:06.840"
+    data: [17, 32, 0, 128, 11, 0, 0, 176, 92, 37, 108, 10, 41, 0, 0, 0, 4]
+    elapsed: 9
+    calories: 1
+    power: 80
+    speed: 8.2025
+    cadence: 36
+    elapsedMillis: 9339
+  - element:
+    timeStamp: "15:35:07.029"
+    data: [17, 32, 0, 160, 11, 0, 0, 192, 38, 38, 166, 137, 41, 0, 0, 0, 4]
+    elapsed: 9
+    calories: 1
+    power: 81
+    speed: 8.2365
+    cadence: 36
+    elapsedMillis: 9537
+  - element:
+    timeStamp: "15:35:07.213"
+    data: [17, 32, 0, 192, 11, 0, 0, 140, 240, 38, 200, 8, 42, 0, 0, 0, 4]
+    elapsed: 9
+    calories: 1
+    power: 81
+    speed: 8.2365
+    cadence: 30
+    elapsedMillis: 9734
+  - element:
+    timeStamp: "15:35:07.440"
+    data: [17, 32, 0, 224, 11, 0, 0, 120, 174, 39, 189, 131, 42, 0, 0, 0, 4]
+    elapsed: 9
+    calories: 1
+    power: 83
+    speed: 8.3038
+    cadence: 30
+    elapsedMillis: 9919
+  - element:
+    timeStamp: "15:35:07.590"
+    data: [17, 32, 0, 0, 12, 0, 0, 200, 92, 40, 240, 248, 42, 0, 0, 0, 4]
+    elapsed: 10
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 36
+    elapsedMillis: 10089
+  - element:
+    timeStamp: "15:35:07.781"
+    data: [17, 32, 0, 32, 12, 0, 0, 184, 14, 41, 129, 111, 43, 0, 0, 0, 4]
+    elapsed: 10
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 36
+    elapsedMillis: 10263
+  - element:
+    timeStamp: "15:35:07.965"
+    data: [17, 32, 0, 64, 12, 0, 0, 144, 195, 41, 39, 231, 43, 0, 0, 0, 4]
+    elapsed: 10
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 36
+    elapsedMillis: 10440
+  - element:
+    timeStamp: "15:35:08.115"
+    data: [17, 32, 0, 96, 12, 0, 0, 224, 114, 42, 187, 92, 44, 0, 0, 0, 4]
+    elapsed: 10
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 36
+    elapsedMillis: 10611
+  - element:
+    timeStamp: "15:35:08.266"
+    data: [17, 32, 0, 128, 12, 0, 0, 240, 25, 43, 37, 207, 44, 0, 0, 0, 4]
+    elapsed: 10
+    calories: 1
+    power: 88
+    speed: 8.4672
+    cadence: 36
+    elapsedMillis: 10774
+  - element:
+    timeStamp: "15:35:08.468"
+    data: [17, 32, 0, 160, 12, 0, 0, 188, 197, 43, 99, 67, 45, 0, 0, 0, 4]
+    elapsed: 10
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 10942
+  - element:
+    timeStamp: "15:35:08.601"
+    data: [17, 32, 0, 192, 12, 0, 0, 244, 117, 44, 78, 185, 45, 0, 0, 0, 4]
+    elapsed: 11
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 36
+    elapsedMillis: 11114
+  - element:
+    timeStamp: "15:35:08.789"
+    data: [17, 32, 0, 224, 12, 0, 0, 108, 38, 45, 82, 47, 46, 0, 0, 0, 4]
+    elapsed: 11
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 30
+    elapsedMillis: 11287
+  - element:
+    timeStamp: "15:35:08.941"
+    data: [17, 32, 0, 0, 13, 0, 0, 128, 208, 45, 231, 162, 46, 0, 0, 0, 4]
+    elapsed: 11
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 11453
+  - element:
+    timeStamp: "15:35:09.165"
+    data: [17, 32, 0, 32, 13, 0, 0, 232, 128, 46, 229, 24, 47, 0, 0, 0, 4]
+    elapsed: 11
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 36
+    elapsedMillis: 11625
+  - element:
+    timeStamp: "15:35:09.316"
+    data: [17, 32, 0, 64, 13, 0, 0, 96, 54, 47, 198, 144, 47, 0, 0, 0, 4]
+    elapsed: 11
+    calories: 1
+    power: 84
+    speed: 8.3370
+    cadence: 36
+    elapsedMillis: 11802
+  - element:
+    timeStamp: "15:35:09.465"
+    data: [17, 32, 0, 96, 13, 0, 0, 12, 235, 47, 91, 8, 48, 0, 0, 0, 4]
+    elapsed: 11
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 36
+    elapsedMillis: 11979
+  - element:
+    timeStamp: "15:35:09.652"
+    data: [17, 32, 0, 128, 13, 0, 0, 84, 152, 48, 42, 125, 48, 0, 0, 0, 4]
+    elapsed: 12
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 12148
+  - element:
+    timeStamp: "15:35:09.800"
+    data: [17, 32, 0, 160, 13, 0, 0, 228, 73, 49, 151, 243, 48, 0, 0, 0, 4]
+    elapsed: 12
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 36
+    elapsedMillis: 12321
+  - element:
+    timeStamp: "15:35:09.990"
+    data: [17, 32, 0, 192, 13, 0, 0, 120, 254, 49, 35, 107, 49, 0, 0, 0, 4]
+    elapsed: 12
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 36
+    elapsedMillis: 12498
+  - element:
+    timeStamp: "15:35:10.177"
+    data: [17, 32, 0, 224, 13, 0, 0, 180, 175, 50, 112, 225, 49, 0, 0, 0, 4]
+    elapsed: 12
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 30
+    elapsedMillis: 12670
+  - element:
+    timeStamp: "15:35:10.328"
+    data: [17, 32, 0, 0, 14, 0, 0, 152, 88, 51, 144, 84, 50, 0, 0, 0, 4]
+    elapsed: 12
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 12835
+  - element:
+    timeStamp: "15:35:10.513"
+    data: [17, 32, 0, 32, 14, 0, 0, 148, 10, 52, 37, 203, 50, 0, 0, 0, 4]
+    elapsed: 13
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 36
+    elapsedMillis: 13009
+  - element:
+    timeStamp: "15:35:10.684"
+    data: [17, 32, 0, 64, 14, 0, 0, 32, 191, 52, 175, 66, 51, 0, 0, 0, 4]
+    elapsed: 13
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 36
+    elapsedMillis: 13186
+  - element:
+    timeStamp: "15:35:10.851"
+    data: [17, 32, 0, 96, 14, 0, 0, 0, 110, 53, 25, 184, 51, 0, 0, 0, 4]
+    elapsed: 13
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 36
+    elapsedMillis: 13357
+  - element:
+    timeStamp: "15:35:11.002"
+    data: [17, 32, 0, 128, 14, 0, 0, 124, 18, 54, 129, 41, 52, 0, 0, 0, 4]
+    elapsed: 13
+    calories: 1
+    power: 89
+    speed: 8.4992
+    cadence: 36
+    elapsedMillis: 13517
+  - element:
+    timeStamp: "15:35:11.188"
+    data: [17, 32, 0, 160, 14, 0, 0, 208, 186, 54, 105, 156, 52, 0, 0, 0, 4]
+    elapsed: 13
+    calories: 1
+    power: 88
+    speed: 8.4672
+    cadence: 36
+    elapsedMillis: 13681
+  - element:
+    timeStamp: "15:35:11.340"
+    data: [17, 32, 0, 192, 14, 0, 0, 12, 101, 55, 13, 16, 53, 0, 0, 0, 4]
+    elapsed: 13
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 13848
+  - element:
+    timeStamp: "15:35:11.529"
+    data: [17, 32, 0, 224, 14, 0, 0, 252, 12, 56, 206, 130, 53, 0, 0, 0, 4]
+    elapsed: 14
+    calories: 1
+    power: 88
+    speed: 8.4672
+    cadence: 36
+    elapsedMillis: 14011
+  - element:
+    timeStamp: "15:35:11.676"
+    data: [17, 32, 0, 0, 15, 0, 0, 244, 172, 56, 108, 242, 53, 0, 0, 0, 4]
+    elapsed: 14
+    calories: 1
+    power: 90
+    speed: 8.5309
+    cadence: 36
+    elapsedMillis: 14167
+  - element:
+    timeStamp: "15:35:11.827"
+    data: [17, 32, 0, 32, 15, 0, 0, 208, 84, 57, 37, 101, 54, 0, 0, 0, 4]
+    elapsed: 14
+    calories: 1
+    power: 88
+    speed: 8.4672
+    cadence: 36
+    elapsedMillis: 14332
+  - element:
+    timeStamp: "15:35:11.977"
+    data: [17, 32, 0, 64, 15, 0, 0, 240, 255, 57, 33, 217, 54, 0, 0, 0, 4]
+    elapsed: 14
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 14499
+  - element:
+    timeStamp: "15:35:12.167"
+    data: [17, 32, 0, 96, 15, 0, 0, 96, 169, 58, 119, 76, 55, 0, 0, 0, 4]
+    elapsed: 14
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 14665
+  - element:
+    timeStamp: "15:35:12.353"
+    data: [17, 32, 0, 128, 15, 0, 0, 48, 76, 59, 54, 189, 55, 0, 0, 0, 4]
+    elapsed: 14
+    calories: 1
+    power: 89
+    speed: 8.4992
+    cadence: 36
+    elapsedMillis: 14824
+  - element:
+    timeStamp: "15:35:12.502"
+    data: [17, 32, 0, 160, 15, 0, 0, 176, 244, 59, 47, 48, 56, 0, 0, 0, 4]
+    elapsed: 14
+    calories: 1
+    power: 88
+    speed: 8.4672
+    cadence: 36
+    elapsedMillis: 14988
+  - element:
+    timeStamp: "15:35:12.653"
+    data: [17, 32, 0, 192, 15, 0, 0, 60, 160, 60, 84, 164, 56, 0, 0, 0, 4]
+    elapsed: 15
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 15156
+  - element:
+    timeStamp: "15:35:12.861"
+    data: [17, 32, 0, 224, 15, 0, 0, 248, 74, 61, 42, 24, 57, 0, 0, 0, 4]
+    elapsed: 15
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 15322
+  - element:
+    timeStamp: "15:35:12.990"
+    data: [17, 32, 0, 0, 16, 0, 0, 216, 238, 61, 85, 137, 57, 0, 0, 0, 4]
+    elapsed: 15
+    calories: 1
+    power: 89
+    speed: 8.4992
+    cadence: 36
+    elapsedMillis: 15482
+  - element:
+    timeStamp: "15:35:13.176"
+    data: [17, 32, 0, 32, 16, 0, 0, 176, 152, 62, 211, 252, 57, 0, 0, 0, 4]
+    elapsed: 15
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 15648
+  - element:
+    timeStamp: "15:35:13.329"
+    data: [17, 32, 0, 64, 16, 0, 0, 120, 73, 63, 245, 114, 58, 0, 0, 0, 4]
+    elapsed: 15
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 36
+    elapsedMillis: 15821
+  - element:
+    timeStamp: "15:35:13.512"
+    data: [17, 32, 0, 96, 16, 0, 0, 4, 249, 63, 160, 232, 58, 0, 0, 0, 4]
+    elapsed: 15
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 36
+    elapsedMillis: 15993
+  - element:
+    timeStamp: "15:35:13.662"
+    data: [17, 32, 0, 128, 16, 0, 0, 132, 161, 64, 153, 91, 59, 0, 0, 0, 4]
+    elapsed: 16
+    calories: 1
+    power: 88
+    speed: 8.4672
+    cadence: 36
+    elapsedMillis: 16157
+  - element:
+    timeStamp: "15:35:13.813"
+    data: [17, 32, 0, 160, 16, 0, 0, 16, 77, 65, 190, 207, 59, 0, 0, 0, 4]
+    elapsed: 16
+    calories: 1
+    power: 87
+    speed: 8.4350
+    cadence: 36
+    elapsedMillis: 16325
+  - element:
+    timeStamp: "15:35:14.000"
+    data: [17, 32, 0, 192, 16, 0, 0, 24, 252, 65, 55, 69, 60, 0, 0, 0, 4]
+    elapsed: 16
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 36
+    elapsedMillis: 16496
+  - element:
+    timeStamp: "15:35:14.150"
+    data: [17, 32, 0, 224, 16, 0, 0, 128, 170, 66, 115, 186, 60, 0, 0, 0, 4]
+    elapsed: 16
+    calories: 1
+    power: 86
+    speed: 8.4026
+    cadence: 36
+    elapsedMillis: 16666
+  - element:
+    timeStamp: "15:35:14.338"
+    data: [17, 32, 0, 0, 17, 0, 0, 128, 82, 67, 58, 45, 61, 0, 0, 0, 4]
+    elapsed: 16
+    calories: 1
+    power: 88
+    speed: 8.4672
+    cadence: 44
+    elapsedMillis: 16830
+  - element:
+    timeStamp: "15:35:14.488"
+    data: [17, 32, 0, 32, 17, 0, 0, 52, 4, 68, 180, 163, 61, 0, 0, 0, 4]
+    elapsed: 17
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 44
+    elapsedMillis: 17003
+  - element:
+    timeStamp: "15:35:14.675"
+    data: [17, 32, 0, 64, 17, 0, 0, 228, 186, 68, 8, 28, 62, 0, 0, 0, 4]
+    elapsed: 17
+    calories: 1
+    power: 85
+    speed: 8.3699
+    cadence: 43
+    elapsedMillis: 17181
+  - element:
+    timeStamp: "15:35:14.862"
+    data: [17, 32, 0, 96, 17, 0, 0, 68, 114, 69, 157, 148, 62, 0, 0, 0, 4]
+    elapsed: 17
+    calories: 1
+    power: 84
+    speed: 8.3370
+    cadence: 42
+    elapsedMillis: 17361
+  - element:
+    timeStamp: "15:35:15.050"
+    data: [17, 32, 0, 128, 17, 0, 0, 140, 66, 70, 245, 21, 63, 0, 0, 0, 4]
+    elapsed: 17
+    calories: 1
+    power: 80
+    speed: 8.2025
+    cadence: 37
+    elapsedMillis: 17564
+  - element:
+    timeStamp: "15:35:16.178"
+    data: [17, 32, 0, 160, 17, 0, 0, 244, 199, 74, 16, 21, 64, 0, 0, 0, 4]
+    elapsed: 18
+    calories: 2
+    power: 28
+    speed: 5.7806
+    cadence: 37
+    elapsedMillis: 18694
+  - element:
+    timeStamp: "15:35:17.908"
+    data: [17, 32, 0, 192, 17, 0, 0, 244, 172, 81, 31, 43, 65, 0, 0, 0, 4]
+    elapsed: 20
+    calories: 2
+    power: 20
+    speed: 5.1672
+    cadence: 30
+    elapsedMillis: 20417
+  - element:
+    timeStamp: "15:35:18.390"
+    data: [17, 32, 0, 224, 17, 0, 0, 184, 104, 83, 194, 229, 65, 0, 0, 0, 4]
+    elapsed: 20
+    calories: 2
+    power: 54
+    speed: 7.1953
+    cadence: 30
+    elapsedMillis: 20851
+  - element:
+    timeStamp: "15:35:18.654"
+    data: [17, 32, 0, 0, 18, 0, 0, 68, 153, 84, 32, 131, 66, 0, 0, 0, 4]
+    elapsed: 21
+    calories: 2
+    power: 66
+    speed: 7.6930
+    cadence: 36
+    elapsedMillis: 21149
+  - element:
+    timeStamp: "15:35:18.934"
+    data: [17, 32, 0, 32, 18, 0, 0, 184, 188, 85, 35, 29, 67, 0, 0, 0, 4]
+    elapsed: 21
+    calories: 2
+    power: 68
+    speed: 7.7700
+    cadence: 30
+    elapsedMillis: 21433
+  - element:
+    timeStamp: "15:35:19.177"
+    data: [17, 32, 0, 64, 18, 0, 0, 88, 178, 86, 88, 170, 67, 0, 0, 0, 4]
+    elapsed: 21
+    calories: 2
+    power: 74
+    speed: 7.9920
+    cadence: 30
+    elapsedMillis: 21673
+  - element:
+    timeStamp: "15:35:19.365"
+    data: [17, 32, 0, 96, 18, 0, 0, 148, 131, 87, 3, 44, 68, 0, 0, 0, 4]
+    elapsed: 21
+    calories: 2
+    power: 80
+    speed: 8.2025
+    cadence: 30
+    elapsedMillis: 21877
+  - element:
+    timeStamp: "15:35:19.588"
+    data: [17, 32, 0, 128, 18, 0, 0, 168, 87, 88, 161, 174, 68, 0, 0, 0, 4]
+    elapsed: 22
+    calories: 2
+    power: 79
+    speed: 8.1681
+    cadence: 30
+    elapsedMillis: 22084
+  - element:
+    timeStamp: "15:35:19.778"
+    data: [17, 32, 0, 160, 18, 0, 0, 204, 46, 89, 67, 50, 69, 0, 0, 0, 4]
+    elapsed: 22
+    calories: 2
+    power: 78
+    speed: 8.1335
+    cadence: 30
+    elapsedMillis: 22294
+  - element:
+    timeStamp: "15:35:20.001"
+    data: [17, 32, 0, 192, 18, 0, 0, 20, 248, 89, 56, 177, 69, 0, 0, 0, 4]
+    elapsed: 22
+    calories: 2
+    power: 81
+    speed: 8.2365
+    cadence: 30
+    elapsedMillis: 22492
+  - element:
+    timeStamp: "15:35:20.154"
+    data: [17, 32, 0, 224, 18, 0, 0, 124, 178, 90, 232, 42, 70, 0, 0, 0, 4]
+    elapsed: 22
+    calories: 2
+    power: 84
+    speed: 8.3370
+    cadence: 24
+    elapsedMillis: 22673
+  - element:
+    timeStamp: "15:35:20.375"
+    data: [17, 32, 0, 0, 19, 0, 0, 164, 113, 91, 78, 166, 70, 0, 0, 0, 4]
+    elapsed: 22
+    calories: 2
+    power: 83
+    speed: 8.3038
+    cadence: 30
+    elapsedMillis: 22860
+  - element:
+    timeStamp: "15:35:20.524"
+    data: [17, 32, 0, 32, 19, 0, 0, 152, 10, 93, 143, 90, 71, 0, 0, 0, 4]
+    elapsed: 23
+    calories: 2
+    power: 56
+    speed: 7.2830
+    cadence: 30
+    elapsedMillis: 23259
+  - element:
+    timeStamp: "15:35:20.749"
+    data: [17, 32, 0, 64, 19, 0, 0, 252, 198, 93, 247, 212, 71, 0, 0, 0, 4]
+    elapsed: 23
+    calories: 2
+    power: 84
+    speed: 8.3370
+    cadence: 30
+    elapsedMillis: 23443
+  - element:
+    timeStamp: "15:35:20.899"
+    data: [17, 32, 0, 96, 19, 0, 0, 12, 121, 94, 148, 75, 72, 0, 0, 0, 4]
+    elapsed: 23
+    calories: 2
+    power: 85
+    speed: 8.3699
+    cadence: 30
+    elapsedMillis: 23618

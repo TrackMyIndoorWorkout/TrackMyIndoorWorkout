@@ -11,8 +11,8 @@ void main() {
     for (var divider in getRandomDoubles(repetition, 1024, rnd)) {
       final len = rnd.nextInt(99) + 5;
       final data = getRandomInts(len, maxUint8, rnd);
-      final lsbLocation = rnd.nextInt(len);
-      final larger = lsbLocation > 1 ? (lsbLocation < len - 2 ? rnd.nextBool() : false) : true;
+      final larger = rnd.nextBool();
+      final lsbLocation = rnd.nextInt(len - 2) + (larger ? 0 : 2);
       final msbLocation = larger ? lsbLocation + 2 : lsbLocation - 2;
       data[lsbLocation] = maxByte;
       data[(lsbLocation + msbLocation) ~/ 2] = maxByte;
@@ -34,8 +34,8 @@ void main() {
     for (var lenMinusFive in getRandomInts(repetition, 99, rnd)) {
       final len = lenMinusFive + 5;
       final data = getRandomInts(len, maxUint8, rnd);
-      final lsbLocation = rnd.nextInt(len);
-      final larger = lsbLocation > 1 ? (lsbLocation < len - 2 ? rnd.nextBool() : false) : true;
+      final larger = rnd.nextBool();
+      final lsbLocation = rnd.nextInt(len - 2) + (larger ? 0 : 2);
       final msbLocation = larger ? lsbLocation + 2 : lsbLocation - 2;
       final midLocation = (lsbLocation + msbLocation) ~/ 2;
       final divider = rnd.nextDouble() * 1024;
@@ -49,7 +49,7 @@ void main() {
               divider;
 
       test(
-          "(${data[lsbLocation]} + ${data[midLocation]} + ${data[msbLocation]}) / $divider -> $expected",
+          "(${data[lsbLocation]}, ${data[midLocation]}, ${data[msbLocation]}) / $divider -> $expected",
           () async {
         final desc = ThreeByteMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);

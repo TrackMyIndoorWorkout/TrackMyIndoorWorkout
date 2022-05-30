@@ -1,3 +1,4 @@
+// ignore_for_file: type=lint
 // ignore_for_file: directives_ordering
 import 'package:build_runner_core/build_runner_core.dart' as _i1;
 import 'package:floor_generator/builder.dart' as _i2;

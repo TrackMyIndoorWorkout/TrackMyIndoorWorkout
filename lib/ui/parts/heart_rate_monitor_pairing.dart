@@ -14,11 +14,11 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
   const HeartRateMonitorPairingBottomSheet({Key? key}) : super(key: key);
 
   @override
-  _HeartRateMonitorPairingBottomSheetState createState() =>
-      _HeartRateMonitorPairingBottomSheetState();
+  HeartRateMonitorPairingBottomSheetState createState() =>
+      HeartRateMonitorPairingBottomSheetState();
 }
 
-class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
+class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
   static RegExp colonRegex = RegExp(r'\:');
 
   int _scanDuration = 4;

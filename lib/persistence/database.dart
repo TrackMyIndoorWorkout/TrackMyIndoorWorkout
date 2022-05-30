@@ -6,7 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
-import '../devices/device_map.dart';
+import '../devices/device_fourcc.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../utils/time_zone.dart';
 import 'dao/activity_dao.dart';

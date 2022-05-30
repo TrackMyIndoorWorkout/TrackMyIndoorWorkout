@@ -69,7 +69,7 @@ void main() {
           port > 0 &&
           port < maxUint16;
       final addressString = ipParts.map((part) => part.toString()).join(".");
-      final fullAddress = addressString + ":$port";
+      final fullAddress = "$addressString:$port";
       final expected = valid ? Tuple2<String, int>(addressString, port) : dummyAddressTuple;
       test('$index.: $fullAddress -> $expected', () async {
         expect(parseIpAddress(fullAddress), expected);

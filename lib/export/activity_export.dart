@@ -35,7 +35,7 @@ abstract class ActivityExport {
   String heartRateLimitingMethod = heartRateLimitingMethodDefault;
 
   ActivityExport({required this.nonCompressedFileExtension, required this.nonCompressedMimeType}) {
-    compressedFileExtension = nonCompressedFileExtension + '.gz';
+    compressedFileExtension = "$nonCompressedFileExtension.gz";
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
         prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;

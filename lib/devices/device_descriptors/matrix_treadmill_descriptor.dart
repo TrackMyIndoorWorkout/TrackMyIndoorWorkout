@@ -1,5 +1,5 @@
 import '../../export/fit/fit_manufacturer.dart';
-import '../device_map.dart';
+import '../device_fourcc.dart';
 import 'treadmill_device_descriptor.dart';
 
 class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {

@@ -8,3 +8,4 @@ linter:
 analyzer:
   exclude:
     - test/**.mocks.dart
+    - /**.g.dart

@@ -1,9 +1,9 @@
 class CadenceData {
-  final double seconds;
+  final double time;
   int revolutions;
 
   CadenceData({
-    required this.seconds,
+    required this.time,
     required this.revolutions,
   });
 }
