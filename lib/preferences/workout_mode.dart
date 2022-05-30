@@ -1,0 +1,10 @@
+const workoutMode = "Workout Mode";
+const workoutModeTag = "workout_mode";
+const workoutModeDescription = "Select Workout Mode.";
+const workoutModeDefault = workoutModeIndividual;
+const workoutModeIndividual = "individual";
+const workoutModeIndividualDescription = "Individual";
+const workoutModeCircuit = "circuit";
+const workoutModeCircuitDescription = "Circuit / Bootcamp";
+// const workoutModeHIIT = "hiit";
+// const workoutModeHIITDescription = "HIIT";

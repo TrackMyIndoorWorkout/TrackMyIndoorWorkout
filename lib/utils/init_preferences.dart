@@ -45,6 +45,7 @@ import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
+import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
 import 'constants.dart';
@@ -115,6 +116,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     calculateGpsTag: calculateGpsDefault,
     avgSpeedOnTrackTag: avgSpeedOnTrackDefault,
     showPacerTag: showPacerDefault,
+    workoutModeTag: workoutModeDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
