@@ -46,6 +46,7 @@ import '../preferences/target_heart_rate.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
@@ -145,6 +146,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _uxDebug = appDebugModeDefault;
   bool _movingOrElapsedTime = movingOrElapsedTimeDefault;
 
+  bool _circuitWorkout = false;
   Timer? _dataGapWatchdog;
   int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
   String _dataGapSoundEffect = dataStreamGapSoundEffectDefault;
@@ -236,6 +238,7 @@ class RecordingState extends State<RecordingScreen> {
     await _fitnessEquipment?.additionalSensorsOnDemand();
 
     final now = DateTime.now();
+    // TODO #249
     _activity = Activity(
       fourCC: widget.descriptor.fourCC,
       deviceName: widget.device.name,
@@ -304,7 +307,7 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment?.pumpData((record) async {
       _dataGapWatchdog?.cancel();
       _dataGapBeeperTimer?.cancel();
-      if (_dataGapWatchdogTime > 0) {
+      if (_dataGapWatchdogTime > 0 && !_circuitWorkout) {
         _dataGapWatchdog = Timer(
           Duration(seconds: _dataGapWatchdogTime),
           _dataGapTimeoutHandler,
@@ -534,6 +537,7 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
+    _circuitWorkout = (prefService.get<int>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
     _dataGapWatchdogTime =
         prefService.get<int>(dataStreamGapWatchdogIntTag) ?? dataStreamGapWatchdogDefault;
     _dataGapSoundEffect =
@@ -890,7 +894,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<bool> _onWillPop() async {
-    if (!_measuring) {
+    if (!_measuring || _circuitWorkout) {
       _preDispose();
       return true;
     }
@@ -1833,6 +1837,9 @@ class RecordingState extends State<RecordingScreen> {
           -20,
           () async {
             if (_measuring) {
+              if (_circuitWorkout) {
+                // TODO: warning about circuit workout end
+              }
               await _stopMeasurement(false);
             } else {
               await _startMeasurement();
