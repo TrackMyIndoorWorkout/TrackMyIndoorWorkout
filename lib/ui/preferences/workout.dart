@@ -17,12 +17,14 @@ class WorkoutPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(workoutModeDescription),
       ),
       const PrefRadio<String>(
-        title: Text(workoutModeIndividualDescription),
+        title: Text(workoutModeIndividualTitle),
+        subtitle: Text(workoutModeIndividualDescription),
         value: workoutModeIndividual,
         pref: workoutModeTag,
       ),
       const PrefRadio<String>(
-        title: Text(workoutModeCircuitDescription),
+        title: Text(workoutModeCircuitTitle),
+        subtitle: Text(workoutModeCircuitDescription),
         value: workoutModeCircuit,
         pref: workoutModeTag,
       ),
