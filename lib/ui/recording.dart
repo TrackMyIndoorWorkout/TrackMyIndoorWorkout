@@ -1355,6 +1355,46 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
+  Future<void> startStopAction() async {
+    if (_measuring) {
+      if (_circuitWorkout) {
+        final selection = await Get.dialog(
+          AlertDialog(
+            title: const Text("Circuit workout in progress"),
+            content: const Text("Select an action"),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(result: 0),
+                child: const Text("Continue"),
+              ),
+              TextButton(
+                onPressed: () => Get.back(result: 1),
+                child: const Text("Finalize / finish this part"),
+              ),
+              TextButton(
+                onPressed: () => Get.back(result: 2),
+                child: const Text("Finalize / finish all parts"),
+              ),
+            ],
+          ),
+        );
+        if (selection > 0) {
+          await _stopMeasurement(false);
+          if (selection > 1) {
+            final unfinished = await _database.activityDao.findUnfinishedActivities();
+            for (final activity in unfinished) {
+              await _database.finalizeActivity(activity);
+            }
+          }
+        }
+      } else {
+        await _stopMeasurement(false);
+      }
+    } else {
+      await _startMeasurement();
+    }
+  }
+
   bool hitTest(GlobalKey globalKey, Offset globalPosition) {
     final RenderObject? renderObject = globalKey.currentContext?.findRenderObject();
     if (renderObject != null && renderObject is RenderBox) {
@@ -1853,14 +1893,7 @@ class RecordingState extends State<RecordingScreen> {
           "Start / Stop Workout",
           -20,
           () async {
-            if (_measuring) {
-              if (_circuitWorkout) {
-                // TODO: warning about circuit workout end
-              }
-              await _stopMeasurement(false);
-            } else {
-              await _startMeasurement();
-            }
+            await startStopAction();
           },
         ),
       ]);
@@ -1953,11 +1986,7 @@ class RecordingState extends State<RecordingScreen> {
                     child: IconButton(
                       icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
                       onPressed: () async {
-                        if (_measuring) {
-                          await _stopMeasurement(false);
-                        } else {
-                          await _startMeasurement();
-                        }
+                        await startStopAction();
                       },
                     ),
                   ),

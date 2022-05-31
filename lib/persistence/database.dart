@@ -205,16 +205,6 @@ abstract class AppDatabase extends FloorDatabase {
     }
   }
 
-  Future<List<Activity>> findRecentUnfinishedActivities(String deviceId) {
-    final yesterday = DateTime.now().subtract(const Duration(days: 1));
-    return activityDao.findRecentUnfinishedActivities(deviceId, yesterday.millisecondsSinceEpoch);
-  }
-
-  Future<List<Activity>> findStaleUnfinishedActivities(String deviceId) {
-    final yesterday = DateTime.now().subtract(const Duration(days: 1));
-    return activityDao.findStaleUnfinishedActivities(deviceId, yesterday.millisecondsSinceEpoch);
-  }
-
   Future<bool> finalizeActivity(Activity activity) async {
     final lastRecord = await recordDao.findLastRecordOfActivity(activity.id!).first;
     if (lastRecord == null) {
