@@ -7,6 +7,7 @@ import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
+import '../preferences/bike_weight.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
@@ -14,6 +15,7 @@ import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
+import '../preferences/drive_train_loss.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/extend_tuning.dart';
 import '../preferences/generic.dart';
@@ -115,6 +117,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     calculateGpsTag: calculateGpsDefault,
     avgSpeedOnTrackTag: avgSpeedOnTrackDefault,
     showPacerTag: showPacerDefault,
+    bikeWeightTag: bikeWeightDefault,
+    driveTrainLossTag: driveTrainLossDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

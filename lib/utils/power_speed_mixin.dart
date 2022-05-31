@@ -1,19 +1,20 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 import '../preferences/athlete_body_weight.dart';
+import '../preferences/bike_weight.dart';
+import '../preferences/drive_train_loss.dart';
 import 'constants.dart';
+import 'init_preferences.dart';
 
 class PowerSpeedMixin {
   static const energy2speed = 5.28768241564455E-05;
   static const epsilon = 0.001;
   static const maxIterations = 100;
-  static const driveTrainLoss = 1; // %
+  static int driveTrainLoss = driveTrainLossDefault; // 1 %
   static const gConst = 9.8067;
-  static const bikerWeightDefault = 81; // kg
-  static int bikerWeight = bikerWeightDefault; // kg
-  static int bikeWeight = 9; // kg
+  static int athleteWeight = athleteBodyWeightDefault; // 80 kg
+  static int bikeWeight = bikeWeightDefault; // 9 kg
   static const rollingResistanceCoefficient = 0.005;
   static const dragCoefficient = 0.63;
   // Backup: 5.4788
@@ -28,20 +29,38 @@ class PowerSpeedMixin {
     }
 
     final prefService = Get.find<BasePrefService>();
-    final bikeWeightNewest = prefService.get<int>(athleteBodyWeightIntTag) ?? bikerWeightDefault;
-    if (bikeWeightNewest != bikerWeight) {
-      _velocityForPowerDict.clear();
-      bikerWeight = bikeWeightNewest;
+    bool clearDictionary = false;
+    final athleteWeightNew =
+        prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
+    if (athleteWeightNew != athleteWeight) {
+      athleteWeight = athleteWeightNew;
+      clearDictionary = true;
     }
 
-    fRolling = gConst * (bikerWeight + bikeWeight) * rollingResistanceCoefficient;
+    final bikeWeightNewest = prefService.get<int>(bikeWeightTag) ?? bikeWeightDefault;
+    if (bikeWeightNewest != bikeWeight) {
+      bikeWeight = bikeWeightNewest;
+      clearDictionary = true;
+    }
+
+    final driveTrainLossNewest = prefService.get<int>(bikeWeightTag) ?? bikeWeightDefault;
+    if (driveTrainLossNewest != driveTrainLoss) {
+      driveTrainLoss = driveTrainLossNewest;
+      clearDictionary = true;
+    }
+
+    if (clearDictionary) {
+      _velocityForPowerDict.clear();
+    }
+
+    fRolling = gConst * (athleteWeight + bikeWeight) * rollingResistanceCoefficient;
   }
 
   double powerForVelocity(velocity) {
     final fDrag = 0.5 * frontalArea * dragCoefficient * airDensity * velocity * velocity;
     final totalForce = fRolling + fDrag;
     final wheelPower = totalForce * velocity;
-    const driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
+    final driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
     final legPower = wheelPower / driveTrainFraction;
     return legPower;
   }
