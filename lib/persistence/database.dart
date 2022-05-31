@@ -243,7 +243,7 @@ abstract class AppDatabase extends FloorDatabase {
     }
 
     if (updated > 0) {
-      activityDao.updateActivity(activity);
+      await activityDao.updateActivity(activity);
     }
 
     return updated > 0;

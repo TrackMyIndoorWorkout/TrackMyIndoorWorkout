@@ -145,7 +145,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _uxDebug = appDebugModeDefault;
   bool _movingOrElapsedTime = movingOrElapsedTimeDefault;
 
-  bool _circuitWorkout = false;
+  bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
   Timer? _dataGapWatchdog;
   int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
   String _dataGapSoundEffect = dataStreamGapSoundEffectDefault;
@@ -235,24 +235,41 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> _startMeasurement() async {
     await _fitnessEquipment?.additionalSensorsOnDemand();
-
     final now = DateTime.now();
-    // TODO #249
-    _activity = Activity(
-      fourCC: widget.descriptor.fourCC,
-      deviceName: widget.device.name,
-      deviceId: widget.device.id.id,
-      hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
-      start: now.millisecondsSinceEpoch,
-      startDateTime: now,
-      sport: widget.descriptor.defaultSport,
-      powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
-      calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
-      hrCalorieFactor: _fitnessEquipment?.hrCalorieFactor ?? 1.0,
-      hrmCalorieFactor: _fitnessEquipment?.hrmCalorieFactor ?? 1.0,
-      hrBasedCalories: _hrBasedCalorieCounting,
-      timeZone: await getTimeZone(),
-    );
+    final unfinished =
+        await _database.activityDao.findUnfinishedDeviceActivities(widget.device.id.id);
+    var continued = false;
+    if (unfinished.isNotEmpty) {
+      final yesterday = now.subtract(const Duration(days: 1));
+      if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
+        _activity = unfinished.first;
+        continued = true;
+      }
+
+      for (final activity in unfinished) {
+        if (!continued || _activity != null && _activity!.id != activity.id) {
+          await _database.finalizeActivity(activity);
+        }
+      }
+    }
+
+    if (!continued) {
+      _activity = Activity(
+        fourCC: widget.descriptor.fourCC,
+        deviceName: widget.device.name,
+        deviceId: widget.device.id.id,
+        hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
+        start: now.millisecondsSinceEpoch,
+        startDateTime: now,
+        sport: widget.descriptor.defaultSport,
+        powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
+        calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
+        hrCalorieFactor: _fitnessEquipment?.hrCalorieFactor ?? 1.0,
+        hrmCalorieFactor: _fitnessEquipment?.hrmCalorieFactor ?? 1.0,
+        hrBasedCalories: _hrBasedCalorieCounting,
+        timeZone: await getTimeZone(),
+      );
+    }
     if (!_uxDebug) {
       final id = await _database.activityDao.insertActivity(_activity!);
       _activity!.id = id;
@@ -749,7 +766,9 @@ class RecordingState extends State<RecordingScreen> {
       _dataTimeoutBeeper();
     }
 
-    await _stopMeasurement(false);
+    if (!_circuitWorkout) {
+      await _stopMeasurement(false);
+    }
 
     try {
       await _fitnessEquipment?.disconnect();

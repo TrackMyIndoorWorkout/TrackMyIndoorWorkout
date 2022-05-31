@@ -13,6 +13,10 @@ abstract class ActivityDao {
   Future<List<Activity>> findActivities(int limit, int offset);
 
   @Query(
+      'SELECT * FROM `$activitiesTableName` WHERE `deviceId` = :deviceId and `end` = 0 ORDER BY `start` DESC')
+  Future<List<Activity>> findUnfinishedDeviceActivities(String deviceId);
+
+  @Query(
       'SELECT * FROM `$activitiesTableName` WHERE `deviceId` = :deviceId and `end` = 0 and `start` >= :thresholdTime ORDER BY `start` DESC')
   Future<List<Activity>> findRecentUnfinishedActivities(String deviceId, int thresholdTime);
 

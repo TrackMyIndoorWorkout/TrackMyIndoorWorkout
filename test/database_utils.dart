@@ -49,10 +49,19 @@ class InMemoryActivityDao extends ActivityDao {
   }
 
   @override
+  Future<List<Activity>> findUnfinishedDeviceActivities(String deviceId) async {
+    return activities
+        .where((element) => element.deviceId == deviceId && element.end == 0)
+        .sortedByCompare<int>((element) => element.start, (int e1, int e2) => e1 - e2)
+        .toList();
+  }
+
+  @override
   Future<List<Activity>> findRecentUnfinishedActivities(String deviceId, int thresholdTime) async {
     return activities
         .where((element) =>
             element.deviceId == deviceId && element.end == 0 && element.start >= thresholdTime)
+        .sortedByCompare<int>((element) => element.start, (int e1, int e2) => e1 - e2)
         .toList();
   }
 
@@ -61,6 +70,7 @@ class InMemoryActivityDao extends ActivityDao {
     return activities
         .where((element) =>
             element.deviceId == deviceId && element.end == 0 && element.start < thresholdTime)
+        .sortedByCompare<int>((element) => element.start, (int e1, int e2) => e1 - e2)
         .toList();
   }
 
