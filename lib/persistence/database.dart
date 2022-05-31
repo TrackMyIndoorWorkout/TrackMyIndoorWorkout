@@ -204,6 +204,50 @@ abstract class AppDatabase extends FloorDatabase {
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
   }
+
+  Future<List<Activity>> findRecentUnfinishedActivities(String deviceId) {
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    return activityDao.findRecentUnfinishedActivities(deviceId, yesterday.millisecondsSinceEpoch);
+  }
+
+  Future<List<Activity>> findStaleUnfinishedActivities(String deviceId) {
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    return activityDao.findStaleUnfinishedActivities(deviceId, yesterday.millisecondsSinceEpoch);
+  }
+
+  Future<bool> finalizeActivity(Activity activity) async {
+    final lastRecord = await recordDao.findLastRecordOfActivity(activity.id!).first;
+    if (lastRecord == null) {
+      return false;
+    }
+
+    int updated = 0;
+    if (lastRecord.calories != null && lastRecord.calories! > 0 && activity.calories == 0) {
+      activity.calories = lastRecord.calories!;
+      updated++;
+    }
+
+    if (lastRecord.distance != null && lastRecord.distance! > 0 && activity.distance == 0) {
+      activity.distance = lastRecord.distance!;
+      updated++;
+    }
+
+    if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
+      activity.elapsed = lastRecord.elapsed!;
+      updated++;
+    }
+
+    if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
+      activity.end = lastRecord.timeStamp!;
+      updated++;
+    }
+
+    if (updated > 0) {
+      activityDao.updateActivity(activity);
+    }
+
+    return updated > 0;
+  }
 }
 
 final migration1to2 = Migration(1, 2, (database) async {

@@ -49,8 +49,19 @@ class InMemoryActivityDao extends ActivityDao {
   }
 
   @override
-  Future<List<Activity>> findUnfinishedActivities(String deviceId) async {
-    return activities.where((element) => element.deviceId == deviceId).toList();
+  Future<List<Activity>> findRecentUnfinishedActivities(String deviceId, int thresholdTime) async {
+    return activities
+        .where((element) =>
+            element.deviceId == deviceId && element.end == 0 && element.start >= thresholdTime)
+        .toList();
+  }
+
+  @override
+  Future<List<Activity>> findStaleUnfinishedActivities(String deviceId, int thresholdTime) async {
+    return activities
+        .where((element) =>
+            element.deviceId == deviceId && element.end == 0 && element.start < thresholdTime)
+        .toList();
   }
 
   @override

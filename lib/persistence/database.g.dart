@@ -387,41 +387,19 @@ class _$ActivityDao extends ActivityDao {
   }
 
   @override
-  Future<List<Activity>> findUnfinishedActivities(String deviceId) async {
+  Future<List<Activity>> findRecentUnfinishedActivities(String deviceId, int thresholdTime) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM `activities` WHERE `deviceId` = ?1 and `end` = 0 ORDER BY `start` DESC',
-        mapper: (Map<String, Object?> row) => Activity(
-            id: row['id'] as int?,
-            deviceName: row['device_name'] as String,
-            deviceId: row['device_id'] as String,
-            hrmId: row['hrm_id'] as String,
-            start: row['start'] as int,
-            end: row['end'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            movingTime: row['moving_time'] as int,
-            calories: row['calories'] as int,
-            uploaded: (row['uploaded'] as int) != 0,
-            suuntoUploaded: (row['suunto_uploaded'] as int) != 0,
-            suuntoBlobUrl: row['suunto_blob_url'] as String,
-            underArmourUploaded: (row['under_armour_uploaded'] as int) != 0,
-            trainingPeaksUploaded: (row['training_peaks_uploaded'] as int) != 0,
-            stravaId: row['strava_id'] as int,
-            uaWorkoutId: row['ua_workout_id'] as int,
-            suuntoUploadId: row['suunto_upload_id'] as int,
-            suuntoUploadIdentifier: row['suunto_upload_identifier'] as String,
-            suuntoWorkoutUrl: row['suunto_workout_url'] as String,
-            trainingPeaksAthleteId: row['training_peaks_athlete_id'] as int,
-            trainingPeaksWorkoutId: row['training_peaks_workout_id'] as int,
-            fourCC: row['four_cc'] as String,
-            sport: row['sport'] as String,
-            powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double,
-            hrCalorieFactor: row['hr_calorie_factor'] as double,
-            hrmCalorieFactor: row['hrm_calorie_factor'] as double,
-            hrBasedCalories: (row['hr_based_calories'] as int) != 0,
-            timeZone: row['time_zone'] as String),
-        arguments: [deviceId]);
+        'SELECT * FROM `activities` WHERE `deviceId` = ?1 and `end` = 0 and `start` >= ?2 ORDER BY `start` DESC',
+        mapper: (Map<String, Object?> row) => Activity(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, hrmId: row['hrm_id'] as String, start: row['start'] as int, end: row['end'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, movingTime: row['moving_time'] as int, calories: row['calories'] as int, uploaded: (row['uploaded'] as int) != 0, suuntoUploaded: (row['suunto_uploaded'] as int) != 0, suuntoBlobUrl: row['suunto_blob_url'] as String, underArmourUploaded: (row['under_armour_uploaded'] as int) != 0, trainingPeaksUploaded: (row['training_peaks_uploaded'] as int) != 0, stravaId: row['strava_id'] as int, uaWorkoutId: row['ua_workout_id'] as int, suuntoUploadId: row['suunto_upload_id'] as int, suuntoUploadIdentifier: row['suunto_upload_identifier'] as String, suuntoWorkoutUrl: row['suunto_workout_url'] as String, trainingPeaksAthleteId: row['training_peaks_athlete_id'] as int, trainingPeaksWorkoutId: row['training_peaks_workout_id'] as int, fourCC: row['four_cc'] as String, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double, hrCalorieFactor: row['hr_calorie_factor'] as double, hrmCalorieFactor: row['hrm_calorie_factor'] as double, hrBasedCalories: (row['hr_based_calories'] as int) != 0, timeZone: row['time_zone'] as String),
+        arguments: [deviceId, thresholdTime]);
+  }
+
+  @override
+  Future<List<Activity>> findStaleUnfinishedActivities(String deviceId, int thresholdTime) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM `activities` WHERE `deviceId` = ?1 and `end` = 0 and `start` < ?2 ORDER BY `start` DESC',
+        mapper: (Map<String, Object?> row) => Activity(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, hrmId: row['hrm_id'] as String, start: row['start'] as int, end: row['end'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, movingTime: row['moving_time'] as int, calories: row['calories'] as int, uploaded: (row['uploaded'] as int) != 0, suuntoUploaded: (row['suunto_uploaded'] as int) != 0, suuntoBlobUrl: row['suunto_blob_url'] as String, underArmourUploaded: (row['under_armour_uploaded'] as int) != 0, trainingPeaksUploaded: (row['training_peaks_uploaded'] as int) != 0, stravaId: row['strava_id'] as int, uaWorkoutId: row['ua_workout_id'] as int, suuntoUploadId: row['suunto_upload_id'] as int, suuntoUploadIdentifier: row['suunto_upload_identifier'] as String, suuntoWorkoutUrl: row['suunto_workout_url'] as String, trainingPeaksAthleteId: row['training_peaks_athlete_id'] as int, trainingPeaksWorkoutId: row['training_peaks_workout_id'] as int, fourCC: row['four_cc'] as String, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double, hrCalorieFactor: row['hr_calorie_factor'] as double, hrmCalorieFactor: row['hrm_calorie_factor'] as double, hrBasedCalories: (row['hr_based_calories'] as int) != 0, timeZone: row['time_zone'] as String),
+        arguments: [deviceId, thresholdTime]);
   }
 
   @override
