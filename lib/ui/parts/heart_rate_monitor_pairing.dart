@@ -134,27 +134,24 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                             final existingId = heartRateMonitor?.device?.id.id ?? notAvailable;
                             final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
                             if (existingId != notAvailable && existingId != r.device.id.id) {
-                              if (!(await showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Text('You are connected to a HRM right now'),
-                                      content: const Text(
-                                          'Disconnect from that HRM to connect the selected one?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Get.close(1),
-                                          child: const Text('No'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop(true);
-                                          },
-                                          child: const Text('Yes'),
-                                        ),
-                                      ],
+                              final disconnect = await Get.dialog(
+                                AlertDialog(
+                                  title: const Text('You are connected to a HRM right now'),
+                                  content: const Text(
+                                      'Disconnect from that HRM to connect the selected one?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Get.back(result: false),
+                                      child: const Text('No'),
                                     ),
-                                  ) ??
-                                  false)) {
+                                    TextButton(
+                                      onPressed: () => Get.back(result: true),
+                                      child: const Text('Yes'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (!disconnect) {
                                 if (existingId != storedId) {
                                   setState(() {
                                     _heartRateMonitor = heartRateMonitor;
@@ -169,6 +166,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                                 setState(() {
                                   _pairingHrm = false;
                                 });
+
                                 return;
                               }
                             }

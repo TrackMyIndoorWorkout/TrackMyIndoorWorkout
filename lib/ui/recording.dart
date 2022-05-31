@@ -1,4 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
@@ -900,28 +899,26 @@ class RecordingState extends State<RecordingScreen> {
       return true;
     }
 
-    return (await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('About to navigate away'),
-            content: const Text("The workout in progress will be finished. Are you sure?"),
-            actions: [
-              TextButton(
-                onPressed: () => Get.close(1),
-                child: const Text('No'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  await _stopMeasurement(true);
-                  await _preDispose();
-                  Navigator.of(context).pop(true);
-                },
-                child: const Text('Yes'),
-              ),
-            ],
+    return await Get.dialog(
+      AlertDialog(
+        title: const Text('About to navigate away'),
+        content: const Text("The workout in progress will be finished. Are you sure?"),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text('No'),
           ),
-        )) ??
-        false;
+          TextButton(
+            onPressed: () async {
+              await _stopMeasurement(true);
+              await _preDispose();
+              Get.back(result: false);
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
   }
 
   Color _getZoneColor({required metricIndex, required bool background}) {

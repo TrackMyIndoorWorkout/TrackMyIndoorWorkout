@@ -735,26 +735,23 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                     final content = disconnectOnly
                                         ? 'Disconnect from the selected HRM?'
                                         : 'Disconnect from that HRM to connect to the selected one?';
-                                    if (!(await showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: Text(title),
-                                            content: Text(content),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () => Get.close(1),
-                                                child: const Text('No'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop(true);
-                                                },
-                                                child: const Text('Yes'),
-                                              ),
-                                            ],
+                                    final disconnect = await Get.dialog(
+                                      AlertDialog(
+                                        title: Text(title),
+                                        content: Text(content),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Get.back(result: false),
+                                            child: const Text('No'),
                                           ),
-                                        ) ??
-                                        false)) {
+                                          TextButton(
+                                            onPressed: () => Get.back(result: true),
+                                            child: const Text('Yes'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    if (!disconnect) {
                                       if (existingId != storedId) {
                                         setState(() {
                                           _heartRateMonitor = heartRateMonitor;
