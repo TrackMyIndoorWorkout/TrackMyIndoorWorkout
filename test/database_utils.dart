@@ -122,13 +122,17 @@ class InMemoryRecordDao extends RecordDao {
   }
 
   @override
-  Stream<Record?> findLastRecordOfActivity(int activityId) {
-    throw UnimplementedError();
+  Stream<Record?> findLastRecordOfActivity(int activityId) async* {
+    yield records
+        .where((element) => element.activityId == activityId)
+        .sortedByCompare<int?>(
+            (element) => element.timeStamp, (int? e1, int? e2) => (e1 ?? 0) - (e2 ?? 0))
+        .last;
   }
 
   @override
-  Stream<Record?> findRecordById(int id) {
-    throw UnimplementedError();
+  Stream<Record?> findRecordById(int id) async* {
+    yield records.firstWhereOrNull((element) => element.id == id);
   }
 
   @override
