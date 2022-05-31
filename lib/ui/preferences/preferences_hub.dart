@@ -9,6 +9,7 @@ import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import 'athlete.dart';
 import 'data_preferences.dart';
+import 'equipment.dart';
 import 'expert.dart';
 import 'integrations.dart';
 import 'leaderboard.dart';
@@ -168,6 +169,26 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                   children: [
                     TextOneLine(
                       AthletePreferencesScreen.shortTitle,
+                      style: _textStyle,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(5.0),
+              margin: const EdgeInsets.all(5.0),
+              child: ElevatedButton(
+                onPressed: () => Get.to(() => const EquipmentPreferencesScreen()),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextOneLine(
+                      EquipmentPreferencesScreen.shortTitle,
                       style: _textStyle,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
