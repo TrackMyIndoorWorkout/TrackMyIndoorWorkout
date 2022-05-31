@@ -24,6 +24,7 @@ import '../persistence/models/device_usage.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/workout_mode.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/logging.dart';
@@ -49,6 +50,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _instantScan = instantScanDefault;
   int _scanDuration = scanDurationDefault;
   bool _autoConnect = autoConnectDefault;
+  bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   bool _goingToRecording = false;
@@ -135,6 +137,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final prefService = Get.find<BasePrefService>();
     _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
     _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
+    _circuitWorkout =
+        (prefService.get<int>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _scannedDevices.clear();
@@ -362,7 +366,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (fitnessEquipment.device?.id.id != device.id.id) {
         try {
           await fitnessEquipment.detach();
-          await fitnessEquipment.disconnect();
+          if (!_circuitWorkout) {
+            await fitnessEquipment.disconnect();
+          }
         } on PlatformException catch (e, stack) {
           debugPrint("$e");
           debugPrintStack(stackTrace: stack, label: "trace:");
