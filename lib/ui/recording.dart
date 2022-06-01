@@ -236,19 +236,21 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _startMeasurement() async {
     await _fitnessEquipment?.additionalSensorsOnDemand();
     final now = DateTime.now();
-    final unfinished =
-        await _database.activityDao.findUnfinishedDeviceActivities(widget.device.id.id);
     var continued = false;
-    if (unfinished.isNotEmpty) {
-      final yesterday = now.subtract(const Duration(days: 1));
-      if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
-        _activity = unfinished.first;
-        continued = true;
-      }
+    if (!_uxDebug) {
+      final unfinished =
+          await _database.activityDao.findUnfinishedDeviceActivities(widget.device.id.id);
+      if (unfinished.isNotEmpty) {
+        final yesterday = now.subtract(const Duration(days: 1));
+        if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
+          _activity = unfinished.first;
+          continued = true;
+        }
 
-      for (final activity in unfinished) {
-        if (!continued || _activity != null && _activity!.id != activity.id) {
-          await _database.finalizeActivity(activity);
+        for (final activity in unfinished) {
+          if (!continued || _activity != null && _activity!.id != activity.id) {
+            await _database.finalizeActivity(activity);
+          }
         }
       }
     }
@@ -270,9 +272,12 @@ class RecordingState extends State<RecordingScreen> {
         timeZone: await getTimeZone(),
       );
     }
+
     if (!_uxDebug) {
-      final id = await _database.activityDao.insertActivity(_activity!);
-      _activity!.id = id;
+      if (!continued) {
+        final id = await _database.activityDao.insertActivity(_activity!);
+        _activity!.id = id;
+      }
     }
 
     if (_leaderboardFeature || _showPacer) {
