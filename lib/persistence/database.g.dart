@@ -389,7 +389,7 @@ class _$ActivityDao extends ActivityDao {
   @override
   Future<List<Activity>> findUnfinishedDeviceActivities(String deviceId) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM `activities` WHERE `deviceId` = ?1 and `end` = 0 ORDER BY `start` DESC',
+        'SELECT * FROM `activities` WHERE `device_id` = ?1 and `end` = 0 ORDER BY `start` DESC',
         mapper: (Map<String, Object?> row) => Activity(
             id: row['id'] as int?,
             deviceName: row['device_name'] as String,
