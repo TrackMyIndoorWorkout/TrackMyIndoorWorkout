@@ -12,6 +12,7 @@ import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/six_byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
+import 'device_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
 
 class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpeedMixin {
@@ -24,6 +25,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     1.72, 1.88, 2.04, // 20-22
     2.20, 2.36, 2.52 // 23-25
   ];
+  // static const kooiboyCalorieFactor = 1.25;
+  // static const kooiboyCalorieDivider = 1.0 / kooiboyCalorieFactor;
   late double lastTime;
   late double lastCalories;
   late double lastPower;
@@ -119,7 +122,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     }
 
     final integerPower = (lastPower * 2.0).toInt();
-    final speed = velocityForPower(integerPower);
+    final speed = velocityForPower(integerPower) * DeviceDescriptor.ms2kmh;
     final record = RecordWithSport(
       distance: null,
       elapsed: testing ? time ~/ 1024 : null,
