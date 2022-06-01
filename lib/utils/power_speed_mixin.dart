@@ -11,7 +11,7 @@ class PowerSpeedMixin {
   static const energy2speed = 5.28768241564455E-05;
   static const epsilon = 0.001;
   static const maxIterations = 100;
-  static int driveTrainLoss = driveTrainLossDefault; // 1 %
+  static int driveTrainLoss = driveTrainLossDefault; // 3 %
   static const gConst = 9.8067;
   static int athleteWeight = athleteBodyWeightDefault; // 80 kg
   static int bikeWeight = bikeWeightDefault; // 9 kg
@@ -66,6 +66,7 @@ class PowerSpeedMixin {
   }
 
   double velocityForPower(int power) {
+    // It returns m/s
     if (_velocityForPowerDict.containsKey(power)) {
       return _velocityForPowerDict[power] ?? 0.0;
     }
