@@ -138,7 +138,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
     _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
     _circuitWorkout =
-        (prefService.get<int>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
+        (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _scannedDevices.clear();
