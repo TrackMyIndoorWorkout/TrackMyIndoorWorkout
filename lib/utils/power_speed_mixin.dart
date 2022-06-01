@@ -66,6 +66,7 @@ class PowerSpeedMixin {
   }
 
   double velocityForPower(int power) {
+    // It returns m/s
     if (_velocityForPowerDict.containsKey(power)) {
       return _velocityForPowerDict[power] ?? 0.0;
     }
