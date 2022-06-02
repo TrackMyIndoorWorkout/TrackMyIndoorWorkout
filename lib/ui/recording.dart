@@ -921,7 +921,7 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<bool> _onWillPop() async {
     if (!_measuring || _circuitWorkout) {
-      _preDispose();
+      await _preDispose();
       return true;
     }
 
@@ -933,7 +933,12 @@ class RecordingState extends State<RecordingScreen> {
       isDismissible: false,
       enableDrag: false,
     );
-    return !verdict;
+
+    if (verdict) {
+      await _preDispose();
+    }
+
+    return verdict;
   }
 
   Color _getZoneColor({required metricIndex, required bool background}) {
