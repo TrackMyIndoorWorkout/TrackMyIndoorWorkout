@@ -39,19 +39,19 @@ class ThreeChoicesBottomSheetState extends State<ThreeChoicesBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final actions = [
-      TextButton(
+      ElevatedButton(
         onPressed: () => Get.back(result: 0),
-        child: Text(widget.firstChoice),
+        child: Text(widget.firstChoice, textScaleFactor: 2.0, textAlign: TextAlign.center),
       ),
       const SizedBox(width: 10, height: 10),
-      TextButton(
+      ElevatedButton(
         onPressed: () => Get.back(result: 1),
-        child: Text(widget.secondChoice),
+        child: Text(widget.secondChoice, textScaleFactor: 2.0, textAlign: TextAlign.center),
       ),
       const SizedBox(width: 10, height: 10),
-      TextButton(
+      ElevatedButton(
         onPressed: () => Get.back(result: 2),
-        child: Text(widget.thirdChoice),
+        child: Text(widget.thirdChoice, textScaleFactor: 2.0, textAlign: TextAlign.center),
       ),
     ];
 

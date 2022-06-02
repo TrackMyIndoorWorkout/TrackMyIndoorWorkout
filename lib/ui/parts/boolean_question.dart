@@ -16,12 +16,17 @@ class BooleanQuestionBottomSheet extends StatefulWidget {
 
 class BooleanQuestionBottomSheetState extends State<BooleanQuestionBottomSheet> {
   TextStyle _largerTextStyle = const TextStyle();
+  TextStyle _textStyle = const TextStyle();
   final _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
     super.initState();
     _largerTextStyle = Get.textTheme.headline4!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getProtagonistColor(),
+    );
+    _textStyle = Get.textTheme.headline5!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
@@ -35,9 +40,9 @@ class BooleanQuestionBottomSheetState extends State<BooleanQuestionBottomSheet> 
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(widget.title, style: _largerTextStyle),
+            Text(widget.title, style: _largerTextStyle, textAlign: TextAlign.center),
             const Divider(),
-            Text(widget.content, style: _largerTextStyle),
+            Text(widget.content, style: _textStyle, textAlign: TextAlign.center),
           ],
         ),
       ),
@@ -48,14 +53,14 @@ class BooleanQuestionBottomSheetState extends State<BooleanQuestionBottomSheet> 
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextButton(
+            ElevatedButton(
               onPressed: () => Get.back(result: false),
-              child: const Text("No"),
+              child: const Text("No", textScaleFactor: 2.0, textAlign: TextAlign.center),
             ),
             const SizedBox(width: 10, height: 10),
-            TextButton(
+            ElevatedButton(
               onPressed: () => Get.back(result: true),
-              child: const Text("Yes"),
+              child: const Text("Yes", textScaleFactor: 2.0, textAlign: TextAlign.center),
             ),
           ],
         ),
