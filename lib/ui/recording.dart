@@ -1359,10 +1359,12 @@ class RecordingState extends State<RecordingScreen> {
             title: "Circuit workout in progress",
             content: "Select an action",
             verticalActions: true,
-            firstChoice: "Continue",
+            firstChoice: "Continue workout",
             secondChoice: "Finish on THIS machine for good",
             thirdChoice: "Finish an ALL machines (the whole circuit workout is over)",
           ),
+          isDismissible: false,
+          enableDrag: false,
         );
         if (selection > 0) {
           await _stopMeasurement(false);
