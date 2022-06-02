@@ -2,12 +2,12 @@ session:
   - element:
     timeStamp: "26 May 2022 01:07:57 PM"
     data: [17, 32, 0, 0, 191, 11, 0, 16, 93, 157, 253, 149, 1, 0, 0, 0, 4]
-    elapsed: 0
-    calories: 0
-    power: 0
-    speed: 0.0
-    cadence: 0
-    elapsedMillis: 0
+    elapsed: null
+    calories: null
+    power: null
+    speed: null
+    cadence: null
+    elapsedMillis: null
   - element:
     timeStamp: "26 May 2022 01:07:57 PM"
     data: [17, 32, 0, 32, 191, 11, 0, 96, 220, 157, 182, 247, 1, 0, 0, 0, 4]

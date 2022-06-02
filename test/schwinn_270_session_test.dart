@@ -17,7 +17,6 @@ void main() {
     final fixture = loadYaml(yamlContent);
     // String content = "session:\n";
 
-    bool first = true;
     for (final element in fixture["session"].nodes) {
       final List<int> data = element["data"]
           .nodes
@@ -40,13 +39,13 @@ void main() {
       // content += "    elapsedMillis: ${record.elapsedMillis}\n";
 
       final expected = RecordWithSport(
-        distance: first ? 0.0 : null,
+        distance: null,
         elapsed: element["elapsed"],
         calories: element["calories"],
         power: element["power"],
         speed: element["speed"],
         cadence: element["cadence"],
-        heartRate: 0,
+        heartRate: null,
         sport: ActivityType.ride,
         elapsedMillis: element["elapsedMillis"],
       );
@@ -72,8 +71,6 @@ void main() {
       expect(record.caloriesPerHour, expected.caloriesPerHour);
       expect(record.caloriesPerMinute, expected.caloriesPerMinute);
       expect(record.elapsedMillis, expected.elapsedMillis);
-
-      first = false;
     }
 
     // File f = File('results.yaml');

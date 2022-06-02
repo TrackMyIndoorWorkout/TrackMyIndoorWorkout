@@ -2,12 +2,12 @@ session:
   - element:
     timeStamp: "15:34:57.050"
     data: [17, 32, 0, 160, 5, 0, 0, 226, 111, 253, 76, 96, 17, 0, 0, 0, 4]
-    elapsed: 0
-    calories: 0
-    power: 0
-    speed: 0.0
-    cadence: 0
-    elapsedMillis: 0
+    elapsed: null
+    calories: null
+    power: null
+    speed: null
+    cadence: null
+    elapsedMillis: null
   - element:
     timeStamp: "15:34:57.239"
     data: [17, 32, 0, 192, 5, 0, 0, 42, 37, 254, 27, 216, 17, 0, 0, 0, 4]

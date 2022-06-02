@@ -92,9 +92,9 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       lastCalories = calories!;
       lastPower = 0.0;
       lastRecord = null;
-      return RecordWithSport.getZero(defaultSport);
+      return RecordWithSport(sport: defaultSport);
     } else if (time == lastTime) {
-      return lastRecord ?? RecordWithSport.getZero(defaultSport);
+      return lastRecord ?? RecordWithSport(sport: defaultSport);
     }
 
     addCadenceData(time! / 1024, getCadence(data)?.toInt());
@@ -130,7 +130,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       power: integerPower,
       speed: speed,
       cadence: computeCadence(),
-      heartRate: 0,
+      heartRate: null,
       sport: defaultSport,
     );
     if (testing) {
