@@ -32,6 +32,7 @@ import '../utils/machine_type.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
+import 'parts/boolean_question.dart';
 import 'parts/circular_menu.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
@@ -741,23 +742,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                     final content = disconnectOnly
                                         ? 'Disconnect from the selected HRM?'
                                         : 'Disconnect from that HRM to connect to the selected one?';
-                                    final disconnect = await Get.dialog(
-                                      AlertDialog(
-                                        title: Text(title),
-                                        content: Text(content),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Get.back(result: false),
-                                            child: const Text('No'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () => Get.back(result: true),
-                                            child: const Text('Yes'),
-                                          ),
-                                        ],
+                                    final verdict = await Get.bottomSheet(
+                                      BooleanQuestionBottomSheet(
+                                        title: title,
+                                        content: content,
                                       ),
+                                      isDismissible: false,
+                                      enableDrag: false,
                                     );
-                                    if (!disconnect) {
+
+                                    if (!verdict) {
                                       if (existingId != storedId) {
                                         setState(() {
                                           _heartRateMonitor = heartRateMonitor;

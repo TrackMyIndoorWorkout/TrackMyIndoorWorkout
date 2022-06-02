@@ -8,6 +8,7 @@ import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../preferences/scan_duration.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
+import 'boolean_question.dart';
 import 'heart_rate_monitor_scan_result.dart';
 
 class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
@@ -134,24 +135,16 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                             final existingId = heartRateMonitor?.device?.id.id ?? notAvailable;
                             final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
                             if (existingId != notAvailable && existingId != r.device.id.id) {
-                              final disconnect = await Get.dialog(
-                                AlertDialog(
-                                  title: const Text('You are connected to a HRM right now'),
-                                  content: const Text(
-                                      'Disconnect from that HRM to connect the selected one?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Get.back(result: false),
-                                      child: const Text('No'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () => Get.back(result: true),
-                                      child: const Text('Yes'),
-                                    ),
-                                  ],
+                              final verdict = await Get.bottomSheet(
+                                const BooleanQuestionBottomSheet(
+                                  title: "You are connected to a HRM right now",
+                                  content: "Disconnect from that HRM to connect the selected one?",
                                 ),
+                                isDismissible: false,
+                                enableDrag: false,
                               );
-                              if (!disconnect) {
+
+                              if (!verdict) {
                                 if (existingId != storedId) {
                                   setState(() {
                                     _heartRateMonitor = heartRateMonitor;

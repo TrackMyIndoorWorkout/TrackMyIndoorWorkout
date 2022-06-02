@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
+import 'package:track_my_indoor_exercise/ui/parts/boolean_question.dart';
 import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -923,26 +924,15 @@ class RecordingState extends State<RecordingScreen> {
       return true;
     }
 
-    return await Get.dialog(
-      AlertDialog(
-        title: const Text('About to navigate away'),
-        content: const Text("The workout in progress will be finished. Are you sure?"),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(result: true),
-            child: const Text('No'),
-          ),
-          TextButton(
-            onPressed: () async {
-              await _stopMeasurement(true);
-              await _preDispose();
-              Get.back(result: false);
-            },
-            child: const Text('Yes'),
-          ),
-        ],
+    final verdict = await Get.bottomSheet(
+      const BooleanQuestionBottomSheet(
+        title: "About to navigate away",
+        content: "The workout in progress will be finished. Are you sure?",
       ),
+      isDismissible: false,
+      enableDrag: false,
     );
+    return !verdict;
   }
 
   Color _getZoneColor({required metricIndex, required bool background}) {
