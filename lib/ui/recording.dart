@@ -13,7 +13,6 @@ import 'package:get/get.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
-import 'package:track_my_indoor_exercise/ui/parts/boolean_question.dart';
 import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -61,10 +60,12 @@ import '../utils/theme_manager.dart';
 import '../utils/time_zone.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
+import 'parts/boolean_question.dart';
 import 'parts/circular_menu.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
 import 'parts/spin_down.dart';
+import 'parts/three_choices.dart';
 import 'parts/upload_portal_picker.dart';
 import 'activities.dart';
 
@@ -1353,24 +1354,14 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> startStopAction() async {
     if (_measuring) {
       if (_circuitWorkout) {
-        final selection = await Get.dialog(
-          AlertDialog(
-            title: const Text("Circuit workout in progress"),
-            content: const Text("Select an action"),
-            actions: [
-              TextButton(
-                onPressed: () => Get.back(result: 0),
-                child: const Text("Continue"),
-              ),
-              TextButton(
-                onPressed: () => Get.back(result: 1),
-                child: const Text("Finalize / finish this part"),
-              ),
-              TextButton(
-                onPressed: () => Get.back(result: 2),
-                child: const Text("Finalize / finish all parts"),
-              ),
-            ],
+        final selection = await Get.bottomSheet(
+          const ThreeChoicesBottomSheet(
+            title: "Circuit workout in progress",
+            content: "Select an action",
+            verticalActions: true,
+            firstChoice: "Continue",
+            secondChoice: "Finish on THIS machine for good",
+            thirdChoice: "Finish an ALL machines (the whole circuit workout is over)",
           ),
         );
         if (selection > 0) {
