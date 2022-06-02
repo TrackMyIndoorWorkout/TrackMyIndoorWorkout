@@ -5,7 +5,6 @@ import '../../utils/theme_manager.dart';
 
 class ThreeChoicesBottomSheet extends StatefulWidget {
   final String title;
-  final String content;
   final bool verticalActions;
   final String firstChoice;
   final String secondChoice;
@@ -14,7 +13,6 @@ class ThreeChoicesBottomSheet extends StatefulWidget {
   const ThreeChoicesBottomSheet({
     Key? key,
     required this.title,
-    required this.content,
     required this.verticalActions,
     required this.firstChoice,
     required this.secondChoice,
@@ -63,9 +61,7 @@ class ThreeChoicesBottomSheetState extends State<ThreeChoicesBottomSheet> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(widget.title, style: _largerTextStyle),
-            const Divider(),
-            Text(widget.content, style: _largerTextStyle),
+            Text(widget.title, style: _largerTextStyle, textAlign: TextAlign.center),
           ],
         ),
       ),

@@ -1362,7 +1362,6 @@ class RecordingState extends State<RecordingScreen> {
         final selection = await Get.bottomSheet(
           const ThreeChoicesBottomSheet(
             title: "Circuit workout in progress",
-            content: "Select an action",
             verticalActions: true,
             firstChoice: "Continue workout",
             secondChoice: "Finish on THIS machine for good",
