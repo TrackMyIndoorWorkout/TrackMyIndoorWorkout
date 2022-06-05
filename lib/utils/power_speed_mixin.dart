@@ -14,7 +14,7 @@ class PowerSpeedMixin {
   static int driveTrainLoss = driveTrainLossDefault; // 2 %
   static const gConst = 9.8067;
   static int athleteWeight = athleteBodyWeightDefault; // 80 kg
-  static int bikeWeight = bikeWeightDefault; // 11 kg
+  static int bikeWeight = bikeWeightDefault; // 9 kg
   static const rollingResistanceCoefficient = 0.005;
   static const dragCoefficient = 0.63;
   // Backup: 5.4788
