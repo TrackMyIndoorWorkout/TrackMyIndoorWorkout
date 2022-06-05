@@ -62,7 +62,7 @@ class PowerSpeedMixin {
       clearDictionary = true;
     }
 
-    final driveTrainLossNewest = prefService.get<int>(bikeWeightTag) ?? bikeWeightDefault;
+    final driveTrainLossNewest = prefService.get<int>(driveTrainLossTag) ?? driveTrainLossDefault;
     if (driveTrainLossNewest != driveTrainLoss) {
       driveTrainLoss = driveTrainLossNewest;
       clearDictionary = true;
