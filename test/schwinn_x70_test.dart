@@ -3,6 +3,7 @@ import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_x70.
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 class TestPair {
   final List<int> data;
@@ -12,6 +13,10 @@ class TestPair {
 }
 
 void main() {
+  setUpAll(() async {
+    await initPrefServiceForTest();
+  });
+
   test('Schwinn X70 constructor tests', () async {
     final bike = SchwinnX70();
 
@@ -138,7 +143,7 @@ void main() {
           elapsed: 25,
           calories: 0,
           power: 0,
-          speed: 0.0,
+          speed: 0.0004119873046875,
           cadence: 0,
           heartRate: null,
           pace: null,
