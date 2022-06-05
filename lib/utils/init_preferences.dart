@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
@@ -120,6 +121,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     showPacerTag: showPacerDefault,
     bikeWeightTag: bikeWeightDefault,
     driveTrainLossTag: driveTrainLossDefault,
+    airTemperatureTag: airTemperatureDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

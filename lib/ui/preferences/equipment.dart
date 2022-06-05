@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import '../../preferences/air_temperature.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/drive_train_loss.dart';
 import 'preferences_base.dart';
@@ -29,6 +30,16 @@ class EquipmentPreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value %"),
         min: driveTrainLossMin,
         max: driveTrainLossMax,
+        direction: Axis.vertical,
+      ),
+      PrefSlider<int>(
+        title: const Text(airTemperature),
+        subtitle: const Text(airTemperatureDescription),
+        pref: driveTrainLossTag,
+        trailing: (num value) => Text("$value C"),
+        min: airTemperatureMin,
+        max: airTemperatureMax,
+        divisions: 5,
         direction: Axis.vertical,
       ),
     ];
