@@ -337,7 +337,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       if (_rememberLastWeight) {
         final weightKg = _weight * (_si ? 1.0 : lbToKg);
         final prefService = Get.find<BasePrefService>();
-        await prefService.set<int>(athleteBodyWeightTag, weightKg.round());
+        await prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
       }
 
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);
