@@ -43,7 +43,7 @@ class PowerSpeedMixin {
   static final Map<int, double> _velocityForPowerDict = <int, double>{};
 
   Future<void> initPower2SpeedConstants() async {
-    if (testing) {
+    if (testing && !Get.isRegistered<BasePrefService>()) {
       await initPrefServiceForTest();
     }
 
