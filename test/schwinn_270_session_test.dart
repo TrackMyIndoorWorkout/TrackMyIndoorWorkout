@@ -34,7 +34,7 @@ void main() {
       // content += "    elapsed: ${record.elapsed}\n";
       // content += "    calories: ${record.calories}\n";
       // content += "    power: ${record.power}\n";
-      // content += "    speed: ${record.speed!.toStringAsFixed(4)}\n";
+      // content += "    speed: ${record.speed?.toStringAsFixed(4)}\n";
       // content += "    cadence: ${record.cadence}\n";
       // content += "    elapsedMillis: ${record.elapsedMillis}\n";
 
