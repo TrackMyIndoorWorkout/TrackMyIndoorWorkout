@@ -35,7 +35,8 @@ void main() {
         final speed2Power = PowerSpeedMixin();
         await speed2Power.initPower2SpeedConstants();
 
-        final velocity = speed2Power.velocityForPowerCardano(testData.watts.toInt()) * DeviceDescriptor.ms2kmh;
+        final velocity =
+            speed2Power.velocityForPowerCardano(testData.watts.toInt()) * DeviceDescriptor.ms2kmh;
         expect(velocity, closeTo(testData.speed, displayEps));
         // debugPrint("${testData.watts} -> $velocity");
       });

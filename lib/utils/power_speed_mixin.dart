@@ -24,7 +24,10 @@ class PowerSpeedMixin {
   // https://www.gribble.org/cycling/air_density.html
   static int airTemperature = airTemperatureDefault; // 15 C
   static double airDensity = airDensityDefault; // default for 15 Celsius
-  static double fRolling = 0.0;
+  static double a = 0.0; // See Cardano's Formula
+  static double c = 0.0; // fRolling, but also c in Cardano's Formula
+  static double q = 0.0; // See Cardano's Formula
+  static double driveTrainFraction = 0.0;
 
   // https://en.wikipedia.org/wiki/Density_of_air
   static final Map<int, double> _airTemperatureToDensity = {
@@ -73,37 +76,35 @@ class PowerSpeedMixin {
       airDensity = _airTemperatureToDensity[airTemperature] ?? airDensityDefault;
     }
 
-    fRolling = gConst * (athleteWeight + bikeWeight) * rollingResistanceCoefficient;
+    a = 0.5 * frontalArea * dragCoefficient * airDensity;
+    c = gConst * (athleteWeight + bikeWeight) * rollingResistanceCoefficient;
+    q = c / (3 * a);
+    driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
   }
 
   double powerForVelocity(velocity) {
-    final fDrag = 0.5 * frontalArea * dragCoefficient * airDensity * velocity * velocity;
-    final totalForce = fRolling + fDrag;
-    final wheelPower = totalForce * velocity;
-    final driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
-    final legPower = wheelPower / driveTrainFraction;
-    return legPower;
+    // https://www.gribble.org/cycling/power_v_speed.html
+    // fDrag = 0.5 * frontalArea * dragCoefficient * airDensity * velocity * velocity;
+    // totalForce = fRolling + fDrag;
+    // wheelPower = totalForce * velocity;
+    // driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
+    // legPower = wheelPower / driveTrainFraction;
+    return (c + a * velocity * velocity) * velocity / driveTrainFraction;
   }
 
   double velocityForPowerCardano(int power) {
     // Looking at https://proofwiki.org/wiki/Cardano%27s_Formula
     // https://brilliant.org/wiki/cardano-method/
     // It returns m/s
-    final driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
-    final a = 0.5 * dragCoefficient * frontalArea * airDensity;
-    final c = gConst * (athleteWeight + bikeWeight) * rollingResistanceCoefficient;
     final dNeg = driveTrainFraction * power;
-    final q = c / (3 * a);
     final r = dNeg / (2 * a);
     final e = sqrt(q * q * q + r * r);
     const third = 1 / 3;
     final rAddE = r + e;
     // Dart pow doesn't like negative bases
-    final negateS = rAddE < 0;
-    final s = pow(rAddE.abs(), third) * (negateS ? -1 : 1);
+    final s = rAddE > 0 ? pow(rAddE, third) : -pow(-rAddE, third);
     final rSubE = r - e;
-    final negateT = rSubE < 0;
-    final t = pow(rSubE.abs(), third) * (negateT ? -1 : 1);
+    final t = rSubE > 0 ? pow(rSubE, third) : -pow(-rSubE, third);
     return (s + t).toDouble();
   }
 }
