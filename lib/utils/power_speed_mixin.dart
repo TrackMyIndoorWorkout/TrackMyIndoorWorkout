@@ -45,35 +45,46 @@ class PowerSpeedMixin {
     -20: 1.3943,
     -25: 1.4224,
   };
+  final Map<int, double> velocityForPowerDict = <int, double>{};
 
   Future<void> initPower2SpeedConstants() async {
     if (testing) {
+      velocityForPowerDict.clear();
       if (!Get.isRegistered<BasePrefService>()) {
         await initPrefServiceForTest();
       }
     }
 
     final prefService = Get.find<BasePrefService>();
+    bool clearDictionary = false;
     final athleteWeightNew =
         prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     if (athleteWeightNew != athleteWeight) {
       athleteWeight = athleteWeightNew;
+      clearDictionary = true;
     }
 
     final bikeWeightNewest = prefService.get<int>(bikeWeightTag) ?? bikeWeightDefault;
     if (bikeWeightNewest != bikeWeight) {
       bikeWeight = bikeWeightNewest;
+      clearDictionary = true;
     }
 
     final driveTrainLossNewest = prefService.get<int>(driveTrainLossTag) ?? driveTrainLossDefault;
     if (driveTrainLossNewest != driveTrainLoss) {
       driveTrainLoss = driveTrainLossNewest;
+      clearDictionary = true;
     }
 
     final airTemperatureNewest = prefService.get<int>(airTemperatureTag) ?? airTemperatureDefault;
     if (airTemperatureNewest != airTemperature) {
       airTemperature = airTemperatureNewest;
       airDensity = _airTemperatureToDensity[airTemperature] ?? airDensityDefault;
+      clearDictionary = true;
+    }
+
+    if (clearDictionary) {
+      velocityForPowerDict.clear();
     }
 
     a = 0.5 * frontalArea * dragCoefficient * airDensity;
@@ -96,6 +107,10 @@ class PowerSpeedMixin {
     // Looking at https://proofwiki.org/wiki/Cardano%27s_Formula
     // https://brilliant.org/wiki/cardano-method/
     // It returns m/s
+    if (velocityForPowerDict.containsKey(power)) {
+      return velocityForPowerDict[power] ?? 0.0;
+    }
+
     final dNeg = driveTrainFraction * power;
     final r = dNeg / (2 * a);
     final e = sqrt(q * q * q + r * r);
@@ -105,6 +120,9 @@ class PowerSpeedMixin {
     final s = rAddE > 0 ? pow(rAddE, third) : -pow(-rAddE, third);
     final rSubE = r - e;
     final t = rSubE > 0 ? pow(rSubE, third) : -pow(-rSubE, third);
-    return (s + t).toDouble();
+    final speed = (s + t).toDouble();
+
+    velocityForPowerDict[power] = speed;
+    return speed;
   }
 }
