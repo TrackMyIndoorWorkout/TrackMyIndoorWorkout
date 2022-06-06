@@ -116,7 +116,7 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
                                       PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
                                   final str = PaletteSpec.getDefaultPaletteString(
                                       lightOrDark, fgOrBg, paletteSize);
-                                  prefService.set<String>(tag, str);
+                                  await prefService.set<String>(tag, str);
                                 }
                               }
                             }

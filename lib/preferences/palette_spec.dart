@@ -216,14 +216,14 @@ class PaletteSpec {
     }
   }
 
-  void saveToPreferences(
+  Future<void> saveToPreferences(
     BasePrefService prefService,
     bool lightOrDark,
     bool fgOrBg,
     int paletteSize,
     Color color,
     int colorIndex,
-  ) {
+  ) async {
     final palette = getPalette(lightOrDark, fgOrBg, paletteSize);
     assert(colorIndex >= 0 && colorIndex < palette.length);
     palette[colorIndex] = color;

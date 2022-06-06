@@ -3,6 +3,7 @@ import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_x70.
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 class TestPair {
   final List<int> data;
@@ -12,6 +13,10 @@ class TestPair {
 }
 
 void main() {
+  setUpAll(() async {
+    await initPrefServiceForTest();
+  });
+
   test('Schwinn X70 constructor tests', () async {
     final bike = SchwinnX70();
 
@@ -44,10 +49,10 @@ void main() {
           distance: null,
           elapsed: 63,
           calories: 0,
-          power: 8,
-          speed: 6.742829019053678,
+          power: 4,
+          speed: 3.069322008620992,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -62,10 +67,10 @@ void main() {
           distance: null,
           elapsed: 10,
           calories: 1,
-          power: 134,
-          speed: 31.11875335619637,
+          power: 67,
+          speed: 21.388046453417445,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -80,10 +85,10 @@ void main() {
           distance: null,
           elapsed: 23,
           calories: 2,
-          power: 98,
-          speed: 27.419521748406265,
+          power: 49,
+          speed: 18.453916913895046,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -140,7 +145,7 @@ void main() {
           power: 0,
           speed: 0.0,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -155,10 +160,10 @@ void main() {
           distance: null,
           elapsed: 33,
           calories: 68,
-          power: 2085,
-          speed: 83.92807859551978,
+          power: 1042,
+          speed: 61.80192983373757,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -173,10 +178,10 @@ void main() {
           distance: null,
           elapsed: 39,
           calories: 69,
-          power: 1824,
-          speed: 80.16211856988147,
+          power: 912,
+          speed: 58.972272706891744,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -192,10 +197,10 @@ void main() {
           distance: null,
           elapsed: 20,
           calories: 69,
-          power: 3454,
-          speed: 99.71132971539147,
+          power: 1727,
+          speed: 73.68868796565019,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -210,10 +215,10 @@ void main() {
           distance: null,
           elapsed: 15,
           calories: 137,
-          power: 9077,
-          speed: 138.26239387799245,
+          power: 4538,
+          speed: 102.58641883679401,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,

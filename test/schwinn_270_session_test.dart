@@ -4,9 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_x70.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
+  setUpAll(() async {
+    await initPrefServiceForTest();
+  });
+
   test('Schwinn 270 recording session evaluation', () {
     SchwinnX70 bike = SchwinnX70();
     bike.stopWorkout();
@@ -17,7 +22,6 @@ void main() {
     final fixture = loadYaml(yamlContent);
     // String content = "session:\n";
 
-    bool first = true;
     for (final element in fixture["session"].nodes) {
       final List<int> data = element["data"]
           .nodes
@@ -35,18 +39,18 @@ void main() {
       // content += "    elapsed: ${record.elapsed}\n";
       // content += "    calories: ${record.calories}\n";
       // content += "    power: ${record.power}\n";
-      // content += "    speed: ${record.speed!.toStringAsFixed(4)}\n";
+      // content += "    speed: ${record.speed?.toStringAsFixed(4)}\n";
       // content += "    cadence: ${record.cadence}\n";
       // content += "    elapsedMillis: ${record.elapsedMillis}\n";
 
       final expected = RecordWithSport(
-        distance: first ? 0.0 : null,
+        distance: null,
         elapsed: element["elapsed"],
         calories: element["calories"],
         power: element["power"],
         speed: element["speed"],
         cadence: element["cadence"],
-        heartRate: 0,
+        heartRate: null,
         sport: ActivityType.ride,
         elapsedMillis: element["elapsedMillis"],
       );
@@ -72,8 +76,6 @@ void main() {
       expect(record.caloriesPerHour, expected.caloriesPerHour);
       expect(record.caloriesPerMinute, expected.caloriesPerMinute);
       expect(record.elapsedMillis, expected.elapsedMillis);
-
-      first = false;
     }
 
     // File f = File('results.yaml');

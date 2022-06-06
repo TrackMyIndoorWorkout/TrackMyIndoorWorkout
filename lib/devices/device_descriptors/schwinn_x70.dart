@@ -19,7 +19,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   MetricDescriptor? resistanceMetric;
   // From https://github.com/ursoft/connectivity-samples/blob/main/BluetoothLeGatt/Application/src/main/java/com/example/android/bluetoothlegatt/BluetoothLeService.java
   static const List<double> resistancePowerFactor = [
-    0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, // 11-13
+    0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, // 1-13
     0.75, 0.91, 1.07, // 14-16
     1.23, 1.39, 1.55, // 17-19
     1.72, 1.88, 2.04, // 20-22
@@ -92,9 +92,9 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       lastCalories = calories!;
       lastPower = 0.0;
       lastRecord = null;
-      return RecordWithSport.getZero(defaultSport);
+      return RecordWithSport(sport: defaultSport);
     } else if (time == lastTime) {
-      return lastRecord ?? RecordWithSport.getZero(defaultSport);
+      return lastRecord ?? RecordWithSport(sport: defaultSport);
     }
 
     addCadenceData(time! / 1024, getCadence(data)?.toInt());
@@ -121,8 +121,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       lastPower = 1.0;
     }
 
-    final integerPower = (lastPower * 2.0).toInt();
-    final speed = velocityForPower(integerPower) * DeviceDescriptor.ms2kmh;
+    final integerPower = lastPower.toInt();
+    final speed = velocityForPowerCardano(integerPower) * DeviceDescriptor.ms2kmh;
     final record = RecordWithSport(
       distance: null,
       elapsed: testing ? time ~/ 1024 : null,
@@ -130,7 +130,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       power: integerPower,
       speed: speed,
       cadence: computeCadence(),
-      heartRate: 0,
+      heartRate: null,
       sport: defaultSport,
     );
     if (testing) {
