@@ -35,11 +35,11 @@ class EquipmentPreferencesScreen extends PreferencesScreenBase {
       PrefSlider<int>(
         title: const Text(airTemperature),
         subtitle: const Text(airTemperatureDescription),
-        pref: driveTrainLossTag,
+        pref: airTemperatureTag,
         trailing: (num value) => Text("$value C"),
         min: airTemperatureMin,
         max: airTemperatureMax,
-        divisions: 5,
+        divisions: airTemperatureDivisions,
         direction: Axis.vertical,
       ),
     ];
