@@ -4,9 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_x70.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
+  setUpAll(() async {
+    await initPrefServiceForTest();
+  });
+
   test('Schwinn 270 recording session evaluation', () {
     SchwinnX70 bike = SchwinnX70();
     bike.stopWorkout();

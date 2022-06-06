@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
@@ -9,7 +11,7 @@ import 'constants.dart';
 import 'init_preferences.dart';
 
 class PowerSpeedMixin {
-  static const energy2speed = 5.28768241564455E-05;
+  // https://www.gribble.org/cycling/power_v_speed.html
   static const epsilon = 0.001;
   static const maxIterations = 100;
   static int driveTrainLoss = driveTrainLossDefault; // 2 %
@@ -20,7 +22,7 @@ class PowerSpeedMixin {
   static const dragCoefficient = 0.63;
   static double frontalArea = 0.509; // m^2
   // https://www.gribble.org/cycling/air_density.html
-  static int airTemperature = 15;
+  static int airTemperature = airTemperatureDefault; // 15 C
   static double airDensity = airDensityDefault; // default for 15 Celsius
   static double fRolling = 0.0;
 
@@ -40,43 +42,35 @@ class PowerSpeedMixin {
     -20: 1.3943,
     -25: 1.4224,
   };
-  static final Map<int, double> _velocityForPowerDict = <int, double>{};
 
   Future<void> initPower2SpeedConstants() async {
-    if (testing && !Get.isRegistered<BasePrefService>()) {
-      await initPrefServiceForTest();
+    if (testing) {
+      if (!Get.isRegistered<BasePrefService>()) {
+        await initPrefServiceForTest();
+      }
     }
 
     final prefService = Get.find<BasePrefService>();
-    bool clearDictionary = false;
     final athleteWeightNew =
         prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     if (athleteWeightNew != athleteWeight) {
       athleteWeight = athleteWeightNew;
-      clearDictionary = true;
     }
 
     final bikeWeightNewest = prefService.get<int>(bikeWeightTag) ?? bikeWeightDefault;
     if (bikeWeightNewest != bikeWeight) {
       bikeWeight = bikeWeightNewest;
-      clearDictionary = true;
     }
 
     final driveTrainLossNewest = prefService.get<int>(driveTrainLossTag) ?? driveTrainLossDefault;
     if (driveTrainLossNewest != driveTrainLoss) {
       driveTrainLoss = driveTrainLossNewest;
-      clearDictionary = true;
     }
 
     final airTemperatureNewest = prefService.get<int>(airTemperatureTag) ?? airTemperatureDefault;
     if (airTemperatureNewest != airTemperature) {
       airTemperature = airTemperatureNewest;
       airDensity = _airTemperatureToDensity[airTemperature] ?? airDensityDefault;
-      clearDictionary = true;
-    }
-
-    if (clearDictionary) {
-      _velocityForPowerDict.clear();
     }
 
     fRolling = gConst * (athleteWeight + bikeWeight) * rollingResistanceCoefficient;
@@ -91,32 +85,25 @@ class PowerSpeedMixin {
     return legPower;
   }
 
-  double velocityForPower(int power) {
+  double velocityForPowerCardano(int power) {
+    // Looking at https://proofwiki.org/wiki/Cardano%27s_Formula
+    // https://brilliant.org/wiki/cardano-method/
     // It returns m/s
-    if (_velocityForPowerDict.containsKey(power)) {
-      return _velocityForPowerDict[power] ?? 0.0;
-    }
-
-    var lowerVelocity = 0.0;
-    var upperVelocity = 2000.0;
-    var middleVelocity = power * energy2speed * 1000;
-    var middlePower = powerForVelocity(middleVelocity);
-
-    var i = 0;
-    do {
-      if ((middlePower - power).abs() < epsilon) break;
-
-      if (middlePower > power) {
-        upperVelocity = middleVelocity;
-      } else {
-        lowerVelocity = middleVelocity;
-      }
-
-      middleVelocity = (upperVelocity + lowerVelocity) / 2.0;
-      middlePower = powerForVelocity(middleVelocity);
-    } while (i++ < maxIterations);
-
-    _velocityForPowerDict[power] = middleVelocity;
-    return middleVelocity;
+    final driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
+    final a = 0.5 * dragCoefficient * frontalArea * airDensity;
+    final c = gConst * (athleteWeight + bikeWeight) * rollingResistanceCoefficient;
+    final dNeg = driveTrainFraction * power;
+    final q = c / (3 * a);
+    final r = dNeg / (2 * a);
+    final e = sqrt(q * q * q + r * r);
+    const third = 1 / 3;
+    final rAddE = r + e;
+    // Dart pow doesn't like negative bases
+    final negateS = rAddE < 0;
+    final s = pow(rAddE.abs(), third) * (negateS ? -1 : 1);
+    final rSubE = r - e;
+    final negateT = rSubE < 0;
+    final t = pow(rSubE.abs(), third) * (negateT ? -1 : 1);
+    return (s + t).toDouble();
   }
 }

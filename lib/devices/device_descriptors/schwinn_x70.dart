@@ -122,7 +122,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     }
 
     final integerPower = (lastPower * 2.0).toInt();
-    final speed = velocityForPower(integerPower) * DeviceDescriptor.ms2kmh;
+    final speed = velocityForPowerCardano(integerPower) * DeviceDescriptor.ms2kmh;
     final record = RecordWithSport(
       distance: null,
       elapsed: testing ? time ~/ 1024 : null,

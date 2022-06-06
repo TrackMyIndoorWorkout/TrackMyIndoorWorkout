@@ -659,7 +659,7 @@ class CSVImporter with PowerSpeedMixin {
 
         for (int i = 0; i < recordsPerRow; i++) {
           final powerInt = power.round();
-          final speed = velocityForPower(powerInt);
+          final speed = velocityForPowerCardano(powerInt);
           final dDistance = speed * milliSecondsPerRecord / 1000;
 
           final record = RecordWithSport(
