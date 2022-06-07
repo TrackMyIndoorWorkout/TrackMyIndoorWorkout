@@ -4,7 +4,7 @@ const athleteBodyWeight = "Body Weight (kg)";
 const athleteBodyWeightTag = "athlete_body_weight";
 const athleteBodyWeightIntTag = athleteBodyWeightTag + intTagPostfix;
 const athleteBodyWeightMin = 1;
-const athleteBodyWeightDefault = 60;
+const athleteBodyWeightDefault = 80;
 const athleteBodyWeightMax = 300;
 const athleteBodyWeightDescription =
     "This settings is optional. It could be used either for heart rate based calorie counting equations "

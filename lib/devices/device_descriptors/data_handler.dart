@@ -1,8 +1,6 @@
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
-import '../metric_descriptors/byte_metric_descriptor.dart';
-import '../metric_descriptors/short_metric_descriptor.dart';
-import '../metric_descriptors/three_byte_metric_descriptor.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 
 abstract class DataHandler {
   final bool hasFeatureFlags;
@@ -15,14 +13,14 @@ abstract class DataHandler {
   bool lastNotMoving = true;
 
   // Common metrics
-  ShortMetricDescriptor? speedMetric;
-  ShortMetricDescriptor? cadenceMetric;
-  ThreeByteMetricDescriptor? distanceMetric;
-  ShortMetricDescriptor? powerMetric;
-  ShortMetricDescriptor? caloriesMetric;
-  ShortMetricDescriptor? timeMetric;
-  ShortMetricDescriptor? caloriesPerHourMetric;
-  ByteMetricDescriptor? caloriesPerMinuteMetric;
+  MetricDescriptor? speedMetric;
+  MetricDescriptor? cadenceMetric;
+  MetricDescriptor? distanceMetric;
+  MetricDescriptor? powerMetric;
+  MetricDescriptor? caloriesMetric;
+  MetricDescriptor? timeMetric;
+  MetricDescriptor? caloriesPerHourMetric;
+  MetricDescriptor? caloriesPerMinuteMetric;
 
   DataHandler({
     this.hasFeatureFlags = true,

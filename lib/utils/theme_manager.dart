@@ -169,10 +169,10 @@ class ThemeManager {
     final fab = FloatingActionButton(
       key: key,
       heroTag: null,
-      child: widget,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
       onPressed: onPressed,
+      child: widget,
     );
 
     return wrapInHole

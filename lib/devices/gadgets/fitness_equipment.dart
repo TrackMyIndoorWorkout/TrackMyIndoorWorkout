@@ -108,7 +108,7 @@ class FitnessEquipment extends DeviceBase {
           device: device,
         ) {
     readConfiguration();
-    lastRecord = RecordWithSport.getZero(sport);
+    lastRecord = RecordWithSport(sport: sport);
   }
 
   String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);

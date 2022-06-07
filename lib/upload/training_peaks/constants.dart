@@ -6,7 +6,7 @@ const tpProductionApiUrlBase = "https://api.trainingpeaks.com/";
 const tokenPath = "oauth/token";
 const authorizationPath = "OAuth/Authorize";
 const deauthorizationPath = "oauth/deauthorize";
-const uploadPath = "v1/file";
+const uploadPath = "/v2/file/synchronous";
 
 // To use with iOS or Android
 const redirectUrlScheme = "trainingpeaksflutter";

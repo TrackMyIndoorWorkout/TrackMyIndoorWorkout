@@ -195,11 +195,11 @@ void main() {
   });
 
   group('fitTimeStamp test', () {
-    for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+    for (var i in List<int>.generate(smallRepetition, (index) => index)) {
       final testDateTime = mockDate(fitEpochDateTime);
       final expected =
           (testDateTime.millisecondsSinceEpoch - fitEpochDateTime.millisecondsSinceEpoch) ~/ 1000;
-      test('$testDateTime -> $expected', () async {
+      test('$i. $testDateTime -> $expected', () async {
         final timeStamp = FitSerializable.fitTimeStamp(testDateTime.millisecondsSinceEpoch);
 
         expect(timeStamp, expected);
@@ -208,11 +208,11 @@ void main() {
   });
 
   group('fitDateTime test', () {
-    for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+    for (var i in List<int>.generate(smallRepetition, (index) => index)) {
       final testDateTime = mockDate(fitEpochDateTime);
       final expected =
           (testDateTime.millisecondsSinceEpoch - fitEpochDateTime.millisecondsSinceEpoch) ~/ 1000;
-      test('$testDateTime -> $expected', () async {
+      test('$i. $testDateTime -> $expected', () async {
         final timeStamp = FitSerializable.fitDateTime(testDateTime);
 
         expect(timeStamp, expected);

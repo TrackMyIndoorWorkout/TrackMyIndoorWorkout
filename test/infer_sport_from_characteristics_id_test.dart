@@ -4,9 +4,8 @@ import 'package:mockito/annotations.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/heart_rate_monitor.dart';
 import 'package:track_my_indoor_exercise/devices/gatt_constants.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'infer_sport_from_characteristics_id_test.mocks.dart';
-
-import 'utils.dart';
 
 class TestPair {
   final String characteristicsId;

@@ -8,7 +8,6 @@ import '../../utils/display.dart';
 import 'activity.dart';
 
 const recordsTableName = 'records';
-const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
 
 @Entity(tableName: recordsTableName, foreignKeys: [
   ForeignKey(

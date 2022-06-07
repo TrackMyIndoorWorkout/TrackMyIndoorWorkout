@@ -5,6 +5,28 @@ import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 void main() {
+  group("RecordWithSport null by default:", () {
+    for (final sport in allSports) {
+      test("for $sport", () async {
+        final blank = RecordWithSport(sport: sport);
+        expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
+        expect(blank.distance, null);
+        expect(blank.elapsed, null);
+        expect(blank.calories, null);
+        expect(blank.power, null);
+        expect(blank.speed, null);
+        expect(blank.cadence, null);
+        expect(blank.heartRate, null);
+        expect(blank.elapsedMillis, null);
+        expect(blank.sport, sport);
+        expect(blank.pace, null);
+        expect(blank.strokeCount, null);
+        expect(blank.caloriesPerHour, null);
+        expect(blank.caloriesPerMinute, null);
+      });
+    }
+  });
+
   group("Record getBlank provides blank:", () {
     for (final sport in allSports) {
       test("for $sport", () async {

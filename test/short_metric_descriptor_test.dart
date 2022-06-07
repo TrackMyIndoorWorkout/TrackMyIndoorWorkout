@@ -11,8 +11,8 @@ void main() {
     getRandomDoubles(repetition, 1024, rnd).forEach((divider) {
       final len = rnd.nextInt(99) + 2;
       final data = getRandomInts(len, maxUint8, rnd);
-      final lsbLocation = rnd.nextInt(len);
-      final larger = lsbLocation > 0 ? (lsbLocation < len - 1 ? rnd.nextBool() : false) : true;
+      final larger = rnd.nextBool();
+      final lsbLocation = rnd.nextInt(len - 1) + (larger ? 0 : 1);
       final msbLocation = larger ? lsbLocation + 1 : lsbLocation - 1;
       data[lsbLocation] = maxByte;
       data[msbLocation] = maxByte;
@@ -33,8 +33,8 @@ void main() {
     for (var lenMinusTwo in getRandomInts(repetition, 99, rnd)) {
       final len = lenMinusTwo + 2;
       final data = getRandomInts(len, maxUint8, rnd);
-      final lsbLocation = rnd.nextInt(len);
-      final larger = lsbLocation > 0 ? (lsbLocation < len - 1 ? rnd.nextBool() : false) : true;
+      final larger = rnd.nextBool();
+      final lsbLocation = rnd.nextInt(len - 1) + (larger ? 0 : 1);
       final msbLocation = larger ? lsbLocation + 1 : lsbLocation - 1;
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();

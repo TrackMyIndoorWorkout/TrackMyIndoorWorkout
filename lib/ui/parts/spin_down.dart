@@ -22,7 +22,7 @@ class SpinDownBottomSheet extends StatefulWidget {
   const SpinDownBottomSheet({Key? key}) : super(key: key);
 
   @override
-  _SpinDownBottomSheetState createState() => _SpinDownBottomSheetState();
+  SpinDownBottomSheetState createState() => SpinDownBottomSheetState();
 }
 
 enum CalibrationState {
@@ -41,7 +41,7 @@ enum CalibrationState {
   notSupported,
 }
 
-class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
+class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   static const stepWeightInput = 0;
   static const stepCalibrating = 1;
   static const stepDone = 2;
@@ -337,7 +337,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       if (_rememberLastWeight) {
         final weightKg = _weight * (_si ? 1.0 : lbToKg);
         final prefService = Get.find<BasePrefService>();
-        await prefService.set<int>(athleteBodyWeightTag, weightKg.round());
+        await prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
       }
 
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);
@@ -522,12 +522,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                     },
                   ),
                   ElevatedButton(
+                    style: _weightInputButtonStyle(),
+                    onPressed: () async => await _onWeightInputButtonPressed(),
                     child: Text(
                       _weightInputButtonText(),
                       style: _weightInputButtonTextStyle(),
                     ),
-                    style: _weightInputButtonStyle(),
-                    onPressed: () async => await _onWeightInputButtonPressed(),
                   ),
                 ],
               ),
@@ -552,9 +552,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                           _largerTextStyle.merge(TextStyle(color: _themeManager.getBlueColor()))),
                   Text(_calibrationInstruction(), style: _calibrationInstructionStyle()),
                   ElevatedButton(
-                    child: Text(_calibrationButtonText(), style: _smallerTextStyle),
                     style: _buttonBackgroundStyle(),
                     onPressed: () async => await onCalibrationButtonPressed(),
+                    child: Text(_calibrationButtonText(), style: _smallerTextStyle),
                   ),
                 ],
               ),
@@ -571,11 +571,6 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                           : "ERROR",
                       style: _largerTextStyle),
                   ElevatedButton(
-                    child: Text(
-                        _calibrationState == CalibrationState.calibrationSuccess
-                            ? 'Close'
-                            : 'Retry',
-                        style: _smallerTextStyle),
                     style: _buttonBackgroundStyle(),
                     onPressed: () {
                       if (_calibrationState == CalibrationState.calibrationSuccess) {
@@ -588,6 +583,11 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                         });
                       }
                     },
+                    child: Text(
+                        _calibrationState == CalibrationState.calibrationSuccess
+                            ? 'Close'
+                            : 'Retry',
+                        style: _smallerTextStyle),
                   ),
                 ],
               ),

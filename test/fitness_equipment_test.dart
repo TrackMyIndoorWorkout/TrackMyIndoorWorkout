@@ -2,17 +2,18 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 import 'fitness_equipment_test.mocks.dart';
-import 'utils.dart';
 
 @GenerateMocks([BluetoothDevice, BluetoothService, BluetoothCharacteristic])
 main() {
   setUpAll(() async {
     await initPrefServiceForTest();
   });
+
   group('discover', () {
     BluetoothService _mockBluetoothService(
         {required String serviceUid,
@@ -47,7 +48,7 @@ main() {
       when(mockDevice.discoverServices())
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
-      final deviceDescriptor = deviceMap[yesoulS3FourCC];
+      final deviceDescriptor = DeviceFactory.getYesoulS3();
       final equipment = FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
       equipment.connected = true;
 
@@ -63,7 +64,7 @@ main() {
       when(mockDevice.discoverServices())
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
-      final deviceDescriptor = deviceMap[yesoulS3FourCC];
+      final deviceDescriptor = DeviceFactory.getYesoulS3();
       final equipment = FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
       equipment.connected = true;
 

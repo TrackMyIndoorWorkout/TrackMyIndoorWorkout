@@ -230,11 +230,11 @@ class MetricSpec {
   }
 
   String thresholdTag(String sport) {
-    return SportSpec.sport2Sport(sport) + "_" + thresholdTagPostfix;
+    return "${SportSpec.sport2Sport(sport)}_$thresholdTagPostfix";
   }
 
   String zonesTag(String sport) {
-    return SportSpec.sport2Sport(sport) + "_" + zonesTagPostfix;
+    return "${SportSpec.sport2Sport(sport)}_$zonesTagPostfix";
   }
 
   void updateMultiLineUnit() {

@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
@@ -1390,7 +1391,7 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final _timeDisplay =
+    final timeDisplay =
         Duration(seconds: _movingOrElapsedTime ? _movingTime ~/ 1000 : _elapsed).toDisplay();
 
     List<Widget> rows = [
@@ -1399,7 +1400,7 @@ class RecordingState extends State<RecordingScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-          Text(_timeDisplay, style: _measurementStyle),
+          Text(timeDisplay, style: _measurementStyle),
           SizedBox(width: _sizeDefault / 4),
         ],
       ),
