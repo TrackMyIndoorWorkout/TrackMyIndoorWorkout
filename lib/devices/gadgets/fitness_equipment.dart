@@ -65,6 +65,8 @@ class FitnessEquipment extends DeviceBase {
   bool hasTotalTimeReporting = false;
   Timer? _timer;
   late RecordWithSport lastRecord;
+  late Record continuationRecord;
+  bool continuation = false;
   HeartRateMonitor? heartRateMonitor;
   RunningCadenceSensor? _runningCadenceSensor;
   String _heartRateGapWorkaround = heartRateGapWorkaroundDefault;
@@ -356,9 +358,15 @@ class FitnessEquipment extends DeviceBase {
     }
   }
 
-  void setActivity(Activity activity) {
+  void setActivity(Activity activity) async {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
+    if (Get.isRegistered<AppDatabase>()) {
+      final database = Get.find<AppDatabase>();
+      final lastRecord = await database.recordDao.findLastRecordOfActivity(activity.id!).first;
+      continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
+      continuation = continuationRecord.hasCumulative();
+    }
     workoutState = WorkoutState.waitingForFirstMove;
     dataHandlers = {};
     readConfiguration();
@@ -857,7 +865,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     lastRecord = stub;
-    return stub;
+    return continuation ? RecordWithSport.offsetForward(stub, continuationRecord) : stub;
   }
 
   Future<void> refreshFactors() async {
@@ -949,6 +957,7 @@ class FitnessEquipment extends DeviceBase {
     _startingElapsed = 0;
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
+    continuationRecord = RecordWithSport.getZero(sport);
   }
 
   void stopWorkout() {

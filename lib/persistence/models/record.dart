@@ -145,6 +145,13 @@ class Record {
         (cadence ?? 0) == 0;
   }
 
+  bool hasCumulative() {
+    return (timeStamp ?? 0) > 0 ||
+        (distance ?? 0.0) > eps ||
+        (elapsed ?? 0) > 0 ||
+        (calories ?? 0) > 0;
+  }
+
   void cumulativeDistanceEnforcement(Record lastRecord) {
     if (distance != null && lastRecord.distance != null) {
       if (!testing && kDebugMode) {
@@ -296,6 +303,70 @@ class RecordWithSport extends Record {
     }
 
     return this;
+  }
+
+  factory RecordWithSport.copy(Record record) {
+    return RecordWithSport(
+      activityId: record.activityId,
+      timeStamp: record.timeStamp,
+      distance: record.distance,
+      elapsed: record.elapsed,
+      calories: record.calories,
+      power: record.power,
+      speed: record.speed,
+      cadence: record.cadence,
+      heartRate: record.heartRate,
+      elapsedMillis: record.elapsedMillis,
+      pace: record.pace,
+      strokeCount: record.strokeCount,
+      sport: record.sport,
+      caloriesPerHour: record.caloriesPerHour,
+      caloriesPerMinute: record.caloriesPerMinute,
+    );
+  }
+
+  factory RecordWithSport.offsetBack(Record record, Record continuationRecord) {
+    final copy = RecordWithSport.copy(record);
+
+    if (copy.timeStamp != null && continuationRecord.timeStamp != null) {
+      copy.timeStamp = copy.timeStamp! - continuationRecord.timeStamp!;
+    }
+
+    if (copy.distance != null && continuationRecord.distance != null) {
+      copy.distance = copy.distance! - continuationRecord.distance!;
+    }
+
+    if (copy.elapsed != null && continuationRecord.elapsed != null) {
+      copy.elapsed = copy.elapsed! - continuationRecord.elapsed!;
+    }
+
+    if (copy.calories != null && continuationRecord.calories != null) {
+      copy.calories = copy.calories! - continuationRecord.calories!;
+    }
+
+    return copy;
+  }
+
+  factory RecordWithSport.offsetForward(Record record, Record continuationRecord) {
+    final copy = RecordWithSport.copy(record);
+
+    if (copy.timeStamp != null && continuationRecord.timeStamp != null) {
+      copy.timeStamp = copy.timeStamp! + continuationRecord.timeStamp!;
+    }
+
+    if (copy.distance != null && continuationRecord.distance != null) {
+      copy.distance = copy.distance! + continuationRecord.distance!;
+    }
+
+    if (copy.elapsed != null && continuationRecord.elapsed != null) {
+      copy.elapsed = copy.elapsed! + continuationRecord.elapsed!;
+    }
+
+    if (copy.calories != null && continuationRecord.calories != null) {
+      copy.calories = copy.calories! + continuationRecord.calories!;
+    }
+
+    return copy;
   }
 
   @override
