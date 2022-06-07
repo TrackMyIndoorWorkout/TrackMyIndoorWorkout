@@ -1,3 +1,9 @@
+## 1.1.103
+
+* Schwinn 170 / 270 / 570u experimental support 
+* Upgrade to Flutter 3.x
+* Training Peaks API changes part 1 (deprecation approaching)
+
 ## 1.1.102
 
 * Decrease Leaderboard flicker (jump back-and-forth) effect especially the first few minutes
