@@ -366,6 +366,16 @@ class FitnessEquipment extends DeviceBase {
       final lastRecord = await database.recordDao.findLastRecordOfActivity(activity.id!).first;
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "setActivity",
+          "continuation $continuation continuationRecord $continuationRecord",
+        );
+      }
+      debugPrint("continuation $continuation continuationRecord $continuationRecord");
     }
     workoutState = WorkoutState.waitingForFirstMove;
     dataHandlers = {};
