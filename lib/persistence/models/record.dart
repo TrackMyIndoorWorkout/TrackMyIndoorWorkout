@@ -146,10 +146,7 @@ class Record {
   }
 
   bool hasCumulative() {
-    return (timeStamp ?? 0) > 0 ||
-        (distance ?? 0.0) > eps ||
-        (elapsed ?? 0) > 0 ||
-        (calories ?? 0) > 0;
+    return (distance ?? 0.0) > eps || (elapsed ?? 0) > 0 || (calories ?? 0) > 0;
   }
 
   void cumulativeDistanceEnforcement(Record lastRecord) {
