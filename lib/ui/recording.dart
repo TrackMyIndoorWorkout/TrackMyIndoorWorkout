@@ -249,7 +249,7 @@ class RecordingState extends State<RecordingScreen> {
         }
 
         for (final activity in unfinished) {
-          if (!continued || _activity != null && _activity!.id != activity.id) {
+          if (!continued || _activity == null || _activity!.id != activity.id) {
             await _database.finalizeActivity(activity);
           }
         }
