@@ -302,7 +302,7 @@ class RecordWithSport extends Record {
     return this;
   }
 
-  factory RecordWithSport.copy(Record record) {
+  factory RecordWithSport.clone(Record record) {
     return RecordWithSport(
       activityId: record.activityId,
       timeStamp: record.timeStamp,
@@ -323,47 +323,51 @@ class RecordWithSport extends Record {
   }
 
   factory RecordWithSport.offsetBack(Record record, Record continuationRecord) {
-    final copy = RecordWithSport.copy(record);
+    final clone = RecordWithSport.clone(record);
 
-    if (copy.timeStamp != null && continuationRecord.timeStamp != null) {
-      copy.timeStamp = copy.timeStamp! - continuationRecord.timeStamp!;
+    if (clone.timeStamp != null && continuationRecord.timeStamp != null) {
+      clone.timeStamp = clone.timeStamp! - continuationRecord.timeStamp!;
     }
 
-    if (copy.distance != null && continuationRecord.distance != null) {
-      copy.distance = copy.distance! - continuationRecord.distance!;
+    if (clone.distance != null && continuationRecord.distance != null) {
+      clone.distance = clone.distance! - continuationRecord.distance!;
     }
 
-    if (copy.elapsed != null && continuationRecord.elapsed != null) {
-      copy.elapsed = copy.elapsed! - continuationRecord.elapsed!;
+    if (clone.elapsed != null && continuationRecord.elapsed != null) {
+      clone.elapsed = clone.elapsed! - continuationRecord.elapsed!;
     }
 
-    if (copy.calories != null && continuationRecord.calories != null) {
-      copy.calories = copy.calories! - continuationRecord.calories!;
+    if (clone.calories != null && continuationRecord.calories != null) {
+      clone.calories = clone.calories! - continuationRecord.calories!;
     }
 
-    return copy;
+    return clone;
   }
 
   factory RecordWithSport.offsetForward(Record record, Record continuationRecord) {
-    final copy = RecordWithSport.copy(record);
+    final clone = RecordWithSport.clone(record);
 
-    if (copy.timeStamp != null && continuationRecord.timeStamp != null) {
-      copy.timeStamp = copy.timeStamp! + continuationRecord.timeStamp!;
+    if (clone.distance != null && continuationRecord.distance != null) {
+      clone.distance = clone.distance! + continuationRecord.distance!;
     }
 
-    if (copy.distance != null && continuationRecord.distance != null) {
-      copy.distance = copy.distance! + continuationRecord.distance!;
+    if (clone.elapsed != null && continuationRecord.elapsed != null) {
+      clone.elapsed = clone.elapsed! + continuationRecord.elapsed!;
     }
 
-    if (copy.elapsed != null && continuationRecord.elapsed != null) {
-      copy.elapsed = copy.elapsed! + continuationRecord.elapsed!;
+    if (clone.elapsedMillis != null &&
+        (continuationRecord.elapsedMillis != null || continuationRecord.elapsed != null)) {
+      clone.elapsedMillis = clone.elapsedMillis! +
+          (continuationRecord.elapsedMillis != null
+              ? continuationRecord.elapsedMillis!
+              : continuationRecord.elapsed! * 1000);
     }
 
-    if (copy.calories != null && continuationRecord.calories != null) {
-      copy.calories = copy.calories! + continuationRecord.calories!;
+    if (clone.calories != null && continuationRecord.calories != null) {
+      clone.calories = clone.calories! + continuationRecord.calories!;
     }
 
-    return copy;
+    return clone;
   }
 
   @override
