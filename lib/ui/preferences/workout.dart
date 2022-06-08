@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import '../../preferences/time_display_mode.dart';
 import '../../preferences/workout_mode.dart';
 import 'preferences_base.dart';
 
@@ -27,6 +28,28 @@ class WorkoutPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(workoutModeCircuitDescription),
         value: workoutModeCircuit,
         pref: workoutModeTag,
+      ),
+      const PrefLabel(
+        title: Text(timeDisplayMode),
+        subtitle: Text(timeDisplayModeDescription),
+      ),
+      const PrefRadio<String>(
+        title: Text(timeDisplayModeElapsedTitle),
+        subtitle: Text(timeDisplayModeElapsedDescription),
+        value: timeDisplayModeElapsed,
+        pref: timeDisplayModeTag,
+      ),
+      const PrefRadio<String>(
+        title: Text(timeDisplayModeMovingTitle),
+        subtitle: Text(timeDisplayModeMovingDescription),
+        value: timeDisplayModeMoving,
+        pref: timeDisplayModeTag,
+      ),
+      const PrefRadio<String>(
+        title: Text(timeDisplayModeHIITMovingTitle),
+        subtitle: Text(timeDisplayModeHIITMovingDescription),
+        value: timeDisplayModeHIITMoving,
+        pref: timeDisplayModeTag,
       ),
     ];
 

@@ -34,7 +34,6 @@ import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
-import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/simpler_ui.dart';
@@ -42,6 +41,7 @@ import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
+import '../preferences/time_display_mode.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
@@ -145,8 +145,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _twoColumnLayout = twoColumnLayoutDefault;
   bool _instantUpload = instantUploadDefault;
   bool _uxDebug = appDebugModeDefault;
-  bool _movingOrElapsedTime = movingOrElapsedTimeDefault;
-
+  String _timeDisplayMode = timeDisplayModeDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
   Timer? _dataGapWatchdog;
   int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
@@ -525,8 +524,7 @@ class RecordingState extends State<RecordingScreen> {
     _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
-    _movingOrElapsedTime =
-        prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
+    _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
     _instantUpload = prefService.get<bool>(instantUploadTag) ?? instantUploadDefault;
     _pointCount = min(60, size.width ~/ 2);
     final now = DateTime.now();
@@ -1444,8 +1442,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final timeDisplay =
-        Duration(seconds: _movingOrElapsedTime ? _movingTime ~/ 1000 : _elapsed).toDisplay();
+    final timeDisplay = Duration(
+            seconds: _timeDisplayMode == timeDisplayModeElapsed ? _movingTime ~/ 1000 : _elapsed)
+        .toDisplay();
 
     List<Widget> rows = [
       Row(

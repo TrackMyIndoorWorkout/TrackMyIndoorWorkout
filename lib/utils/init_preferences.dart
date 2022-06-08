@@ -32,7 +32,6 @@ import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
-import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/scan_duration.dart';
@@ -43,6 +42,7 @@ import '../preferences/sport_spec.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
+import '../preferences/time_display_mode.dart';
 import '../preferences/training_peaks_upload_public.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
@@ -114,7 +114,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     displayLapCounterTag: displayLapCounterDefault,
     measurementFontSizeAdjustTag: measurementFontSizeAdjustDefault,
     twoColumnLayoutTag: twoColumnLayoutDefault,
-    movingOrElapsedTimeTag: movingOrElapsedTimeDefault,
     trainingPeaksUploadPublicTag: trainingPeaksUploadPublicDefault,
     logLevelTag: logLevelDefault,
     calculateGpsTag: calculateGpsDefault,
@@ -124,6 +123,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     bikeWeightTag: bikeWeightDefault,
     driveTrainLossTag: driveTrainLossDefault,
     airTemperatureTag: airTemperatureDefault,
+    timeDisplayModeTag: timeDisplayModeDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -305,6 +305,14 @@ Future<BasePrefService> initPreferences() async {
         prefService.get<bool>(rankingForDeviceOldTag) ?? rankingForDeviceOldDefault;
     if (rankingForDevice && !rankingForSport) {
       await prefService.set<bool>(rankingForSportOrDeviceTag, !rankingForSportOrDeviceDefault);
+    }
+  }
+
+  if (prefVersion <= preferencesVersionTimeDisplayMode) {
+    final movingOrElapsedTime =
+        prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
+    if (!movingOrElapsedTime) {
+      await prefService.set<String>(timeDisplayModeTag, timeDisplayModeElapsed);
     }
   }
 
