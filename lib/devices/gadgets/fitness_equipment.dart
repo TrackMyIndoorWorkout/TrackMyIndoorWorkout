@@ -966,7 +966,6 @@ class FitnessEquipment extends DeviceBase {
     _startingElapsed = 0;
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
-    continuationRecord = RecordWithSport.getZero(sport);
   }
 
   void stopWorkout() {
