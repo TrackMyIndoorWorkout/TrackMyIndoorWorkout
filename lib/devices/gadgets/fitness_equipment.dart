@@ -358,7 +358,7 @@ class FitnessEquipment extends DeviceBase {
     }
   }
 
-  void setActivity(Activity activity) async {
+  Future<void> setActivity(Activity activity) async {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<AppDatabase>()) {

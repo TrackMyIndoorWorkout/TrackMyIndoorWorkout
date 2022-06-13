@@ -312,7 +312,7 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    _fitnessEquipment?.setActivity(_activity!);
+    await _fitnessEquipment?.setActivity(_activity!);
 
     await _fitnessEquipment?.attach();
     setState(() {
