@@ -27,4 +27,12 @@ class DisplayRecord {
   double speedByUnit(bool si) {
     return speedByUnitCore(speed ?? 0.0, si);
   }
+
+  @override
+  String toString() {
+    return "power $power | "
+        "speed $speed | "
+        "cadence $cadence | "
+        "heartRate $heartRate";
+  }
 }
