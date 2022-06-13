@@ -375,7 +375,6 @@ class FitnessEquipment extends DeviceBase {
           "continuation $continuation continuationRecord $continuationRecord",
         );
       }
-      debugPrint("continuation $continuation continuationRecord $continuationRecord");
     }
     workoutState = WorkoutState.waitingForFirstMove;
     dataHandlers = {};
