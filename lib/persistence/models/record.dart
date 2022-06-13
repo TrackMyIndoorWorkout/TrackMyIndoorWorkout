@@ -215,6 +215,25 @@ class Record {
       cumulativeCaloriesEnforcement(lastRecord);
     }
   }
+
+  @override
+  String toString() {
+    return "id $id | "
+        "activityId $activityId | "
+        "timeStamp $timeStamp | "
+        "distance $distance | "
+        "elapsed $elapsed | "
+        "calories $calories | "
+        "power $power | "
+        "speed $speed | "
+        "cadence $cadence | "
+        "heartRate $heartRate | "
+        "elapsedMillis $elapsedMillis | "
+        "pace $pace | "
+        "strokeCount $strokeCount | "
+        "caloriesPerHour $caloriesPerHour | "
+        "caloriesPerMinute $caloriesPerMinute";
+  }
 }
 
 class RecordWithSport extends Record {
@@ -368,24 +387,5 @@ class RecordWithSport extends Record {
     }
 
     return clone;
-  }
-
-  @override
-  String toString() {
-    return "id $id | "
-        "activityId $activityId | "
-        "timeStamp $timeStamp | "
-        "distance $distance | "
-        "elapsed $elapsed | "
-        "calories $calories | "
-        "power $power | "
-        "speed $speed | "
-        "cadence $cadence | "
-        "heartRate $heartRate | "
-        "elapsedMillis $elapsedMillis | "
-        "pace $pace | "
-        "strokeCount $strokeCount | "
-        "caloriesPerHour $caloriesPerHour | "
-        "caloriesPerMinute $caloriesPerMinute";
   }
 }
