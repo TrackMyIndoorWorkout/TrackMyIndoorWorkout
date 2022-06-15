@@ -1,0 +1,39 @@
+version: v0.1
+name: playstore-data-safety-report
+projectName: ''
+createdAt: '2022-06-15 06:19:37.305795'
+updatedAt: '2022-06-15 06:21:14.915283'
+doesProcessData: true
+doesEncryptDataInTransit: true
+doesAllowDeletionOfData: true
+pii:
+- element: Device or other IDs
+  category: Device or other IDs
+  isSDK: false
+  collected: true
+  shared: false
+  processedEphemerally: false
+  required: true
+  collectionPurposes:
+  - Developer communications
+  sharingPurposes: []
+- element: Precise location
+  category: Location
+  isSDK: false
+  collected: true
+  shared: false
+  processedEphemerally: true
+  required: true
+  collectionPurposes:
+  - App functionality
+  sharingPurposes: []
+- element: User IDs
+  category: Personal info
+  isSDK: false
+  collected: true
+  shared: false
+  processedEphemerally: true
+  required: false
+  collectionPurposes:
+  - App functionality
+  sharingPurposes: []
