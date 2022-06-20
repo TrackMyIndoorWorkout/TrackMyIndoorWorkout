@@ -9,6 +9,7 @@ const matrixBikeFourCC = "MxBk";
 const stagesSB20FourCC = "Stg2";
 const yesoulS3FourCC = "ysS3";
 const kayakProGenesisPortFourCC = "KPro";
+const mrCaptainRowerFourCC = "MrCn";
 const npeRunnFourCC = "RUNN";
 const matrixTreadmillFourCC = "MxTm";
 const genericFTMSBikeFourCC = "GRid";
