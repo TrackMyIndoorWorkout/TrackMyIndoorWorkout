@@ -1,3 +1,8 @@
+## 1.1.104
+
+* Dummy version bump to appease Huawei AppGallery submission.
+  (The app is also in the Galaxy store now BTW).
+
 ## 1.1.103
 
 * Schwinn 170 / 270 / 570u experimental support 

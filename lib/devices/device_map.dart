@@ -19,6 +19,7 @@ Map<String, DeviceDescriptor> deviceMap = {
   schwinnACPerfPlusFourCC: SchwinnACPerformancePlus(),
   matrixBikeFourCC: MatrixBikeDescriptor(),
   kayakProGenesisPortFourCC: DeviceFactory.getKayaPro(),
+  mrCaptainRowerFourCC: DeviceFactory.getMrCaptain(),
   npeRunnFourCC: DeviceFactory.getNpeRunn(),
   matrixTreadmillFourCC: MatrixTreadmillDescriptor(),
   genericFTMSTreadmillFourCC: DeviceFactory.getGenericFTMSTreadmill(),
