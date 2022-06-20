@@ -21,7 +21,7 @@ dependencies:
   device_info: ^2.0.3
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^4.5.1
+  file_picker: ^4.6.1
   floor: ^1.2.0
   flutter_blue:
     git:
