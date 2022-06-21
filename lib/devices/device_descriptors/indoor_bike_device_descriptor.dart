@@ -17,6 +17,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     canMeasureHeartRate = true,
     heartRateByteIndex,
     canMeasureCalories = true,
+    shouldSignalStartStop = false,
   }) : super(
           defaultSport: ActivityType.ride,
           isMultiSport: false,
@@ -32,6 +33,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
           canMeasureCalories: canMeasureCalories,
+          shouldSignalStartStop: shouldSignalStartStop,
         );
 
   @override
@@ -48,6 +50,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
         canMeasureHeartRate: canMeasureHeartRate,
         heartRateByteIndex: heartRateByteIndex,
         canMeasureCalories: canMeasureCalories,
+        shouldSignalStartStop: shouldSignalStartStop,
       );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.indoor_bike_data.xml
