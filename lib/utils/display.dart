@@ -107,7 +107,8 @@ IconData getSportIcon(String sport) {
   } else if (sport == ActivityType.stairStepper) {
     return Icons.stairs;
   }
-  return Icons.directions_bike;
+
+  return Icons.help;
 }
 
 String getCadenceUnit(String sport) {
