@@ -95,11 +95,7 @@ class FitnessEquipment extends DeviceBase {
   Timer? _throttleTimer;
   RecordHandlerFunction? _recordHandlerFunction;
 
-  FitnessEquipment(
-      {this.descriptor,
-      device,
-      this.firstCalories = true,
-      this.firstDistance = true})
+  FitnessEquipment({this.descriptor, device, this.firstCalories = true, this.firstDistance = true})
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
           characteristicsId: descriptor?.dataCharacteristicId,
