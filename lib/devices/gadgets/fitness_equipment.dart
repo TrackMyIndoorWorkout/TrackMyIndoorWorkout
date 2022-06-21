@@ -41,6 +41,7 @@ typedef RecordHandlerFunction = Function(RecordWithSport data);
 // (intelligent start and elapsed time tracking)
 enum WorkoutState {
   waitingForFirstMove,
+  startedMoving,
   moving,
   justStopped,
   stopped,
@@ -500,7 +501,12 @@ class FitnessEquipment extends DeviceBase {
         return lastRecord;
       } else {
         dataHandlers = {};
-        workoutState = WorkoutState.moving;
+        if (workoutState == WorkoutState.startedMoving) {
+          workoutState = WorkoutState.moving;
+        } else {
+          workoutState = WorkoutState.startedMoving;
+        }
+
         // Null activity should only happen in UX simulation mode
         if (_activity != null) {
           _activity!.startDateTime = now;
@@ -520,13 +526,17 @@ class FitnessEquipment extends DeviceBase {
       // Once all types of packets indicate non movement we can be sure
       // that the workout is stopped.
       if (isNotMoving && wasNotMoving()) {
-        if (workoutState == WorkoutState.moving) {
+        if (workoutState == WorkoutState.moving || workoutState == WorkoutState.startedMoving) {
           workoutState = WorkoutState.justStopped;
         } else if (workoutState == WorkoutState.justStopped) {
           workoutState = WorkoutState.stopped;
         }
       } else {
-        workoutState = WorkoutState.moving;
+        if (workoutState == WorkoutState.startedMoving) {
+          workoutState = WorkoutState.moving;
+        } else {
+          workoutState = WorkoutState.startedMoving;
+        }
       }
     }
 

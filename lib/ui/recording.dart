@@ -160,6 +160,7 @@ class RecordingState extends State<RecordingScreen> {
   double _distance = 0.0;
   int _elapsed = 0;
   int _movingTime = 0;
+  int _stoppedTime = 0;
 
   String _targetHrMode = targetHeartRateModeDefault;
   Tuple2<double, double> _targetHrBounds = const Tuple2(0, 0);
@@ -338,9 +339,12 @@ class RecordingState extends State<RecordingScreen> {
 
       final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
       if (_measuring &&
-          (workoutState == WorkoutState.moving || workoutState == WorkoutState.justStopped) &&
-          (_fitnessEquipment?.measuring ?? false)) {
-        if (!_uxDebug) {
+          (_fitnessEquipment?.measuring ?? false) &&
+          workoutState != WorkoutState.waitingForFirstMove) {
+        if (!_uxDebug &&
+            (workoutState == WorkoutState.moving ||
+                workoutState == WorkoutState.startedMoving ||
+                workoutState == WorkoutState.justStopped)) {
           await _database.recordDao.insertRecord(record);
         }
 
@@ -358,6 +362,16 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           _elapsed = record.elapsed ?? 0;
+          if (_timeDisplayMode == timeDisplayModeHIITMoving) {
+            if (workoutState == WorkoutState.justStopped ||
+                workoutState == WorkoutState.startedMoving) {
+              _stoppedTime = _elapsed;
+            }
+
+            if (workoutState == WorkoutState.stopped || workoutState == WorkoutState.justStopped) {
+              _elapsed -= _stoppedTime;
+            }
+          }
           _movingTime = record.movingTime.round();
           if (record.heartRate != null &&
               (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
@@ -1443,7 +1457,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     final timeDisplay = Duration(
-            seconds: _timeDisplayMode == timeDisplayModeElapsed ? _movingTime ~/ 1000 : _elapsed)
+            seconds: _timeDisplayMode == timeDisplayModeMoving ? _movingTime ~/ 1000 : _elapsed)
         .toDisplay();
 
     List<Widget> rows = [
