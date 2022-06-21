@@ -150,13 +150,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, weightCharacteristicUuid);
     if (_weightData == null) return false;
 
-    final fitnessMachine =
-        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], fitnessMachineUuid);
-    _controlPoint = BluetoothDeviceEx.filterCharacteristic(
-        fitnessMachine?.characteristics, fitnessMachineControlPointUuid);
-    _fitnessMachineStatus = BluetoothDeviceEx.filterCharacteristic(
-        fitnessMachine?.characteristics, fitnessMachineStatusUuid);
-    if (_controlPoint == null || _fitnessMachineStatus == null) return false;
+    if (_fitnessEquipment?.controlPoint == null || _fitnessEquipment?.status == null) return false;
 
     // #117 Attach the handler way ahead of the actual weight write
     try {
@@ -410,7 +404,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
-    _fitnessEquipment?.statusSubscription = _fitnessMachineStatus?.value
+    _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.value
         .throttleTime(
       const Duration(milliseconds: ftmsStatusThreshold),
       leading: false,

@@ -86,34 +86,34 @@ class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     List<String> readFeatures = [];
     if ((_fitnessEquipment?.readFeatures ?? 0) > 0) {
       int flagBit = 1;
-      READ_FEATURE_TEXTS.forEach((readFeatureText) {
+      for (var readFeatureText in readFeatureTexts) {
         if (_fitnessEquipment!.readFeatures & flagBit > 0) {
           readFeatures.add(readFeatureText);
         }
 
         flagBit *= 2;
-      });
+      }
     }
 
     List<String> writeFeatures = [];
     if ((_fitnessEquipment?.writeFeatures ?? 0) > 0) {
       int flagBit = 1;
-      WRITE_FEATURE_TEXTS.forEach((writeFeatureText) {
+      for (var writeFeatureText in writeFeatureTexts) {
         if (_fitnessEquipment!.writeFeatures & flagBit > 0) {
           writeFeatures.add(writeFeatureText);
         }
 
         flagBit *= 2;
-      });
+      }
     }
 
     setState(() {
-      if (readFeatures.length > 0) {
-        _readFeatures = "Features: " + readFeatures.join(", ");
+      if (readFeatures.isNotEmpty) {
+        _readFeatures = "Features: ${readFeatures.join(", ")}";
       }
 
-      if (writeFeatures.length > 0) {
-        _writeFeatures = "Write Features: " + writeFeatures.join(", ");
+      if (writeFeatures.isNotEmpty) {
+        _writeFeatures = "Write Features: ${writeFeatures.join(", ")}";
       }
     });
   }
@@ -159,9 +159,9 @@ class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
                 Text(_hrmBatteryLevel, style: _textStyle),
               ],
             ),
-            Divider(),
+            const Divider(),
             Text(_readFeatures),
-            Divider(),
+            const Divider(),
             Text(_writeFeatures),
           ],
         ),

@@ -1,3 +1,4 @@
+// ignore_for_file: unused_field
 import 'dart:async';
 import 'dart:math';
 
@@ -5,7 +6,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/app_debug_mode.dart';
@@ -400,13 +400,13 @@ class FitnessEquipment extends DeviceBase {
   }
 
   Future<WriteSupportParameters?> getWriteSupportParameters(
-      int writeFeaturesFlag,
-      int supportBit,
-      String supportCharacteristicsId,
-      String description,
-      int division, {
-        int numberBytes = 2,
-      }) async {
+    int writeFeaturesFlag,
+    int supportBit,
+    String supportCharacteristicsId,
+    String description,
+    int division, {
+    int numberBytes = 2,
+  }) async {
     if (writeFeaturesFlag & supportBit > 0) {
       final writeTargets = BluetoothDeviceEx.filterCharacteristic(
           service!.characteristics, supportCharacteristicsId);
@@ -436,7 +436,7 @@ class FitnessEquipment extends DeviceBase {
 
   Future<void> _fitnessMachineFeature() async {
     final machineFeatures =
-    BluetoothDeviceEx.filterCharacteristic(service!.characteristics, FITNESS_MACHINE_FEATURE);
+        BluetoothDeviceEx.filterCharacteristic(service!.characteristics, fitnessMachineFeature);
 
     try {
       final featureValues = await machineFeatures?.read();
@@ -448,48 +448,48 @@ class FitnessEquipment extends DeviceBase {
       writeFeatures = _getLongFromBytes(featureValues, 4);
       _speedLevels = await getWriteSupportParameters(
         writeFeatures,
-        SPEED_TARGET_SETTING_SUPPORTED,
-        SUPPORTED_SPEED_RANGE,
-        WRITE_FEATURE_TEXTS[0],
+        speedTargetSettingSupported,
+        supportedSpeedRange,
+        writeFeatureTexts[0],
         100,
       );
       _inclinationLevels = await getWriteSupportParameters(
         writeFeatures,
-        INCLINATION_TARGET_SETTING_SUPPORTED,
-        SUPPORTED_INCLINATION_RANGE,
-        WRITE_FEATURE_TEXTS[1],
+        inclinationTargetSettingSupported,
+        supportedInclinationRange,
+        writeFeatureTexts[1],
         10,
       );
       _resistanceLevels = await getWriteSupportParameters(
         writeFeatures,
-        RESISTANCE_TARGET_SETTING_SUPPORTED,
-        SUPPORTED_RESISTANCE_LEVEL,
-        WRITE_FEATURE_TEXTS[2],
+        resistanceTargetSettingSupported,
+        supportedResistanceLevel,
+        writeFeatureTexts[2],
         10,
       );
       _heartRateLevels = await getWriteSupportParameters(
         writeFeatures,
-        HEART_RATE_TARGET_SETTING_SUPPORTED,
-        SUPPORTED_HEART_RATE_RANGE,
-        WRITE_FEATURE_TEXTS[4],
+        heartRateTargetSettingSupported,
+        supportedHeartRateRange,
+        writeFeatureTexts[4],
         1,
         numberBytes: 1,
       );
       _powerLevels = await getWriteSupportParameters(
         writeFeatures,
-        POWER_TARGET_SETTING_SUPPORTED,
-        SUPPORTED_POWER_RANGE,
-        WRITE_FEATURE_TEXTS[3],
+        powerTargetSettingSupported,
+        supportedPowerRange,
+        writeFeatureTexts[3],
         1,
       );
-      supportsSpinDown = writeFeatures & SPIN_DOWN_CONTROL_SUPPORTED > 0;
+      supportsSpinDown = writeFeatures & spinDownControlSupported > 0;
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
   }
 
-  Future<bool> _executeControlOperation(int opCode, {int? controlInfo = null}) async {
+  Future<bool> _executeControlOperation(int opCode, {int? controlInfo}) async {
     List<int> requestInfo = [opCode];
     if (controlInfo != null) {
       requestInfo.add(controlInfo);
@@ -499,26 +499,26 @@ class FitnessEquipment extends DeviceBase {
     final controlResponse = await controlPoint?.read();
 
     return controlResponse != null &&
-        controlResponse[0] == RESPONSE_OPCODE &&
+        controlResponse[0] == controlOpcode &&
         controlResponse[1] == opCode &&
-        controlResponse[2] == SUCCESS_RESPONSE;
+        controlResponse[2] == successResponse;
   }
 
   Future<void> _connectToControlPoint() async {
     if (controlPoint == null) {
       controlPoint = BluetoothDeviceEx.filterCharacteristic(
         service!.characteristics,
-        FITNESS_MACHINE_CONTROL_POINT,
+        fitnessMachineControlPointUuid,
       );
 
       status = BluetoothDeviceEx.filterCharacteristic(
         service!.characteristics,
-        FITNESS_MACHINE_STATUS,
+        fitnessMachineStatusUuid,
       );
     }
 
     if (!gotControl) {
-      gotControl = await _executeControlOperation(REQUEST_CONTROL);
+      gotControl = await _executeControlOperation(requestControl);
     }
   }
 
@@ -1093,11 +1093,11 @@ class FitnessEquipment extends DeviceBase {
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
-    return await _executeControlOperation(START_OR_RESUME_CONTROL);
+    return await _executeControlOperation(startOrResumeControl);
   }
 
   void stopWorkout() {
-    _executeControlOperation(STOP_OR_PAUSE_CONTROL, controlInfo: STOP_CONTROL_INFO);
+    _executeControlOperation(stopOrPauseControl, controlInfo: stopControlInfo);
     readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
