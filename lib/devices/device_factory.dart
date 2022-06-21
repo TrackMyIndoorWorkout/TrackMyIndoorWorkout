@@ -94,6 +94,7 @@ class DeviceFactory {
       manufacturerFitId: stravaFitId,
       model: "000000",
       canMeasureHeartRate: false,
+      isMultiSport: false,
     );
   }
 

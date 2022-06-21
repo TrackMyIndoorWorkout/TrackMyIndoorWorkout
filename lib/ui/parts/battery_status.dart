@@ -105,7 +105,8 @@ class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _themeManager.getBlueIcon(getIcon(_fitnessEquipment?.sport), _sizeDefault),
+                _themeManager.getBlueIcon(
+                    getSportIcon(_fitnessEquipment?.sport ?? ActivityType.workout), _sizeDefault),
                 _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
                 Text(_batteryLevel, style: _textStyle),
               ],

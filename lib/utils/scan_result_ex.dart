@@ -7,6 +7,7 @@ import '../devices/device_map.dart';
 import '../devices/gatt_constants.dart';
 import 'advertisement_data_ex.dart';
 import 'constants.dart';
+import 'display.dart';
 import 'machine_type.dart';
 import 'string_ex.dart';
 
@@ -97,7 +98,7 @@ extension ScanResultEx on ScanResult {
     return machineTypes;
   }
 
-  MachineType getMachineType(List<MachineType>? ftmsServiceDataMachineTypes) {
+  MachineType getMachineType(List<MachineType> ftmsServiceDataMachineTypes) {
     if (serviceUuids.contains(precorServiceUuid) || serviceUuids.contains(schwinnX70ServiceUuid)) {
       return MachineType.indoorBike;
     }
@@ -110,7 +111,10 @@ extension ScanResultEx on ScanResult {
       return MachineType.notFitnessMachine;
     }
 
-    ftmsServiceDataMachineTypes ??= getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte());
+    if (ftmsServiceDataMachineTypes.isEmpty) {
+      ftmsServiceDataMachineTypes = getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte());
+    }
+
     if (ftmsServiceDataMachineTypes.isEmpty) {
       return MachineType.notFitnessMachine;
     }
@@ -122,6 +126,15 @@ extension ScanResultEx on ScanResult {
     return MachineType.multiFtms;
   }
 
-  IconData getEquipmentIcon([List<MachineType>? ftmsServiceDataMachineTypes]) =>
-      getMachineType(ftmsServiceDataMachineTypes).icon;
+  IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes) {
+    for (var dev in deviceMap.values.where((d) => !d.isMultiSport)) {
+      for (var prefix in dev.namePrefixes) {
+        if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
+          return getSportIcon(dev.defaultSport);
+        }
+      }
+    }
+
+    return getMachineType(ftmsServiceDataMachineTypes).icon;
+  }
 }
