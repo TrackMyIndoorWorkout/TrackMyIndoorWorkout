@@ -1,6 +1,6 @@
 import '../../export/fit/fit_manufacturer.dart';
 import '../../utils/constants.dart';
-import '../device_map.dart';
+import '../device_fourcc.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
@@ -9,17 +9,17 @@ import 'fixed_layout_device_descriptor.dart';
 class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
   PrecorSpinnerChronoPower()
       : super(
-          defaultSport: ActivityType.Ride,
+          defaultSport: ActivityType.ride,
           isMultiSport: false,
-          fourCC: PRECOR_SPINNER_CHRONO_POWER_FOURCC,
+          fourCC: precorSpinnerChronoPowerFourCC,
           vendorName: "Precor",
           modelName: "Spinner Chrono Power",
           namePrefixes: ["CHRONO"],
           manufacturerPrefix: "Precor",
-          manufacturerFitId: PRECOR_FIT_ID,
+          manufacturerFitId: precorFitId,
           model: "1",
-          dataServiceId: PRECOR_SERVICE_ID,
-          dataCharacteristicId: PRECOR_MEASUREMENT_ID,
+          dataServiceId: precorServiceUuid,
+          dataCharacteristicId: precorMeasurementUuid,
           canMeasureHeartRate: true,
           heartRateByteIndex: 5,
           timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4),
@@ -31,7 +31,10 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
         );
 
   @override
-  bool canDataProcessed(List<int> data) {
+  PrecorSpinnerChronoPower clone() => PrecorSpinnerChronoPower();
+
+  @override
+  bool isDataProcessable(List<int> data) {
     if (data.length != 19) return false;
 
     const measurementPrefix = [83, 89, 22];

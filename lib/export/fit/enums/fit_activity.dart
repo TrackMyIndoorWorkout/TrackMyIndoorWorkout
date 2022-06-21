@@ -1,4 +1,4 @@
 class FitActivityEnum {
-  static const int Manual = 0;
-  static const int AutoMultiSport = 1;
+  static const int manual = 0;
+  static const int autoMultiSport = 1;
 }

@@ -1,17 +1,23 @@
 import 'dart:convert';
 import 'dart:math';
 
-import '../../persistence/preferences.dart';
-import '../../utils/display.dart';
+import '../../preferences/heart_rate_gap_workaround.dart';
+import '../../preferences/heart_rate_limiting.dart';
+import '../../utils/constants.dart';
 import '../activity_export.dart';
 import '../export_model.dart';
 import '../export_record.dart';
 
 class TCXExport extends ActivityExport {
-  StringBuffer _sb = StringBuffer();
+  final StringBuffer _sb = StringBuffer();
 
   TCXExport() : super(nonCompressedFileExtension: 'tcx', nonCompressedMimeType: 'text/xml');
 
+  static String tcxSport(String sport) {
+    return sport == ActivityType.ride || sport == ActivityType.run ? sport : "Other";
+  }
+
+  @override
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     // The prolog of the TCX file
     _sb.writeln("""<?xml version="1.0" encoding="UTF-8"?>
@@ -39,8 +45,7 @@ class TCXExport extends ActivityExport {
     <Activity Sport="$activityType">""");
 
     // Add ID
-    final dateActivity = DateTime.fromMillisecondsSinceEpoch(exportModel.activity.start);
-    addElement('Id', timeStampString(dateActivity));
+    addElement('Id', timeStampString(exportModel.activity.start));
     addLap(exportModel);
     addCreator(exportModel);
 
@@ -51,8 +56,7 @@ class TCXExport extends ActivityExport {
   void addLap(ExportModel exportModel) {
     // Add lap
     //---------
-    final dateActivity = DateTime.fromMillisecondsSinceEpoch(exportModel.activity.start);
-    _sb.writeln('        <Lap StartTime="${timeStampString(dateActivity)}">');
+    _sb.writeln('        <Lap StartTime="${timeStampString(exportModel.activity.start)}">');
 
     addElement('TotalTimeSeconds', exportModel.activity.elapsed.toStringAsFixed(1));
     // Add Total distance in meters
@@ -89,22 +93,25 @@ class TCXExport extends ActivityExport {
 
     // Add track inside the lap
     for (var record in exportModel.records) {
-      addTrackPoint(record);
+      addTrackPoint(record, exportModel);
     }
 
     _sb.writeln('          </Track>');
   }
 
   /// Generate a string that will include
-  /// all the tags corresponding to TCX trackpoint
+  /// all the tags corresponding to TCX Trackpoint
   ///
   /// Extension handling is missing for the moment
   ///
-  void addTrackPoint(ExportRecord record) {
+  void addTrackPoint(ExportRecord record, ExportModel exportModel) {
     _sb.writeln("<Trackpoint>");
-    addElement('Time', record.timeStampString);
-    addPosition(record.latitude.toStringAsFixed(7), record.longitude.toStringAsFixed(7));
-    addElement('AltitudeMeters', record.altitude.toString());
+    addElement('Time', timeStampString(record.record.timeStamp));
+    if (!exportModel.rawData && exportModel.calculateGps) {
+      addPosition(record.latitude.toStringAsFixed(7), record.longitude.toStringAsFixed(7));
+    }
+
+    addElement('AltitudeMeters', exportModel.altitude.toString());
     addElement('DistanceMeters', (record.record.distance ?? 0.0).toStringAsFixed(2));
     if (record.record.cadence != null) {
       final cadence = min(max(record.record.cadence!, 0), 254).toInt();
@@ -119,8 +126,8 @@ class TCXExport extends ActivityExport {
     );
 
     if ((record.record.heartRate ?? 0) > 0 ||
-        heartRateGapWorkaround == DATA_GAP_WORKAROUND_NO_WORKAROUND ||
-        heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
+        heartRateGapWorkaround == dataGapWorkaroundNoWorkaround ||
+        heartRateLimitingMethod == heartRateLimitingWriteZero) {
       addHeartRate(record.record.heartRate);
     }
 
@@ -185,9 +192,9 @@ class TCXExport extends ActivityExport {
   ///       </HeartRateBpm>
   ///
   void addHeartRate(int? heartRate) {
-    int _heartRate = heartRate ?? 0;
+    int nonNullHeartRate = heartRate ?? 0;
     _sb.writeln("""                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
-                <Value>${_heartRate.toString()}</Value>
+                <Value>${nonNullHeartRate.toString()}</Value>
               </HeartRateBpm>""");
   }
 
@@ -212,7 +219,7 @@ class TCXExport extends ActivityExport {
   /// create XML attribute
   /// from content string
   void addAttribute(String tag, String attribute, String value, String content) {
-    _sb.writeln('<$tag $attribute="$value">\n$content</$tag>');
+    _sb.writeln('<$tag $attribute="$value">$content</$tag>');
   }
 
   /// Create timestamp for <Time> element in TCX file
@@ -220,11 +227,8 @@ class TCXExport extends ActivityExport {
   /// To get 2019-03-03T11:43:46.000Z
   /// utc time
   /// Need to add T in the middle
-  String timeStampString(DateTime dateTime) {
+  String timeStampString(int? epochTime) {
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(epochTime ?? 0);
     return dateTime.toUtc().toString().replaceFirst(' ', 'T');
-  }
-
-  int timeStampInteger(DateTime dateTime) {
-    return 0; // Not used for TCX
   }
 }

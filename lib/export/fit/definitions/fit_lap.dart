@@ -12,18 +12,29 @@ import '../fit_serializable.dart';
 import '../fit_sport.dart';
 
 class FitLap extends FitDefinitionMessage {
-  FitLap(localMessageType) : super(localMessageType, FitMessage.Lap) {
+  final bool outputGps;
+
+  FitLap(localMessageType, this.outputGps) : super(localMessageType, FitMessage.lap) {
     fields = [
       FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
       FitField(253, FitBaseTypes.uint32Type), // Timestamp (Lap end time)
       FitField(0, FitBaseTypes.enumType), // Event
       FitField(1, FitBaseTypes.enumType), // EventType
       FitField(2, FitBaseTypes.uint32Type), // StartTime
-      FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
-      FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
-      FitField(5, FitBaseTypes.sint32Type), // EndPositionLat
-      FitField(6, FitBaseTypes.sint32Type), // EndPositionLong
+    ];
+
+    if (outputGps) {
+      fields.addAll([
+        FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
+        FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
+        FitField(5, FitBaseTypes.sint32Type), // EndPositionLat
+        FitField(6, FitBaseTypes.sint32Type), // EndPositionLong
+      ]);
+    }
+
+    fields.addAll([
       FitField(7, FitBaseTypes.uint32Type), // TotalElapsedTime (1/1000s)
+      FitField(8, FitBaseTypes.uint32Type), // TotalTimerTime (1/1000s)
       FitField(9, FitBaseTypes.uint32Type), // TotalDistance (1/100 m)
       FitField(11, FitBaseTypes.uint16Type), // TotalCalories (kcal)
       FitField(13, FitBaseTypes.uint16Type), // AvgSpeed (1/1000 m/s)
@@ -37,9 +48,10 @@ class FitLap extends FitDefinitionMessage {
       FitField(24, FitBaseTypes.enumType), // LapTrigger
       FitField(25, FitBaseTypes.enumType), // Sport
       FitField(39, FitBaseTypes.enumType), // Sub-Sport
-    ];
+    ]);
   }
 
+  @override
   List<int> serializeData(dynamic parameter) {
     ExportModel model = parameter;
 
@@ -48,23 +60,26 @@ class FitLap extends FitDefinitionMessage {
     var data = FitData();
     data.output = [localMessageType];
     data.addShort(0);
-    data.addLong(FitSerializable.fitTimeStamp(last.timeStampInteger));
-    data.addByte(FitEvent.Lap);
-    data.addByte(FitEventType.Stop);
-    data.addLong(FitSerializable.fitTimeStamp(first.timeStampInteger));
-    data.addGpsCoordinate(first.latitude);
-    data.addGpsCoordinate(first.longitude);
-    data.addGpsCoordinate(last.latitude);
-    data.addGpsCoordinate(last.longitude);
+    data.addLong(FitSerializable.fitTimeStamp(last.record.timeStamp));
+    data.addByte(FitEvent.lap);
+    data.addByte(FitEventType.stop);
+    data.addLong(FitSerializable.fitTimeStamp(first.record.timeStamp));
+    if (outputGps) {
+      data.addGpsCoordinate(first.latitude);
+      data.addGpsCoordinate(first.longitude);
+      data.addGpsCoordinate(last.latitude);
+      data.addGpsCoordinate(last.longitude);
+    }
     data.addLong(model.activity.elapsed * 1000);
+    data.addLong(model.activity.movingTime);
     data.addLong((model.activity.distance * 100).ceil());
     data.addShort(model.activity.calories > 0
         ? model.activity.calories
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.averageSpeed > EPS
+    data.addShort(model.averageSpeed > eps
         ? (model.averageSpeed * 1000).round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.maximumSpeed > EPS
+    data.addShort(model.maximumSpeed > eps
         ? (model.maximumSpeed * 1000).round()
         : FitBaseTypes.uint16Type.invalidValue);
     data.addByte(
@@ -75,13 +90,13 @@ class FitLap extends FitDefinitionMessage {
         model.averageCadence > 0 ? model.averageCadence : FitBaseTypes.uint8Type.invalidValue);
     data.addByte(
         model.maximumCadence > 0 ? model.maximumCadence : FitBaseTypes.uint8Type.invalidValue);
-    data.addShort(model.averagePower > EPS
+    data.addShort(model.averagePower > eps
         ? model.averagePower.round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.maximumPower > EPS
+    data.addShort(model.maximumPower > eps
         ? model.maximumPower.round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addByte(FitLapTrigger.SessionEnd);
+    data.addByte(FitLapTrigger.sessionEnd);
     final fitSport = toFitSport(model.activity.sport);
     data.addByte(fitSport.item1);
     data.addByte(fitSport.item2);

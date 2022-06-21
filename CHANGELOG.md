@@ -1,3 +1,157 @@
+## 1.1.106
+
+* Further refactoring for Mr Captain rower support
+
+## 1.1.105
+
+* Recognizing Mr Captain rowers
+* Released to Samsung Galaxy App Store
+* Released to Huawei AppGallery
+
+## 1.1.104
+
+* Dummy version bump to appease Huawei AppGallery submission.
+  (The app is also in the Galaxy store now BTW).
+
+## 1.1.103
+
+* Schwinn 170 / 270 / 570u experimental support 
+* Upgrade to Flutter 3.x
+* Training Peaks API changes part 1 (deprecation approaching)
+
+## 1.1.102
+
+* Decrease Leaderboard flicker (jump back-and-forth) effect especially the first few minutes
+* Introduce lock screen feature
+
+## 1.1.101
+
+* Ability to turn off GPS data from uploads and exports
+* Ability to specify pacer with a fixed speed (per sport, speed in km/h)
+* Ability to display average speed on the leaderboard info section (center of the track)
+
+## 1.1.100
+
+* Fixing manufacturer name check which fixes Yesoul S3 support as well (by Sebastian Kutschbach)
+* Revising some zone threshold and boundary defaults
+* Revising a few default zone colors to differ more by contrast / color
+* Making zone colors configurable (5 / 6 / 7 zones, light / dark theme, foreground / background)
+* Making sport and device based leaderboards mutually exclusive. More info is coming and we won't
+  have space for both at the same time.
+
+## 1.1.99
+
+* Adding attributions link to About page.
+
+## 1.1.98
+
+* Unit system will default to imperial only for US, UK, Myanmar and Liberia.
+  Every other country will default to metric upon the first start.
+* Further tuning of the data processing throttling logic. Please file an issue if you
+  come across any suspicious anomaly (such as stuck cumulative values, flickering).
+
+## 1.1.97
+
+* Bugfix: cure accidental double application of calorie / power tunes
+
+## 1.1.96
+
+* Foundations for optional debug logging to help remote debugging issues or
+  supporting new fitness machines
+* The app grew large enough with this feature that it became multi-dex
+
+## 1.1.95
+
+* Attempting to fix distance stuck at 0.3mi (Schwinn IC4)
+* Attempting to fix calories stuck at 1 (Genesis Port)
+
+## 1.1.94
+
+* Changes towards proper Stages SB20 and Yesoul S3 support which can also
+  help with many other machines
+* Fix for 4x calories reading inflation of Schwinn AC Perf+ CSV imported workouts
+
+## 1.1.93
+
+* Adding support: Stages SB 20, FlexStride Pro, Matrix TF50, Matrix R50, Sole E25
+* Moving time into FIT uploads (Strava, SUUNTO, Training Peaks)
+* Training Peaks upload default visibility switch
+* Leaderboard distance display is automatic high res / low res (m / km, yd / mi)
+* Handling machines which report themselves as multiple types
+* Fix calorie tunes for non heart rate based calorie counting
+* Fix leaderboard display
+
+## 1.1.92
+
+* Workout will only start when the first movement is sensed
+* Moving time is accounted for besides elapsed time and persisted. UI switch tells which one is
+  primarily preferred on the measurement screen and the activities list. The workout details
+  displays both moving and elapsed time if they differ.
+* Cross Trainer support fixes
+* Two column layout size adjustment
+* Workout migration import fix
+
+## 1.1.91
+
+* Enabling FTMS Cross Trainer, assigning it to Elliptical sport
+
+## 1.1.90
+
+* Measurement row configuration UI for graph height (1/4, 1/3, 1/2) and expanded/collapsed state
+* More natural 1-based zone index display instead of 0-based
+
+## 1.1.89
+
+* Adding lap counter display option (center of track or in leaderboard as well)
+* Adding preferences slider to shrink fonts on the Recording, Activity and Workout Details screens
+* Adding simple fixed two column layout for landscape mode with explicit preferences switch
+
+## 1.1.88
+
+* Hotfix: Calorie factor adjuster data migration could lock up
+
+## 1.1.87
+
+* Fix: power based calorie counting factor won't interfere (skyrocket) the HR based calories
+* Fix: Default 4.0 power based calorie factor will be implicit and hidden
+  to make factors more uniform
+* Large code churn to get Continuous Integration going and preparation for contributions
+* GPLv3 license once the app will go open source
+* Recognize Bowflex C7 not as generic
+
+## 1.1.86
+
+* Update the check-mark and open icons immediately when Strava upload finishes
+  (right now it requires the upload bottom shelf to be closed and reopened).
+* Fix activity timestamp problem of SUUNTO workout uploads.
+
+## 1.1.85
+
+* Fix Training Peaks sport type (showed up as other, now it's proper)
+* When data connection timeout happens the auto closed workout won't be all zeroes
+* Special designated button in the Data Preferences to retroactively fix workouts with all zeroes
+* Increase default data connection timeout limit from 5 seconds to 30 seconds
+* Fix anomaly when someone starts a workout on a fitness machine right after exercising on another
+
+## 1.1.84
+
+* Training Peaks integration (workout upload)
+* Workout upload in-progress UI feedback
+
+## 1.1.83
+
+* BREAKING CHANGE: Re-authentication with Strava will be needed due to preference library changes
+* Under Armour integration (workout upload)
+* SUUNTO integration (workout upload)
+* Integration UX changes in concert with the new supported portals
+* Flutter API v2 upgrade for the file download module (share_files_and_screenshot_widgets)
+* Flutter API v2 upgrade for the bluetooth enable module (bluetooth_enable)
+* Fix: 10 second lag while uploading workout files, data connection checker module
+  (internet_connection_checker) main upgrade
+* Fix: custom data connection checking rules now apply
+* Fix: enforce GetX permanent flag to avoid eviction of services by SmartManagement
+* Fix: release version exception prevention by catches in flutter_blue fork
+
 ## 1.1.82
 
 * Adding compensation logic for (distance, calories, and elapsed time) consecutive workouts
@@ -62,7 +216,7 @@
 ## 1.1.70
 
 * Data connection check preferences bug fix (was not reading the right value)
-* Recognizing Schwinn 130 / 170 / 510u specifically by name instead of a generic FTMS bike
+* Recognizing Schwinn 230 / 510u specifically by name instead of a generic FTMS bike
 * Swap the order of Leaderboard and Zone Preferences button in the preferences hub
 * Preferences wording change: persist -> record
 * Reverting back to official pref plugin after my PR was merged

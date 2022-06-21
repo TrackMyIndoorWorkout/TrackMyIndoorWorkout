@@ -12,13 +12,13 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
-    dataServiceId = FITNESS_MACHINE_ID,
-    dataCharacteristicId = INDOOR_BIKE_ID,
+    dataServiceId = fitnessMachineUuid,
+    dataCharacteristicId = indoorBikeUuid,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactorDefault = 1.0,
+    canMeasureCalories = true,
   }) : super(
-          defaultSport: ActivityType.Ride,
+          defaultSport: ActivityType.ride,
           isMultiSport: false,
           fourCC: fourCC,
           vendorName: vendorName,
@@ -31,35 +31,50 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactorDefault: calorieFactorDefault,
+          canMeasureCalories: canMeasureCalories,
         );
+
+  @override
+  IndoorBikeDeviceDescriptor clone() => IndoorBikeDeviceDescriptor(
+        fourCC: fourCC,
+        vendorName: vendorName,
+        modelName: modelName,
+        namePrefixes: namePrefixes,
+        manufacturerPrefix: manufacturerPrefix,
+        manufacturerFitId: manufacturerFitId,
+        model: model,
+        dataServiceId: dataServiceId,
+        dataCharacteristicId: dataCharacteristicId,
+        canMeasureHeartRate: canMeasureHeartRate,
+        heartRateByteIndex: heartRateByteIndex,
+        canMeasureCalories: canMeasureCalories,
+      );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.indoor_bike_data.xml
   @override
   void processFlag(int flag) {
     super.processFlag(flag);
-    // Schwinn IC4, two flag bytes
-    // 68 01000100 instant cadence, instant power
-    //  2 00000010 heart rate
+    // Schwinn IC4
+    // 68 0100 0100 instant cadence, instant power
+    //  2 0000 0010 heart rate
     // negated first bit!
-    flag = processSpeedFlag(flag, true); // Instant
-    flag = processSpeedFlag(flag, false); // Average (fallback)
-    flag = processCadenceFlag(flag); // Instant
-    flag = processCadenceFlag(flag); // Average (fallback)
+    flag = processSpeedFlag(flag);
+    flag = skipFlag(flag); // Average Speed
+    flag = processCadenceFlag(flag);
+    flag = skipFlag(flag); // Average Cadence
     flag = processTotalDistanceFlag(flag);
-    flag = processResistanceLevelFlag(flag);
-    flag = processPowerFlag(flag); // Instant
-    flag = processPowerFlag(flag); // Average (fallback)
+    flag = skipFlag(flag); // Resistance Level
+    flag = processPowerFlag(flag);
+    flag = skipFlag(flag); // Average Power
     flag = processExpandedEnergyFlag(flag);
     flag = processHeartRateFlag(flag);
-    flag = processMetabolicEquivalentFlag(flag);
+    flag = skipFlag(flag, size: 1); // Metabolic Equivalent
     flag = processElapsedTimeFlag(flag);
-    flag = processRemainingTimeFlag(flag);
+    flag = skipFlag(flag); // Remaining Time
   }
 
   @override
-  RecordWithSport stubRecord(List<int> data) {
-    super.stubRecord(data);
+  RecordWithSport? stubRecord(List<int> data) {
     return RecordWithSport(
       distance: getDistance(data),
       elapsed: getTime(data)?.toInt(),

@@ -22,24 +22,34 @@
 -keep class io.flutter.plugins.** { *; }
 
 # This is from iterating over GeneratedPLuginRegistrant.java [
+-keep class com.hui.bluetooth_enable.** { *; }
+-keepclassmembernames class com.hui.bluetooth_enable.* { *; }
 -keep class io.flutter.plugins.deviceinfo.** { *; }
 -keepclassmembernames class io.flutter.plugins.deviceinfo.** { *; }
 -keep class com.mr.flutter.plugin.filepicker.** { *; }
 -keepclassmembernames class com.mr.flutter.plugin.filepicker.** { *; }
 -keep class com.pauldemarco.flutter_blue.** { *; }
 -keepclassmembernames class com.pauldemarco.flutter_blue.* { *; }
+-keep class com.flutter.logs.plogs.flutter_logs.** { *; }
+-keepclassmembernames class com.flutter.logs.plogs.flutter_logs.* { *; }
+-keep class com.whelksoft.flutter_native_timezone.** { *; }
+-keepclassmembernames class com.whelksoft.flutter_native_timezone.* { *; }
 -keep class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keepclassmembernames class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
--keep class dev.flutter.plugins.integration_test.** { *; }
--keepclassmembernames class dev.flutter.plugins.integration_test.** { *; }
+# -keep class dev.flutter.plugins.integration_test.** { *; }
+# -keepclassmembernames class dev.flutter.plugins.integration_test.** { *; }
 -keep class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keepclassmembernames class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keep class io.flutter.plugins.pathprovider.** { *; }
 -keepclassmembernames class io.flutter.plugins.pathprovider.** { *; }
 -keep class com.baseflow.permissionhandler.** { *; }
 -keepclassmembernames class com.baseflow.permissionhandler.* { *; }
+-keep class com.twwm.share_files_and_screenshot_widgets.** { *; }
+-keepclassmembernames class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keep class io.flutter.plugins.sharedpreferences.** { *; }
 -keepclassmembernames class io.flutter.plugins.sharedpreferences.** { *; }
+-keep class pl.ukaszapps.soundpool.SoundpoolPlugin.** { *; }
+-keepclassmembernames class pl.ukaszapps.soundpool.SoundpoolPlugin.** { *; }
 -keep class com.tekartik.sqflite.** { *; }
 -keepclassmembernames class com.tekartik.sqflite.** { *; }
 -keep class name.avioli.unilinks.** { *; }
@@ -48,12 +58,6 @@
 -keepclassmembernames class io.flutter.plugins.urllauncher.** { *; }
 -keep class creativemaybeno.wakelock.** { *; }
 -keepclassmembernames class creativemaybeno.wakelock.** { *; }
--keep class com.hui.bluetooth_enable.** { *; }
--keepclassmembernames class com.hui.bluetooth_enable.* { *; }
--keep class com.twwm.share_files_and_screenshot_widgets.** { *; }
--keepclassmembernames class com.twwm.share_files_and_screenshot_widgets.** { *; }
--keep class pl.ukaszapps.soundpool.SoundpoolPlugin.** { *; }
--keepclassmembernames class pl.ukaszapps.soundpool.SoundpoolPlugin.** { *; }
 # ] This is from iterating over GeneratedPLuginRegistrant.java
 
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod

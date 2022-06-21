@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences.dart';
+import '../../devices/gatt_maps.dart';
+import '../../preferences/app_debug_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../gatt_constants.dart';
@@ -15,7 +15,7 @@ abstract class DeviceBase {
   final String serviceId;
   String? characteristicsId;
   BluetoothDevice? device;
-  BluetoothService? service;
+  BluetoothService? _service;
   List<BluetoothService> services = [];
   BluetoothCharacteristic? characteristic;
   StreamSubscription? subscription;
@@ -27,14 +27,14 @@ abstract class DeviceBase {
   bool discovered = false;
 
   final prefService = Get.find<BasePrefService>();
-  bool uxDebug = APP_DEBUG_MODE_DEFAULT;
+  bool uxDebug = appDebugModeDefault;
 
   DeviceBase({
     required this.serviceId,
     this.characteristicsId,
     this.device,
   }) {
-    uxDebug = prefService.get<bool>(APP_DEBUG_MODE_TAG) ?? APP_DEBUG_MODE_DEFAULT;
+    uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
   }
 
   Future<bool> connect() async {
@@ -50,7 +50,7 @@ abstract class DeviceBase {
       await device?.connect();
     } on Exception catch (e) {
       if (e is PlatformException && e.code != 'already_connected') {
-        throw e;
+        rethrow;
       }
     } finally {
       connecting = false;
@@ -62,23 +62,33 @@ abstract class DeviceBase {
   bool discoverCore() {
     discovering = false;
     discovered = true;
-    service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
+    _service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
 
-    if (service == null) {
+    if (_service == null) {
       characteristic = null;
       return false;
     }
 
-    if (characteristicsId != null) {
-      characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
-    } else {
-      characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => FTMS_SPORT_CHARACTERISTICS.contains(ch.uuid.uuidString()));
-      characteristicsId = characteristic?.uuid.uuidString();
+    setCharacteristicById(characteristicsId);
+    return characteristic != null;
+  }
+
+  void setCharacteristicById(String? newCharacteristicsId) {
+    if (newCharacteristicsId != null &&
+        newCharacteristicsId == characteristicsId &&
+        characteristic != null) {
+      return;
     }
 
-    return characteristic != null;
+    characteristicsId = newCharacteristicsId;
+    if (characteristicsId != null) {
+      characteristic = _service!.characteristics
+          .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
+    } else {
+      characteristic = _service!.characteristics
+          .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
+      characteristicsId = characteristic?.uuid.uuidString();
+    }
   }
 
   Future<bool> discover({bool retry = false}) async {
@@ -97,8 +107,11 @@ abstract class DeviceBase {
     try {
       services = await device!.discoverServices();
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      if (kDebugMode) {
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
+
       discovering = false;
       if (retry) return false;
       await discover(retry: true);
@@ -107,18 +120,29 @@ abstract class DeviceBase {
     return discoverCore();
   }
 
-  String? inferSportFromCharacteristicsId() {
-    if (characteristicsId == TREADMILL_ID) {
-      return ActivityType.Run;
-    } else if (characteristicsId == PRECOR_MEASUREMENT_ID || characteristicsId == INDOOR_BIKE_ID) {
-      return ActivityType.Ride;
-    } else if (characteristicsId == ROWER_DEVICE_ID) {
-      return ActivityType.Rowing;
-    } else if (characteristicsId == CROSS_TRAINER_ID) {
-      return ActivityType.Elliptical;
+  List<String> inferSportsFromCharacteristicsIds() {
+    if (discovered) {
+      return _service!.characteristics
+          .where((char) => ftmsSportCharacteristics.contains(char.uuid.uuidString()))
+          .map((char) => uuidToSport[char.uuid.uuidString()]!)
+          .toSet()
+          .toList(growable: false);
     }
 
-    return null;
+    List<String> sports = [];
+    if (characteristicsId == treadmillUuid ||
+        characteristicsId == stepClimberUuid ||
+        characteristicsId == stairClimberUuid) {
+      sports.add(ActivityType.run);
+    } else if (characteristicsId == precorMeasurementUuid || characteristicsId == indoorBikeUuid) {
+      sports.add(ActivityType.ride);
+    } else if (characteristicsId == rowerDeviceUuid) {
+      sports.addAll(waterSports);
+    } else if (characteristicsId == crossTrainerUuid) {
+      sports.add(ActivityType.elliptical);
+    }
+
+    return sports;
   }
 
   Future<void> attach() async {
@@ -150,11 +174,15 @@ abstract class DeviceBase {
       try {
         await characteristic?.setNotifyValue(false);
       } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
+        if (kDebugMode) {
+          debugPrint("$e");
+          debugPrintStack(stackTrace: stack, label: "trace:");
+        }
       }
+
       attached = false;
     }
+
     cancelSubscription();
   }
 
@@ -164,8 +192,9 @@ abstract class DeviceBase {
       await device?.disconnect();
       characteristic = null;
       services = [];
-      service = null;
+      _service = null;
     }
+
     connected = false;
     connecting = false;
     discovering = false;

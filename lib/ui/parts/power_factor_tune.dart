@@ -10,7 +10,7 @@ class PowerFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
   final double oldPowerFactor;
 
-  PowerFactorTuneBottomSheet({Key? key, required this.deviceId, required this.oldPowerFactor})
+  const PowerFactorTuneBottomSheet({Key? key, required this.deviceId, required this.oldPowerFactor})
       : super(key: key);
 
   @override
@@ -19,15 +19,15 @@ class PowerFactorTuneBottomSheet extends StatefulWidget {
 
 class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> {
   double _powerFactorPercent = 100.0;
-  TextStyle _largerTextStyle = TextStyle();
-  ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = const TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
     super.initState();
     _powerFactorPercent = widget.oldPowerFactor * 100.0;
     _largerTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
   }

@@ -1,0 +1,45 @@
+name: Flutter Test & Build
+on: [push, pull_request]
+concurrency:
+  group: pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  flutter_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      - name: Mock Secret File
+        run: |
+          echo 'const stravaSecret = "a";' > lib/secret.dart
+          echo 'const stravaClientId = "1";' >> lib/secret.dart
+          echo 'const suuntoSecret = "a";' >> lib/secret.dart
+          echo 'const suuntoClientId = "a";' >> lib/secret.dart
+          echo 'const suuntoSubscriptionPrimaryKey = "a";' >> lib/secret.dart
+          echo 'const suuntoSubscriptionSecondaryKey = "a";' >> lib/secret.dart
+          echo 'const underArmourSecret = "a";' >> lib/secret.dart
+          echo 'const underArmourKey = "a";' >> lib/secret.dart
+          echo 'const trainingPeaksSecret = "a";' >> lib/secret.dart
+          echo 'const trainingPeaksClientId = "a";' >> lib/secret.dart
+          echo 'const googleFitClientId = "a";' >> lib/secret.dart
+          echo 'const googleFitSecret = "a";' >> lib/secret.dart
+      - name: Format files
+        run: flutter format --line-length 100 --set-exit-if-changed .
+      - name: Analyze files
+        run: flutter analyze .
+      - name: Run the tests
+        run: flutter test --dart-define=testing_mode=true
+      #- name: Build App Bundle (debug)
+      #  run: flutter build appbundle

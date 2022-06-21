@@ -4,35 +4,34 @@ import 'package:mockito/annotations.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/heart_rate_monitor.dart';
 import 'package:track_my_indoor_exercise/devices/gatt_constants.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'infer_sport_from_characteristics_id_test.mocks.dart';
-
-import 'utils.dart';
 
 class TestPair {
   final String characteristicsId;
-  final String? sport;
+  final List<String> sports;
 
-  TestPair({required this.characteristicsId, required this.sport});
+  const TestPair({required this.characteristicsId, required this.sports});
 }
 
 @GenerateMocks([BluetoothDevice])
 void main() {
   group('DeviceBase infers sport as expected from characteristics ID', () {
-    [
-      TestPair(characteristicsId: TREADMILL_ID, sport: ActivityType.Run),
-      TestPair(characteristicsId: PRECOR_MEASUREMENT_ID, sport: ActivityType.Ride),
-      TestPair(characteristicsId: INDOOR_BIKE_ID, sport: ActivityType.Ride),
-      TestPair(characteristicsId: ROWER_DEVICE_ID, sport: ActivityType.Rowing),
-      TestPair(characteristicsId: CROSS_TRAINER_ID, sport: ActivityType.Elliptical),
-      TestPair(characteristicsId: HEART_RATE_MEASUREMENT_ID, sport: null)
-    ].forEach((testPair) {
-      test("${testPair.characteristicsId} -> ${testPair.sport}", () async {
+    for (final testPair in [
+      const TestPair(characteristicsId: treadmillUuid, sports: [ActivityType.run]),
+      const TestPair(characteristicsId: precorMeasurementUuid, sports: [ActivityType.ride]),
+      const TestPair(characteristicsId: indoorBikeUuid, sports: [ActivityType.ride]),
+      const TestPair(characteristicsId: rowerDeviceUuid, sports: waterSports),
+      const TestPair(characteristicsId: crossTrainerUuid, sports: [ActivityType.elliptical]),
+      const TestPair(characteristicsId: heartRateMeasurementUuid, sports: [])
+    ]) {
+      test("${testPair.characteristicsId} -> ${testPair.sports}", () async {
         await initPrefServiceForTest();
         final hrm = HeartRateMonitor(MockBluetoothDevice());
         hrm.characteristicsId = testPair.characteristicsId;
 
-        expect(hrm.inferSportFromCharacteristicsId(), testPair.sport);
+        expect(hrm.inferSportsFromCharacteristicsIds(), testPair.sports);
       });
-    });
+    }
   });
 }

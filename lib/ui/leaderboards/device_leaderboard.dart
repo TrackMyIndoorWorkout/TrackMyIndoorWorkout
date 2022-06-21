@@ -8,41 +8,49 @@ import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/workout_summary.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/distance_resolution.dart';
+import '../../preferences/generic.dart';
+import '../../preferences/speed_spec.dart';
+import '../../preferences/sport_spec.dart';
+import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class DeviceLeaderboardScreen extends StatefulWidget {
-  final Tuple2<String, String> device;
+  final Tuple3<String, String, String> device;
 
-  DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
+  const DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => DeviceLeaderboardScreenState();
+  DeviceLeaderboardScreenState createState() => DeviceLeaderboardScreenState();
 }
 
 class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
-  AppDatabase _database = Get.find<AppDatabase>();
-  bool _si = UNIT_SYSTEM_DEFAULT;
-  bool _highRes = DISTANCE_RESOLUTION_DEFAULT;
+  final AppDatabase _database = Get.find<AppDatabase>();
+  bool _si = unitSystemDefault;
+  bool _highRes = distanceResolutionDefault;
   int _editCount = 0;
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
-  TextStyle _textStyle2 = TextStyle();
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
+  TextStyle _textStyle = const TextStyle();
+  TextStyle _textStyle2 = const TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
+  double? _slowSpeed;
 
   @override
   void initState() {
     super.initState();
-    _si = Get.find<BasePrefService>().get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _highRes = Get.find<BasePrefService>().get<bool>(DISTANCE_RESOLUTION_TAG) ??
-        DISTANCE_RESOLUTION_DEFAULT;
+    _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _highRes =
+        Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _textStyle = Get.textTheme.headline5!
-        .apply(fontFamily: FONT_FAMILY, color: _themeManager.getProtagonistColor());
+        .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    if (widget.device.item3 != ActivityType.ride) {
+      _slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.device.item3)]!;
+    }
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
@@ -56,7 +64,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
               title: 'Warning!!!',
               middleText: 'Are you sure to delete this entry?',
               confirm: TextButton(
-                child: Text("Yes"),
+                child: const Text("Yes"),
                 onPressed: () async {
                   await _database.workoutSummaryDao.deleteWorkoutSummary(workoutSummary);
                   setState(() {
@@ -66,7 +74,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
                 },
               ),
               cancel: TextButton(
-                child: Text("No"),
+                child: const Text("No"),
                 onPressed: () => Get.close(1),
               ),
             );
@@ -84,7 +92,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
         initialOffset: 0,
-        loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
+        loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
@@ -99,12 +107,12 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
               Text(error.toString()),
               ElevatedButton(
                 onPressed: () => state.loadMore(),
-                child: Text('Retry'),
+                child: const Text('Retry'),
               ),
             ],
           );
         },
-        empty: Center(
+        empty: const Center(
           child: Text('No entries found'),
         ),
         itemBuilder: (context, index, item) {
@@ -112,7 +120,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen> {
           final timeStamp = DateTime.fromMillisecondsSinceEpoch(workoutSummary.start);
           final dateString = DateFormat.yMd().format(timeStamp);
           final timeString = DateFormat.Hms().format(timeStamp);
-          final speedString = workoutSummary.speedString(_si);
+          final speedString = workoutSummary.speedString(_si, _slowSpeed);
           final distanceString = workoutSummary.distanceStringWithUnit(_si, _highRes);
           final timeDisplay = Duration(seconds: workoutSummary.elapsed).toDisplay();
           return Card(

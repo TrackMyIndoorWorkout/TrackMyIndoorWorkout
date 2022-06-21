@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:vector_math/vector_math.dart' as vector;
 
 typedef DisplayChange = void Function(bool isOpen);
@@ -25,7 +26,7 @@ class CircularFabMenu extends StatefulWidget {
   final Curve animationCurve;
   final DisplayChange? onDisplayChange;
 
-  CircularFabMenu(
+  const CircularFabMenu(
       {Key? key,
       this.alignment = Alignment.bottomRight,
       this.ringColor,
@@ -68,7 +69,7 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
   Color? _fabColor;
   Color? _fabOpenColor;
   Color? _fabCloseColor;
-  ShapeBorder _fabIconBorder = CircleBorder();
+  ShapeBorder _fabIconBorder = const CircleBorder();
 
   AnimationController? _animationController;
   Animation<double>? _scaleAnimation;
@@ -137,7 +138,7 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
               0.0,
             )..scale(_scaleAnimation!.value),
             alignment: FractionalOffset.center,
-            child: Container(
+            child: SizedBox(
               width: _ringDiameter,
               height: _ringDiameter,
               child: CustomPaint(
@@ -148,16 +149,14 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
                 child: _scaleAnimation!.value == 1.0
                     ? Transform.rotate(
                         angle: (2 * pi) * _rotateAnimation!.value * _directionX * _directionY,
-                        child: Container(
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: widget.children
-                                .asMap()
-                                .map((index, child) =>
-                                    MapEntry(index, _applyTransformations(child, index)))
-                                .values
-                                .toList(),
-                          ),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: widget.children
+                              .asMap()
+                              .map((index, child) =>
+                                  MapEntry(index, _applyTransformations(child, index)))
+                              .values
+                              .toList(),
                         ),
                       )
                     : Container(),
@@ -185,9 +184,8 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
               }
             },
             child: Center(
-              child: widget.fabChild == null
-                  ? (_scaleAnimation!.value == 1.0 ? widget.fabCloseIcon : widget.fabOpenIcon)
-                  : widget.fabChild,
+              child: widget.fabChild ??
+                  (_scaleAnimation!.value == 1.0 ? widget.fabCloseIcon : widget.fabOpenIcon),
             ),
           ),
         ),
@@ -218,13 +216,13 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
   }
 
   void _calculateProps() {
-    _ringColor = widget.ringColor ?? Theme.of(context).accentColor;
-    _fabColor = widget.fabColor ?? Theme.of(context).primaryColor;
+    _ringColor = widget.ringColor ?? Get.theme.secondaryHeaderColor;
+    _fabColor = widget.fabColor ?? Get.theme.primaryColor;
     _fabOpenColor = widget.fabOpenColor ?? _fabColor;
     _fabCloseColor = widget.fabCloseColor ?? _fabColor;
-    _fabIconBorder = widget.fabIconBorder ?? CircleBorder();
-    _screenWidth = MediaQuery.of(context).size.width;
-    _screenHeight = MediaQuery.of(context).size.height;
+    _fabIconBorder = widget.fabIconBorder ?? const CircleBorder();
+    _screenWidth = Get.mediaQuery.size.width;
+    _screenHeight = Get.mediaQuery.size.height;
     _ringDiameter = widget.ringDiameter ?? min(_screenWidth, _screenHeight) * 1.5;
     _ringWidth = widget.ringWidth ?? _ringDiameter! * 0.2;
     _marginH = (widget.fabMargin.right + widget.fabMargin.left) / 2;
@@ -244,9 +242,9 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
           ));
       _colorAnimation = ColorTween(begin: _fabCloseColor, end: _fabOpenColor)
           .animate(_colorCurve as Animation<double>)
-            ..addListener(() {
-              setState(() {});
-            });
+        ..addListener(() {
+          setState(() {});
+        });
     }
   }
 

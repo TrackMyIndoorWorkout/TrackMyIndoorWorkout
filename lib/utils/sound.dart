@@ -2,54 +2,58 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:soundpool/soundpool.dart';
-import '../persistence/preferences.dart';
+import '../preferences/audio_volume.dart';
+import '../preferences/data_stream_gap_sound_effect.dart';
+import '../preferences/sound_effects.dart';
+import '../preferences/target_heart_rate.dart';
 
-enum SoundEffect { Bleep, FlatBeep, TwoTone, ThreeTone }
+enum SoundEffect { bleep, flatBeep, twoTone, threeTone }
+
 final Map<SoundEffect, String> _soundAssetPaths = {
-  SoundEffect.Bleep: "assets/bleep.mp3",
-  SoundEffect.FlatBeep: "assets/flat_beep.mp3",
-  SoundEffect.TwoTone: "assets/two_tone.mp3",
-  SoundEffect.ThreeTone: "assets/three_tone.mp3",
+  SoundEffect.bleep: "assets/bleep.mp3",
+  SoundEffect.flatBeep: "assets/flat_beep.mp3",
+  SoundEffect.twoTone: "assets/two_tone.mp3",
+  SoundEffect.threeTone: "assets/three_tone.mp3",
 };
 
 class SoundService {
   Soundpool? _soundPool;
 
-  Map<SoundEffect, int> _soundIds = {
-    SoundEffect.Bleep: 0,
-    SoundEffect.FlatBeep: 0,
-    SoundEffect.TwoTone: 0,
-    SoundEffect.ThreeTone: 0,
+  final Map<SoundEffect, int> _soundIds = {
+    SoundEffect.bleep: 0,
+    SoundEffect.flatBeep: 0,
+    SoundEffect.twoTone: 0,
+    SoundEffect.threeTone: 0,
   };
-  Map<SoundEffect, int> _streamIds = {
-    SoundEffect.Bleep: 0,
-    SoundEffect.FlatBeep: 0,
-    SoundEffect.TwoTone: 0,
-    SoundEffect.ThreeTone: 0,
+  final Map<SoundEffect, int> _streamIds = {
+    SoundEffect.bleep: 0,
+    SoundEffect.flatBeep: 0,
+    SoundEffect.twoTone: 0,
+    SoundEffect.threeTone: 0,
   };
-  Map<String, SoundEffect> _soundPreferences = {
-    SOUND_EFFECT_BLEEP: SoundEffect.Bleep,
-    SOUND_EFFECT_ONE_TONE: SoundEffect.FlatBeep,
-    SOUND_EFFECT_TWO_TONE: SoundEffect.TwoTone,
-    SOUND_EFFECT_THREE_TONE: SoundEffect.ThreeTone,
+  final Map<String, SoundEffect> _soundPreferences = {
+    soundEffectBleep: SoundEffect.bleep,
+    soundEffectOneTone: SoundEffect.flatBeep,
+    soundEffectTwoTone: SoundEffect.twoTone,
+    soundEffectThreeTone: SoundEffect.threeTone,
   };
 
   SoundService() {
     Get.putAsync<Soundpool>(() async {
       _soundPool = Soundpool.fromOptions(
-          options: SoundpoolOptions(streamType: StreamType.music, maxStreams: 2));
-      _soundAssetPaths.forEach((k, v) async {
-        if ((_soundIds[k] ?? 0) <= 0) {
-          var asset = await rootBundle.load(v);
+          options: const SoundpoolOptions(streamType: StreamType.music, maxStreams: 2));
+      for (var entry in _soundAssetPaths.entries) {
+        if ((_soundIds[entry.key] ?? 0) <= 0) {
+          var asset = await rootBundle.load(entry.value);
           final soundId = await _soundPool?.load(asset) ?? 0;
           if (soundId > 0) {
-            _soundIds.addAll({k: soundId});
+            _soundIds.addAll({entry.key: soundId});
           }
         }
-      });
+      }
 
       return _soundPool!;
-    });
+    }, permanent: true);
   }
 
   Future<int> playSoundEffect(SoundEffect soundEffect) async {
@@ -59,7 +63,7 @@ class SoundService {
     }
 
     final prefService = Get.find<BasePrefService>();
-    final volumePercent = prefService.get<int>(AUDIO_VOLUME_INT_TAG) ?? AUDIO_VOLUME_DEFAULT;
+    final volumePercent = prefService.get<int>(audioVolumeIntTag) ?? audioVolumeDefault;
     final volume = volumePercent / 100.0;
     _soundPool?.setVolume(soundId: soundId, volume: volume);
     final streamId = await _soundPool?.play(soundId) ?? 0;
@@ -72,22 +76,22 @@ class SoundService {
   }
 
   Future<int> playSpecificSoundEffect(String soundEffectString) async {
-    final soundEffect = _soundPreferences[soundEffectString] ?? SoundEffect.Bleep;
+    final soundEffect = _soundPreferences[soundEffectString] ?? SoundEffect.bleep;
     return await playSoundEffect(soundEffect);
   }
 
   Future<int> playTargetHrSoundEffect() async {
     final prefService = Get.find<BasePrefService>();
-    final soundEffectString = prefService.get<String>(TARGET_HEART_RATE_SOUND_EFFECT_TAG) ??
-        TARGET_HEART_RATE_SOUND_EFFECT_DEFAULT;
+    final soundEffectString =
+        prefService.get<String>(targetHeartRateSoundEffectTag) ?? targetHeartRateSoundEffectDefault;
     return await playSpecificSoundEffect(soundEffectString);
   }
 
   Future<int> playDataTimeoutSoundEffect() async {
     final prefService = Get.find<BasePrefService>();
-    final soundEffectString = prefService.get<String>(DATA_STREAM_GAP_SOUND_EFFECT_TAG) ??
-        DATA_STREAM_GAP_SOUND_EFFECT_DEFAULT;
-    if (soundEffectString == SOUND_EFFECT_NONE) {
+    final soundEffectString =
+        prefService.get<String>(dataStreamGapSoundEffectTag) ?? dataStreamGapSoundEffectDefault;
+    if (soundEffectString == soundEffectNone) {
       return 0;
     }
 
@@ -103,14 +107,14 @@ class SoundService {
   }
 
   void stopAllSoundEffects() {
-    _soundIds.forEach((k, v) {
-      stopSoundEffect(k);
-    });
+    for (var entry in _soundIds.entries) {
+      stopSoundEffect(entry.key);
+    }
   }
 
   void updateVolume(newVolume) {
-    _soundIds.forEach((k, v) {
-      _soundPool?.setVolume(soundId: v, volume: newVolume / 100.0);
-    });
+    for (var entry in _soundIds.entries) {
+      _soundPool?.setVolume(soundId: entry.value, volume: newVolume / 100.0);
+    }
   }
 }

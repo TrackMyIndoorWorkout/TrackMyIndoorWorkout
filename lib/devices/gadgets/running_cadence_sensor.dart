@@ -4,17 +4,18 @@ import '../device_descriptors/device_descriptor.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/long_metric_descriptor.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import 'complex_sensor.dart';
 
 class RunningCadenceSensor extends ComplexSensor {
   // Running cadence metrics
-  ShortMetricDescriptor? speedMetric;
-  ByteMetricDescriptor? cadenceMetric;
-  LongMetricDescriptor? distanceMetric;
+  MetricDescriptor? speedMetric;
+  MetricDescriptor? cadenceMetric;
+  MetricDescriptor? distanceMetric;
 
   RunningCadenceSensor(device, powerFactor)
-      : super(RUNNING_CADENCE_SERVICE_ID, RUNNING_CADENCE_MEASUREMENT_ID, device);
+      : super(runningCadenceServiceUuid, runningCadenceMeasurementUuid, device);
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml
   @override
@@ -28,14 +29,14 @@ class RunningCadenceSensor extends ComplexSensor {
       expectedLength = 1; // The flag itself + instant speed and cadence
       // UInt16, m/s with 1/256 resolution -> immediately convert it to km/h with the divider
       speedMetric = ShortMetricDescriptor(
-          lsb: expectedLength, msb: expectedLength + 1, divider: 256.0 / DeviceDescriptor.MS2KMH);
+          lsb: expectedLength, msb: expectedLength + 1, divider: 256.0 / DeviceDescriptor.ms2kmh);
       expectedLength += 2;
       cadenceMetric = ByteMetricDescriptor(lsb: expectedLength);
       expectedLength += 1;
 
       // Has Instantaneous stride length? (first bit)
       if (flag % 2 == 1) {
-        // Skip it, we are not interested in strode length
+        // Skip it, we are not interested in stride length
         expectedLength += 2; // 16 bit uint, 1/100 m
       }
 
@@ -57,7 +58,7 @@ class RunningCadenceSensor extends ComplexSensor {
   @override
   RecordWithSport processMeasurement(List<int> data) {
     if (!canMeasurementProcessed(data)) {
-      return RecordWithSport.getBlank(ActivityType.Run, uxDebug, random);
+      return RecordWithSport(sport: ActivityType.run);
     }
 
     return RecordWithSport(
@@ -65,17 +66,12 @@ class RunningCadenceSensor extends ComplexSensor {
       distance: getDistance(data),
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
-      sport: ActivityType.Run,
+      sport: ActivityType.run,
     );
   }
 
   double? getSpeed(List<int> data) {
-    var speed = speedMetric?.getMeasurementValue(data);
-    if (speed == null || !extendTuning) {
-      return speed;
-    }
-
-    return speed * powerFactor;
+    return speedMetric?.getMeasurementValue(data);
   }
 
   double? getCadence(List<int> data) {
@@ -83,12 +79,7 @@ class RunningCadenceSensor extends ComplexSensor {
   }
 
   double? getDistance(List<int> data) {
-    var distance = distanceMetric?.getMeasurementValue(data);
-    if (distance == null || !extendTuning) {
-      return distance;
-    }
-
-    return distance * powerFactor;
+    return distanceMetric?.getMeasurementValue(data);
   }
 
   @override

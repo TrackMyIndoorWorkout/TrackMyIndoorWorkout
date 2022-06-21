@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/precor_spinner_chrono_power.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
@@ -8,24 +8,23 @@ class TestPair {
   final List<int> data;
   final RecordWithSport record;
 
-  TestPair({required this.data, required this.record});
+  const TestPair({required this.data, required this.record});
 }
 
 void main() {
   test('Precor Spinner Chrono Power constructor tests', () async {
-    final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC]!;
+    final bike = PrecorSpinnerChronoPower();
 
     expect(bike.canMeasureHeartRate, true);
-    expect(bike.defaultSport, ActivityType.Ride);
-    expect(bike.fourCC, PRECOR_SPINNER_CHRONO_POWER_FOURCC);
+    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.fourCC, precorSpinnerChronoPowerFourCC);
   });
 
   test('Precor Spinner Chrono Power interprets Data flags properly', () async {
-    final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC] as PrecorSpinnerChronoPower;
+    final bike = PrecorSpinnerChronoPower();
+    final data = [83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-    expect(
-        bike.canDataProcessed([83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), true);
-
+    expect(bike.isDataProcessable(data), true);
     expect(bike.speedMetric, isNotNull);
     expect(bike.cadenceMetric, isNotNull);
     expect(bike.distanceMetric, isNotNull);
@@ -37,7 +36,7 @@ void main() {
   });
 
   group('Precor Spinner Chrono Power interprets Data properly', () {
-    [
+    for (final testPair in [
       TestPair(
         data: [83, 89, 22, 110, 2, 0, 200, 8, 84, 1, 80, 14, 0, 57, 0, 47, 0, 90, 0],
         record: RecordWithSport(
@@ -49,7 +48,7 @@ void main() {
           cadence: 34,
           heartRate: 0,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -65,7 +64,7 @@ void main() {
           cadence: 35,
           heartRate: 77,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -81,7 +80,7 @@ void main() {
           cadence: 0,
           heartRate: 67,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -97,7 +96,7 @@ void main() {
           cadence: 0,
           heartRate: 0,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -113,7 +112,7 @@ void main() {
           cadence: 64,
           heartRate: 79,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -129,7 +128,7 @@ void main() {
           cadence: 63,
           heartRate: 103,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -145,7 +144,7 @@ void main() {
           cadence: 42,
           heartRate: 88,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -161,7 +160,7 @@ void main() {
           cadence: 40,
           heartRate: 81,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -177,7 +176,7 @@ void main() {
           cadence: 92,
           heartRate: 68,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -193,16 +192,18 @@ void main() {
           cadence: 102,
           heartRate: 83,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
       ),
-    ].forEach((testPair) {
+    ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap[PRECOR_SPINNER_CHRONO_POWER_FOURCC]!;
-        final record = bike.stubRecord(testPair.data)!;
+        final bike = PrecorSpinnerChronoPower();
+        expect(bike.isDataProcessable(testPair.data), true);
+
+        final record = bike.wrappedStubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);
@@ -222,6 +223,6 @@ void main() {
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
       });
-    });
+    }
   });
 }

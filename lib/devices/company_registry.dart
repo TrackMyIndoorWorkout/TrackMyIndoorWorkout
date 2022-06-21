@@ -6,8 +6,10 @@ import '../utils/constants.dart';
 
 // Bluetooth SIG registered companies
 class CompanyRegistry {
-  static const BLANK_KEY = 1930;
-  Map<int, String> registry = Map<int, String>();
+  static const stagesCyclingLlcKey = 442;
+  static const matrixIncKey = 859;
+  static const johnsonHealthTechKey = 1988;
+  Map<int, String> registry = {};
 
   Future<void> loadCompanyIdentifiers() async {
     ByteData namesGzip = await rootBundle.load('assets/CompanyNames.txt.gz');
@@ -17,7 +19,7 @@ class CompanyRegistry {
   }
 
   String nameForId(int id) {
-    if (!registry.containsKey(id)) return NOT_AVAILABLE;
+    if (!registry.containsKey(id)) return notAvailable;
 
     return registry[id]!;
   }

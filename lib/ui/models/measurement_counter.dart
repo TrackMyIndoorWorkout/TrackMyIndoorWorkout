@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import '../../persistence/models/record.dart';
-import '../../persistence/preferences_spec.dart';
+import '../../preferences/speed_spec.dart';
+import '../../preferences/sport_spec.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 
@@ -10,29 +11,29 @@ class MeasurementCounter {
   final String sport;
 
   int powerCounter = 0;
-  int minPower = MIN_INIT;
-  int maxPower = MAX_INIT;
+  int minPower = minInit;
+  int maxPower = maxInit;
 
   int speedCounter = 0;
-  double minSpeed = MIN_INIT.toDouble();
-  double maxSpeed = MAX_INIT.toDouble();
+  double minSpeed = minInit.toDouble();
+  double maxSpeed = maxInit.toDouble();
 
   int cadenceCounter = 0;
-  int minCadence = MIN_INIT;
-  int maxCadence = MAX_INIT;
+  int minCadence = minInit;
+  int maxCadence = maxInit;
 
   int hrCounter = 0;
-  int minHr = MIN_INIT;
-  int maxHr = MAX_INIT;
+  int minHr = minInit;
+  int maxHr = maxInit;
 
-  double slowPace = EPS;
+  double slowPace = eps;
 
   MeasurementCounter({
     required this.si,
     required this.sport,
   }) {
-    if (sport != ActivityType.Ride) {
-      final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)] ?? EPS;
+    if (sport != ActivityType.ride) {
+      final slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(sport)] ?? eps;
       slowPace = speedOrPace(slowSpeed, si, sport);
     } else {
       slowPace = 0.0;

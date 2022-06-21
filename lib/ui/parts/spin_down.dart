@@ -11,45 +11,48 @@ import 'package:tuple/tuple.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/athlete_body_weight.dart';
+import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
 class SpinDownBottomSheet extends StatefulWidget {
+  const SpinDownBottomSheet({Key? key}) : super(key: key);
+
   @override
-  _SpinDownBottomSheetState createState() => _SpinDownBottomSheetState();
+  SpinDownBottomSheetState createState() => SpinDownBottomSheetState();
 }
 
 enum CalibrationState {
-  PreInit,
-  Initializing,
-  ReadyToWeighIn,
-  WeightSubmitting,
-  WeighInProblem,
-  WeighInSuccess,
-  ReadyToCalibrate,
-  CalibrationStarting,
-  CalibrationInProgress,
-  CalibrationOver,
-  CalibrationSuccess,
-  CalibrationFail,
-  NotSupported,
+  preInit,
+  initializing,
+  readyToWeighIn,
+  weightSubmitting,
+  weighInProblem,
+  weighInSuccess,
+  readyToCalibrate,
+  calibrationStarting,
+  calibrationInProgress,
+  calibrationOver,
+  calibrationSuccess,
+  calibrationFail,
+  notSupported,
 }
 
-class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
-  static const STEP_WEIGHT_INPUT = 0;
-  static const STEP_CALIBRATING = 1;
-  static const STEP_DONE = 2;
-  static const STEP_NOT_SUPPORTED = 3;
+class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
+  static const stepWeightInput = 0;
+  static const stepCalibrating = 1;
+  static const stepDone = 2;
+  static const stepNotSupported = 3;
 
   FitnessEquipment? _fitnessEquipment;
   double _sizeDefault = 10.0;
-  TextStyle _smallerTextStyle = TextStyle();
-  TextStyle _largerTextStyle = TextStyle();
-  bool _si = UNIT_SYSTEM_DEFAULT;
-  int _step = STEP_WEIGHT_INPUT;
+  TextStyle _smallerTextStyle = const TextStyle();
+  TextStyle _largerTextStyle = const TextStyle();
+  bool _si = unitSystemDefault;
+  int _step = stepWeightInput;
   int _weight = 80;
   int _oldWeightLsb = 0;
   int _oldWeightMsb = 0;
@@ -57,17 +60,17 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   int _newWeightMsb = 0;
   BluetoothCharacteristic? _weightData;
   StreamSubscription? _weightDataSubscription;
-  CalibrationState _calibrationState = CalibrationState.PreInit;
+  CalibrationState _calibrationState = CalibrationState.preInit;
   double _targetSpeedHigh = 0.0;
   double _targetSpeedLow = 0.0;
   double _currentSpeed = 0.0;
   String _targetSpeedHighString = "...";
   String _targetSpeedLowString = "...";
   String _currentSpeedString = "...";
-  ThemeManager _themeManager = Get.find<ThemeManager>();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
-  int _preferencesWeight = ATHLETE_BODY_WEIGHT_DEFAULT;
-  bool _rememberLastWeight = REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
+  int _preferencesWeight = athleteBodyWeightDefault;
+  bool _rememberLastWeight = rememberAthleteBodyWeightDefault;
 
   bool get _spinDownPossible =>
       (_fitnessEquipment?.supportsSpinDown ?? false) &&
@@ -75,27 +78,26 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       _fitnessEquipment?.status != null &&
       _fitnessEquipment?.characteristic != null;
   bool get _canSubmitWeight =>
-      _spinDownPossible && _calibrationState == CalibrationState.ReadyToWeighIn;
+      _spinDownPossible && _calibrationState == CalibrationState.readyToWeighIn;
 
   Tuple2<int, int> getWeightBytes(int weight) {
-    final weightTransport = (weight * (_si ? 1.0 : LB_TO_KG) * 200).round();
-    return Tuple2<int, int>(weightTransport % MAX_UINT8, weightTransport ~/ MAX_UINT8);
+    final weightTransport = (weight * (_si ? 1.0 : lbToKg) * 200).round();
+    return Tuple2<int, int>(weightTransport % maxUint8, weightTransport ~/ maxUint8);
   }
 
   int getWeightFromBytes(int weightLsb, int weightMsb) {
-    return (weightLsb + weightMsb * MAX_UINT8) / (_si ? 1.0 : LB_TO_KG) ~/ 200;
+    return (weightLsb + weightMsb * maxUint8) / (_si ? 1.0 : lbToKg) ~/ 200;
   }
 
   @override
   void initState() {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(UNIT_SYSTEM_TAG) ?? UNIT_SYSTEM_DEFAULT;
-    _rememberLastWeight = prefService.get<bool>(REMEMBER_ATHLETE_BODY_WEIGHT_TAG) ??
-        REMEMBER_ATHLETE_BODY_WEIGHT_DEFAULT;
-    _preferencesWeight =
-        prefService.get<int>(ATHLETE_BODY_WEIGHT_INT_TAG) ?? ATHLETE_BODY_WEIGHT_DEFAULT;
-    _weight = (_preferencesWeight * (_si ? 1.0 : KG_TO_LB)).round();
+    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _rememberLastWeight =
+        prefService.get<bool>(rememberAthleteBodyWeightTag) ?? rememberAthleteBodyWeightDefault;
+    _preferencesWeight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
+    _weight = (_preferencesWeight * (_si ? 1.0 : kgToLb)).round();
     final weightBytes = getWeightBytes(_weight);
     _oldWeightLsb = weightBytes.item1;
     _oldWeightMsb = weightBytes.item2;
@@ -103,12 +105,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _newWeightMsb = weightBytes.item2;
     _isLight = !_themeManager.isDark();
     _smallerTextStyle = Get.textTheme.headline5!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
     _sizeDefault = _smallerTextStyle.fontSize!;
     _largerTextStyle = Get.textTheme.headline2!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
     _prepareSpinDown();
@@ -143,12 +145,18 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     if (!(_fitnessEquipment?.supportsSpinDown ?? false)) return false;
 
     final userData =
-        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], USER_DATA_SERVICE);
+        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], userDataServiceUuid);
     _weightData =
-        BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, WEIGHT_CHARACTERISTIC);
+        BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, weightCharacteristicUuid);
     if (_weightData == null) return false;
 
-    if (_fitnessEquipment?.controlPoint == null || _fitnessEquipment?.status == null) return false;
+    final fitnessMachine =
+        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], fitnessMachineUuid);
+    _controlPoint = BluetoothDeviceEx.filterCharacteristic(
+        fitnessMachine?.characteristics, fitnessMachineControlPointUuid);
+    _fitnessMachineStatus = BluetoothDeviceEx.filterCharacteristic(
+        fitnessMachine?.characteristics, fitnessMachineStatusUuid);
+    if (_controlPoint == null || _fitnessMachineStatus == null) return false;
 
     // #117 Attach the handler way ahead of the actual weight write
     try {
@@ -159,18 +167,22 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     _weightDataSubscription = _weightData?.value
-        .throttleTime(Duration(milliseconds: SPIN_DOWN_THRESHOLD))
+        .throttleTime(
+      const Duration(milliseconds: spinDownThreshold),
+      leading: false,
+      trailing: true,
+    )
         .listen((response) async {
-      if (response.length == 1 && _calibrationState == CalibrationState.WeightSubmitting) {
-        if (response[0] != WEIGHT_SUCCESS_OPCODE) {
+      if (response.length == 1 && _calibrationState == CalibrationState.weightSubmitting) {
+        if (response[0] != weightSuccessOpcode) {
           setState(() {
-            _calibrationState = CalibrationState.WeighInProblem;
+            _calibrationState = CalibrationState.weighInProblem;
           });
         }
       } else if (response.length == 2) {
-        if (_calibrationState == CalibrationState.ReadyToWeighIn) {
+        if (_calibrationState == CalibrationState.readyToWeighIn) {
           setState(() {
-            _calibrationState = CalibrationState.WeighInProblem;
+            _calibrationState = CalibrationState.weighInProblem;
             _oldWeightLsb = response[0];
             _oldWeightMsb = response[1];
             _weight = getWeightFromBytes(_oldWeightLsb, _oldWeightMsb);
@@ -178,23 +190,23 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         } else {
           if (response[0] == _newWeightLsb && response[1] == _newWeightMsb) {
             setState(() {
-              _step = STEP_CALIBRATING;
-              _calibrationState = CalibrationState.ReadyToCalibrate;
+              _step = stepCalibrating;
+              _calibrationState = CalibrationState.readyToCalibrate;
             });
           } else {
             setState(() {
-              _calibrationState = CalibrationState.WeighInProblem;
+              _calibrationState = CalibrationState.weighInProblem;
             });
           }
         }
-      } else if (_calibrationState == CalibrationState.WeightSubmitting) {
+      } else if (_calibrationState == CalibrationState.weightSubmitting) {
         try {
           await _weightData?.write([_newWeightLsb, _newWeightMsb]);
         } on PlatformException catch (e, stack) {
           debugPrint("$e");
           debugPrintStack(stackTrace: stack, label: "trace:");
           setState(() {
-            _calibrationState = CalibrationState.WeighInProblem;
+            _calibrationState = CalibrationState.weighInProblem;
           });
         }
       }
@@ -210,35 +222,37 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     _fitnessEquipment?.controlPointSubscription = _fitnessEquipment?.controlPoint?.value
-        .throttleTime(Duration(milliseconds: SPIN_DOWN_THRESHOLD))
+        .throttleTime(
+      const Duration(milliseconds: spinDownThreshold),
+      leading: false,
+      trailing: true,
+    )
         .listen((data) async {
       if (data.length == 1) {
-        if (data[0] != SPIN_DOWN_CONTROL) {
+        if (data[0] != spinDownOpcode) {
           setState(() {
-            _step = STEP_DONE;
-            _calibrationState = CalibrationState.CalibrationFail;
+            _step = stepDone;
+            _calibrationState = CalibrationState.calibrationFail;
           });
         }
       }
 
       if (data.length == 7) {
-        if (data[0] != RESPONSE_OPCODE ||
-            data[1] != SPIN_DOWN_CONTROL ||
-            data[2] != SUCCESS_RESPONSE) {
+        if (data[0] != controlOpcode || data[1] != spinDownOpcode || data[2] != successResponse) {
           setState(() {
-            _step = STEP_DONE;
-            _calibrationState = CalibrationState.CalibrationFail;
+            _step = stepDone;
+            _calibrationState = CalibrationState.calibrationFail;
           });
           return;
         }
         setState(() {
-          _calibrationState = CalibrationState.CalibrationInProgress;
-          _targetSpeedHigh = (data[3] * MAX_UINT8 + data[4]) / 100;
+          _calibrationState = CalibrationState.calibrationInProgress;
+          _targetSpeedHigh = (data[3] * maxUint8 + data[4]) / 100;
           _targetSpeedHighString = speedOrPaceString(
-              _targetSpeedHigh, _si, _fitnessEquipment?.sport ?? ActivityType.Ride);
-          _targetSpeedLow = (data[5] * MAX_UINT8 + data[6]) / 100;
+              _targetSpeedHigh, _si, _fitnessEquipment?.sport ?? ActivityType.ride);
+          _targetSpeedLow = (data[5] * maxUint8 + data[6]) / 100;
           _targetSpeedLowString = speedOrPaceString(
-              _targetSpeedLow, _si, _fitnessEquipment?.sport ?? ActivityType.Ride);
+              _targetSpeedLow, _si, _fitnessEquipment?.sport ?? ActivityType.ride);
         });
       }
     });
@@ -250,24 +264,24 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     final success = await _prepareSpinDownCore();
     setState(() {
       if (!success) {
-        _step = STEP_NOT_SUPPORTED;
-        _calibrationState = CalibrationState.NotSupported;
+        _step = stepNotSupported;
+        _calibrationState = CalibrationState.notSupported;
       } else {
-        _calibrationState = CalibrationState.ReadyToWeighIn;
+        _calibrationState = CalibrationState.readyToWeighIn;
       }
     });
   }
 
   ButtonStyle _buttonBackgroundStyle() {
     var backColor = _isLight ? Colors.black12 : Colors.black87;
-    if (_calibrationState == CalibrationState.WeighInProblem ||
-        _calibrationState == CalibrationState.CalibrationFail ||
-        _calibrationState == CalibrationState.NotSupported) {
+    if (_calibrationState == CalibrationState.weighInProblem ||
+        _calibrationState == CalibrationState.calibrationFail ||
+        _calibrationState == CalibrationState.notSupported) {
       backColor = _isLight ? Colors.red.shade50 : Colors.red.shade900;
-    } else if (_calibrationState == CalibrationState.ReadyToWeighIn ||
-        _calibrationState == CalibrationState.WeighInSuccess ||
-        _calibrationState == CalibrationState.ReadyToCalibrate ||
-        _calibrationState == CalibrationState.CalibrationSuccess) {
+    } else if (_calibrationState == CalibrationState.readyToWeighIn ||
+        _calibrationState == CalibrationState.weighInSuccess ||
+        _calibrationState == CalibrationState.readyToCalibrate ||
+        _calibrationState == CalibrationState.calibrationSuccess) {
       backColor = _isLight ? Colors.lightGreen.shade100 : Colors.green.shade900;
     }
 
@@ -275,54 +289,54 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   String _weightInputButtonText() {
-    if (_calibrationState == CalibrationState.WeighInSuccess) return 'Next >';
-    if (_calibrationState == CalibrationState.ReadyToWeighIn) return 'Submit';
-    if (_calibrationState == CalibrationState.WeighInProblem) return 'Retry';
+    if (_calibrationState == CalibrationState.weighInSuccess) return 'Next >';
+    if (_calibrationState == CalibrationState.readyToWeighIn) return 'Submit';
+    if (_calibrationState == CalibrationState.weighInProblem) return 'Retry';
 
     return 'Wait...';
   }
 
   TextStyle _weightInputButtonTextStyle() {
     return _smallerTextStyle.merge(TextStyle(
-        color: _calibrationState == CalibrationState.WeighInSuccess || _canSubmitWeight
+        color: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
             ? (_isLight ? Colors.black : Colors.white)
             : (_isLight ? Colors.black87 : Colors.white70)));
   }
 
   ButtonStyle _weightInputButtonStyle() {
     return ElevatedButton.styleFrom(
-      primary: _calibrationState == CalibrationState.WeighInSuccess || _canSubmitWeight
+      primary: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
           ? (_isLight ? Colors.lightGreen.shade100 : Colors.green.shade900)
           : (_isLight ? Colors.black12 : Colors.black87),
     );
   }
 
   Future<void> _onWeightInputButtonPressed() async {
-    if (_calibrationState == CalibrationState.WeighInSuccess) {
+    if (_calibrationState == CalibrationState.weighInSuccess) {
       return;
     }
 
-    if (_calibrationState == CalibrationState.PreInit ||
-        _calibrationState == CalibrationState.Initializing) {
+    if (_calibrationState == CalibrationState.preInit ||
+        _calibrationState == CalibrationState.initializing) {
       Get.snackbar("Please wait", "Initializing equipment for calibration...");
       return;
     }
-    if (_calibrationState == CalibrationState.WeightSubmitting) {
+    if (_calibrationState == CalibrationState.weightSubmitting) {
       Get.snackbar("Please wait", "Weight submission is in progress...");
       return;
     }
 
     setState(() {
-      _calibrationState = CalibrationState.WeightSubmitting;
+      _calibrationState = CalibrationState.weightSubmitting;
     });
     final newWeightBytes = getWeightBytes(_weight);
     _newWeightLsb = newWeightBytes.item1;
     _newWeightMsb = newWeightBytes.item2;
     try {
       if (_rememberLastWeight) {
-        final weightKg = _weight * (_si ? 1.0 : LB_TO_KG);
+        final weightKg = _weight * (_si ? 1.0 : lbToKg);
         final prefService = Get.find<BasePrefService>();
-        await prefService.set<int>(ATHLETE_BODY_WEIGHT_INT_TAG, weightKg.round());
+        await prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
       }
 
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);
@@ -330,22 +344,22 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
       setState(() {
-        _calibrationState = CalibrationState.WeighInProblem;
+        _calibrationState = CalibrationState.weighInProblem;
       });
     }
   }
 
   String _calibrationInstruction() {
-    if (_calibrationState == CalibrationState.ReadyToCalibrate) {
+    if (_calibrationState == CalibrationState.readyToCalibrate) {
       return "READY!";
     }
 
-    if (_calibrationState == CalibrationState.CalibrationStarting) {
+    if (_calibrationState == CalibrationState.calibrationStarting) {
       return "START!";
     }
 
-    if (_calibrationState == CalibrationState.CalibrationInProgress) {
-      if (_currentSpeed < EPS || _currentSpeed < _targetSpeedLow) {
+    if (_calibrationState == CalibrationState.calibrationInProgress) {
+      if (_currentSpeed < eps || _currentSpeed < _targetSpeedLow) {
         return "FASTER";
       } else if (_currentSpeed > _targetSpeedHigh) {
         return "SLOWER";
@@ -359,63 +373,68 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   TextStyle _calibrationInstructionStyle() {
     var color = _themeManager.getRedColor();
 
-    if (_calibrationState == CalibrationState.ReadyToCalibrate ||
-        _calibrationState == CalibrationState.CalibrationStarting) {
+    if (_calibrationState == CalibrationState.readyToCalibrate ||
+        _calibrationState == CalibrationState.calibrationStarting) {
       color = _themeManager.getGreenColor();
     }
 
-    if (_calibrationState == CalibrationState.CalibrationInProgress)
+    if (_calibrationState == CalibrationState.calibrationInProgress) {
       color = _themeManager.getBlueColor();
+    }
 
     return _largerTextStyle.merge(TextStyle(color: color));
   }
 
   String _calibrationButtonText() {
-    if (_calibrationState == CalibrationState.ReadyToCalibrate) return 'Start';
+    if (_calibrationState == CalibrationState.readyToCalibrate) return 'Start';
 
-    if (_calibrationState == CalibrationState.CalibrationStarting) return 'Wait...';
+    if (_calibrationState == CalibrationState.calibrationStarting) return 'Wait...';
 
     return 'Stop';
   }
 
   Future<void> onCalibrationButtonPressed() async {
-    if (_calibrationState == CalibrationState.CalibrationStarting) {
+    if (_calibrationState == CalibrationState.calibrationStarting) {
       Get.snackbar("Calibration", "Wait for instructions!");
       return;
     }
     setState(() {
-      _calibrationState = CalibrationState.CalibrationStarting;
+      _calibrationState = CalibrationState.calibrationStarting;
     });
 
     try {
-      await _fitnessEquipment?.controlPoint?.write([SPIN_DOWN_CONTROL, SPIN_DOWN_START_COMMAND]);
+      await _fitnessEquipment?.controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
       await _fitnessEquipment?.status?.setNotifyValue(true);
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
-    _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.value
-        .throttleTime(Duration(milliseconds: FTMS_STATUS_THRESHOLD))
+    _fitnessEquipment?.statusSubscription = _fitnessMachineStatus?.value
+        .throttleTime(
+      const Duration(milliseconds: ftmsStatusThreshold),
+      leading: false,
+      trailing: true,
+    )
         .listen((status) {
-      if (status.length == 2 && status[0] == SPIN_DOWN_STATUS) {
-        if (status[1] == SPIN_DOWN_STATUS_SUCCESS) {
+      if (status.length == 2 && status[0] == spinDownStatus) {
+        if (status[1] == spinDownStatusSuccess) {
           _reset();
           setState(() {
-            _step = STEP_DONE;
-            _calibrationState = CalibrationState.CalibrationSuccess;
+            _step = stepDone;
+            _calibrationState = CalibrationState.calibrationSuccess;
           });
         }
-        if (status[1] == SPIN_DOWN_STATUS_ERROR) {
+        if (status[1] == spinDownStatusError) {
           _reset();
           setState(() {
-            _step = STEP_DONE;
-            _calibrationState = CalibrationState.CalibrationFail;
+            _step = stepDone;
+            _calibrationState = CalibrationState.calibrationFail;
           });
         }
-        if (status[1] == SPIN_DOWN_STATUS_STOP_PEDALING) {
+        if (status[1] == spinDownStatusStopPedaling) {
           setState(() {
-            _calibrationState = CalibrationState.CalibrationOver;
+            _calibrationState = CalibrationState.calibrationOver;
           });
         }
       }
@@ -427,7 +446,7 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       setState(() {
         _currentSpeed = record.speed ?? 0.0;
         _currentSpeedString =
-            record.speedOrPaceStringByUnit(_si, _fitnessEquipment?.sport ?? ActivityType.Ride);
+            record.speedOrPaceStringByUnit(_si, _fitnessEquipment?.sport ?? ActivityType.ride);
       });
     });
   }
@@ -502,12 +521,12 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                     },
                   ),
                   ElevatedButton(
+                    style: _weightInputButtonStyle(),
+                    onPressed: () async => await _onWeightInputButtonPressed(),
                     child: Text(
                       _weightInputButtonText(),
                       style: _weightInputButtonTextStyle(),
                     ),
-                    style: _weightInputButtonStyle(),
-                    onPressed: () async => await _onWeightInputButtonPressed(),
                   ),
                 ],
               ),
@@ -532,9 +551,9 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                           _largerTextStyle.merge(TextStyle(color: _themeManager.getBlueColor()))),
                   Text(_calibrationInstruction(), style: _calibrationInstructionStyle()),
                   ElevatedButton(
-                    child: Text(_calibrationButtonText(), style: _smallerTextStyle),
                     style: _buttonBackgroundStyle(),
                     onPressed: () async => await onCalibrationButtonPressed(),
+                    child: Text(_calibrationButtonText(), style: _smallerTextStyle),
                   ),
                 ],
               ),
@@ -546,28 +565,28 @@ class _SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                      _calibrationState == CalibrationState.CalibrationSuccess
+                      _calibrationState == CalibrationState.calibrationSuccess
                           ? "SUCCESS"
                           : "ERROR",
                       style: _largerTextStyle),
                   ElevatedButton(
-                    child: Text(
-                        _calibrationState == CalibrationState.CalibrationSuccess
-                            ? 'Close'
-                            : 'Retry',
-                        style: _smallerTextStyle),
                     style: _buttonBackgroundStyle(),
                     onPressed: () {
-                      if (_calibrationState == CalibrationState.CalibrationSuccess) {
+                      if (_calibrationState == CalibrationState.calibrationSuccess) {
                         Get.close(1);
                       } else {
                         _fitnessEquipment?.detach();
                         setState(() {
-                          _calibrationState = CalibrationState.ReadyToWeighIn;
-                          _step = STEP_WEIGHT_INPUT;
+                          _calibrationState = CalibrationState.readyToWeighIn;
+                          _step = stepWeightInput;
                         });
                       }
                     },
+                    child: Text(
+                        _calibrationState == CalibrationState.calibrationSuccess
+                            ? 'Close'
+                            : 'Retry',
+                        style: _smallerTextStyle),
                   ),
                 ],
               ),

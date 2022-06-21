@@ -4,19 +4,20 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
 import '../../persistence/models/record.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/stroke_rate_smoothing.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 
 class RowerDeviceDescriptor extends FitnessMachineDescriptor {
-  ByteMetricDescriptor? strokeRateMetric;
-  ShortMetricDescriptor? strokeCountMetric;
-  ShortMetricDescriptor? paceMetric;
+  MetricDescriptor? strokeRateMetric;
+  MetricDescriptor? strokeCountMetric;
+  MetricDescriptor? paceMetric;
 
-  int _strokeRateWindowSize = STROKE_RATE_SMOOTHING_DEFAULT;
-  ListQueue<int> _strokeRates = ListQueue<int>();
+  int _strokeRateWindowSize = strokeRateSmoothingDefault;
+  final ListQueue<int> _strokeRates = ListQueue<int>();
   int _strokeRateSum = 0;
 
   RowerDeviceDescriptor({
@@ -28,11 +29,10 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
-    dataServiceId = FITNESS_MACHINE_ID,
-    dataCharacteristicId = ROWER_DEVICE_ID,
+    dataServiceId = fitnessMachineUuid,
+    dataCharacteristicId = rowerDeviceUuid,
     canMeasureHeartRate = true,
     heartRateByteIndex,
-    calorieFactorDefault = 1.0,
     isMultiSport = true,
   }) : super(
           defaultSport: defaultSport,
@@ -48,8 +48,23 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactorDefault: calorieFactorDefault,
         );
+
+  @override
+  RowerDeviceDescriptor clone() => RowerDeviceDescriptor(
+        defaultSport: defaultSport,
+        fourCC: fourCC,
+        vendorName: vendorName,
+        modelName: modelName,
+        namePrefixes: namePrefixes,
+        manufacturerPrefix: manufacturerPrefix,
+        manufacturerFitId: manufacturerFitId,
+        model: model,
+        dataServiceId: dataServiceId,
+        dataCharacteristicId: dataCharacteristicId,
+        canMeasureHeartRate: canMeasureHeartRate,
+        heartRateByteIndex: heartRateByteIndex,
+      );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override
@@ -57,31 +72,29 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     super.processFlag(flag);
     final prefService = Get.find<BasePrefService>();
     _strokeRateWindowSize =
-        prefService.get<int>(STROKE_RATE_SMOOTHING_INT_TAG) ?? STROKE_RATE_SMOOTHING_DEFAULT;
+        prefService.get<int>(strokeRateSmoothingIntTag) ?? strokeRateSmoothingDefault;
 
-    // KayakPro Compact: two flag bytes
-    // 44 00101100 (stroke rate, stroke count), total distance, instant pace, instant power
-    //  9 00001001 expanded energy, (heart rate), elapsed time
+    // KayakPro Compact
+    // 44 0010 1100 (stroke rate, stroke count), total distance, instant pace, instant power
+    //  9 0000 1001 expanded energy, (heart rate), elapsed time
     // negated first bit!
     flag = processStrokeRateFlag(flag, true);
-    flag = processAverageStrokeRateFlag(flag);
+    flag = skipFlag(flag, size: 1); // Average Stroke Rate
     flag = processTotalDistanceFlag(flag);
-    flag = processPaceFlag(flag); // Instant
-    flag = processPaceFlag(flag); // Average (fallback)
-    flag = processPowerFlag(flag); // Instant
-    flag = processPowerFlag(flag); // Average (fallback)
-    flag = processResistanceLevelFlag(flag);
+    flag = processPaceFlag(flag);
+    flag = skipFlag(flag); // Average Pace
+    flag = processPowerFlag(flag);
+    flag = skipFlag(flag); // Average Power
+    flag = skipFlag(flag); // Resistance Level
     flag = processExpandedEnergyFlag(flag);
     flag = processHeartRateFlag(flag);
-    flag = processMetabolicEquivalentFlag(flag);
+    flag = skipFlag(flag, size: 1); // Metabolic Equivalent
     flag = processElapsedTimeFlag(flag);
-    flag = processRemainingTimeFlag(flag);
+    flag = skipFlag(flag); // Remaining Time
   }
 
   @override
-  RecordWithSport stubRecord(List<int> data) {
-    super.stubRecord(data);
-
+  RecordWithSport? stubRecord(List<int> data) {
     final pace = getPace(data);
 
     var strokeRate = getStrokeRate(data);
@@ -96,7 +109,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
         _strokeRateSum -= _strokeRates.first;
         _strokeRates.removeFirst();
       }
-      strokeRate = _strokeRates.length > 0 ? (_strokeRateSum / _strokeRates.length).round() : 0;
+      strokeRate = _strokeRates.isNotEmpty ? (_strokeRateSum / _strokeRates.length).round() : 0;
     }
 
     return RecordWithSport(
@@ -132,32 +145,18 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       strokeCountMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
-    flag ~/= 2;
-    return flag;
-  }
 
-  int processAverageStrokeRateFlag(int flag) {
-    if (flag % 2 == 1) {
-      if (strokeRateMetric != null) {
-        // UByte with 0.5 resolution
-        strokeRateMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 2.0);
-      }
-      byteCounter++;
-    }
-    flag ~/= 2;
-    return flag;
+    return advanceFlag(flag);
   }
 
   int processPaceFlag(int flag) {
     if (flag % 2 == 1) {
       // UInt16, seconds with 1 resolution
-      if (paceMetric == null) {
-        paceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
-      }
+      paceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   int? getStrokeRate(List<int> data) {
@@ -165,11 +164,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   }
 
   double? getPace(List<int> data) {
-    var pace = paceMetric?.getMeasurementValue(data);
-    if (pace == null || !extendTuning) {
-      return pace;
-    }
-    return pace / powerFactor;
+    return paceMetric?.getMeasurementValue(data);
   }
 
   @override

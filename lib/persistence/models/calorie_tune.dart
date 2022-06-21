@@ -1,9 +1,9 @@
 import 'package:floor/floor.dart';
 
-const CALORIE_TUNE_TABLE_NAME = 'calorie_tune';
+const calorieTuneTableName = 'calorie_tune';
 
 @Entity(
-  tableName: CALORIE_TUNE_TABLE_NAME,
+  tableName: calorieTuneTableName,
   indices: [
     Index(value: ['mac'])
   ],
@@ -14,6 +14,8 @@ class CalorieTune {
   final String mac;
   @ColumnInfo(name: 'calorie_factor')
   double calorieFactor;
+  @ColumnInfo(name: 'hr_based')
+  bool hrBased;
 
   int time; // ms since epoch
 
@@ -21,6 +23,7 @@ class CalorieTune {
     this.id,
     required this.mac,
     required this.calorieFactor,
+    required this.hrBased,
     required this.time,
   });
 

@@ -29,7 +29,7 @@ class ScanResultTile extends StatelessWidget {
       children: [
         Text(
           result.device.name.isNotEmpty ? result.device.name : deviceIdString,
-          style: themeManger.boldStyle(captionStyle, fontSizeFactor: FONT_SIZE_FACTOR),
+          style: themeManger.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
           overflow: TextOverflow.ellipsis,
         ),
         Text(deviceIdString, style: dataStyle),
@@ -39,12 +39,12 @@ class ScanResultTile extends StatelessWidget {
 
   Widget _buildAdvRow(String title, String value, TextStyle captionStyle, TextStyle dataStyle) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: captionStyle),
-          SizedBox(width: 12.0),
+          const SizedBox(width: 12.0),
           Expanded(child: Text(value, softWrap: true)),
         ],
       ),
@@ -64,9 +64,9 @@ class ScanResultTile extends StatelessWidget {
 
     final companyRegistry = Get.find<CompanyRegistry>();
     List<String> nameStrings = [];
-    companyIds.forEach((companyId) {
+    for (var companyId in companyIds) {
       nameStrings.add(companyRegistry.nameForId(companyId));
-    });
+    }
 
     return nameStrings.join(', ');
   }
@@ -77,9 +77,9 @@ class ScanResultTile extends StatelessWidget {
     }
 
     List<String> res = [];
-    data.forEach((id, bytes) {
-      res.add('${id.uuidString()}: ${getNiceHexArray(bytes)}');
-    });
+    for (var entry in data.entries) {
+      res.add('${entry.key.uuidString()}: ${getNiceHexArray(entry.value)}');
+    }
 
     return res.join(', ');
   }
@@ -87,14 +87,14 @@ class ScanResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final captionStyle = Get.textTheme.headline6!;
-    final detailStyle = captionStyle.apply(fontSizeFactor: 1 / FONT_SIZE_FACTOR);
-    final secondaryStyle = captionStyle.apply(fontFamily: FONT_FAMILY);
+    final detailStyle = captionStyle.apply(fontSizeFactor: 1 / fontSizeFactor);
+    final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
 
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: Icon(
-        result.getEquipmentIcon(),
+        result.getIcon([]),
         size: captionStyle.fontSize! * 2.5,
         color: themeManager.getProtagonistColor(),
       ),

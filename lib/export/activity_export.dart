@@ -6,10 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
-import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
-import '../persistence/preferences.dart';
+import '../preferences/cadence_data_gap_workaround.dart';
+import '../preferences/heart_rate_gap_workaround.dart';
+import '../preferences/heart_rate_limiting.dart';
 import '../track/calculator.dart';
 import '../track/tracks.dart';
 import '../utils/constants.dart';
@@ -27,23 +28,23 @@ abstract class ActivityExport {
   late String buildNumber;
 
   int _lastPositiveCadence = 0; // #101
-  bool _cadenceGapWorkaround = CADENCE_GAP_WORKAROUND_DEFAULT;
+  bool _cadenceGapWorkaround = cadenceGapWorkaroundDefault;
   int _lastPositiveHeartRate = 0;
-  String heartRateGapWorkaround = HEART_RATE_GAP_WORKAROUND_DEFAULT;
-  int heartRateUpperLimit = HEART_RATE_UPPER_LIMIT_DEFAULT;
-  String heartRateLimitingMethod = HEART_RATE_LIMITING_NO_LIMIT;
+  String heartRateGapWorkaround = heartRateGapWorkaroundDefault;
+  int heartRateUpperLimit = heartRateUpperLimitDefault;
+  String heartRateLimitingMethod = heartRateLimitingMethodDefault;
 
   ActivityExport({required this.nonCompressedFileExtension, required this.nonCompressedMimeType}) {
-    compressedFileExtension = nonCompressedFileExtension + '.gz';
+    compressedFileExtension = "$nonCompressedFileExtension.gz";
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
-        prefService.get<bool>(CADENCE_GAP_WORKAROUND_TAG) ?? CADENCE_GAP_WORKAROUND_DEFAULT;
+        prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
     heartRateGapWorkaround =
-        prefService.get<String>(HEART_RATE_GAP_WORKAROUND_TAG) ?? HEART_RATE_GAP_WORKAROUND_DEFAULT;
+        prefService.get<String>(heartRateGapWorkaroundTag) ?? heartRateGapWorkaroundDefault;
     heartRateUpperLimit =
-        prefService.get<int>(HEART_RATE_UPPER_LIMIT_INT_TAG) ?? HEART_RATE_UPPER_LIMIT_DEFAULT;
+        prefService.get<int>(heartRateUpperLimitIntTag) ?? heartRateUpperLimitDefault;
     heartRateLimitingMethod =
-        prefService.get<String>(HEART_RATE_LIMITING_METHOD_TAG) ?? HEART_RATE_LIMITING_NO_LIMIT;
+        prefService.get<String>(heartRateLimitingMethodTag) ?? heartRateLimitingMethodDefault;
 
     final packageInfo = Get.find<PackageInfo>();
     version = packageInfo.version;
@@ -58,39 +59,46 @@ abstract class ActivityExport {
     return compressed ? compressedMimeType : nonCompressedMimeType;
   }
 
-  ExportRecord recordToExport(Record record, TrackCalculator calculator, bool rawData) {
-    final timeStamp = DateTime.fromMillisecondsSinceEpoch(record.timeStamp ?? 0);
-    if (record.distance == null) {
-      record.distance = 0.0;
-    }
-
-    Offset gps = record.distance != null && !rawData
-        ? calculator.gpsCoordinates(record.distance!)
-        : Offset(0, 0);
+  ExportRecord recordToExport(
+    Record record,
+    Activity activity,
+    TrackCalculator calculator,
+    bool calculateGps,
+    bool rawData,
+  ) {
+    record.distance ??= 0.0;
 
     if (!rawData && record.speed != null) {
-      record.speed = record.speed! * DeviceDescriptor.KMH2MS;
+      record.speed = record.speed! * DeviceDescriptor.kmh2ms;
     }
 
-    return ExportRecord(record: record)
-      ..longitude = gps.dx
-      ..latitude = gps.dy
-      ..altitude = calculator.track.altitude
-      ..timeStampString = timeStampString(timeStamp)
-      ..timeStampInteger = timeStampInteger(timeStamp);
+    final exportRecord = ExportRecord(record: record);
+    if (record.distance != null && !rawData && calculateGps) {
+      Offset gps = calculator.gpsCoordinates(record.distance!);
+      exportRecord.longitude = gps.dx;
+      exportRecord.latitude = gps.dy;
+    }
+
+    return exportRecord;
   }
 
   Future<List<int>> getExport(
-      Activity activity, List<Record> records, bool rawData, bool compress) async {
+    Activity activity,
+    List<Record> records,
+    bool rawData,
+    bool calculateGps,
+    bool compress,
+    int exportTarget,
+  ) async {
     activity.hydrate();
-    final descriptor = deviceMap[activity.fourCC] ?? genericDescriptorForSport(activity.sport);
+    final descriptor = activity.deviceDescriptor();
     final track = getDefaultTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     final exportRecords = records.map((r) {
-      final record = recordToExport(r, calculator, rawData);
+      final record = recordToExport(r, activity, calculator, calculateGps, rawData);
 
       if (!rawData) {
-        if ((record.record.speed ?? 0.0) > EPS) {
+        if ((record.record.speed ?? 0.0) > eps) {
           // #101, #122
           if ((record.record.cadence == null || record.record.cadence == 0) &&
               _lastPositiveCadence > 0 &&
@@ -102,14 +110,14 @@ abstract class ActivityExport {
         }
 
         if (record.record.heartRate == null &&
-            heartRateLimitingMethod == HEART_RATE_LIMITING_WRITE_ZERO) {
+            heartRateLimitingMethod == heartRateLimitingWriteZero) {
           record.record.heartRate = 0;
         }
 
         // #93, #113
         if ((record.record.heartRate == 0 || record.record.heartRate == null) &&
             _lastPositiveHeartRate > 0 &&
-            heartRateGapWorkaround == DATA_GAP_WORKAROUND_LAST_POSITIVE_VALUE) {
+            heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue) {
           record.record.heartRate = _lastPositiveHeartRate;
         } else if ((record.record.heartRate ?? 0) > 0) {
           _lastPositiveHeartRate = record.record.heartRate!;
@@ -119,8 +127,8 @@ abstract class ActivityExport {
         if (heartRateUpperLimit > 0 &&
             record.record.heartRate != null &&
             record.record.heartRate! > heartRateUpperLimit &&
-            heartRateLimitingMethod != HEART_RATE_LIMITING_NO_LIMIT) {
-          if (heartRateLimitingMethod == HEART_RATE_LIMITING_CAP_AT_LIMIT) {
+            heartRateLimitingMethod != heartRateLimitingNoLimit) {
+          if (heartRateLimitingMethod == heartRateLimitingCapAtLimit) {
             record.record.heartRate = heartRateUpperLimit;
           } else {
             record.record.heartRate = 0;
@@ -134,15 +142,18 @@ abstract class ActivityExport {
     ExportModel exportModel = ExportModel(
       activity: activity,
       rawData: rawData,
+      calculateGps: calculateGps,
       descriptor: descriptor,
       author: 'Csaba Consulting',
-      name: 'Track My Indoor Exercise',
+      name: appName,
       swVersionMajor: versionParts[0],
       swVersionMinor: versionParts[1],
       buildVersionMajor: versionParts[2],
       buildVersionMinor: buildNumber,
       langID: 'en-US',
       partNumber: '0',
+      altitude: calculator.track.altitude,
+      exportTarget: exportTarget,
       records: exportRecords,
     );
 
@@ -173,8 +184,4 @@ abstract class ActivityExport {
   }
 
   Future<List<int>> getFileCore(ExportModel exportModel);
-
-  String timeStampString(DateTime dateTime);
-
-  int timeStampInteger(DateTime dateTime);
 }

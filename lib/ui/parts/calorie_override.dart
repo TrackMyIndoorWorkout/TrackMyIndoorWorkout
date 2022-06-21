@@ -2,16 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
+import '../../persistence/models/activity.dart';
 import '../../persistence/models/calorie_tune.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class CalorieOverrideBottomSheet extends StatefulWidget {
-  final String deviceId;
-  final double oldCalories;
+  late final String deviceId;
+  late final double oldFactor;
+  late final double oldCalories;
+  late final bool hrBased;
 
-  CalorieOverrideBottomSheet({Key? key, required this.deviceId, required this.oldCalories})
-      : super(key: key);
+  CalorieOverrideBottomSheet({Key? key, required Activity activity}) : super(key: key) {
+    if (activity.hrBasedCalories) {
+      if (activity.hrmId.isNotEmpty) {
+        deviceId = activity.hrmId;
+        oldFactor = activity.hrmCalorieFactor;
+      } else {
+        deviceId = activity.deviceId;
+        oldFactor = activity.hrCalorieFactor;
+      }
+    } else {
+      deviceId = activity.deviceId;
+      oldFactor = activity.calorieFactor;
+    }
+    oldCalories = activity.calories.toDouble();
+    hrBased = activity.hrBasedCalories;
+  }
 
   @override
   CalorieOverrideBottomSheetState createState() => CalorieOverrideBottomSheetState();
@@ -19,15 +36,15 @@ class CalorieOverrideBottomSheet extends StatefulWidget {
 
 class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> {
   double _newCalorie = 0.0;
-  TextStyle _largerTextStyle = TextStyle();
-  ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = const TextStyle();
+  final _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
     super.initState();
     _newCalorie = widget.oldCalories;
     _largerTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
   }
@@ -54,10 +71,10 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0, () async {
         final database = Get.find<AppDatabase>();
-        final calorieFactor = _newCalorie / widget.oldCalories;
+        final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
         CalorieTune? calorieTune;
-        if (await database.hasCalorieTune(widget.deviceId)) {
-          calorieTune = await database.calorieTuneDao.findCalorieTuneByMac(widget.deviceId).first;
+        if (await database.hasCalorieTune(widget.deviceId, widget.hrBased)) {
+          calorieTune = await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
         }
 
         if (calorieTune != null) {
@@ -67,6 +84,7 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
           calorieTune = CalorieTune(
             mac: widget.deviceId,
             calorieFactor: calorieFactor,
+            hrBased: widget.hrBased,
             time: DateTime.now().millisecondsSinceEpoch,
           );
           await database.calorieTuneDao.insertCalorieTune(calorieTune);

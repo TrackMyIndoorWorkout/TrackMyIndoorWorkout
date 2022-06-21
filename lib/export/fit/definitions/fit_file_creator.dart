@@ -5,16 +5,17 @@ import '../fit_field.dart';
 import '../fit_message.dart';
 
 class FitFileCreator extends FitDefinitionMessage {
-  FitFileCreator(localMessageType) : super(localMessageType, FitMessage.FileCreator) {
+  FitFileCreator(localMessageType) : super(localMessageType, FitMessage.fileCreator) {
     fields = [
       FitField(0, FitBaseTypes.uint16Type), // SoftwareRevision
     ];
   }
 
+  @override
   List<int> serializeData(dynamic parameter) {
     var data = FitData();
     data.output = [localMessageType];
-    data.addShort(36);
+    data.addShort(85);
     return data.output;
   }
 }

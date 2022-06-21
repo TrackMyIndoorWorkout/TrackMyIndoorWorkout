@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/preferences_spec.dart';
+import '../../preferences/metric_spec.dart';
+import '../../preferences/speed_spec.dart';
 import '../../utils/constants.dart';
 import 'preferences_base.dart';
 
@@ -11,7 +12,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
   static String title = "$shortTitle Preferences";
   final String sport;
 
-  MeasurementZonesPreferencesScreen(this.sport) {
+  MeasurementZonesPreferencesScreen(this.sport, {Key? key}) : super(key: key) {
     shortTitle = "$sport Zone";
     title = "$shortTitle Preferences";
   }
@@ -35,11 +36,11 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
   Widget build(BuildContext context) {
     List<Widget> zonePreferences = [];
 
-    PreferencesSpec.preferencesSpecs.forEach((prefSpec) {
+    for (var prefSpec in MetricSpec.preferencesSpecs) {
       zonePreferences.addAll([
         PrefText(
           label: sport +
-              PreferencesSpec.THRESHOLD_CAPITAL +
+              MetricSpec.thresholdCapital +
               (prefSpec.metric == "speed" ? prefSpec.kmhTitle : prefSpec.fullTitle),
           pref: prefSpec.thresholdTag(sport),
           validator: (str) {
@@ -51,27 +52,34 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
           },
         ),
         PrefText(
-          label: "$sport ${prefSpec.title}${PreferencesSpec.ZONES_CAPITAL}",
+          label: "$sport ${prefSpec.title}${MetricSpec.zonesCapital}",
           pref: prefSpec.zonesTag(sport),
           validator: (str) {
             if (str == null || !isMonotoneIncreasingList(str)) {
-              return "Invalid zones (should be comma separated list of " +
-                  "monotonically increasing numbers)";
+              return "Invalid zones (should be comma separated list of monotonically increasing numbers)";
             }
 
             return null;
           },
         ),
       ]);
-    });
-    if (sport != ActivityType.Ride) {
+    }
+
+    if (sport != ActivityType.ride) {
       zonePreferences.addAll([
         PrefText(
-          label: sport + SLOW_SPEED_POSTFIX,
-          pref: PreferencesSpec.slowSpeedTag(sport),
+          label: sport + slowSpeedPostfix,
+          pref: SpeedSpec.slowSpeedTag(sport),
           validator: (str) {
             if (str == null || !isNumber(str, 0.01, -1)) {
               return "Slow speed has to be positive";
+            }
+
+            if (sport != ActivityType.ride) {
+              final slowSpeed = double.tryParse(str);
+              if (slowSpeed != null && slowSpeed > (SpeedSpec.pacerSpeeds[sport] ?? 0.0)) {
+                return "Slow speed must be slower than 'Pacer Speed' (see below)";
+              }
             }
 
             return null;
@@ -79,12 +87,39 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
           onChange: (str) {
             final slowSpeed = double.tryParse(str);
             if (slowSpeed != null) {
-              PreferencesSpec.slowSpeeds[sport] = slowSpeed;
+              SpeedSpec.slowSpeeds[sport] = slowSpeed;
             }
           },
         ),
       ]);
     }
+
+    zonePreferences.addAll([
+      PrefText(
+        label: sport + pacerSpeedPostfix,
+        pref: SpeedSpec.pacerSpeedTag(sport),
+        validator: (str) {
+          if (str == null || !isNumber(str, 0.01, -1)) {
+            return "Pacer speed has to be positive";
+          }
+
+          if (sport != ActivityType.ride) {
+            final pacerSpeed = double.tryParse(str);
+            if (pacerSpeed != null && pacerSpeed < (SpeedSpec.slowSpeeds[sport] ?? 0.0)) {
+              return "Pacer speed must be faster than 'Slow Speed' (see above)";
+            }
+          }
+
+          return null;
+        },
+        onChange: (str) {
+          final pacerSpeed = double.tryParse(str);
+          if (pacerSpeed != null) {
+            SpeedSpec.pacerSpeeds[sport] = pacerSpeed;
+          }
+        },
+      ),
+    ]);
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),

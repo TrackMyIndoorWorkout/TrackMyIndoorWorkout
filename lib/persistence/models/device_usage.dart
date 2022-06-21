@@ -1,9 +1,9 @@
 import 'package:floor/floor.dart';
 
-const DEVICE_USAGE_TABLE_NAME = 'device_usage';
+const deviceUsageTableName = 'device_usage';
 
 @Entity(
-  tableName: DEVICE_USAGE_TABLE_NAME,
+  tableName: deviceUsageTableName,
   indices: [
     Index(value: ['time']),
     Index(value: ['mac']),

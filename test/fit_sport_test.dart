@@ -1,18 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_sport.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
-
-import 'utils.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 void main() {
   test('FitSport has the expected global message number', () async {
     final sport = FitSport(0);
 
-    expect(sport.globalMessageNumber, FitMessage.Sport);
+    expect(sport.globalMessageNumber, FitMessage.sport);
   });
 
   group('FitSport data has the expected length', () {
-    SPORTS.forEach((sport) {
+    for (final sport in allSports) {
       final fileCreator = FitSport(0);
       final expected = fileCreator.fields.fold<int>(0, (accu, field) => accu + field.size);
 
@@ -21,6 +20,6 @@ void main() {
 
         expect(output.length, expected + 1);
       });
-    });
+    }
   });
 }

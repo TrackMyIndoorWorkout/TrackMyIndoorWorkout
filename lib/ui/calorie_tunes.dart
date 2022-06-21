@@ -10,19 +10,19 @@ import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
 
 class CalorieTunesScreen extends StatefulWidget {
-  CalorieTunesScreen({key}) : super(key: key);
+  const CalorieTunesScreen({key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => CalorieTunesScreenState();
+  CalorieTunesScreenState createState() => CalorieTunesScreenState();
 }
 
 class CalorieTunesScreenState extends State<CalorieTunesScreen> {
-  AppDatabase _database = Get.find<AppDatabase>();
+  final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _textStyle = TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _textStyle = const TextStyle();
   double _sizeDefault = 10.0;
-  ExpandableThemeData _expandableThemeData = ExpandableThemeData(iconColor: Colors.black);
+  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void initState() {
@@ -40,10 +40,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
           icon: _themeManager.getActionIcon(Icons.edit, size),
           onPressed: () async {
             final result = await Get.bottomSheet(
-              CalorieFactorTuneBottomSheet(
-                deviceId: calorieTune.mac,
-                oldCalorieFactor: calorieTune.calorieFactor,
-              ),
+              CalorieFactorTuneBottomSheet(calorieTune: calorieTune),
               enableDrag: false,
             );
             if (result != null) {
@@ -53,7 +50,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
             }
           },
         ),
-        Spacer(),
+        const Spacer(),
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
           onPressed: () async {
@@ -61,7 +58,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
               title: 'Warning!!!',
               middleText: 'Are you sure to delete this Tune?',
               confirm: TextButton(
-                child: Text("Yes"),
+                child: const Text("Yes"),
                 onPressed: () async {
                   await _database.calorieTuneDao.deleteCalorieTune(calorieTune);
                   setState(() {
@@ -71,7 +68,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
                 },
               ),
               cancel: TextButton(
-                child: Text("No"),
+                child: const Text("No"),
                 onPressed: () => Get.close(1),
               ),
             );
@@ -84,12 +81,12 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Calorie Tunes')),
+      appBar: AppBar(title: const Text('Calorie Tunes')),
       body: CustomListView(
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
         initialOffset: 0,
-        loadingBuilder: (BuildContext context) => Center(child: CircularProgressIndicator()),
+        loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
@@ -103,12 +100,12 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
               Text(error.toString()),
               ElevatedButton(
                 onPressed: () => state.loadMore(),
-                child: Text('Retry'),
+                child: const Text('Retry'),
               ),
             ],
           );
         },
-        empty: Center(
+        empty: const Center(
           child: Text('No tunes found'),
         ),
         itemBuilder: (context, _, item) {
@@ -116,6 +113,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
           final timeStamp = DateTime.fromMillisecondsSinceEpoch(calorieTune.time);
           final dateString = DateFormat.yMd().format(timeStamp);
           final timeString = DateFormat.Hms().format(timeStamp);
+          final hrBasedString = calorieTune.hrBased ? "HR based" : "Non HR based";
           final caloriePercent = (calorieTune.calorieFactor * 100).round();
           return Card(
             elevation: 6,
@@ -156,6 +154,16 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
                       children: [
                         _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
                         Text(timeString, style: _textStyle),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        calorieTune.hrBased
+                            ? _themeManager.getBlueIcon(Icons.favorite, _sizeDefault)
+                            : _themeManager.getGreyIcon(Icons.favorite, _sizeDefault),
+                        Text(hrBasedString, style: _textStyle),
                       ],
                     ),
                     _actionButtonRow(calorieTune, _sizeDefault),

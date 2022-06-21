@@ -1,73 +1,65 @@
 import 'package:tuple/tuple.dart';
 import '../../utils/constants.dart';
 
-const FITNESS_EQUIPMENT_SPORT_ID = 4;
-const GENERIC_SPORT_ID = 0;
-const RUNNING_SPORT_ID = 1;
-const CYCLING_SPORT_ID = 2;
-const SWIMMING_SPORT_ID = 5;
-const TRAINING_SPORT_ID = 10;
-const PADDLING_SPORT_ID = 19;
+const fitnessEquipmentSportId = 4;
+const genericSportId = 0;
+const runningSportId = 1;
+const cyclingSportId = 2;
+const swimmingSportId = 5;
+const trainingSportId = 10;
+const paddlingSportId = 19;
 
-Map<String, Tuple2<int, int>> fitSport = {
-  "AlpineSki": Tuple2(13, 9),
-  "BackcountrySki": Tuple2(12, 0), // Crosscountry skiing
-  "Canoeing": Tuple2(PADDLING_SPORT_ID, 0), // Paddling
-  "Crossfit": Tuple2(TRAINING_SPORT_ID, 0), // Training
-  "EBikeRide": Tuple2(CYCLING_SPORT_ID, 28),
-  "Elliptical": Tuple2(FITNESS_EQUIPMENT_SPORT_ID, 15), // Fitness Equipment, Elliptical
-  "Golf": Tuple2(25, 0),
-  "Handcycle": Tuple2(GENERIC_SPORT_ID, 12),
-  "Hike": Tuple2(17, 3), // Hiking, Trail
-  "IceSkate": Tuple2(33, 0),
-  "IndoorRowing": Tuple2(FITNESS_EQUIPMENT_SPORT_ID, 14),
-  "IndoorRunning": Tuple2(RUNNING_SPORT_ID, 45),
-  "InlineSkate": Tuple2(30, 0),
-  "Kayaking": Tuple2(41, 0),
-  "Kitesurf": Tuple2(44, 0),
-  "NordicSki": Tuple2(GENERIC_SPORT_ID, 0),
-  "OpenWaterSwim": Tuple2(SWIMMING_SPORT_ID, 18),
-  "Paddling": Tuple2(PADDLING_SPORT_ID, 0),
-  "Ride": Tuple2(CYCLING_SPORT_ID, 0), // Cycling
-  "RockClimbing": Tuple2(48, 0), // Floor climbing
-  "RollerSki": Tuple2(GENERIC_SPORT_ID, 0),
-  "Rowing": Tuple2(15, 0),
-  "Run": Tuple2(RUNNING_SPORT_ID, 0),
-  "Sail": Tuple2(32, 0),
-  "Skateboard": Tuple2(GENERIC_SPORT_ID, 0),
-  "Snowboard": Tuple2(14, 0),
-  "Snowshoe": Tuple2(35, 0),
-  "Soccer": Tuple2(7, 0),
-  "StairStepper": Tuple2(FITNESS_EQUIPMENT_SPORT_ID, 16),
-  "StandUpPaddling": Tuple2(37, 0),
-  "Surfing": Tuple2(38, 0),
-  "Swim": Tuple2(SWIMMING_SPORT_ID, 0),
-  "Treadmill": Tuple2(RUNNING_SPORT_ID, 1), // Treadmill running
-  "TrackRide": Tuple2(CYCLING_SPORT_ID, 13),
-  "TrackRun": Tuple2(RUNNING_SPORT_ID, 4),
-  "Velomobile": Tuple2(GENERIC_SPORT_ID, 0),
-  "VirtualRide": Tuple2(CYCLING_SPORT_ID, 6), // Cycling, Indoor Cycling
-  "VirtualRun": Tuple2(RUNNING_SPORT_ID, 1), // Treadmill running
-  "VirtualRowing": Tuple2(PADDLING_SPORT_ID, 14), // Indoor Rowing
-  "Walk": Tuple2(11, 0),
-  "WeightTraining": Tuple2(TRAINING_SPORT_ID, 0), // Training
-  "Wheelchair": Tuple2(GENERIC_SPORT_ID, 0),
-  "Windsurf": Tuple2(43, 0),
-  "Workout": Tuple2(GENERIC_SPORT_ID, 0),
-  "Yoga": Tuple2(TRAINING_SPORT_ID, 43),
+const Map<String, Tuple2<int, int>> fitSport = {
+  ActivityType.alpineSki: Tuple2(13, 9),
+  ActivityType.backcountrySki: Tuple2(12, 0), // Cross country skiing
+  ActivityType.canoeing: Tuple2(paddlingSportId, 0), // Paddling
+  ActivityType.crossfit: Tuple2(trainingSportId, 0), // Training
+  ActivityType.eBikeRide: Tuple2(cyclingSportId, 28),
+  ActivityType.elliptical: Tuple2(fitnessEquipmentSportId, 15), // Fitness Equipment, Elliptical
+  ActivityType.golf: Tuple2(25, 0),
+  ActivityType.handcycle: Tuple2(genericSportId, 12),
+  ActivityType.hike: Tuple2(17, 3), // Hiking, Trail
+  ActivityType.iceSkate: Tuple2(33, 0),
+  "IndoorRowing": Tuple2(fitnessEquipmentSportId, 14),
+  "IndoorRunning": Tuple2(runningSportId, 45),
+  ActivityType.inlineSkate: Tuple2(30, 0),
+  ActivityType.kayaking: Tuple2(41, 0),
+  ActivityType.kitesurf: Tuple2(44, 0),
+  ActivityType.nordicSki: Tuple2(genericSportId, 0),
+  "OpenWaterSwim": Tuple2(swimmingSportId, 18),
+  "Paddling": Tuple2(paddlingSportId, 0),
+  ActivityType.ride: Tuple2(cyclingSportId, 0), // Cycling
+  ActivityType.rockClimbing: Tuple2(48, 0), // Floor climbing
+  ActivityType.rollerSki: Tuple2(genericSportId, 0),
+  ActivityType.rowing: Tuple2(15, 0),
+  ActivityType.run: Tuple2(runningSportId, 0),
+  ActivityType.sail: Tuple2(32, 0),
+  ActivityType.skateboard: Tuple2(genericSportId, 0),
+  ActivityType.snowboard: Tuple2(14, 0),
+  ActivityType.snowshoe: Tuple2(35, 0),
+  ActivityType.soccer: Tuple2(7, 0),
+  ActivityType.stairStepper: Tuple2(fitnessEquipmentSportId, 16),
+  ActivityType.standUpPaddling: Tuple2(37, 0),
+  ActivityType.surfing: Tuple2(38, 0),
+  ActivityType.swim: Tuple2(swimmingSportId, 0),
+  "Treadmill": Tuple2(runningSportId, 1), // Treadmill running
+  "TrackRide": Tuple2(cyclingSportId, 13),
+  "TrackRun": Tuple2(runningSportId, 4),
+  ActivityType.velomobile: Tuple2(genericSportId, 0),
+  ActivityType.virtualRide: Tuple2(cyclingSportId, 6), // Cycling, Indoor Cycling
+  ActivityType.virtualRun: Tuple2(runningSportId, 1), // Treadmill running
+  "VirtualRowing": Tuple2(paddlingSportId, 14), // Indoor Rowing
+  ActivityType.walk: Tuple2(11, 0),
+  ActivityType.weightTraining: Tuple2(trainingSportId, 0), // Training
+  ActivityType.wheelchair: Tuple2(genericSportId, 0),
+  ActivityType.windsurf: Tuple2(43, 0),
+  ActivityType.workout: Tuple2(genericSportId, 0),
+  ActivityType.yoga: Tuple2(trainingSportId, 43),
 };
 
 Tuple2 toFitSport(String sport) {
-  if (sport == ActivityType.Swim) {
-    sport = "OpenWaterSwim";
-  } else if (sport == ActivityType.Canoeing) {
-    sport = ActivityType.Kayaking;
-  } else if (sport == ActivityType.Run) {
-    sport = "TrackRun";
-  } else if (sport == ActivityType.Ride) {
-    sport = "TrackRide";
-  } else if (sport == ActivityType.Elliptical) {
-    sport = "Elliptical";
+  if (sport == ActivityType.canoeing) {
+    sport = ActivityType.kayaking;
   }
 
   if (!fitSport.containsKey(sport)) {

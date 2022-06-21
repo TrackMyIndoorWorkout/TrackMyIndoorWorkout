@@ -1,16 +1,16 @@
-const STRAVA_URL = "https://www.strava.com/";
-const TOKEN_ENDPOINT = STRAVA_URL + "oauth/token";
-const AUTHORIZATION_ENDPOINT = STRAVA_URL + "oauth/authorize";
-const DEAUTHORIZATION_ENDPOINT = STRAVA_URL + "oauth/deauthorize";
-const UPLOADS_ENDPOINT = STRAVA_URL + "api/v3/uploads";
+const stravaUrl = "https://www.strava.com/";
+const tokenEndpoint = "${stravaUrl}oauth/token";
+const authorizationEndpoint = "${stravaUrl}oauth/authorize";
+const deauthorizationEndpoint = "${stravaUrl}oauth/deauthorize";
+const uploadsEndpoint = "${stravaUrl}api/v3/uploads";
 
-const REDIRECT_URL_WEB = "https://trackmyindoorworkout.github.io";
+const redirectUrlWeb = "https://trackmyindoorworkout.github.io";
 
 // To use with iOS or Android
-const REDIRECT_URL_SCHEME = "stravaflutter";
-const REDIRECT_URL_MOBILE = "$REDIRECT_URL_SCHEME://redirect/";
+const redirectUrlScheme = "stravaflutter";
+const redirectUrlMobile = "$redirectUrlScheme://redirect/";
 
-const ACCESS_TOKEN_TAG = "strava_accessToken";
-const REFRESH_TOKEN_TAG = "strava_refreshToken";
-const EXPIRES_AT_TAG = "strava_expire";
-const TOKEN_SCOPE_TAG = "strava_scope";
+const stravaAccessTokenTag = "strava_accessToken";
+const stravaRefreshTokenTag = "strava_refreshToken";
+const stravaExpiresAtTag = "strava_expire";
+const stravaTokenScopeTag = "strava_scope";

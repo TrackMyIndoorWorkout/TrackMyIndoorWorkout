@@ -15,20 +15,21 @@ class BluetoothIssueScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => BluetoothIssueScreenState();
+  BluetoothIssueScreenState createState() => BluetoothIssueScreenState();
 }
 
 class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
   late PermissionStatus locationState = PermissionStatus.denied;
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _textStyle = TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _textStyle = const TextStyle();
 
   @override
   void initState() {
     super.initState();
     locationState = widget.locationState;
     _textStyle = Get.textTheme.headline6!.apply(color: Colors.white);
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      // TODO: Android does not need this any more
       if (locationState != PermissionStatus.granted && locationState != PermissionStatus.limited) {
         final locationTake2 = await Permission.locationWhenInUse.request();
         setState(() {
@@ -46,23 +47,20 @@ class BluetoothIssueScreenState extends State<BluetoothIssueScreen> {
     return Scaffold(
       backgroundColor: _themeManager.getHeaderColor(),
       body: GestureDetector(
-        onLongPress: () => Get.snackbar(
-            "Warning",
-            "Make sure you turn on your Bluetooth Adapter and " +
-                "location permission is required for Bluetooth functionality!"),
+        onLongPress: () => Get.snackbar("Warning",
+            "Make sure you turn on your Bluetooth Adapter and location permission is required for Bluetooth functionality!"),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
+              const Icon(
                 Icons.bluetooth_disabled,
                 size: 200.0,
                 color: Colors.white,
               ),
               Flexible(
                 child: Text(
-                  'Bluetooth Adapter is $bluetoothDisplay.\n' +
-                      'Location permission is $locationDisplay',
+                  'Bluetooth Adapter is $bluetoothDisplay.\nLocation permission is $locationDisplay',
                   style: _textStyle,
                   maxLines: 10,
                   overflow: TextOverflow.ellipsis,

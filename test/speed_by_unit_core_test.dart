@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/display.dart';
-import 'utils.dart';
 
 void main() {
   final speeds = [
@@ -21,24 +20,24 @@ void main() {
     20.0,
   ];
   group("speedByUnitCore for metric system and riding:", () {
-    speeds.forEach((speed) {
-      SPORTS.forEach((sport) {
+    for (final speed in speeds) {
+      for (final sport in allSports) {
         final expected = speed;
         test("$speed ($sport) -> $expected", () async {
           expect(speedByUnitCore(speed, true), expected);
         });
-      });
-    });
+      }
+    }
   });
 
   group("speedByUnitCore for imperial system and riding:", () {
-    speeds.forEach((speed) {
-      SPORTS.forEach((sport) {
-        final expected = speed * KM2MI;
+    for (final speed in speeds) {
+      for (final sport in allSports) {
+        final expected = speed * km2mi;
         test("$speed ($sport) -> $expected", () async {
           expect(speedByUnitCore(speed, false), expected);
         });
-      });
-    });
+      }
+    }
   });
 }

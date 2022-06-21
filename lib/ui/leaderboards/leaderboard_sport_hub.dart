@@ -7,21 +7,21 @@ import 'sport_leaderboard.dart';
 class LeaderboardSportHubScreen extends StatefulWidget {
   final List<String> sports;
 
-  LeaderboardSportHubScreen({Key? key, required this.sports}) : super(key: key);
+  const LeaderboardSportHubScreen({Key? key, required this.sports}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => LeaderboardSportHubScreenState();
+  LeaderboardSportHubScreenState createState() => LeaderboardSportHubScreenState();
 }
 
 class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
   double _sizeDefault = 10.0;
-  TextStyle _textStyle = TextStyle();
+  TextStyle _textStyle = const TextStyle();
 
   @override
   void initState() {
     super.initState();
     _textStyle = Get.textTheme.headline4!.apply(
-      fontFamily: FONT_FAMILY,
+      fontFamily: fontFamily,
       color: Colors.white,
     );
     _sizeDefault = _textStyle.fontSize! * 2;
@@ -30,7 +30,7 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Leaderboard Sports')),
+      appBar: AppBar(title: const Text('Leaderboard Sports')),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

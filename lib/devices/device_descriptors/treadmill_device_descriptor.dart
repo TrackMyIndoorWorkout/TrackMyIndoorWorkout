@@ -2,11 +2,12 @@ import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import 'fitness_machine_descriptor.dart';
 
 class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
-  ByteMetricDescriptor? paceMetric;
+  MetricDescriptor? paceMetric;
 
   TreadmillDeviceDescriptor({
     required fourCC,
@@ -16,13 +17,12 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
-    dataServiceId = FITNESS_MACHINE_ID,
-    dataCharacteristicId = TREADMILL_ID,
+    dataServiceId = fitnessMachineUuid,
+    dataCharacteristicId = treadmillUuid,
     canMeasureHeartRate = false,
     heartRateByteIndex,
-    calorieFactorDefault = 1.0,
   }) : super(
-          defaultSport: ActivityType.Run,
+          defaultSport: ActivityType.run,
           isMultiSport: false,
           fourCC: fourCC,
           vendorName: vendorName,
@@ -35,39 +35,49 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          calorieFactorDefault: calorieFactorDefault,
         );
+
+  @override
+  TreadmillDeviceDescriptor clone() => TreadmillDeviceDescriptor(
+        fourCC: fourCC,
+        vendorName: vendorName,
+        modelName: modelName,
+        namePrefixes: namePrefixes,
+        manufacturerPrefix: manufacturerPrefix,
+        manufacturerFitId: manufacturerFitId,
+        model: model,
+        dataServiceId: dataServiceId,
+        dataCharacteristicId: dataCharacteristicId,
+        canMeasureHeartRate: canMeasureHeartRate,
+        heartRateByteIndex: heartRateByteIndex,
+      );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
   void processFlag(int flag) {
     super.processFlag(flag);
     // negated first bit!
-    flag = processSpeedFlag(flag, true); // Instant
-    flag = processSpeedFlag(flag, false); // Average (fallback)
+    flag = processSpeedFlag(flag);
+    flag = skipFlag(flag); // Average Speed
     flag = processTotalDistanceFlag(flag);
-    flag = processInclinationFlag(flag); // skip Inclination and Ramp Angle
-    flag = processElevationGainFlag(flag); // skip + and - Elevation Gain
-    flag = processPaceFlag(flag); // Instant
-    flag = processPaceFlag(flag); // Average (fallback)
+    flag = skipFlag(flag, size: 4); // Inclination and Ramp Angle
+    flag = skipFlag(flag, size: 4); // Positive and Negative Elevation Gain
+    flag = processPaceFlag(flag);
+    flag = skipFlag(flag, size: 1); // Average Pace
     flag = processExpandedEnergyFlag(flag);
     flag = processHeartRateFlag(flag);
-    flag = processMetabolicEquivalentFlag(flag);
+    flag = skipFlag(flag, size: 1); // Metabolic Equivalent
     flag = processElapsedTimeFlag(flag);
-    flag = processRemainingTimeFlag(flag);
+    flag = skipFlag(flag); // Remaining Time
     flag = processForceAndPowerFlag(flag);
   }
 
   @override
-  RecordWithSport stubRecord(List<int> data) {
-    super.stubRecord(data);
-
+  RecordWithSport? stubRecord(List<int> data) {
     double? speed = getSpeed(data);
     double? pace = getPace(data); // km / minute
-    if (speed == null) {
-      speed = (pace ?? 0.0) * 60.0; // km / h
-    }
-
+    speed ??= (pace ?? 0.0) * 60.0; // km / h
+    // Run pace is not really a pace (speed reciprocal) but it's km/min
     if (pace != null && pace > 0) {
       pace = 1 / pace; // now minutes / km
     }
@@ -89,57 +99,30 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   @override
   void stopWorkout() {}
 
-  int processInclinationFlag(int flag) {
-    if (flag % 2 == 1) {
-      // SInt16 Inclination, SInt16 Ramp Angle Setting
-      byteCounter += 4;
-    }
-    flag ~/= 2;
-    return flag;
-  }
-
-  int processElevationGainFlag(int flag) {
-    if (flag % 2 == 1) {
-      // UInt16 Positive Elevation Gain, UInt16 Negative Elevation Gain
-      byteCounter += 4;
-    }
-    flag ~/= 2;
-    return flag;
-  }
-
   int processPaceFlag(int flag) {
     if (flag % 2 == 1) {
-      // UInt16, km/min with 0.1 resolution
-      if (paceMetric == null) {
-        paceMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 10.0);
-      }
+      // UInt8, km/min with 0.1 resolution
+      paceMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 10.0);
       byteCounter += 1;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   int processForceAndPowerFlag(int flag) {
     if (flag % 2 == 1) {
       byteCounter += 2; // Skip force on belt: SInt16, Newton
-      if (powerMetric == null) {
-        // SInt16, Watts
-        powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
-      }
+      // SInt16, Watts
+      powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
-    flag ~/= 2;
-    return flag;
+
+    return advanceFlag(flag);
   }
 
   double? getPace(List<int> data) {
-    var pace = paceMetric?.getMeasurementValue(data);
-    if (pace == null || !extendTuning) {
-      return pace;
-    }
     // Run pace is not really a pace (speed reciprocal) but it's km/min
-    // So we multiply unlike Rowing/Kayaking/Swimming division
-    return pace * powerFactor;
+    return paceMetric?.getMeasurementValue(data);
   }
 
   @override

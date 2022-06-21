@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/indoor_bike_device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
@@ -8,23 +8,23 @@ class TestPair {
   final List<int> data;
   final RecordWithSport record;
 
-  TestPair({required this.data, required this.record});
+  const TestPair({required this.data, required this.record});
 }
 
 void main() {
   test('Schwinn IC4 constructor tests', () async {
-    final bike = deviceMap["SIC4"]!;
+    final bike = DeviceFactory.getSchwinnIcBike();
 
     expect(bike.canMeasureHeartRate, true);
-    expect(bike.defaultSport, ActivityType.Ride);
-    expect(bike.fourCC, "SIC4");
+    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.fourCC, schwinnICBikeFourCC);
   });
 
   test('Schwinn IC4 interprets FTMS Indoor Bike Data flags properly', () async {
-    final bike = deviceMap["SIC4"] as IndoorBikeDeviceDescriptor;
-    final lsb = 68;
-    final msb = 2;
-    final flag = MAX_UINT8 * msb + lsb;
+    final bike = DeviceFactory.getSchwinnIcBike();
+    const lsb = 68;
+    const msb = 2;
+    const flag = maxUint8 * msb + lsb;
     bike.stopWorkout();
 
     bike.processFlag(flag);
@@ -37,10 +37,11 @@ void main() {
     expect(bike.timeMetric, null);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
+    expect(bike.heartRateByteIndex, isNotNull);
   });
 
   group('Schwinn IC4 interprets FTMS Indoor Bike Data properly', () {
-    [
+    for (final testPair in [
       TestPair(
         data: [68, 2, 94, 11, 240, 0, 122, 0, 84],
         record: RecordWithSport(
@@ -52,7 +53,7 @@ void main() {
           cadence: 120,
           heartRate: 84,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -68,7 +69,7 @@ void main() {
           cadence: 125,
           heartRate: 101,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -84,7 +85,7 @@ void main() {
           cadence: 125,
           heartRate: 115,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -100,7 +101,7 @@ void main() {
           cadence: 53,
           heartRate: 117,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -116,7 +117,7 @@ void main() {
           cadence: 57,
           heartRate: 90,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -132,7 +133,7 @@ void main() {
           cadence: 55,
           heartRate: 116,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
@@ -148,18 +149,20 @@ void main() {
           cadence: 0,
           heartRate: 85,
           pace: null,
-          sport: ActivityType.Ride,
+          sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
       ),
-    ].forEach((testPair) {
+    ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
-      test("$sum", () async {
-        final bike = deviceMap["SIC4"]!;
+      test("$sum ${testPair.data.length}", () async {
+        final bike = DeviceFactory.getSchwinnIcBike();
+        bike.initFlag();
+        expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();
 
-        final record = bike.stubRecord(testPair.data)!;
+        final record = bike.wrappedStubRecord(testPair.data)!;
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);
@@ -179,6 +182,6 @@ void main() {
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
       });
-    });
+    }
   });
 }

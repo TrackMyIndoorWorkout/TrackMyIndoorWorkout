@@ -3,11 +3,13 @@ import 'dart:math';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
 import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'utils.dart';
 import 'fitness_equipment_process_record_test.mocks.dart';
 
@@ -16,17 +18,17 @@ void main() {
   test('startWorkout blanks out leftover lastRecord', () async {
     final rnd = Random();
     await initPrefServiceForTest();
-    final descriptor = deviceMap["SIC4"]!;
+    final descriptor = DeviceFactory.getSchwinnIcBike();
     final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
     equipment.lastRecord = RecordWithSport.getRandom(descriptor.defaultSport, rnd);
 
     equipment.startWorkout();
 
-    expect(equipment.lastRecord.distance, closeTo(0.0, EPS));
+    expect(equipment.lastRecord.distance, closeTo(0.0, eps));
     expect(equipment.lastRecord.elapsed, 0);
     expect(equipment.lastRecord.calories, 0);
     expect(equipment.lastRecord.power, 0);
-    expect(equipment.lastRecord.speed, closeTo(0.0, EPS));
+    expect(equipment.lastRecord.speed, closeTo(0.0, eps));
     expect(equipment.lastRecord.cadence, 0);
     expect(equipment.lastRecord.heartRate, 0);
     expect(equipment.lastRecord.elapsedMillis, 0);
@@ -36,39 +38,53 @@ void main() {
     expect(equipment.lastRecord.caloriesPerHour, null);
     expect(equipment.lastRecord.caloriesPerMinute, null);
 
-    expect(equipment.residueCalories, closeTo(0.0, EPS));
-    expect(equipment.lastPositiveCalories, closeTo(0.0, EPS));
+    expect(equipment.residueCalories, closeTo(0.0, eps));
+    expect(equipment.lastPositiveCalories, closeTo(0.0, eps));
   });
 
   group('stopWorkout blanks out calorie helper variables', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, 300, rnd).forEach((calories) {
+    getRandomInts(smallRepetition, 300, rnd).forEach((calories) {
       test('$calories', () async {
-        await initPrefServiceForTest();
-        final oneSecondAgo = DateTime.now().subtract(Duration(seconds: 1));
-        final descriptor = deviceMap["SIC4"]!;
+        final hrBasedCalories = rnd.nextBool();
+        final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
+        final descriptor = DeviceFactory.getSchwinnIcBike();
         final activity = Activity(
-          deviceId: MPOWER_IMPORT_DEVICE_ID,
+          deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
+          hrmId: "",
           start: oneSecondAgo.millisecondsSinceEpoch,
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.defaultSport,
           powerFactor: 1.0,
           calorieFactor: 1.0,
+          hrCalorieFactor: 1.0,
+          hrmCalorieFactor: 1.0,
+          hrBasedCalories: hrBasedCalories,
+          timeZone: "America/Los_Angeles",
         );
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
-        equipment.lastRecord =
-            Record(timeStamp: oneSecondAgo.millisecondsSinceEpoch, elapsedMillis: 0, calories: 0);
-        equipment.processRecord(Record(calories: calories));
+        equipment.lastRecord = RecordWithSport(
+          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          elapsedMillis: 0,
+          calories: 0,
+          sport: descriptor.defaultSport,
+        );
+        equipment.workoutState = WorkoutState.moving;
+        equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          calories: calories,
+        ));
 
-        expect(equipment.lastPositiveCalories, closeTo(calories, EPS));
+        expect(equipment.lastPositiveCalories, closeTo(calories, eps));
 
         equipment.stopWorkout();
 
-        expect(equipment.residueCalories, closeTo(0.0, EPS));
-        expect(equipment.lastPositiveCalories, closeTo(0.0, EPS));
+        expect(equipment.residueCalories, closeTo(0.0, eps));
+        expect(equipment.lastPositiveCalories, closeTo(0.0, eps));
       });
     });
   });

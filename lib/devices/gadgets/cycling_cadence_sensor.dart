@@ -1,31 +1,28 @@
-import 'dart:collection';
-
 import '../../utils/constants.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../gatt_constants.dart';
-import 'cadence_data.dart';
+import 'cadence_mixin.dart';
 import 'integer_sensor.dart';
 
-class CyclingCadenceSensor extends IntegerSensor {
-  static const int REVOLUTION_SLIDING_WINDOW = 10; // Seconds
-  static const int EVENT_TIME_OVERFLOW = 64; // Overflows every 64 seconds
-
+class CyclingCadenceSensor extends IntegerSensor with CadenceMixin {
   // Secondary (Crank cadence) metrics
-  ShortMetricDescriptor? revolutionsMetric;
-  ShortMetricDescriptor? revolutionTime;
-  ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
+  MetricDescriptor? revolutionsMetric;
+  MetricDescriptor? revolutionTime;
 
   CyclingCadenceSensor(device)
       : super(
-          CYCLING_CADENCE_SERVICE_ID,
-          CYCLING_CADENCE_MEASUREMENT_ID,
+          cyclingCadenceServiceUuid,
+          cyclingCadenceMeasurementUuid,
           device,
-        );
+        ) {
+    initCadence(10, 64, maxUint16);
+  }
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
   @override
   bool canMeasurementProcessed(List<int> data) {
-    if (data.length < 1) return false;
+    if (data.isEmpty) return false;
 
     var flag = data[0];
     // 16 bit revolution and 16 bit time
@@ -59,39 +56,11 @@ class CyclingCadenceSensor extends IntegerSensor {
   int processMeasurement(List<int> data) {
     if (!canMeasurementProcessed(data)) return 0;
 
-    cadenceData.add(CadenceData(
-      seconds: getRevolutionTime(data) ?? 0.0,
-      revolutions: getRevolutions(data) ?? 0,
-    ));
+    addCadenceData(getRevolutionTime(data), getRevolutions(data));
 
-    var firstData = cadenceData.first;
-    if (cadenceData.length == 1) {
-      return firstData.revolutions ~/ firstData.seconds;
-    }
+    processData();
 
-    var lastData = cadenceData.last;
-    var revDiff = lastData.revolutions - firstData.revolutions;
-    // Check overflow
-    if (revDiff < 0) {
-      revDiff += MAX_UINT16;
-    }
-    var secondsDiff = lastData.seconds - firstData.seconds;
-    // Check overflow
-    if (secondsDiff < 0) {
-      secondsDiff += EVENT_TIME_OVERFLOW;
-    }
-
-    while (secondsDiff > REVOLUTION_SLIDING_WINDOW && cadenceData.length > 2) {
-      cadenceData.removeFirst();
-      secondsDiff = cadenceData.last.seconds - cadenceData.first.seconds;
-      // Check overflow
-      if (secondsDiff < 0) {
-        secondsDiff += EVENT_TIME_OVERFLOW;
-      }
-    }
-
-    metric = revDiff ~/ secondsDiff;
-    return metric;
+    return computeCadence();
   }
 
   int? getRevolutions(List<int> data) {
@@ -106,5 +75,6 @@ class CyclingCadenceSensor extends IntegerSensor {
   void clearMetrics() {
     revolutionsMetric = null;
     revolutionTime = null;
+    clearCadenceData();
   }
 }

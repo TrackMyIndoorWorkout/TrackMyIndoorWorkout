@@ -1,0 +1,1496 @@
+{
+  "repoId": "repoId",
+  "repoName": "",
+  "repoURL": "",
+  "branchName": "master",
+  "commitId": "",
+  "customerId": "cliCustomer",
+  "scanId": null,
+  "permissionList": [
+    {
+      "category": "Location Data",
+      "element": "Precise Location",
+      "dataElement": "Precise Location",
+      "sensitive": false,
+      "sensitivity": "high",
+      "score": 1,
+      "confidence": "high",
+      "scoringPoints": [],
+      "occurrences": [
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/flutter_blue/intermediates/merged_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/flutter_blue/intermediates/merged_manifest/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/flutter_blue/outputs/aar/flutter_blue-debug.aar/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/flutter_blue/outputs/aar/flutter_blue-release.aar/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/app/intermediates/merged_manifest/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 37,
+          "authorEmail": null
+        }
+      ]
+    },
+    {
+      "category": "Device Connectivity Access",
+      "element": "Bluetooth",
+      "dataElement": null,
+      "sensitive": false,
+      "sensitivity": "medium",
+      "score": 1,
+      "confidence": "high",
+      "scoringPoints": [],
+      "occurrences": [
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.BLUETOOTH_ADMIN",
+          "fileName": "build/flutter_blue/intermediates/merged_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:targetSdkVersion=\"19\" />\n\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 69
+            }
+          ],
+          "startLocationLine": 10,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.BLUETOOTH",
+          "fileName": "build/flutter_blue/intermediates/merged_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:minSdkVersion=\"19\"\n        android:targetSdkVersion=\"19\" />\n\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 63
+            },
+            {
+              "lineNumber": 4,
+              "startIndex": 35,
+              "endIndex": 63
+            }
+          ],
+          "startLocationLine": 9,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.BLUETOOTH_ADMIN",
+          "fileName": "build/flutter_blue/intermediates/merged_manifest/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:targetSdkVersion=\"19\" />\n\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 69
+            }
+          ],
+          "startLocationLine": 10,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.BLUETOOTH",
+          "fileName": "build/flutter_blue/intermediates/merged_manifest/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:minSdkVersion=\"19\"\n        android:targetSdkVersion=\"19\" />\n\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 63
+            },
+            {
+              "lineNumber": 4,
+              "startIndex": 35,
+              "endIndex": 63
+            }
+          ],
+          "startLocationLine": 9,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.BLUETOOTH_ADMIN",
+          "fileName": "build/flutter_blue/outputs/aar/flutter_blue-debug.aar/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:targetSdkVersion=\"19\" />\n\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 69
+            }
+          ],
+          "startLocationLine": 10,
+          "authorEmail": null
+        }
+      ]
+    },
+    {
+      "category": "Device Data Access",
+      "element": "Storage or Media",
+      "dataElement": null,
+      "sensitive": false,
+      "sensitivity": "low",
+      "score": 1,
+      "confidence": "high",
+      "scoringPoints": [],
+      "occurrences": [
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_EXTERNAL_STORAGE",
+          "fileName": "build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:minSdkVersion=\"16\"\n        android:targetSdkVersion=\"16\" />\n\n    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n\n    <queries>\n        <intent>\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 75
+            }
+          ],
+          "startLocationLine": 9,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_EXTERNAL_STORAGE",
+          "fileName": "build/file_picker/intermediates/merged_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:minSdkVersion=\"16\"\n        android:targetSdkVersion=\"16\" />\n\n    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n\n    <queries>\n        <intent>\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 75
+            }
+          ],
+          "startLocationLine": 9,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_EXTERNAL_STORAGE",
+          "fileName": "build/file_picker/outputs/aar/file_picker-release.aar/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:minSdkVersion=\"16\"\n        android:targetSdkVersion=\"16\" />\n\n    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n\n    <queries>\n        <intent>\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 75
+            }
+          ],
+          "startLocationLine": 9,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_EXTERNAL_STORAGE",
+          "fileName": "build/file_picker/outputs/aar/file_picker-debug.aar/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:minSdkVersion=\"16\"\n        android:targetSdkVersion=\"16\" />\n\n    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n\n    <queries>\n        <intent>\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 75
+            }
+          ],
+          "startLocationLine": 9,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_EXTERNAL_STORAGE",
+          "fileName": "build/app/intermediates/merged_manifest/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        </intent>\n    </queries>\n\n    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 75
+            }
+          ],
+          "startLocationLine": 34,
+          "authorEmail": null
+        }
+      ]
+    },
+    {
+      "category": "Account Data",
+      "element": "Accounts",
+      "dataElement": "Account ID",
+      "sensitive": false,
+      "sensitivity": "low",
+      "score": 1,
+      "confidence": "high",
+      "scoringPoints": [],
+      "occurrences": [
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/merged_manifest/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 40,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/merged_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 42,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/merged_manifests/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 40,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/merged_manifests/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 42,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/packaged_manifests/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 40,
+          "authorEmail": null
+        }
+      ]
+    }
+  ],
+  "piiList": [
+    {
+      "category": "Online Identifiers",
+      "element": "Device Identifier",
+      "dataSafetyElement": "Device or other IDs",
+      "dataSafetyCategory": "Device or other IDs",
+      "sensitive": false,
+      "sensitivity": "medium",
+      "score": 1.3,
+      "confidence": "high",
+      "scoringPoints": [
+        "high confidence",
+        "Positive Word Matched",
+        "CaseDependant Matched"
+      ],
+      "occurrences": [
+        {
+          "score": 1.3,
+          "confidence": "high",
+          "scoringPoints": [
+            "high confidence",
+            "Positive Word Matched",
+            "CaseDependant Matched"
+          ],
+          "sample": "deviceinfo",
+          "fileName": "plugins/GeneratedPluginRegistrant.java",
+          "language": "java",
+          "excerpt": "      Log.e(TAG, \"Error registering plugin bluetooth_enable, com.hui.bluetooth_enable.BluetoothEnablePlugin\", e);\n    }\n    try {\n      flutterEngine.getPlugins().add(new io.flutter.plugins.deviceinfo.DeviceInfoPlugin());\n    } catch(Exception e) {\n      Log.e(TAG, \"Error registering plugin device_info, io.flutter.plugins.deviceinfo.DeviceInfoPlugin\", e);\n    }\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 60,
+              "endIndex": 70
+            },
+            {
+              "lineNumber": 5,
+              "startIndex": 75,
+              "endIndex": 85
+            }
+          ],
+          "startLocationLine": 24,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [
+            "high confidence",
+            "Positive Word Matched"
+          ],
+          "sample": "deviceinfo",
+          "fileName": "build/device_info/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    package=\"io.flutter.plugins.deviceinfo\" >\n\n    <uses-sdk\n        android:minSdkVersion=\"16\"\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 2,
+              "startIndex": 32,
+              "endIndex": 42
+            }
+          ],
+          "startLocationLine": 3,
+          "authorEmail": null
+        },
+        {
+          "score": 0.8,
+          "confidence": "high",
+          "scoringPoints": [
+            "high confidence",
+            "CaseDependant Matched"
+          ],
+          "sample": "device?.id.id",
+          "fileName": "lib/devices/gadgets/fitness_equipment.dart",
+          "language": "dart",
+          "excerpt": "  Future<void> additionalSensorsOnDemand() async {\n    await refreshFactors();\n\n    if (_runningCadenceSensor != null && _runningCadenceSensor?.device?.id.id != device?.id.id) {\n      await _runningCadenceSensor?.detach();\n      _runningCadenceSensor = null;\n    }\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 64,
+              "endIndex": 77
+            },
+            {
+              "lineNumber": 3,
+              "startIndex": 81,
+              "endIndex": 94
+            }
+          ],
+          "startLocationLine": 343,
+          "authorEmail": null
+        },
+        {
+          "score": 0.8,
+          "confidence": "high",
+          "scoringPoints": [
+            "high confidence",
+            "CaseDependant Matched"
+          ],
+          "sample": "deviceId",
+          "fileName": "lib/persistence/database.dart",
+          "language": "dart",
+          "excerpt": "      queryString += \" AND $extraPredicate\";\n    }\n\n    final result = await database.rawQuery(queryString, [deviceId]);\n\n    if (result.isEmpty) {\n      return 0;\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 57,
+              "endIndex": 65
+            }
+          ],
+          "startLocationLine": 52,
+          "authorEmail": null
+        },
+        {
+          "score": 0.8,
+          "confidence": "high",
+          "scoringPoints": [
+            "high confidence",
+            "CaseDependant Matched"
+          ],
+          "sample": "device_info",
+          "fileName": "ios/Runner/GeneratedPluginRegistrant.m",
+          "language": "objective-c",
+          "excerpt": "@import bluetooth_enable;\n#endif\n\n#if __has_include(<device_info/FLTDeviceInfoPlugin.h>)\n#import <device_info/FLTDeviceInfoPlugin.h>\n#else\n@import device_info;\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 19,
+              "endIndex": 30
+            },
+            {
+              "lineNumber": 4,
+              "startIndex": 9,
+              "endIndex": 20
+            },
+            {
+              "lineNumber": 6,
+              "startIndex": 8,
+              "endIndex": 19
+            }
+          ],
+          "startLocationLine": 15,
+          "authorEmail": null
+        }
+      ],
+      "markedAs": "confirmed"
+    },
+    {
+      "category": "Audio, Visual & Sensory Data",
+      "element": "IoT or Sensor Data",
+      "dataSafetyElement": "",
+      "dataSafetyCategory": "",
+      "sensitive": false,
+      "sensitivity": "medium",
+      "score": 1,
+      "confidence": "high",
+      "scoringPoints": [
+        "high confidence",
+        "Variable Regex Matched",
+        "CaseDependant Matched"
+      ],
+      "occurrences": [
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [
+            "high confidence",
+            "Variable Regex Matched",
+            "CaseDependant Matched"
+          ],
+          "sample": "accelerometer",
+          "fileName": "lib/export/fit/fit_message.dart",
+          "language": "dart",
+          "excerpt": "  static const int cameraEvent = 161;\n  static const int timestampCorrelation = 162;\n  static const int gyroscopeData = 164;\n  static const int accelerometerData = 165;\n  static const int threeDSensorCalibration = 167;\n  static const int videoFrame = 169;\n  static const int obd2Data = 174;\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 19,
+              "endIndex": 32
+            }
+          ],
+          "startLocationLine": 62,
+          "authorEmail": null
+        }
+      ],
+      "markedAs": "false positive"
+    },
+    {
+      "category": "Audio, Visual & Sensory Data",
+      "element": "Video",
+      "dataSafetyElement": "Video",
+      "dataSafetyCategory": "Photos or videos",
+      "sensitive": false,
+      "sensitivity": "medium",
+      "score": 1,
+      "confidence": "high",
+      "scoringPoints": [
+        "high confidence",
+        "Variable Regex Matched",
+        "CaseDependant Matched"
+      ],
+      "occurrences": [
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [
+            "high confidence",
+            "Variable Regex Matched",
+            "CaseDependant Matched"
+          ],
+          "sample": "videoClip",
+          "fileName": "lib/export/fit/fit_message.dart",
+          "language": "dart",
+          "excerpt": "  static const int video = 184;\n  static const int videoTitle = 185;\n  static const int videoDescription = 186;\n  static const int videoClip = 187;\n  static const int ohrSettings = 188;\n  static const int exdScreenConfiguration = 200;\n  static const int exdDataFieldConfiguration = 201;\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 19,
+              "endIndex": 28
+            }
+          ],
+          "startLocationLine": 71,
+          "authorEmail": null
+        }
+      ],
+      "markedAs": "false positive"
+    },
+    {
+      "category": "Location Data",
+      "element": "Precise Location",
+      "dataSafetyElement": "Precise location",
+      "dataSafetyCategory": "Location",
+      "sensitive": false,
+      "sensitivity": "high",
+      "score": 1,
+      "confidence": "high",
+      "scoringPoints": [
+        "app_permission"
+      ],
+      "occurrences": [
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/flutter_blue/intermediates/merged_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/flutter_blue/intermediates/merged_manifest/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/flutter_blue/outputs/aar/flutter_blue-debug.aar/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/flutter_blue/outputs/aar/flutter_blue-release.aar/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/app/intermediates/merged_manifest/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 37,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/app/intermediates/merged_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 39,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/flutter_blue/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/flutter_blue/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n</manifest>",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/app/intermediates/merged_manifests/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 37,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/app/intermediates/merged_manifests/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 39,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/app/intermediates/packaged_manifests/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 37,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/app/intermediates/packaged_manifests/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 39,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.ACCESS_FINE_LOCATION",
+          "fileName": "build/app/intermediates/bundle_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH\" />\n    <uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 74
+            }
+          ],
+          "startLocationLine": 39,
+          "authorEmail": null
+        }
+      ],
+      "markedAs": "confirmed"
+    },
+    {
+      "category": "Account Data",
+      "element": "Account ID",
+      "dataSafetyElement": "User IDs",
+      "dataSafetyCategory": "Personal info",
+      "sensitive": false,
+      "sensitivity": "medium",
+      "score": 1,
+      "confidence": "high",
+      "scoringPoints": [
+        "app_permission"
+      ],
+      "occurrences": [
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/merged_manifest/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 40,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/merged_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 42,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/merged_manifests/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 40,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/merged_manifests/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 42,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/packaged_manifests/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 40,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/packaged_manifests/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 42,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.READ_PHONE_STATE",
+          "fileName": "build/app/intermediates/bundle_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 70
+            }
+          ],
+          "startLocationLine": 42,
+          "authorEmail": null
+        }
+      ],
+      "markedAs": "non personal"
+    }
+  ],
+  "vendorList": [],
+  "interestsubjectList": [
+    {
+      "words": [
+        {
+          "word": "provider",
+          "vendorName": "Eclipse.org",
+          "urls": [
+            "Eclipse.org",
+            "Eclipse.org"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "provider",
+          "vendorName": "Eclipse.org",
+          "urls": [
+            "Eclipse.org",
+            "Eclipse.org"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "provider",
+          "vendorName": "Eclipse.org",
+          "urls": [
+            "Eclipse.org",
+            "Eclipse.org"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "provider",
+          "vendorName": "Eclipse.org",
+          "urls": [
+            "Eclipse.org",
+            "Eclipse.org"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "provider",
+          "vendorName": "Eclipse.org",
+          "urls": [
+            "Eclipse.org",
+            "Eclipse.org"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": []
+    },
+    {
+      "words": [
+        {
+          "word": "stravaUrl",
+          "vendorName": "strava.com",
+          "urls": [
+            "https://www.strava.com",
+            "strava.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "suuntoPortalUrl",
+          "vendorName": "sports-tracker.com",
+          "urls": [
+            "https://sports-tracker.com",
+            "sports-tracker.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "suuntoApiUrl",
+          "vendorName": "suunto.com",
+          "urls": [
+            "https://cloudapi.suunto.com",
+            "suunto.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "oauthApiUrl",
+          "vendorName": "suunto.com",
+          "urls": [
+            "https://cloudapi-oauth.suunto.com",
+            "suunto.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "auUrlBase",
+          "vendorName": "mapmyfitness.com",
+          "urls": [
+            "https://www.mapmyfitness.com",
+            "mapmyfitness.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "auUrlBase",
+          "vendorName": "mapmyfitness.com",
+          "urls": [
+            "https://www.mapmyfitness.com",
+            "mapmyfitness.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "underArmourWorkoutUrlBase",
+          "vendorName": "mapmyrun.com",
+          "urls": [
+            "https://www.mapmyrun.com",
+            "mapmyrun.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "tpSandboxOAuthUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://oauth.sandbox.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpProductionOAuthUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://oauth.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpSandboxApiUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://api.sandbox.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpProductionApiUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://api.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "tpSandboxOAuthUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://oauth.sandbox.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpProductionOAuthUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://oauth.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpSandboxApiUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://api.sandbox.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpProductionApiUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://api.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "tpSandboxOAuthUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://oauth.sandbox.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpProductionOAuthUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://oauth.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpSandboxApiUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://api.sandbox.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpProductionApiUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://api.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "tpSandboxOAuthUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://oauth.sandbox.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpProductionOAuthUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://oauth.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpSandboxApiUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://api.sandbox.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        },
+        {
+          "word": "tpProductionApiUrlBase",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://api.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "trainingPeaksPortalUrl",
+          "vendorName": "trainingpeaks.com",
+          "urls": [
+            "https://app.trainingpeaks.com",
+            "trainingpeaks.com"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "provider",
+          "vendorName": "Eclipse.org",
+          "urls": [
+            "Eclipse.org",
+            "Eclipse.org"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "provider",
+          "vendorName": "Eclipse.org",
+          "urls": [
+            "Eclipse.org",
+            "Eclipse.org"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "provider",
+          "vendorName": "Eclipse.org",
+          "urls": [
+            "Eclipse.org",
+            "Eclipse.org"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "provider",
+          "vendorName": "Eclipse.org",
+          "urls": [
+            "Eclipse.org",
+            "Eclipse.org"
+          ],
+          "type": "master"
+        }
+      ]
+    },
+    {
+      "words": [
+        {
+          "word": "provider",
+          "vendorName": "Eclipse.org",
+          "urls": [
+            "Eclipse.org",
+            "Eclipse.org"
+          ],
+          "type": "master"
+        }
+      ]
+    }
+  ],
+  "created": "2022-06-15 06:17:15.067562",
+  "updated": "2022-06-15 06:19:37.262817"
+}

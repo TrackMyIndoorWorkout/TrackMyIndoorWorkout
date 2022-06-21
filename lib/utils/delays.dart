@@ -1,7 +1,7 @@
 // Rate-limiting delays and other thresholds in milliseconds
-const STARTUP_INTERMITTENT_DELAY = 100;
-const FTMS_DATA_THRESHOLD = 450;
-const SENSOR_DATA_THRESHOLD = 950;
-const UI_INTERMITTENT_DELAY = 100;
-const SPIN_DOWN_THRESHOLD = 500;
-const FTMS_STATUS_THRESHOLD = 250;
+const startupIntermittentDelay = 100;
+const ftmsDataThreshold = 480;
+const sensorDataThreshold = 980;
+const uiIntermittentDelay = 100;
+const spinDownThreshold = 500;
+const ftmsStatusThreshold = 250;

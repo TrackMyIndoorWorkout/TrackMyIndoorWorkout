@@ -10,34 +10,34 @@ class TestPair {
   final String input;
   final bool expected;
 
-  TestPair({required this.input, required this.expected});
+  const TestPair({required this.input, required this.expected});
 }
 
 void main() {
   group('isPortNumber corner cases', () {
-    [
-      TestPair(input: "", expected: false),
-      TestPair(input: " ", expected: false),
-      TestPair(input: "*^&@%", expected: false),
-      TestPair(input: "abc", expected: false),
-      TestPair(input: " abc ", expected: false),
-      TestPair(input: " abc123 ", expected: false),
-      TestPair(input: " 123abc ", expected: false),
-      TestPair(input: "1", expected: true),
-      TestPair(input: " 1", expected: true),
-      TestPair(input: "1 ", expected: true),
-      TestPair(input: "  1  ", expected: true),
-    ].forEach((testPair) {
+    for (final testPair in [
+      const TestPair(input: "", expected: false),
+      const TestPair(input: " ", expected: false),
+      const TestPair(input: "*^&@%", expected: false),
+      const TestPair(input: "abc", expected: false),
+      const TestPair(input: " abc ", expected: false),
+      const TestPair(input: " abc123 ", expected: false),
+      const TestPair(input: " 123abc ", expected: false),
+      const TestPair(input: "1", expected: true),
+      const TestPair(input: " 1", expected: true),
+      const TestPair(input: "1 ", expected: true),
+      const TestPair(input: "  1  ", expected: true),
+    ]) {
       test("${testPair.input} -> ${testPair.expected}", () async {
         expect(isPortNumber(testPair.input), testPair.expected);
       });
-    });
+    }
   });
 
   group('isPortNumber random test', () {
     final rnd = Random();
-    getRandomInts(SMALL_REPETITION, 131072, rnd).forEach((number) {
-      final expected = number < MAX_UINT16;
+    getRandomInts(smallRepetition, 131072, rnd).forEach((number) {
+      final expected = number < maxUint16;
       test('$number -> $expected', () async {
         expect(isPortNumber("$number"), expected);
       });

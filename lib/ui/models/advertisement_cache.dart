@@ -4,16 +4,21 @@ import '../../utils/scan_result_ex.dart';
 import 'advertisement_digest.dart';
 
 class AdvertisementCache {
-  Map<String, AdvertisementDigest> _advertisementMap = Map<String, AdvertisementDigest>();
+  final Map<String, AdvertisementDigest> _advertisementMap = {};
 
   void addEntry(ScanResult scanResult) {
     final id = scanResult.device.id.id;
+    final machineByteFlag = scanResult.getFtmsServiceDataMachineByte();
+    final machineTypes = scanResult.getFtmsServiceDataMachineTypes(machineByteFlag);
     _advertisementMap[id] = AdvertisementDigest(
       id: id,
       serviceUuids: scanResult.serviceUuids,
+      companyIds: scanResult.advertisementData.manufacturerData.keys.toList(growable: false),
       manufacturer: scanResult.manufacturerName(),
       txPower: scanResult.advertisementData.txPowerLevel ?? -120,
-      machineType: scanResult.getMachineType(),
+      machineTypesByte: machineByteFlag,
+      machineType: scanResult.getMachineType(machineTypes),
+      machineTypes: machineTypes,
     );
   }
 

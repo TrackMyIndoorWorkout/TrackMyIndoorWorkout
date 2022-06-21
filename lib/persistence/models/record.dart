@@ -1,14 +1,15 @@
 import 'dart:math';
 
 import 'package:floor/floor.dart';
+import 'package:flutter/foundation.dart';
 import '../../ui/models/display_record.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import 'activity.dart';
 
-const RECORDS_TABLE_NAME = 'records';
+const recordsTableName = 'records';
 
-@Entity(tableName: RECORDS_TABLE_NAME, foreignKeys: [
+@Entity(tableName: recordsTableName, foreignKeys: [
   ForeignKey(
     childColumns: ['activity_id'],
     parentColumns: ['id'],
@@ -47,6 +48,8 @@ class Record {
   double? caloriesPerHour;
   @ignore
   double? caloriesPerMinute;
+  @ignore
+  int movingTime = 0; // ms
 
   Record({
     this.id,
@@ -83,18 +86,18 @@ class Record {
 
   void paceToSpeed() {
     if (sport != null && speed == null && pace != null) {
-      if (pace!.abs() < DISPLAY_EPS) {
+      if (pace!.abs() < displayEps) {
         speed = 0.0;
       } else {
-        if (sport == ActivityType.Run || sport == ActivityType.Elliptical) {
+        if (sport == ActivityType.run || sport == ActivityType.elliptical) {
           // minutes / km pace
           speed = 60.0 / pace!;
-        } else if (sport == ActivityType.Kayaking ||
-            sport == ActivityType.Canoeing ||
-            sport == ActivityType.Rowing) {
+        } else if (sport == ActivityType.kayaking ||
+            sport == ActivityType.canoeing ||
+            sport == ActivityType.rowing) {
           // seconds / 500m pace
           speed = 30.0 / (pace! / 60.0);
-        } else if (sport == ActivityType.Swim) {
+        } else if (sport == ActivityType.swim) {
           // seconds / 100m pace
           speed = 6.0 / (pace! / 60.0);
         } else {
@@ -131,6 +134,82 @@ class Record {
 
   DisplayRecord display() {
     return DisplayRecord(this);
+  }
+
+  bool isNotMoving() {
+    return (power ?? 0) == 0 &&
+        (speed ?? 0.0) < eps &&
+        (pace ?? 0.0) == 0.0 &&
+        (caloriesPerHour ?? 0.0) < eps &&
+        (caloriesPerMinute ?? 0.0) < eps &&
+        (cadence ?? 0) == 0;
+  }
+
+  void cumulativeDistanceEnforcement(Record lastRecord) {
+    if (distance != null && lastRecord.distance != null) {
+      if (!testing && kDebugMode) {
+        assert(distance! >= lastRecord.distance!);
+      }
+
+      if (distance! < lastRecord.distance!) {
+        distance = lastRecord.distance;
+      }
+    }
+  }
+
+  void cumulativeElapsedTimeEnforcement(Record lastRecord) {
+    if (elapsed != null && lastRecord.elapsed != null) {
+      if (!testing && kDebugMode) {
+        assert(elapsed! >= lastRecord.elapsed!);
+      }
+
+      if (elapsed! < lastRecord.elapsed!) {
+        elapsed = lastRecord.elapsed;
+      }
+    }
+  }
+
+  void cumulativeMovingTimeEnforcement(Record lastRecord) {
+    if (!testing && kDebugMode) {
+      assert(movingTime >= lastRecord.movingTime);
+    }
+
+    if (movingTime < lastRecord.movingTime) {
+      movingTime = lastRecord.movingTime;
+    }
+  }
+
+  void cumulativeCaloriesEnforcement(Record lastRecord) {
+    if (calories != null && lastRecord.calories != null) {
+      if (!testing && kDebugMode) {
+        assert(calories! >= lastRecord.calories!);
+      }
+
+      if (calories! < lastRecord.calories!) {
+        calories = lastRecord.calories;
+      }
+    }
+  }
+
+  void cumulativeMetricsEnforcements(
+    Record lastRecord, {
+    bool forDistance = false,
+    bool forTime = false,
+    bool forCalories = false,
+  }) {
+    // Ensure that cumulative fields cannot decrease over time
+    if (forDistance) {
+      cumulativeDistanceEnforcement(lastRecord);
+    }
+
+    if (forTime) {
+      cumulativeElapsedTimeEnforcement(lastRecord);
+      cumulativeMovingTimeEnforcement(lastRecord);
+    }
+
+    if (forCalories) {
+      cumulativeCaloriesEnforcement(lastRecord);
+    }
   }
 }
 
@@ -172,7 +251,7 @@ class RecordWithSport extends Record {
           caloriesPerMinute: caloriesPerMinute,
         );
 
-  static getBlank(String sport, bool uxDebug, Random random) {
+  static RecordWithSport getZero(String sport) {
     return RecordWithSport(
       timeStamp: 0,
       distance: 0.0,
@@ -187,15 +266,54 @@ class RecordWithSport extends Record {
     );
   }
 
-  static getRandom(String sport, Random random) {
+  static RecordWithSport getRandom(String sport, Random random) {
+    final spd = sport == ActivityType.run
+        ? 8.0 + random.nextDouble() * 12.0
+        : 30.0 + random.nextDouble() * 10.0;
     return RecordWithSport(
       timeStamp: DateTime.now().millisecondsSinceEpoch,
       calories: random.nextInt(1500),
       power: 50 + random.nextInt(500),
-      speed: 30.0 + random.nextDouble() * 10.0,
+      speed: spd,
       cadence: 30 + random.nextInt(100),
       heartRate: 60 + random.nextInt(120),
       sport: sport,
     );
+  }
+
+  RecordWithSport merge(RecordWithSport record, bool mergeCadence, bool mergeHr) {
+    distance ??= record.distance;
+    elapsed ??= record.elapsed;
+    calories ??= record.calories;
+    power ??= record.power;
+    speed ??= record.speed;
+    if (mergeCadence) {
+      cadence ??= record.cadence;
+    }
+
+    if (mergeHr) {
+      heartRate ??= record.heartRate;
+    }
+
+    return this;
+  }
+
+  @override
+  String toString() {
+    return "id $id | "
+        "activityId $activityId | "
+        "timeStamp $timeStamp | "
+        "distance $distance | "
+        "elapsed $elapsed | "
+        "calories $calories | "
+        "power $power | "
+        "speed $speed | "
+        "cadence $cadence | "
+        "heartRate $heartRate | "
+        "elapsedMillis $elapsedMillis | "
+        "pace $pace | "
+        "strokeCount $strokeCount | "
+        "caloriesPerHour $caloriesPerHour | "
+        "caloriesPerMinute $caloriesPerMinute";
   }
 }

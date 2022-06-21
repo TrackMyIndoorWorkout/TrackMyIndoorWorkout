@@ -6,33 +6,39 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:pref/pref.dart';
 import '../import/csv_importer.dart';
+import '../persistence/database.dart';
+import '../preferences/leaderboard_and_rank.dart';
 
-typedef void SetProgress(double progress);
+typedef SetProgress = void Function(double progress);
 
 class ImportForm extends StatefulWidget {
   final bool migration;
 
-  ImportForm({Key? key, required this.migration}) : super(key: key);
+  const ImportForm({Key? key, required this.migration}) : super(key: key);
 
   @override
-  _ImportFormState createState() => _ImportFormState();
+  ImportFormState createState() => ImportFormState();
 }
 
-class _ImportFormState extends State<ImportForm> {
+class ImportFormState extends State<ImportForm> {
   final dateTimeFormat = DateFormat("yyyy-MM-dd HH:mm");
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _filePath;
   DateTime? _activityDateTime;
   bool _isLoading = false;
   double _progressValue = 0.0;
   double _sizeDefault = 10.0;
-  TextEditingController _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
+  bool _leaderboardFeature = leaderboardFeatureDefault;
 
   @override
   void initState() {
     super.initState();
     _sizeDefault = Get.textTheme.headline2!.fontSize!;
+    final prefService = Get.find<BasePrefService>();
+    _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
   }
 
   void setProgress(double progress) {
@@ -45,17 +51,17 @@ class _ImportFormState extends State<ImportForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('MPower Workout Import'),
+        title: const Text('MPower Workout Import'),
       ),
       body: LoadingOverlay(
         isLoading: _isLoading,
         progressIndicator: SizedBox(
+          height: _sizeDefault * 2,
+          width: _sizeDefault * 2,
           child: CircularProgressIndicator(
             strokeWidth: _sizeDefault,
             value: _progressValue,
           ),
-          height: _sizeDefault * 2,
-          width: _sizeDefault * 2,
         ),
         child: Form(
           key: _formKey,
@@ -64,10 +70,11 @@ class _ImportFormState extends State<ImportForm> {
             children: [
               TextFormField(
                 decoration: InputDecoration(
+                  filled: true,
                   labelText: '${widget.migration ? "Migration" : "MPower Echelon"} CSV File URL',
                   hintText: 'Paste the CSV file URL',
                   suffixIcon: ElevatedButton(
-                    child: Text(
+                    child: const Text(
                       '⋯',
                       style: TextStyle(fontSize: 30),
                     ),
@@ -76,7 +83,7 @@ class _ImportFormState extends State<ImportForm> {
                       if (result != null && result.files.single.path != null) {
                         _textController.text = result.files.single.path!;
                         setState(() {
-                          _filePath = result.files.single.path!;
+                          _filePath = result.files.single.path;
                         });
                       }
                     },
@@ -94,13 +101,15 @@ class _ImportFormState extends State<ImportForm> {
                 }),
               ),
               Visibility(
-                child: SizedBox(height: 24),
                 visible: !widget.migration,
+                child: const SizedBox(height: 24),
               ),
               Visibility(
+                visible: !widget.migration,
                 child: DateTimeField(
                   format: dateTimeFormat,
                   decoration: const InputDecoration(
+                    filled: true,
                     prefixIcon: Icon(Icons.access_time),
                     labelText: 'Workout Date & Time',
                     hintText: 'Pick date & time',
@@ -132,9 +141,8 @@ class _ImportFormState extends State<ImportForm> {
                     _activityDateTime = value;
                   }),
                 ),
-                visible: !widget.migration,
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Padding(
@@ -161,13 +169,21 @@ class _ImportFormState extends State<ImportForm> {
                           try {
                             File file = File(_filePath!);
                             String contents = await file.readAsString();
-                            final importer = CSVImporter(widget.migration, _activityDateTime);
-                            var activity = await importer.import(contents, setProgress);
+                            final importer = CSVImporter(_activityDateTime);
+                            final activity = await importer.import(contents, setProgress);
                             setState(() {
                               _isLoading = false;
                             });
                             if (activity != null) {
                               Get.snackbar("Success", "Workout imported!");
+                              if (_leaderboardFeature) {
+                                final deviceDescriptor = activity.deviceDescriptor();
+                                final workoutSummary =
+                                    activity.getWorkoutSummary(deviceDescriptor.manufacturerPrefix);
+                                final database = Get.find<AppDatabase>();
+                                await database.workoutSummaryDao
+                                    .insertWorkoutSummary(workoutSummary);
+                              }
                             } else {
                               Get.snackbar(
                                   "Failure", "Problem while importing: ${importer.message}");
@@ -183,12 +199,12 @@ class _ImportFormState extends State<ImportForm> {
                           Get.snackbar("Error", "Please correct form fields");
                         }
                       },
-                      child: Text('Import'),
+                      child: const Text('Import'),
                     ),
                   ),
                   Expanded(child: Container()),
                   ElevatedButton(
-                    child: Text('Reset'),
+                    child: const Text('Reset'),
                     onPressed: () => _formKey.currentState?.reset(),
                   ),
                 ],

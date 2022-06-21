@@ -7,12 +7,12 @@ import 'utils.dart';
 String paceString(double pace) {
   final minutes = pace.truncate();
   final seconds = ((pace - minutes) * 60.0).truncate();
-  return "$minutes:" + seconds.toString().padLeft(2, "0");
+  return "$minutes:${seconds.toString().padLeft(2, "0")}";
 }
 
 void main() {
-  group("paceString formats as expected:", () {
-    final List<Tuple2<double, String>> paces = [
+  group("paceString formats as expected (fixed samples):", () {
+    const List<Tuple2<double, String>> paces = [
       Tuple2<double, String>(0.0, "0:00"),
       Tuple2<double, String>(0.5, "0:30"),
       Tuple2<double, String>(1.0, "1:00"),
@@ -29,20 +29,21 @@ void main() {
       Tuple2<double, String>(80.0, "80:00"),
       Tuple2<double, String>(80.5, "80:30"),
     ];
-    paces.forEach((pacePair) {
+    for (final pacePair in paces) {
       final expected = pacePair.item2;
       test("${pacePair.item1} -> $expected", () async {
         expect(paceString(pacePair.item1), expected);
       });
-    });
+    }
+  });
 
+  group("paceString formats as expected (random samples):", () {
     final rnd = Random();
-    1.to(REPETITION).forEach((input) {
-      final randomPace = rnd.nextDouble() * 100;
+    for (var randomPace in getRandomDoubles(repetition, 100, rnd)) {
       final expected = paceString(randomPace);
       test("$randomPace -> $expected", () async {
         expect(paceString(randomPace), expected);
       });
-    });
+    }
   });
 }

@@ -1,10 +1,13 @@
 import 'package:edit_distance/edit_distance.dart';
+import '../../devices/device_descriptors/matrix_treadmill_descriptor.dart';
 import 'fit_base_type.dart';
 
-const NAUTILUS_FIT_ID = 14;
-const NORTH_POLE_ENGINEERING_FIT_ID = 66;
-const PRECOR_FIT_ID = 266;
-const STRAVA_FIT_ID = 265;
+const nautilusFitId = 14;
+const northPoleEngineeringFitId = 66;
+const stagesCyclingFitId = 69;
+const johnsonHealthTechId = 122;
+const precorFitId = 266;
+const stravaFitId = 265;
 
 Map<int, String> fitManufacturer = {
   1: 'garmin',
@@ -20,7 +23,7 @@ Map<int, String> fitManufacturer = {
   11: 'tanita',
   12: 'echowell',
   13: 'dynastream oem',
-  NAUTILUS_FIT_ID: 'nautilus',
+  nautilusFitId: 'nautilus',
   15: 'dynastream',
   16: 'timex',
   17: 'metrigear',
@@ -71,7 +74,7 @@ Map<int, String> fitManufacturer = {
   63: 'specialized',
   64: 'wtek',
   65: 'physical enterprises',
-  NORTH_POLE_ENGINEERING_FIT_ID: 'north pole engineering',
+  northPoleEngineeringFitId: 'north pole engineering',
   67: 'bkool',
   68: 'cateye',
   69: 'stages cycling',
@@ -125,7 +128,7 @@ Map<int, String> fitManufacturer = {
   119: 'orangetheory',
   120: 'inpeak',
   121: 'kinetic',
-  122: 'johnson health tech',
+  johnsonHealthTechId: 'johnson health tech',
   123: 'polar electro',
   124: 'seesense',
   255: 'development',
@@ -137,8 +140,8 @@ Map<int, String> fitManufacturer = {
   262: 'recon',
   263: 'favero electronics',
   264: 'dynovelo',
-  STRAVA_FIT_ID: 'strava',
-  PRECOR_FIT_ID: 'precor', // Amer Sports
+  stravaFitId: 'strava',
+  precorFitId: 'precor', // Amer Sports
   267: 'bryton',
   268: 'sram',
   269: 'navman', // MiTAC Global Corporation (Mio Technology)
@@ -174,23 +177,31 @@ int getFitManufacturer(String manufacturer) {
     return FitBaseTypes.uint16Type.invalidValue;
   }
 
+  final matrixDescriptor = MatrixTreadmillDescriptor();
+  if (manufacturer.startsWith(matrixDescriptor.manufacturerPrefix)) {
+    return johnsonHealthTechId;
+  }
+
   var bestId = 0;
   var bestDistance = 1.0;
   JaroWinkler jaroWinkler = JaroWinkler();
   final manufacturerLower = manufacturer.toLowerCase();
-  fitManufacturer.forEach((id, text) {
-    final manufacturerCropped = manufacturerLower.length <= text.length
+  for (var manufacturerEntry in fitManufacturer.entries) {
+    final manufacturerCropped = manufacturerLower.length <= manufacturerEntry.value.length
         ? manufacturerLower
-        : manufacturerLower.substring(0, text.length - 1);
-    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, text);
+        : manufacturerLower.substring(0, manufacturerEntry.value.length - 1);
+    final entryCropped = manufacturerEntry.value.length <= manufacturerCropped.length
+        ? manufacturerEntry.value
+        : manufacturerEntry.value.substring(0, manufacturerCropped.length - 1);
+    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, entryCropped);
     if (distance < bestDistance) {
       bestDistance = distance;
-      bestId = id;
+      bestId = manufacturerEntry.key;
     }
-  });
+  }
 
-  if (bestDistance > 0.1) {
-    bestId = FitBaseTypes.uint16Type.invalidValue;
+  if (bestDistance > 0.10) {
+    bestId = stravaFitId;
   }
 
   return bestId;

@@ -2,18 +2,17 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
 class SportPickerBottomSheet extends StatefulWidget {
+  final List<String> sportChoices;
   final String initialSport;
-  final bool allSports;
 
-  SportPickerBottomSheet({
+  const SportPickerBottomSheet({
     Key? key,
+    required this.sportChoices,
     required this.initialSport,
-    required this.allSports,
   }) : super(key: key);
 
   @override
@@ -22,32 +21,15 @@ class SportPickerBottomSheet extends StatefulWidget {
 
 class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
   int _sportIndex = 0;
-  List<String> _sportChoices = [];
-  ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _largerTextStyle = TextStyle();
-  TextStyle _selectedTextStyle = TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
+  TextStyle _largerTextStyle = const TextStyle();
+  TextStyle _selectedTextStyle = const TextStyle();
 
   @override
   void initState() {
     super.initState();
 
-    _sportChoices = widget.allSports
-        ? [
-            ActivityType.Ride,
-            ActivityType.Run,
-            ActivityType.Elliptical,
-            ActivityType.Kayaking,
-            ActivityType.Canoeing,
-            ActivityType.Rowing,
-            ActivityType.Swim,
-          ]
-        : [
-            ActivityType.Kayaking,
-            ActivityType.Canoeing,
-            ActivityType.Rowing,
-            ActivityType.Swim,
-          ];
-    _sportIndex = max(0, _sportChoices.indexOf(widget.initialSport));
+    _sportIndex = max(0, widget.sportChoices.indexOf(widget.initialSport));
     _largerTextStyle = Get.textTheme.headline4!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
@@ -59,7 +41,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: _sportChoices
+          children: widget.sportChoices
               .asMap()
               .entries
               .map(
@@ -85,7 +67,8 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
                           _sportIndex = e.key;
                         });
                       },
-                      icon: _themeManager.getBlueIcon(getIcon(e.value), _largerTextStyle.fontSize!),
+                      icon: _themeManager.getBlueIcon(
+                          getSportIcon(e.value), _largerTextStyle.fontSize!),
                       label: Text(e.value,
                           style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),
@@ -96,8 +79,8 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(
-          Icons.check, false, false, "", 0, () => Get.back(result: _sportChoices[_sportIndex])),
+      floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0,
+          () => Get.back(result: widget.sportChoices[_sportIndex])),
     );
   }
 }

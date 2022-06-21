@@ -8,8 +8,9 @@ class ByteMetricDescriptor extends MetricDescriptor {
     optional = false,
   }) : super(lsb: lsb, msb: 0, divider: divider, optional: optional);
 
+  @override
   double? getMeasurementValue(List<int> data) {
-    if (optional && data[lsb] == MAX_UINT8 - 1) {
+    if (optional && data[lsb] == maxUint8 - 1) {
       return null;
     }
 

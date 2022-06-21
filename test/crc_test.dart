@@ -17,7 +17,7 @@ class TestPair {
 
 void main() {
   group('FIT CRC low level test', () {
-    [
+    for (final testPair in [
       TestPair(data: [0x0E, 0x20, 0x23, 0x08, 0xF1, 0x56, 0x00, 0x00], pad: true, crc: 0xADF2),
       TestPair(data: [0x0E, 0x10, 0xE9, 0x05, 0xB1, 0x00, 0x00, 0x00], pad: true, crc: 0x1442),
       TestPair(data: [0x0E, 0x10, 0x5E, 0x06, 0x17, 0x08, 0x00, 0x00], pad: true, crc: 0xBBE3),
@@ -194,11 +194,11 @@ void main() {
         0x10,
         0x03
       ], pad: false, crc: 0x9ed3),
-    ].forEach((testPair) {
+    ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum -> ${testPair.crc}", () async {
         expect(crcData(testPair.data), testPair.crc);
       });
-    });
+    }
   });
 }

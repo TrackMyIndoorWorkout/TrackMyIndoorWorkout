@@ -6,7 +6,7 @@ void main() {
   test('FitFileCreator has the expected global message number', () async {
     final fileCreator = FitFileCreator(0);
 
-    expect(fileCreator.globalMessageNumber, FitMessage.FileCreator);
+    expect(fileCreator.globalMessageNumber, FitMessage.fileCreator);
   });
 
   test('FitFileCreator data has the expected length', () async {

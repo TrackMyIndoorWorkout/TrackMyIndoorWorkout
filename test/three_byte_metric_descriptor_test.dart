@@ -8,17 +8,17 @@ import 'utils.dart';
 void main() {
   group('optional ThreeByteMetricDescriptor returns null if the value is max', () {
     final rnd = Random();
-    getRandomDoubles(REPETITION, 1024, rnd).forEach((divider) {
+    for (var divider in getRandomDoubles(repetition, 1024, rnd)) {
       final len = rnd.nextInt(99) + 5;
-      final data = getRandomInts(len, MAX_UINT8, rnd);
-      final lsbLocation = rnd.nextInt(len);
-      final larger = lsbLocation > 1 ? (lsbLocation < len - 2 ? rnd.nextBool() : false) : true;
+      final data = getRandomInts(len, maxUint8, rnd);
+      final larger = rnd.nextBool();
+      final lsbLocation = rnd.nextInt(len - 2) + (larger ? 0 : 2);
       final msbLocation = larger ? lsbLocation + 2 : lsbLocation - 2;
-      data[lsbLocation] = MAX_BYTE;
-      data[(lsbLocation + msbLocation) ~/ 2] = MAX_BYTE;
-      data[msbLocation] = MAX_BYTE;
-      final divider = rnd.nextDouble() * 4;
-      final expected = 0.0;
+      data[lsbLocation] = maxByte;
+      data[(lsbLocation + msbLocation) ~/ 2] = maxByte;
+      data[msbLocation] = maxByte;
+      divider = rnd.nextDouble() * 4;
+      const expected = 0.0;
 
       test("$divider -> $expected", () async {
         final desc = ThreeByteMetricDescriptor(
@@ -26,36 +26,36 @@ void main() {
 
         expect(desc.getMeasurementValue(data), null);
       });
-    });
+    }
   });
 
   group('ThreeByteMetricDescriptor calculates measurement as expected', () {
     final rnd = Random();
-    1.to(REPETITION).forEach((input) {
-      final len = rnd.nextInt(99) + 5;
-      final data = getRandomInts(len, MAX_UINT8, rnd);
-      final lsbLocation = rnd.nextInt(len);
-      final larger = lsbLocation > 1 ? (lsbLocation < len - 2 ? rnd.nextBool() : false) : true;
+    for (var lenMinusFive in getRandomInts(repetition, 99, rnd)) {
+      final len = lenMinusFive + 5;
+      final data = getRandomInts(len, maxUint8, rnd);
+      final larger = rnd.nextBool();
+      final lsbLocation = rnd.nextInt(len - 2) + (larger ? 0 : 2);
       final msbLocation = larger ? lsbLocation + 2 : lsbLocation - 2;
       final midLocation = (lsbLocation + msbLocation) ~/ 2;
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
       final expected = (optional &&
-              data[lsbLocation] == MAX_BYTE &&
-              data[midLocation] == MAX_BYTE &&
-              data[msbLocation] == MAX_BYTE)
+              data[lsbLocation] == maxByte &&
+              data[midLocation] == maxByte &&
+              data[msbLocation] == maxByte)
           ? 0
-          : (data[lsbLocation] + MAX_UINT8 * (data[midLocation] + MAX_UINT8 * data[msbLocation])) /
+          : (data[lsbLocation] + maxUint8 * (data[midLocation] + maxUint8 * data[msbLocation])) /
               divider;
 
       test(
-          "(${data[lsbLocation]} + ${data[midLocation]} + ${data[msbLocation]}) / $divider -> $expected",
+          "(${data[lsbLocation]}, ${data[midLocation]}, ${data[msbLocation]}) / $divider -> $expected",
           () async {
         final desc = ThreeByteMetricDescriptor(
             lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);
 
-        expect(desc.getMeasurementValue(data), closeTo(expected, EPS));
+        expect(desc.getMeasurementValue(data), closeTo(expected, eps));
       });
-    });
+    }
   });
 }

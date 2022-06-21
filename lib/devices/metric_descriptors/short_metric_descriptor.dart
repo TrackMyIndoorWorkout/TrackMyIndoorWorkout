@@ -9,9 +9,10 @@ class ShortMetricDescriptor extends MetricDescriptor {
     optional = false,
   }) : super(lsb: lsb, msb: msb, divider: divider, optional: optional);
 
+  @override
   double? getMeasurementValue(List<int> data) {
-    final value = data[lsb] + MAX_UINT8 * data[msb];
-    if (optional && value == MAX_UINT16 - 1) {
+    final value = data[lsb] + maxUint8 * data[msb];
+    if (optional && value == maxUint16 - 1) {
       return null;
     }
 

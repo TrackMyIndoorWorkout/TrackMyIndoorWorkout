@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
-import 'package:track_my_indoor_exercise/ui/about.dart';
-import '../persistence/preferences.dart';
-import '../ui/parts/flutter_brand_icons.dart';
+import '../ui/about.dart';
+import '../preferences/theme_selection.dart';
 import '../utils/constants.dart';
 
 class ThemeManager {
   ThemeMode getThemeMode() {
     final prefService = Get.find<BasePrefService>();
-    final themeSelection = prefService.get<String>(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
+    final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
     if (themeSelection == "light") {
       return ThemeMode.light;
     } else if (themeSelection == "dark") {
@@ -22,7 +21,7 @@ class ThemeManager {
 
   bool isDark() {
     final prefService = Get.find<BasePrefService>();
-    final themeSelection = prefService.get<String>(THEME_SELECTION_TAG) ?? THEME_SELECTION_DEFAULT;
+    final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
     if (themeSelection == "light") {
       return false;
     } else if (themeSelection == "dark") {
@@ -54,21 +53,21 @@ class ThemeManager {
         radius: const Radius.circular(16.0),
         overlayTutorialHints: <OverlayTutorialWidgetHint>[
           OverlayTutorialWidgetHint(
-            builder: (context, rect, rRect) {
+            builder: (context, oRect) {
               final annotation = Text(
                 text,
                 style: Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
               );
-              if (rRect.center.dx < Get.width / 2) {
+              if ((oRect.rRect?.center.dx ?? 0.0) < Get.width / 2) {
                 return Positioned(
-                  top: rRect.top + 4.0 + annotationYOffset,
-                  left: rRect.right + 4.0,
+                  top: (oRect.rRect?.top ?? 0.0) + 4.0 + annotationYOffset,
+                  left: (oRect.rRect?.right ?? 0.0) + 4.0,
                   child: annotation,
                 );
               } else {
                 return Positioned(
-                  top: rRect.top + 4.0 + annotationYOffset,
-                  right: Get.width - rRect.left + 4.0,
+                  top: (oRect.rRect?.top ?? 0.0) + 4.0 + annotationYOffset,
+                  right: Get.width - (oRect.rRect?.left ?? 4.0) + 4.0,
                   child: annotation,
                 );
               }
@@ -108,8 +107,12 @@ class ThemeManager {
     return isDark() ? Colors.orange : Colors.deepOrangeAccent;
   }
 
+  Color getSuuntoRedColor() {
+    return isDark() ? Colors.redAccent : Colors.red;
+  }
+
   Color getGreyColor() {
-    return isDark() ? Colors.grey.shade200 : Colors.grey.shade700;
+    return isDark() ? Colors.grey.shade400 : Colors.grey.shade600;
   }
 
   Color getAntagonistColor() {
@@ -122,6 +125,10 @@ class ThemeManager {
 
   Icon getBlueIcon(IconData icon, double size) {
     return Icon(icon, color: getBlueColor(), size: size);
+  }
+
+  Icon getGreyIcon(IconData icon, double size) {
+    return Icon(icon, color: getGreyColor(), size: size);
   }
 
   OverlayTutorialHole getBlueIconWithHole(
@@ -144,7 +151,7 @@ class ThemeManager {
   }
 
   TextStyle getBlueTextStyle(double fontSize) {
-    return TextStyle(fontFamily: FONT_FAMILY, fontSize: fontSize, color: getBlueColor());
+    return TextStyle(fontFamily: fontFamily, fontSize: fontSize, color: getBlueColor());
   }
 
   Widget _getFabCore(
@@ -156,13 +163,16 @@ class ThemeManager {
     String overlayText,
     int annotationYOffset,
     VoidCallback? onPressed,
+    GlobalKey? key,
   ) {
+    key ??= GlobalKey();
     final fab = FloatingActionButton(
+      key: key,
       heroTag: null,
-      child: widget,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
       onPressed: onPressed,
+      child: widget,
     );
 
     return wrapInHole
@@ -193,6 +203,30 @@ class ThemeManager {
       overlayText,
       annotationYOffset,
       onPressed,
+      null,
+    );
+  }
+
+  Widget getIconFabWKey(
+    Color color,
+    IconData icon,
+    bool wrapInHole,
+    bool overlayEnabled,
+    String overlayText,
+    int annotationYOffset,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return _getFabCore(
+      getAntagonistColor(),
+      color,
+      Icon(icon),
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+      key,
     );
   }
 
@@ -234,6 +268,48 @@ class ThemeManager {
     );
   }
 
+  Widget getBlueFabWKey(
+    IconData icon,
+    bool wrapInHole,
+    bool overlayEnabled,
+    String overlayText,
+    int annotationYOffset,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return getIconFabWKey(
+      getBlueColor(),
+      icon,
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+      key,
+    );
+  }
+
+  Widget getGreenFabWKey(
+    IconData icon,
+    bool wrapInHole,
+    bool overlayEnabled,
+    String overlayText,
+    int annotationYOffset,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return getIconFabWKey(
+      getGreenColor(),
+      icon,
+      wrapInHole,
+      overlayEnabled,
+      overlayText,
+      annotationYOffset,
+      onPressed,
+      key,
+    );
+  }
+
   Widget getGreenGenericFab(
     Widget widget,
     wrapInHole,
@@ -251,19 +327,7 @@ class ThemeManager {
       overlayText,
       annotationYOffset,
       onPressed,
-    );
-  }
-
-  Widget getStravaFab(bool overlayEnabled, VoidCallback? onPressed) {
-    return _getFabCore(
-      Colors.white,
-      getOrangeColor(),
-      Icon(BrandIcons.strava),
-      true,
-      overlayEnabled,
-      "Strava Upload",
-      8,
-      onPressed,
+      null,
     );
   }
 
@@ -272,7 +336,7 @@ class ThemeManager {
   }
 
   Widget getRankIcon(int rank) {
-    final textStyle = Get.textTheme.headline4!.apply(fontFamily: FONT_FAMILY, color: Colors.black);
+    final textStyle = Get.textTheme.headline4!.apply(fontFamily: fontFamily, color: Colors.black);
     return _getFabCore(
       Colors.black,
       getYellowColor(),
@@ -282,6 +346,7 @@ class ThemeManager {
       "",
       0,
       () {},
+      null,
     );
   }
 
@@ -301,6 +366,7 @@ class ThemeManager {
       overlayText,
       annotationYOffset,
       onPressed,
+      null,
     );
   }
 
@@ -310,7 +376,7 @@ class ThemeManager {
       overlayEnabled,
       "About & Help",
       0,
-      () => Get.to(() => AboutScreen()),
+      () => Get.to(() => const AboutScreen()),
     );
   }
 

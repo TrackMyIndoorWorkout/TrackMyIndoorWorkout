@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
+import '../preferences/data_connection_addresses.dart';
 import 'constants.dart';
 
 bool isBoundedInteger(String integerString, int minValue, int maxValue) {
@@ -12,11 +15,11 @@ bool isBoundedInteger(String integerString, int minValue, int maxValue) {
 }
 
 bool isPortNumber(String portString) {
-  return isBoundedInteger(portString, 1, MAX_UINT16 - 1);
+  return isBoundedInteger(portString, 1, maxUint16 - 1);
 }
 
 bool isIpPart(String ipAddressPart, bool allowZero) {
-  return isBoundedInteger(ipAddressPart, allowZero ? 0 : 1, MAX_BYTE);
+  return isBoundedInteger(ipAddressPart, allowZero ? 0 : 1, maxByte);
 }
 
 bool isIpAddress(String ipAddress) {
@@ -33,7 +36,7 @@ bool isIpAddress(String ipAddress) {
       isIpPart(ipParts[3], true);
 }
 
-final dummyAddressTuple = Tuple2<String, int>("", 0);
+const dummyAddressTuple = Tuple2<String, int>("", 0);
 
 Tuple2<String, int> parseIpAddress(String ipAddress) {
   if (ipAddress.trim().isEmpty) return dummyAddressTuple;
@@ -41,7 +44,7 @@ Tuple2<String, int> parseIpAddress(String ipAddress) {
   final addressParts = ipAddress.trim().split(":");
   if (addressParts[0].isEmpty) return dummyAddressTuple;
 
-  int portNumber = HTTPS_PORT;
+  int portNumber = httpsPort;
   if (addressParts.length > 1 && addressParts[1].trim().isNotEmpty) {
     final portNumberString = addressParts[1].trim();
     if (!isPortNumber(portNumberString)) return dummyAddressTuple;
@@ -67,13 +70,20 @@ List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
   return addresses;
 }
 
-void applyDataConnectionCheckConfiguration(List<Tuple2<String, int>> addressTuples) {
-  if (addressTuples.length > 0) {
-    InternetConnectionChecker().addresses = addressTuples
+Future<bool> hasInternetConnection() async {
+  final connectionChecker = InternetConnectionChecker();
+  final prefService = Get.find<BasePrefService>();
+  String addressesString =
+      prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
+  if (addressesString.isNotEmpty) {
+    final addressTuples = parseIpAddresses(addressesString);
+    connectionChecker.addresses = addressTuples
         .map((addressTuple) => AddressCheckOptions(
               InternetAddress(addressTuple.item1),
               port: addressTuple.item2,
             ))
         .toList(growable: false);
   }
+
+  return await connectionChecker.hasConnection;
 }

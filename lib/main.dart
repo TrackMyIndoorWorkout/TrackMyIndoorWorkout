@@ -17,34 +17,43 @@ void main() async {
 
   final companyRegistry = CompanyRegistry();
   await companyRegistry.loadCompanyIdentifiers();
-  Get.put<CompanyRegistry>(companyRegistry);
+  Get.put<CompanyRegistry>(companyRegistry, permanent: true);
 
-  Get.put<AdvertisementCache>(AdvertisementCache());
+  Get.put<AdvertisementCache>(AdvertisementCache(), permanent: true);
 
   var blueAvailable = await FlutterBlue.instance.isAvailable;
   var blueOn = await FlutterBlue.instance.isOn;
 
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-    Get.put<PackageInfo>(packageInfo);
+    Get.put<PackageInfo>(packageInfo, permanent: true);
   });
 
-  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
+  await Future.delayed(const Duration(milliseconds: startupIntermittentDelay));
 
   final bluetoothStateString = await BluetoothEnable.enableBluetooth;
 
-  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
+  // TODO: Android 12 does not need location permission any more
+  // Maybe even we can completely eliminate permission handler
+  // if (Platform.isAndroid) {
+  //   var androidInfo = await DeviceInfoPlugin().androidInfo;
+  //   if (androidInfo.version.sdkInt < 31) {
+  await Future.delayed(const Duration(milliseconds: startupIntermittentDelay));
 
   final permissionState = await Permission.locationWhenInUse.request();
+  //   }
+  // }
 
-  await Future.delayed(Duration(milliseconds: STARTUP_INTERMITTENT_DELAY));
+  await Future.delayed(const Duration(milliseconds: startupIntermittentDelay));
 
   blueAvailable = await FlutterBlue.instance.isAvailable;
   blueOn = await FlutterBlue.instance.isOn;
 
-  runApp(TrackMyIndoorExerciseApp(
-    prefService: prefService,
-    blueOn: blueAvailable && blueOn,
-    bluetoothStateString: bluetoothStateString,
-    permissionState: permissionState,
-  ));
+  runApp(
+    TrackMyIndoorExerciseApp(
+      prefService: prefService,
+      blueOn: blueAvailable && blueOn,
+      bluetoothStateString: bluetoothStateString,
+      permissionState: permissionState,
+    ),
+  );
 }

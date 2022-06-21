@@ -5,27 +5,29 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
-import '../../persistence/preferences.dart';
+import '../../preferences/scan_duration.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 import 'heart_rate_monitor_scan_result.dart';
 
 class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
+  const HeartRateMonitorPairingBottomSheet({Key? key}) : super(key: key);
+
   @override
-  _HeartRateMonitorPairingBottomSheetState createState() =>
-      _HeartRateMonitorPairingBottomSheetState();
+  HeartRateMonitorPairingBottomSheetState createState() =>
+      HeartRateMonitorPairingBottomSheetState();
 }
 
-class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
+class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
   static RegExp colonRegex = RegExp(r'\:');
 
   int _scanDuration = 4;
-  TextStyle _captionStyle = TextStyle();
-  TextStyle _subtitleStyle = TextStyle();
+  TextStyle _captionStyle = const TextStyle();
+  TextStyle _subtitleStyle = const TextStyle();
   bool _isScanning = false;
   bool _pairingHrm = false;
-  List<String> _scanResults = [];
-  ThemeManager _themeManager = Get.find<ThemeManager>();
+  final List<String> _scanResults = [];
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
   HeartRateMonitor? _heartRateMonitor;
 
   @override
@@ -51,9 +53,9 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
   void initState() {
     super.initState();
     final prefService = Get.find<BasePrefService>();
-    _scanDuration = prefService.get<int>(SCAN_DURATION_TAG) ?? SCAN_DURATION_DEFAULT;
-    _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: FONT_SIZE_FACTOR);
-    _subtitleStyle = _captionStyle.apply(fontFamily: FONT_FAMILY);
+    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
+    _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
+    _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
     _isScanning = false;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _startScan();
@@ -67,23 +69,23 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
           _startScan();
         },
         child: ListView(
-          physics: const BouncingScrollPhysics(parent: const AlwaysScrollableScrollPhysics()),
+          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           children: [
             Column(
               children: [
                 _heartRateMonitor != null
                     ? ListTile(
                         title: TextOneLine(
-                          _heartRateMonitor?.device?.name ?? EMPTY_MEASUREMENT,
+                          _heartRateMonitor?.device?.name ?? emptyMeasurement,
                           overflow: TextOverflow.ellipsis,
                           style: _themeManager.boldStyle(
                             _captionStyle,
-                            fontSizeFactor: FONT_SIZE_FACTOR,
+                            fontSizeFactor: fontSizeFactor,
                           ),
                         ),
                         subtitle: Text(
                           _heartRateMonitor?.device?.id.id.replaceAll(colonRegex, '') ??
-                              EMPTY_MEASUREMENT,
+                              emptyMeasurement,
                           style: _subtitleStyle,
                         ),
                         trailing: StreamBuilder<BluetoothDeviceState>(
@@ -110,10 +112,10 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                     : Container(),
               ],
             ),
-            Divider(),
+            const Divider(),
             StreamBuilder<List<ScanResult>>(
               stream: FlutterBlue.instance.scanResults,
-              initialData: [],
+              initialData: const [],
               builder: (c, snapshot) => snapshot.data == null
                   ? Container()
                   : Column(
@@ -129,25 +131,25 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                             var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                 ? Get.find<HeartRateMonitor>()
                                 : null;
-                            final existingId = heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
-                            final storedId = _heartRateMonitor?.device?.id.id ?? NOT_AVAILABLE;
-                            if (existingId != NOT_AVAILABLE && existingId != r.device.id.id) {
+                            final existingId = heartRateMonitor?.device?.id.id ?? notAvailable;
+                            final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
+                            if (existingId != notAvailable && existingId != r.device.id.id) {
                               if (!(await showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
-                                      title: Text('You are connected to a HRM right now'),
-                                      content: Text(
+                                      title: const Text('You are connected to a HRM right now'),
+                                      content: const Text(
                                           'Disconnect from that HRM to connect the selected one?'),
                                       actions: [
                                         TextButton(
                                           onPressed: () => Get.close(1),
-                                          child: Text('No'),
+                                          child: const Text('No'),
                                         ),
                                         TextButton(
                                           onPressed: () {
                                             Navigator.of(context).pop(true);
                                           },
-                                          child: Text('Yes'),
+                                          child: const Text('Yes'),
                                         ),
                                       ],
                                     ),
@@ -158,7 +160,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                                     _heartRateMonitor = heartRateMonitor;
                                   });
                                 } else {
-                                  await Get.delete<HeartRateMonitor>();
+                                  await Get.delete<HeartRateMonitor>(force: true);
                                   setState(() {
                                     _heartRateMonitor = null;
                                   });
@@ -177,12 +179,12 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                             }
 
                             if (heartRateMonitor == null || existingId != r.device.id.id) {
-                              heartRateMonitor = new HeartRateMonitor(r.device);
+                              heartRateMonitor = HeartRateMonitor(r.device);
                               if (Get.isRegistered<HeartRateMonitor>()) {
-                                Get.delete<HeartRateMonitor>();
+                                await Get.delete<HeartRateMonitor>(force: true);
                               }
 
-                              Get.put<HeartRateMonitor>(heartRateMonitor);
+                              Get.put<HeartRateMonitor>(heartRateMonitor, permanent: true);
                               await heartRateMonitor.connect();
                               await heartRateMonitor.discover();
                               setState(() {
@@ -206,7 +208,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Container(
-        margin: EdgeInsets.all(10.0),
+        margin: const EdgeInsets.all(10.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -224,11 +226,11 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                   );
                 } else if (_pairingHrm) {
                   return HeartbeatProgressIndicator(
-                    child: IconButton(icon: Icon(Icons.hourglass_empty), onPressed: () => {}),
+                    child: IconButton(icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
                   );
                 } else {
                   return IconButton(
-                    icon: Icon(Icons.refresh),
+                    icon: const Icon(Icons.refresh),
                     onPressed: () => _startScan(),
                   );
                 }
