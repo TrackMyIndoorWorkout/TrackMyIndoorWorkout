@@ -40,6 +40,7 @@ void main() {
     expect(bike.caloriesPerMinuteMetric, null);
   });
 
+  /*
   group('Schwinn 270 interprets Data properly', () {
     for (final testPair in [
       // 15:34:57.050
@@ -261,5 +262,5 @@ void main() {
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
       });
     }
-  });
+  });*/
 }
