@@ -416,7 +416,6 @@ void main() {
           device: MockBluetoothDevice(),
           firstCalories: false,
           firstDistance: false,
-          firstTime: false,
         );
         equipment.setActivity(activity);
         equipment.setFactors(
@@ -489,7 +488,6 @@ void main() {
           device: MockBluetoothDevice(),
           firstCalories: false,
           firstDistance: false,
-          firstTime: false,
         );
         equipment.setActivity(activity);
         equipment.setFactors(
@@ -565,7 +563,6 @@ void main() {
           device: MockBluetoothDevice(),
           firstCalories: true,
           firstDistance: true,
-          firstTime: true,
         );
         equipment.setActivity(activity);
         equipment.setFactors(
@@ -587,7 +584,6 @@ void main() {
         ));
 
         expect(record.distance, closeTo(0, eps));
-        expect(record.elapsed, closeTo(0, eps));
         expect(record.calories, closeTo(0, eps));
       });
     });
@@ -631,7 +627,6 @@ void main() {
           device: MockBluetoothDevice(),
           firstCalories: true,
           firstDistance: true,
-          firstTime: true,
         );
         equipment.setActivity(activity);
         equipment.setFactors(
@@ -675,7 +670,6 @@ void main() {
         );
 
         expect(record.distance, closeTo(deltaRecord.distance!, eps));
-        expect(record.elapsed, closeTo(1, eps));
         expect(record.calories, closeTo(deltaRecord.calories!, 1));
       });
     });

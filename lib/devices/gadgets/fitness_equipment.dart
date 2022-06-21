@@ -58,11 +58,8 @@ class FitnessEquipment extends DeviceBase {
   double _startingCalories = 0.0;
   bool firstDistance; // #197 #234 #259
   double _startingDistance = 0.0;
-  bool firstTime; // #197 #234 #259
-  int _startingElapsed = 0;
   bool hasTotalCalorieReporting = false;
   bool hasTotalDistanceReporting = false;
-  bool hasTotalTimeReporting = false;
   Timer? _timer;
   late RecordWithSport lastRecord;
   late Record continuationRecord;
@@ -102,8 +99,7 @@ class FitnessEquipment extends DeviceBase {
       {this.descriptor,
       device,
       this.firstCalories = true,
-      this.firstDistance = true,
-      this.firstTime = true})
+      this.firstDistance = true})
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
           characteristicsId: descriptor?.dataCharacteristicId,
@@ -558,11 +554,8 @@ class FitnessEquipment extends DeviceBase {
             "_startingCalories $_startingCalories, "
             "firstDistance $firstDistance, "
             "_startingDistance $_startingDistance, "
-            "firstTime $firstTime, "
-            "_startingElapsed $_startingElapsed, "
             "hasTotalCalorieReporting $hasTotalCalorieReporting, "
-            "hasTotalDistanceReporting $hasTotalDistanceReporting, "
-            "hasTotalTimeReporting $hasTotalTimeReporting",
+            "hasTotalDistanceReporting $hasTotalDistanceReporting",
       );
     }
 
@@ -605,12 +598,6 @@ class FitnessEquipment extends DeviceBase {
       firstDistance = false;
     }
 
-    hasTotalTimeReporting |= stub.elapsed != null;
-    if (hasTotalTimeReporting && firstTime && (stub.elapsed ?? 0) > 2) {
-      _startingElapsed = stub.elapsed!;
-      firstTime = false;
-    }
-
     if (shouldMerge) {
       stub.merge(
         lastRecord,
@@ -619,21 +606,12 @@ class FitnessEquipment extends DeviceBase {
       );
     }
 
-    if (hasTotalCalorieReporting && stub.elapsed != null) {
-      elapsed = stub.elapsed!.toDouble();
-    }
-
     if (stub.elapsed == null || stub.elapsed == 0) {
       stub.elapsed = elapsed.round();
     }
 
     if (stub.elapsedMillis == null || stub.elapsedMillis == 0) {
       stub.elapsedMillis = elapsedMillis;
-    }
-
-    // #197
-    if (_startingElapsed > 0) {
-      stub.elapsed = stub.elapsed! - _startingElapsed;
     }
 
     if (workoutState == WorkoutState.stopped) {
@@ -687,7 +665,6 @@ class FitnessEquipment extends DeviceBase {
     // time reporting or not
     if (stub.movingTime >= 2000) {
       firstDistance = false;
-      firstTime = false;
       firstCalories = false;
     }
 
@@ -837,7 +814,7 @@ class FitnessEquipment extends DeviceBase {
       stub.cumulativeMetricsEnforcements(
         lastRecord,
         forDistance: !firstDistance,
-        forTime: !firstTime,
+        forTime: true,
         forCalories: !firstCalories,
       );
     }
@@ -865,11 +842,8 @@ class FitnessEquipment extends DeviceBase {
             "_startingCalories $_startingCalories, "
             "firstDistance $firstDistance, "
             "_startingDistance $_startingDistance, "
-            "firstTime $firstTime, "
-            "_startingElapsed $_startingElapsed, "
             "hasTotalCalorieReporting $hasTotalCalorieReporting, "
-            "hasTotalDistanceReporting $hasTotalDistanceReporting, "
-            "hasTotalTimeReporting $hasTotalTimeReporting",
+            "hasTotalDistanceReporting $hasTotalDistanceReporting",
       );
     }
 
@@ -960,10 +934,8 @@ class FitnessEquipment extends DeviceBase {
     _lastPositiveCalories = 0.0;
     firstCalories = true;
     firstDistance = true;
-    firstTime = true;
     _startingCalories = 0.0;
     _startingDistance = 0.0;
-    _startingElapsed = 0;
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
   }
