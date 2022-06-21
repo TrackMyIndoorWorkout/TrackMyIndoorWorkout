@@ -491,6 +491,12 @@ class FitnessEquipment extends DeviceBase {
     }
     if (workoutState == WorkoutState.waitingForFirstMove) {
       if (isNotMoving) {
+        if (_activity != null && _activity!.startDateTime != null) {
+          int elapsedMillis = now.difference(_activity!.startDateTime!).inMilliseconds;
+          lastRecord.elapsedMillis = elapsedMillis;
+          lastRecord.elapsed = elapsedMillis ~/ 1000;
+        }
+
         return lastRecord;
       } else {
         dataHandlers = {};
