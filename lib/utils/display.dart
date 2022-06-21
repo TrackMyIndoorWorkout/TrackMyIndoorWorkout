@@ -91,7 +91,7 @@ String speedTitle(String sport) {
   return sport == ActivityType.ride ? "Speed" : "Pace";
 }
 
-IconData getIcon(String? sport) {
+IconData getSportIcon(String sport) {
   if (sport == ActivityType.ride) {
     return Icons.directions_bike;
   } else if (sport == ActivityType.run) {
