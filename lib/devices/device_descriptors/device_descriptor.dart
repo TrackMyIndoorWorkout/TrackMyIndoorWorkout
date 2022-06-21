@@ -24,6 +24,7 @@ abstract class DeviceDescriptor extends DataHandler {
 
   bool canMeasureHeartRate;
   bool canMeasureCalories;
+  bool shouldSignalStartStop;
 
   double? slowPace;
 
@@ -42,6 +43,7 @@ abstract class DeviceDescriptor extends DataHandler {
     this.antPlus = false,
     this.canMeasureHeartRate = true,
     this.canMeasureCalories = true,
+    this.shouldSignalStartStop = false,
     hasFeatureFlags = true,
     flagByteSize = 2,
     heartRateByteIndex,

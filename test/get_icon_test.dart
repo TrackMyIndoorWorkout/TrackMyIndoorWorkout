@@ -37,6 +37,6 @@ void main() {
   });
 
   test("getIcon for other (Crossfit):", () async {
-    expect(getSportIcon(ActivityType.crossfit), Icons.directions_bike);
+    expect(getSportIcon(ActivityType.crossfit), Icons.help);
   });
 }

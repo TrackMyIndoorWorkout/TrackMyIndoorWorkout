@@ -1093,11 +1093,18 @@ class FitnessEquipment extends DeviceBase {
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
-    return await _executeControlOperation(startOrResumeControl);
+    if (descriptor?.shouldSignalStartStop ?? false) {
+      return await _executeControlOperation(startOrResumeControl);
+    }
+
+    return false;
   }
 
   void stopWorkout() {
-    _executeControlOperation(stopOrPauseControl, controlInfo: stopControlInfo);
+    if (descriptor?.shouldSignalStartStop ?? false) {
+      _executeControlOperation(stopOrPauseControl, controlInfo: stopControlInfo);
+    }
+
     readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
