@@ -487,7 +487,7 @@ class RecordsScreenState extends State<RecordsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIcon(getIcon(widget.activity.sport), _sizeDefault),
+          _themeManager.getBlueIcon(getSportIcon(widget.activity.sport), _sizeDefault),
           Expanded(
             child: TextOneLine(
               widget.activity.deviceName,

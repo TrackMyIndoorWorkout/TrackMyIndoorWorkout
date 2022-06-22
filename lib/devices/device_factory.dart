@@ -42,6 +42,7 @@ class DeviceFactory {
       manufacturerPrefix: "Nautilus",
       manufacturerFitId: nautilusFitId,
       model: "SCH BIKE",
+      shouldSignalStartStop: true,
     );
   }
 
@@ -86,6 +87,7 @@ class DeviceFactory {
   static RowerDeviceDescriptor getMrCaptain() {
     return RowerDeviceDescriptor(
       defaultSport: ActivityType.rowing,
+      isMultiSport: false,
       fourCC: mrCaptainRowerFourCC,
       vendorName: "Mr Captain",
       modelName: "Rower",
@@ -94,6 +96,7 @@ class DeviceFactory {
       manufacturerFitId: stravaFitId,
       model: "000000",
       canMeasureHeartRate: false,
+      shouldSignalStartStop: true,
     );
   }
 

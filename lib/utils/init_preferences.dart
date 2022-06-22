@@ -35,6 +35,7 @@ import '../preferences/metric_spec.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/scan_duration.dart';
+import '../preferences/should_signal_start_stop.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/speed_spec.dart';
@@ -123,6 +124,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     bikeWeightTag: bikeWeightDefault,
     driveTrainLossTag: driveTrainLossDefault,
     airTemperatureTag: airTemperatureDefault,
+    shouldSignalStartStopTag: shouldSignalStartStopDefault,
     timeDisplayModeTag: timeDisplayModeDefault,
   };
 

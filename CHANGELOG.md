@@ -1,3 +1,13 @@
+## 1.1.106
+
+* Further refactoring for Mr Captain rower support
+
+## 1.1.105
+
+* Recognizing Mr Captain rowers
+* Released to Samsung Galaxy App Store
+* Released to Huawei AppGallery
+
 ## 1.1.104
 
 * Dummy version bump to appease Huawei AppGallery submission.

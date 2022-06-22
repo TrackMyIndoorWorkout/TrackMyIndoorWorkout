@@ -468,7 +468,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              _themeManager.getBlueIcon(getIcon(activity.sport), _sizeDefault),
+                              _themeManager.getBlueIcon(getSportIcon(activity.sport), _sizeDefault),
                               Expanded(
                                 child: TextOneLine(
                                   activity.deviceName,
