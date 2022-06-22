@@ -48,6 +48,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   static const stepNotSupported = 3;
 
   FitnessEquipment? _fitnessEquipment;
+  StreamSubscription? _controlPointSubscription;
   double _sizeDefault = 10.0;
   TextStyle _smallerTextStyle = const TextStyle();
   TextStyle _largerTextStyle = const TextStyle();
@@ -142,6 +143,9 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
     if (!(_fitnessEquipment?.discovered ?? false)) return false;
 
+    // #117 Attach the handler way ahead of the spin down start command write
+    await _fitnessEquipment?.connectToControlPoint(false);
+
     if (!(_fitnessEquipment?.supportsSpinDown ?? false)) return false;
 
     final userData =
@@ -206,16 +210,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       }
     });
 
-    // #117 Attach the handler way ahead of the spin down start command write
-    try {
-      await _fitnessEquipment?.controlPoint
-          ?.setNotifyValue(true); // Is this what needed for indication?
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-
-    _fitnessEquipment?.controlPointSubscription = _fitnessEquipment?.controlPoint?.value
+    _controlPointSubscription = _fitnessEquipment?.controlPoint?.value
         .throttleTime(
       const Duration(milliseconds: spinDownThreshold),
       leading: false,
@@ -447,7 +442,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   Future<void> _detachControlPoint() async {
     await _fitnessEquipment?.controlPoint?.setNotifyValue(false);
-    _fitnessEquipment?.controlPointSubscription?.cancel();
+    _controlPointSubscription?.cancel();
   }
 
   Future<void> _detachWeightData() async {

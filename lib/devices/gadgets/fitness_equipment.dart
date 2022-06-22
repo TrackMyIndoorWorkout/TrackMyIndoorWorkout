@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:rxdart/rxdart.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
@@ -21,6 +22,7 @@ import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/log_level.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
+import '../../preferences/should_signal_start_stop.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
@@ -31,6 +33,7 @@ import '../../utils/logging.dart';
 import '../bluetooth_device_ex.dart';
 import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
+import '../device_fourcc.dart';
 import '../gatt_constants.dart';
 import 'device_base.dart';
 import 'heart_rate_monitor.dart';
@@ -102,9 +105,11 @@ class FitnessEquipment extends DeviceBase {
   bool supportsSpinDown = false;
   BluetoothCharacteristic? controlPoint;
   StreamSubscription? controlPointSubscription;
+  bool controlNotification = false;
   bool gotControl = false;
   BluetoothCharacteristic? status;
   StreamSubscription? statusSubscription;
+  bool _shouldSignalStartStop = shouldSignalStartStopDefault;
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
@@ -482,29 +487,35 @@ class FitnessEquipment extends DeviceBase {
         writeFeatureTexts[3],
         1,
       );
-      supportsSpinDown = writeFeatures & spinDownControlSupported > 0;
+      supportsSpinDown = (writeFeatures & spinDownControlSupported > 0) ||
+          descriptor?.fourCC == kayakProGenesisPortFourCC;
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
   }
 
-  Future<bool> _executeControlOperation(int opCode, {int? controlInfo}) async {
+  Future<void> _executeControlOperation(int opCode, {int? controlInfo}) async {
+    if (controlPoint == null ||
+        (!_shouldSignalStartStop && !(descriptor?.shouldSignalStartStop ?? false))) {
+      return;
+    }
+
     List<int> requestInfo = [opCode];
     if (controlInfo != null) {
       requestInfo.add(controlInfo);
     }
 
-    controlPoint?.write(requestInfo);
-    final controlResponse = await controlPoint?.read();
-
-    return controlResponse != null &&
-        controlResponse[0] == controlOpcode &&
-        controlResponse[1] == opCode &&
-        controlResponse[2] == successResponse;
+    try {
+      await controlPoint?.write(requestInfo);
+      // Response could be picked up in the subscription listener
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
   }
 
-  Future<void> _connectToControlPoint() async {
+  Future<void> connectToControlPoint(obtainControl) async {
     if (controlPoint == null) {
       controlPoint = BluetoothDeviceEx.filterCharacteristic(
         service!.characteristics,
@@ -517,8 +528,42 @@ class FitnessEquipment extends DeviceBase {
       );
     }
 
-    if (!gotControl) {
-      gotControl = await _executeControlOperation(requestControl);
+    if (!controlNotification && controlPoint != null) {
+      try {
+        controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
+      } on PlatformException catch (e, stack) {
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
+
+      controlPointSubscription = controlPoint?.value
+          .throttleTime(
+        const Duration(milliseconds: ftmsStatusThreshold),
+        leading: false,
+        trailing: true,
+      )
+          .listen((controlResponse) async {
+        if (_logLevel >= logLevelInfo) {
+          Logging.log(
+            _logLevel,
+            logLevelInfo,
+            "FITNESS_EQUIPMENT",
+            "connectToControlPoint controlPointSubscription",
+            controlResponse.toString(),
+          );
+        }
+
+        if (controlResponse.length >= 3) {
+          gotControl |= controlResponse[0] == controlOpcode &&
+              controlResponse[1] == requestControl &&
+              controlResponse[2] == successResponse;
+        }
+      });
+
+      if (obtainControl &&
+          (_shouldSignalStartStop || (descriptor?.shouldSignalStartStop ?? false))) {
+        await _executeControlOperation(requestControl);
+      }
     }
   }
 
@@ -534,7 +579,7 @@ class FitnessEquipment extends DeviceBase {
     _equipmentDiscovery = true;
 
     await _fitnessMachineFeature();
-    await _connectToControlPoint();
+    await connectToControlPoint(true);
 
     // Check manufacturer name
     if (manufacturerName == null) {
@@ -556,9 +601,11 @@ class FitnessEquipment extends DeviceBase {
         "ensuring that manufacturer name ($manufacturerName) contains manufacturer prefix ${descriptor!.manufacturerPrefix}",
       );
     }
+
     if (descriptor!.manufacturerPrefix == "Unknown") {
       return true;
     }
+
     return manufacturerName?.toLowerCase().contains(descriptor!.manufacturerPrefix.toLowerCase()) ??
         false;
   }
@@ -1053,6 +1100,8 @@ class FitnessEquipment extends DeviceBase {
     _useHrBasedCalorieCounting &= (_weight > athleteBodyWeightMin && _age > athleteAgeMin);
     _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    _shouldSignalStartStop =
+        prefService.get<bool>(shouldSignalStartStopTag) ?? shouldSignalStartStopDefault;
 
     if (_logLevel >= logLevelInfo) {
       Logging.log(
@@ -1080,7 +1129,7 @@ class FitnessEquipment extends DeviceBase {
     refreshFactors();
   }
 
-  Future<bool> startWorkout() async {
+  Future<void> startWorkout() async {
     readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
@@ -1093,15 +1142,13 @@ class FitnessEquipment extends DeviceBase {
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
-    if (descriptor?.shouldSignalStartStop ?? false) {
-      return await _executeControlOperation(startOrResumeControl);
+    if ((descriptor?.shouldSignalStartStop ?? false) || _shouldSignalStartStop) {
+      await _executeControlOperation(startOrResumeControl);
     }
-
-    return false;
   }
 
   void stopWorkout() {
-    if (descriptor?.shouldSignalStartStop ?? false) {
+    if ((descriptor?.shouldSignalStartStop ?? false) || _shouldSignalStartStop) {
       _executeControlOperation(stopOrPauseControl, controlInfo: stopControlInfo);
     }
 
