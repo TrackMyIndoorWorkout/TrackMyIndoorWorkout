@@ -12,6 +12,7 @@ import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enforced_time_zone.dart';
 import '../../preferences/log_level.dart';
+import '../../preferences/should_signal_start_stop.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
 import 'preferences_base.dart';
@@ -61,6 +62,11 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         title: Text(deviceFiltering),
         subtitle: Text(deviceFilteringDescription),
         pref: deviceFilteringTag,
+      ),
+      const PrefCheckbox(
+        title: Text(shouldSignalStartStop),
+        subtitle: Text(shouldSignalStartStopDescription),
+        pref: shouldSignalStartStopTag,
       ),
       PrefDropdown<String>(
         title: const Text(enforcedTimeZone),
