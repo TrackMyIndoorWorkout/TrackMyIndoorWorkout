@@ -56,7 +56,7 @@ class HeartRateMonitor extends ComplexSensor {
   @override
   RecordWithSport processMeasurement(List<int> data) {
     if (!canMeasurementProcessed(data)) {
-      return RecordWithSport.getZero(ActivityType.run);
+      return RecordWithSport(sport: ActivityType.run);
     }
 
     return RecordWithSport(

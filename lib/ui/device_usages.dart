@@ -142,7 +142,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _themeManager.getBlueIcon(getIcon(deviceUsage.sport), _sizeDefault),
+                      _themeManager.getBlueIcon(getSportIcon(deviceUsage.sport), _sizeDefault),
                       Text(deviceUsage.sport, style: _textStyle),
                     ],
                   ),

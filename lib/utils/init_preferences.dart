@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
@@ -7,6 +8,7 @@ import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
+import '../preferences/bike_weight.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
@@ -14,6 +16,7 @@ import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
+import '../preferences/drive_train_loss.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/extend_tuning.dart';
 import '../preferences/generic.dart';
@@ -33,6 +36,7 @@ import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/scan_duration.dart';
+import '../preferences/should_signal_start_stop.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/speed_spec.dart';
@@ -49,11 +53,12 @@ import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
 import 'constants.dart';
 
-void migrateStringIntegerPreference(String tag, int defaultInt, BasePrefService prefService) {
+Future<void> migrateStringIntegerPreference(
+    String tag, int defaultInt, BasePrefService prefService) async {
   final valueString = prefService.get<String>(tag) ?? "$defaultInt";
   final intValue = int.tryParse(valueString);
   if (intValue != null && intValue != defaultInt) {
-    prefService.set<int>(tag + intTagPostfix, intValue);
+    await prefService.set<int>(tag + intTagPostfix, intValue);
   }
 }
 
@@ -115,6 +120,10 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     calculateGpsTag: calculateGpsDefault,
     avgSpeedOnTrackTag: avgSpeedOnTrackDefault,
     showPacerTag: showPacerDefault,
+    bikeWeightTag: bikeWeightDefault,
+    driveTrainLossTag: driveTrainLossDefault,
+    airTemperatureTag: airTemperatureDefault,
+    shouldSignalStartStopTag: shouldSignalStartStopDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -191,52 +200,52 @@ Future<BasePrefService> initPreferences() async {
   }
 
   if (prefVersion <= preferencesVersionSpinners) {
-    migrateStringIntegerPreference(
+    await migrateStringIntegerPreference(
       strokeRateSmoothingTag,
       strokeRateSmoothingDefault,
       prefService,
     );
-    migrateStringIntegerPreference(
+    await migrateStringIntegerPreference(
       dataStreamGapWatchdogTag,
       dataStreamGapWatchdogDefault,
       prefService,
     );
-    migrateStringIntegerPreference(
+    await migrateStringIntegerPreference(
       heartRateUpperLimitTag,
       heartRateUpperLimitDefault,
       prefService,
     );
-    migrateStringIntegerPreference(
+    await migrateStringIntegerPreference(
       targetHeartRateLowerBpmTag,
       targetHeartRateLowerBpmDefault,
       prefService,
     );
-    migrateStringIntegerPreference(
+    await migrateStringIntegerPreference(
       targetHeartRateUpperBpmTag,
       targetHeartRateUpperBpmDefault,
       prefService,
     );
-    migrateStringIntegerPreference(
+    await migrateStringIntegerPreference(
       targetHeartRateLowerZoneTag,
       targetHeartRateLowerZoneDefault,
       prefService,
     );
-    migrateStringIntegerPreference(
+    await migrateStringIntegerPreference(
       targetHeartRateUpperZoneTag,
       targetHeartRateUpperZoneDefault,
       prefService,
     );
-    migrateStringIntegerPreference(
+    await migrateStringIntegerPreference(
       targetHeartRateAudioPeriodTag,
       targetHeartRateAudioPeriodDefault,
       prefService,
     );
-    migrateStringIntegerPreference(
+    await migrateStringIntegerPreference(
       audioVolumeTag,
       audioVolumeDefault,
       prefService,
     );
-    migrateStringIntegerPreference(
+    await migrateStringIntegerPreference(
       athleteBodyWeightTag,
       athleteBodyWeightDefault,
       prefService,
@@ -279,10 +288,10 @@ Future<BasePrefService> initPreferences() async {
         final zonesStr = prefService.get<String>(zonesTag) ?? oldZoneDefault;
         if (thresholdStr == oldThresholdDefault && zonesStr == oldZoneDefault) {
           if (thresholdStr != newThresholdDefault) {
-            prefService.set<String>(thresholdTag, newThresholdDefault);
+            await prefService.set<String>(thresholdTag, newThresholdDefault);
           }
           if (zonesStr != newZonesDefault) {
-            prefService.set<String>(zonesTag, newZonesDefault);
+            await prefService.set<String>(zonesTag, newZonesDefault);
           }
         }
       }
@@ -295,7 +304,7 @@ Future<BasePrefService> initPreferences() async {
     final rankingForDevice =
         prefService.get<bool>(rankingForDeviceOldTag) ?? rankingForDeviceOldDefault;
     if (rankingForDevice && !rankingForSport) {
-      prefService.set<bool>(rankingForSportOrDeviceTag, !rankingForSportOrDeviceDefault);
+      await prefService.set<bool>(rankingForSportOrDeviceTag, !rankingForSportOrDeviceDefault);
     }
   }
 

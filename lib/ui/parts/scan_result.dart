@@ -94,7 +94,7 @@ class ScanResultTile extends StatelessWidget {
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: Icon(
-        result.getEquipmentIcon(),
+        result.getIcon([]),
         size: captionStyle.fontSize! * 2.5,
         color: themeManager.getProtagonistColor(),
       ),

@@ -67,7 +67,8 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
                           _sportIndex = e.key;
                         });
                       },
-                      icon: _themeManager.getBlueIcon(getIcon(e.value), _largerTextStyle.fontSize!),
+                      icon: _themeManager.getBlueIcon(
+                          getSportIcon(e.value), _largerTextStyle.fontSize!),
                       label: Text(e.value,
                           style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),
