@@ -51,9 +51,23 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       PrefButton(
         onTap: () async {
           if (await hasInternetConnection()) {
-            Get.snackbar("Info", "Data connection detected");
+            await Get.defaultDialog(
+              title: "Data connection detected",
+              middleText: "",
+              confirm: TextButton(
+                child: const Text("Dismiss"),
+                onPressed: () => Get.close(1),
+              ),
+            );
           } else {
-            Get.snackbar("Warning", "No data connection detected");
+            await Get.defaultDialog(
+              title: "No data connection detected",
+              middleText: "",
+              confirm: TextButton(
+                child: const Text("Dismiss"),
+                onPressed: () => Get.close(1),
+              ),
+            );
           }
         },
         child: const Text("Apply Configuration and Test"),
@@ -135,20 +149,50 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
                 text: title,
               );
             } else {
-              Get.snackbar("Export", "File not found");
+              await Get.defaultDialog(
+                title: "Nothing to Export",
+                middleText: "(or file not found)",
+                confirm: TextButton(
+                  child: const Text("OK"),
+                  onPressed: () => Get.close(1),
+                ),
+              );
             }
           } else {
-            Get.snackbar("Warning", "Logging is not initialized");
+            await Get.defaultDialog(
+              title: "Logging is not initialized",
+              middleText: "Switch to other than 'No logging' level to initialize",
+              confirm: TextButton(
+                child: const Text("Dismiss"),
+                onPressed: () => Get.close(1),
+              ),
+            );
           }
         },
-        child: const Text("Exporting Logs..."),
+        child: const Text("Export Logs..."),
       ),
       PrefButton(
-        onTap: () {
+        onTap: () async {
           if (Logging.initialized) {
+            // TODO: await!
             FlutterLogs.clearLogs();
+            await Get.defaultDialog(
+              title: "Logs cleared",
+              middleText: "",
+              confirm: TextButton(
+                child: const Text("Dismiss"),
+                onPressed: () => Get.close(1),
+              ),
+            );
           } else {
-            Get.snackbar("Warning", "Logging is not initialized");
+            await Get.defaultDialog(
+              title: "Logging is not initialized",
+              middleText: "Switch to other than 'No logging' level to initialize",
+              confirm: TextButton(
+                child: const Text("Dismiss"),
+                onPressed: () => Get.close(1),
+              ),
+            );
           }
         },
         child: const Text("Clear All Logs"),
