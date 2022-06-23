@@ -18,6 +18,8 @@ void main() {
     expect(xTrainer.canMeasureHeartRate, true);
     expect(xTrainer.defaultSport, ActivityType.elliptical);
     expect(xTrainer.fourCC, genericFTMSCrossTrainerFourCC);
+    expect(xTrainer.isMultiSport, false);
+    expect(xTrainer.shouldSignalStartStop, false);
   });
 
   test('Cross Trainer Device interprets LifePro FlexStride Pro flags properly', () async {
