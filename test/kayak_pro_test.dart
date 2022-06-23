@@ -23,12 +23,25 @@ void main() {
     expect(rower.canMeasureHeartRate, false);
     expect(rower.defaultSport, ActivityType.kayaking);
     expect(rower.fourCC, kayakProGenesisPortFourCC);
+    expect(rower.isMultiSport, true);
+    expect(rower.shouldSignalStartStop, false);
   });
 
   test('Rower Device interprets KayakPro flags properly', () async {
     final rower = DeviceFactory.getKayaPro();
     const lsb = 44;
     const msb = 9;
+    // C1 stroke rate uint8 (spm) 0.5
+    // C1 stroke count uint16
+    // C3 distance uint24 (m) 1
+    // C4 pace uint16 seconds 1
+    // C6 power sint16 (watts) 1
+    // -
+    // C9 total energy uint16 (kcal) 1
+    // C9 energy/h uint16 1
+    // C9 energy/min uint8 1
+    // C12 elapsed time uint16 (s) 1
+    // total length (1 + 2 + 3 + 2 + 2) + (2 + 2 + 1 + 2) = 10 + 7 = 17
     const flag = maxUint8 * msb + lsb;
     rower.stopWorkout();
 
