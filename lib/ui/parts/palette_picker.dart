@@ -21,6 +21,7 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _textStyle = const TextStyle();
   TextStyle _largerTextStyle = const TextStyle();
+  TextStyle _groupStyle = const TextStyle();
   final _darknessController = GroupButtonController(selectedIndex: 0);
   final _fgBgController = GroupButtonController(selectedIndex: 0);
   final _sizeController = GroupButtonController(selectedIndex: 0);
@@ -31,16 +32,22 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
     super.initState();
     _largerTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
-      color: Colors.white,
+      color: _themeManager.getProtagonistColor(),
     );
     _textStyle = Get.textTheme.headline5!.apply(
       fontFamily: fontFamily,
-      color: Colors.white,
+      color: _themeManager.getProtagonistColor(),
+    );
+    _groupStyle = Get.textTheme.headline5!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getAntagonistColor(),
     );
     _groupButtonOptions = GroupButtonOptions(
       borderRadius: BorderRadius.circular(4),
-      selectedTextStyle: _textStyle,
-      unselectedTextStyle: _textStyle,
+      selectedTextStyle: _groupStyle,
+      selectedColor: _themeManager.getGreenColor(),
+      unselectedTextStyle: _groupStyle,
+      unselectedColor: _themeManager.getBlueColor(),
     );
   }
 
