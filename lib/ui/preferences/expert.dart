@@ -11,7 +11,6 @@ import '../../preferences/app_debug_mode.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enforced_time_zone.dart';
-import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/should_signal_start_stop.dart';
 import '../../utils/logging.dart';
@@ -149,11 +148,11 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       PrefButton(
         onTap: () async {
           if (Logging.initialized) {
-            if (!(PrefService.of(context).get<bool>(hasLoggedMessagesTag) ??
-                hasLoggedMessagesDefault)) {
-              await displayNoLogsDialog();
-              return;
-            }
+            // TODO https://github.com/umair13adil/flutter_logs/issues/39
+            // if (!hasLoggedMessagesDefault) {
+            //   await displayNoLogsDialog();
+            //   return;
+            // }
 
             FlutterLogs.exportLogs(exportType: ExportType.ALL);
             final String zipName = await Logging.completer.future;
@@ -193,10 +192,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       PrefButton(
         onTap: () async {
           if (Logging.initialized) {
-            // TODO: await!
-            FlutterLogs.clearLogs();
-            PrefService.of(context).set(hasLoggedMessagesTag, hasLoggedMessagesDefault);
-            await Get.defaultDialog(
+            Get.defaultDialog(
               title: "Logs cleared",
               middleText: "",
               confirm: TextButton(
@@ -204,6 +200,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
                 onPressed: () => Get.close(1),
               ),
             );
+            await FlutterLogs.clearLogs();
           } else {
             await displayNotInitializedDialog();
           }
