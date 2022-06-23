@@ -3,6 +3,7 @@ import 'package:pref/pref.dart';
 import '../../preferences/air_temperature.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/drive_train_loss.dart';
+import '../../preferences/should_signal_start_stop.dart';
 import 'preferences_base.dart';
 
 class EquipmentPreferencesScreen extends PreferencesScreenBase {
@@ -41,6 +42,11 @@ class EquipmentPreferencesScreen extends PreferencesScreenBase {
         max: airTemperatureMax,
         divisions: airTemperatureDivisions,
         direction: Axis.vertical,
+      ),
+      const PrefCheckbox(
+        title: Text(shouldSignalStartStop),
+        subtitle: Text(shouldSignalStartStopDescription),
+        pref: shouldSignalStartStopTag,
       ),
     ];
 

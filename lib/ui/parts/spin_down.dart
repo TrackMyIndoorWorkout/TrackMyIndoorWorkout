@@ -48,6 +48,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   static const stepNotSupported = 3;
 
   FitnessEquipment? _fitnessEquipment;
+  StreamSubscription? _controlPointSubscription;
   double _sizeDefault = 10.0;
   TextStyle _smallerTextStyle = const TextStyle();
   TextStyle _largerTextStyle = const TextStyle();
@@ -60,10 +61,6 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   int _newWeightMsb = 0;
   BluetoothCharacteristic? _weightData;
   StreamSubscription? _weightDataSubscription;
-  BluetoothCharacteristic? _controlPoint;
-  StreamSubscription? _controlPointSubscription;
-  BluetoothCharacteristic? _fitnessMachineStatus;
-  StreamSubscription? _statusSubscription;
   CalibrationState _calibrationState = CalibrationState.preInit;
   double _targetSpeedHigh = 0.0;
   double _targetSpeedLow = 0.0;
@@ -77,9 +74,9 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   bool _rememberLastWeight = rememberAthleteBodyWeightDefault;
 
   bool get _spinDownPossible =>
-      _weightData != null &&
-      _controlPoint != null &&
-      _fitnessMachineStatus != null &&
+      (_fitnessEquipment?.supportsSpinDown ?? false) &&
+      _fitnessEquipment?.controlPoint != null &&
+      _fitnessEquipment?.status != null &&
       _fitnessEquipment?.characteristic != null;
   bool get _canSubmitWeight =>
       _spinDownPossible && _calibrationState == CalibrationState.readyToWeighIn;
@@ -146,19 +143,18 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
     if (!(_fitnessEquipment?.discovered ?? false)) return false;
 
+    // #117 Attach the handler way ahead of the spin down start command write
+    await _fitnessEquipment?.connectToControlPoint(false);
+
+    if (!(_fitnessEquipment?.supportsSpinDown ?? false)) return false;
+
     final userData =
         BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], userDataServiceUuid);
     _weightData =
         BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, weightCharacteristicUuid);
     if (_weightData == null) return false;
 
-    final fitnessMachine =
-        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], fitnessMachineUuid);
-    _controlPoint = BluetoothDeviceEx.filterCharacteristic(
-        fitnessMachine?.characteristics, fitnessMachineControlPointUuid);
-    _fitnessMachineStatus = BluetoothDeviceEx.filterCharacteristic(
-        fitnessMachine?.characteristics, fitnessMachineStatusUuid);
-    if (_controlPoint == null || _fitnessMachineStatus == null) return false;
+    if (_fitnessEquipment?.controlPoint == null || _fitnessEquipment?.status == null) return false;
 
     // #117 Attach the handler way ahead of the actual weight write
     try {
@@ -214,15 +210,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       }
     });
 
-    // #117 Attach the handler way ahead of the spin down start command write
-    try {
-      await _controlPoint?.setNotifyValue(true); // Is this what needed for indication?
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-
-    _controlPointSubscription = _controlPoint?.value
+    _controlPointSubscription = _fitnessEquipment?.controlPoint?.value
         .throttleTime(
       const Duration(milliseconds: spinDownThreshold),
       leading: false,
@@ -404,14 +392,14 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     });
 
     try {
-      await _controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
-      await _fitnessMachineStatus?.setNotifyValue(true);
+      await _fitnessEquipment?.controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
+      await _fitnessEquipment?.status?.setNotifyValue(true);
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
 
-    _statusSubscription = _fitnessMachineStatus?.value
+    _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.value
         .throttleTime(
       const Duration(milliseconds: ftmsStatusThreshold),
       leading: false,
@@ -453,7 +441,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   Future<void> _detachControlPoint() async {
-    await _controlPoint?.setNotifyValue(false);
+    await _fitnessEquipment?.controlPoint?.setNotifyValue(false);
     _controlPointSubscription?.cancel();
   }
 
@@ -463,8 +451,8 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   Future<void> _detachFitnessMachineStatus() async {
-    _fitnessMachineStatus?.setNotifyValue(false);
-    _statusSubscription?.cancel();
+    _fitnessEquipment?.status?.setNotifyValue(false);
+    _fitnessEquipment?.statusSubscription?.cancel();
   }
 
   Future<void> _detachFitnessMachine() async {
