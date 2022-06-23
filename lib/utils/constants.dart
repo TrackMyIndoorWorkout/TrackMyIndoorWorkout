@@ -2,6 +2,7 @@ const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
 
 const eps = 1e-6;
 const displayEps = 1e-4;
+const workaroundEps = 2.0;
 const minInit = 10000;
 const maxInit = -10000;
 const lbToKg = 0.45359237;
