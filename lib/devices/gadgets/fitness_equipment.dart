@@ -43,7 +43,7 @@ import 'write_support_parameters.dart';
 typedef RecordHandlerFunction = Function(RecordWithSport data);
 
 // State Machine for #231 and #235
-// (intelligent start and elapsed time tracking)
+// (intelligent start and moving / elapsed time tracking)
 enum WorkoutState {
   waitingForFirstMove,
   startedMoving,
