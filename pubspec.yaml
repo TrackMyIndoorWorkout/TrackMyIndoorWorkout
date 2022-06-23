@@ -56,7 +56,7 @@ dependencies:
   syncfusion_flutter_charts: ^20.1.56
   tuple: ^2.0.0
   uni_links: ^0.5.1
-  url_launcher: ^6.0.18
+  url_launcher: ^6.1.4
   vector_math: ^2.1.2
   wakelock: ^0.6.1+2
   flutter:
