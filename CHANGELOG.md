@@ -1,3 +1,9 @@
+## 1.1.107
+
+* Support fitness machines which require explicit workout 
+  Start/Stop signaling via FTMS control point (needed when workout doesn't start)
+* Workaround for Mr Captain rower's botched / malformed FTMS Rower protocol
+
 ## 1.1.106
 
 * Further refactoring for Mr Captain rower support
