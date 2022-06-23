@@ -84,22 +84,6 @@ class DeviceFactory {
     );
   }
 
-  static RowerDeviceDescriptor getMrCaptain() {
-    return RowerDeviceDescriptor(
-      defaultSport: ActivityType.rowing,
-      isMultiSport: false,
-      fourCC: mrCaptainRowerFourCC,
-      vendorName: "Mr Captain",
-      modelName: "Rower",
-      namePrefixes: ["XG"],
-      manufacturerPrefix: "XG",
-      manufacturerFitId: stravaFitId,
-      model: "000000",
-      canMeasureHeartRate: false,
-      shouldSignalStartStop: true,
-    );
-  }
-
   static TreadmillDeviceDescriptor getNpeRunn() {
     return TreadmillDeviceDescriptor(
       fourCC: npeRunnFourCC,
