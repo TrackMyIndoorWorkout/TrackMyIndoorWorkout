@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_logs/flutter_logs.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
+import '../preferences/has_logged_messages.dart';
 import '../preferences/log_level.dart';
 
 class Logging {
@@ -55,12 +58,16 @@ class Logging {
       return;
     }
 
+    final prefService = Get.find<BasePrefService>();
     if (logLevelThreshold >= logLevelInfo && logLevel >= logLevelInfo) {
       FlutterLogs.logInfo(tag, subTag, logMessage);
+      prefService.set<bool>(hasLoggedMessagesTag, true);
     } else if (logLevelThreshold >= logLevelWarning && logLevel >= logLevelWarning) {
       FlutterLogs.logWarn(tag, subTag, logMessage);
+      prefService.set<bool>(hasLoggedMessagesTag, true);
     } else {
       FlutterLogs.logError(tag, subTag, logMessage);
+      prefService.set<bool>(hasLoggedMessagesTag, true);
     }
   }
 
@@ -77,5 +84,6 @@ class Logging {
     }
 
     FlutterLogs.logError(tag, subTag, "$logMessage; $e; $stack");
+    Get.find<BasePrefService>().set<bool>(hasLoggedMessagesTag, true);
   }
 }

@@ -20,6 +20,7 @@ import '../preferences/drive_train_loss.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/extend_tuning.dart';
 import '../preferences/generic.dart';
+import '../preferences/has_logged_messages.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
 import '../preferences/instant_measurement_start.dart';
@@ -124,6 +125,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     driveTrainLossTag: driveTrainLossDefault,
     airTemperatureTag: airTemperatureDefault,
     shouldSignalStartStopTag: shouldSignalStartStopDefault,
+    hasLoggedMessagesTag: hasLoggedMessagesDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

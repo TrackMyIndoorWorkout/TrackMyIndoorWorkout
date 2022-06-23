@@ -11,6 +11,7 @@ import '../../preferences/app_debug_mode.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enforced_time_zone.dart';
+import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/should_signal_start_stop.dart';
 import '../../utils/logging.dart';
@@ -32,6 +33,17 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
           "logging is not advised unless requested by the developer. "
           "Make sure to turn off logging when the session is over "
           "for the same reason.",
+      confirm: TextButton(
+        child: const Text("Dismiss"),
+        onPressed: () => Get.close(1),
+      ),
+    );
+  }
+
+  Future<void> displayNoLogsDialog() async {
+    await Get.defaultDialog(
+      title: "Nothing to Export",
+      middleText: "(or file not found)",
       confirm: TextButton(
         child: const Text("Dismiss"),
         onPressed: () => Get.close(1),
@@ -137,6 +149,12 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       PrefButton(
         onTap: () async {
           if (Logging.initialized) {
+            if (!(PrefService.of(context).get<bool>(hasLoggedMessagesTag) ??
+                hasLoggedMessagesDefault)) {
+              await displayNoLogsDialog();
+              return;
+            }
+
             FlutterLogs.exportLogs(exportType: ExportType.ALL);
             final String zipName = await Logging.completer.future;
             Directory externalDirectory;
@@ -164,14 +182,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
                 text: title,
               );
             } else {
-              await Get.defaultDialog(
-                title: "Nothing to Export",
-                middleText: "(or file not found)",
-                confirm: TextButton(
-                  child: const Text("OK"),
-                  onPressed: () => Get.close(1),
-                ),
-              );
+              await displayNoLogsDialog();
             }
           } else {
             await displayNotInitializedDialog();
@@ -184,6 +195,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
           if (Logging.initialized) {
             // TODO: await!
             FlutterLogs.clearLogs();
+            PrefService.of(context).set(hasLoggedMessagesTag, hasLoggedMessagesDefault);
             await Get.defaultDialog(
               title: "Logs cleared",
               middleText: "",
