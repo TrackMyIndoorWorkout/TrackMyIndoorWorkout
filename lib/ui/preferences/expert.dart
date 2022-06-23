@@ -24,6 +24,21 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
 
   const ExpertPreferencesScreen({Key? key, required this.timeZoneChoices}) : super(key: key);
 
+  Future<void> displayNotInitializedDialog() async {
+    await Get.defaultDialog(
+      title: "Logging is not initialized",
+      middleText: "You can turn on logging by selecting a level bellow "
+          "'No logging'. Logging slows down the app and consumes space, so "
+          "logging is not advised unless requested by the developer. "
+          "Make sure to turn off logging when the session is over "
+          "for the same reason.",
+      confirm: TextButton(
+        child: const Text("Dismiss"),
+        onPressed: () => Get.close(1),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> expertPreferences = [
@@ -159,14 +174,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
               );
             }
           } else {
-            await Get.defaultDialog(
-              title: "Logging is not initialized",
-              middleText: "Switch to other than 'No logging' level to initialize",
-              confirm: TextButton(
-                child: const Text("Dismiss"),
-                onPressed: () => Get.close(1),
-              ),
-            );
+            await displayNotInitializedDialog();
           }
         },
         child: const Text("Export Logs..."),
@@ -185,14 +193,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
               ),
             );
           } else {
-            await Get.defaultDialog(
-              title: "Logging is not initialized",
-              middleText: "Switch to other than 'No logging' level to initialize",
-              confirm: TextButton(
-                child: const Text("Dismiss"),
-                onPressed: () => Get.close(1),
-              ),
-            );
+            await displayNotInitializedDialog();
           }
         },
         child: const Text("Clear All Logs"),
