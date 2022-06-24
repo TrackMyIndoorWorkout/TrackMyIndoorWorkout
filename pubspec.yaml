@@ -10,7 +10,6 @@ environment:
 
 dependencies:
   assorted_layout_widgets: ^6.0.0
-  bluetooth_enable_fork: ^0.1.4
   collection: ^1.16.0
   datetime_picker_formfield:
     git:
@@ -39,7 +38,6 @@ dependencies:
   overlay_tutorial: ^3.0.0
   package_info_plus: ^1.4.2
   path_provider: ^2.0.10
-  permission_handler: 9.2.0
   pref: ^2.6.0
   progress_indicators: ^1.0.0
   rxdart: ^0.27.3

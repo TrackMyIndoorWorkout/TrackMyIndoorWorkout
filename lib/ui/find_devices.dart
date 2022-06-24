@@ -26,6 +26,7 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/welcome_presented.dart';
+import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/logging.dart';
@@ -110,7 +111,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     Get.put<AppDatabase>(database, permanent: true);
   }
 
-  void _startScan() {
+  Future<void> _startScan(bool silent) async {
     if (_isScanning) {
       if (_logLevel >= logLevelInfo) {
         Logging.log(
@@ -119,6 +120,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
           "FIND_DEVICES",
           "startScan",
           "Scan already in progress",
+        );
+      }
+
+      return;
+    }
+
+    if (!await bluetoothCheck(silent)) {
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FIND_DEVICES",
+          "startScan",
+          "bluetooth check failed",
         );
       }
 
@@ -180,7 +195,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _isScanning = false;
-    _openDatabase().then((value) => _instantScan ? _startScan() : {});
+    _openDatabase().then((value) => _instantScan ? _startScan(true) : {});
 
     _captionStyle = Get.textTheme.headline6!;
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
@@ -574,7 +589,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           );
                         } else {
                           return IconButton(
-                              icon: const Icon(Icons.refresh), onPressed: () => _startScan());
+                              icon: const Icon(Icons.refresh), onPressed: () => _startScan(false));
                         }
                       }
                     },
@@ -584,7 +599,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             ),
             body: RefreshIndicator(
               onRefresh: () async {
-                _startScan();
+                _startScan(false);
               },
               child: ListView(
                 physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -736,6 +751,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               return ScanResultTile(
                                 result: r,
                                 onEquipmentTap: () async {
+                                  if (!await bluetoothCheck(false)) {
+                                    return;
+                                  }
+
                                   if (_isScanning) {
                                     await FlutterBluePlus.instance.stopScan();
                                     await Future.delayed(
@@ -746,6 +765,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       r.device, BluetoothDeviceState.disconnected, true);
                                 },
                                 onHrmTap: () async {
+                                  if (!await bluetoothCheck(false)) {
+                                    return;
+                                  }
+
                                   setState(() {
                                     _pairingHrm = true;
                                   });
@@ -907,7 +930,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         _tutorialVisible,
                         "Start / Stop Scan",
                         -8,
-                        () => _startScan(),
+                        () => _startScan(false),
                       );
                     }
                   },

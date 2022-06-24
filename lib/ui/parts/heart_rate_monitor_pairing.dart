@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../preferences/scan_duration.dart';
+import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 import 'heart_rate_monitor_scan_result.dart';
@@ -124,6 +125,10 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                       return HeartRateMonitorScanResultTile(
                           result: r,
                           onTap: () async {
+                            if (!await bluetoothCheck(false)) {
+                              return;
+                            }
+
                             setState(() {
                               _pairingHrm = true;
                             });

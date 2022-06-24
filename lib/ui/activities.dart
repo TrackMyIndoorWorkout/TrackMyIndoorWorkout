@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../export/activity_export.dart';
@@ -128,10 +127,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       IconButton(
         icon: _themeManager.getActionIcon(Icons.file_download, size),
         onPressed: () async {
-          if (!await Permission.storage.request().isGranted) {
-            return;
-          }
-
           final formatPick = await Get.bottomSheet(
             const ExportFormatPickerBottomSheet(),
             enableDrag: false,

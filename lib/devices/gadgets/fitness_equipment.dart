@@ -496,6 +496,10 @@ class FitnessEquipment extends DeviceBase {
   }
 
   Future<void> _executeControlOperation(int opCode, {int? controlInfo}) async {
+    if (!await FlutterBluePlus.instance.isOn) {
+      return;
+    }
+
     if (controlPoint == null ||
         (!_shouldSignalStartStop && !(descriptor?.shouldSignalStartStop ?? false))) {
       return;
