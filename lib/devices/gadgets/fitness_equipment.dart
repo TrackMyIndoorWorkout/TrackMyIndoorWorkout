@@ -829,13 +829,8 @@ class FitnessEquipment extends DeviceBase {
       );
     }
 
-    if (stub.elapsed == null || stub.elapsed == 0) {
-      stub.elapsed = elapsed.round();
-    }
-
-    if (stub.elapsedMillis == null || stub.elapsedMillis == 0) {
-      stub.elapsedMillis = elapsedMillis;
-    }
+    stub.elapsed = elapsed.round();
+    stub.elapsedMillis = elapsedMillis;
 
     if (workoutState == WorkoutState.stopped) {
       // We have to track the time ticking still #235
