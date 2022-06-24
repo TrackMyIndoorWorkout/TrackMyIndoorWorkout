@@ -1,3 +1,9 @@
+## 1.1.108
+
+* Fix Palette color configuration picker contrast problem in light mode
+* Providing explicit modal dialog feedback to Expert preferences page's button presses
+  (instead of just snack bars)
+
 ## 1.1.107
 
 * Support fitness machines which require explicit workout 

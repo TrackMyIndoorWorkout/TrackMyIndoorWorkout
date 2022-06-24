@@ -29,7 +29,7 @@ void main() {
         await speed2Power.initPower2SpeedConstants();
 
         final power = speed2Power.powerForVelocity(testData.speed * DeviceDescriptor.kmh2ms);
-        expect(power, closeTo(testData.watts, eps));
+        expect(power, closeTo(testData.watts, testData.watts * workaroundEpsRatio));
         // debugPrint("${testData.speed} -> $power");
       });
     }
