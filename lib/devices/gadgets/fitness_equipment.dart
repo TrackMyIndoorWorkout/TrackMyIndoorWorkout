@@ -198,6 +198,14 @@ class FitnessEquipment extends DeviceBase {
         // No way to yield from here so imperatively pump
         pumpDataCore(merged);
       }
+
+      if (workoutState == WorkoutState.justStopped || workoutState == WorkoutState.stopped) {
+        if (merged == null) {
+          pumpDataCore(lastRecord);
+        }
+
+        _startThrottlingTimer();
+      }
     }
   }
 
