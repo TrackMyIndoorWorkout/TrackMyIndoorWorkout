@@ -18,6 +18,8 @@ void main() {
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, schwinnICBikeFourCC);
+    expect(bike.isMultiSport, false);
+    expect(bike.shouldSignalStartStop, false);
   });
 
   test('Schwinn IC4 interprets FTMS Indoor Bike Data flags properly', () async {

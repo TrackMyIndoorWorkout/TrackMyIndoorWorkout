@@ -2,6 +2,7 @@ const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
 
 const eps = 1e-6;
 const displayEps = 1e-4;
+const workaroundEpsRatio = 0.05;
 const minInit = 10000;
 const maxInit = -10000;
 const lbToKg = 0.45359237;
@@ -28,6 +29,8 @@ const degToFitGps = 11930464.711111111; // 2 ^ 32 / 360
 const fontFamily = "RobotoMono";
 const fontSizeFactor = 1.2;
 const appName = "Track My Indoor Exercise";
+const displayAppName = "Track My Indoor Workout";
+const huaweiAppGalleryBuild = false;
 
 class ActivityType {
   static const String alpineSki = "AlpineSki";

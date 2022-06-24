@@ -553,10 +553,31 @@ class FitnessEquipment extends DeviceBase {
           );
         }
 
-        if (controlResponse.length >= 3) {
-          gotControl |= controlResponse[0] == controlOpcode &&
-              controlResponse[1] == requestControl &&
-              controlResponse[2] == successResponse;
+        if (controlResponse.length >= 3 &&
+            controlResponse[0] == controlOpcode &&
+            controlResponse[2] == successResponse) {
+          String logMessage = "Unknown success";
+          switch (controlResponse[1]) {
+            case requestControl:
+              gotControl = true;
+              logMessage = "Got control!";
+              break;
+            case startOrResumeControl:
+              logMessage = "Started!";
+              break;
+            case stopOrPauseControl:
+              logMessage = "Stopped!";
+              break;
+          }
+          if (_logLevel >= logLevelInfo) {
+            Logging.log(
+              _logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "connectToControlPoint controlPointSubscription",
+              logMessage,
+            );
+          }
         }
       });
 

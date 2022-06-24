@@ -1,3 +1,15 @@
+## 1.1.108
+
+* Fix Palette color configuration picker contrast problem in light mode
+* Providing explicit modal dialog feedback to Expert preferences page's button presses
+  (instead of just snack bars)
+
+## 1.1.107
+
+* Support fitness machines which require explicit workout 
+  Start/Stop signaling via FTMS control point (needed when workout doesn't start)
+* Workaround for Mr Captain rower's botched / malformed FTMS Rower protocol
+
 ## 1.1.106
 
 * Further refactoring for Mr Captain rower support

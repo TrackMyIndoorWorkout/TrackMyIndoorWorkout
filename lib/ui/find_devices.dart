@@ -7,6 +7,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_fourcc.dart';
 import '../devices/device_map.dart';
@@ -24,6 +25,7 @@ import '../persistence/models/device_usage.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/welcome_presented.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/logging.dart';
@@ -35,6 +37,7 @@ import 'parts/circular_menu.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
 import 'preferences/preferences_hub.dart';
+import 'about.dart';
 import 'activities.dart';
 import 'recording.dart';
 
@@ -185,6 +188,33 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
+
+    if (huaweiAppGalleryBuild) {
+      if (!prefService.get(welcomePresentedTag)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await Get.defaultDialog(
+            title: "Welcome to $displayAppName",
+            content: ElevatedButton.icon(
+              icon: const Icon(Icons.open_in_new),
+              label: const Text("Privacy Policy"),
+              onPressed: () async {
+                if (await canLaunchUrlString(AboutScreen.privacyPolicyUrl)) {
+                  launchUrlString(AboutScreen.privacyPolicyUrl);
+                } else {
+                  Get.snackbar("Attention", "Cannot open URL");
+                }
+              },
+            ),
+            confirm: TextButton(
+              child: const Text("Dismiss"),
+              onPressed: () => Get.close(1),
+            ),
+          );
+
+          prefService.set(welcomePresentedTag, true);
+        });
+      }
+    }
   }
 
   Future<bool> goToRecording(

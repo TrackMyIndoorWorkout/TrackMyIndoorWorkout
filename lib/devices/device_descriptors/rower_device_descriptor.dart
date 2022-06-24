@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 import '../../persistence/models/record.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
@@ -75,8 +76,12 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   void processFlag(int flag) {
     super.processFlag(flag);
     final prefService = Get.find<BasePrefService>();
-    _strokeRateWindowSize =
-        prefService.get<int>(strokeRateSmoothingIntTag) ?? strokeRateSmoothingDefault;
+    if (defaultSport == ActivityType.rowing) {
+      _strokeRateWindowSize = 0;
+    } else {
+      _strokeRateWindowSize =
+          prefService.get<int>(strokeRateSmoothingIntTag) ?? strokeRateSmoothingDefault;
+    }
 
     // KayakPro Compact
     // 44 0010 1100 (stroke rate, stroke count), total distance, instant pace, instant power

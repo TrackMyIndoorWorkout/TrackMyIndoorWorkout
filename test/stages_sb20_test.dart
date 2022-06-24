@@ -18,6 +18,8 @@ void main() {
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, stagesSB20FourCC);
+    expect(bike.isMultiSport, false);
+    expect(bike.shouldSignalStartStop, false);
   });
 
   test('Stages SB20 interprets FTMS Indoor Bike Data 1 flags properly', () async {

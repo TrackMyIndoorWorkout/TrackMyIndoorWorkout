@@ -37,7 +37,7 @@ void main() {
 
         final velocity =
             speed2Power.velocityForPowerCardano(testData.watts.toInt()) * DeviceDescriptor.ms2kmh;
-        expect(velocity, closeTo(testData.speed, displayEps));
+        expect(velocity, closeTo(testData.speed, testData.speed * workaroundEpsRatio));
         // debugPrint("${testData.watts} -> $velocity");
       });
     }
