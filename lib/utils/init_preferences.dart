@@ -49,6 +49,7 @@ import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
+import '../preferences/welcome_presented.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
 import 'constants.dart';
@@ -124,6 +125,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     driveTrainLossTag: driveTrainLossDefault,
     airTemperatureTag: airTemperatureDefault,
     shouldSignalStartStopTag: shouldSignalStartStopDefault,
+    welcomePresentedTag: welcomePresentedDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

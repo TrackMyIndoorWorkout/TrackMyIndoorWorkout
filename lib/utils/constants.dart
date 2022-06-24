@@ -29,6 +29,8 @@ const degToFitGps = 11930464.711111111; // 2 ^ 32 / 360
 const fontFamily = "RobotoMono";
 const fontSizeFactor = 1.2;
 const appName = "Track My Indoor Exercise";
+const displayAppName = "Track My Indoor Workout";
+const huaweiAppGalleryBuild = false;
 
 class ActivityType {
   static const String alpineSki = "AlpineSki";

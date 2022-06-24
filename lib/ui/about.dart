@@ -6,10 +6,18 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../preferences/enforced_time_zone.dart';
+import '../preferences/welcome_presented.dart';
 import '../utils/constants.dart';
 
 class AboutScreen extends StatefulWidget {
   static String shortTitle = "About";
+  static const hostUrl = "https://trackmyindoorworkout.github.io/";
+  static const quickStartUrl = "${hostUrl}2020/09/25/quick-start.html";
+  static const faqUrl = "${hostUrl}2020/09/22/frequently-asked-questions.html";
+  static const knownIssuesUrl = "${hostUrl}2020/09/26/known-issues.html";
+  static const changeLogUrl = "${hostUrl}changelog";
+  static const attributionsUrl = "${hostUrl}attributions";
+  static const privacyPolicyUrl = "${hostUrl}privacy/";
 
   const AboutScreen({Key? key}) : super(key: key);
 
@@ -18,13 +26,6 @@ class AboutScreen extends StatefulWidget {
 }
 
 class AboutScreenState extends State<AboutScreen> {
-  static const hostUrl = "https://trackmyindoorworkout.github.io/";
-  static const quickStartUrl = "${hostUrl}2020/09/25/quick-start.html";
-  static const faqUrl = "${hostUrl}2020/09/22/frequently-asked-questions.html";
-  static const knownIssuesUrl = "${hostUrl}2020/09/26/known-issues.html";
-  static const changeLogUrl = "${hostUrl}changelog";
-  static const attributionsUrl = "${hostUrl}attributions";
-
   late String _version;
   late String _buildNumber;
   String _detectedTimeZone = "";
@@ -57,7 +58,9 @@ class AboutScreenState extends State<AboutScreen> {
     if (kDebugMode) {
       actions.add(IconButton(
         icon: const Icon(Icons.build),
-        onPressed: () async {},
+        onPressed: () async {
+          Get.find<BasePrefService>().set(welcomePresentedTag, welcomePresentedDefault);
+        },
       ));
     }
 
@@ -75,11 +78,12 @@ class AboutScreenState extends State<AboutScreen> {
             ..._valueWithTitle(title: 'Detected Time Zone:', value: _detectedTimeZone),
             ..._valueWithTitle(title: 'Enforced Time Zone:', value: _enforcedTimeZone),
             const Divider(),
-            _buttonWithLink(buttonText: "Quick Start", linkUrl: quickStartUrl),
-            _buttonWithLink(buttonText: "Frequently Asked Questions", linkUrl: faqUrl),
-            _buttonWithLink(buttonText: "Known Issues", linkUrl: knownIssuesUrl),
-            _buttonWithLink(buttonText: "Change Log", linkUrl: changeLogUrl),
-            _buttonWithLink(buttonText: "Attributions", linkUrl: attributionsUrl),
+            _buttonWithLink(buttonText: "Privacy Policy", linkUrl: AboutScreen.privacyPolicyUrl),
+            _buttonWithLink(buttonText: "Quick Start", linkUrl: AboutScreen.quickStartUrl),
+            _buttonWithLink(buttonText: "Frequently Asked Questions", linkUrl: AboutScreen.faqUrl),
+            _buttonWithLink(buttonText: "Known Issues", linkUrl: AboutScreen.knownIssuesUrl),
+            _buttonWithLink(buttonText: "Change Log", linkUrl: AboutScreen.changeLogUrl),
+            _buttonWithLink(buttonText: "Attributions", linkUrl: AboutScreen.attributionsUrl),
           ],
         ),
       ),
