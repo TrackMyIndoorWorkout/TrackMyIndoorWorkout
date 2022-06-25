@@ -368,10 +368,9 @@ class RecordingState extends State<RecordingScreen> {
               _stoppedTime = _elapsed;
             }
 
-            if (workoutState == WorkoutState.stopped || workoutState == WorkoutState.justStopped) {
-              _elapsed -= _stoppedTime;
-            }
+            _elapsed -= _stoppedTime;
           }
+
           _movingTime = record.movingTime.round();
           if (record.heartRate != null &&
               (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
