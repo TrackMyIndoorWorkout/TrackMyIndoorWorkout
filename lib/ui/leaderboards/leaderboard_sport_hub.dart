@@ -31,35 +31,31 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Leaderboard Sports')),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: widget.sports
-              .map(
-                (sport) => Container(
-                  padding: const EdgeInsets.all(5.0),
-                  margin: const EdgeInsets.all(5.0),
-                  child: ElevatedButton(
-                    onPressed: () => Get.to(() => SportLeaderboardScreen(sport: sport)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        TextOneLine(
-                          sport,
-                          style: _textStyle,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Icon(Icons.chevron_right, size: _sizeDefault),
-                      ],
-                    ),
+      body: ListView(
+        children: widget.sports
+            .map(
+              (sport) => Container(
+                padding: const EdgeInsets.all(5.0),
+                margin: const EdgeInsets.all(5.0),
+                child: ElevatedButton(
+                  onPressed: () => Get.to(() => SportLeaderboardScreen(sport: sport)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      TextOneLine(
+                        sport,
+                        style: _textStyle,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Icon(Icons.chevron_right, size: _sizeDefault),
+                    ],
                   ),
                 ),
-              )
-              .toList(growable: false),
-        ),
+              ),
+            )
+            .toList(growable: false),
       ),
     );
   }

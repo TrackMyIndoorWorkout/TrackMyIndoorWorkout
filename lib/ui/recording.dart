@@ -1584,140 +1584,128 @@ class RecordingState extends State<RecordingScreen> {
             physics: const NeverScrollableScrollPhysics(),
             semanticChildCount: 2,
             children: [
-              SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    rows[0],
-                    const Divider(height: separatorHeight),
-                    rows[1],
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getZoneColor(metricIndex: 0, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[2],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[0],
-                        controller: _rowControllers[0],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getPaceLightColor(_selfRank, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[3],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[1],
-                        controller: _rowControllers[1],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ColoredBox(
-                      color: _getZoneColor(metricIndex: 2, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[4],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[2],
-                        controller: _rowControllers[2],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getTargetHrColor(targetHrState, true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[5],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[3],
-                        controller: _rowControllers[3],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ExpandablePanel(
+              ListView(
+                children: [
+                  rows[0],
+                  const Divider(height: separatorHeight),
+                  rows[1],
+                  const Divider(height: separatorHeight),
+                  ColoredBox(
+                    color: _getZoneColor(metricIndex: 0, background: true),
+                    child: ExpandablePanel(
                       theme: _expandableThemeData,
-                      header: rows[6],
+                      header: rows[2],
                       collapsed: Container(),
-                      expanded: _simplerUi ? Container() : extras[4],
-                      controller: _rowControllers[4],
+                      expanded: _simplerUi ? Container() : extras[0],
+                      controller: _rowControllers[0],
                     ),
-                  ],
-                ),
+                  ),
+                  const Divider(height: separatorHeight),
+                  ColoredBox(
+                    color: _getPaceLightColor(_selfRank, background: true),
+                    child: ExpandablePanel(
+                      theme: _expandableThemeData,
+                      header: rows[3],
+                      collapsed: Container(),
+                      expanded: _simplerUi ? Container() : extras[1],
+                      controller: _rowControllers[1],
+                    ),
+                  ),
+                ],
+              ),
+              ListView(
+                children: [
+                  ColoredBox(
+                    color: _getZoneColor(metricIndex: 2, background: true),
+                    child: ExpandablePanel(
+                      theme: _expandableThemeData,
+                      header: rows[4],
+                      collapsed: Container(),
+                      expanded: _simplerUi ? Container() : extras[2],
+                      controller: _rowControllers[2],
+                    ),
+                  ),
+                  const Divider(height: separatorHeight),
+                  ColoredBox(
+                    color: _getTargetHrColor(targetHrState, true),
+                    child: ExpandablePanel(
+                      theme: _expandableThemeData,
+                      header: rows[5],
+                      collapsed: Container(),
+                      expanded: _simplerUi ? Container() : extras[3],
+                      controller: _rowControllers[3],
+                    ),
+                  ),
+                  const Divider(height: separatorHeight),
+                  ExpandablePanel(
+                    theme: _expandableThemeData,
+                    header: rows[6],
+                    collapsed: Container(),
+                    expanded: _simplerUi ? Container() : extras[4],
+                    controller: _rowControllers[4],
+                  ),
+                ],
               ),
             ],
           )
-        : SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                rows[0],
-                const Divider(height: separatorHeight),
-                rows[1],
-                const Divider(height: separatorHeight),
-                ColoredBox(
-                  color: _getZoneColor(metricIndex: 0, background: true),
-                  child: ExpandablePanel(
-                    theme: _expandableThemeData,
-                    header: rows[2],
-                    collapsed: Container(),
-                    expanded: _simplerUi ? Container() : extras[0],
-                    controller: _rowControllers[0],
-                  ),
-                ),
-                const Divider(height: separatorHeight),
-                ColoredBox(
-                  color: _getPaceLightColor(_selfRank, background: true),
-                  child: ExpandablePanel(
-                    theme: _expandableThemeData,
-                    header: rows[3],
-                    collapsed: Container(),
-                    expanded: _simplerUi ? Container() : extras[1],
-                    controller: _rowControllers[1],
-                  ),
-                ),
-                const Divider(height: separatorHeight),
-                ColoredBox(
-                  color: _getZoneColor(metricIndex: 2, background: true),
-                  child: ExpandablePanel(
-                    theme: _expandableThemeData,
-                    header: rows[4],
-                    collapsed: Container(),
-                    expanded: _simplerUi ? Container() : extras[2],
-                    controller: _rowControllers[2],
-                  ),
-                ),
-                const Divider(height: separatorHeight),
-                ColoredBox(
-                  color: _getTargetHrColor(targetHrState, true),
-                  child: ExpandablePanel(
-                    theme: _expandableThemeData,
-                    header: rows[5],
-                    collapsed: Container(),
-                    expanded: _simplerUi ? Container() : extras[3],
-                    controller: _rowControllers[3],
-                  ),
-                ),
-                const Divider(height: separatorHeight),
-                ExpandablePanel(
+        : ListView(
+            children: [
+              rows[0],
+              const Divider(height: separatorHeight),
+              rows[1],
+              const Divider(height: separatorHeight),
+              ColoredBox(
+                color: _getZoneColor(metricIndex: 0, background: true),
+                child: ExpandablePanel(
                   theme: _expandableThemeData,
-                  header: rows[6],
+                  header: rows[2],
                   collapsed: Container(),
-                  expanded: _simplerUi ? Container() : extras[4],
-                  controller: _rowControllers[4],
+                  expanded: _simplerUi ? Container() : extras[0],
+                  controller: _rowControllers[0],
                 ),
-              ],
-            ),
+              ),
+              const Divider(height: separatorHeight),
+              ColoredBox(
+                color: _getPaceLightColor(_selfRank, background: true),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[3],
+                  collapsed: Container(),
+                  expanded: _simplerUi ? Container() : extras[1],
+                  controller: _rowControllers[1],
+                ),
+              ),
+              const Divider(height: separatorHeight),
+              ColoredBox(
+                color: _getZoneColor(metricIndex: 2, background: true),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[4],
+                  collapsed: Container(),
+                  expanded: _simplerUi ? Container() : extras[2],
+                  controller: _rowControllers[2],
+                ),
+              ),
+              const Divider(height: separatorHeight),
+              ColoredBox(
+                color: _getTargetHrColor(targetHrState, true),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[5],
+                  collapsed: Container(),
+                  expanded: _simplerUi ? Container() : extras[3],
+                  controller: _rowControllers[3],
+                ),
+              ),
+              const Divider(height: separatorHeight),
+              ExpandablePanel(
+                theme: _expandableThemeData,
+                header: rows[6],
+                collapsed: Container(),
+                expanded: _simplerUi ? Container() : extras[4],
+                controller: _rowControllers[4],
+              ),
+            ],
           );
 
     final List<Widget> menuButtons = [];
