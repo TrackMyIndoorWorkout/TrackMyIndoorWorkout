@@ -1459,13 +1459,29 @@ class RecordingState extends State<RecordingScreen> {
             seconds: _timeDisplayMode == timeDisplayModeMoving ? _movingTime ~/ 1000 : _elapsed)
         .toDisplay();
 
+    final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
+    var timeStyle = _measurementStyle;
+    if (_timeDisplayMode == timeDisplayModeHIITMoving &&
+        workoutState != WorkoutState.waitingForFirstMove) {
+      final timeColorIndex =
+          (workoutState == WorkoutState.justStopped || workoutState == WorkoutState.stopped)
+              ? 0
+              : 4;
+      timeStyle = _measurementStyle.apply(color: _paletteSpec?.lightFgPalette[5]![timeColorIndex]);
+    }
+
+    var timeIcon = (_timeDisplayMode == timeDisplayModeHIITMoving &&
+            (workoutState == WorkoutState.startedMoving || workoutState == WorkoutState.moving))
+        ? _themeManager.getRedIcon(Icons.timer, _sizeDefault)
+        : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
+
     List<Widget> rows = [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-          Text(timeDisplay, style: _measurementStyle),
+          timeIcon,
+          Text(timeDisplay, style: timeStyle),
           SizedBox(width: _sizeDefault / 4),
         ],
       ),
