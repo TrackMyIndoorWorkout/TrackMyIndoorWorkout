@@ -35,21 +35,17 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text("Power Factor %", style: _largerTextStyle),
-            SpinBox(
-              min: 1,
-              max: 1000,
-              value: _powerFactorPercent,
-              onChanged: (value) => _powerFactorPercent = value,
-              textStyle: _largerTextStyle,
-            ),
-          ],
-        ),
+      body: ListView(
+        children: [
+          Text("Power Factor %", style: _largerTextStyle),
+          SpinBox(
+            min: 1,
+            max: 1000,
+            value: _powerFactorPercent,
+            onChanged: (value) => _powerFactorPercent = value,
+            textStyle: _largerTextStyle,
+          ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0, () async {

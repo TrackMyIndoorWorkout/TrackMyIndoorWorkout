@@ -53,221 +53,217 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
     final integrationsKey = "integrations$keyPart";
     return Scaffold(
       appBar: AppBar(title: const Text('Preferences')),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () => Get.to(() => const UXPreferencesScreen()),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      UXPreferencesScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+      body: ListView(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => const UXPreferencesScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    UXPreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () => Get.to(() => const DataPreferencesScreen()),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      DataPreferencesScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => const DataPreferencesScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    DataPreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () => Get.to(() => const TargetHrPreferencesScreen()),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      TargetHrPreferencesScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => const TargetHrPreferencesScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    TargetHrPreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () => Get.to(() => const ZonesHubScreen()),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      ZonesHubScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => const ZonesHubScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    ZonesHubScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () => Get.to(() => const LeaderboardPreferencesScreen()),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      LeaderboardPreferencesScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => const LeaderboardPreferencesScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    LeaderboardPreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () => Get.to(() => const AthletePreferencesScreen()),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      AthletePreferencesScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => const AthletePreferencesScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    AthletePreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () => Get.to(() => const EquipmentPreferencesScreen()),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      EquipmentPreferencesScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => const EquipmentPreferencesScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    EquipmentPreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () => Get.to(() => const WorkoutPreferencesScreen()),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      WorkoutPreferencesScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => const WorkoutPreferencesScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    WorkoutPreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () =>
-                    Get.to(() => IntegrationPreferencesScreen(key: Key(integrationsKey))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      IntegrationPreferencesScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () =>
+                  Get.to(() => IntegrationPreferencesScreen(key: Key(integrationsKey))),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    IntegrationPreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  final timeZoneChoicesFixed = await FlutterNativeTimezone.getAvailableTimezones();
-                  List<String> timeZoneChoices = [];
-                  timeZoneChoices.addAll(timeZoneChoicesFixed);
-                  timeZoneChoices.sort();
-                  timeZoneChoices.insert(0, enforcedTimeZoneDefault);
-                  Get.to(() => ExpertPreferencesScreen(timeZoneChoices: timeZoneChoices));
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      ExpertPreferencesScreen.shortTitle,
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () async {
+                final timeZoneChoicesFixed = await FlutterNativeTimezone.getAvailableTimezones();
+                List<String> timeZoneChoices = [];
+                timeZoneChoices.addAll(timeZoneChoicesFixed);
+                timeZoneChoices.sort();
+                timeZoneChoices.insert(0, enforcedTimeZoneDefault);
+                Get.to(() => ExpertPreferencesScreen(timeZoneChoices: timeZoneChoices));
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    ExpertPreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

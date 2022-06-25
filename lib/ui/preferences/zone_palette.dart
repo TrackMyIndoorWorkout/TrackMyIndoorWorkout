@@ -98,13 +98,7 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
 
     return Scaffold(
       appBar: AppBar(title: const Text('Palette Preferences')),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: items,
-        ),
-      ),
+      body: ListView(children: items),
     );
   }
 }

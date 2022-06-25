@@ -135,36 +135,32 @@ class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _themeManager.getBlueIcon(
-                    getSportIcon(_fitnessEquipment?.sport ?? ActivityType.workout), _sizeDefault),
-                _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
-                Text(_batteryLevel, style: _textStyle),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _themeManager.getBlueIcon(Icons.favorite, _sizeDefault),
-                _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
-                Text(_hrmBatteryLevel, style: _textStyle),
-              ],
-            ),
-            const Divider(),
-            Text(_readFeatures),
-            const Divider(),
-            Text(_writeFeatures),
-          ],
-        ),
+      body: ListView(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _themeManager.getBlueIcon(
+                  getSportIcon(_fitnessEquipment?.sport ?? ActivityType.workout), _sizeDefault),
+              _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
+              Text(_batteryLevel, style: _textStyle),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _themeManager.getBlueIcon(Icons.favorite, _sizeDefault),
+              _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
+              Text(_hrmBatteryLevel, style: _textStyle),
+            ],
+          ),
+          const Divider(),
+          Text(_readFeatures),
+          const Divider(),
+          Text(_writeFeatures),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton:

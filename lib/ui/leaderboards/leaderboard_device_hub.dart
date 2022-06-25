@@ -37,47 +37,43 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Leaderboard Devices')),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: widget.devices
-              .map(
-                (device) => Container(
-                  padding: const EdgeInsets.all(5.0),
-                  margin: const EdgeInsets.all(5.0),
-                  child: ElevatedButton(
-                    onPressed: () => Get.to(() => DeviceLeaderboardScreen(device: device)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextOneLine(
-                              device.item2,
-                              style: _textStyle,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            TextOneLine(
-                              "(${device.item1})",
-                              style: _subTextStyle,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                        Icon(Icons.chevron_right, size: _sizeDefault),
-                      ],
-                    ),
+      body: ListView(
+        children: widget.devices
+            .map(
+              (device) => Container(
+                padding: const EdgeInsets.all(5.0),
+                margin: const EdgeInsets.all(5.0),
+                child: ElevatedButton(
+                  onPressed: () => Get.to(() => DeviceLeaderboardScreen(device: device)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextOneLine(
+                            device.item2,
+                            style: _textStyle,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          TextOneLine(
+                            "(${device.item1})",
+                            style: _subTextStyle,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                      Icon(Icons.chevron_right, size: _sizeDefault),
+                    ],
                   ),
                 ),
-              )
-              .toList(growable: false),
-        ),
+              ),
+            )
+            .toList(growable: false),
       ),
     );
   }

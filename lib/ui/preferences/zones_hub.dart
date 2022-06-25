@@ -124,13 +124,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Zones Preferences')),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: items,
-        ),
-      ),
+      body: ListView(children: items),
     );
   }
 }

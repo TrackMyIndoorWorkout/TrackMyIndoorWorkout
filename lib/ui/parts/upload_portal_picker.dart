@@ -165,13 +165,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     );
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: choiceRows,
-        ),
-      ),
+      body: ListView(children: choiceRows),
     );
   }
 }
