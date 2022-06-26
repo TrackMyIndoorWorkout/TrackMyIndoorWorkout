@@ -7,6 +7,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_fourcc.dart';
 import '../devices/device_map.dart';
@@ -24,6 +25,8 @@ import '../persistence/models/device_usage.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/welcome_presented.dart';
+import '../preferences/workout_mode.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/logging.dart';
@@ -31,10 +34,12 @@ import '../utils/machine_type.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
+import 'parts/boolean_question.dart';
 import 'parts/circular_menu.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
 import 'preferences/preferences_hub.dart';
+import 'about.dart';
 import 'activities.dart';
 import 'recording.dart';
 
@@ -49,6 +54,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _instantScan = instantScanDefault;
   int _scanDuration = scanDurationDefault;
   bool _autoConnect = autoConnectDefault;
+  bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   bool _goingToRecording = false;
@@ -135,6 +141,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final prefService = Get.find<BasePrefService>();
     _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
     _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
+    _circuitWorkout =
+        (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _scannedDevices.clear();
@@ -185,6 +193,33 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
+
+    if (huaweiAppGalleryBuild) {
+      if (!prefService.get(welcomePresentedTag)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await Get.defaultDialog(
+            title: "Welcome to $displayAppName",
+            content: ElevatedButton.icon(
+              icon: const Icon(Icons.open_in_new),
+              label: const Text("Privacy Policy"),
+              onPressed: () async {
+                if (await canLaunchUrlString(AboutScreen.privacyPolicyUrl)) {
+                  launchUrlString(AboutScreen.privacyPolicyUrl);
+                } else {
+                  Get.snackbar("Attention", "Cannot open URL");
+                }
+              },
+            ),
+            confirm: TextButton(
+              child: const Text("Dismiss"),
+              onPressed: () => Get.close(1),
+            ),
+          );
+
+          prefService.set(welcomePresentedTag, true);
+        });
+      }
+    }
   }
 
   Future<bool> goToRecording(
@@ -362,7 +397,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (fitnessEquipment.device?.id.id != device.id.id) {
         try {
           await fitnessEquipment.detach();
-          await fitnessEquipment.disconnect();
+          if (!_circuitWorkout) {
+            await fitnessEquipment.disconnect();
+          }
         } on PlatformException catch (e, stack) {
           debugPrint("$e");
           debugPrintStack(stackTrace: stack, label: "trace:");
@@ -735,26 +772,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                     final content = disconnectOnly
                                         ? 'Disconnect from the selected HRM?'
                                         : 'Disconnect from that HRM to connect to the selected one?';
-                                    if (!(await showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: Text(title),
-                                            content: Text(content),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () => Get.close(1),
-                                                child: const Text('No'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop(true);
-                                                },
-                                                child: const Text('Yes'),
-                                              ),
-                                            ],
-                                          ),
-                                        ) ??
-                                        false)) {
+                                    final verdict = await Get.bottomSheet(
+                                      BooleanQuestionBottomSheet(
+                                        title: title,
+                                        content: content,
+                                      ),
+                                      isDismissible: false,
+                                      enableDrag: false,
+                                    );
+
+                                    if (!verdict) {
                                       if (existingId != storedId) {
                                         setState(() {
                                           _heartRateMonitor = heartRateMonitor;

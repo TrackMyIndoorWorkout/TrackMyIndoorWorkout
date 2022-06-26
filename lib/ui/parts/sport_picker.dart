@@ -37,46 +37,42 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: widget.sportChoices
-              .asMap()
-              .entries
-              .map(
-                (e) => Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Transform.scale(
-                      scale: 2,
-                      child: Radio(
-                        value: e.key,
-                        groupValue: _sportIndex,
-                        onChanged: (value) {
-                          setState(() {
-                            _sportIndex = value as int;
-                          });
-                        },
-                      ),
-                    ),
-                    TextButton.icon(
-                      onPressed: () {
+      body: ListView(
+        children: widget.sportChoices
+            .asMap()
+            .entries
+            .map(
+              (e) => Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Transform.scale(
+                    scale: 2,
+                    child: Radio(
+                      value: e.key,
+                      groupValue: _sportIndex,
+                      onChanged: (value) {
                         setState(() {
-                          _sportIndex = e.key;
+                          _sportIndex = value as int;
                         });
                       },
-                      icon: _themeManager.getBlueIcon(
-                          getSportIcon(e.value), _largerTextStyle.fontSize!),
-                      label: Text(e.value,
-                          style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),
-                  ],
-                ),
-              )
-              .toList(growable: false),
-        ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _sportIndex = e.key;
+                      });
+                    },
+                    icon: _themeManager.getBlueIcon(
+                        getSportIcon(e.value), _largerTextStyle.fontSize!),
+                    label: Text(e.value,
+                        style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+                  ),
+                ],
+              ),
+            )
+            .toList(growable: false),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0,

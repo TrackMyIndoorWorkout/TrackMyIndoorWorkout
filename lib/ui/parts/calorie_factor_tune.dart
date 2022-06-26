@@ -39,21 +39,17 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text("Calorie Factor %", style: _largerTextStyle),
-            SpinBox(
-              min: 1,
-              max: 1000,
-              value: _calorieFactorPercent,
-              onChanged: (value) => _calorieFactorPercent = value,
-              textStyle: _largerTextStyle,
-            ),
-          ],
-        ),
+      body: ListView(
+        children: [
+          Text("Calorie Factor %", style: _largerTextStyle),
+          SpinBox(
+            min: 1,
+            max: 1000,
+            value: _calorieFactorPercent,
+            onChanged: (value) => _calorieFactorPercent = value,
+            textStyle: _largerTextStyle,
+          ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0, () async {

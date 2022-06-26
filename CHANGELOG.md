@@ -1,7 +1,18 @@
+## 1.1.109
+
+* Circuit workout mode: being able to switch between multiple fitness machines while 
+  leaving the workout open simultaneously on all of them (by simply navigating back
+  from the measurement screen) and continue arbitrarily any of them, until all the
+  workouts are finalized with the stop button.
+* HIIT display mode: while the athlete is alternating between active and rest periods
+  the timer counts each period starting from 0, active is red colored, rest is blue.
+* Buttons on the Expert configuration page pop up modal dialogs instead of snack bars.
+* Several screens (About screen for example) are scrollable now in landscape mode
+
 ## 1.1.108
 
 * Fix Palette color configuration picker contrast problem in light mode
-* Providing explicit modal dialog feedbacks to Expert preferences page's button presses
+* Providing explicit modal dialog feedback to Expert preferences page's button presses
   (instead of just snack bars)
 
 ## 1.1.107

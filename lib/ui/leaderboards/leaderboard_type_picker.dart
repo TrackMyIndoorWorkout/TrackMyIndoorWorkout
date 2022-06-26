@@ -40,72 +40,68 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("Leaderboards:", style: _inverseTextStyle),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  final sports = await _database.findDistinctWorkoutSummarySports();
-                  if (sports.isEmpty) {
-                    Get.snackbar("Warning", "No sports found");
-                  } else if (sports.length > 1) {
-                    Get.to(() => LeaderboardSportHubScreen(sports: sports));
-                  } else {
-                    Get.to(() => SportLeaderboardScreen(sport: sports.first));
-                  }
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      "Sport",
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+      body: ListView(
+        children: [
+          Text("Leaderboards:", style: _inverseTextStyle),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () async {
+                final sports = await _database.findDistinctWorkoutSummarySports();
+                if (sports.isEmpty) {
+                  Get.snackbar("Warning", "No sports found");
+                } else if (sports.length > 1) {
+                  Get.to(() => LeaderboardSportHubScreen(sports: sports));
+                } else {
+                  Get.to(() => SportLeaderboardScreen(sport: sports.first));
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    "Sport",
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              margin: const EdgeInsets.all(5.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  final devices = await _database.findDistinctWorkoutSummaryDevices();
-                  if (devices.isEmpty) {
-                    Get.snackbar("Warning", "No devices found");
-                  } else if (devices.length > 1) {
-                    Get.to(() => LeaderboardDeviceHubScreen(devices: devices));
-                  } else {
-                    Get.to(() => DeviceLeaderboardScreen(device: devices.first));
-                  }
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextOneLine(
-                      "Device",
-                      style: _textStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
-                ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () async {
+                final devices = await _database.findDistinctWorkoutSummaryDevices();
+                if (devices.isEmpty) {
+                  Get.snackbar("Warning", "No devices found");
+                } else if (devices.length > 1) {
+                  Get.to(() => LeaderboardDeviceHubScreen(devices: devices));
+                } else {
+                  Get.to(() => DeviceLeaderboardScreen(device: devices.first));
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    "Device",
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

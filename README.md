@@ -45,7 +45,8 @@ Run this command: `flutter packages pub run build_runner build --delete-conflict
 
 ## License
 
-This work is dual-licensed under Apache 2.0 and GPL 3.0.
-You can choose between one of them if you use this work.
+This work is licensed under GPL 3.0.
 
-`SPDX-License-Identifier: Apache-2.0 OR GPL-3.0`
+In anutshell if you borrow or modify any code that work must be mandatorily GPL 3.0 open source as well!
+
+`SPDX-License-Identifier: GPL-3.0`
