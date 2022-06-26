@@ -42,6 +42,23 @@ void main() {
     expect(equipment.lastPositiveCalories, closeTo(0.0, eps));
   });
 
+  test('startWorkout does not blank out continuationRecord', () async {
+    final rnd = Random();
+    await initPrefServiceForTest();
+    final descriptor = DeviceFactory.getSchwinnIcBike();
+    final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+    equipment.continuationRecord = RecordWithSport.getRandom(descriptor.defaultSport, rnd)
+      ..distance = rnd.nextDouble() + 100
+      ..elapsed = rnd.nextInt(1000) + 60
+      ..calories = rnd.nextInt(1000) + 10;
+
+    equipment.startWorkout();
+
+    expect(equipment.continuationRecord.distance! > 0.0, true);
+    expect(equipment.continuationRecord.elapsed! > 0, true);
+    expect(equipment.continuationRecord.calories! > 0, true);
+  });
+
   group('stopWorkout blanks out calorie helper variables', () {
     final rnd = Random();
     getRandomInts(smallRepetition, 300, rnd).forEach((calories) {

@@ -75,41 +75,19 @@ class DataPreferencesScreen extends PreferencesScreenBase {
             "activities."),
         onTap: () async {
           final database = Get.find<AppDatabase>();
-          final activities = await database.activityDao.findAllActivities();
-          for (var activity in activities) {
-            final lastRecord =
-                await database.recordDao.findLastRecordOfActivity(activity.id!).first;
-            if (lastRecord != null) {
-              int updated = 0;
-              if (lastRecord.calories != null &&
-                  lastRecord.calories! > 0 &&
-                  activity.calories == 0) {
-                activity.calories = lastRecord.calories!;
-                updated++;
-              }
-
-              if (lastRecord.distance != null &&
-                  lastRecord.distance! > 0 &&
-                  activity.distance == 0) {
-                activity.distance = lastRecord.distance!;
-                updated++;
-              }
-
-              if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
-                activity.elapsed = lastRecord.elapsed!;
-                updated++;
-              }
-
-              if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
-                activity.end = lastRecord.timeStamp!;
-                updated++;
-              }
-
-              if (updated > 0) {
-                await database.activityDao.updateActivity(activity);
-                Get.snackbar("Activity ${activity.id}", "Updated $updated fields");
-              }
+          final unfinished = await database.activityDao.findUnfinishedActivities();
+          var counter = 0;
+          for (final activity in unfinished) {
+            final finalized = await database.finalizeActivity(activity);
+            if (finalized) {
+              counter++;
             }
+          }
+
+          if (counter > 0) {
+            Get.snackbar("Activity finalization", "Finalized $counter unfinished activities");
+          } else {
+            Get.snackbar("Activity finalization", "Didn't find any unfinished activities");
           }
         },
         child: const Text("Fix empty workouts"),

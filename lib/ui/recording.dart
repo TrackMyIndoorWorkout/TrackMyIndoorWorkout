@@ -1,4 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
@@ -35,7 +34,6 @@ import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
-import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/simpler_ui.dart';
@@ -43,9 +41,11 @@ import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
+import '../preferences/time_display_mode.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
@@ -61,10 +61,12 @@ import '../utils/theme_manager.dart';
 import '../utils/time_zone.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
+import 'parts/boolean_question.dart';
 import 'parts/circular_menu.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
 import 'parts/spin_down.dart';
+import 'parts/three_choices.dart';
 import 'parts/upload_portal_picker.dart';
 import 'activities.dart';
 
@@ -144,8 +146,8 @@ class RecordingState extends State<RecordingScreen> {
   bool _twoColumnLayout = twoColumnLayoutDefault;
   bool _instantUpload = instantUploadDefault;
   bool _uxDebug = appDebugModeDefault;
-  bool _movingOrElapsedTime = movingOrElapsedTimeDefault;
-
+  String _timeDisplayMode = timeDisplayModeDefault;
+  bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
   Timer? _dataGapWatchdog;
   int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
   String _dataGapSoundEffect = dataStreamGapSoundEffectDefault;
@@ -159,6 +161,7 @@ class RecordingState extends State<RecordingScreen> {
   double _distance = 0.0;
   int _elapsed = 0;
   int _movingTime = 0;
+  int _markedTime = 0;
 
   String _targetHrMode = targetHeartRateModeDefault;
   Tuple2<double, double> _targetHrBounds = const Tuple2(0, 0);
@@ -243,26 +246,49 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     await _fitnessEquipment?.additionalSensorsOnDemand();
-
     final now = DateTime.now();
-    _activity = Activity(
-      fourCC: widget.descriptor.fourCC,
-      deviceName: widget.device.name,
-      deviceId: widget.device.id.id,
-      hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
-      start: now.millisecondsSinceEpoch,
-      startDateTime: now,
-      sport: widget.descriptor.defaultSport,
-      powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
-      calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
-      hrCalorieFactor: _fitnessEquipment?.hrCalorieFactor ?? 1.0,
-      hrmCalorieFactor: _fitnessEquipment?.hrmCalorieFactor ?? 1.0,
-      hrBasedCalories: _hrBasedCalorieCounting,
-      timeZone: await getTimeZone(),
-    );
+    var continued = false;
     if (!_uxDebug) {
-      final id = await _database.activityDao.insertActivity(_activity!);
-      _activity!.id = id;
+      final unfinished =
+          await _database.activityDao.findUnfinishedDeviceActivities(widget.device.id.id);
+      if (unfinished.isNotEmpty) {
+        final yesterday = now.subtract(const Duration(days: 1));
+        if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
+          _activity = unfinished.first;
+          continued = true;
+        }
+
+        for (final activity in unfinished) {
+          if (!continued || _activity == null || _activity!.id != activity.id) {
+            await _database.finalizeActivity(activity);
+          }
+        }
+      }
+    }
+
+    if (!continued) {
+      _activity = Activity(
+        fourCC: widget.descriptor.fourCC,
+        deviceName: widget.device.name,
+        deviceId: widget.device.id.id,
+        hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
+        start: now.millisecondsSinceEpoch,
+        startDateTime: now,
+        sport: widget.descriptor.defaultSport,
+        powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
+        calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
+        hrCalorieFactor: _fitnessEquipment?.hrCalorieFactor ?? 1.0,
+        hrmCalorieFactor: _fitnessEquipment?.hrmCalorieFactor ?? 1.0,
+        hrBasedCalories: _hrBasedCalorieCounting,
+        timeZone: await getTimeZone(),
+      );
+    }
+
+    if (!_uxDebug) {
+      if (!continued) {
+        final id = await _database.activityDao.insertActivity(_activity!);
+        _activity!.id = id;
+      }
     }
 
     if (_leaderboardFeature || _showPacer) {
@@ -296,7 +322,7 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    _fitnessEquipment?.setActivity(_activity!);
+    await _fitnessEquipment?.setActivity(_activity!);
 
     await _fitnessEquipment?.attach();
     setState(() {
@@ -313,7 +339,7 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment?.pumpData((record) async {
       _dataGapWatchdog?.cancel();
       _dataGapBeeperTimer?.cancel();
-      if (_dataGapWatchdogTime > 0) {
+      if (_dataGapWatchdogTime > 0 && !_circuitWorkout) {
         _dataGapWatchdog = Timer(
           Duration(seconds: _dataGapWatchdogTime),
           _dataGapTimeoutHandler,
@@ -322,9 +348,12 @@ class RecordingState extends State<RecordingScreen> {
 
       final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
       if (_measuring &&
-          (workoutState == WorkoutState.moving || workoutState == WorkoutState.justStopped) &&
-          (_fitnessEquipment?.measuring ?? false)) {
-        if (!_uxDebug) {
+          (_fitnessEquipment?.measuring ?? false) &&
+          workoutState != WorkoutState.waitingForFirstMove) {
+        if (!_uxDebug &&
+            (workoutState == WorkoutState.moving ||
+                workoutState == WorkoutState.startedMoving ||
+                workoutState == WorkoutState.justStopped)) {
           await _database.recordDao.insertRecord(record);
         }
 
@@ -342,6 +371,17 @@ class RecordingState extends State<RecordingScreen> {
           }
 
           _elapsed = record.elapsed ?? 0;
+          if (_timeDisplayMode == timeDisplayModeHIITMoving) {
+            if (workoutState == WorkoutState.justStopped ||
+                workoutState == WorkoutState.startedMoving) {
+              _markedTime = _elapsed;
+            }
+
+            if (workoutState != WorkoutState.waitingForFirstMove) {
+              _elapsed -= _markedTime;
+            }
+          }
+
           _movingTime = record.movingTime.round();
           if (record.heartRate != null &&
               (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
@@ -512,8 +552,7 @@ class RecordingState extends State<RecordingScreen> {
     _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
-    _movingOrElapsedTime =
-        prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
+    _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
     _instantUpload = prefService.get<bool>(instantUploadTag) ?? instantUploadDefault;
     _pointCount = min(60, size.width ~/ 2);
     final now = DateTime.now();
@@ -547,6 +586,8 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
+    _circuitWorkout =
+        (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
     _dataGapWatchdogTime =
         prefService.get<int>(dataStreamGapWatchdogIntTag) ?? dataStreamGapWatchdogDefault;
     _dataGapSoundEffect =
@@ -758,7 +799,9 @@ class RecordingState extends State<RecordingScreen> {
       _dataTimeoutBeeper();
     }
 
-    await _stopMeasurement(false);
+    if (!_circuitWorkout) {
+      await _stopMeasurement(false);
+    }
 
     try {
       await _fitnessEquipment?.disconnect();
@@ -906,33 +949,25 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<bool> _onWillPop() async {
-    if (!_measuring) {
-      _preDispose();
+    if (!_measuring || _circuitWorkout) {
+      await _preDispose();
       return true;
     }
 
-    return (await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('About to navigate away'),
-            content: const Text("The workout in progress will be finished. Are you sure?"),
-            actions: [
-              TextButton(
-                onPressed: () => Get.close(1),
-                child: const Text('No'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  await _stopMeasurement(true);
-                  await _preDispose();
-                  Navigator.of(context).pop(true);
-                },
-                child: const Text('Yes'),
-              ),
-            ],
-          ),
-        )) ??
-        false;
+    final verdict = await Get.bottomSheet(
+      const BooleanQuestionBottomSheet(
+        title: "About to navigate away",
+        content: "The workout in progress will be finished. Are you sure?",
+      ),
+      isDismissible: false,
+      enableDrag: false,
+    );
+
+    if (verdict) {
+      await _preDispose();
+    }
+
+    return verdict;
   }
 
   Color _getZoneColor({required metricIndex, required bool background}) {
@@ -1350,6 +1385,37 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
+  Future<void> startStopAction() async {
+    if (_measuring) {
+      if (_circuitWorkout) {
+        final selection = await Get.bottomSheet(
+          const ThreeChoicesBottomSheet(
+            title: "Circuit workout in progress",
+            verticalActions: true,
+            firstChoice: "Continue workout",
+            secondChoice: "Finish on THIS machine for good",
+            thirdChoice: "Finish an ALL machines (the whole circuit workout is over)",
+          ),
+          isDismissible: false,
+          enableDrag: false,
+        );
+        if (selection > 0) {
+          await _stopMeasurement(false);
+          if (selection > 1) {
+            final unfinished = await _database.activityDao.findUnfinishedActivities();
+            for (final activity in unfinished) {
+              await _database.finalizeActivity(activity);
+            }
+          }
+        }
+      } else {
+        await _stopMeasurement(false);
+      }
+    } else {
+      await _startMeasurement();
+    }
+  }
+
   bool hitTest(GlobalKey globalKey, Offset globalPosition) {
     final RenderObject? renderObject = globalKey.currentContext?.findRenderObject();
     if (renderObject != null && renderObject is RenderBox) {
@@ -1407,16 +1473,33 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final timeDisplay =
-        Duration(seconds: _movingOrElapsedTime ? _movingTime ~/ 1000 : _elapsed).toDisplay();
+    final timeDisplay = Duration(
+            seconds: _timeDisplayMode == timeDisplayModeMoving ? _movingTime ~/ 1000 : _elapsed)
+        .toDisplay();
+
+    final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
+    var timeStyle = _measurementStyle;
+    if (_timeDisplayMode == timeDisplayModeHIITMoving &&
+        workoutState != WorkoutState.waitingForFirstMove) {
+      final timeColorIndex =
+          (workoutState == WorkoutState.justStopped || workoutState == WorkoutState.stopped)
+              ? 0
+              : 4;
+      timeStyle = _measurementStyle.apply(color: _paletteSpec?.lightFgPalette[5]![timeColorIndex]);
+    }
+
+    var timeIcon = (_timeDisplayMode == timeDisplayModeHIITMoving &&
+            (workoutState == WorkoutState.startedMoving || workoutState == WorkoutState.moving))
+        ? _themeManager.getRedIcon(Icons.timer, _sizeDefault)
+        : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
 
     List<Widget> rows = [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-          Text(timeDisplay, style: _measurementStyle),
+          timeIcon,
+          Text(timeDisplay, style: timeStyle),
           SizedBox(width: _sizeDefault / 4),
         ],
       ),
@@ -1600,140 +1683,128 @@ class RecordingState extends State<RecordingScreen> {
             physics: const NeverScrollableScrollPhysics(),
             semanticChildCount: 2,
             children: [
-              SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    rows[0],
-                    const Divider(height: separatorHeight),
-                    rows[1],
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getZoneColor(metricIndex: 0, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[2],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[0],
-                        controller: _rowControllers[0],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getPaceLightColor(_selfRank, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[3],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[1],
-                        controller: _rowControllers[1],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ColoredBox(
-                      color: _getZoneColor(metricIndex: 2, background: true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[4],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[2],
-                        controller: _rowControllers[2],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ColoredBox(
-                      color: _getTargetHrColor(targetHrState, true),
-                      child: ExpandablePanel(
-                        theme: _expandableThemeData,
-                        header: rows[5],
-                        collapsed: Container(),
-                        expanded: _simplerUi ? Container() : extras[3],
-                        controller: _rowControllers[3],
-                      ),
-                    ),
-                    const Divider(height: separatorHeight),
-                    ExpandablePanel(
+              ListView(
+                children: [
+                  rows[0],
+                  const Divider(height: separatorHeight),
+                  rows[1],
+                  const Divider(height: separatorHeight),
+                  ColoredBox(
+                    color: _getZoneColor(metricIndex: 0, background: true),
+                    child: ExpandablePanel(
                       theme: _expandableThemeData,
-                      header: rows[6],
+                      header: rows[2],
                       collapsed: Container(),
-                      expanded: _simplerUi ? Container() : extras[4],
-                      controller: _rowControllers[4],
+                      expanded: _simplerUi ? Container() : extras[0],
+                      controller: _rowControllers[0],
                     ),
-                  ],
-                ),
+                  ),
+                  const Divider(height: separatorHeight),
+                  ColoredBox(
+                    color: _getPaceLightColor(_selfRank, background: true),
+                    child: ExpandablePanel(
+                      theme: _expandableThemeData,
+                      header: rows[3],
+                      collapsed: Container(),
+                      expanded: _simplerUi ? Container() : extras[1],
+                      controller: _rowControllers[1],
+                    ),
+                  ),
+                ],
+              ),
+              ListView(
+                children: [
+                  ColoredBox(
+                    color: _getZoneColor(metricIndex: 2, background: true),
+                    child: ExpandablePanel(
+                      theme: _expandableThemeData,
+                      header: rows[4],
+                      collapsed: Container(),
+                      expanded: _simplerUi ? Container() : extras[2],
+                      controller: _rowControllers[2],
+                    ),
+                  ),
+                  const Divider(height: separatorHeight),
+                  ColoredBox(
+                    color: _getTargetHrColor(targetHrState, true),
+                    child: ExpandablePanel(
+                      theme: _expandableThemeData,
+                      header: rows[5],
+                      collapsed: Container(),
+                      expanded: _simplerUi ? Container() : extras[3],
+                      controller: _rowControllers[3],
+                    ),
+                  ),
+                  const Divider(height: separatorHeight),
+                  ExpandablePanel(
+                    theme: _expandableThemeData,
+                    header: rows[6],
+                    collapsed: Container(),
+                    expanded: _simplerUi ? Container() : extras[4],
+                    controller: _rowControllers[4],
+                  ),
+                ],
               ),
             ],
           )
-        : SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                rows[0],
-                const Divider(height: separatorHeight),
-                rows[1],
-                const Divider(height: separatorHeight),
-                ColoredBox(
-                  color: _getZoneColor(metricIndex: 0, background: true),
-                  child: ExpandablePanel(
-                    theme: _expandableThemeData,
-                    header: rows[2],
-                    collapsed: Container(),
-                    expanded: _simplerUi ? Container() : extras[0],
-                    controller: _rowControllers[0],
-                  ),
-                ),
-                const Divider(height: separatorHeight),
-                ColoredBox(
-                  color: _getPaceLightColor(_selfRank, background: true),
-                  child: ExpandablePanel(
-                    theme: _expandableThemeData,
-                    header: rows[3],
-                    collapsed: Container(),
-                    expanded: _simplerUi ? Container() : extras[1],
-                    controller: _rowControllers[1],
-                  ),
-                ),
-                const Divider(height: separatorHeight),
-                ColoredBox(
-                  color: _getZoneColor(metricIndex: 2, background: true),
-                  child: ExpandablePanel(
-                    theme: _expandableThemeData,
-                    header: rows[4],
-                    collapsed: Container(),
-                    expanded: _simplerUi ? Container() : extras[2],
-                    controller: _rowControllers[2],
-                  ),
-                ),
-                const Divider(height: separatorHeight),
-                ColoredBox(
-                  color: _getTargetHrColor(targetHrState, true),
-                  child: ExpandablePanel(
-                    theme: _expandableThemeData,
-                    header: rows[5],
-                    collapsed: Container(),
-                    expanded: _simplerUi ? Container() : extras[3],
-                    controller: _rowControllers[3],
-                  ),
-                ),
-                const Divider(height: separatorHeight),
-                ExpandablePanel(
+        : ListView(
+            children: [
+              rows[0],
+              const Divider(height: separatorHeight),
+              rows[1],
+              const Divider(height: separatorHeight),
+              ColoredBox(
+                color: _getZoneColor(metricIndex: 0, background: true),
+                child: ExpandablePanel(
                   theme: _expandableThemeData,
-                  header: rows[6],
+                  header: rows[2],
                   collapsed: Container(),
-                  expanded: _simplerUi ? Container() : extras[4],
-                  controller: _rowControllers[4],
+                  expanded: _simplerUi ? Container() : extras[0],
+                  controller: _rowControllers[0],
                 ),
-              ],
-            ),
+              ),
+              const Divider(height: separatorHeight),
+              ColoredBox(
+                color: _getPaceLightColor(_selfRank, background: true),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[3],
+                  collapsed: Container(),
+                  expanded: _simplerUi ? Container() : extras[1],
+                  controller: _rowControllers[1],
+                ),
+              ),
+              const Divider(height: separatorHeight),
+              ColoredBox(
+                color: _getZoneColor(metricIndex: 2, background: true),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[4],
+                  collapsed: Container(),
+                  expanded: _simplerUi ? Container() : extras[2],
+                  controller: _rowControllers[2],
+                ),
+              ),
+              const Divider(height: separatorHeight),
+              ColoredBox(
+                color: _getTargetHrColor(targetHrState, true),
+                child: ExpandablePanel(
+                  theme: _expandableThemeData,
+                  header: rows[5],
+                  collapsed: Container(),
+                  expanded: _simplerUi ? Container() : extras[3],
+                  controller: _rowControllers[3],
+                ),
+              ),
+              const Divider(height: separatorHeight),
+              ExpandablePanel(
+                theme: _expandableThemeData,
+                header: rows[6],
+                collapsed: Container(),
+                expanded: _simplerUi ? Container() : extras[4],
+                controller: _rowControllers[4],
+              ),
+            ],
           );
 
     final List<Widget> menuButtons = [];
@@ -1848,11 +1919,7 @@ class RecordingState extends State<RecordingScreen> {
           "Start / Stop Workout",
           -20,
           () async {
-            if (_measuring) {
-              await _stopMeasurement(false);
-            } else {
-              await _startMeasurement();
-            }
+            await startStopAction();
           },
         ),
       ]);
@@ -1945,11 +2012,7 @@ class RecordingState extends State<RecordingScreen> {
                     child: IconButton(
                       icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
                       onPressed: () async {
-                        if (_measuring) {
-                          await _stopMeasurement(false);
-                        } else {
-                          await _startMeasurement();
-                        }
+                        await startStopAction();
                       },
                     ),
                   ),

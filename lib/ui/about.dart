@@ -69,23 +69,21 @@ class AboutScreenState extends State<AboutScreen> {
         title: Text(AboutScreen.shortTitle),
         actions: actions,
       ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ..._valueWithTitle(title: 'Version:', value: _version),
-            ..._valueWithTitle(title: 'Build#:', value: _buildNumber),
-            ..._valueWithTitle(title: 'Detected Time Zone:', value: _detectedTimeZone),
-            ..._valueWithTitle(title: 'Enforced Time Zone:', value: _enforcedTimeZone),
-            const Divider(),
-            _buttonWithLink(buttonText: "Privacy Policy", linkUrl: AboutScreen.privacyPolicyUrl),
-            _buttonWithLink(buttonText: "Quick Start", linkUrl: AboutScreen.quickStartUrl),
-            _buttonWithLink(buttonText: "Frequently Asked Questions", linkUrl: AboutScreen.faqUrl),
-            _buttonWithLink(buttonText: "Known Issues", linkUrl: AboutScreen.knownIssuesUrl),
-            _buttonWithLink(buttonText: "Change Log", linkUrl: AboutScreen.changeLogUrl),
-            _buttonWithLink(buttonText: "Attributions", linkUrl: AboutScreen.attributionsUrl),
-          ],
-        ),
+      body: ListView(
+        shrinkWrap: true,
+        children: [
+          ..._valueWithTitle(title: 'Version:', value: _version, oneLine: true),
+          ..._valueWithTitle(title: 'Build#:', value: _buildNumber, oneLine: true),
+          ..._valueWithTitle(title: 'Detected Time Zone:', value: _detectedTimeZone),
+          ..._valueWithTitle(title: 'Enforced Time Zone:', value: _enforcedTimeZone),
+          const Divider(),
+          _buttonWithLink(buttonText: "Privacy Policy", linkUrl: AboutScreen.privacyPolicyUrl),
+          _buttonWithLink(buttonText: "Quick Start", linkUrl: AboutScreen.quickStartUrl),
+          _buttonWithLink(buttonText: "Frequently Asked Questions", linkUrl: AboutScreen.faqUrl),
+          _buttonWithLink(buttonText: "Known Issues", linkUrl: AboutScreen.knownIssuesUrl),
+          _buttonWithLink(buttonText: "Change Log", linkUrl: AboutScreen.changeLogUrl),
+          _buttonWithLink(buttonText: "Attributions", linkUrl: AboutScreen.attributionsUrl),
+        ],
       ),
     );
   }
@@ -104,24 +102,34 @@ class AboutScreenState extends State<AboutScreen> {
         ),
       );
 
-  List<Widget> _valueWithTitle({required String title, required String value}) => [
-        Flexible(
-          child: Text(
-            title,
-            style: _fieldStyle,
-            maxLines: 10,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-          ),
+  List<Widget> _valueWithTitleCore({required String title, required String value}) => [
+        Text(
+          title,
+          style: _fieldStyle,
+          maxLines: 10,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
         ),
-        Flexible(
-          child: Text(
-            value,
-            style: _valueStyle,
-            maxLines: 10,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-          ),
-        )
+        Text(
+          value,
+          style: _valueStyle,
+          maxLines: 10,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+        ),
       ];
+
+  List<Widget> _valueWithTitle({
+    required String title,
+    required String value,
+    bool oneLine = false,
+  }) =>
+      oneLine
+          ? [
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: _valueWithTitleCore(title: title, value: value)),
+            ]
+          : _valueWithTitleCore(title: title, value: value);
 }
