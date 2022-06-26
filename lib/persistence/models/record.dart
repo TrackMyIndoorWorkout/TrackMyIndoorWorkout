@@ -392,7 +392,7 @@ class RecordWithSport extends Record {
   void adjustTime(int newElapsed, int newElapsedMillis) {
     if (elapsedMillis != null && dt != null) {
       final dMillis = newElapsedMillis - elapsedMillis!;
-      dt!.add(Duration(milliseconds: dMillis));
+      dt = dt!.add(Duration(milliseconds: dMillis));
     }
 
     elapsed = newElapsed;
