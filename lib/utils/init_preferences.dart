@@ -32,7 +32,6 @@ import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
-import '../preferences/moving_or_elapsed_time.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/scan_duration.dart';
@@ -44,12 +43,14 @@ import '../preferences/sport_spec.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
+import '../preferences/time_display_mode.dart';
 import '../preferences/training_peaks_upload_public.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
 import '../preferences/welcome_presented.dart';
+import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
 import 'constants.dart';
@@ -115,16 +116,17 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     displayLapCounterTag: displayLapCounterDefault,
     measurementFontSizeAdjustTag: measurementFontSizeAdjustDefault,
     twoColumnLayoutTag: twoColumnLayoutDefault,
-    movingOrElapsedTimeTag: movingOrElapsedTimeDefault,
     trainingPeaksUploadPublicTag: trainingPeaksUploadPublicDefault,
     logLevelTag: logLevelDefault,
     calculateGpsTag: calculateGpsDefault,
     avgSpeedOnTrackTag: avgSpeedOnTrackDefault,
     showPacerTag: showPacerDefault,
+    workoutModeTag: workoutModeDefault,
     bikeWeightTag: bikeWeightDefault,
     driveTrainLossTag: driveTrainLossDefault,
     airTemperatureTag: airTemperatureDefault,
     shouldSignalStartStopTag: shouldSignalStartStopDefault,
+    timeDisplayModeTag: timeDisplayModeDefault,
     welcomePresentedTag: welcomePresentedDefault,
   };
 
@@ -307,6 +309,14 @@ Future<BasePrefService> initPreferences() async {
         prefService.get<bool>(rankingForDeviceOldTag) ?? rankingForDeviceOldDefault;
     if (rankingForDevice && !rankingForSport) {
       await prefService.set<bool>(rankingForSportOrDeviceTag, !rankingForSportOrDeviceDefault);
+    }
+  }
+
+  if (prefVersion <= preferencesVersionTimeDisplayMode) {
+    final movingOrElapsedTime =
+        prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
+    if (!movingOrElapsedTime) {
+      await prefService.set<String>(timeDisplayModeTag, timeDisplayModeElapsed);
     }
   }
 

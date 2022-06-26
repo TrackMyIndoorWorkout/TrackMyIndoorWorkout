@@ -15,6 +15,7 @@ import 'integrations.dart';
 import 'leaderboard.dart';
 import 'target_heart_rate.dart';
 import 'ux_preferences.dart';
+import 'workout.dart';
 import 'zones_hub.dart';
 
 class PreferencesHubScreen extends StatefulWidget {
@@ -185,6 +186,26 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     EquipmentPreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => const WorkoutPreferencesScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    WorkoutPreferencesScreen.shortTitle,
                     style: _textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,

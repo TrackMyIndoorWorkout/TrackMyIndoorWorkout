@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import '../preferences/log_level.dart';
+import '../utils/constants.dart';
 
 class Logging {
   static bool initialized = false;
@@ -52,6 +53,11 @@ class Logging {
     String logMessage,
   ) {
     if (!initialized || logLevelThreshold == logLevelNone) {
+      return;
+    }
+
+    if (!testing && kDebugMode) {
+      debugPrint("$tag | $subTag | $logMessage");
       return;
     }
 

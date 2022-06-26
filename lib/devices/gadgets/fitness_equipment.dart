@@ -43,9 +43,10 @@ import 'write_support_parameters.dart';
 typedef RecordHandlerFunction = Function(RecordWithSport data);
 
 // State Machine for #231 and #235
-// (intelligent start and elapsed time tracking)
+// (intelligent start and moving / elapsed time tracking)
 enum WorkoutState {
   waitingForFirstMove,
+  startedMoving,
   moving,
   justStopped,
   stopped,
@@ -63,13 +64,12 @@ class FitnessEquipment extends DeviceBase {
   double _startingCalories = 0.0;
   bool firstDistance; // #197 #234 #259
   double _startingDistance = 0.0;
-  bool firstTime; // #197 #234 #259
-  int _startingElapsed = 0;
   bool hasTotalCalorieReporting = false;
   bool hasTotalDistanceReporting = false;
-  bool hasTotalTimeReporting = false;
   Timer? _timer;
   late RecordWithSport lastRecord;
+  late Record continuationRecord;
+  bool continuation = false;
   HeartRateMonitor? heartRateMonitor;
   RunningCadenceSensor? _runningCadenceSensor;
   String _heartRateGapWorkaround = heartRateGapWorkaroundDefault;
@@ -117,12 +117,7 @@ class FitnessEquipment extends DeviceBase {
   Timer? _throttleTimer;
   RecordHandlerFunction? _recordHandlerFunction;
 
-  FitnessEquipment(
-      {this.descriptor,
-      device,
-      this.firstCalories = true,
-      this.firstDistance = true,
-      this.firstTime = true})
+  FitnessEquipment({this.descriptor, device, this.firstCalories = true, this.firstDistance = true})
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
           characteristicsId: descriptor?.dataCharacteristicId,
@@ -202,6 +197,14 @@ class FitnessEquipment extends DeviceBase {
         _startThrottlingTimer();
         // No way to yield from here so imperatively pump
         pumpDataCore(merged);
+      }
+
+      if (workoutState == WorkoutState.justStopped || workoutState == WorkoutState.stopped) {
+        if (merged == null) {
+          pumpDataCore(lastRecord);
+        }
+
+        _startThrottlingTimer();
       }
     }
   }
@@ -377,9 +380,24 @@ class FitnessEquipment extends DeviceBase {
     }
   }
 
-  void setActivity(Activity activity) {
+  Future<void> setActivity(Activity activity) async {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
+    if (Get.isRegistered<AppDatabase>()) {
+      final database = Get.find<AppDatabase>();
+      final lastRecord = await database.recordDao.findLastRecordOfActivity(activity.id!).first;
+      continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
+      continuation = continuationRecord.hasCumulative();
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "setActivity",
+          "continuation $continuation continuationRecord $continuationRecord",
+        );
+      }
+    }
     workoutState = WorkoutState.waitingForFirstMove;
     dataHandlers = {};
     readConfiguration();
@@ -693,10 +711,20 @@ class FitnessEquipment extends DeviceBase {
     }
     if (workoutState == WorkoutState.waitingForFirstMove) {
       if (isNotMoving) {
+        if (_activity != null && _activity!.startDateTime != null) {
+          int elapsedMillis = now.difference(_activity!.startDateTime!).inMilliseconds;
+          lastRecord.adjustTime(elapsedMillis ~/ 1000, elapsedMillis);
+        }
+
         return lastRecord;
       } else {
         dataHandlers = {};
-        workoutState = WorkoutState.moving;
+        if (workoutState == WorkoutState.startedMoving) {
+          workoutState = WorkoutState.moving;
+        } else if (workoutState != WorkoutState.moving) {
+          workoutState = WorkoutState.startedMoving;
+        }
+
         // Null activity should only happen in UX simulation mode
         if (_activity != null) {
           _activity!.startDateTime = now;
@@ -716,13 +744,17 @@ class FitnessEquipment extends DeviceBase {
       // Once all types of packets indicate non movement we can be sure
       // that the workout is stopped.
       if (isNotMoving && wasNotMoving()) {
-        if (workoutState == WorkoutState.moving) {
+        if (workoutState == WorkoutState.moving || workoutState == WorkoutState.startedMoving) {
           workoutState = WorkoutState.justStopped;
-        } else if (workoutState == WorkoutState.justStopped) {
+        } else {
           workoutState = WorkoutState.stopped;
         }
       } else {
-        workoutState = WorkoutState.moving;
+        if (workoutState == WorkoutState.startedMoving) {
+          workoutState = WorkoutState.moving;
+        } else if (workoutState != WorkoutState.moving) {
+          workoutState = WorkoutState.startedMoving;
+        }
       }
     }
 
@@ -752,11 +784,8 @@ class FitnessEquipment extends DeviceBase {
             "_startingCalories $_startingCalories, "
             "firstDistance $firstDistance, "
             "_startingDistance $_startingDistance, "
-            "firstTime $firstTime, "
-            "_startingElapsed $_startingElapsed, "
             "hasTotalCalorieReporting $hasTotalCalorieReporting, "
-            "hasTotalDistanceReporting $hasTotalDistanceReporting, "
-            "hasTotalTimeReporting $hasTotalTimeReporting",
+            "hasTotalDistanceReporting $hasTotalDistanceReporting",
       );
     }
 
@@ -799,12 +828,6 @@ class FitnessEquipment extends DeviceBase {
       firstDistance = false;
     }
 
-    hasTotalTimeReporting |= stub.elapsed != null;
-    if (hasTotalTimeReporting && firstTime && (stub.elapsed ?? 0) > 2) {
-      _startingElapsed = stub.elapsed!;
-      firstTime = false;
-    }
-
     if (shouldMerge) {
       stub.merge(
         lastRecord,
@@ -813,27 +836,12 @@ class FitnessEquipment extends DeviceBase {
       );
     }
 
-    if (hasTotalCalorieReporting && stub.elapsed != null) {
-      elapsed = stub.elapsed!.toDouble();
-    }
-
-    if (stub.elapsed == null || stub.elapsed == 0) {
-      stub.elapsed = elapsed.round();
-    }
-
-    if (stub.elapsedMillis == null || stub.elapsedMillis == 0) {
-      stub.elapsedMillis = elapsedMillis;
-    }
-
-    // #197
-    if (_startingElapsed > 0) {
-      stub.elapsed = stub.elapsed! - _startingElapsed;
-    }
+    stub.elapsed = elapsed.round();
+    stub.elapsedMillis = elapsedMillis;
 
     if (workoutState == WorkoutState.stopped) {
       // We have to track the time ticking still #235
-      lastRecord.elapsed = stub.elapsed;
-      lastRecord.elapsedMillis = stub.elapsedMillis;
+      lastRecord.adjustTime(stub.elapsed!, stub.elapsedMillis!);
       return lastRecord;
     }
 
@@ -881,7 +889,6 @@ class FitnessEquipment extends DeviceBase {
     // time reporting or not
     if (stub.movingTime >= 2000) {
       firstDistance = false;
-      firstTime = false;
       firstCalories = false;
     }
 
@@ -1031,7 +1038,7 @@ class FitnessEquipment extends DeviceBase {
       stub.cumulativeMetricsEnforcements(
         lastRecord,
         forDistance: !firstDistance,
-        forTime: !firstTime,
+        forTime: true,
         forCalories: !firstCalories,
       );
     }
@@ -1059,16 +1066,13 @@ class FitnessEquipment extends DeviceBase {
             "_startingCalories $_startingCalories, "
             "firstDistance $firstDistance, "
             "_startingDistance $_startingDistance, "
-            "firstTime $firstTime, "
-            "_startingElapsed $_startingElapsed, "
             "hasTotalCalorieReporting $hasTotalCalorieReporting, "
-            "hasTotalDistanceReporting $hasTotalDistanceReporting, "
-            "hasTotalTimeReporting $hasTotalTimeReporting",
+            "hasTotalDistanceReporting $hasTotalDistanceReporting",
       );
     }
 
     lastRecord = stub;
-    return stub;
+    return continuation ? RecordWithSport.offsetForward(stub, continuationRecord) : stub;
   }
 
   Future<void> refreshFactors() async {
@@ -1156,10 +1160,8 @@ class FitnessEquipment extends DeviceBase {
     _lastPositiveCalories = 0.0;
     firstCalories = true;
     firstDistance = true;
-    firstTime = true;
     _startingCalories = 0.0;
     _startingDistance = 0.0;
-    _startingElapsed = 0;
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
