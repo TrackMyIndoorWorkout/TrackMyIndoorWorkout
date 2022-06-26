@@ -368,7 +368,9 @@ class RecordingState extends State<RecordingScreen> {
               _stoppedTime = _elapsed;
             }
 
-            _elapsed -= _stoppedTime;
+            if (workoutState != WorkoutState.waitingForFirstMove) {
+              _elapsed -= _stoppedTime;
+            }
           }
 
           _movingTime = record.movingTime.round();
