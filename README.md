@@ -47,6 +47,6 @@ Run this command: `flutter packages pub run build_runner build --delete-conflict
 
 This work is licensed under GPL 3.0.
 
-In anutshell if you borrow or modify any code that work must be mandatorily open source as well!
+In a nutshell if you borrow or modify any code that work must be mandatorily open source as well!
 
 `SPDX-License-Identifier: GPL-3.0`
