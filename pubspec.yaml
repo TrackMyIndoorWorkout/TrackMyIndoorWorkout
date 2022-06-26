@@ -10,6 +10,9 @@ environment:
 
 dependencies:
   assorted_layout_widgets: ^6.0.0
+  bluetooth_enable_fork:
+    git:
+      url: https://github.com/CsabaConsulting/bluetooth_enable_fork.git
   collection: ^1.16.0
   datetime_picker_formfield:
     git:

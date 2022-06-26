@@ -1,3 +1,4 @@
+import 'package:bluetooth_enable_fork/bluetooth_enable_fork.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
@@ -41,9 +42,9 @@ Future<bool> bluetoothCheck(bool silent) async {
       return false;
     }
 
-    final success = await FlutterBluePlus.instance.turnOn();
-    if (!success) {
-      return false;
+    await BluetoothEnable.enableBluetooth;
+    if (!await FlutterBluePlus.instance.isOn) {
+      await FlutterBluePlus.instance.turnOn();
     }
   }
 
