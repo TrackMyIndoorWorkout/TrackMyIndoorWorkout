@@ -160,7 +160,7 @@ class RecordingState extends State<RecordingScreen> {
   double _distance = 0.0;
   int _elapsed = 0;
   int _movingTime = 0;
-  int _stoppedTime = 0;
+  int _markedTime = 0;
 
   String _targetHrMode = targetHeartRateModeDefault;
   Tuple2<double, double> _targetHrBounds = const Tuple2(0, 0);
@@ -365,11 +365,11 @@ class RecordingState extends State<RecordingScreen> {
           if (_timeDisplayMode == timeDisplayModeHIITMoving) {
             if (workoutState == WorkoutState.justStopped ||
                 workoutState == WorkoutState.startedMoving) {
-              _stoppedTime = _elapsed;
+              _markedTime = _elapsed;
             }
 
             if (workoutState != WorkoutState.waitingForFirstMove) {
-              _elapsed -= _stoppedTime;
+              _elapsed -= _markedTime;
             }
           }
 
