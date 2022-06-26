@@ -721,7 +721,7 @@ class FitnessEquipment extends DeviceBase {
         dataHandlers = {};
         if (workoutState == WorkoutState.startedMoving) {
           workoutState = WorkoutState.moving;
-        } else {
+        } else if (workoutState != WorkoutState.moving) {
           workoutState = WorkoutState.startedMoving;
         }
 
@@ -746,13 +746,13 @@ class FitnessEquipment extends DeviceBase {
       if (isNotMoving && wasNotMoving()) {
         if (workoutState == WorkoutState.moving || workoutState == WorkoutState.startedMoving) {
           workoutState = WorkoutState.justStopped;
-        } else if (workoutState == WorkoutState.justStopped) {
+        } else {
           workoutState = WorkoutState.stopped;
         }
       } else {
         if (workoutState == WorkoutState.startedMoving) {
           workoutState = WorkoutState.moving;
-        } else {
+        } else if (workoutState != WorkoutState.moving) {
           workoutState = WorkoutState.startedMoving;
         }
       }
