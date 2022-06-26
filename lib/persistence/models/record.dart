@@ -388,4 +388,14 @@ class RecordWithSport extends Record {
 
     return clone;
   }
+
+  void adjustTime(int newElapsed, int newElapsedMillis) {
+    if (elapsedMillis != null && dt != null) {
+      final dMillis = newElapsedMillis - elapsedMillis!;
+      dt!.add(Duration(milliseconds: dMillis));
+    }
+
+    elapsed = newElapsed;
+    elapsedMillis = newElapsedMillis;
+  }
 }

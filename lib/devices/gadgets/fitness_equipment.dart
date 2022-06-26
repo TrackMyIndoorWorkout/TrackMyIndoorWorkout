@@ -713,8 +713,7 @@ class FitnessEquipment extends DeviceBase {
       if (isNotMoving) {
         if (_activity != null && _activity!.startDateTime != null) {
           int elapsedMillis = now.difference(_activity!.startDateTime!).inMilliseconds;
-          lastRecord.elapsedMillis = elapsedMillis;
-          lastRecord.elapsed = elapsedMillis ~/ 1000;
+          lastRecord.adjustTime(elapsedMillis ~/ 1000, elapsedMillis);
         }
 
         return lastRecord;
@@ -842,8 +841,7 @@ class FitnessEquipment extends DeviceBase {
 
     if (workoutState == WorkoutState.stopped) {
       // We have to track the time ticking still #235
-      lastRecord.elapsed = stub.elapsed;
-      lastRecord.elapsedMillis = stub.elapsedMillis;
+      lastRecord.adjustTime(stub.elapsed!, stub.elapsedMillis!);
       return lastRecord;
     }
 
