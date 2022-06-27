@@ -28,8 +28,8 @@
 -keepclassmembernames class io.flutter.plugins.deviceinfo.** { *; }
 -keep class com.mr.flutter.plugin.filepicker.** { *; }
 -keepclassmembernames class com.mr.flutter.plugin.filepicker.** { *; }
--keep class com.pauldemarco.flutter_blue.** { *; }
--keepclassmembernames class com.pauldemarco.flutter_blue.* { *; }
+-keep class com.boskokg.flutter_blue_plus.** { *; }
+-keepclassmembernames class com.boskokg.flutter_blue_plus.* { *; }
 -keep class com.flutter.logs.plogs.flutter_logs.** { *; }
 -keepclassmembernames class com.flutter.logs.plogs.flutter_logs.* { *; }
 -keep class com.whelksoft.flutter_native_timezone.** { *; }
@@ -42,14 +42,12 @@
 -keepclassmembernames class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keep class io.flutter.plugins.pathprovider.** { *; }
 -keepclassmembernames class io.flutter.plugins.pathprovider.** { *; }
--keep class com.baseflow.permissionhandler.** { *; }
--keepclassmembernames class com.baseflow.permissionhandler.* { *; }
 -keep class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keepclassmembernames class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keep class io.flutter.plugins.sharedpreferences.** { *; }
 -keepclassmembernames class io.flutter.plugins.sharedpreferences.** { *; }
--keep class pl.ukaszapps.soundpool.SoundpoolPlugin.** { *; }
--keepclassmembernames class pl.ukaszapps.soundpool.SoundpoolPlugin.** { *; }
+-keep class pl.ukaszapps.soundpool.** { *; }
+-keepclassmembernames class pl.ukaszapps.soundpool.** { *; }
 -keep class com.tekartik.sqflite.** { *; }
 -keepclassmembernames class com.tekartik.sqflite.** { *; }
 -keep class name.avioli.unilinks.** { *; }

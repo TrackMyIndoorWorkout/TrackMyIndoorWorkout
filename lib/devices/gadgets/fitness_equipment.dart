@@ -3,9 +3,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
@@ -514,6 +514,10 @@ class FitnessEquipment extends DeviceBase {
   }
 
   Future<void> _executeControlOperation(int opCode, {int? controlInfo}) async {
+    if (!await FlutterBluePlus.instance.isOn) {
+      return;
+    }
+
     if (controlPoint == null ||
         (!_shouldSignalStartStop && !(descriptor?.shouldSignalStartStop ?? false))) {
       return;
