@@ -30,11 +30,11 @@ Future<bool> bluetoothCheck(bool silent) async {
       middleText: "Try enable Bluetooth?",
       confirm: TextButton(
         child: const Text("Yes"),
-        onPressed: () => Get.close(1),
+        onPressed: () => Get.back(result: true),
       ),
       cancel: TextButton(
         child: const Text("No"),
-        onPressed: () => Get.close(1),
+        onPressed: () => Get.back(result: false),
       ),
     );
 
