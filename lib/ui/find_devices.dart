@@ -497,7 +497,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           }
                         } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
                           if (_fitnessEquipment != null) {
-                            WidgetsBinding.instance?.addPostFrameCallback((_) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
                               goToRecording(
                                 _fitnessEquipment!.device!,
                                 BluetoothDeviceState.connected,
@@ -506,7 +506,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             });
                           } else {
                             if (_filterDevices && _scannedDevices.length == 1) {
-                              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
                                 goToRecording(
                                   _scannedDevices.first,
                                   BluetoothDeviceState.disconnected,
@@ -526,7 +526,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       .txPower
                                       .compareTo(_advertisementCache.getEntry(b.id.id)!.txPower);
                                 });
-                                WidgetsBinding.instance?.addPostFrameCallback((_) {
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
                                   goToRecording(
                                       lasts.last, BluetoothDeviceState.disconnected, false);
                                 });
