@@ -35,7 +35,6 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
           hasFeatureFlags: false,
-          canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
           timeMetric: timeMetric,
           caloriesMetric: caloriesMetric,

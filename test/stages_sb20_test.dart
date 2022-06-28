@@ -15,7 +15,6 @@ void main() {
   test('Stages SB20 constructor tests', () async {
     final bike = DeviceFactory.getStagesSB20();
 
-    expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, stagesSB20FourCC);
     expect(bike.isMultiSport, false);

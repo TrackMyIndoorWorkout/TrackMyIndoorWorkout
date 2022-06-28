@@ -34,7 +34,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
           flagByteSize: flagByteSize,
-          canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
           canMeasureCalories: canMeasureCalories,
           shouldSignalStartStop: shouldSignalStartStop,

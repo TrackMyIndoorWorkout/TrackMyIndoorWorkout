@@ -47,7 +47,6 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
         model: model,
         dataServiceId: dataServiceId,
         dataCharacteristicId: dataCharacteristicId,
-        canMeasureHeartRate: canMeasureHeartRate,
         heartRateByteIndex: heartRateByteIndex,
         canMeasureCalories: canMeasureCalories,
         shouldSignalStartStop: shouldSignalStartStop,
