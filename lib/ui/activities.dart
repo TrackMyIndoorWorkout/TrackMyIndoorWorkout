@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../export/activity_export.dart';
@@ -24,7 +23,7 @@ import '../preferences/calculate_gps.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
-import '../preferences/moving_or_elapsed_time.dart';
+import '../preferences/time_display_mode.dart';
 import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -59,7 +58,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _leaderboardFeature = leaderboardFeatureDefault;
-  bool _movingOrElapsedTime = movingOrElapsedTimeDefault;
+  String _timeDisplayMode = timeDisplayModeDefault;
   bool _calculateGps = calculateGpsDefault;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
@@ -83,8 +82,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
-    _movingOrElapsedTime =
-        prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
+    _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
@@ -128,10 +126,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
       IconButton(
         icon: _themeManager.getActionIcon(Icons.file_download, size),
         onPressed: () async {
-          if (!await Permission.storage.request().isGranted) {
-            return;
-          }
-
           final formatPick = await Get.bottomSheet(
             const ExportFormatPickerBottomSheet(),
             enableDrag: false,
@@ -469,7 +463,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              _themeManager.getBlueIcon(getIcon(activity.sport), _sizeDefault),
+                              _themeManager.getBlueIcon(getSportIcon(activity.sport), _sizeDefault),
                               Expanded(
                                 child: TextOneLine(
                                   activity.deviceName,
@@ -487,9 +481,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> {
                               _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
                               const Spacer(),
                               Text(
-                                _movingOrElapsedTime
-                                    ? activity.movingTimeString
-                                    : activity.elapsedString,
+                                _timeDisplayMode == timeDisplayModeElapsed
+                                    ? activity.elapsedString
+                                    : activity.movingTimeString,
                                 style: _measurementStyle,
                               ),
                             ],

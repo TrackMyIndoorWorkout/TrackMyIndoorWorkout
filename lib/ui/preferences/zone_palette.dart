@@ -74,7 +74,7 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
             setState(() {
               _palette[index] = color;
             });
-            _paletteSpec.saveToPreferences(
+            await _paletteSpec.saveToPreferences(
               _prefService,
               widget.lightOrDark,
               widget.fgOrBg,
@@ -98,13 +98,7 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
 
     return Scaffold(
       appBar: AppBar(title: const Text('Palette Preferences')),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: items,
-        ),
-      ),
+      body: ListView(children: items),
     );
   }
 }

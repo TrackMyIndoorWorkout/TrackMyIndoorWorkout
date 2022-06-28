@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/indoor_bike_device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
@@ -13,15 +13,17 @@ class TestPair {
 
 void main() {
   test('Yesoul S3 constructor tests', () async {
-    final bike = deviceMap[yesoulS3FourCC]!;
+    final bike = DeviceFactory.getYesoulS3();
 
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, yesoulS3FourCC);
+    expect(bike.isMultiSport, false);
+    expect(bike.shouldSignalStartStop, false);
   });
 
   test('Yesoul S3 interprets FTMS Indoor Bike Data 1 flags properly', () async {
-    final bike = deviceMap[yesoulS3FourCC] as IndoorBikeDeviceDescriptor;
+    final bike = DeviceFactory.getYesoulS3();
     const lsb = 0;
     const msb = 8;
     const flag = maxUint8 * msb + lsb;
@@ -41,7 +43,7 @@ void main() {
   });
 
   test('Yesoul S3 interprets FTMS Indoor Bike Data 2 flags properly', () async {
-    final bike = deviceMap[yesoulS3FourCC] as IndoorBikeDeviceDescriptor;
+    final bike = DeviceFactory.getYesoulS3();
     const lsb = 245; // 0xF5
     const msb = 1;
     const flag = maxUint8 * msb + lsb;
@@ -161,7 +163,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        final bike = deviceMap[schwinnICBikeFourCC]!;
+        final bike = DeviceFactory.getYesoulS3();
         bike.initFlag();
         expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();

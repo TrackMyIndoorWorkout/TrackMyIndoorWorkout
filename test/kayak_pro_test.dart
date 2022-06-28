@@ -1,10 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/rower_device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
-
-import 'utils.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 class TestPair {
   final List<int> data;
@@ -14,20 +13,36 @@ class TestPair {
 }
 
 void main() {
+  setUpAll(() async {
+    await initPrefServiceForTest();
+  });
+
   test('KayakPro Rower Device constructor tests', () async {
-    final rower = deviceMap[kayakProGenesisPortFourCC]!;
+    final rower = DeviceFactory.getKayaPro();
 
     expect(rower.canMeasureHeartRate, false);
     expect(rower.defaultSport, ActivityType.kayaking);
     expect(rower.fourCC, kayakProGenesisPortFourCC);
+    expect(rower.isMultiSport, true);
+    expect(rower.shouldSignalStartStop, false);
   });
 
   test('Rower Device interprets KayakPro flags properly', () async {
-    final rower = deviceMap[kayakProGenesisPortFourCC] as RowerDeviceDescriptor;
+    final rower = DeviceFactory.getKayaPro();
     const lsb = 44;
     const msb = 9;
+    // C1 stroke rate uint8 (spm) 0.5
+    // C1 stroke count uint16
+    // C3 distance uint24 (m) 1
+    // C4 pace uint16 seconds 1
+    // C6 power sint16 (watts) 1
+    // -
+    // C9 total energy uint16 (kcal) 1
+    // C9 energy/h uint16 1
+    // C9 energy/min uint8 1
+    // C12 elapsed time uint16 (s) 1
+    // total length (1 + 2 + 3 + 2 + 2) + (2 + 2 + 1 + 2) = 10 + 7 = 17
     const flag = maxUint8 * msb + lsb;
-    await initPrefServiceForTest();
     rower.stopWorkout();
 
     rower.processFlag(flag);
@@ -171,8 +186,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        await initPrefServiceForTest();
-        final rower = deviceMap[kayakProGenesisPortFourCC]!;
+        final rower = DeviceFactory.getKayaPro();
         rower.initFlag();
         expect(rower.isDataProcessable(testPair.data), true);
         rower.stopWorkout();

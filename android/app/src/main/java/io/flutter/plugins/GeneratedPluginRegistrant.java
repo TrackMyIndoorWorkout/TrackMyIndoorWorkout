@@ -18,7 +18,7 @@ public final class GeneratedPluginRegistrant {
     try {
       flutterEngine.getPlugins().add(new com.hui.bluetooth_enable.BluetoothEnablePlugin());
     } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin bluetooth_enable, com.hui.bluetooth_enable.BluetoothEnablePlugin", e);
+      Log.e(TAG, "Error registering plugin bluetooth_enable_fork, com.hui.bluetooth_enable.BluetoothEnablePlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.deviceinfo.DeviceInfoPlugin());
@@ -31,9 +31,9 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin file_picker, com.mr.flutter.plugin.filepicker.FilePickerPlugin", e);
     }
     try {
-      flutterEngine.getPlugins().add(new com.pauldemarco.flutter_blue.FlutterBluePlugin());
+      flutterEngine.getPlugins().add(new com.boskokg.flutter_blue_plus.FlutterBluePlusPlugin());
     } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin flutter_blue, com.pauldemarco.flutter_blue.FlutterBluePlugin", e);
+      Log.e(TAG, "Error registering plugin flutter_blue_plus, com.boskokg.flutter_blue_plus.FlutterBluePlusPlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new com.flutter.logs.plogs.flutter_logs.FlutterLogsPlugin());
@@ -64,11 +64,6 @@ public final class GeneratedPluginRegistrant {
       flutterEngine.getPlugins().add(new io.flutter.plugins.pathprovider.PathProviderPlugin());
     } catch(Exception e) {
       Log.e(TAG, "Error registering plugin path_provider_android, io.flutter.plugins.pathprovider.PathProviderPlugin", e);
-    }
-    try {
-      flutterEngine.getPlugins().add(new com.baseflow.permissionhandler.PermissionHandlerPlugin());
-    } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin permission_handler, com.baseflow.permissionhandler.PermissionHandlerPlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new com.twwm.share_files_and_screenshot_widgets.ShareFilesAndScreenshotWidgetsPlugin());

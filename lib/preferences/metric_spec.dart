@@ -230,11 +230,11 @@ class MetricSpec {
   }
 
   String thresholdTag(String sport) {
-    return SportSpec.sport2Sport(sport) + "_" + thresholdTagPostfix;
+    return "${SportSpec.sport2Sport(sport)}_$thresholdTagPostfix";
   }
 
   String zonesTag(String sport) {
-    return SportSpec.sport2Sport(sport) + "_" + zonesTagPostfix;
+    return "${SportSpec.sport2Sport(sport)}_$zonesTagPostfix";
   }
 
   void updateMultiLineUnit() {
@@ -322,7 +322,7 @@ class MetricSpec {
     var prefSpecs = [...preferencesSpecs];
     prefSpecs[1].updateUnit(getSpeedUnit(si, sport));
     prefSpecs[1].title = speedTitle(sport);
-    prefSpecs[2].icon = getIcon(sport);
+    prefSpecs[2].icon = getSportIcon(sport);
     prefSpecs[2].unit = getCadenceUnit(sport);
     for (var prefSpec in prefSpecs) {
       prefSpec.calculateZones(si, sport);

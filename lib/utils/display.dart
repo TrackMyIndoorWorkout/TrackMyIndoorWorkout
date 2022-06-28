@@ -69,7 +69,7 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
 String paceString(double pace) {
   final minutes = pace.truncate();
   final seconds = ((pace - minutes) * 60.0).truncate();
-  return "$minutes:" + seconds.toString().padLeft(2, "0");
+  return "$minutes:${seconds.toString().padLeft(2, "0")}";
 }
 
 String getSpeedUnit(bool si, String sport) {
@@ -91,7 +91,7 @@ String speedTitle(String sport) {
   return sport == ActivityType.ride ? "Speed" : "Pace";
 }
 
-IconData getIcon(String? sport) {
+IconData getSportIcon(String sport) {
   if (sport == ActivityType.ride) {
     return Icons.directions_bike;
   } else if (sport == ActivityType.run) {
@@ -107,7 +107,8 @@ IconData getIcon(String? sport) {
   } else if (sport == ActivityType.stairStepper) {
     return Icons.stairs;
   }
-  return Icons.directions_bike;
+
+  return Icons.help;
 }
 
 String getCadenceUnit(String sport) {

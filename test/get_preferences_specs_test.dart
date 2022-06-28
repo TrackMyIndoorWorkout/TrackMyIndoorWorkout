@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/preferences/metric_spec.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
-import 'utils.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 void main() {
   group('getPreferencesSpecs finishes for various sports', () {

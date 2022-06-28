@@ -1,5 +1,5 @@
 import '../../export/fit/fit_manufacturer.dart';
-import '../device_map.dart';
+import '../device_fourcc.dart';
 import 'indoor_bike_device_descriptor.dart';
 
 class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {

@@ -1,3 +1,47 @@
+## 1.1.109
+
+* Circuit workout mode: being able to switch between multiple fitness machines while 
+  leaving the workout open simultaneously on all of them (by simply navigating back
+  from the measurement screen) and continue arbitrarily any of them, until all the
+  workouts are finalized with the stop button.
+* HIIT display mode: while the athlete is alternating between active and rest periods
+  the timer counts each period starting from 0, active is red colored, rest is blue.
+* Buttons on the Expert configuration page pop up modal dialogs instead of snack bars.
+* Several screens (About screen for example) are scrollable now in landscape mode
+
+## 1.1.108
+
+* Fix Palette color configuration picker contrast problem in light mode
+* Providing explicit modal dialog feedback to Expert preferences page's button presses
+  (instead of just snack bars)
+
+## 1.1.107
+
+* Support fitness machines which require explicit workout 
+  Start/Stop signaling via FTMS control point (needed when workout doesn't start)
+* Workaround for Mr Captain rower's botched / malformed FTMS Rower protocol
+
+## 1.1.106
+
+* Further refactoring for Mr Captain rower support
+
+## 1.1.105
+
+* Recognizing Mr Captain rowers
+* Released to Samsung Galaxy App Store
+* Released to Huawei AppGallery
+
+## 1.1.104
+
+* Dummy version bump to appease Huawei AppGallery submission.
+  (The app is also in the Galaxy store now BTW).
+
+## 1.1.103
+
+* Schwinn 170 / 270 / 570u experimental support 
+* Upgrade to Flutter 3.x
+* Training Peaks API changes part 1 (deprecation approaching)
+
 ## 1.1.102
 
 * Decrease Leaderboard flicker (jump back-and-forth) effect especially the first few minutes

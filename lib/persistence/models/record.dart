@@ -8,7 +8,6 @@ import '../../utils/display.dart';
 import 'activity.dart';
 
 const recordsTableName = 'records';
-const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
 
 @Entity(tableName: recordsTableName, foreignKeys: [
   ForeignKey(
@@ -146,6 +145,10 @@ class Record {
         (cadence ?? 0) == 0;
   }
 
+  bool hasCumulative() {
+    return (distance ?? 0.0) > eps || (elapsed ?? 0) > 0 || (calories ?? 0) > 0;
+  }
+
   void cumulativeDistanceEnforcement(Record lastRecord) {
     if (distance != null && lastRecord.distance != null) {
       if (!testing && kDebugMode) {
@@ -211,6 +214,25 @@ class Record {
     if (forCalories) {
       cumulativeCaloriesEnforcement(lastRecord);
     }
+  }
+
+  @override
+  String toString() {
+    return "id $id | "
+        "activityId $activityId | "
+        "timeStamp $timeStamp | "
+        "distance $distance | "
+        "elapsed $elapsed | "
+        "calories $calories | "
+        "power $power | "
+        "speed $speed | "
+        "cadence $cadence | "
+        "heartRate $heartRate | "
+        "elapsedMillis $elapsedMillis | "
+        "pace $pace | "
+        "strokeCount $strokeCount | "
+        "caloriesPerHour $caloriesPerHour | "
+        "caloriesPerMinute $caloriesPerMinute";
   }
 }
 
@@ -299,22 +321,81 @@ class RecordWithSport extends Record {
     return this;
   }
 
-  @override
-  String toString() {
-    return "id $id | "
-        "activityId $activityId | "
-        "timeStamp $timeStamp | "
-        "distance $distance | "
-        "elapsed $elapsed | "
-        "calories $calories | "
-        "power $power | "
-        "speed $speed | "
-        "cadence $cadence | "
-        "heartRate $heartRate | "
-        "elapsedMillis $elapsedMillis | "
-        "pace $pace | "
-        "strokeCount $strokeCount | "
-        "caloriesPerHour $caloriesPerHour | "
-        "caloriesPerMinute $caloriesPerMinute";
+  factory RecordWithSport.clone(Record record) {
+    return RecordWithSport(
+      activityId: record.activityId,
+      timeStamp: record.timeStamp,
+      distance: record.distance,
+      elapsed: record.elapsed,
+      calories: record.calories,
+      power: record.power,
+      speed: record.speed,
+      cadence: record.cadence,
+      heartRate: record.heartRate,
+      elapsedMillis: record.elapsedMillis,
+      pace: record.pace,
+      strokeCount: record.strokeCount,
+      sport: record.sport,
+      caloriesPerHour: record.caloriesPerHour,
+      caloriesPerMinute: record.caloriesPerMinute,
+    );
+  }
+
+  factory RecordWithSport.offsetBack(Record record, Record continuationRecord) {
+    final clone = RecordWithSport.clone(record);
+
+    if (clone.timeStamp != null && continuationRecord.timeStamp != null) {
+      clone.timeStamp = clone.timeStamp! - continuationRecord.timeStamp!;
+    }
+
+    if (clone.distance != null && continuationRecord.distance != null) {
+      clone.distance = clone.distance! - continuationRecord.distance!;
+    }
+
+    if (clone.elapsed != null && continuationRecord.elapsed != null) {
+      clone.elapsed = clone.elapsed! - continuationRecord.elapsed!;
+    }
+
+    if (clone.calories != null && continuationRecord.calories != null) {
+      clone.calories = clone.calories! - continuationRecord.calories!;
+    }
+
+    return clone;
+  }
+
+  factory RecordWithSport.offsetForward(Record record, Record continuationRecord) {
+    final clone = RecordWithSport.clone(record);
+
+    if (clone.distance != null && continuationRecord.distance != null) {
+      clone.distance = clone.distance! + continuationRecord.distance!;
+    }
+
+    if (clone.elapsed != null && continuationRecord.elapsed != null) {
+      clone.elapsed = clone.elapsed! + continuationRecord.elapsed!;
+    }
+
+    if (clone.elapsedMillis != null &&
+        (continuationRecord.elapsedMillis != null || continuationRecord.elapsed != null)) {
+      clone.elapsedMillis = clone.elapsedMillis! +
+          (continuationRecord.elapsedMillis != null
+              ? continuationRecord.elapsedMillis!
+              : continuationRecord.elapsed! * 1000);
+    }
+
+    if (clone.calories != null && continuationRecord.calories != null) {
+      clone.calories = clone.calories! + continuationRecord.calories!;
+    }
+
+    return clone;
+  }
+
+  void adjustTime(int newElapsed, int newElapsedMillis) {
+    if (elapsedMillis != null && dt != null) {
+      final dMillis = newElapsedMillis - elapsedMillis!;
+      dt = dt!.add(Duration(milliseconds: dMillis));
+    }
+
+    elapsed = newElapsed;
+    elapsedMillis = newElapsedMillis;
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/matrix_treadmill_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
@@ -21,7 +21,7 @@ class TestPair {
 
 void main() {
   test('Matrix Treadmill constructor tests', () async {
-    final treadmill = deviceMap[matrixTreadmillFourCC]!;
+    final treadmill = MatrixTreadmillDescriptor();
 
     expect(treadmill.canMeasureHeartRate, false);
     expect(treadmill.defaultSport, ActivityType.run);
@@ -34,7 +34,7 @@ void main() {
       const FlagBytes(lsb: 158, msb: 31, description: "during workout"),
     ]) {
       test(flagBytes.description, () async {
-        final treadmill = deviceMap[matrixTreadmillFourCC] as MatrixTreadmillDescriptor;
+        final treadmill = MatrixTreadmillDescriptor();
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
         treadmill.stopWorkout();
 
@@ -138,7 +138,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        final treadmill = deviceMap[matrixTreadmillFourCC]!;
+        final treadmill = MatrixTreadmillDescriptor();
         treadmill.initFlag();
         expect(treadmill.isDataProcessable(testPair.data), true);
         treadmill.stopWorkout();

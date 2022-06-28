@@ -1,24 +1,26 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../preferences/scan_duration.dart';
+import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
+import 'boolean_question.dart';
 import 'heart_rate_monitor_scan_result.dart';
 
 class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
   const HeartRateMonitorPairingBottomSheet({Key? key}) : super(key: key);
 
   @override
-  _HeartRateMonitorPairingBottomSheetState createState() =>
-      _HeartRateMonitorPairingBottomSheetState();
+  HeartRateMonitorPairingBottomSheetState createState() =>
+      HeartRateMonitorPairingBottomSheetState();
 }
 
-class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
+class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
   static RegExp colonRegex = RegExp(r'\:');
 
   int _scanDuration = 4;
@@ -32,7 +34,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
 
   @override
   void dispose() {
-    FlutterBlue.instance.stopScan();
+    FlutterBluePlus.instance.stopScan();
     super.dispose();
   }
 
@@ -44,7 +46,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
     _scanResults.clear();
     _isScanning = true;
 
-    FlutterBlue.instance
+    FlutterBluePlus.instance
         .startScan(timeout: Duration(seconds: _scanDuration))
         .whenComplete(() => {_isScanning = false});
   }
@@ -114,7 +116,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
             ),
             const Divider(),
             StreamBuilder<List<ScanResult>>(
-              stream: FlutterBlue.instance.scanResults,
+              stream: FlutterBluePlus.instance.scanResults,
               initialData: const [],
               builder: (c, snapshot) => snapshot.data == null
                   ? Container()
@@ -124,6 +126,10 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                       return HeartRateMonitorScanResultTile(
                           result: r,
                           onTap: () async {
+                            if (!await bluetoothCheck(false)) {
+                              return;
+                            }
+
                             setState(() {
                               _pairingHrm = true;
                             });
@@ -134,27 +140,16 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                             final existingId = heartRateMonitor?.device?.id.id ?? notAvailable;
                             final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
                             if (existingId != notAvailable && existingId != r.device.id.id) {
-                              if (!(await showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Text('You are connected to a HRM right now'),
-                                      content: const Text(
-                                          'Disconnect from that HRM to connect the selected one?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Get.close(1),
-                                          child: const Text('No'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop(true);
-                                          },
-                                          child: const Text('Yes'),
-                                        ),
-                                      ],
-                                    ),
-                                  ) ??
-                                  false)) {
+                              final verdict = await Get.bottomSheet(
+                                const BooleanQuestionBottomSheet(
+                                  title: "You are connected to a HRM right now",
+                                  content: "Disconnect from that HRM to connect the selected one?",
+                                ),
+                                isDismissible: false,
+                                enableDrag: false,
+                              );
+
+                              if (!verdict) {
                                 if (existingId != storedId) {
                                   setState(() {
                                     _heartRateMonitor = heartRateMonitor;
@@ -169,6 +164,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
                                 setState(() {
                                   _pairingHrm = false;
                                 });
+
                                 return;
                               }
                             }
@@ -216,7 +212,7 @@ class _HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPai
             _themeManager.getBlueFab(
                 Icons.clear, false, false, "Close", 0, () => Get.back(result: true)),
             StreamBuilder<bool>(
-              stream: FlutterBlue.instance.isScanning,
+              stream: FlutterBluePlus.instance.isScanning,
               initialData: true,
               builder: (c, snapshot) {
                 if (snapshot.data == null || snapshot.data!) {

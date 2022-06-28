@@ -21,6 +21,7 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _textStyle = const TextStyle();
   TextStyle _largerTextStyle = const TextStyle();
+  TextStyle _groupStyle = const TextStyle();
   final _darknessController = GroupButtonController(selectedIndex: 0);
   final _fgBgController = GroupButtonController(selectedIndex: 0);
   final _sizeController = GroupButtonController(selectedIndex: 0);
@@ -31,16 +32,22 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
     super.initState();
     _largerTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
-      color: Colors.white,
+      color: _themeManager.getProtagonistColor(),
     );
     _textStyle = Get.textTheme.headline5!.apply(
       fontFamily: fontFamily,
-      color: Colors.white,
+      color: _themeManager.getProtagonistColor(),
+    );
+    _groupStyle = Get.textTheme.headline5!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getAntagonistColor(),
     );
     _groupButtonOptions = GroupButtonOptions(
       borderRadius: BorderRadius.circular(4),
-      selectedTextStyle: _textStyle,
-      unselectedTextStyle: _textStyle,
+      selectedTextStyle: _groupStyle,
+      selectedColor: _themeManager.getGreenColor(),
+      unselectedTextStyle: _groupStyle,
+      unselectedColor: _themeManager.getBlueColor(),
     );
   }
 
@@ -59,8 +66,8 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
               isRadio: true,
               buttons: const ["Dark", "Light"],
               maxSelected: 1,
-              options: _groupButtonOptions,
-              onSelected: (i, selected) =>
+              options: _groupButtonOptions!,
+              onSelected: (_, i, selected) =>
                   _lightOrDark = (i == 1 && selected || i == 0 && !selected),
             ),
             Text("Fg./Bg.:", style: _textStyle),
@@ -69,8 +76,8 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
               isRadio: true,
               buttons: const ["Foregr.", "Backgr."],
               maxSelected: 1,
-              options: _groupButtonOptions,
-              onSelected: (i, selected) => _fgOrBg = (i == 1 && selected || i == 0 && !selected),
+              options: _groupButtonOptions!,
+              onSelected: (_, i, selected) => _fgOrBg = (i == 1 && selected || i == 0 && !selected),
             ),
             Text("Size:", style: _textStyle),
             GroupButton(
@@ -78,8 +85,8 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
               isRadio: true,
               buttons: const ["5", "6", "7"],
               maxSelected: 1,
-              options: _groupButtonOptions,
-              onSelected: (i, selected) {
+              options: _groupButtonOptions!,
+              onSelected: (_, i, selected) {
                 if (selected) {
                   _size = i + 5;
                 }
@@ -116,7 +123,7 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
                                       PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
                                   final str = PaletteSpec.getDefaultPaletteString(
                                       lightOrDark, fgOrBg, paletteSize);
-                                  prefService.set<String>(tag, str);
+                                  await prefService.set<String>(tag, str);
                                 }
                               }
                             }

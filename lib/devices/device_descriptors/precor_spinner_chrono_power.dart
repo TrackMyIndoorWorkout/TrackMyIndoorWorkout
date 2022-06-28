@@ -1,6 +1,6 @@
 import '../../export/fit/fit_manufacturer.dart';
 import '../../utils/constants.dart';
-import '../device_map.dart';
+import '../device_fourcc.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';

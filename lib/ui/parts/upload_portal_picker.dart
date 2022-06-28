@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/activity.dart';
 import '../../preferences/calculate_gps.dart';
@@ -54,8 +54,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
       return false;
     }
 
-    final AppDatabase _database = Get.find<AppDatabase>();
-    final records = await _database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
+    final AppDatabase database = Get.find<AppDatabase>();
+    final records = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
 
     final statusCode = await uploadService.upload(widget.activity, records, _calculateGps);
     final finalResult =
@@ -148,8 +148,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                               ),
                               onPressed: () async {
                                 final workoutUrl = widget.activity.workoutUrl(e.value.name);
-                                if (await canLaunch(workoutUrl)) {
-                                  launch(workoutUrl);
+                                if (await canLaunchUrlString(workoutUrl)) {
+                                  launchUrlString(workoutUrl);
                                 } else {
                                   Get.snackbar("Attention", "Cannot open URL");
                                 }
@@ -165,13 +165,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     );
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: choiceRows,
-        ),
-      ),
+      body: ListView(children: choiceRows),
     );
   }
 }

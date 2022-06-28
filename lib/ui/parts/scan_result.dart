@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import '../../devices/company_registry.dart';
 import '../../utils/constants.dart';
@@ -94,7 +94,7 @@ class ScanResultTile extends StatelessWidget {
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: Icon(
-        result.getEquipmentIcon(),
+        result.getIcon([]),
         size: captionStyle.fontSize! * 2.5,
         color: themeManager.getProtagonistColor(),
       ),

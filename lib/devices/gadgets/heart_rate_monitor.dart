@@ -1,14 +1,14 @@
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../gatt_constants.dart';
 import 'complex_sensor.dart';
 
 class HeartRateMonitor extends ComplexSensor {
-  ByteMetricDescriptor? _byteHeartRateMetric;
-  ShortMetricDescriptor? _shortHeartRateMetric;
-  ShortMetricDescriptor? _caloriesMetric;
+  MetricDescriptor? _heartRateMetric;
+  MetricDescriptor? _caloriesMetric;
 
   HeartRateMonitor(device) : super(heartRateServiceUuid, heartRateMeasurementUuid, device);
 
@@ -24,10 +24,10 @@ class HeartRateMonitor extends ComplexSensor {
       expectedLength = 1; // The flag
       // Heart rate value format (first bit)
       if (flag % 2 == 0) {
-        _byteHeartRateMetric = ByteMetricDescriptor(lsb: expectedLength);
+        _heartRateMetric = ByteMetricDescriptor(lsb: expectedLength);
         expectedLength += 1; // 8 bit HR
       } else {
-        _shortHeartRateMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
+        _heartRateMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
         expectedLength += 2; // 16 bit HR
       }
 
@@ -56,7 +56,7 @@ class HeartRateMonitor extends ComplexSensor {
   @override
   RecordWithSport processMeasurement(List<int> data) {
     if (!canMeasurementProcessed(data)) {
-      return RecordWithSport.getZero(ActivityType.run);
+      return RecordWithSport(sport: ActivityType.run);
     }
 
     return RecordWithSport(
@@ -68,13 +68,7 @@ class HeartRateMonitor extends ComplexSensor {
   }
 
   int? getHeartRate(List<int> data) {
-    if (_byteHeartRateMetric != null) {
-      return _byteHeartRateMetric!.getMeasurementValue(data)?.toInt();
-    } else if (_shortHeartRateMetric != null) {
-      return _shortHeartRateMetric!.getMeasurementValue(data)?.toInt();
-    }
-
-    return null;
+    return _heartRateMetric?.getMeasurementValue(data)?.toInt();
   }
 
   double? getCalories(List<int> data) {

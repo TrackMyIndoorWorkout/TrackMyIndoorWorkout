@@ -6,7 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
-import '../devices/device_map.dart';
+import '../devices/device_fourcc.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
@@ -203,6 +203,40 @@ abstract class AppDatabase extends FloorDatabase {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
+  }
+
+  Future<bool> finalizeActivity(Activity activity) async {
+    final lastRecord = await recordDao.findLastRecordOfActivity(activity.id!).first;
+    if (lastRecord == null) {
+      return false;
+    }
+
+    int updated = 0;
+    if (lastRecord.calories != null && lastRecord.calories! > 0 && activity.calories == 0) {
+      activity.calories = lastRecord.calories!;
+      updated++;
+    }
+
+    if (lastRecord.distance != null && lastRecord.distance! > 0 && activity.distance == 0) {
+      activity.distance = lastRecord.distance!;
+      updated++;
+    }
+
+    if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
+      activity.elapsed = lastRecord.elapsed!;
+      updated++;
+    }
+
+    if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
+      activity.end = lastRecord.timeStamp!;
+      updated++;
+    }
+
+    if (updated > 0) {
+      await activityDao.updateActivity(activity);
+    }
+
+    return updated > 0;
   }
 }
 

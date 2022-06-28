@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import '../../devices/gadgets/device_base.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
@@ -17,14 +17,16 @@ class BatteryStatusBottomSheet extends StatefulWidget {
   const BatteryStatusBottomSheet({Key? key}) : super(key: key);
 
   @override
-  _BatteryStatusBottomSheetState createState() => _BatteryStatusBottomSheetState();
+  BatteryStatusBottomSheetState createState() => BatteryStatusBottomSheetState();
 }
 
-class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
+class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   String _hrmBatteryLevel = notAvailable;
   String _batteryLevel = notAvailable;
+  String _readFeatures = "Features: $notAvailable";
+  String _writeFeatures = "Write Features: $notAvailable";
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
@@ -80,6 +82,42 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     });
   }
 
+  Future<void> _readAndWriteFeatures() async {
+    List<String> readFeatures = [];
+    if ((_fitnessEquipment?.readFeatures ?? 0) > 0) {
+      int flagBit = 1;
+      for (var readFeatureText in readFeatureTexts) {
+        if (_fitnessEquipment!.readFeatures & flagBit > 0) {
+          readFeatures.add(readFeatureText);
+        }
+
+        flagBit *= 2;
+      }
+    }
+
+    List<String> writeFeatures = [];
+    if ((_fitnessEquipment?.writeFeatures ?? 0) > 0) {
+      int flagBit = 1;
+      for (var writeFeatureText in writeFeatureTexts) {
+        if (_fitnessEquipment!.writeFeatures & flagBit > 0) {
+          writeFeatures.add(writeFeatureText);
+        }
+
+        flagBit *= 2;
+      }
+    }
+
+    setState(() {
+      if (readFeatures.isNotEmpty) {
+        _readFeatures = "Features: ${readFeatures.join(", ")}";
+      }
+
+      if (writeFeatures.isNotEmpty) {
+        _writeFeatures = "Write Features: ${writeFeatures.join(", ")}";
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -91,36 +129,38 @@ class _BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _readBatteryLevels();
+    _readAndWriteFeatures();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _themeManager.getBlueIcon(getIcon(_fitnessEquipment?.sport), _sizeDefault),
-                _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
-                Text(_batteryLevel, style: _textStyle),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _themeManager.getBlueIcon(Icons.favorite, _sizeDefault),
-                _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
-                Text(_hrmBatteryLevel, style: _textStyle),
-              ],
-            ),
-          ],
-        ),
+      body: ListView(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _themeManager.getBlueIcon(
+                  getSportIcon(_fitnessEquipment?.sport ?? ActivityType.workout), _sizeDefault),
+              _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
+              Text(_batteryLevel, style: _textStyle),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _themeManager.getBlueIcon(Icons.favorite, _sizeDefault),
+              _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
+              Text(_hrmBatteryLevel, style: _textStyle),
+            ],
+          ),
+          const Divider(),
+          Text(_readFeatures),
+          const Divider(),
+          Text(_writeFeatures),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton:

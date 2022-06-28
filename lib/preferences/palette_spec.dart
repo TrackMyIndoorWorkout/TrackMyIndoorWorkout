@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -208,7 +207,7 @@ class PaletteSpec {
           final paletteStr = prefService.get<String>(tag) ?? "";
           final palette = getPalette(lightOrDark, fgOrBg, paletteSize);
           palette.clear();
-          paletteStr.split(",").forEachIndexed((index, colorStr) {
+          paletteStr.split(",").forEach((colorStr) {
             final colorInt = int.parse(colorStr, radix: 16);
             palette.add(Color(colorInt));
           });
@@ -217,14 +216,14 @@ class PaletteSpec {
     }
   }
 
-  void saveToPreferences(
+  Future<void> saveToPreferences(
     BasePrefService prefService,
     bool lightOrDark,
     bool fgOrBg,
     int paletteSize,
     Color color,
     int colorIndex,
-  ) {
+  ) async {
     final palette = getPalette(lightOrDark, fgOrBg, paletteSize);
     assert(colorIndex >= 0 && colorIndex < palette.length);
     palette[colorIndex] = color;

@@ -127,6 +127,10 @@ class ThemeManager {
     return Icon(icon, color: getBlueColor(), size: size);
   }
 
+  Icon getRedIcon(IconData icon, double size) {
+    return Icon(icon, color: getRedColor(), size: size);
+  }
+
   Icon getGreyIcon(IconData icon, double size) {
     return Icon(icon, color: getGreyColor(), size: size);
   }
@@ -169,10 +173,10 @@ class ThemeManager {
     final fab = FloatingActionButton(
       key: key,
       heroTag: null,
-      child: widget,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
       onPressed: onPressed,
+      child: widget,
     );
 
     return wrapInHole

@@ -11,7 +11,9 @@ import '../../preferences/app_debug_mode.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enforced_time_zone.dart';
+import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
+import '../../preferences/should_signal_start_stop.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
 import 'preferences_base.dart';
@@ -22,6 +24,32 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
   final List<String> timeZoneChoices;
 
   const ExpertPreferencesScreen({Key? key, required this.timeZoneChoices}) : super(key: key);
+
+  Future<void> displayNotInitializedDialog() async {
+    await Get.defaultDialog(
+      title: "Logging is not initialized",
+      middleText: "You can turn on logging by selecting a level bellow "
+          "'No logging'. Logging slows down the app and consumes space, so "
+          "logging is not advised unless requested by the developer. "
+          "Make sure to turn off logging when the session is over "
+          "for the same reason.",
+      confirm: TextButton(
+        child: const Text("Dismiss"),
+        onPressed: () => Get.close(1),
+      ),
+    );
+  }
+
+  Future<void> displayNoLogsDialog() async {
+    await Get.defaultDialog(
+      title: "Nothing to Export",
+      middleText: "(or file not found)",
+      confirm: TextButton(
+        child: const Text("Dismiss"),
+        onPressed: () => Get.close(1),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +78,23 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       PrefButton(
         onTap: () async {
           if (await hasInternetConnection()) {
-            Get.snackbar("Info", "Data connection detected");
+            await Get.defaultDialog(
+              title: "Data connection detected",
+              middleText: "",
+              confirm: TextButton(
+                child: const Text("Dismiss"),
+                onPressed: () => Get.close(1),
+              ),
+            );
           } else {
-            Get.snackbar("Warning", "No data connection detected");
+            await Get.defaultDialog(
+              title: "No data connection detected",
+              middleText: "",
+              confirm: TextButton(
+                child: const Text("Dismiss"),
+                onPressed: () => Get.close(1),
+              ),
+            );
           }
         },
         child: const Text("Apply Configuration and Test"),
@@ -61,6 +103,11 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         title: Text(deviceFiltering),
         subtitle: Text(deviceFilteringDescription),
         pref: deviceFilteringTag,
+      ),
+      const PrefCheckbox(
+        title: Text(shouldSignalStartStop),
+        subtitle: Text(shouldSignalStartStopDescription),
+        pref: shouldSignalStartStopTag,
       ),
       PrefDropdown<String>(
         title: const Text(enforcedTimeZone),
@@ -102,6 +149,13 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       PrefButton(
         onTap: () async {
           if (Logging.initialized) {
+            // TODO https://github.com/umair13adil/flutter_logs/issues/39
+            if (!(PrefService.of(context).get<bool>(hasLoggedMessagesTag) ??
+                hasLoggedMessagesDefault)) {
+              await displayNoLogsDialog();
+              return;
+            }
+
             FlutterLogs.exportLogs(exportType: ExportType.ALL);
             final String zipName = await Logging.completer.future;
             Directory externalDirectory;
@@ -129,20 +183,32 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
                 text: title,
               );
             } else {
-              Get.snackbar("Export", "File not found");
+              await displayNoLogsDialog();
             }
           } else {
-            Get.snackbar("Warning", "Logging is not initialized");
+            await displayNotInitializedDialog();
           }
         },
-        child: const Text("Exporting Logs..."),
+        child: const Text("Export Logs..."),
       ),
       PrefButton(
-        onTap: () {
-          if (Logging.initialized) {
+        onTap: () async {
+          if (PrefService.of(context).get<bool>(hasLoggedMessagesTag) ?? hasLoggedMessagesDefault) {
             FlutterLogs.clearLogs();
+            PrefService.of(context).set(hasLoggedMessagesTag, hasLoggedMessagesDefault);
+          }
+
+          if (Logging.initialized) {
+            Get.defaultDialog(
+              title: "Logs cleared",
+              middleText: "",
+              confirm: TextButton(
+                child: const Text("Dismiss"),
+                onPressed: () => Get.close(1),
+              ),
+            );
           } else {
-            Get.snackbar("Warning", "Logging is not initialized");
+            await displayNotInitializedDialog();
           }
         },
         child: const Text("Clear All Logs"),

@@ -1,8 +1,8 @@
 const stravaUrl = "https://www.strava.com/";
-const tokenEndpoint = stravaUrl + "oauth/token";
-const authorizationEndpoint = stravaUrl + "oauth/authorize";
-const deauthorizationEndpoint = stravaUrl + "oauth/deauthorize";
-const uploadsEndpoint = stravaUrl + "api/v3/uploads";
+const tokenEndpoint = "${stravaUrl}oauth/token";
+const authorizationEndpoint = "${stravaUrl}oauth/authorize";
+const deauthorizationEndpoint = "${stravaUrl}oauth/deauthorize";
+const uploadsEndpoint = "${stravaUrl}api/v3/uploads";
 
 const redirectUrlWeb = "https://trackmyindoorworkout.github.io";
 

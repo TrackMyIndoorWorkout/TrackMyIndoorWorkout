@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_descriptors/schwinn_ac_performance_plus.dart';
+import '../devices/device_fourcc.dart';
 import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
@@ -19,6 +20,7 @@ import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../ui/import_form.dart';
 import '../utils/constants.dart';
 import '../utils/hr_based_calories.dart';
+import '../utils/power_speed_mixin.dart';
 import '../utils/time_zone.dart';
 import 'constants.dart';
 
@@ -67,21 +69,9 @@ class WorkoutRow {
   }
 }
 
-class CSVImporter {
+class CSVImporter with PowerSpeedMixin {
   static const maxProgressSteps = 400;
-  static const energy2speed = 5.28768241564455E-05;
   static const timeResolutionFactor = 2;
-  static const epsilon = 0.001;
-  static const maxIterations = 100;
-  static const driveTrainLoss = 0; // %
-  static const gConst = 9.8067;
-  static const bikerWeight = 81; // kg
-  static const bikeWeight = 9; // kg
-  static const rollingResistanceCoefficient = 0.005;
-  static const dragCoefficient = 0.63;
-  // Backup: 5.4788
-  static const frontalArea = 4 * ftToM * ftToM; // ft * ft_2_m^2
-  static const airDensity = 0.076537 * lbToKg / (ftToM * ftToM * ftToM);
 
   DateTime? start;
   String message = "";
@@ -90,7 +80,6 @@ class CSVImporter {
   int _linePointer = 0;
   bool _migration = false;
   int _version = csvVersion;
-  final Map<int, double> _velocityForPowerDict = <int, double>{};
 
   CSVImporter(this.start);
 
@@ -102,47 +91,8 @@ class CSVImporter {
     return _linePointer <= _lines.length;
   }
 
-  double powerForVelocity(velocity) {
-    const fRolling = gConst * (bikerWeight + bikeWeight) * rollingResistanceCoefficient;
-
-    final fDrag = 0.5 * frontalArea * dragCoefficient * airDensity * velocity * velocity;
-
-    final totalForce = fRolling + fDrag;
-    final wheelPower = totalForce * velocity;
-    const driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
-    final legPower = wheelPower / driveTrainFraction;
-    return legPower;
-  }
-
-  double velocityForPower(int power) {
-    if (_velocityForPowerDict.containsKey(power)) {
-      return _velocityForPowerDict[power] ?? 0.0;
-    }
-
-    var lowerVelocity = 0.0;
-    var upperVelocity = 2000.0;
-    var middleVelocity = power * energy2speed * 1000;
-    var middlePower = powerForVelocity(middleVelocity);
-
-    var i = 0;
-    do {
-      if ((middlePower - power).abs() < epsilon) break;
-
-      if (middlePower > power) {
-        upperVelocity = middleVelocity;
-      } else {
-        lowerVelocity = middleVelocity;
-      }
-
-      middleVelocity = (upperVelocity + lowerVelocity) / 2.0;
-      middlePower = powerForVelocity(middleVelocity);
-    } while (i++ < maxIterations);
-
-    _velocityForPowerDict[power] = middleVelocity;
-    return middleVelocity;
-  }
-
   Future<Activity?> import(String csv, SetProgress setProgress) async {
+    await initPower2SpeedConstants();
     LineSplitter lineSplitter = const LineSplitter();
     _lines = lineSplitter.convert(csv);
     if (_lines.length < 20) {
@@ -709,7 +659,7 @@ class CSVImporter {
 
         for (int i = 0; i < recordsPerRow; i++) {
           final powerInt = power.round();
-          final speed = velocityForPower(powerInt);
+          final speed = velocityForPowerCardano(powerInt);
           final dDistance = speed * milliSecondsPerRecord / 1000;
 
           final record = RecordWithSport(

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/indoor_bike_device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
@@ -13,15 +13,17 @@ class TestPair {
 
 void main() {
   test('Stages SB20 constructor tests', () async {
-    final bike = deviceMap[stagesSB20FourCC]!;
+    final bike = DeviceFactory.getStagesSB20();
 
     expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, stagesSB20FourCC);
+    expect(bike.isMultiSport, false);
+    expect(bike.shouldSignalStartStop, false);
   });
 
   test('Stages SB20 interprets FTMS Indoor Bike Data 1 flags properly', () async {
-    final bike = deviceMap[stagesSB20FourCC] as IndoorBikeDeviceDescriptor;
+    final bike = DeviceFactory.getStagesSB20();
     const lsb = 0;
     const msb = 0;
     const flag = maxUint8 * msb + lsb;
@@ -41,7 +43,7 @@ void main() {
   });
 
   test('Stages SB20 interprets FTMS Indoor Bike Data 2 flags properly', () async {
-    final bike = deviceMap[stagesSB20FourCC] as IndoorBikeDeviceDescriptor;
+    final bike = DeviceFactory.getStagesSB20();
     const lsb = 17; // 0x11
     const msb = 0;
     const flag = maxUint8 * msb + lsb;
@@ -61,7 +63,7 @@ void main() {
   });
 
   test('Stages SB20 interprets FTMS Indoor Bike Data 3 flags properly', () async {
-    final bike = deviceMap[stagesSB20FourCC] as IndoorBikeDeviceDescriptor;
+    final bike = DeviceFactory.getStagesSB20();
     const lsb = 197; // 0xC5
     const msb = 0;
     const flag = maxUint8 * msb + lsb;
@@ -181,7 +183,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        final bike = deviceMap[stagesSB20FourCC]!;
+        final bike = DeviceFactory.getStagesSB20();
         bike.initFlag();
         expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();

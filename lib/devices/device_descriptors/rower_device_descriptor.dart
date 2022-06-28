@@ -2,18 +2,20 @@ import 'dart:collection';
 
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 import '../../persistence/models/record.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 
 class RowerDeviceDescriptor extends FitnessMachineDescriptor {
-  ByteMetricDescriptor? strokeRateMetric;
-  ShortMetricDescriptor? strokeCountMetric;
-  ShortMetricDescriptor? paceMetric;
+  MetricDescriptor? strokeRateMetric;
+  MetricDescriptor? strokeCountMetric;
+  MetricDescriptor? paceMetric;
 
   int _strokeRateWindowSize = strokeRateSmoothingDefault;
   final ListQueue<int> _strokeRates = ListQueue<int>();
@@ -33,6 +35,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     canMeasureHeartRate = true,
     heartRateByteIndex,
     isMultiSport = true,
+    shouldSignalStartStop = false,
   }) : super(
           defaultSport: defaultSport,
           isMultiSport: isMultiSport,
@@ -47,11 +50,13 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           dataCharacteristicId: dataCharacteristicId,
           canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
+          shouldSignalStartStop: shouldSignalStartStop,
         );
 
   @override
   RowerDeviceDescriptor clone() => RowerDeviceDescriptor(
         defaultSport: defaultSport,
+        isMultiSport: isMultiSport,
         fourCC: fourCC,
         vendorName: vendorName,
         modelName: modelName,
@@ -63,6 +68,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
         dataCharacteristicId: dataCharacteristicId,
         canMeasureHeartRate: canMeasureHeartRate,
         heartRateByteIndex: heartRateByteIndex,
+        shouldSignalStartStop: shouldSignalStartStop,
       );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
@@ -70,8 +76,12 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   void processFlag(int flag) {
     super.processFlag(flag);
     final prefService = Get.find<BasePrefService>();
-    _strokeRateWindowSize =
-        prefService.get<int>(strokeRateSmoothingIntTag) ?? strokeRateSmoothingDefault;
+    if (defaultSport == ActivityType.rowing) {
+      _strokeRateWindowSize = 0;
+    } else {
+      _strokeRateWindowSize =
+          prefService.get<int>(strokeRateSmoothingIntTag) ?? strokeRateSmoothingDefault;
+    }
 
     // KayakPro Compact
     // 44 0010 1100 (stroke rate, stroke count), total distance, instant pace, instant power
