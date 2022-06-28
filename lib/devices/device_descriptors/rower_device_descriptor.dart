@@ -66,7 +66,6 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
         model: model,
         dataServiceId: dataServiceId,
         dataCharacteristicId: dataCharacteristicId,
-        canMeasureHeartRate: canMeasureHeartRate,
         heartRateByteIndex: heartRateByteIndex,
         shouldSignalStartStop: shouldSignalStartStop,
       );

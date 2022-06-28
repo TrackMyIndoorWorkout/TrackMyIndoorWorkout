@@ -28,7 +28,6 @@ void main() {
   test('Runn RSC constructor tests', () async {
     final treadmill = DeviceFactory.getNpeRunn();
 
-    expect(treadmill.canMeasureHeartRate, false);
     expect(treadmill.defaultSport, ActivityType.run);
     expect(treadmill.fourCC, npeRunnFourCC);
     expect(treadmill.isMultiSport, false);

@@ -15,7 +15,6 @@ void main() {
   test('Yesoul S3 constructor tests', () async {
     final bike = DeviceFactory.getYesoulS3();
 
-    expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, yesoulS3FourCC);
     expect(bike.isMultiSport, false);

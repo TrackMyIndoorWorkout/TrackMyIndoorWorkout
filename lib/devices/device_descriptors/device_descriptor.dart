@@ -22,7 +22,6 @@ abstract class DeviceDescriptor extends DataHandler {
   String? dataCharacteristicId;
   final bool antPlus;
 
-  bool canMeasureHeartRate;
   bool canMeasureCalories;
   bool shouldSignalStartStop;
 
@@ -41,7 +40,6 @@ abstract class DeviceDescriptor extends DataHandler {
     this.dataServiceId,
     this.dataCharacteristicId,
     this.antPlus = false,
-    this.canMeasureHeartRate = true,
     this.canMeasureCalories = true,
     this.shouldSignalStartStop = false,
     hasFeatureFlags = true,

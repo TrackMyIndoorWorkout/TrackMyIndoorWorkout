@@ -48,7 +48,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
         model: model,
         dataServiceId: dataServiceId,
         dataCharacteristicId: dataCharacteristicId,
-        canMeasureHeartRate: canMeasureHeartRate,
         heartRateByteIndex: heartRateByteIndex,
       );
 

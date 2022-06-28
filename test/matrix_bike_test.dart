@@ -23,7 +23,6 @@ void main() {
   test('Matrix Bike constructor tests', () async {
     final bike = MatrixBikeDescriptor();
 
-    expect(bike.canMeasureHeartRate, false);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, matrixBikeFourCC);
   });
