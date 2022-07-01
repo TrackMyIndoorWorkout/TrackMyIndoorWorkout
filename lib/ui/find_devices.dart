@@ -73,6 +73,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   final RegExp _colonRegex = RegExp(r'\:');
   bool _tutorialVisible = false;
   TextStyle _overlayStyle = const TextStyle();
+  bool _privacyStatementViews = false;
 
   @override
   void dispose() {
@@ -213,21 +214,34 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (!prefService.get(welcomePresentedTag)) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           await Get.defaultDialog(
+            barrierDismissible: false,
             title: "Welcome to $displayAppName",
             content: ElevatedButton.icon(
               icon: const Icon(Icons.open_in_new),
-              label: const Text("Privacy Policy"),
+              label: const Text("Click to Read Privacy Policy"),
               onPressed: () async {
                 if (await canLaunchUrlString(AboutScreen.privacyPolicyUrl)) {
-                  launchUrlString(AboutScreen.privacyPolicyUrl);
+                  if (await launchUrlString(AboutScreen.privacyPolicyUrl)) {
+                    setState(() {
+                      _privacyStatementViews = true;
+                    });
+                  }
                 } else {
-                  Get.snackbar("Attention", "Cannot open URL");
+                  Get.snackbar(
+                      "Attention", "Please open URL manually: ${AboutScreen.privacyPolicyUrl}");
                 }
               },
             ),
             confirm: TextButton(
-              child: const Text("Dismiss"),
-              onPressed: () => Get.close(1),
+              child: const Text("Agree"),
+              onPressed: () {
+                if (_privacyStatementViews) {
+                  Get.close(1);
+                } else {
+                  Get.snackbar(
+                      "Must read Privacy Policy to agree", "Click the dialog's button to read");
+                }
+              },
             ),
           );
 
