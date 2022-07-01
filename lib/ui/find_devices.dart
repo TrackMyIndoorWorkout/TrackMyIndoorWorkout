@@ -1,6 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_blue/flutter_blue.dart' hide LogLevel;
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide LogLevel;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -27,6 +27,7 @@ import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
+import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/logging.dart';
@@ -72,11 +73,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
   final RegExp _colonRegex = RegExp(r'\:');
   bool _tutorialVisible = false;
   TextStyle _overlayStyle = const TextStyle();
+  bool _privacyStatementViews = false;
 
   @override
   void dispose() {
     if (_isScanning) {
-      FlutterBlue.instance.stopScan();
+      FlutterBluePlus.instance.stopScan();
     }
 
     _heartRateMonitor?.detach();
@@ -113,7 +115,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     Get.put<AppDatabase>(database, permanent: true);
   }
 
-  void _startScan() {
+  Future<void> _startScan(bool silent) async {
     if (_isScanning) {
       if (_logLevel >= logLevelInfo) {
         Logging.log(
@@ -122,6 +124,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
           "FIND_DEVICES",
           "startScan",
           "Scan already in progress",
+        );
+      }
+
+      return;
+    }
+
+    if (!await bluetoothCheck(silent)) {
+      if (_logLevel >= logLevelInfo) {
+        Logging.log(
+          _logLevel,
+          logLevelInfo,
+          "FIND_DEVICES",
+          "startScan",
+          "bluetooth check failed",
         );
       }
 
@@ -148,7 +164,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _scannedDevices.clear();
     _isScanning = true;
     _autoConnectLatch = true;
-    FlutterBlue.instance
+    FlutterBluePlus.instance
         .startScan(timeout: Duration(seconds: _scanDuration))
         .whenComplete(() => {_isScanning = false});
   }
@@ -185,7 +201,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _isScanning = false;
-    _openDatabase().then((value) => _instantScan ? _startScan() : {});
+    _openDatabase().then((value) => _instantScan ? _startScan(true) : {});
 
     _captionStyle = Get.textTheme.headline6!;
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
@@ -198,21 +214,34 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (!prefService.get(welcomePresentedTag)) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           await Get.defaultDialog(
+            barrierDismissible: false,
             title: "Welcome to $displayAppName",
             content: ElevatedButton.icon(
               icon: const Icon(Icons.open_in_new),
-              label: const Text("Privacy Policy"),
+              label: const Text("Click to Read Privacy Policy"),
               onPressed: () async {
                 if (await canLaunchUrlString(AboutScreen.privacyPolicyUrl)) {
-                  launchUrlString(AboutScreen.privacyPolicyUrl);
+                  if (await launchUrlString(AboutScreen.privacyPolicyUrl)) {
+                    setState(() {
+                      _privacyStatementViews = true;
+                    });
+                  }
                 } else {
-                  Get.snackbar("Attention", "Cannot open URL");
+                  Get.snackbar(
+                      "Attention", "Please open URL manually: ${AboutScreen.privacyPolicyUrl}");
                 }
               },
             ),
             confirm: TextButton(
-              child: const Text("Dismiss"),
-              onPressed: () => Get.close(1),
+              child: const Text("Agree"),
+              onPressed: () {
+                if (_privacyStatementViews) {
+                  Get.close(1);
+                } else {
+                  Get.snackbar(
+                      "Must read Privacy Policy to agree", "Click the dialog's button to read");
+                }
+              },
             ),
           );
 
@@ -503,7 +532,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     ],
                   ),
                   child: StreamBuilder<bool>(
-                    stream: FlutterBlue.instance.isScanning,
+                    stream: FlutterBluePlus.instance.isScanning,
                     initialData: _instantScan,
                     builder: (c, snapshot) {
                       if (snapshot.data == null || snapshot.data!) {
@@ -581,7 +610,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           );
                         } else {
                           return IconButton(
-                              icon: const Icon(Icons.refresh), onPressed: () => _startScan());
+                              icon: const Icon(Icons.refresh), onPressed: () => _startScan(false));
                         }
                       }
                     },
@@ -591,7 +620,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             ),
             body: RefreshIndicator(
               onRefresh: () async {
-                _startScan();
+                _startScan(false);
               },
               child: ListView(
                 physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -677,7 +706,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       0,
                                       () async {
                                         if (_isScanning) {
-                                          await FlutterBlue.instance.stopScan();
+                                          await FlutterBluePlus.instance.stopScan();
                                           await Future.delayed(
                                               const Duration(milliseconds: uiIntermittentDelay));
                                         }
@@ -713,7 +742,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   ),
                   const Divider(),
                   StreamBuilder<List<ScanResult>>(
-                    stream: FlutterBlue.instance.scanResults,
+                    stream: FlutterBluePlus.instance.scanResults,
                     initialData: const [],
                     builder: (c, snapshot) => snapshot.data == null
                         ? Container()
@@ -733,7 +762,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
                               if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {
                                 if (_isScanning) {
-                                  FlutterBlue.instance.stopScan().whenComplete(() async {
+                                  FlutterBluePlus.instance.stopScan().whenComplete(() async {
                                     await Future.delayed(
                                         const Duration(milliseconds: uiIntermittentDelay));
                                   });
@@ -743,8 +772,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               return ScanResultTile(
                                 result: r,
                                 onEquipmentTap: () async {
+                                  if (!await bluetoothCheck(false)) {
+                                    return;
+                                  }
+
                                   if (_isScanning) {
-                                    await FlutterBlue.instance.stopScan();
+                                    await FlutterBluePlus.instance.stopScan();
                                     await Future.delayed(
                                         const Duration(milliseconds: uiIntermittentDelay));
                                   }
@@ -753,6 +786,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                       r.device, BluetoothDeviceState.disconnected, true);
                                 },
                                 onHrmTap: () async {
+                                  if (!await bluetoothCheck(false)) {
+                                    return;
+                                  }
+
                                   setState(() {
                                     _pairingHrm = true;
                                   });
@@ -878,7 +915,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   },
                 ),
                 StreamBuilder<bool>(
-                  stream: FlutterBlue.instance.isScanning,
+                  stream: FlutterBluePlus.instance.isScanning,
                   initialData: _instantScan,
                   builder: (c, snapshot) {
                     if (snapshot.data == null) {
@@ -892,7 +929,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         -8,
                         () async {
                           if (_isScanning) {
-                            await FlutterBlue.instance.stopScan();
+                            await FlutterBluePlus.instance.stopScan();
                             await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
                           }
                         },
@@ -904,7 +941,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         _tutorialVisible,
                         "Start / Stop Scan",
                         -8,
-                        () => _startScan(),
+                        () => _startScan(false),
                       );
                     }
                   },

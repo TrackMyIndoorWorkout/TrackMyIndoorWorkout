@@ -4,7 +4,7 @@
 
 import 'dart:async' as _i3;
 
-import 'package:flutter_blue/flutter_blue.dart' as _i2;
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -73,8 +73,11 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
               returnValue: Future<List<_i2.BluetoothService>>.value(<_i2.BluetoothService>[]))
           as _i3.Future<List<_i2.BluetoothService>>);
   @override
-  _i3.Future<void> requestMtu(int? desiredMtu) =>
+  _i3.Future<int> requestMtu(int? desiredMtu) =>
       (super.noSuchMethod(Invocation.method(#requestMtu, [desiredMtu]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+          returnValue: Future<int>.value(0)) as _i3.Future<int>);
+  @override
+  _i3.Future<int> readRssi() =>
+      (super.noSuchMethod(Invocation.method(#readRssi, []), returnValue: Future<int>.value(0))
+          as _i3.Future<int>);
 }

@@ -7,7 +7,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
 import 'package:overlay_tutorial/overlay_tutorial.dart';
@@ -51,6 +51,7 @@ import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
 import '../track/tracks.dart';
+import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/preferences.dart';
@@ -208,6 +209,10 @@ class RecordingState extends State<RecordingScreen> {
   int _unlockKey = -2;
 
   Future<void> _connectOnDemand() async {
+    if (!await bluetoothCheck(true)) {
+      return;
+    }
+
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
       final prefService = Get.find<BasePrefService>();
@@ -236,6 +241,10 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _startMeasurement() async {
+    if (!await bluetoothCheck(true)) {
+      return;
+    }
+
     await _fitnessEquipment?.additionalSensorsOnDemand();
     final now = DateTime.now();
     var continued = false;
@@ -458,6 +467,10 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<String> _initializeHeartRateMonitor() async {
+    if (!await bluetoothCheck(true)) {
+      return "";
+    }
+
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     final discovered = (await _heartRateMonitor?.discover()) ?? false;
     if (discovered) {
@@ -849,12 +862,15 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
 
-    try {
-      _fitnessEquipment?.detach();
-    } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    final isOn = await FlutterBluePlus.instance.isOn;
+    if (isOn) {
+      try {
+        _fitnessEquipment?.detach();
+      } on PlatformException catch (e, stack) {
+        debugPrint("Equipment got turned off?");
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
     }
 
     final last = _fitnessEquipment?.lastRecord;
