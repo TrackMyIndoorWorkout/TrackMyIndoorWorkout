@@ -149,7 +149,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                               onPressed: () async {
                                 final workoutUrl = widget.activity.workoutUrl(e.value.name);
                                 if (await canLaunchUrlString(workoutUrl)) {
-                                  launchUrlString(workoutUrl);
+                                  launchUrlString(workoutUrl, mode: LaunchMode.externalApplication);
                                 } else {
                                   Get.snackbar("Attention", "Cannot open URL");
                                 }

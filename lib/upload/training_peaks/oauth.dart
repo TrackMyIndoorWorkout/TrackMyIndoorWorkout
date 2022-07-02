@@ -113,7 +113,7 @@ abstract class Auth {
     debugPrint(reqAuth);
     StreamSubscription? sub;
 
-    launchUrlString(reqAuth);
+    launchUrlString(reqAuth, mode: LaunchMode.externalApplication);
 
     debugPrint('Running on iOS or Android');
 

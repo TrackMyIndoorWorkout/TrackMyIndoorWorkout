@@ -104,7 +104,7 @@ abstract class Auth {
 
     StreamSubscription? sub;
 
-    launchUrlString(oAuth2Url);
+    launchUrlString(oAuth2Url, mode: LaunchMode.externalApplication);
 
     //--------  NOT working yet on web
     debugPrint('Running on iOS or Android');

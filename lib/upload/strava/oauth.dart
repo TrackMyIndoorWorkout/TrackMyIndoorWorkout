@@ -123,7 +123,7 @@ abstract class Auth {
     StreamSubscription? sub;
 
     // closeWebView();
-    launchUrlString(reqAuth);
+    launchUrlString(reqAuth, mode: LaunchMode.externalApplication);
 
     //--------  NOT working yet on web
     if (kIsWeb) {
