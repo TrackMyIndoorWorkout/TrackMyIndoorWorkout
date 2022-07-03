@@ -360,8 +360,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
           fitnessEquipment = FitnessEquipment(device: device);
           final success = await fitnessEquipment.connectOnDemand(identify: true);
-          if (success && fitnessEquipment.characteristicsId != null) {
-            final inferredSports = fitnessEquipment.inferSportsFromCharacteristicsIds();
+          if (success) {
+            final inferredSports = fitnessEquipment.inferSportsFromCharacteristicIds();
             if (inferredSports.isNotEmpty) {
               if (inferredSports.length == 1) {
                 inferredSport = inferredSports.first;

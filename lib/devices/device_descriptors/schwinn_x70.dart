@@ -25,8 +25,6 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     1.72, 1.88, 2.04, // 20-22
     2.20, 2.36, 2.52 // 23-25
   ];
-  // static const kooiboyCalorieFactor = 1.25;
-  // static const kooiboyCalorieDivider = 1.0 / kooiboyCalorieFactor;
   late double lastTime;
   late double lastCalories;
   late double lastPower;
@@ -46,6 +44,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           model: "",
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
+          secondaryCharacteristicId: schwinnX70ExtraMeasurementUuid,
+          controlCharacteristicId: schwinnX70ControlUuid,
           canMeasureHeartRate: false,
           timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1.0),
           caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 1.0),
