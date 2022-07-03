@@ -24,7 +24,8 @@ class SportLeaderboardScreen extends StatefulWidget {
   SportLeaderboardScreenState createState() => SportLeaderboardScreenState();
 }
 
-class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
+class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
+    with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
@@ -37,8 +38,16 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   double? _slowSpeed;
 
   @override
+  void didChangeMetrics() {
+    setState(() {
+      _editCount++;
+    });
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
@@ -50,6 +59,12 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
     if (widget.sport != ActivityType.ride) {
       _slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
     }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {

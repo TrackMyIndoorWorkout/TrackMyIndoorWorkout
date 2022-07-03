@@ -18,7 +18,7 @@ class DeviceUsagesScreen extends StatefulWidget {
   DeviceUsagesScreenState createState() => DeviceUsagesScreenState();
 }
 
-class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
+class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
@@ -27,12 +27,26 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> {
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
+  void didChangeMetrics() {
+    setState(() {
+      _editCount++;
+    });
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _textStyle = Get.textTheme.headline5!
         .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Widget _actionButtonRow(DeviceUsage deviceUsage, double size) {

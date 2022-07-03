@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
-import 'package:overlay_tutorial/overlay_tutorial.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
@@ -65,6 +64,7 @@ import 'parts/boolean_question.dart';
 import 'parts/circular_menu.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
+import 'parts/legend_dialog.dart';
 import 'parts/spin_down.dart';
 import 'parts/three_choices.dart';
 import 'parts/upload_portal_picker.dart';
@@ -128,7 +128,6 @@ class RecordingState extends State<RecordingScreen> {
   );
   TextStyle _markerStyle = const TextStyle();
   TextStyle _markerStyleSmall = const TextStyle();
-  TextStyle _overlayStyle = const TextStyle();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(
     hasIcon: !simplerUiSlowDefault,
     iconColor: Colors.black,
@@ -199,7 +198,6 @@ class RecordingState extends State<RecordingScreen> {
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   bool _zoneIndexColoring = false;
-  bool _tutorialVisible = false;
   int _lapCount = 0;
   bool _isLocked = false;
   int _unlockButtonIndex = 0;
@@ -525,7 +523,6 @@ class RecordingState extends State<RecordingScreen> {
         _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: _markerStyleSizeAdjust);
     _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!,
         fontSizeFactor: _markerStyleSmallSizeAdjust);
-    _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     prefService.set<String>(
       lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),
       widget.device.id.id,
@@ -1528,13 +1525,7 @@ class RecordingState extends State<RecordingScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIconWithHole(
-            entry.value.icon,
-            _sizeDefault,
-            _tutorialVisible,
-            entry.value.title,
-            0,
-          ),
+          _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
           const Spacer(),
           Text(_values[entry.key], style: measurementStyle),
           SizedBox(
@@ -1811,29 +1802,37 @@ class RecordingState extends State<RecordingScreen> {
     if (_isLocked) {
       for (var i = 0; i < _unlockChoices; ++i) {
         final button = i == _unlockButtonIndex
-            ? _themeManager.getGreenFabWKey(Icons.lock_open, true, true, "", 0, () {
+            ? _themeManager.getGreenFabWKey(Icons.lock_open, () {
                 setState(() {
                   _isLocked = false;
                 });
               }, _unlockKeys[i])
-            : _themeManager.getBlueFabWKey(Icons.adjust, true, true, "", 0, null, _unlockKeys[i]);
+            : _themeManager.getBlueFabWKey(Icons.adjust, null, _unlockKeys[i]);
         menuButtons.add(button);
       }
     } else {
       menuButtons.addAll([
         _themeManager.getTutorialFab(
-          _tutorialVisible,
           () async {
-            setState(() {
-              _tutorialVisible = !_tutorialVisible;
-            });
+            legendDialog([
+              const Tuple2<IconData, String>(Icons.whatshot, "Calories"),
+              const Tuple2<IconData, String>(Icons.add_road, "Distance"),
+              const Tuple2<IconData, String>(Icons.timer, "Elapsed / moving time"),
+              const Tuple2<IconData, String>(Icons.lock_open, "Lock Screen"),
+              const Tuple2<IconData, String>(Icons.cloud_upload, "Upload Workout"),
+              const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
+              const Tuple2<IconData, String>(Icons.battery_unknown, "Battery & Extras"),
+              const Tuple2<IconData, String>(Icons.build, "Calibration"),
+              const Tuple2<IconData, String>(Icons.favorite, "HRM Pairing"),
+              const Tuple2<IconData, String>(Icons.stop, "Stop Workout"),
+              const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
+            ]);
           },
         ),
       ]);
 
       if (_measuring) {
-        menuButtons.add(_themeManager
-            .getGreenFab(Icons.lock_open, true, _tutorialVisible, "Lock Screen", 0, () {
+        menuButtons.add(_themeManager.getGreenFab(Icons.lock_open, () {
           _unlockButtonIndex = _rng.nextInt(_unlockChoices);
           _fabKey.currentState?.close();
           setState(() {
@@ -1842,86 +1841,50 @@ class RecordingState extends State<RecordingScreen> {
         }));
       } else {
         menuButtons.addAll([
-          _themeManager.getBlueFab(Icons.cloud_upload, true, _tutorialVisible, "Upload Workout", 8,
-              () async {
+          _themeManager.getBlueFab(Icons.cloud_upload, () async {
             await _workoutUpload(false);
           }),
-          _themeManager.getBlueFab(
-            Icons.list_alt,
-            true,
-            _tutorialVisible,
-            "Workout List",
-            0,
-            () async {
-              final hasLeaderboardData = await _database.hasLeaderboardData();
-              Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
-            },
-          ),
-          _themeManager.getBlueFab(
-            Icons.battery_unknown,
-            true,
-            _tutorialVisible,
-            "Battery & Extras",
-            8,
-            () async {
+          _themeManager.getBlueFab(Icons.list_alt, () async {
+            final hasLeaderboardData = await _database.hasLeaderboardData();
+            Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+          }),
+          _themeManager.getBlueFab(Icons.battery_unknown, () async {
+            Get.bottomSheet(
+              const BatteryStatusBottomSheet(),
+              enableDrag: false,
+            );
+          }),
+          _themeManager.getBlueFab(Icons.build, () async {
+            if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
+              Get.snackbar("Error", "Not compatible with the calibration method");
+            } else {
               Get.bottomSheet(
-                const BatteryStatusBottomSheet(),
+                const SpinDownBottomSheet(),
+                isDismissible: false,
                 enableDrag: false,
               );
-            },
-          ),
-          _themeManager.getBlueFab(
-            Icons.build,
-            true,
-            _tutorialVisible,
-            "Calibration",
-            0,
-            () async {
-              if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
-                Get.snackbar("Error", "Not compatible with the calibration method");
-              } else {
-                Get.bottomSheet(
-                  const SpinDownBottomSheet(),
-                  isDismissible: false,
-                  enableDrag: false,
-                );
-              }
-            },
-          ),
+            }
+          }),
         ]);
       }
 
       menuButtons.addAll([
-        _themeManager.getBlueFab(
-          Icons.favorite,
-          true,
-          _tutorialVisible,
-          "HRM Pairing",
-          -10,
-          () async {
-            await Get.bottomSheet(
-              const HeartRateMonitorPairingBottomSheet(),
-              isDismissible: false,
-              enableDrag: false,
-            );
-            String hrmId = await _initializeHeartRateMonitor();
-            if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
-              _activity!.hrmId = hrmId;
-              _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true);
-              await _database.activityDao.updateActivity(_activity!);
-            }
-          },
-        ),
-        _themeManager.getBlueFab(
-          _measuring ? Icons.stop : Icons.play_arrow,
-          true,
-          _tutorialVisible,
-          "Start / Stop Workout",
-          -20,
-          () async {
-            await startStopAction();
-          },
-        ),
+        _themeManager.getBlueFab(Icons.favorite, () async {
+          await Get.bottomSheet(
+            const HeartRateMonitorPairingBottomSheet(),
+            isDismissible: false,
+            enableDrag: false,
+          );
+          String hrmId = await _initializeHeartRateMonitor();
+          if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
+            _activity!.hrmId = hrmId;
+            _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true);
+            await _database.activityDao.updateActivity(_activity!);
+          }
+        }),
+        _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, () async {
+          await startStopAction();
+        }),
       ]);
     }
 
@@ -1972,65 +1935,32 @@ class RecordingState extends State<RecordingScreen> {
             return;
           }
         },
-        onTap: _tutorialVisible
-            ? () {
-                setState(() {
-                  _tutorialVisible = false;
-                });
-              }
-            : null,
-        child: OverlayTutorialScope(
-          enabled: _tutorialVisible || _isLocked,
-          overlayColor: _isLocked ? Colors.transparent : Colors.green.withOpacity(.8),
-          child: AbsorbPointer(
-            absorbing: _tutorialVisible || _isLocked,
-            ignoringSemantics: true,
-            child: Scaffold(
-              appBar: AppBar(
-                title: TextOneLine(
-                  widget.device.name,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                actions: [
-                  OverlayTutorialHole(
-                    enabled: _tutorialVisible,
-                    overlayTutorialEntry: OverlayTutorialRectEntry(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      radius: const Radius.circular(16.0),
-                      overlayTutorialHints: <OverlayTutorialWidgetHint>[
-                        OverlayTutorialWidgetHint(
-                          builder: (context, oRect) {
-                            return Positioned(
-                              top: (oRect.rRect?.top ?? 0.0) + 8.0,
-                              right: Get.width - (oRect.rRect?.left ?? 4.0) + 4.0,
-                              child: Text("Help Overlay", style: _overlayStyle),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-                      onPressed: () async {
-                        await startStopAction();
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              body: body,
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-              floatingActionButton: CircularFabMenu(
-                key: _fabKey,
-                fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
-                    color: _themeManager.getAntagonistColor()),
-                fabOpenColor: _themeManager.getBlueColor(),
-                fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-                fabCloseColor: _themeManager.getBlueColor(),
-                ringColor: _themeManager.getBlueColorInverse(),
-                children: menuButtons,
-              ),
+        child: Scaffold(
+          appBar: AppBar(
+            title: TextOneLine(
+              widget.device.name,
+              overflow: TextOverflow.ellipsis,
             ),
+            actions: [
+              IconButton(
+                icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+                onPressed: () async {
+                  await startStopAction();
+                },
+              ),
+            ],
+          ),
+          body: body,
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: CircularFabMenu(
+            key: _fabKey,
+            fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
+                color: _themeManager.getAntagonistColor()),
+            fabOpenColor: _themeManager.getBlueColor(),
+            fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+            fabCloseColor: _themeManager.getBlueColor(),
+            ringColor: _themeManager.getBlueColorInverse(),
+            children: menuButtons,
           ),
         ),
       ),

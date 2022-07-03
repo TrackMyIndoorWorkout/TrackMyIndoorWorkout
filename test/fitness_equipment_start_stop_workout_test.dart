@@ -105,4 +105,39 @@ void main() {
       });
     });
   });
+
+  test('keySelector returns badKey for empty data bytes', () async {
+    await initPrefServiceForTest();
+    final descriptor = DeviceFactory.getSchwinnIcBike();
+    final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+
+    final key = equipment.keySelector([]);
+
+    expect(key, FitnessEquipment.badKey);
+  });
+
+  test('keySelector returns 0 for Stages SB20 speed only data bytes', () async {
+    await initPrefServiceForTest();
+    final descriptor = DeviceFactory.getSchwinnIcBike();
+    final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+
+    final key = equipment.keySelector([0, 0, 96, 10]);
+
+    expect(key, 0);
+  });
+
+  group('keySelector interprets feature bytes little endian', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 256, rnd).forEach((lsb) {
+      final msb = rnd.nextInt(256);
+      test('[$lsb $msb]', () async {
+        final descriptor = DeviceFactory.getSchwinnIcBike();
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+
+        final key = equipment.keySelector([lsb, msb]);
+
+        expect(key, lsb + 256 * msb);
+      });
+    });
+  });
 }

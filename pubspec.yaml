@@ -40,7 +40,6 @@ dependencies:
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
-  overlay_tutorial: ^3.0.0
   package_info_plus: ^1.4.2
   path_provider: ^2.0.10
   pref: ^2.6.0

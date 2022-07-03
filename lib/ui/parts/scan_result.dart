@@ -103,10 +103,6 @@ class ScanResultTile extends StatelessWidget {
             ? themeManager.getBlueColor()
             : themeManager.getGreyColor(),
         result.isHeartRateMonitor ? Icons.favorite : Icons.play_arrow,
-        false,
-        false,
-        result.isHeartRateMonitor ? "Pair" : "Start Workout",
-        0,
         result.advertisementData.connectable
             ? (result.isHeartRateMonitor ? onHrmTap : onEquipmentTap)
             : null,
