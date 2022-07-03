@@ -38,7 +38,8 @@ class RecordsScreen extends StatefulWidget {
   RecordsScreenState createState() => RecordsScreenState();
 }
 
-class RecordsScreenState extends State<RecordsScreen> {
+class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserver {
+  int _editCount = 0;
   int _pointCount = 0;
   List<Record> _allRecords = [];
   List<DisplayRecord> _sampledRecords = [];
@@ -320,8 +321,16 @@ class RecordsScreenState extends State<RecordsScreen> {
   }
 
   @override
+  void didChangeMetrics() {
+    setState(() {
+      _editCount++;
+    });
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     final prefService = Get.find<BasePrefService>();
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
@@ -343,6 +352,12 @@ class RecordsScreenState extends State<RecordsScreen> {
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
 
     extraInit(prefService);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _getPowerData() {
@@ -604,6 +619,7 @@ class RecordsScreenState extends State<RecordsScreen> {
       body: !_initialized
           ? const Text('Initializing...')
           : CustomListView(
+              key: Key("CLV$_editCount"),
               paginationMode: PaginationMode.offset,
               initialOffset: 0,
               loadingBuilder: CustomListLoading.defaultBuilder,

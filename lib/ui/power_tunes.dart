@@ -16,7 +16,7 @@ class PowerTunesScreen extends StatefulWidget {
   PowerTunesScreenState createState() => PowerTunesScreenState();
 }
 
-class PowerTunesScreenState extends State<PowerTunesScreen> {
+class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   double _sizeDefault = 10.0;
@@ -25,11 +25,25 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
+  void didChangeMetrics() {
+    setState(() {
+      _editCount++;
+    });
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _textStyle = Get.textTheme.headline4!;
     _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Widget _actionButtonRow(PowerTune powerTune, double size) {

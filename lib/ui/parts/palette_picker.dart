@@ -104,10 +104,6 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
           children: [
             _themeManager.getBlueFab(
                 Icons.refresh,
-                false,
-                false,
-                "Reset",
-                0,
                 () => {
                       Get.defaultDialog(
                         title: 'Reset all colors to default!',
@@ -137,7 +133,7 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
                       )
                     }),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(Icons.arrow_forward, false, false, "", 0,
+            _themeManager.getGreenFab(Icons.arrow_forward,
                 () => Get.back(result: Tuple3<bool, bool, int>(_lightOrDark, _fgOrBg, _size))),
           ],
         ),

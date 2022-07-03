@@ -70,7 +70,7 @@ class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomS
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: _themeManager.getGreenFab(
-          Icons.check, false, false, "", 0, () => Get.back(result: _formatChoices[_formatIndex])),
+          Icons.check, () => Get.back(result: _formatChoices[_formatIndex])),
     );
   }
 }

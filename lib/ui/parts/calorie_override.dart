@@ -65,7 +65,7 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0, () async {
+      floatingActionButton: _themeManager.getGreenFab(Icons.check, () async {
         final database = Get.find<AppDatabase>();
         final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
         CalorieTune? calorieTune;

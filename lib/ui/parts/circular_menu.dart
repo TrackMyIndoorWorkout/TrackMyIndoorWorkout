@@ -53,7 +53,8 @@ class CircularFabMenu extends StatefulWidget {
   CircularFabMenuState createState() => CircularFabMenuState();
 }
 
-class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProviderStateMixin {
+class CircularFabMenuState extends State<CircularFabMenu>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   double _screenWidth = 0.0;
   double _screenHeight = 0.0;
   double _marginH = 0.0;
@@ -83,8 +84,16 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
   bool _isAnimating = false;
 
   @override
+  void didChangeMetrics() {
+    if (isOpen) {
+      close();
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     _animationController = AnimationController(duration: widget.animationDuration, vsync: this);
 
@@ -107,6 +116,7 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
   @override
   void dispose() {
     _animationController?.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -124,72 +134,76 @@ class CircularFabMenuState extends State<CircularFabMenu> with SingleTickerProvi
       _calculateProps();
     }
 
-    return Stack(
-      alignment: widget.alignment,
-      children: <Widget>[
-        // Ring
-        OverflowBox(
-          maxWidth: _ringDiameter,
-          maxHeight: _ringDiameter,
-          child: Transform(
-            transform: Matrix4.translationValues(
-              _translationX,
-              _translationY,
-              0.0,
-            )..scale(_scaleAnimation!.value),
-            alignment: FractionalOffset.center,
-            child: SizedBox(
-              width: _ringDiameter,
-              height: _ringDiameter,
-              child: CustomPaint(
-                painter: _RingPainter(
-                  width: _ringWidth,
-                  color: _ringColor,
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        return Stack(
+          alignment: widget.alignment,
+          children: <Widget>[
+            // Ring
+            OverflowBox(
+              maxWidth: _ringDiameter,
+              maxHeight: _ringDiameter,
+              child: Transform(
+                transform: Matrix4.translationValues(
+                  _translationX,
+                  _translationY,
+                  0.0,
+                )..scale(_scaleAnimation!.value),
+                alignment: FractionalOffset.center,
+                child: SizedBox(
+                  width: _ringDiameter,
+                  height: _ringDiameter,
+                  child: CustomPaint(
+                    painter: _RingPainter(
+                      width: _ringWidth,
+                      color: _ringColor,
+                    ),
+                    child: _scaleAnimation!.value == 1.0
+                        ? Transform.rotate(
+                            angle: (2 * pi) * _rotateAnimation!.value * _directionX * _directionY,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: widget.children
+                                  .asMap()
+                                  .map((index, child) =>
+                                      MapEntry(index, _applyTransformations(child, index)))
+                                  .values
+                                  .toList(),
+                            ),
+                          )
+                        : Container(),
+                  ),
                 ),
-                child: _scaleAnimation!.value == 1.0
-                    ? Transform.rotate(
-                        angle: (2 * pi) * _rotateAnimation!.value * _directionX * _directionY,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: widget.children
-                              .asMap()
-                              .map((index, child) =>
-                                  MapEntry(index, _applyTransformations(child, index)))
-                              .values
-                              .toList(),
-                        ),
-                      )
-                    : Container(),
               ),
             ),
-          ),
-        ),
 
-        // FAB
-        Container(
-          width: widget.fabSize,
-          height: widget.fabSize,
-          margin: widget.fabMargin,
-          child: RawMaterialButton(
-            fillColor: _colorAnimation!.value,
-            shape: _fabIconBorder,
-            elevation: widget.fabElevation,
-            onPressed: () {
-              if (_isAnimating) return;
+            // FAB
+            Container(
+              width: widget.fabSize,
+              height: widget.fabSize,
+              margin: widget.fabMargin,
+              child: RawMaterialButton(
+                fillColor: _colorAnimation!.value,
+                shape: _fabIconBorder,
+                elevation: widget.fabElevation,
+                onPressed: () {
+                  if (_isAnimating) return;
 
-              if (_isOpen) {
-                close();
-              } else {
-                open();
-              }
-            },
-            child: Center(
-              child: widget.fabChild ??
-                  (_scaleAnimation!.value == 1.0 ? widget.fabCloseIcon : widget.fabOpenIcon),
+                  if (_isOpen) {
+                    close();
+                  } else {
+                    open();
+                  }
+                },
+                child: Center(
+                  child: widget.fabChild ??
+                      (_scaleAnimation!.value == 1.0 ? widget.fabCloseIcon : widget.fabOpenIcon),
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 
