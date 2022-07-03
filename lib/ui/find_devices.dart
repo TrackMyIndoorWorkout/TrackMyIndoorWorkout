@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:overlay_tutorial/overlay_tutorial.dart';
+import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_fourcc.dart';
@@ -37,6 +37,7 @@ import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/boolean_question.dart';
 import 'parts/circular_menu.dart';
+import 'parts/legend_dialog.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
 import 'preferences/preferences_hub.dart';
@@ -71,8 +72,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
   final AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   final RegExp _colonRegex = RegExp(r'\:');
-  bool _tutorialVisible = false;
-  TextStyle _overlayStyle = const TextStyle();
   bool _privacyStatementViews = false;
 
   @override
@@ -205,7 +204,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     _captionStyle = Get.textTheme.headline6!;
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
-    _overlayStyle = _captionStyle.copyWith(color: Colors.yellowAccent);
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
@@ -493,289 +491,172 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _tutorialVisible
-          ? () {
-              setState(() {
-                _tutorialVisible = false;
-              });
-            }
-          : null,
-      child: OverlayTutorialScope(
-        enabled: _tutorialVisible,
-        overlayColor: Colors.green.withOpacity(.8),
-        child: AbsorbPointer(
-          absorbing: _tutorialVisible,
-          ignoringSemantics: true,
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(_filterDevices ? 'Supported Devices:' : 'Devices'),
-              actions: [
-                OverlayTutorialHole(
-                  enabled: _tutorialVisible,
-                  overlayTutorialEntry: OverlayTutorialRectEntry(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    radius: const Radius.circular(16.0),
-                    overlayTutorialHints: <OverlayTutorialWidgetHint>[
-                      OverlayTutorialWidgetHint(
-                        builder: (context, oRect) {
-                          return Positioned(
-                            top: (oRect.rRect?.top ?? 0.0) + 4.0,
-                            right: Get.width - (oRect.rRect?.left ?? 4.0) + 4.0,
-                            child: Text(
-                              'Scan for equipment',
-                              style: _overlayStyle,
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  child: StreamBuilder<bool>(
-                    stream: FlutterBluePlus.instance.isScanning,
-                    initialData: _instantScan,
-                    builder: (c, snapshot) {
-                      if (snapshot.data == null || snapshot.data!) {
-                        return JumpingDotsProgressIndicator(
-                          fontSize: 30.0,
-                          color: Colors.white,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_filterDevices ? 'Supported Devices:' : 'Devices'),
+        actions: [
+          StreamBuilder<bool>(
+            stream: FlutterBluePlus.instance.isScanning,
+            initialData: _instantScan,
+            builder: (c, snapshot) {
+              if (snapshot.data == null || snapshot.data!) {
+                return JumpingDotsProgressIndicator(
+                  fontSize: 30.0,
+                  color: Colors.white,
+                );
+              } else {
+                _isScanning = false;
+                final lasts = _scannedDevices.where((d) => _lastEquipmentIds.contains(d.id.id));
+                if (_fitnessEquipment != null &&
+                        !_advertisementCache
+                            .hasEntry(_fitnessEquipment!.device?.id.id ?? emptyMeasurement) ||
+                    _filterDevices &&
+                        _scannedDevices.length == 1 &&
+                        !_advertisementCache.hasEntry(_scannedDevices.first.id.id) ||
+                    _scannedDevices.length > 1 &&
+                        _lastEquipmentIds.isNotEmpty &&
+                        lasts.isNotEmpty &&
+                        !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
+                  Get.snackbar("Request", "Please scan again");
+                  if (_logLevel > logLevelNone) {
+                    Logging.log(
+                      _logLevel,
+                      logLevelWarning,
+                      "FIND_DEVICES",
+                      "build",
+                      "advertisementCache miss",
+                    );
+                  }
+                } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
+                  if (_fitnessEquipment != null) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      goToRecording(
+                        _fitnessEquipment!.device!,
+                        BluetoothDeviceState.connected,
+                        false,
+                      );
+                    });
+                  } else {
+                    if (_filterDevices && _scannedDevices.length == 1) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        goToRecording(
+                          _scannedDevices.first,
+                          BluetoothDeviceState.disconnected,
+                          false,
                         );
-                      } else {
-                        _isScanning = false;
-                        final lasts =
-                            _scannedDevices.where((d) => _lastEquipmentIds.contains(d.id.id));
-                        if (_fitnessEquipment != null &&
-                                !_advertisementCache.hasEntry(
-                                    _fitnessEquipment!.device?.id.id ?? emptyMeasurement) ||
-                            _filterDevices &&
-                                _scannedDevices.length == 1 &&
-                                !_advertisementCache.hasEntry(_scannedDevices.first.id.id) ||
-                            _scannedDevices.length > 1 &&
-                                _lastEquipmentIds.isNotEmpty &&
-                                lasts.isNotEmpty &&
-                                !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
-                          Get.snackbar("Request", "Please scan again");
-                          if (_logLevel > logLevelNone) {
-                            Logging.log(
-                              _logLevel,
-                              logLevelWarning,
-                              "FIND_DEVICES",
-                              "build",
-                              "advertisementCache miss",
-                            );
-                          }
-                        } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
-                          if (_fitnessEquipment != null) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              goToRecording(
-                                _fitnessEquipment!.device!,
-                                BluetoothDeviceState.connected,
-                                false,
-                              );
-                            });
-                          } else {
-                            if (_filterDevices && _scannedDevices.length == 1) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                goToRecording(
-                                  _scannedDevices.first,
-                                  BluetoothDeviceState.disconnected,
-                                  false,
-                                );
-                              });
-                            } else if (_scannedDevices.length > 1 && _lastEquipmentIds.isNotEmpty) {
-                              final lasts = _scannedDevices
-                                  .where((d) =>
-                                      _lastEquipmentIds.contains(d.id.id) &&
-                                      _advertisementCache.hasEntry(d.id.id))
-                                  .toList(growable: false);
-                              if (lasts.isNotEmpty) {
-                                lasts.sort((a, b) {
-                                  return _advertisementCache
-                                      .getEntry(a.id.id)!
-                                      .txPower
-                                      .compareTo(_advertisementCache.getEntry(b.id.id)!.txPower);
-                                });
-                                WidgetsBinding.instance.addPostFrameCallback((_) {
-                                  goToRecording(
-                                      lasts.last, BluetoothDeviceState.disconnected, false);
-                                });
-                              }
-                            }
-                          }
-                        }
-                        if (_goingToRecording || _pairingHrm) {
-                          return HeartbeatProgressIndicator(
-                            child: IconButton(
-                                icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
-                          );
-                        } else {
-                          return IconButton(
-                              icon: const Icon(Icons.refresh), onPressed: () => _startScan(false));
-                        }
+                      });
+                    } else if (_scannedDevices.length > 1 && _lastEquipmentIds.isNotEmpty) {
+                      final lasts = _scannedDevices
+                          .where((d) =>
+                              _lastEquipmentIds.contains(d.id.id) &&
+                              _advertisementCache.hasEntry(d.id.id))
+                          .toList(growable: false);
+                      if (lasts.isNotEmpty) {
+                        lasts.sort((a, b) {
+                          return _advertisementCache
+                              .getEntry(a.id.id)!
+                              .txPower
+                              .compareTo(_advertisementCache.getEntry(b.id.id)!.txPower);
+                        });
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          goToRecording(lasts.last, BluetoothDeviceState.disconnected, false);
+                        });
                       }
-                    },
-                  ),
-                ),
-              ],
-            ),
-            body: RefreshIndicator(
-              onRefresh: () async {
-                _startScan(false);
-              },
-              child: ListView(
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                children: [
-                  Column(
-                    children: [
-                      _heartRateMonitor != null
-                          ? ListTile(
-                              title: TextOneLine(
-                                _heartRateMonitor?.device?.name ?? emptyMeasurement,
-                                overflow: TextOverflow.ellipsis,
-                                style: _themeManager.boldStyle(_captionStyle,
-                                    fontSizeFactor: fontSizeFactor),
-                              ),
-                              subtitle: Text(
-                                _heartRateMonitor?.device?.id.id.replaceAll(_colonRegex, '') ??
-                                    emptyMeasurement,
-                                style: _subtitleStyle,
-                              ),
-                              trailing: StreamBuilder<BluetoothDeviceState>(
-                                stream: _heartRateMonitor?.device?.state,
-                                initialData: BluetoothDeviceState.disconnected,
-                                builder: (c, snapshot) {
-                                  if (snapshot.data == BluetoothDeviceState.connected) {
-                                    return _themeManager.getGreenGenericFab(
-                                      const Icon(Icons.favorite),
-                                      false,
-                                      _tutorialVisible,
-                                      "Paired HRM",
-                                      0,
-                                      () {
-                                        Get.snackbar("Info", "HRM Already connected");
+                    }
+                  }
+                }
+                if (_goingToRecording || _pairingHrm) {
+                  return HeartbeatProgressIndicator(
+                    child: IconButton(icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
+                  );
+                } else {
+                  return IconButton(
+                      icon: const Icon(Icons.refresh), onPressed: () => _startScan(false));
+                }
+              }
+            },
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          _startScan(false);
+        },
+        child: ListView(
+          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          children: [
+            Column(
+              children: [
+                _heartRateMonitor != null
+                    ? ListTile(
+                        title: TextOneLine(
+                          _heartRateMonitor?.device?.name ?? emptyMeasurement,
+                          overflow: TextOverflow.ellipsis,
+                          style: _themeManager.boldStyle(_captionStyle,
+                              fontSizeFactor: fontSizeFactor),
+                        ),
+                        subtitle: Text(
+                          _heartRateMonitor?.device?.id.id.replaceAll(_colonRegex, '') ??
+                              emptyMeasurement,
+                          style: _subtitleStyle,
+                        ),
+                        trailing: StreamBuilder<BluetoothDeviceState>(
+                          stream: _heartRateMonitor?.device?.state,
+                          initialData: BluetoothDeviceState.disconnected,
+                          builder: (c, snapshot) {
+                            if (snapshot.data == BluetoothDeviceState.connected) {
+                              return _themeManager.getGreenGenericFab(
+                                const Icon(Icons.favorite),
+                                () {
+                                  Get.snackbar("Info", "HRM Already connected");
 
-                                        if (_logLevel > logLevelNone) {
-                                          Logging.log(
-                                            _logLevel,
-                                            logLevelWarning,
-                                            "FIND_DEVICES",
-                                            "HRM click",
-                                            "HRM Already connected",
-                                          );
-                                        }
-                                      },
-                                    );
-                                  } else {
-                                    return _themeManager.getGreyFab(Icons.bluetooth, () {
-                                      setState(() {
-                                        _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
-                                            ? Get.find<HeartRateMonitor>()
-                                            : null;
-                                      });
-                                    });
-                                  }
-                                },
-                              ),
-                            )
-                          : Container(),
-                      _fitnessEquipment != null
-                          ? ListTile(
-                              title: TextOneLine(
-                                _fitnessEquipment?.device?.name ?? emptyMeasurement,
-                                overflow: TextOverflow.ellipsis,
-                                style: _themeManager.boldStyle(
-                                  _captionStyle,
-                                  fontSizeFactor: fontSizeFactor,
-                                ),
-                              ),
-                              subtitle: Text(
-                                _fitnessEquipment?.device?.id.id.replaceAll(_colonRegex, '') ??
-                                    emptyMeasurement,
-                                style: _subtitleStyle,
-                              ),
-                              trailing: StreamBuilder<BluetoothDeviceState>(
-                                stream: _fitnessEquipment?.device?.state,
-                                initialData: BluetoothDeviceState.disconnected,
-                                builder: (c, snapshot) {
-                                  if (snapshot.data == BluetoothDeviceState.connected) {
-                                    return _themeManager.getGreenGenericFab(
-                                      const Icon(Icons.open_in_new),
-                                      false,
-                                      _tutorialVisible,
-                                      "Start Workout",
-                                      0,
-                                      () async {
-                                        if (_isScanning) {
-                                          await FlutterBluePlus.instance.stopScan();
-                                          await Future.delayed(
-                                              const Duration(milliseconds: uiIntermittentDelay));
-                                        }
-
-                                        await goToRecording(
-                                          _fitnessEquipment!.device!,
-                                          snapshot.data!,
-                                          true,
-                                        );
-                                      },
-                                    );
-                                  } else {
-                                    return _themeManager.getGreenFab(
-                                      Icons.bluetooth_disabled,
-                                      false,
-                                      _tutorialVisible,
-                                      "Disconnected",
-                                      0,
-                                      () {
-                                        setState(() {
-                                          _fitnessEquipment = Get.isRegistered<FitnessEquipment>()
-                                              ? Get.find<FitnessEquipment>()
-                                              : null;
-                                        });
-                                      },
+                                  if (_logLevel > logLevelNone) {
+                                    Logging.log(
+                                      _logLevel,
+                                      logLevelWarning,
+                                      "FIND_DEVICES",
+                                      "HRM click",
+                                      "HRM Already connected",
                                     );
                                   }
                                 },
-                              ),
-                            )
-                          : Container(),
-                    ],
-                  ),
-                  const Divider(),
-                  StreamBuilder<List<ScanResult>>(
-                    stream: FlutterBluePlus.instance.scanResults,
-                    initialData: const [],
-                    builder: (c, snapshot) => snapshot.data == null
-                        ? Container()
-                        : Column(
-                            children:
-                                snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
-                              addScannedDevice(r);
-                              if (_logLevel >= logLevelInfo) {
-                                Logging.log(
-                                  _logLevel,
-                                  logLevelInfo,
-                                  "FIND_DEVICES",
-                                  "ScanResult",
-                                  r.toString(),
-                                );
-                              }
-
-                              if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {
-                                if (_isScanning) {
-                                  FlutterBluePlus.instance.stopScan().whenComplete(() async {
-                                    await Future.delayed(
-                                        const Duration(milliseconds: uiIntermittentDelay));
-                                  });
-                                }
-                              }
-
-                              return ScanResultTile(
-                                result: r,
-                                onEquipmentTap: () async {
-                                  if (!await bluetoothCheck(false)) {
-                                    return;
-                                  }
-
+                              );
+                            } else {
+                              return _themeManager.getGreyFab(Icons.bluetooth, () {
+                                setState(() {
+                                  _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                      ? Get.find<HeartRateMonitor>()
+                                      : null;
+                                });
+                              });
+                            }
+                          },
+                        ),
+                      )
+                    : Container(),
+                _fitnessEquipment != null
+                    ? ListTile(
+                        title: TextOneLine(
+                          _fitnessEquipment?.device?.name ?? emptyMeasurement,
+                          overflow: TextOverflow.ellipsis,
+                          style: _themeManager.boldStyle(
+                            _captionStyle,
+                            fontSizeFactor: fontSizeFactor,
+                          ),
+                        ),
+                        subtitle: Text(
+                          _fitnessEquipment?.device?.id.id.replaceAll(_colonRegex, '') ??
+                              emptyMeasurement,
+                          style: _subtitleStyle,
+                        ),
+                        trailing: StreamBuilder<BluetoothDeviceState>(
+                          stream: _fitnessEquipment?.device?.state,
+                          initialData: BluetoothDeviceState.disconnected,
+                          builder: (c, snapshot) {
+                            if (snapshot.data == BluetoothDeviceState.connected) {
+                              return _themeManager.getGreenGenericFab(
+                                const Icon(Icons.open_in_new),
+                                () async {
                                   if (_isScanning) {
                                     await FlutterBluePlus.instance.stopScan();
                                     await Future.delayed(
@@ -783,181 +664,225 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   }
 
                                   await goToRecording(
-                                      r.device, BluetoothDeviceState.disconnected, true);
+                                    _fitnessEquipment!.device!,
+                                    snapshot.data!,
+                                    true,
+                                  );
                                 },
-                                onHrmTap: () async {
-                                  if (!await bluetoothCheck(false)) {
-                                    return;
-                                  }
-
+                              );
+                            } else {
+                              return _themeManager.getGreenFab(
+                                Icons.bluetooth_disabled,
+                                () {
                                   setState(() {
-                                    _pairingHrm = true;
-                                  });
-
-                                  var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
-                                      ? Get.find<HeartRateMonitor>()
-                                      : null;
-                                  final existingId =
-                                      heartRateMonitor?.device?.id.id ?? notAvailable;
-                                  final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
-                                  bool disconnectOnly = false;
-                                  if (heartRateMonitor != null) {
-                                    disconnectOnly = existingId == r.device.id.id;
-                                    final title = disconnectOnly
-                                        ? 'You are connected to that HRM right now'
-                                        : 'You are connected to a HRM right now';
-                                    final content = disconnectOnly
-                                        ? 'Disconnect from the selected HRM?'
-                                        : 'Disconnect from that HRM to connect to the selected one?';
-                                    final verdict = await Get.bottomSheet(
-                                      BooleanQuestionBottomSheet(
-                                        title: title,
-                                        content: content,
-                                      ),
-                                      isDismissible: false,
-                                      enableDrag: false,
-                                    );
-
-                                    if (!verdict) {
-                                      if (existingId != storedId) {
-                                        setState(() {
-                                          _heartRateMonitor = heartRateMonitor;
-                                        });
-                                      }
-
-                                      setState(() {
-                                        _pairingHrm = false;
-                                      });
-
-                                      return;
-                                    }
-                                  }
-
-                                  if (heartRateMonitor != null) {
-                                    await heartRateMonitor.detach();
-                                    await heartRateMonitor.disconnect();
-                                    if (disconnectOnly) {
-                                      if (existingId != storedId) {
-                                        setState(() {
-                                          _heartRateMonitor = heartRateMonitor;
-                                        });
-                                      } else {
-                                        await Get.delete<HeartRateMonitor>(force: true);
-                                        setState(() {
-                                          _heartRateMonitor = null;
-                                        });
-                                      }
-
-                                      setState(() {
-                                        _pairingHrm = false;
-                                      });
-
-                                      return;
-                                    }
-                                  }
-
-                                  if (heartRateMonitor == null || existingId != r.device.id.id) {
-                                    heartRateMonitor = HeartRateMonitor(r.device);
-                                    if (Get.isRegistered<HeartRateMonitor>()) {
-                                      await Get.delete<HeartRateMonitor>(force: true);
-                                    }
-
-                                    Get.put<HeartRateMonitor>(heartRateMonitor, permanent: true);
-                                    await heartRateMonitor.connect();
-                                    await heartRateMonitor.discover();
-                                    setState(() {
-                                      _heartRateMonitor = heartRateMonitor;
-                                    });
-                                  } else if (existingId != storedId) {
-                                    setState(() {
-                                      _heartRateMonitor = heartRateMonitor;
-                                    });
-                                  }
-
-                                  setState(() {
-                                    _pairingHrm = false;
+                                    _fitnessEquipment = Get.isRegistered<FitnessEquipment>()
+                                        ? Get.find<FitnessEquipment>()
+                                        : null;
                                   });
                                 },
                               );
-                            }).toList(growable: false),
-                          ),
-                  ),
-                ],
-              ),
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: CircularFabMenu(
-              fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
-              fabOpenColor: _themeManager.getBlueColor(),
-              fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-              fabCloseColor: _themeManager.getBlueColor(),
-              ringColor: _themeManager.getBlueColorInverse(),
-              children: [
-                _themeManager.getTutorialFab(
-                  _tutorialVisible,
-                  () async {
-                    setState(() {
-                      _tutorialVisible = !_tutorialVisible;
-                    });
-                  },
-                ),
-                _themeManager.getAboutFab(_tutorialVisible),
-                _themeManager.getBlueFab(
-                  Icons.list_alt,
-                  true,
-                  _tutorialVisible,
-                  "Workout List",
-                  0,
-                  () async {
-                    final database = Get.find<AppDatabase>();
-                    final hasLeaderboardData = await database.hasLeaderboardData();
-                    Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
-                  },
-                ),
-                StreamBuilder<bool>(
-                  stream: FlutterBluePlus.instance.isScanning,
-                  initialData: _instantScan,
-                  builder: (c, snapshot) {
-                    if (snapshot.data == null) {
-                      return Container();
-                    } else if (snapshot.data!) {
-                      return _themeManager.getBlueFab(
-                        Icons.stop,
-                        true,
-                        _tutorialVisible,
-                        "Start / Stop Scan",
-                        -8,
-                        () async {
-                          if (_isScanning) {
-                            await FlutterBluePlus.instance.stopScan();
-                            await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
-                          }
-                        },
-                      );
-                    } else {
-                      return _themeManager.getGreenFab(
-                        Icons.search,
-                        true,
-                        _tutorialVisible,
-                        "Start / Stop Scan",
-                        -8,
-                        () => _startScan(false),
-                      );
-                    }
-                  },
-                ),
-                _themeManager.getBlueFab(
-                  Icons.settings,
-                  true,
-                  _tutorialVisible,
-                  "Preferences",
-                  -16,
-                  () async => Get.to(() => const PreferencesHubScreen()),
-                ),
+                            }
+                          },
+                        ),
+                      )
+                    : Container(),
               ],
             ),
-          ),
+            const Divider(),
+            StreamBuilder<List<ScanResult>>(
+              stream: FlutterBluePlus.instance.scanResults,
+              initialData: const [],
+              builder: (c, snapshot) => snapshot.data == null
+                  ? Container()
+                  : Column(
+                      children: snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
+                        addScannedDevice(r);
+                        if (_logLevel >= logLevelInfo) {
+                          Logging.log(
+                            _logLevel,
+                            logLevelInfo,
+                            "FIND_DEVICES",
+                            "ScanResult",
+                            r.toString(),
+                          );
+                        }
+
+                        if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {
+                          if (_isScanning) {
+                            FlutterBluePlus.instance.stopScan().whenComplete(() async {
+                              await Future.delayed(
+                                  const Duration(milliseconds: uiIntermittentDelay));
+                            });
+                          }
+                        }
+
+                        return ScanResultTile(
+                          result: r,
+                          onEquipmentTap: () async {
+                            if (!await bluetoothCheck(false)) {
+                              return;
+                            }
+
+                            if (_isScanning) {
+                              await FlutterBluePlus.instance.stopScan();
+                              await Future.delayed(
+                                  const Duration(milliseconds: uiIntermittentDelay));
+                            }
+
+                            await goToRecording(r.device, BluetoothDeviceState.disconnected, true);
+                          },
+                          onHrmTap: () async {
+                            if (!await bluetoothCheck(false)) {
+                              return;
+                            }
+
+                            setState(() {
+                              _pairingHrm = true;
+                            });
+
+                            var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                ? Get.find<HeartRateMonitor>()
+                                : null;
+                            final existingId = heartRateMonitor?.device?.id.id ?? notAvailable;
+                            final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
+                            bool disconnectOnly = false;
+                            if (heartRateMonitor != null) {
+                              disconnectOnly = existingId == r.device.id.id;
+                              final title = disconnectOnly
+                                  ? 'You are connected to that HRM right now'
+                                  : 'You are connected to a HRM right now';
+                              final content = disconnectOnly
+                                  ? 'Disconnect from the selected HRM?'
+                                  : 'Disconnect from that HRM to connect to the selected one?';
+                              final verdict = await Get.bottomSheet(
+                                BooleanQuestionBottomSheet(
+                                  title: title,
+                                  content: content,
+                                ),
+                                isDismissible: false,
+                                enableDrag: false,
+                              );
+
+                              if (!verdict) {
+                                if (existingId != storedId) {
+                                  setState(() {
+                                    _heartRateMonitor = heartRateMonitor;
+                                  });
+                                }
+
+                                setState(() {
+                                  _pairingHrm = false;
+                                });
+
+                                return;
+                              }
+                            }
+
+                            if (heartRateMonitor != null) {
+                              await heartRateMonitor.detach();
+                              await heartRateMonitor.disconnect();
+                              if (disconnectOnly) {
+                                if (existingId != storedId) {
+                                  setState(() {
+                                    _heartRateMonitor = heartRateMonitor;
+                                  });
+                                } else {
+                                  await Get.delete<HeartRateMonitor>(force: true);
+                                  setState(() {
+                                    _heartRateMonitor = null;
+                                  });
+                                }
+
+                                setState(() {
+                                  _pairingHrm = false;
+                                });
+
+                                return;
+                              }
+                            }
+
+                            if (heartRateMonitor == null || existingId != r.device.id.id) {
+                              heartRateMonitor = HeartRateMonitor(r.device);
+                              if (Get.isRegistered<HeartRateMonitor>()) {
+                                await Get.delete<HeartRateMonitor>(force: true);
+                              }
+
+                              Get.put<HeartRateMonitor>(heartRateMonitor, permanent: true);
+                              await heartRateMonitor.connect();
+                              await heartRateMonitor.discover();
+                              setState(() {
+                                _heartRateMonitor = heartRateMonitor;
+                              });
+                            } else if (existingId != storedId) {
+                              setState(() {
+                                _heartRateMonitor = heartRateMonitor;
+                              });
+                            }
+
+                            setState(() {
+                              _pairingHrm = false;
+                            });
+                          },
+                        );
+                      }).toList(growable: false),
+                    ),
+            ),
+          ],
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: CircularFabMenu(
+        fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
+        fabOpenColor: _themeManager.getBlueColor(),
+        fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+        fabCloseColor: _themeManager.getBlueColor(),
+        ringColor: _themeManager.getBlueColorInverse(),
+        children: [
+          _themeManager.getTutorialFab(
+            () async {
+              legendDialog([
+                const Tuple2<IconData, String>(Icons.favorite, "HRM"),
+                const Tuple2<IconData, String>(Icons.search, "Start Scanning"),
+                const Tuple2<IconData, String>(Icons.stop, "Stop Scanning"),
+                const Tuple2<IconData, String>(Icons.refresh, "Scan Again"),
+                const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
+                const Tuple2<IconData, String>(Icons.open_in_new, "Workout Again"),
+                const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
+                const Tuple2<IconData, String>(Icons.settings, "Preferences"),
+                const Tuple2<IconData, String>(Icons.help, "About"),
+                const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
+              ]);
+            },
+          ),
+          _themeManager.getAboutFab(),
+          _themeManager.getBlueFab(Icons.list_alt, () async {
+            final database = Get.find<AppDatabase>();
+            final hasLeaderboardData = await database.hasLeaderboardData();
+            Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+          }),
+          StreamBuilder<bool>(
+            stream: FlutterBluePlus.instance.isScanning,
+            initialData: _instantScan,
+            builder: (c, snapshot) {
+              if (snapshot.data == null) {
+                return Container();
+              } else if (snapshot.data!) {
+                return _themeManager.getBlueFab(Icons.stop, () async {
+                  if (_isScanning) {
+                    await FlutterBluePlus.instance.stopScan();
+                    await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
+                  }
+                });
+              } else {
+                return _themeManager.getGreenFab(Icons.search, () => _startScan(false));
+              }
+            },
+          ),
+          _themeManager.getBlueFab(
+            Icons.settings,
+            () async => Get.to(() => const PreferencesHubScreen()),
+          ),
+        ],
       ),
     );
   }

@@ -53,6 +53,8 @@ enum WorkoutState {
 }
 
 class FitnessEquipment extends DeviceBase {
+  static const badKey = -1;
+
   DeviceDescriptor? descriptor;
   Map<int, DataHandler> dataHandlers = {};
   String? manufacturerName;
@@ -134,7 +136,7 @@ class FitnessEquipment extends DeviceBase {
 
   int keySelector(List<int> l) {
     if (l.isEmpty) {
-      return 0;
+      return badKey;
     }
 
     if (l.length == 1) {
@@ -284,7 +286,7 @@ class FitnessEquipment extends DeviceBase {
         );
       }
       bool processable = false;
-      if (key > 0) {
+      if (key >= 0) {
         if (!dataHandlers.containsKey(key)) {
           if (_logLevel >= logLevelInfo) {
             Logging.log(
@@ -319,7 +321,7 @@ class FitnessEquipment extends DeviceBase {
         // Bad or useless data packets shouldn't count against rate limit.
         // But now we let the code flow reach here so they can trigger
         // a yield though.
-        if (key > 0 && processable) {
+        if (key >= 0 && processable) {
           _startThrottlingTimer();
         }
 

@@ -95,8 +95,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                           initialData: BluetoothDeviceState.disconnected,
                           builder: (c, snapshot) {
                             if (snapshot.data == BluetoothDeviceState.connected) {
-                              return _themeManager.getGreenFab(Icons.favorite, false, false, "", 0,
-                                  () {
+                              return _themeManager.getGreenFab(Icons.favorite, () {
                                 Get.snackbar("Info", "Already connected");
                               });
                             } else {
@@ -209,8 +208,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(
-                Icons.clear, false, false, "Close", 0, () => Get.back(result: true)),
+            _themeManager.getBlueFab(Icons.clear, () => Get.back(result: true)),
             StreamBuilder<bool>(
               stream: FlutterBluePlus.instance.isScanning,
               initialData: true,

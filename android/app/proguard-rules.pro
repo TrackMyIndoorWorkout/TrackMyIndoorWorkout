@@ -24,8 +24,8 @@
 # This is from iterating over GeneratedPLuginRegistrant.java [
 -keep class com.hui.bluetooth_enable.** { *; }
 -keepclassmembernames class com.hui.bluetooth_enable.* { *; }
--keep class io.flutter.plugins.deviceinfo.** { *; }
--keepclassmembernames class io.flutter.plugins.deviceinfo.** { *; }
+-keep class dev.fluttercommunity.plus.device_info.** { *; }
+-keepclassmembernames class dev.fluttercommunity.plus.device_info.** { *; }
 -keep class com.mr.flutter.plugin.filepicker.** { *; }
 -keepclassmembernames class com.mr.flutter.plugin.filepicker.** { *; }
 -keep class com.boskokg.flutter_blue_plus.** { *; }
