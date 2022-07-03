@@ -5,20 +5,37 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:rxdart/rxdart.dart';
 import '../../devices/gatt_maps.dart';
 import '../../preferences/app_debug_mode.dart';
+import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
+import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
+import '../../utils/logging.dart';
 import '../gatt_constants.dart';
 
 abstract class DeviceBase {
   final String serviceId;
-  String? characteristicsId;
+  String characteristicId;
   BluetoothDevice? device;
-  BluetoothService? service;
   List<BluetoothService> services = [];
+  BluetoothService? service;
   BluetoothCharacteristic? characteristic;
   StreamSubscription? subscription;
+
+  String secondaryCharacteristicId;
+  BluetoothCharacteristic? secondaryCharacteristic;
+  StreamSubscription? secondarySubscription;
+  String controlCharacteristicId;
+  BluetoothCharacteristic? controlPoint;
+  StreamSubscription? controlPointSubscription;
+  bool controlNotification = false;
+  bool gotControl = false;
+
+  String statusCharacteristicId;
+  BluetoothCharacteristic? status;
+  StreamSubscription? statusSubscription;
 
   bool connecting = false;
   bool connected = false;
@@ -28,13 +45,23 @@ abstract class DeviceBase {
 
   final prefService = Get.find<BasePrefService>();
   bool uxDebug = appDebugModeDefault;
+  int logLevel = logLevelDefault;
 
   DeviceBase({
     required this.serviceId,
-    this.characteristicsId,
-    this.device,
+    required this.characteristicId,
+    required this.device,
+    this.secondaryCharacteristicId = "",
+    this.controlCharacteristicId = "",
+    this.statusCharacteristicId = "",
   }) {
+    readConfiguration();
+  }
+
+  void readConfiguration() {
+    final prefService = Get.find<BasePrefService>();
     uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
+    logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
   }
 
   Future<bool> connect() async {
@@ -69,25 +96,113 @@ abstract class DeviceBase {
       return false;
     }
 
-    setCharacteristicById(characteristicsId);
+    setCharacteristicById(characteristicId);
+    setExtraCharacteristicsById(secondaryCharacteristicId, controlCharacteristicId);
+
     return characteristic != null;
   }
 
-  void setCharacteristicById(String? newCharacteristicsId) {
-    if (newCharacteristicsId != null &&
-        newCharacteristicsId == characteristicsId &&
+  void setCharacteristicById(String newCharacteristicId) {
+    if (newCharacteristicId.isNotEmpty &&
+        newCharacteristicId == characteristicId &&
         characteristic != null) {
       return;
     }
 
-    characteristicsId = newCharacteristicsId;
-    if (characteristicsId != null) {
+    characteristicId = newCharacteristicId;
+    if (characteristicId.isNotEmpty) {
       characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
+          .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicId);
     } else {
       characteristic = service!.characteristics
           .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
-      characteristicsId = characteristic?.uuid.uuidString();
+      characteristicId = characteristic?.uuid.uuidString() ?? "";
+    }
+  }
+
+  void setExtraCharacteristicsById(String newCharacteristicId, controlCharacteristicId) {
+    if (newCharacteristicId.isNotEmpty &&
+        newCharacteristicId == secondaryCharacteristicId &&
+        secondaryCharacteristic != null) {
+      return;
+    }
+
+    secondaryCharacteristicId = newCharacteristicId;
+    if (secondaryCharacteristicId.isNotEmpty) {
+      secondaryCharacteristic = service!.characteristics
+          .firstWhereOrNull((ch) => ch.uuid.uuidString() == secondaryCharacteristicId);
+    } else {
+      secondaryCharacteristic = service!.characteristics
+          .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
+      secondaryCharacteristicId = characteristic?.uuid.uuidString() ?? "";
+    }
+
+    // TODO control?
+  }
+
+  Future<void> connectToControlPoint(obtainControl) async {
+    if (controlPoint == null && controlCharacteristicId.isNotEmpty) {
+      controlPoint = service!.characteristics
+          .firstWhereOrNull((ch) => ch.uuid.uuidString() == controlCharacteristicId);
+    }
+
+    if (status != null && statusCharacteristicId.isNotEmpty) {
+      status = service!.characteristics
+          .firstWhereOrNull((ch) => ch.uuid.uuidString() == statusCharacteristicId);
+    }
+
+    if (!controlNotification && controlPoint != null) {
+      try {
+        controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
+      } on PlatformException catch (e, stack) {
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
+
+      controlPointSubscription = controlPoint?.value
+          .throttleTime(
+        const Duration(milliseconds: ftmsStatusThreshold),
+        leading: false,
+        trailing: true,
+      )
+          .listen((controlResponse) async {
+        if (logLevel >= logLevelInfo) {
+          Logging.log(
+            logLevel,
+            logLevelInfo,
+            "FITNESS_EQUIPMENT",
+            "connectToControlPoint controlPointSubscription",
+            controlResponse.toString(),
+          );
+        }
+
+        if (controlResponse.length >= 3 &&
+            controlResponse[0] == controlOpcode &&
+            controlResponse[2] == successResponse) {
+          String logMessage = "Unknown success";
+          switch (controlResponse[1]) {
+            case requestControl:
+              gotControl = true;
+              logMessage = "Got control!";
+              break;
+            case startOrResumeControl:
+              logMessage = "Started!";
+              break;
+            case stopOrPauseControl:
+              logMessage = "Stopped!";
+              break;
+          }
+          if (logLevel >= logLevelInfo) {
+            Logging.log(
+              logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "connectToControlPoint controlPointSubscription",
+              logMessage,
+            );
+          }
+        }
+      });
     }
   }
 
@@ -117,10 +232,14 @@ abstract class DeviceBase {
       await discover(retry: true);
     }
 
-    return discoverCore();
+    final success = discoverCore();
+
+    await connectToControlPoint(true);
+
+    return success;
   }
 
-  List<String> inferSportsFromCharacteristicsIds() {
+  List<String> inferSportsFromCharacteristicIds() {
     if (discovered) {
       return service!.characteristics
           .where((char) => ftmsSportCharacteristics.contains(char.uuid.uuidString()))
@@ -130,15 +249,15 @@ abstract class DeviceBase {
     }
 
     List<String> sports = [];
-    if (characteristicsId == treadmillUuid ||
-        characteristicsId == stepClimberUuid ||
-        characteristicsId == stairClimberUuid) {
+    if (characteristicId == treadmillUuid ||
+        characteristicId == stepClimberUuid ||
+        characteristicId == stairClimberUuid) {
       sports.add(ActivityType.run);
-    } else if (characteristicsId == precorMeasurementUuid || characteristicsId == indoorBikeUuid) {
+    } else if (characteristicId == precorMeasurementUuid || characteristicId == indoorBikeUuid) {
       sports.add(ActivityType.ride);
-    } else if (characteristicsId == rowerDeviceUuid) {
+    } else if (characteristicId == rowerDeviceUuid) {
       sports.addAll(waterSports);
-    } else if (characteristicsId == crossTrainerUuid) {
+    } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
     }
 

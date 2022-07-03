@@ -18,8 +18,11 @@ abstract class DeviceDescriptor extends DataHandler {
   final String manufacturerPrefix;
   final int manufacturerFitId;
   final String model;
-  String? dataServiceId;
-  String? dataCharacteristicId;
+  String dataServiceId;
+  String dataCharacteristicId;
+  String secondaryCharacteristicId;
+  String controlCharacteristicId;
+  String statusCharacteristicId;
   final bool antPlus;
 
   bool canMeasureCalories;
@@ -37,8 +40,11 @@ abstract class DeviceDescriptor extends DataHandler {
     required this.manufacturerPrefix,
     required this.manufacturerFitId,
     required this.model, // Maybe eradicate?
-    this.dataServiceId,
-    this.dataCharacteristicId,
+    this.dataServiceId = "",
+    this.dataCharacteristicId = "",
+    this.secondaryCharacteristicId = "",
+    this.controlCharacteristicId = "",
+    this.statusCharacteristicId = "",
     this.antPlus = false,
     this.canMeasureCalories = true,
     this.shouldSignalStartStop = false,

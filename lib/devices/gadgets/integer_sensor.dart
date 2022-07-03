@@ -9,7 +9,7 @@ typedef IntegerMetricProcessingFunction = Function(int measurement);
 abstract class IntegerSensor extends SensorBase {
   int metric = 0;
 
-  IntegerSensor(serviceId, characteristicsId, device) : super(serviceId, characteristicsId, device);
+  IntegerSensor(serviceId, characteristicId, device) : super(serviceId, characteristicId, device);
 
   Stream<int> get _listenToData async* {
     if (!attached || characteristic == null) return;

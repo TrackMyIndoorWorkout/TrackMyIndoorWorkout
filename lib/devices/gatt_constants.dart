@@ -61,6 +61,8 @@ const precorMeasurementUuid = 'e01d';
 
 const schwinnX70ServiceUuid = '8980';
 const schwinnX70MeasurementUuid = '82a0';
+const schwinnX70ControlUuid = 'b3c0';
+const schwinnX70ExtraMeasurementUuid = 'f580';
 
 // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.service.user_data.xml
 const userDataServiceUuid = '181c';

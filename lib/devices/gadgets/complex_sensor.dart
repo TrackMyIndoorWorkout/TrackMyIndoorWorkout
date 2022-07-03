@@ -10,7 +10,7 @@ typedef ComplexMetricProcessingFunction = Function(RecordWithSport record);
 abstract class ComplexSensor extends SensorBase {
   RecordWithSport? record;
 
-  ComplexSensor(serviceId, characteristicsId, device) : super(serviceId, characteristicsId, device);
+  ComplexSensor(serviceId, characteristicId, device) : super(serviceId, characteristicId, device);
 
   Stream<RecordWithSport> get _listenToData async* {
     if (!attached || characteristic == null) return;

@@ -119,7 +119,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       ),
       const PrefLabel(title: Divider(height: 1)),
       const PrefLabel(
-        title: Text(logLevel),
+        title: Text(logLevelTitle),
         subtitle: Text(logLevelDescription),
       ),
       PrefRadio<int>(

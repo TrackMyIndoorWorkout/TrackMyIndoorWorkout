@@ -1,3 +1,4 @@
+import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
@@ -16,6 +17,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     model,
     dataServiceId,
     dataCharacteristicId,
+    controlCharacteristicId = fitnessMachineControlPointUuid,
+    statusCharacteristicId = fitnessMachineStatusUuid,
     flagByteSize = 2,
     canMeasureHeartRate = true,
     heartRateByteIndex,
@@ -33,6 +36,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           model: model,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
+          controlCharacteristicId: controlCharacteristicId,
           flagByteSize: flagByteSize,
           heartRateByteIndex: heartRateByteIndex,
           canMeasureCalories: canMeasureCalories,
