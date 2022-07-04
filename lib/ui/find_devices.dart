@@ -77,7 +77,19 @@ class FindDevicesState extends State<FindDevicesScreen> {
   @override
   void dispose() {
     if (_isScanning) {
-      FlutterBluePlus.instance.stopScan();
+      try {
+        FlutterBluePlus.instance.stopScan();
+      } on PlatformException catch (e, stack) {
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+        Logging.log(
+          _logLevel,
+          logLevelError,
+          "FIND_DEVICES",
+          "dispose",
+          "${e.message}",
+        );
+      }
     }
 
     _heartRateMonitor?.detach();
@@ -129,7 +141,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       return;
     }
 
-    if (!await bluetoothCheck(silent)) {
+    if (!await bluetoothCheck(silent, _logLevel)) {
       if (_logLevel >= logLevelInfo) {
         Logging.log(
           _logLevel,
@@ -163,9 +175,21 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _scannedDevices.clear();
     _isScanning = true;
     _autoConnectLatch = true;
-    FlutterBluePlus.instance
-        .startScan(timeout: Duration(seconds: _scanDuration))
-        .whenComplete(() => {_isScanning = false});
+    try {
+      FlutterBluePlus.instance
+          .startScan(timeout: Duration(seconds: _scanDuration))
+          .whenComplete(() => {_isScanning = false});
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.log(
+        _logLevel,
+        logLevelError,
+        "FIND_DEVICES",
+        "_startScan",
+        "${e.message}",
+      );
+    }
   }
 
   void addScannedDevice(ScanResult scanResult) {
@@ -719,7 +743,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         return ScanResultTile(
                           result: r,
                           onEquipmentTap: () async {
-                            if (!await bluetoothCheck(false)) {
+                            if (!await bluetoothCheck(false, _logLevel)) {
                               return;
                             }
 
@@ -732,7 +756,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             await goToRecording(r.device, BluetoothDeviceState.disconnected, true);
                           },
                           onHrmTap: () async {
-                            if (!await bluetoothCheck(false)) {
+                            if (!await bluetoothCheck(false, _logLevel)) {
                               return;
                             }
 
