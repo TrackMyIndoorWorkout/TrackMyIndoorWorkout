@@ -258,7 +258,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     ]);
 
     return Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: actionsRow,
     );
   }
@@ -388,6 +388,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               key: Key(activity.uniqueIntegrationString()),
               theme: _expandableThemeData,
               header: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -436,11 +438,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                       children: [
                         _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
                         const Spacer(),
-                        Text(
-                          _timeDisplayMode == timeDisplayModeElapsed
-                              ? activity.elapsedString
-                              : activity.movingTimeString,
-                          style: _measurementStyle,
+                        FitHorizontally(
+                          child: Text(
+                            _timeDisplayMode == timeDisplayModeElapsed
+                                ? activity.elapsedString
+                                : activity.movingTimeString,
+                            style: _measurementStyle,
+                          ),
                         ),
                       ],
                     ),
