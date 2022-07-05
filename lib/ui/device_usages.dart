@@ -51,10 +51,10 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
 
   Widget _actionButtonRow(DeviceUsage deviceUsage, double size) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: _themeManager.getActionIcon(Icons.edit, size),
+          iconSize: size,
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
               SportPickerBottomSheet(sportChoices: allSports, initialSport: deviceUsage.sport),
@@ -73,6 +73,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         const Spacer(),
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
+          iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
