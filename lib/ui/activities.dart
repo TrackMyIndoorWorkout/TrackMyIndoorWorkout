@@ -409,6 +409,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               ),
               collapsed: Container(),
               expanded: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 1.0),
+                minLeadingWidth: 0,
+                horizontalTitleGap: 0,
                 onTap: () => Get.to(() => RecordsScreen(activity: item, size: Get.mediaQuery.size)),
                 title: Column(
                   children: [
