@@ -385,7 +385,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           return Card(
             elevation: 6,
             child: ExpandablePanel(
-              key: Key("${activity.id} ${activity.stravaId}"),
+              key: Key(activity.uniqueIntegrationString()),
               theme: _expandableThemeData,
               header: Column(
                 children: [
