@@ -122,6 +122,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     final actionsRow = <Widget>[
       IconButton(
         icon: _themeManager.getActionIcon(Icons.cloud_upload, size),
+        iconSize: size,
         onPressed: () async {
           if (!await hasInternetConnection()) {
             Get.snackbar("Warning", "No data connection detected, try again later!");
@@ -136,6 +137,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       ),
       IconButton(
         icon: _themeManager.getActionIcon(Icons.file_download, size),
+        iconSize: size,
         onPressed: () async {
           final formatPick = await Get.bottomSheet(
             const ExportFormatPickerBottomSheet(),
@@ -168,6 +170,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       ),
       IconButton(
         icon: _themeManager.getActionIcon(Icons.bolt, size),
+        iconSize: size,
         onPressed: () async {
           if (activity.powerFactor < eps) {
             Get.snackbar("Error", "Cannot tune power of activity due to lack of reference");
@@ -182,6 +185,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       ),
       IconButton(
         icon: _themeManager.getActionIcon(Icons.whatshot, size),
+        iconSize: size,
         onPressed: () async {
           if (activity.calories == 0) {
             Get.snackbar("Error", "Cannot tune calories of activity with 0 calories");
@@ -199,6 +203,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       actionsRow.add(
         IconButton(
           icon: _themeManager.getActionIcon(Icons.edit, size),
+          iconSize: size,
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
               SportPickerBottomSheet(sportChoices: allSports, initialSport: activity.sport),
@@ -220,6 +225,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       const Spacer(),
       IconButton(
         icon: _themeManager.getDeleteIcon(size),
+        iconSize: size,
         onPressed: () async {
           Get.defaultDialog(
             title: 'Warning!!!',
@@ -245,6 +251,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       const Spacer(),
       IconButton(
         icon: _themeManager.getActionIcon(Icons.chevron_right, size),
+        iconSize: size,
         onPressed: () async =>
             await Get.to(() => RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
       ),
