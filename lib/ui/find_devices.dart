@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide LogLevel;
@@ -235,7 +237,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (huaweiAppGalleryBuild) {
       if (!prefService.get(welcomePresentedTag)) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await Get.defaultDialog(
+          final agreed = await Get.defaultDialog(
             barrierDismissible: false,
             title: "Welcome to $displayAppName",
             content: ElevatedButton.icon(
@@ -258,16 +260,29 @@ class FindDevicesState extends State<FindDevicesScreen> {
               child: const Text("Agree"),
               onPressed: () {
                 if (_privacyStatementViews) {
-                  Get.close(1);
+                  Get.back(result: true);
                 } else {
                   Get.snackbar(
                       "Must read Privacy Policy to agree", "Click the dialog's button to read");
                 }
               },
             ),
+            cancel: TextButton(
+              child: const Text("Deny"),
+              onPressed: () {
+                try {
+                  Platform.isAndroid ? SystemNavigator.pop() : exit(0);
+                } catch (e) {
+                  Platform.isAndroid ? exit(0) : SystemNavigator.pop();
+                }
+                Get.back(result: false);
+              },
+            ),
           );
 
-          prefService.set(welcomePresentedTag, true);
+          if (agreed) {
+            prefService.set(welcomePresentedTag, true);
+          }
         });
       }
     }
