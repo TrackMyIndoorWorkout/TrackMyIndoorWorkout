@@ -765,7 +765,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     if (descriptor != null) {
-      stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
+      stub.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
       if (_logLevel >= logLevelInfo) {
         Logging.log(
           _logLevel,
@@ -803,14 +803,8 @@ class FitnessEquipment extends DeviceBase {
     // With this fix the calorie zeroing bug is revealed. Calorie preserving workaround can be
     // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
     final deviceReportsTotalCalories = stub.calories != null;
-    final hrmRecord = heartRateMonitor?.record != null
-        ? descriptor!.adjustRecord(
-            heartRateMonitor!.record!,
-            powerFactor,
-            hrmCalorieFactor,
-            _extendTuning,
-          )
-        : null;
+    final hrmRecord = heartRateMonitor?.record;
+    hrmRecord?.adjustByFactors(powerFactor, hrmCalorieFactor, _extendTuning);
     final hrmReportsCalories = hrmRecord?.calories != null;
     // All of these starting* and hasTotal* codes have to come before the (optional) merge
     // and after tuning / factoring adjustments #197
@@ -851,29 +845,24 @@ class FitnessEquipment extends DeviceBase {
       return lastRecord;
     }
 
-    RecordWithSport? rscRecord;
     if (sport == ActivityType.run &&
         _runningCadenceSensor != null &&
         (_runningCadenceSensor?.attached ?? false)) {
-      if (_runningCadenceSensor?.record != null) {
-        rscRecord = descriptor!.adjustRecord(
-          _runningCadenceSensor!.record!,
-          powerFactor,
-          calorieFactor,
-          _extendTuning,
-        );
-      }
+      RecordWithSport? rscRecord = _runningCadenceSensor?.record;
+      if (rscRecord != null) {
+        rscRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
 
-      if ((stub.cadence == null || stub.cadence == 0) && (rscRecord?.cadence ?? 0) > 0) {
-        stub.cadence = rscRecord!.cadence;
-      }
+        if ((stub.cadence == null || stub.cadence == 0) && (rscRecord.cadence ?? 0) > 0) {
+          stub.cadence = rscRecord.cadence;
+        }
 
-      if ((stub.speed == null || stub.speed == 0) && (rscRecord?.speed ?? 0.0) > eps) {
-        stub.speed = rscRecord!.speed;
-      }
+        if ((stub.speed == null || stub.speed == 0) && (rscRecord.speed ?? 0.0) > eps) {
+          stub.speed = rscRecord.speed;
+        }
 
-      if ((stub.distance == null || stub.distance == 0) && (rscRecord?.distance ?? 0.0) > eps) {
-        stub.distance = rscRecord!.distance;
+        if ((stub.distance == null || stub.distance == 0) && (rscRecord.distance ?? 0.0) > eps) {
+          stub.distance = rscRecord.distance;
+        }
       }
     }
 

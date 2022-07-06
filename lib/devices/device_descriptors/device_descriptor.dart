@@ -1,4 +1,3 @@
-import '../../persistence/models/record.dart';
 import '../../track/tracks.dart';
 import '../gatt_constants.dart';
 import 'data_handler.dart';
@@ -70,43 +69,4 @@ abstract class DeviceDescriptor extends DataHandler {
   bool get isFitnessMachine => dataServiceId == fitnessMachineUuid;
 
   void stopWorkout();
-
-  RecordWithSport adjustRecord(
-    RecordWithSport record,
-    double powerFactor,
-    double calorieFactor,
-    bool extendTuning,
-  ) {
-    if (record.power != null) {
-      record.power = (record.power! * powerFactor).round();
-    }
-
-    if (extendTuning) {
-      if (record.speed != null) {
-        record.speed = record.speed! * powerFactor;
-      }
-
-      if (record.distance != null) {
-        record.distance = record.distance! * powerFactor;
-      }
-
-      if (record.pace != null) {
-        record.pace = record.pace! / powerFactor;
-      }
-    }
-
-    if (record.calories != null) {
-      record.calories = (record.calories! * calorieFactor).round();
-    }
-
-    if (record.caloriesPerHour != null) {
-      record.caloriesPerHour = record.caloriesPerHour! * calorieFactor;
-    }
-
-    if (record.caloriesPerMinute != null) {
-      record.caloriesPerMinute = record.caloriesPerMinute! * calorieFactor;
-    }
-
-    return record;
-  }
 }
