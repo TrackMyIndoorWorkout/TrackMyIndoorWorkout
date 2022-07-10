@@ -39,7 +39,7 @@ void main() {
           calories: calorie,
         ));
 
-        expect(equipment.hasTotalCalorieReporting, true);
+        expect(equipment.deviceHasTotalCalorieReporting, true);
       });
     });
   });
@@ -73,40 +73,100 @@ void main() {
           calories: 0,
         ));
 
-        expect(equipment.hasTotalCalorieReporting, true);
+        expect(equipment.deviceHasTotalCalorieReporting, true);
       });
     });
   });
 
-  group('processRecord recognizes lack total calorie counting capability', () {
-    final rnd = Random();
-    getRandomInts(smallRepetition, 500, rnd).forEach((calorie) {
-      test('$calorie', () async {
-        final descriptor = DeviceFactory.getSchwinnIcBike();
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-        );
-        equipment.workoutState = WorkoutState.moving;
+  test('processRecord recognizes lack total calorie counting capability', () async {
+    final descriptor = DeviceFactory.getSchwinnIcBike();
+    final equipment = FitnessEquipment(
+      descriptor: descriptor,
+      device: MockBluetoothDevice(),
+      firstCalories: false,
+    );
+    equipment.workoutState = WorkoutState.moving;
 
-        // calories: null
-        equipment.processRecord(RecordWithSport(
-          sport: descriptor.defaultSport,
-          speed: 8.0,
-        ));
-        equipment.processRecord(RecordWithSport(
-          sport: descriptor.defaultSport,
-          speed: 8.0,
-        ));
-        equipment.processRecord(RecordWithSport(
-          sport: descriptor.defaultSport,
-          speed: 8.0,
-        ));
+    // calories: null
+    equipment.processRecord(RecordWithSport(
+      sport: descriptor.defaultSport,
+      speed: 8.0,
+    ));
+    equipment.processRecord(RecordWithSport(
+      sport: descriptor.defaultSport,
+      speed: 8.0,
+    ));
+    equipment.processRecord(RecordWithSport(
+      sport: descriptor.defaultSport,
+      speed: 8.0,
+    ));
 
-        expect(equipment.hasTotalCalorieReporting, false);
-      });
-    });
+    expect(equipment.deviceHasTotalCalorieReporting, false);
+  });
+
+  test('processRecord recognizes lack total calorie counting capability when idle', () async {
+    final descriptor = DeviceFactory.getSchwinnIcBike();
+    final equipment = FitnessEquipment(
+      descriptor: descriptor,
+      device: MockBluetoothDevice(),
+      firstCalories: false,
+    );
+    equipment.workoutState = WorkoutState.moving;
+
+    equipment.processRecord(
+      RecordWithSport(
+        sport: descriptor.defaultSport,
+        speed: 8.0,
+        calories: 0,
+      ),
+      true,
+    );
+    equipment.processRecord(
+      RecordWithSport(
+        sport: descriptor.defaultSport,
+        speed: 8.0,
+        calories: 0,
+      ),
+      true,
+    );
+    equipment.processRecord(
+      RecordWithSport(
+        sport: descriptor.defaultSport,
+        speed: 8.0,
+        calories: 0,
+      ),
+      true,
+    );
+
+    expect(equipment.deviceHasTotalCalorieReporting, false);
+  });
+
+  test('processRecord decides total calorie counting capability when not idle', () async {
+    final descriptor = DeviceFactory.getSchwinnIcBike();
+    final equipment = FitnessEquipment(
+      descriptor: descriptor,
+      device: MockBluetoothDevice(),
+      firstCalories: false,
+    );
+    equipment.workoutState = WorkoutState.moving;
+
+    equipment.processRecord(RecordWithSport(
+      sport: descriptor.defaultSport,
+      speed: 8.0,
+      calories: 0,
+    ));
+    equipment.processRecord(RecordWithSport(
+      sport: descriptor.defaultSport,
+      speed: 8.0,
+      calories: 0,
+    ));
+    equipment.processRecord(RecordWithSport(
+      sport: descriptor.defaultSport,
+      speed: 8.0,
+      calories: 0,
+    ));
+
+    expect(equipment.deviceHasTotalCalorieReporting, true);
   });
 
   group('processRecord calculates calories from caloriesPerHour', () {
@@ -354,15 +414,8 @@ void main() {
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
-        final adjustedRecord = descriptor.adjustRecord(
-          RecordWithSport(
-            sport: descriptor.defaultSport,
-            distance: distance,
-          ),
-          powerFactor,
-          calorieFactor,
-          true,
-        );
+        final adjustedRecord = RecordWithSport(sport: descriptor.defaultSport, distance: distance);
+        adjustedRecord.adjustByFactors(powerFactor, calorieFactor, true);
         equipment.lastRecord = RecordWithSport(
           timeStamp: oneSecondAgo.millisecondsSinceEpoch,
           elapsedMillis: 0,
@@ -425,20 +478,17 @@ void main() {
           calorieFactor,
           extendTuning,
         );
-        equipment.lastRecord = descriptor.adjustRecord(
-          RecordWithSport(
-            sport: descriptor.defaultSport,
-            timeStamp: oneSecondAgo.millisecondsSinceEpoch,
-            elapsed: 0,
-            elapsedMillis: 0,
-            distance: distance,
-            speed: speed,
-            calories: calories,
-          ),
-          powerFactor,
-          calorieFactor,
-          extendTuning,
+        final adjustedRecord = RecordWithSport(
+          sport: descriptor.defaultSport,
+          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          elapsed: 0,
+          elapsedMillis: 0,
+          distance: distance,
+          speed: speed,
+          calories: calories,
         );
+        adjustedRecord.adjustByFactors(powerFactor, calorieFactor, extendTuning);
+        equipment.lastRecord = adjustedRecord;
         equipment.workoutState = WorkoutState.moving;
 
         final record = equipment.processRecord(RecordWithSport(
@@ -497,20 +547,18 @@ void main() {
           calorieFactor,
           extendTuning,
         );
-        equipment.lastRecord = descriptor.adjustRecord(
-          RecordWithSport(
-            sport: descriptor.defaultSport,
-            timeStamp: oneSecondAgo.millisecondsSinceEpoch,
-            elapsed: 0,
-            elapsedMillis: 0,
-            distance: distance,
-            speed: speed,
-            calories: calories,
-          ),
-          powerFactor,
-          calorieFactor,
-          extendTuning,
+
+        final adjustedRecord = RecordWithSport(
+          sport: descriptor.defaultSport,
+          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          elapsed: 0,
+          elapsedMillis: 0,
+          distance: distance,
+          speed: speed,
+          calories: calories,
         );
+        adjustedRecord.adjustByFactors(powerFactor, calorieFactor, extendTuning);
+        equipment.lastRecord = adjustedRecord;
         equipment.workoutState = WorkoutState.moving;
 
         final record = equipment.processRecord(RecordWithSport(
@@ -657,17 +705,13 @@ void main() {
           calories: calories + deltaCalories,
         ));
 
-        final deltaRecord = descriptor.adjustRecord(
-          RecordWithSport(
-            sport: descriptor.defaultSport,
-            distance: deltaDistance,
-            speed: speed,
-            calories: deltaCalories,
-          ),
-          powerFactor,
-          calorieFactor,
-          extendTuning,
+        final deltaRecord = RecordWithSport(
+          sport: descriptor.defaultSport,
+          distance: deltaDistance,
+          speed: speed,
+          calories: deltaCalories,
         );
+        deltaRecord.adjustByFactors(powerFactor, calorieFactor, extendTuning);
 
         expect(record.distance, closeTo(deltaRecord.distance!, eps));
         expect(record.calories, closeTo(deltaRecord.calories!, 1));
