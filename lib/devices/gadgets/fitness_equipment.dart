@@ -804,11 +804,11 @@ class FitnessEquipment extends DeviceBase {
     // Therefore the FTMS elapsed time reading is kinda useless, causes problems.
     // With this fix the calorie zeroing bug is revealed. Calorie preserving workaround can be
     // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
-    final deviceReportsTotalCalories = idle ? (stub.calories ?? 0) > 0 : stub.calories != null;
+    final deviceReportsTotalCalories = !idle && stub.calories != null;
     deviceHasTotalCalorieReporting |= deviceReportsTotalCalories;
     final hrmRecord = heartRateMonitor?.record;
     hrmRecord?.adjustByFactors(powerFactor, hrmCalorieFactor, _extendTuning);
-    final hrmReportsCalories = idle ? (hrmRecord?.calories ?? 0) > 0 : hrmRecord?.calories != null;
+    final hrmReportsCalories = !idle && hrmRecord?.calories != null;
     hrmHasTotalCalorieReporting |= hrmReportsCalories;
     // All of these starting* and hasTotal* codes have to come before the (optional) merge
     // and after tuning / factoring adjustments #197
@@ -996,6 +996,7 @@ class FitnessEquipment extends DeviceBase {
     if (_startingCalories > eps) {
       if (kDebugMode) {
         assert(deviceHasTotalCalorieReporting || hrmHasTotalCalorieReporting);
+        assert(calories >= _startingCalories);
       }
 
       if (_logLevel >= logLevelInfo) {
