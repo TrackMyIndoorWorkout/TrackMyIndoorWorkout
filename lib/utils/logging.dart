@@ -55,11 +55,11 @@ class Logging {
     String subTag,
     String logMessage,
   ) {
-    if (!initialized || logLevelThreshold == logLevelNone) {
+    if (!initialized || logLevelThreshold == logLevelNone || testing) {
       return;
     }
 
-    if (!testing && kDebugMode) {
+    if (kDebugMode) {
       debugPrint("$tag | $subTag | $logMessage");
       return;
     }

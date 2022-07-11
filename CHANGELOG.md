@@ -1,3 +1,15 @@
+## 1.1.113
+
+* Fixing Stages SB20 calorie counting (other machines might be affected too)
+* Fixing cut-off action icons (at certain resolutions) on the Activities screen
+
+## 1.1.112
+
+* Fixing Stages SB 20 speed acquisition / display
+* Screen rotation artifact workarounds on many screens
+* Replacing overlay tutorial / help with legend modal dialogs
+* Android 12L SDK level targeting and package version bumps
+
 ## 1.1.111
 
 * Fixing broken OAuth integration flows (Strava, SUUNTO, UA, TP)

@@ -158,6 +158,14 @@ class Record {
       if (distance! < lastRecord.distance!) {
         distance = lastRecord.distance;
       }
+
+      if (kDebugMode) {
+        assert(distance! >= 0.0);
+      }
+
+      if (distance! < 0.0) {
+        distance = 0.0;
+      }
     }
   }
 
@@ -170,6 +178,14 @@ class Record {
       if (elapsed! < lastRecord.elapsed!) {
         elapsed = lastRecord.elapsed;
       }
+
+      if (kDebugMode) {
+        assert(elapsed! >= 0);
+      }
+
+      if (elapsed! < 0) {
+        elapsed = 0;
+      }
     }
   }
 
@@ -181,6 +197,14 @@ class Record {
     if (movingTime < lastRecord.movingTime) {
       movingTime = lastRecord.movingTime;
     }
+
+    if (kDebugMode) {
+      assert(movingTime >= 0);
+    }
+
+    if (movingTime < 0) {
+      movingTime = 0;
+    }
   }
 
   void cumulativeCaloriesEnforcement(Record lastRecord) {
@@ -191,6 +215,14 @@ class Record {
 
       if (calories! < lastRecord.calories!) {
         calories = lastRecord.calories;
+      }
+
+      if (kDebugMode) {
+        assert(calories! >= 0);
+      }
+
+      if (calories! < 0) {
+        calories = 0;
       }
     }
   }
@@ -397,5 +429,41 @@ class RecordWithSport extends Record {
 
     elapsed = newElapsed;
     elapsedMillis = newElapsedMillis;
+  }
+
+  void adjustByFactors(double powerFactor, double calorieFactor, bool extendTuning) {
+    if ((powerFactor - 1.0).abs() > eps) {
+      if (power != null) {
+        power = (power! * powerFactor).round();
+      }
+
+      if (extendTuning) {
+        if (speed != null) {
+          speed = speed! * powerFactor;
+        }
+
+        if (distance != null) {
+          distance = distance! * powerFactor;
+        }
+
+        if (pace != null) {
+          pace = pace! / powerFactor;
+        }
+      }
+    }
+
+    if ((calorieFactor - 1.0).abs() > eps) {
+      if (calories != null) {
+        calories = (calories! * calorieFactor).round();
+      }
+
+      if (caloriesPerHour != null) {
+        caloriesPerHour = caloriesPerHour! * calorieFactor;
+      }
+
+      if (caloriesPerMinute != null) {
+        caloriesPerMinute = caloriesPerMinute! * calorieFactor;
+      }
+    }
   }
 }

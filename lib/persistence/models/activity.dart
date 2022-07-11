@@ -205,6 +205,10 @@ class Activity {
     return deviceMap[fourCC] ?? genericDescriptorForSport(sport);
   }
 
+  String uniqueIntegrationString() {
+    return "$id $stravaId $suuntoUploadIdentifier $uaWorkoutId $trainingPeaksWorkoutId";
+  }
+
   WorkoutSummary getWorkoutSummary(String manufacturer) {
     return WorkoutSummary(
       deviceName: deviceName,

@@ -64,7 +64,8 @@ class FitnessEquipment extends DeviceBase {
   double _startingCalories = 0.0;
   bool firstDistance; // #197 #234 #259
   double _startingDistance = 0.0;
-  bool hasTotalCalorieReporting = false;
+  bool deviceHasTotalCalorieReporting = false;
+  bool hrmHasTotalCalorieReporting = false;
   bool hasTotalDistanceReporting = false;
   Timer? _timer;
   late RecordWithSport lastRecord;
@@ -191,12 +192,12 @@ class FitnessEquipment extends DeviceBase {
         // Since we processed this should also count against throttle
         _startThrottlingTimer();
         // No way to yield from here so imperatively pump
-        pumpDataCore(merged);
+        pumpDataCore(merged, false);
       }
 
       if (workoutState == WorkoutState.justStopped || workoutState == WorkoutState.stopped) {
         if (merged == null) {
-          pumpDataCore(lastRecord);
+          pumpDataCore(lastRecord, true);
         }
 
         _startThrottlingTimer();
@@ -326,9 +327,9 @@ class FitnessEquipment extends DeviceBase {
     }
   }
 
-  void pumpDataCore(RecordWithSport recordStub) {
+  void pumpDataCore(RecordWithSport recordStub, bool idle) {
     if (_recordHandlerFunction != null) {
-      final record = processRecord(recordStub);
+      final record = processRecord(recordStub, idle);
       _recordHandlerFunction!(record);
     }
   }
@@ -339,7 +340,7 @@ class FitnessEquipment extends DeviceBase {
       _timer = Timer(
         const Duration(seconds: 1),
         () {
-          final record = processRecord(RecordWithSport.getRandom(sport, _random));
+          final record = processRecord(RecordWithSport.getRandom(sport, _random), false);
           recordHandlerFunction(record);
           pumpData(recordHandlerFunction);
         },
@@ -347,7 +348,7 @@ class FitnessEquipment extends DeviceBase {
     } else {
       _runningCadenceSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
-        pumpDataCore(recordStub);
+        pumpDataCore(recordStub, false);
       });
     }
   }
@@ -628,7 +629,7 @@ class FitnessEquipment extends DeviceBase {
     _extendTuning = extendTuning;
   }
 
-  RecordWithSport processRecord(RecordWithSport stub) {
+  RecordWithSport processRecord(RecordWithSport stub, [bool idle = false]) {
     final now = DateTime.now();
     // State Machine for #231 and #235
     // (intelligent start and elapsed time tracking)
@@ -692,7 +693,7 @@ class FitnessEquipment extends DeviceBase {
     }
 
     if (descriptor != null) {
-      stub = descriptor!.adjustRecord(stub, powerFactor, calorieFactor, _extendTuning);
+      stub.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
       if (logLevel >= logLevelInfo) {
         Logging.log(
           logLevel,
@@ -710,14 +711,15 @@ class FitnessEquipment extends DeviceBase {
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "processRecord",
-        "_residueCalories $_residueCalories, "
+        "#1 _residueCalories $_residueCalories, "
             "_lastPositiveCadence $_lastPositiveCadence, "
             "_lastPositiveCalories $_lastPositiveCalories, "
             "firstCalories $firstCalories, "
             "_startingCalories $_startingCalories, "
             "firstDistance $firstDistance, "
             "_startingDistance $_startingDistance, "
-            "hasTotalCalorieReporting $hasTotalCalorieReporting, "
+            "deviceHasTotalCalorieReporting $deviceHasTotalCalorieReporting, "
+            "hrmHasTotalCalorieReporting $hrmHasTotalCalorieReporting, "
             "hasTotalDistanceReporting $hasTotalDistanceReporting",
       );
     }
@@ -729,27 +731,21 @@ class FitnessEquipment extends DeviceBase {
     // Therefore the FTMS elapsed time reading is kinda useless, causes problems.
     // With this fix the calorie zeroing bug is revealed. Calorie preserving workaround can be
     // toggled in the settings now. Only the distance perseverance could pose a glitch. #94
-    final deviceReportsTotalCalories = stub.calories != null;
-    final hrmRecord = heartRateMonitor?.record != null
-        ? descriptor!.adjustRecord(
-            heartRateMonitor!.record!,
-            powerFactor,
-            hrmCalorieFactor,
-            _extendTuning,
-          )
-        : null;
-    final hrmReportsCalories = hrmRecord?.calories != null;
+    final deviceReportsTotalCalories = !idle && stub.calories != null;
+    deviceHasTotalCalorieReporting |= deviceReportsTotalCalories;
+    final hrmRecord = heartRateMonitor?.record;
+    hrmRecord?.adjustByFactors(powerFactor, hrmCalorieFactor, _extendTuning);
+    final hrmReportsCalories = !idle && hrmRecord?.calories != null;
+    hrmHasTotalCalorieReporting |= hrmReportsCalories;
     // All of these starting* and hasTotal* codes have to come before the (optional) merge
     // and after tuning / factoring adjustments #197
-    hasTotalCalorieReporting =
-        hasTotalCalorieReporting || deviceReportsTotalCalories || hrmReportsCalories;
-    if (firstCalories && hasTotalCalorieReporting) {
+    if (firstCalories) {
       if (_useHrmReportedCalories) {
-        if ((hrmRecord?.calories ?? 0) >= 1) {
+        if (hrmHasTotalCalorieReporting && (hrmRecord?.calories ?? 0) > 0) {
           _startingCalories = hrmRecord!.calories!.toDouble();
           firstCalories = false;
         }
-      } else if ((stub.calories ?? 0) >= 1) {
+      } else if (deviceHasTotalCalorieReporting && (stub.calories ?? 0) > 0) {
         _startingCalories = stub.calories!.toDouble();
         firstCalories = false;
       }
@@ -778,29 +774,24 @@ class FitnessEquipment extends DeviceBase {
       return lastRecord;
     }
 
-    RecordWithSport? rscRecord;
     if (sport == ActivityType.run &&
         _runningCadenceSensor != null &&
         (_runningCadenceSensor?.attached ?? false)) {
-      if (_runningCadenceSensor?.record != null) {
-        rscRecord = descriptor!.adjustRecord(
-          _runningCadenceSensor!.record!,
-          powerFactor,
-          calorieFactor,
-          _extendTuning,
-        );
-      }
+      RecordWithSport? rscRecord = _runningCadenceSensor?.record;
+      if (rscRecord != null) {
+        rscRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
 
-      if ((stub.cadence == null || stub.cadence == 0) && (rscRecord?.cadence ?? 0) > 0) {
-        stub.cadence = rscRecord!.cadence;
-      }
+        if ((stub.cadence == null || stub.cadence == 0) && (rscRecord.cadence ?? 0) > 0) {
+          stub.cadence = rscRecord.cadence;
+        }
 
-      if ((stub.speed == null || stub.speed == 0) && (rscRecord?.speed ?? 0.0) > eps) {
-        stub.speed = rscRecord!.speed;
-      }
+        if ((stub.speed == null || stub.speed == 0) && (rscRecord.speed ?? 0.0) > eps) {
+          stub.speed = rscRecord.speed;
+        }
 
-      if ((stub.distance == null || stub.distance == 0) && (rscRecord?.distance ?? 0.0) > eps) {
-        stub.distance = rscRecord!.distance;
+        if ((stub.distance == null || stub.distance == 0) && (rscRecord.distance ?? 0.0) > eps) {
+          stub.distance = rscRecord.distance;
+        }
       }
     }
 
@@ -853,28 +844,22 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    var calories1 = 0.0;
-    if (stub.calories != null && stub.calories! > 0) {
-      calories1 = stub.calories!.toDouble();
-    }
-
-    var calories2 = 0.0;
-    if ((hrmRecord?.calories ?? 0) > 0) {
-      calories2 = hrmRecord?.calories?.toDouble() ?? 0.0;
-    }
-
+    final calories1 = stub.calories?.toDouble() ?? 0.0;
+    final calories2 = hrmRecord?.calories?.toDouble() ?? 0.0;
     var calories = 0.0;
-    if (calories1 > eps &&
+    if (deviceHasTotalCalorieReporting &&
+        calories1 > eps &&
         (!_useHrmReportedCalories || calories2 < eps) &&
         (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
       calories = calories1;
-    } else if (calories2 > eps &&
+    } else if (hrmHasTotalCalorieReporting &&
+        calories2 > eps &&
         (_useHrmReportedCalories || calories1 < eps) &&
         (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
       calories = calories2;
     } else {
       var deltaCalories = 0.0;
-      if (_useHrBasedCalorieCounting && stub.heartRate != null && stub.heartRate! > 0) {
+      if (_useHrBasedCalorieCounting && (stub.heartRate ?? 0) > 0) {
         stub.caloriesPerMinute =
             hrBasedCaloriesPerMinute(stub.heartRate!, _weight, _age, _isMale, _vo2Max) *
                 hrCalorieFactor;
@@ -902,7 +887,7 @@ class FitnessEquipment extends DeviceBase {
       }
 
       // Should we only use power based calorie integration if sport == ActivityType.ride?
-      if (deltaCalories < eps && stub.power != null && stub.power! > eps) {
+      if (deltaCalories < eps && (stub.power ?? 0) > eps) {
         deltaCalories =
             stub.power! * dT * jToKCal * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault;
       }
@@ -928,16 +913,17 @@ class FitnessEquipment extends DeviceBase {
     }
 
     // #111
-    if (calories < eps && _lastPositiveCalories > 0) {
+    if (calories < eps && _lastPositiveCalories > eps) {
       calories = _lastPositiveCalories;
-    } else {
+    } else if (calories > eps && _lastPositiveCalories < eps) {
       _lastPositiveCalories = calories;
     }
 
     // #197
     if (_startingCalories > eps) {
       if (kDebugMode) {
-        assert(hasTotalCalorieReporting);
+        assert(deviceHasTotalCalorieReporting || hrmHasTotalCalorieReporting);
+        assert(calories >= _startingCalories);
       }
 
       if (logLevel >= logLevelInfo) {
@@ -992,14 +978,15 @@ class FitnessEquipment extends DeviceBase {
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "processRecord",
-        "_residueCalories $_residueCalories, "
+        "#2 _residueCalories $_residueCalories, "
             "_lastPositiveCadence $_lastPositiveCadence, "
             "_lastPositiveCalories $_lastPositiveCalories, "
             "firstCalories $firstCalories, "
             "_startingCalories $_startingCalories, "
             "firstDistance $firstDistance, "
             "_startingDistance $_startingDistance, "
-            "hasTotalCalorieReporting $hasTotalCalorieReporting, "
+            "deviceHasTotalCalorieReporting $deviceHasTotalCalorieReporting, "
+            "hrmHasTotalCalorieReporting $hrmHasTotalCalorieReporting, "
             "hasTotalDistanceReporting $hasTotalDistanceReporting",
       );
     }

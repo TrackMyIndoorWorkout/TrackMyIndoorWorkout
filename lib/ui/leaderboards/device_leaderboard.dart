@@ -70,10 +70,10 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
+          iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',

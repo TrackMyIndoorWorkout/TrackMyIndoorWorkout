@@ -1,13 +1,16 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
+import '../../preferences/log_level.dart';
 import '../../preferences/scan_duration.dart';
 import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
+import '../../utils/logging.dart';
 import '../../utils/theme_manager.dart';
 import 'boolean_question.dart';
 import 'heart_rate_monitor_scan_result.dart';
@@ -31,10 +34,24 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
   final List<String> _scanResults = [];
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   HeartRateMonitor? _heartRateMonitor;
+  int _logLevel = logLevelDefault;
 
   @override
   void dispose() {
-    FlutterBluePlus.instance.stopScan();
+    try {
+      FlutterBluePlus.instance.stopScan();
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.log(
+        _logLevel,
+        logLevelError,
+        "FIND_DEVICES",
+        "dispose",
+        "${e.message}",
+      );
+    }
+
     super.dispose();
   }
 
@@ -46,9 +63,21 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     _scanResults.clear();
     _isScanning = true;
 
-    FlutterBluePlus.instance
-        .startScan(timeout: Duration(seconds: _scanDuration))
-        .whenComplete(() => {_isScanning = false});
+    try {
+      FlutterBluePlus.instance
+          .startScan(timeout: Duration(seconds: _scanDuration))
+          .whenComplete(() => {_isScanning = false});
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.log(
+        _logLevel,
+        logLevelError,
+        "HRM_PAIRING",
+        "_startScan",
+        "${e.message}",
+      );
+    }
   }
 
   @override
@@ -60,6 +89,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
     _isScanning = false;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
+    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _startScan();
   }
 
@@ -125,7 +155,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                       return HeartRateMonitorScanResultTile(
                           result: r,
                           onTap: () async {
-                            if (!await bluetoothCheck(false)) {
+                            if (!await bluetoothCheck(false, _logLevel)) {
                               return;
                             }
 

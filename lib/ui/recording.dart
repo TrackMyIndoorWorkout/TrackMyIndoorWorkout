@@ -30,6 +30,7 @@ import '../preferences/instant_upload.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
@@ -53,6 +54,7 @@ import '../track/tracks.dart';
 import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import '../utils/logging.dart';
 import '../utils/preferences.dart';
 import '../utils/sound.dart';
 import '../utils/target_heart_rate.dart';
@@ -205,9 +207,10 @@ class RecordingState extends State<RecordingScreen> {
   final List<GlobalKey> _unlockKeys = [];
   final GlobalKey<CircularFabMenuState> _fabKey = GlobalKey();
   int _unlockKey = -2;
+  int _logLevel = logLevelDefault;
 
   Future<void> _connectOnDemand() async {
-    if (!await bluetoothCheck(true)) {
+    if (!await bluetoothCheck(true, _logLevel)) {
       return;
     }
 
@@ -239,7 +242,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _startMeasurement() async {
-    if (!await bluetoothCheck(true)) {
+    if (!await bluetoothCheck(true, _logLevel)) {
       return;
     }
 
@@ -465,7 +468,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<String> _initializeHeartRateMonitor() async {
-    if (!await bluetoothCheck(true)) {
+    if (!await bluetoothCheck(true, _logLevel)) {
       return "";
     }
 
@@ -514,6 +517,7 @@ class RecordingState extends State<RecordingScreen> {
       color: _themeManager.getBlueColor(),
     );
     final prefService = Get.find<BasePrefService>();
+    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     final sizeAdjustInt =
         prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
     if (sizeAdjustInt != 100) {
@@ -859,15 +863,21 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
 
-    final isOn = await FlutterBluePlus.instance.isOn;
-    if (isOn) {
-      try {
+    try {
+      if (await FlutterBluePlus.instance.isOn) {
         _fitnessEquipment?.detach();
-      } on PlatformException catch (e, stack) {
-        debugPrint("Equipment got turned off?");
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
       }
+    } on PlatformException catch (e, stack) {
+      debugPrint("Equipment got turned off?");
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.log(
+        _logLevel,
+        logLevelError,
+        "RECORD",
+        "_stopMeasurement",
+        "${e.message}",
+      );
     }
 
     final last = _fitnessEquipment?.lastRecord;
