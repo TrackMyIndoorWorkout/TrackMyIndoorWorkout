@@ -48,10 +48,10 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
 
   Widget _actionButtonRow(CalorieTune calorieTune, double size) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: _themeManager.getActionIcon(Icons.edit, size),
+          iconSize: size,
           onPressed: () async {
             final result = await Get.bottomSheet(
               CalorieFactorTuneBottomSheet(calorieTune: calorieTune),
@@ -67,6 +67,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         const Spacer(),
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
+          iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',

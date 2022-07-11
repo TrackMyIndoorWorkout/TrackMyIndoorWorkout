@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide LogLevel;
@@ -77,7 +79,19 @@ class FindDevicesState extends State<FindDevicesScreen> {
   @override
   void dispose() {
     if (_isScanning) {
-      FlutterBluePlus.instance.stopScan();
+      try {
+        FlutterBluePlus.instance.stopScan();
+      } on PlatformException catch (e, stack) {
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+        Logging.log(
+          _logLevel,
+          logLevelError,
+          "FIND_DEVICES",
+          "dispose",
+          "${e.message}",
+        );
+      }
     }
 
     _heartRateMonitor?.detach();
@@ -129,7 +143,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       return;
     }
 
-    if (!await bluetoothCheck(silent)) {
+    if (!await bluetoothCheck(silent, _logLevel)) {
       if (_logLevel >= logLevelInfo) {
         Logging.log(
           _logLevel,
@@ -163,9 +177,21 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _scannedDevices.clear();
     _isScanning = true;
     _autoConnectLatch = true;
-    FlutterBluePlus.instance
-        .startScan(timeout: Duration(seconds: _scanDuration))
-        .whenComplete(() => {_isScanning = false});
+    try {
+      FlutterBluePlus.instance
+          .startScan(timeout: Duration(seconds: _scanDuration))
+          .whenComplete(() => {_isScanning = false});
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.log(
+        _logLevel,
+        logLevelError,
+        "FIND_DEVICES",
+        "_startScan",
+        "${e.message}",
+      );
+    }
   }
 
   void addScannedDevice(ScanResult scanResult) {
@@ -211,7 +237,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (huaweiAppGalleryBuild) {
       if (!prefService.get(welcomePresentedTag)) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await Get.defaultDialog(
+          final agreed = await Get.defaultDialog(
             barrierDismissible: false,
             title: "Welcome to $displayAppName",
             content: ElevatedButton.icon(
@@ -234,16 +260,29 @@ class FindDevicesState extends State<FindDevicesScreen> {
               child: const Text("Agree"),
               onPressed: () {
                 if (_privacyStatementViews) {
-                  Get.close(1);
+                  Get.back(result: true);
                 } else {
                   Get.snackbar(
                       "Must read Privacy Policy to agree", "Click the dialog's button to read");
                 }
               },
             ),
+            cancel: TextButton(
+              child: const Text("Deny"),
+              onPressed: () {
+                try {
+                  Platform.isAndroid ? SystemNavigator.pop() : exit(0);
+                } catch (e) {
+                  Platform.isAndroid ? exit(0) : SystemNavigator.pop();
+                }
+                Get.back(result: false);
+              },
+            ),
           );
 
-          prefService.set(welcomePresentedTag, true);
+          if (agreed) {
+            prefService.set(welcomePresentedTag, true);
+          }
         });
       }
     }
@@ -719,7 +758,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         return ScanResultTile(
                           result: r,
                           onEquipmentTap: () async {
-                            if (!await bluetoothCheck(false)) {
+                            if (!await bluetoothCheck(false, _logLevel)) {
                               return;
                             }
 
@@ -732,7 +771,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             await goToRecording(r.device, BluetoothDeviceState.disconnected, true);
                           },
                           onHrmTap: () async {
-                            if (!await bluetoothCheck(false)) {
+                            if (!await bluetoothCheck(false, _logLevel)) {
                               return;
                             }
 

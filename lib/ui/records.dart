@@ -519,9 +519,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
         children: [
           _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
           const Spacer(),
-          Text(
-            widget.activity.movingTimeString,
-            style: _measurementStyle,
+          FitHorizontally(
+            child: Text(
+              widget.activity.movingTimeString,
+              style: _measurementStyle,
+            ),
           ),
         ],
       ),
@@ -545,9 +547,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
           children: [
             _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
             const Spacer(),
-            Text(
-              widget.activity.elapsedString,
-              style: _measurementStyle,
+            FitHorizontally(
+              child: Text(
+                widget.activity.elapsedString,
+                style: _measurementStyle,
+              ),
             ),
           ],
         ),
@@ -572,9 +576,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
         children: [
           _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
           const Spacer(),
-          Text(
-            widget.activity.distanceString(_si, _highRes),
-            style: _measurementStyle,
+          FitHorizontally(
+            child: Text(
+              widget.activity.distanceString(_si, _highRes),
+              style: _measurementStyle,
+            ),
           ),
           SizedBox(
             width: _sizeDefault,
@@ -591,9 +597,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
         children: [
           _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
           const Spacer(),
-          Text(
-            '${widget.activity.calories}',
-            style: _measurementStyle,
+          FitHorizontally(
+            child: Text(
+              '${widget.activity.calories}',
+              style: _measurementStyle,
+            ),
           ),
           SizedBox(
             width: _sizeDefault,
@@ -639,9 +647,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
+                            TextOneLine(
                               _tileConfigurations[item]!.title,
                               style: _textStyle,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -652,9 +662,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
                             _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
                             Text("MAX", style: _unitStyle),
                             const Spacer(),
-                            Text(
-                              _tileConfigurations[item]!.maxString,
-                              style: _measurementStyle,
+                            FitHorizontally(
+                              child: Text(
+                                _tileConfigurations[item]!.maxString,
+                                style: _measurementStyle,
+                              ),
                             ),
                             const Spacer(),
                             Text(
@@ -672,9 +684,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
                             _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
                             Text("AVG", style: _unitStyle),
                             const Spacer(),
-                            Text(
-                              _tileConfigurations[item]!.avgString,
-                              style: _measurementStyle,
+                            FitHorizontally(
+                              child: Text(
+                                _tileConfigurations[item]!.avgString,
+                                style: _measurementStyle,
+                              ),
                             ),
                             const Spacer(),
                             Text(
@@ -690,9 +704,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
                     collapsed: Container(),
                     expanded: Column(children: [
                       item == "speed" && widget.activity.sport != ActivityType.ride
-                          ? Text(
+                          ? TextOneLine(
                               "Speed ${_si ? 'km' : 'mi'}/h",
                               style: _textStyle,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
                             )
                           : Container(),
                       SizedBox(
@@ -723,9 +739,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
                         ),
                       ),
                       const Divider(height: 20, thickness: 2),
-                      Text(
+                      TextOneLine(
                         _tileConfigurations[item]!.histogramTitle,
                         style: _textStyle,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(
                         width: widget.size.width,

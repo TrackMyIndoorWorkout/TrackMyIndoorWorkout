@@ -13,15 +13,16 @@ void main() {
     final rnd = Random();
     final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
     final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
-    final adjustedRecord = descriptor.adjustRecord(record, powerFactor, calorieFactor, true);
 
-    expect(adjustedRecord.power, null);
-    expect(adjustedRecord.speed, null);
-    expect(adjustedRecord.distance, null);
-    expect(adjustedRecord.pace, null);
-    expect(adjustedRecord.calories, null);
-    expect(adjustedRecord.caloriesPerHour, null);
-    expect(adjustedRecord.caloriesPerMinute, null);
+    record.adjustByFactors(powerFactor, calorieFactor, true);
+
+    expect(record.power, null);
+    expect(record.speed, null);
+    expect(record.distance, null);
+    expect(record.pace, null);
+    expect(record.calories, null);
+    expect(record.caloriesPerHour, null);
+    expect(record.caloriesPerMinute, null);
   });
 
   group('adjustRecord adjusts power', () {
@@ -35,10 +36,9 @@ void main() {
       test('$power = $pow * $powerFactor', () async {
         final record = RecordWithSport(sport: descriptor.defaultSport, power: pow);
 
-        final adjustedRecord =
-            descriptor.adjustRecord(record, powerFactor, calorieFactor, extendTuning);
+        record.adjustByFactors(powerFactor, calorieFactor, extendTuning);
 
-        expect(adjustedRecord.power, power);
+        expect(record.power, power);
       });
     });
   });
@@ -61,12 +61,12 @@ void main() {
           pace: pace,
         );
 
-        final adjustedRecord = descriptor.adjustRecord(record, powerFactor, calorieFactor, true);
+        record.adjustByFactors(powerFactor, calorieFactor, true);
 
-        expect(adjustedRecord.power, (power * powerFactor).round());
-        expect(adjustedRecord.speed, speed * powerFactor);
-        expect(adjustedRecord.distance, distance * powerFactor);
-        expect(adjustedRecord.pace, pace / powerFactor);
+        expect(record.power, (power * powerFactor).round());
+        expect(record.speed, speed * powerFactor);
+        expect(record.distance, distance * powerFactor);
+        expect(record.pace, pace / powerFactor);
       });
     });
   });
@@ -89,12 +89,12 @@ void main() {
           pace: pace,
         );
 
-        final adjustedRecord = descriptor.adjustRecord(record, powerFactor, calorieFactor, false);
+        record.adjustByFactors(powerFactor, calorieFactor, false);
 
-        expect(adjustedRecord.power, (power * powerFactor).round());
-        expect(adjustedRecord.speed, closeTo(speed, eps));
-        expect(adjustedRecord.distance, closeTo(distance, eps));
-        expect(adjustedRecord.pace, closeTo(pace, eps));
+        expect(record.power, (power * powerFactor).round());
+        expect(record.speed, closeTo(speed, eps));
+        expect(record.distance, closeTo(distance, eps));
+        expect(record.pace, closeTo(pace, eps));
       });
     });
   });
@@ -116,12 +116,11 @@ void main() {
           caloriesPerMinute: caloriesPerMinute,
         );
 
-        final adjustedRecord =
-            descriptor.adjustRecord(record, powerFactor, calorieFactor, extendTuning);
+        record.adjustByFactors(powerFactor, calorieFactor, extendTuning);
 
-        expect(adjustedRecord.calories, (calories * calorieFactor).round());
-        expect(adjustedRecord.caloriesPerHour, closeTo(caloriesPerHour * calorieFactor, eps));
-        expect(adjustedRecord.caloriesPerMinute, closeTo(caloriesPerMinute * calorieFactor, eps));
+        expect(record.calories, (calories * calorieFactor).round());
+        expect(record.caloriesPerHour, closeTo(caloriesPerHour * calorieFactor, eps));
+        expect(record.caloriesPerMinute, closeTo(caloriesPerMinute * calorieFactor, eps));
       });
     });
   });
