@@ -85,6 +85,7 @@ class CircularFabMenuState extends State<CircularFabMenu>
 
   @override
   void didChangeMetrics() {
+    _calculateProps();
     if (isOpen) {
       close();
     }
