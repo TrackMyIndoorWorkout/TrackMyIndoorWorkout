@@ -190,8 +190,8 @@ packages:
     description:
       path: "."
       ref: fix-widgets-binding-warning
-      resolved-ref: "4a0352af80cdba4eb1bf8b5c0cb1ae7b92349257"
-      url: "https://github.com/tainanfochesatto/datetime_picker_formfield.git"
+      resolved-ref: "3463972a33b78e43041e2f8dcd735b625a3fb2f3"
+      url: "https://github.com/CsabaConsulting/datetime_picker_formfield.git"
     source: git
     version: "2.0.0"
   device_info_plus:
@@ -1221,5 +1221,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.17.5 <3.0.0"
-  flutter: ">=3.0.3"
+  dart: ">=2.17.6 <3.0.0"
+  flutter: ">=3.0.5"

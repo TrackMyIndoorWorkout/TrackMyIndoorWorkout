@@ -5,8 +5,8 @@ publish_to: "none"
 version: 1.1.113+113
 
 environment:
-  sdk: ">=2.17.5 <3.0.0"
-  flutter: ">=3.0.3"
+  sdk: ">=2.17.6 <3.0.0"
+  flutter: ">=3.0.5"
 
 dependencies:
   assorted_layout_widgets: ^6.0.0
@@ -16,7 +16,7 @@ dependencies:
   collection: ^1.16.0
   datetime_picker_formfield:
     git:
-      url: https://github.com/tainanfochesatto/datetime_picker_formfield.git
+      url: https://github.com/CsabaConsulting/datetime_picker_formfield.git
       ref: fix-widgets-binding-warning
   device_info_plus: ^4.0.0
   edit_distance: ^0.5.0-nullsafety.0
