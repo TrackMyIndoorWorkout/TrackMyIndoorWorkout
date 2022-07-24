@@ -20,7 +20,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     controlCharacteristicId = fitnessMachineControlPointUuid,
     statusCharacteristicId = fitnessMachineStatusUuid,
     flagByteSize = 2,
-    canMeasureHeartRate = true,
     heartRateByteIndex,
     canMeasureCalories = true,
     shouldSignalStartStop = false,

@@ -20,7 +20,6 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
           model: "1",
           dataServiceId: precorServiceUuid,
           dataCharacteristicId: precorMeasurementUuid,
-          canMeasureHeartRate: true,
           heartRateByteIndex: 5,
           timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4),
           caloriesMetric: ShortMetricDescriptor(lsb: 13, msb: 14),

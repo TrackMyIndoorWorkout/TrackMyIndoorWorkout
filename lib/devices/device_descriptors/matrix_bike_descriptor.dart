@@ -12,7 +12,6 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
           manufacturerPrefix: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Bike",
-          canMeasureHeartRate: false,
         );
 
   @override

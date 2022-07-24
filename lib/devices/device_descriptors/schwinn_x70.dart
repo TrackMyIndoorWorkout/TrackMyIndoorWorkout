@@ -46,7 +46,6 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           dataCharacteristicId: schwinnX70MeasurementUuid,
           secondaryCharacteristicId: schwinnX70ExtraMeasurementUuid,
           controlCharacteristicId: schwinnX70ControlUuid,
-          canMeasureHeartRate: false,
           timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1.0),
           caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 1.0),
           cadenceMetric: ThreeByteMetricDescriptor(lsb: 4, msb: 6, divider: 1.0),
