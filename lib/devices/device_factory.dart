@@ -80,7 +80,6 @@ class DeviceFactory {
       manufacturerPrefix: "North Pole Engineering",
       manufacturerFitId: northPoleEngineeringFitId,
       model: "64",
-      canMeasureHeartRate: false,
     );
   }
 

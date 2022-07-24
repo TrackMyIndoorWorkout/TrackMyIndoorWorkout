@@ -16,7 +16,6 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     dataCharacteristicId,
     secondaryCharacteristicId = "",
     controlCharacteristicId = "",
-    canMeasureHeartRate,
     heartRateByteIndex,
     timeMetric,
     caloriesMetric,

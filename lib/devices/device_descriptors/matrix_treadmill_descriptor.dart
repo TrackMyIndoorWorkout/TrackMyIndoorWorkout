@@ -12,7 +12,6 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
           manufacturerPrefix: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Treadmill",
-          canMeasureHeartRate: false,
         );
 
   @override
