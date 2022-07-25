@@ -21,10 +21,7 @@ dependencies:
   device_info_plus: ^4.0.1
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker:
-    git:
-      url: https://github.com/miguelpruivo/flutter_file_picker.git
-      ref: b108b98d2f2623bddedb6e5dd7a07d137430e670
+  file_picker: ^5.0.0
   floor: ^1.2.0
   flutter_blue_plus:
     git:
