@@ -18,7 +18,6 @@ void main() {
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, yesoulS3FourCC);
     expect(bike.isMultiSport, false);
-    expect(bike.shouldSignalStartStop, false);
   });
 
   test('Yesoul S3 interprets FTMS Indoor Bike Data 1 flags properly', () async {

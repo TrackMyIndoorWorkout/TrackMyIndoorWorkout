@@ -9,12 +9,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../../preferences/app_debug_mode.dart';
+import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enforced_time_zone.dart';
 import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
-import '../../preferences/should_signal_start_stop.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
 import 'preferences_screen_mixin.dart';
@@ -125,9 +125,9 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         pref: deviceFilteringTag,
       ),
       const PrefCheckbox(
-        title: Text(shouldSignalStartStop),
-        subtitle: Text(shouldSignalStartStopDescription),
-        pref: shouldSignalStartStopTag,
+        title: Text(blockSignalStartStop),
+        subtitle: Text(blockSignalStartStopDescription),
+        pref: blockSignalStartStopTag,
       ),
       PrefDropdown<String>(
         title: const Text(enforcedTimeZone),

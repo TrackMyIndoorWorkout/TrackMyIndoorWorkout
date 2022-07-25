@@ -22,7 +22,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     flagByteSize = 2,
     heartRateByteIndex,
     canMeasureCalories = true,
-    shouldSignalStartStop = false,
   }) : super(
           defaultSport: defaultSport,
           isMultiSport: isMultiSport,
@@ -39,7 +38,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           flagByteSize: flagByteSize,
           heartRateByteIndex: heartRateByteIndex,
           canMeasureCalories: canMeasureCalories,
-          shouldSignalStartStop: shouldSignalStartStop,
         );
 
   @override

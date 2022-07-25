@@ -16,7 +16,6 @@ class MrCaptainDescriptor extends RowerDeviceDescriptor {
           manufacturerPrefix: "XG",
           manufacturerFitId: stravaFitId,
           model: "000000",
-          shouldSignalStartStop: true,
         );
 
   @override
