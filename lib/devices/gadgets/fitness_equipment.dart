@@ -12,6 +12,7 @@ import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
+import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../persistence/database.dart';
 import '../../preferences/extend_tuning.dart';
@@ -20,7 +21,6 @@ import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/log_level.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
-import '../../preferences/should_signal_start_stop.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
@@ -103,7 +103,7 @@ class FitnessEquipment extends DeviceBase {
   WriteSupportParameters? _heartRateLevels;
   WriteSupportParameters? _powerLevels;
   bool supportsSpinDown = false;
-  bool _shouldSignalStartStop = shouldSignalStartStopDefault;
+  bool _blockSignalStartStop = blockSignalStartStopDefault;
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
@@ -514,8 +514,7 @@ class FitnessEquipment extends DeviceBase {
       return;
     }
 
-    if (controlPoint == null ||
-        (!_shouldSignalStartStop && !(descriptor?.shouldSignalStartStop ?? false))) {
+    if (controlPoint == null || _blockSignalStartStop) {
       return;
     }
 
@@ -536,7 +535,7 @@ class FitnessEquipment extends DeviceBase {
   @override
   Future<void> connectToControlPoint(obtainControl) async {
     await super.connectToControlPoint(obtainControl);
-    if (obtainControl && (_shouldSignalStartStop || (descriptor?.shouldSignalStartStop ?? false))) {
+    if (obtainControl && !_blockSignalStartStop) {
       await _executeControlOperation(requestControl);
     }
   }
@@ -1045,8 +1044,8 @@ class FitnessEquipment extends DeviceBase {
     _vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
     _useHrBasedCalorieCounting &= (_weight > athleteBodyWeightMin && _age > athleteAgeMin);
     _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
-    _shouldSignalStartStop =
-        prefService.get<bool>(shouldSignalStartStopTag) ?? shouldSignalStartStopDefault;
+    _blockSignalStartStop =
+        testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
 
     if (logLevel >= logLevelInfo) {
       Logging.log(
@@ -1085,13 +1084,13 @@ class FitnessEquipment extends DeviceBase {
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
-    if ((descriptor?.shouldSignalStartStop ?? false) || _shouldSignalStartStop) {
+    if (!_blockSignalStartStop) {
       await _executeControlOperation(startOrResumeControl);
     }
   }
 
   void stopWorkout() {
-    if ((descriptor?.shouldSignalStartStop ?? false) || _shouldSignalStartStop) {
+    if (!_blockSignalStartStop) {
       _executeControlOperation(stopOrPauseControl, controlInfo: stopControlInfo);
     }
 

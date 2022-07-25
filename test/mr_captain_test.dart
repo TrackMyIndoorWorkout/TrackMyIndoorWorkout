@@ -23,7 +23,6 @@ void main() {
     expect(rower.defaultSport, ActivityType.rowing);
     expect(rower.fourCC, mrCaptainRowerFourCC);
     expect(rower.isMultiSport, false);
-    expect(rower.shouldSignalStartStop, true);
   });
 
   test('Rower Device interprets Mr Captain flags properly', () async {

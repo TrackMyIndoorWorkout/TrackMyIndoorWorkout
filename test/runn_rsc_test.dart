@@ -31,7 +31,6 @@ void main() {
     expect(treadmill.defaultSport, ActivityType.run);
     expect(treadmill.fourCC, npeRunnFourCC);
     expect(treadmill.isMultiSport, false);
-    expect(treadmill.shouldSignalStartStop, false);
   });
 
   test('Runn RSC Device interprets flags properly', () async {

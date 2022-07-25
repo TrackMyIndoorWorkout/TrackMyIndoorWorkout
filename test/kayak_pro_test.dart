@@ -23,7 +23,6 @@ void main() {
     expect(rower.defaultSport, ActivityType.kayaking);
     expect(rower.fourCC, kayakProGenesisPortFourCC);
     expect(rower.isMultiSport, true);
-    expect(rower.shouldSignalStartStop, false);
   });
 
   test('Rower Device interprets KayakPro flags properly', () async {

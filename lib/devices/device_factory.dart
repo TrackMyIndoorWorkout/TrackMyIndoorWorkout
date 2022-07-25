@@ -42,7 +42,6 @@ class DeviceFactory {
       manufacturerPrefix: "Nautilus",
       manufacturerFitId: nautilusFitId,
       model: "SCH BIKE",
-      shouldSignalStartStop: true,
     );
   }
 

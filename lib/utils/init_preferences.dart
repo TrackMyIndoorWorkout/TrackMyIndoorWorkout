@@ -9,6 +9,7 @@ import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
 import '../preferences/bike_weight.dart';
+import '../preferences/block_signal_start_stop.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
@@ -36,7 +37,6 @@ import '../preferences/metric_spec.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/scan_duration.dart';
-import '../preferences/should_signal_start_stop.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/speed_spec.dart';
@@ -126,7 +126,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     bikeWeightTag: bikeWeightDefault,
     driveTrainLossTag: driveTrainLossDefault,
     airTemperatureTag: airTemperatureDefault,
-    shouldSignalStartStopTag: shouldSignalStartStopDefault,
+    blockSignalStartStopTag: blockSignalStartStopDefault,
     timeDisplayModeTag: timeDisplayModeDefault,
     welcomePresentedTag: welcomePresentedDefault,
     hasLoggedMessagesTag: hasLoggedMessagesDefault,
