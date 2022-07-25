@@ -122,7 +122,8 @@ abstract class DeviceBase {
     await connectToControlPoint(true);
   }
 
-  Future<void> setExtraCharacteristicsById(String newCharacteristicId, controlCharacteristicId) async {
+  Future<void> setExtraCharacteristicsById(
+      String newCharacteristicId, controlCharacteristicId) async {
     if (newCharacteristicId.isNotEmpty &&
         newCharacteristicId == secondaryCharacteristicId &&
         secondaryCharacteristic != null) {
