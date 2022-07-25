@@ -117,6 +117,7 @@ class FitnessEquipment extends DeviceBase {
           characteristicId: descriptor?.dataCharacteristicId ?? "",
           secondaryCharacteristicId: descriptor?.secondaryCharacteristicId ?? "",
           controlCharacteristicId: descriptor?.controlCharacteristicId ?? "",
+          listenOnControl: descriptor?.listenOnControl ?? true,
           device: device,
         ) {
     readConfiguration();
@@ -509,34 +510,20 @@ class FitnessEquipment extends DeviceBase {
     }
   }
 
-  Future<void> _executeControlOperation(int opCode, {int? controlInfo}) async {
-    if (!await FlutterBluePlus.instance.isOn) {
-      return;
-    }
-
-    if (controlPoint == null || _blockSignalStartStop) {
-      return;
-    }
-
-    List<int> requestInfo = [opCode];
-    if (controlInfo != null) {
-      requestInfo.add(controlInfo);
-    }
-
-    try {
-      await controlPoint?.write(requestInfo);
-      // Response could be picked up in the subscription listener
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-  }
-
   @override
   Future<void> connectToControlPoint(obtainControl) async {
+    if (controlCharacteristicId.isEmpty) {
+      return;
+    }
+
     await super.connectToControlPoint(obtainControl);
-    if (obtainControl && !_blockSignalStartStop) {
-      await _executeControlOperation(requestControl);
+    if (obtainControl && !_blockSignalStartStop && descriptor != null) {
+      await descriptor!.executeControlOperation(
+        controlPoint,
+        _blockSignalStartStop,
+        logLevel,
+        requestControl,
+      );
     }
   }
 
@@ -1084,14 +1071,25 @@ class FitnessEquipment extends DeviceBase {
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
-    if (!_blockSignalStartStop) {
-      await _executeControlOperation(startOrResumeControl);
+    if (!_blockSignalStartStop && descriptor != null) {
+      await descriptor!.executeControlOperation(
+        controlPoint,
+        _blockSignalStartStop,
+        logLevel,
+        startOrResumeControl,
+      );
     }
   }
 
   void stopWorkout() {
-    if (!_blockSignalStartStop) {
-      _executeControlOperation(stopOrPauseControl, controlInfo: stopControlInfo);
+    if (!_blockSignalStartStop && descriptor != null) {
+      descriptor!.executeControlOperation(
+        controlPoint,
+        _blockSignalStartStop,
+        logLevel,
+        stopOrPauseControl,
+        controlInfo: stopControlInfo,
+      );
     }
 
     readConfiguration();

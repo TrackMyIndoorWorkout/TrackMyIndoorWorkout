@@ -28,6 +28,7 @@ abstract class DeviceBase {
   BluetoothCharacteristic? secondaryCharacteristic;
   StreamSubscription? secondarySubscription;
   String controlCharacteristicId;
+  bool listenOnControl;
   BluetoothCharacteristic? controlPoint;
   StreamSubscription? controlPointSubscription;
   bool controlNotification = false;
@@ -53,6 +54,7 @@ abstract class DeviceBase {
     required this.device,
     this.secondaryCharacteristicId = "",
     this.controlCharacteristicId = "",
+    this.listenOnControl = true,
     this.statusCharacteristicId = "",
   }) {
     readConfiguration();
@@ -142,6 +144,10 @@ abstract class DeviceBase {
   }
 
   Future<void> connectToControlPoint(obtainControl) async {
+    if (controlCharacteristicId.isEmpty) {
+      return;
+    }
+
     if (controlPoint == null && controlCharacteristicId.isNotEmpty) {
       controlPoint = service!.characteristics
           .firstWhereOrNull((ch) => ch.uuid.uuidString() == controlCharacteristicId);
@@ -152,7 +158,7 @@ abstract class DeviceBase {
           .firstWhereOrNull((ch) => ch.uuid.uuidString() == statusCharacteristicId);
     }
 
-    if (!controlNotification && controlPoint != null) {
+    if (listenOnControl && !controlNotification && controlPoint != null) {
       try {
         controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
       } on PlatformException catch (e, stack) {

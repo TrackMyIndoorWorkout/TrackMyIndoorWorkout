@@ -1,3 +1,5 @@
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../track/tracks.dart';
 import '../gatt_constants.dart';
 import 'data_handler.dart';
@@ -21,6 +23,7 @@ abstract class DeviceDescriptor extends DataHandler {
   String dataCharacteristicId;
   String secondaryCharacteristicId;
   String controlCharacteristicId;
+  bool listenOnControl;
   String statusCharacteristicId;
   final bool antPlus;
 
@@ -42,6 +45,7 @@ abstract class DeviceDescriptor extends DataHandler {
     this.dataCharacteristicId = "",
     this.secondaryCharacteristicId = "",
     this.controlCharacteristicId = "",
+    this.listenOnControl = true,
     this.statusCharacteristicId = "",
     this.antPlus = false,
     this.canMeasureCalories = true,
@@ -71,4 +75,8 @@ abstract class DeviceDescriptor extends DataHandler {
   bool get isFitnessMachine => dataServiceId == fitnessMachineUuid;
 
   void stopWorkout();
+
+  Future<void> executeControlOperation(
+      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
+      {int? controlInfo});
 }
