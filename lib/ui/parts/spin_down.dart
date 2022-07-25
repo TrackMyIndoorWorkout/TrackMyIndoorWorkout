@@ -142,9 +142,8 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     if (!(_fitnessEquipment?.discovered ?? false)) return false;
-
-    // #117 Attach the handler way ahead of the spin down start command write
-    await _fitnessEquipment?.connectToControlPoint(false);
+    // #117 ControlPoint is attached as part of the discover()
+    // (so way ahead of the spin down start command write)
 
     if (!(_fitnessEquipment?.supportsSpinDown ?? false)) return false;
 

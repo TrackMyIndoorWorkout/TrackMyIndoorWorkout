@@ -370,7 +370,7 @@ class FitnessEquipment extends DeviceBase {
           null) {
         _runningCadenceSensor = RunningCadenceSensor(device, powerFactor);
         _runningCadenceSensor?.services = services;
-        _runningCadenceSensor?.discoverCore();
+        await _runningCadenceSensor?.discoverCore();
         await _runningCadenceSensor?.attach();
       }
     }
