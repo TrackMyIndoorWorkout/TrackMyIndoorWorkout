@@ -1,3 +1,9 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
+import '../../preferences/log_level.dart';
+import '../../utils/logging.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
@@ -164,5 +170,38 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     }
 
     return advanceFlag(flag);
+  }
+
+  @override
+  Future<void> executeControlOperation(
+      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
+      {int? controlInfo}) async {
+    if (!await FlutterBluePlus.instance.isOn) {
+      return;
+    }
+
+    if (controlPoint == null || blockSignalStartStop) {
+      return;
+    }
+
+    List<int> requestInfo = [opCode];
+    if (controlInfo != null) {
+      requestInfo.add(controlInfo);
+    }
+
+    try {
+      await controlPoint.write(requestInfo);
+      // Response could be picked up in the subscription listener
+    } on PlatformException catch (e, stack) {
+      Logging.log(
+        logLevel,
+        logLevelError,
+        "FTMS",
+        "executeControlOperation",
+        "${e.message}",
+      );
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
   }
 }
