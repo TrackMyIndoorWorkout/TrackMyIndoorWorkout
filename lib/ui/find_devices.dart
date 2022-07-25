@@ -375,7 +375,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   enableDrag: false,
                 );
                 pickedAlready = inferredSport != null;
-                fitnessEquipment.setCharacteristicById(sportToUuid[inferredSport]!);
+                await fitnessEquipment.setCharacteristicById(sportToUuid[inferredSport]!);
               }
             }
           }

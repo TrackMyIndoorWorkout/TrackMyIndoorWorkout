@@ -86,7 +86,7 @@ abstract class DeviceBase {
     return connected;
   }
 
-  bool discoverCore() {
+  Future<bool> discoverCore() async {
     discovering = false;
     discovered = true;
     service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
@@ -96,13 +96,12 @@ abstract class DeviceBase {
       return false;
     }
 
-    setCharacteristicById(characteristicId);
-    setExtraCharacteristicsById(secondaryCharacteristicId, controlCharacteristicId);
+    await setCharacteristicById(characteristicId);
 
     return characteristic != null;
   }
 
-  void setCharacteristicById(String newCharacteristicId) {
+  Future<void> setCharacteristicById(String newCharacteristicId) async {
     if (newCharacteristicId.isNotEmpty &&
         newCharacteristicId == characteristicId &&
         characteristic != null) {
@@ -118,9 +117,12 @@ abstract class DeviceBase {
           .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
       characteristicId = characteristic?.uuid.uuidString() ?? "";
     }
+
+    await setExtraCharacteristicsById(secondaryCharacteristicId, controlCharacteristicId);
+    await connectToControlPoint(true);
   }
 
-  void setExtraCharacteristicsById(String newCharacteristicId, controlCharacteristicId) {
+  Future<void> setExtraCharacteristicsById(String newCharacteristicId, controlCharacteristicId) async {
     if (newCharacteristicId.isNotEmpty &&
         newCharacteristicId == secondaryCharacteristicId &&
         secondaryCharacteristic != null) {
@@ -136,8 +138,6 @@ abstract class DeviceBase {
           .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
       secondaryCharacteristicId = characteristic?.uuid.uuidString() ?? "";
     }
-
-    // TODO control?
   }
 
   Future<void> connectToControlPoint(obtainControl) async {
@@ -232,9 +232,7 @@ abstract class DeviceBase {
       await discover(retry: true);
     }
 
-    final success = discoverCore();
-
-    await connectToControlPoint(true);
+    final success = await discoverCore();
 
     return success;
   }
