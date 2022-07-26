@@ -1,6 +1,7 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../track/tracks.dart';
+import '../gadgets/complex_sensor.dart';
 import '../gatt_constants.dart';
 import 'data_handler.dart';
 
@@ -21,7 +22,7 @@ abstract class DeviceDescriptor extends DataHandler {
   final String model;
   String dataServiceId;
   String dataCharacteristicId;
-  String secondaryCharacteristicId;
+  String extraCharacteristicId;
   String controlCharacteristicId;
   bool listenOnControl;
   String statusCharacteristicId;
@@ -43,7 +44,7 @@ abstract class DeviceDescriptor extends DataHandler {
     required this.model, // Maybe eradicate?
     this.dataServiceId = "",
     this.dataCharacteristicId = "",
-    this.secondaryCharacteristicId = "",
+    this.extraCharacteristicId = "",
     this.controlCharacteristicId = "",
     this.listenOnControl = true,
     this.statusCharacteristicId = "",
@@ -79,4 +80,8 @@ abstract class DeviceDescriptor extends DataHandler {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo});
+
+  ComplexSensor? getExtraSensor(BluetoothDevice device) {
+    return null;
+  }
 }
