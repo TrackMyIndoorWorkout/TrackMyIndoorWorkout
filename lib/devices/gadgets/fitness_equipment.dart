@@ -32,10 +32,10 @@ import '../bluetooth_device_ex.dart';
 import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../device_fourcc.dart';
+import '../gadgets/complex_sensor.dart';
 import '../gatt_constants.dart';
 import 'device_base.dart';
 import 'heart_rate_monitor.dart';
-import 'running_cadence_sensor.dart';
 import 'write_support_parameters.dart';
 
 typedef RecordHandlerFunction = Function(RecordWithSport data);
@@ -72,7 +72,7 @@ class FitnessEquipment extends DeviceBase {
   late Record continuationRecord;
   bool continuation = false;
   HeartRateMonitor? heartRateMonitor;
-  RunningCadenceSensor? _runningCadenceSensor;
+  ComplexSensor? _extraSensor;
   String _heartRateGapWorkaround = heartRateGapWorkaroundDefault;
   int _heartRateUpperLimit = heartRateUpperLimitDefault;
   String _heartRateLimitingMethod = heartRateLimitingMethodDefault;
@@ -115,7 +115,7 @@ class FitnessEquipment extends DeviceBase {
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
           characteristicId: descriptor?.dataCharacteristicId ?? "",
-          secondaryCharacteristicId: descriptor?.secondaryCharacteristicId ?? "",
+          extraCharacteristicId: descriptor?.extraCharacteristicId ?? "",
           controlCharacteristicId: descriptor?.controlCharacteristicId ?? "",
           listenOnControl: descriptor?.listenOnControl ?? true,
           device: device,
@@ -347,7 +347,7 @@ class FitnessEquipment extends DeviceBase {
         },
       );
     } else {
-      _runningCadenceSensor?.pumpData(null);
+      _extraSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
         pumpDataCore(recordStub, false);
       });
@@ -361,19 +361,23 @@ class FitnessEquipment extends DeviceBase {
   Future<void> additionalSensorsOnDemand() async {
     await refreshFactors();
 
-    if (_runningCadenceSensor != null && _runningCadenceSensor?.device?.id.id != device?.id.id) {
-      await _runningCadenceSensor?.detach();
-      _runningCadenceSensor = null;
+    if (_extraSensor != null && _extraSensor?.device?.id.id != device?.id.id) {
+      await _extraSensor?.detach();
+      _extraSensor = null;
     }
-    if (sport == ActivityType.run) {
-      if (services.firstWhereOrNull(
-              (service) => service.uuid.uuidString() == runningCadenceServiceUuid) !=
+
+    if (descriptor != null && device != null) {
+      if (services
+              .firstWhereOrNull((service) => service.uuid.uuidString() == extraCharacteristicId) !=
           null) {
-        _runningCadenceSensor = RunningCadenceSensor(device, powerFactor);
-        _runningCadenceSensor?.services = services;
-        await _runningCadenceSensor?.discoverCore();
-        await _runningCadenceSensor?.attach();
+        _extraSensor = descriptor!.getExtraSensor(device!);
+        await _extraSensor?.discoverCore();
+        await _extraSensor?.attach();
+      } else {
+        _extraSensor = null;
       }
+    } else {
+      _extraSensor = null;
     }
   }
 
@@ -760,24 +764,11 @@ class FitnessEquipment extends DeviceBase {
       return lastRecord;
     }
 
-    if (sport == ActivityType.run &&
-        _runningCadenceSensor != null &&
-        (_runningCadenceSensor?.attached ?? false)) {
-      RecordWithSport? rscRecord = _runningCadenceSensor?.record;
-      if (rscRecord != null) {
-        rscRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-
-        if ((stub.cadence == null || stub.cadence == 0) && (rscRecord.cadence ?? 0) > 0) {
-          stub.cadence = rscRecord.cadence;
-        }
-
-        if ((stub.speed == null || stub.speed == 0) && (rscRecord.speed ?? 0.0) > eps) {
-          stub.speed = rscRecord.speed;
-        }
-
-        if ((stub.distance == null || stub.distance == 0) && (rscRecord.distance ?? 0.0) > eps) {
-          stub.distance = rscRecord.distance;
-        }
+    if (_extraSensor != null && (_extraSensor?.attached ?? false)) {
+      RecordWithSport? extraRecord = _extraSensor?.record;
+      if (extraRecord != null) {
+        extraRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
+        stub.merge(extraRecord, true, true);
       }
     }
 
@@ -1102,7 +1093,7 @@ class FitnessEquipment extends DeviceBase {
 
   @override
   Future<void> detach() async {
+    await _extraSensor?.detach();
     await super.detach();
-    await _runningCadenceSensor?.detach();
   }
 }

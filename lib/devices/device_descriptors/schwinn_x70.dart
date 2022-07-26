@@ -12,6 +12,8 @@ import '../../utils/logging.dart';
 import '../../utils/power_speed_mixin.dart';
 import '../device_fourcc.dart';
 import '../gadgets/cadence_mixin.dart';
+import '../gadgets/complex_sensor.dart';
+import '../gadgets/schwinn_x70_hr_sensor.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
@@ -50,7 +52,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           model: "",
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
-          secondaryCharacteristicId: schwinnX70ExtraMeasurementUuid,
+          extraCharacteristicId: schwinnX70ExtraMeasurementUuid,
           controlCharacteristicId: schwinnX70ControlUuid,
           listenOnControl: false,
           timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1.0),
@@ -187,5 +189,10 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
         debugPrintStack(stackTrace: stack, label: "trace:");
       }
     }
+  }
+
+  @override
+  ComplexSensor? getExtraSensor(BluetoothDevice device) {
+    return SchwinnX70HrSensor(device);
   }
 }

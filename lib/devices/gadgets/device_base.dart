@@ -24,9 +24,7 @@ abstract class DeviceBase {
   BluetoothCharacteristic? characteristic;
   StreamSubscription? subscription;
 
-  String secondaryCharacteristicId;
-  BluetoothCharacteristic? secondaryCharacteristic;
-  StreamSubscription? secondarySubscription;
+  String extraCharacteristicId;
   String controlCharacteristicId;
   bool listenOnControl;
   BluetoothCharacteristic? controlPoint;
@@ -52,7 +50,7 @@ abstract class DeviceBase {
     required this.serviceId,
     required this.characteristicId,
     required this.device,
-    this.secondaryCharacteristicId = "",
+    this.extraCharacteristicId = "",
     this.controlCharacteristicId = "",
     this.listenOnControl = true,
     this.statusCharacteristicId = "",
@@ -120,27 +118,7 @@ abstract class DeviceBase {
       characteristicId = characteristic?.uuid.uuidString() ?? "";
     }
 
-    await setExtraCharacteristicsById(secondaryCharacteristicId, controlCharacteristicId);
     await connectToControlPoint(true);
-  }
-
-  Future<void> setExtraCharacteristicsById(
-      String newCharacteristicId, controlCharacteristicId) async {
-    if (newCharacteristicId.isNotEmpty &&
-        newCharacteristicId == secondaryCharacteristicId &&
-        secondaryCharacteristic != null) {
-      return;
-    }
-
-    secondaryCharacteristicId = newCharacteristicId;
-    if (secondaryCharacteristicId.isNotEmpty) {
-      secondaryCharacteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == secondaryCharacteristicId);
-    } else {
-      secondaryCharacteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
-      secondaryCharacteristicId = characteristic?.uuid.uuidString() ?? "";
-    }
   }
 
   Future<void> connectToControlPoint(obtainControl) async {

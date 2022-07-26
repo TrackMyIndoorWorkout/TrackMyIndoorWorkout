@@ -82,18 +82,6 @@ class DeviceFactory {
     );
   }
 
-  static TreadmillDeviceDescriptor getNpeRunn() {
-    return TreadmillDeviceDescriptor(
-      fourCC: npeRunnFourCC,
-      vendorName: "North Pole Engineering Inc.",
-      modelName: "Generic Treadmill",
-      namePrefixes: ["RUNN"],
-      manufacturerPrefix: "North Pole Engineering",
-      manufacturerFitId: northPoleEngineeringFitId,
-      model: "77",
-    );
-  }
-
   static TreadmillDeviceDescriptor getGenericFTMSTreadmill() {
     return TreadmillDeviceDescriptor(
       fourCC: genericFTMSTreadmillFourCC,

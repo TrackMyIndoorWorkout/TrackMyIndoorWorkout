@@ -3,6 +3,7 @@ import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/mr_captain_descriptor.dart';
+import 'device_descriptors/npe_runn_treadmill.dart';
 import 'device_descriptors/precor_spinner_chrono_power.dart';
 import 'device_descriptors/schwinn_ac_performance_plus.dart';
 import 'device_descriptors/schwinn_x70.dart';
@@ -21,7 +22,7 @@ Map<String, DeviceDescriptor> deviceMap = {
   matrixBikeFourCC: MatrixBikeDescriptor(),
   kayakProGenesisPortFourCC: DeviceFactory.getKayaPro(),
   mrCaptainRowerFourCC: MrCaptainDescriptor(),
-  npeRunnFourCC: DeviceFactory.getNpeRunn(),
+  npeRunnFourCC: NpeRunnTreadmill(),
   matrixTreadmillFourCC: MatrixTreadmillDescriptor(),
   genericFTMSTreadmillFourCC: DeviceFactory.getGenericFTMSTreadmill(),
   genericFTMSBikeFourCC: DeviceFactory.getGenericFTMSBike(),
