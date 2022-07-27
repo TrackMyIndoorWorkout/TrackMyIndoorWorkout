@@ -6,9 +6,9 @@ import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 
-class AthletePreferencesScreen extends PreferencesScreenBase {
+class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
   static String shortTitle = "Athlete";
   static String title = "$shortTitle Preferences";
 

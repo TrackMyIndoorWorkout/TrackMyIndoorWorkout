@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
@@ -10,10 +11,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
+import '../export/csv/csv_export.dart';
+import '../export/export_target.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
@@ -21,10 +25,12 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
 import '../preferences/app_debug_mode.dart';
+import '../preferences/calculate_gps.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/generic.dart';
+import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_upload.dart';
 import '../preferences/lap_counter.dart';
@@ -146,6 +152,8 @@ class RecordingState extends State<RecordingScreen> {
   bool _simplerUi = simplerUiSlowDefault;
   bool _twoColumnLayout = twoColumnLayoutDefault;
   bool _instantUpload = instantUploadDefault;
+  String _instantExportLocation = instantExportLocationDefault;
+  bool _calculateGps = calculateGpsDefault;
   bool _uxDebug = appDebugModeDefault;
   String _timeDisplayMode = timeDisplayModeDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
@@ -555,6 +563,9 @@ class RecordingState extends State<RecordingScreen> {
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
     _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
     _instantUpload = prefService.get<bool>(instantUploadTag) ?? instantUploadDefault;
+    _instantExportLocation =
+        prefService.get<String>(instantExportLocationTag) ?? instantExportLocationDefault;
+    _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     _pointCount = min(60, size.width ~/ 2);
     final now = DateTime.now();
     _graphData = _simplerUi
@@ -847,6 +858,24 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
+  _workoutExport() async {
+    if (_activity?.id == null || _instantExportLocation.isEmpty) return;
+
+    final records = await _database.recordDao.findAllActivityRecords(_activity!.id!);
+    final exporter = CsvExport();
+    final fileBytes = await exporter.getExport(
+      _activity!,
+      records,
+      false,
+      _calculateGps,
+      false,
+      ExportTarget.regular,
+    );
+    final persistenceValues = exporter.getPersistenceValues(_activity!, false);
+    String fileName = p.join(_instantExportLocation, persistenceValues['name']);
+    await File(fileName).writeAsBytes(fileBytes);
+  }
+
   _stopMeasurement(bool quick) async {
     _fitnessEquipment?.measuring = false;
     if (!_measuring || _activity == null) return;
@@ -901,8 +930,14 @@ class RecordingState extends State<RecordingScreen> {
         return;
       }
 
-      if (_instantUpload && !quick) {
-        await _workoutUpload(true);
+      if (!quick && _activity != null) {
+        if (_instantUpload) {
+          await _workoutUpload(true);
+        }
+
+        if (_instantExportLocation.isNotEmpty) {
+          await _workoutExport();
+        }
       }
     }
   }

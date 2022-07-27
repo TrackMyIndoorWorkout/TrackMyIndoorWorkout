@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/metric_spec.dart';
 import '../../preferences/zone_index_display_coloring.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 
-class ZoneIndexDisplayPreferencesScreen extends PreferencesScreenBase {
+class ZoneIndexDisplayPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
   static String shortTitle = "Index Disp.";
   static String title = "$shortTitle Preferences";
 

@@ -1,8 +1,10 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/auto_connect.dart';
 import '../../preferences/distance_resolution.dart';
+import '../../preferences/instant_export.dart';
 import '../../preferences/instant_measurement_start.dart';
 import '../../preferences/instant_scan.dart';
 import '../../preferences/instant_upload.dart';
@@ -13,14 +15,21 @@ import '../../preferences/simpler_ui.dart';
 import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
 import '../../preferences/unit_system.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 import 'row_configuration_dialog.dart';
 
-class UXPreferencesScreen extends PreferencesScreenBase {
+class UXPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "UX";
   static String title = "$shortTitle Preferences";
 
   const UXPreferencesScreen({Key? key}) : super(key: key);
+
+  @override
+  UXPreferencesScreenState createState() => UXPreferencesScreenState();
+}
+
+class UXPreferencesScreenState extends State<UXPreferencesScreen> {
+  int _locationEdit = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +94,30 @@ class UXPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(instantUploadDescription),
         pref: instantUploadTag,
       ),
+      PrefLabel(
+        title: Text(instantExportLocation, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(instantExportLocationDescription),
+      ),
+      PrefText(
+        key: Key("instantExportLocation$_locationEdit"),
+        label: instantExportLocationPasteCommand,
+        pref: instantExportLocationTag,
+      ),
+      PrefButton(
+        onTap: () async {
+          final result = await FilePicker.platform.pickFiles();
+          if (result != null && result.files.single.path != null) {
+            final pathParts = result.files.single.path!.split("/");
+            pathParts.removeLast();
+            final path = pathParts.join("/");
+            setState(() {
+              _locationEdit++;
+              PrefService.of(context).set(instantExportLocationTag, path);
+            });
+          }
+        },
+        child: const Text(instantExportLocationPickCommand),
+      ),
       const PrefCheckbox(
         title: Text(multiSportDeviceSupport),
         subtitle: Text(multiSportDeviceSupportDescription),
@@ -123,7 +156,7 @@ class UXPreferencesScreen extends PreferencesScreenBase {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(UXPreferencesScreen.title)),
       body: PrefPage(children: uxPreferences),
     );
   }

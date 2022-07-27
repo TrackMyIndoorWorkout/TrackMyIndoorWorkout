@@ -15,9 +15,9 @@ import '../../preferences/stroke_rate_smoothing.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/sound.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 
-class DataPreferencesScreen extends PreferencesScreenBase {
+class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
   static String shortTitle = "Data";
   static String title = "$shortTitle Preferences";
 

@@ -150,7 +150,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
 
           final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
           ActivityExport exporter = getExporter(formatPick);
-          final fileStream = await exporter.getExport(
+          final fileBytes = await exporter.getExport(
             activity,
             records,
             formatPick == "CSV",
@@ -162,7 +162,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           ShareFilesAndScreenshotWidgets().shareFile(
             persistenceValues['name'],
             persistenceValues['fileName'],
-            Uint8List.fromList(fileStream),
+            Uint8List.fromList(fileBytes),
             exporter.mimeType(false),
             text: 'Share a ride on ${activity.deviceName}',
           );

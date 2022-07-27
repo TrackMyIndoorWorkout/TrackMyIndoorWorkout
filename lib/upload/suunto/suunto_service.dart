@@ -37,7 +37,7 @@ class SuuntoService implements UploadService {
     }
 
     final exporter = FitExport();
-    final file = await exporter.getExport(
+    final fileBytes = await exporter.getExport(
       activity,
       records,
       false,
@@ -45,7 +45,7 @@ class SuuntoService implements UploadService {
       false,
       ExportTarget.suunto,
     );
-    final statusCode = await _suunto.uploadActivity(activity, file, exporter);
+    final statusCode = await _suunto.uploadActivity(activity, fileBytes, exporter);
 
     return statusCode;
   }
