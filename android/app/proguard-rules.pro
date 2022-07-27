@@ -36,12 +36,11 @@
 -keepclassmembernames class com.whelksoft.flutter_native_timezone.* { *; }
 -keep class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keepclassmembernames class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
-# -keep class dev.flutter.plugins.integration_test.** { *; }
-# -keepclassmembernames class dev.flutter.plugins.integration_test.** { *; }
 -keep class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keepclassmembernames class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keep class io.flutter.plugins.pathprovider.** { *; }
 -keepclassmembernames class io.flutter.plugins.pathprovider.** { *; }
+# permission_handler transitive dependency of easy_folder_picker
 -keep class com.baseflow.permissionhandler.** { *; }
 -keepclassmembernames class com.baseflow.permissionhandler.** { *; }
 -keep class com.twwm.share_files_and_screenshot_widgets.** { *; }
