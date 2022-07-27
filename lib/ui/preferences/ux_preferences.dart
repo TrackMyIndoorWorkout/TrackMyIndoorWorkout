@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -15,6 +14,7 @@ import '../../preferences/simpler_ui.dart';
 import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
 import '../../preferences/unit_system.dart';
+import '../parts/pick_directory.dart';
 import 'preferences_screen_mixin.dart';
 import 'row_configuration_dialog.dart';
 
@@ -105,11 +105,9 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
       ),
       PrefButton(
         onTap: () async {
-          final result = await FilePicker.platform.pickFiles();
-          if (result != null && result.files.single.path != null) {
-            final pathParts = result.files.single.path!.split("/");
-            pathParts.removeLast();
-            final path = pathParts.join("/");
+          final existingPath = PrefService.of(context).get(instantExportLocationTag);
+          final path = await pickDirectory(context, existingPath);
+          if (path.isNotEmpty) {
             setState(() {
               _locationEdit++;
               PrefService.of(context).set(instantExportLocationTag, path);

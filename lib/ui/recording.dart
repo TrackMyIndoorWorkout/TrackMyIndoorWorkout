@@ -73,6 +73,7 @@ import 'parts/circular_menu.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
 import 'parts/legend_dialog.dart';
+import 'parts/pick_directory.dart';
 import 'parts/spin_down.dart';
 import 'parts/three_choices.dart';
 import 'parts/upload_portal_picker.dart';
@@ -859,7 +860,14 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _workoutExport() async {
-    if (_activity?.id == null || _instantExportLocation.isEmpty) return;
+    if (_activity?.id == null) return;
+
+    if (_instantExportLocation.isEmpty) {
+      _instantExportLocation = await pickDirectory(context, _instantExportLocation);
+      if (_instantExportLocation.isEmpty) {
+        return;
+      }
+    }
 
     final records = await _database.recordDao.findAllActivityRecords(_activity!.id!);
     final exporter = CsvExport();
