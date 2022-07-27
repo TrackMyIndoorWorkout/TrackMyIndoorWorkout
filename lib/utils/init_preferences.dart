@@ -131,6 +131,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     timeDisplayModeTag: timeDisplayModeDefault,
     welcomePresentedTag: welcomePresentedDefault,
     hasLoggedMessagesTag: hasLoggedMessagesDefault,
+    instantExportTag: instantExportDefault,
     instantExportLocationTag: instantExportLocationDefault,
   };
 

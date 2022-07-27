@@ -94,10 +94,15 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
         subtitle: Text(instantUploadDescription),
         pref: instantUploadTag,
       ),
-      PrefLabel(
-        title: Text(instantExportLocation, style: Get.textTheme.headline5!, maxLines: 3),
-        subtitle: const Text(instantExportLocationDescription),
+      const PrefCheckbox(
+        title: Text(instantExport),
+        subtitle: Text(instantExportDescription),
+        pref: instantExportTag,
       ),
+      // PrefLabel(
+      //   title: Text(instantExportLocation, style: Get.textTheme.headline5!, maxLines: 3),
+      //   subtitle: const Text(instantExportLocationDescription),
+      // ),
       PrefText(
         key: Key("instantExportLocation$_locationEdit"),
         label: instantExportLocationPasteCommand,

@@ -153,6 +153,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _simplerUi = simplerUiSlowDefault;
   bool _twoColumnLayout = twoColumnLayoutDefault;
   bool _instantUpload = instantUploadDefault;
+  bool _instantExport = instantExportDefault;
   String _instantExportLocation = instantExportLocationDefault;
   bool _calculateGps = calculateGpsDefault;
   bool _uxDebug = appDebugModeDefault;
@@ -564,6 +565,7 @@ class RecordingState extends State<RecordingScreen> {
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
     _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
     _instantUpload = prefService.get<bool>(instantUploadTag) ?? instantUploadDefault;
+    _instantExport = prefService.get<bool>(instantExportTag) ?? instantExportDefault;
     _instantExportLocation =
         prefService.get<String>(instantExportLocationTag) ?? instantExportLocationDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
@@ -860,7 +862,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   _workoutExport() async {
-    if (_activity?.id == null) return;
+    if (_activity?.id == null || !_instantExport) return;
 
     if (_instantExportLocation.isEmpty) {
       _instantExportLocation = await pickDirectory(context, _instantExportLocation);
