@@ -16,8 +16,8 @@ import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
-import '../export/csv/csv_export.dart';
 import '../export/export_target.dart';
+import '../export/fit/fit_export.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
@@ -870,7 +870,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     final records = await _database.recordDao.findAllActivityRecords(_activity!.id!);
-    final exporter = CsvExport();
+    final exporter = FitExport();
     final fileBytes = await exporter.getExport(
       _activity!,
       records,
