@@ -82,8 +82,8 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
         subtitle: Text(trainingPeaksUploadPublicDescription),
         pref: trainingPeaksUploadPublicTag,
       ),
-      const PrefLabel(
-        title: Text("Available Integrations:"),
+      PrefLabel(
+        title: Text("Available Integrations:", style: Get.textTheme.headline5!, maxLines: 3),
       ),
     ];
 

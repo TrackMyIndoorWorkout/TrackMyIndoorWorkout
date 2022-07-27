@@ -118,9 +118,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
             .toList(growable: false),
       ),
       const PrefLabel(title: Divider(height: 1)),
-      const PrefLabel(
-        title: Text(logLevel),
-        subtitle: Text(logLevelDescription),
+      PrefLabel(
+        title: Text(logLevel, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(logLevelDescription),
       ),
       PrefRadio<int>(
         title: const Text(logLevelNoneDescription),

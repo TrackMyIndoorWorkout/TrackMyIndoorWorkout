@@ -25,9 +25,9 @@ class UXPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> uxPreferences = [
-      const PrefLabel(
-        title: Text(themeSelection),
-        subtitle: Text(themeSelectionDescription),
+      PrefLabel(
+        title: Text(themeSelection, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(themeSelectionDescription),
       ),
       const PrefRadio<String>(
         title: Text(themeSelectionSystemDescription),

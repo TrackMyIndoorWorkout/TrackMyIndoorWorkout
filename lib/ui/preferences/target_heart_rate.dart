@@ -17,9 +17,9 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
   @override
   Widget build(BuildContext context) {
     List<Widget> targetHrPreferences = [
-      const PrefLabel(
-        title: Text(targetHeartRateMode),
-        subtitle: Text(targetHeartRateModeDescription),
+      PrefLabel(
+        title: Text(targetHeartRateMode, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(targetHeartRateModeDescription),
       ),
       const PrefRadio<String>(
         title: Text(targetHeartRateModeNoneDescription),
@@ -115,9 +115,9 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         max: targetHeartRateAudioPeriodMax,
         direction: Axis.vertical,
       ),
-      const PrefLabel(
-        title: Text(targetHeartRateSoundEffect),
-        subtitle: Text(targetHeartRateSoundEffectDescription),
+      PrefLabel(
+        title: Text(targetHeartRateSoundEffect, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(targetHeartRateSoundEffectDescription),
       ),
       PrefRadio<String>(
         title: const Text(soundEffectOneToneDescription),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
@@ -44,9 +45,9 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
         max: athleteAgeMax,
         direction: Axis.vertical,
       ),
-      const PrefLabel(
-        title: Text(athleteGender),
-        subtitle: Text(athleteGenderDescription),
+      PrefLabel(
+        title: Text(athleteGender, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(athleteGenderDescription),
       ),
       const PrefRadio<String>(
         title: Text(athleteGenderMaleDescription),
