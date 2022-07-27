@@ -880,7 +880,7 @@ class RecordingState extends State<RecordingScreen> {
       ExportTarget.regular,
     );
     final persistenceValues = exporter.getPersistenceValues(_activity!, false);
-    String fileName = p.join(_instantExportLocation, persistenceValues['name']);
+    String fileName = p.join(_instantExportLocation, persistenceValues['fileName']);
     await File(fileName).writeAsBytes(fileBytes);
   }
 
