@@ -79,7 +79,10 @@ class ImportFormState extends State<ImportForm> {
                       style: TextStyle(fontSize: 30),
                     ),
                     onPressed: () async {
-                      FilePickerResult? result = await FilePicker.platform.pickFiles();
+                      final result = await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ["csv", "CSV", "Csv"],
+                      );
                       if (result != null && result.files.single.path != null) {
                         _textController.text = result.files.single.path!;
                         setState(() {

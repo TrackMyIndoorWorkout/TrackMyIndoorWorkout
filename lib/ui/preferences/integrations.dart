@@ -8,8 +8,9 @@ import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/preferences.dart';
 import '../../utils/theme_manager.dart';
+import 'preferences_screen_mixin.dart';
 
-class IntegrationPreferencesScreen extends StatefulWidget {
+class IntegrationPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "Integrations";
   static String title = "$shortTitle Preferences";
 
@@ -82,8 +83,8 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
         subtitle: Text(trainingPeaksUploadPublicDescription),
         pref: trainingPeaksUploadPublicTag,
       ),
-      const PrefLabel(
-        title: Text("Available Integrations:"),
+      PrefLabel(
+        title: Text("Available Integrations:", style: Get.textTheme.headline5!, maxLines: 3),
       ),
     ];
 

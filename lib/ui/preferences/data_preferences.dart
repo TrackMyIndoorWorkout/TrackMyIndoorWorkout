@@ -15,9 +15,9 @@ import '../../preferences/stroke_rate_smoothing.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/sound.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 
-class DataPreferencesScreen extends PreferencesScreenBase {
+class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
   static String shortTitle = "Data";
   static String title = "$shortTitle Preferences";
 
@@ -92,9 +92,9 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         },
         child: const Text("Fix empty workouts"),
       ),
-      const PrefLabel(
-        title: Text(dataStreamGapSoundEffect),
-        subtitle: Text(dataStreamGapSoundEffectDescription),
+      PrefLabel(
+        title: Text(dataStreamGapSoundEffect, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(dataStreamGapSoundEffectDescription),
       ),
       const PrefRadio<String>(
         title: Text(soundEffectNoneDescription),
@@ -140,7 +140,13 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(cadenceGapWorkaroundDescription),
         pref: cadenceGapWorkaroundTag,
       ),
-      const PrefLabel(title: Text(heartRateGapWorkaroundSelection)),
+      PrefLabel(
+        title: Text(
+          heartRateGapWorkaroundSelection,
+          style: Get.textTheme.headline5!,
+          maxLines: 3,
+        ),
+      ),
       const PrefRadio<String>(
         title: Text(dataGapWorkaroundLastPositiveValueDescription),
         value: dataGapWorkaroundLastPositiveValue,
@@ -166,7 +172,7 @@ class DataPreferencesScreen extends PreferencesScreenBase {
         max: heartRateUpperLimitMax,
         direction: Axis.vertical,
       ),
-      const PrefLabel(title: Text(heartRateLimitingMethod)),
+      PrefLabel(title: Text(heartRateLimitingMethod, style: Get.textTheme.headline5!, maxLines: 3)),
       const PrefRadio<String>(
         title: Text(heartRateLimitingWriteZeroDescription),
         value: heartRateLimitingWriteZero,

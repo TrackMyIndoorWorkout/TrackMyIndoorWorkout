@@ -6,20 +6,25 @@ import '../../preferences/metric_spec.dart';
 import '../../preferences/sound_effects.dart';
 import '../../preferences/target_heart_rate.dart';
 import '../../utils/sound.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 
-class TargetHrPreferencesScreen extends PreferencesScreenBase {
+class TargetHrPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = targetHrShortTitle;
   static String title = "$shortTitle Preferences";
 
   const TargetHrPreferencesScreen({Key? key}) : super(key: key);
 
   @override
+  TargetHrPreferencesScreenState createState() => TargetHrPreferencesScreenState();
+}
+
+class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
+  @override
   Widget build(BuildContext context) {
     List<Widget> targetHrPreferences = [
-      const PrefLabel(
-        title: Text(targetHeartRateMode),
-        subtitle: Text(targetHeartRateModeDescription),
+      PrefLabel(
+        title: Text(targetHeartRateMode, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(targetHeartRateModeDescription),
       ),
       const PrefRadio<String>(
         title: Text(targetHeartRateModeNoneDescription),
@@ -49,7 +54,9 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
           final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperBpmIntTag) ??
               targetHeartRateUpperBpmDefault;
           if (value >= upperLimit) {
-            PrefService.of(context).set<int>(targetHeartRateLowerBpmIntTag, upperLimit - 1);
+            setState(() {
+              PrefService.of(context).set<int>(targetHeartRateLowerBpmIntTag, upperLimit - 1);
+            });
           }
         },
       ),
@@ -65,7 +72,9 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
           final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerBpmIntTag) ??
               targetHeartRateLowerBpmDefault;
           if (value <= lowerLimit) {
-            PrefService.of(context).set<int>(targetHeartRateUpperBpmIntTag, lowerLimit + 1);
+            setState(() {
+              PrefService.of(context).set<int>(targetHeartRateUpperBpmIntTag, lowerLimit + 1);
+            });
           }
         },
       ),
@@ -81,7 +90,9 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
           final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperZoneIntTag) ??
               targetHeartRateUpperZoneDefault;
           if (value > upperLimit) {
-            PrefService.of(context).set<int>(targetHeartRateLowerZoneIntTag, upperLimit);
+            setState(() {
+              PrefService.of(context).set<int>(targetHeartRateLowerZoneIntTag, upperLimit);
+            });
           }
         },
       ),
@@ -97,7 +108,9 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
           final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerZoneIntTag) ??
               targetHeartRateLowerZoneDefault;
           if (value < lowerLimit) {
-            PrefService.of(context).set<int>(targetHeartRateUpperZoneIntTag, lowerLimit);
+            setState(() {
+              PrefService.of(context).set<int>(targetHeartRateUpperZoneIntTag, lowerLimit);
+            });
           }
         },
       ),
@@ -115,9 +128,9 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
         max: targetHeartRateAudioPeriodMax,
         direction: Axis.vertical,
       ),
-      const PrefLabel(
-        title: Text(targetHeartRateSoundEffect),
-        subtitle: Text(targetHeartRateSoundEffectDescription),
+      PrefLabel(
+        title: Text(targetHeartRateSoundEffect, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(targetHeartRateSoundEffectDescription),
       ),
       PrefRadio<String>(
         title: const Text(soundEffectOneToneDescription),
@@ -156,7 +169,7 @@ class TargetHrPreferencesScreen extends PreferencesScreenBase {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(TargetHrPreferencesScreen.title)),
       body: PrefPage(children: targetHrPreferences),
     );
   }

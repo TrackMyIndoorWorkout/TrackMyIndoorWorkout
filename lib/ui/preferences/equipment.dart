@@ -4,9 +4,9 @@ import '../../preferences/air_temperature.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/drive_train_loss.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 
-class EquipmentPreferencesScreen extends PreferencesScreenBase {
+class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
   static String shortTitle = "Equipment";
   static String title = "$shortTitle Preferences";
 

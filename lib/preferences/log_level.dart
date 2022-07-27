@@ -1,7 +1,7 @@
 const logLevelTitle = "Debug Log Level";
 const logLevelTag = "log_level";
-const logLevelDescription = "Select anything but none if you would like to log events "
-    "of the internal working of the application.";
+const logLevelDescription = "(Select anything but none if you would like to "
+    "log events of the internal working of the application)";
 const logLevelDefault = logLevelNone;
 const logLevelNone = 0;
 const logLevelNoneDescription = "No logging";
