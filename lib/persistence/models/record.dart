@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:floor/floor.dart';
 import 'package:flutter/foundation.dart';
+import '../../preferences/log_level.dart';
 import '../../ui/models/display_record.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
+import '../../utils/logging.dart';
 import 'activity.dart';
 
 const recordsTableName = 'records';
@@ -149,53 +151,131 @@ class Record {
     return (distance ?? 0.0) > eps || (elapsed ?? 0) > 0 || (calories ?? 0) > 0;
   }
 
-  void cumulativeDistanceEnforcement(Record lastRecord) {
+  void cumulativeDistanceEnforcement(Record lastRecord, int logLevel) {
     if (distance != null && lastRecord.distance != null) {
       if (!testing && kDebugMode) {
         assert(distance! >= lastRecord.distance!);
       }
 
       if (distance! < lastRecord.distance!) {
+        if (logLevel >= logLevelError) {
+          Logging.log(
+            logLevel,
+            logLevelError,
+            "RECORD",
+            "cumulativeDistanceEnforcement",
+            "violation $distance < ${lastRecord.distance}",
+          );
+        }
+
         distance = lastRecord.distance;
-      }
-
-      if (kDebugMode) {
-        assert(distance! >= 0.0);
-      }
-
-      if (distance! < 0.0) {
-        distance = 0.0;
       }
     }
   }
 
-  void cumulativeElapsedTimeEnforcement(Record lastRecord) {
+  void cumulativeElapsedTimeEnforcement(Record lastRecord, int logLevel) {
     if (elapsed != null && lastRecord.elapsed != null) {
       if (!testing && kDebugMode) {
         assert(elapsed! >= lastRecord.elapsed!);
       }
 
       if (elapsed! < lastRecord.elapsed!) {
+        if (logLevel >= logLevelError) {
+          Logging.log(
+            logLevel,
+            logLevelError,
+            "RECORD",
+            "cumulativeElapsedTimeEnforcement",
+            "violation $elapsed < ${lastRecord.elapsed}",
+          );
+        }
+
         elapsed = lastRecord.elapsed;
-      }
-
-      if (kDebugMode) {
-        assert(elapsed! >= 0);
-      }
-
-      if (elapsed! < 0) {
-        elapsed = 0;
       }
     }
   }
 
-  void cumulativeMovingTimeEnforcement(Record lastRecord) {
+  void cumulativeMovingTimeEnforcement(Record lastRecord, int logLevel) {
     if (!testing && kDebugMode) {
       assert(movingTime >= lastRecord.movingTime);
     }
 
     if (movingTime < lastRecord.movingTime) {
+      if (logLevel >= logLevelError) {
+        Logging.log(
+          logLevel,
+          logLevelError,
+          "RECORD",
+          "cumulativeMovingTimeEnforcement",
+          "violation $movingTime < ${lastRecord.movingTime}",
+        );
+      }
+
       movingTime = lastRecord.movingTime;
+    }
+  }
+
+  void cumulativeCaloriesEnforcement(Record lastRecord, int logLevel) {
+    if (calories != null && lastRecord.calories != null) {
+      if (!testing && kDebugMode) {
+        assert(calories! >= lastRecord.calories!);
+      }
+
+      if (calories! < lastRecord.calories!) {
+        if (logLevel >= logLevelError) {
+          Logging.log(
+            logLevel,
+            logLevelError,
+            "RECORD",
+            "cumulativeCaloriesEnforcement",
+            "violation $calories < ${lastRecord.calories}",
+          );
+        }
+
+        calories = lastRecord.calories;
+      }
+    }
+  }
+
+  void nonNegativeEnforcement(int logLevel) {
+    if (distance != null) {
+      if (kDebugMode) {
+        assert(distance! >= 0.0);
+      }
+
+      if (distance! < 0.0) {
+        if (logLevel >= logLevelError) {
+          Logging.log(
+            logLevel,
+            logLevelError,
+            "RECORD",
+            "nonNegativeEnforcement",
+            "negative distance $distance",
+          );
+        }
+
+        distance = 0.0;
+      }
+    }
+
+    if (elapsed != null) {
+      if (kDebugMode) {
+        assert(elapsed! >= 0);
+      }
+
+      if (elapsed! < 0) {
+        if (logLevel >= logLevelError) {
+          Logging.log(
+            logLevel,
+            logLevelError,
+            "RECORD",
+            "nonNegativeEnforcement",
+            "negative elapsed $elapsed",
+          );
+        }
+
+        elapsed = 0;
+      }
     }
 
     if (kDebugMode) {
@@ -203,49 +283,61 @@ class Record {
     }
 
     if (movingTime < 0) {
+      if (logLevel >= logLevelError) {
+        Logging.log(
+          logLevel,
+          logLevelError,
+          "RECORD",
+          "nonNegativeEnforcement",
+          "negative movingTime $movingTime",
+        );
+      }
+
       movingTime = 0;
     }
-  }
 
-  void cumulativeCaloriesEnforcement(Record lastRecord) {
-    if (calories != null && lastRecord.calories != null) {
-      if (!testing && kDebugMode) {
-        assert(calories! >= lastRecord.calories!);
-      }
-
-      if (calories! < lastRecord.calories!) {
-        calories = lastRecord.calories;
-      }
-
+    if (calories != null) {
       if (kDebugMode) {
         assert(calories! >= 0);
       }
 
       if (calories! < 0) {
+        if (logLevel >= logLevelError) {
+          Logging.log(
+            logLevel,
+            logLevelError,
+            "RECORD",
+            "nonNegativeEnforcement",
+            "negative calories $calories",
+          );
+        }
+
         calories = 0;
       }
     }
   }
 
   void cumulativeMetricsEnforcements(
-    Record lastRecord, {
+    Record lastRecord, int logLevel, {
     bool forDistance = false,
     bool forTime = false,
     bool forCalories = false,
   }) {
     // Ensure that cumulative fields cannot decrease over time
     if (forDistance) {
-      cumulativeDistanceEnforcement(lastRecord);
+      cumulativeDistanceEnforcement(lastRecord, logLevel);
     }
 
     if (forTime) {
-      cumulativeElapsedTimeEnforcement(lastRecord);
-      cumulativeMovingTimeEnforcement(lastRecord);
+      cumulativeElapsedTimeEnforcement(lastRecord, logLevel);
+      cumulativeMovingTimeEnforcement(lastRecord, logLevel);
     }
 
     if (forCalories) {
-      cumulativeCaloriesEnforcement(lastRecord);
+      cumulativeCaloriesEnforcement(lastRecord, logLevel);
     }
+
+    nonNegativeEnforcement(logLevel);
   }
 
   @override
