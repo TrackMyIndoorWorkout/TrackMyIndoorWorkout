@@ -32,7 +32,7 @@
             "name": "Specific Test",
             "type": "dart",
             "request": "launch",
-            "program": "test/mr_captain_test.dart",
+            "program": "test/technogym_aquafeel_test.dart",
             "args": ["--dart-define=testing_mode=true"]
         }
     ]
