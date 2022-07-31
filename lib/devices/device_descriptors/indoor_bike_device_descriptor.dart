@@ -74,6 +74,9 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     flag = skipFlag(flag, size: 1); // Metabolic Equivalent
     flag = processElapsedTimeFlag(flag);
     flag = skipFlag(flag); // Remaining Time
+
+    // #320 The Reserved flag is set
+    hasFutureReservedBytes = flag > 0;
   }
 
   @override
