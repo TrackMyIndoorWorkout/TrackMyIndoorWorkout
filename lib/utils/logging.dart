@@ -61,7 +61,6 @@ class Logging {
 
     if (kDebugMode) {
       debugPrint("$tag | $subTag | $logMessage");
-      // return;
     }
 
     final prefService = Get.find<BasePrefService>();
