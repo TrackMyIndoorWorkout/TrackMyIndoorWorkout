@@ -1029,7 +1029,7 @@ class FitnessEquipment extends DeviceBase {
     if (!uxDebug) {
       stub.cumulativeMetricsEnforcements(
         lastRecord,
-        logLevel,
+        _logLevel,
         forDistance: !firstDistance,
         forTime: true,
         forCalories: !firstCalories,
