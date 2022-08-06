@@ -318,7 +318,8 @@ class Record {
   }
 
   void cumulativeMetricsEnforcements(
-    Record lastRecord, int logLevel, {
+    Record lastRecord,
+    int logLevel, {
     bool forDistance = false,
     bool forTime = false,
     bool forCalories = false,
