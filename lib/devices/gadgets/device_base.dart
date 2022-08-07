@@ -7,8 +7,10 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../devices/gatt_maps.dart';
 import '../../preferences/app_debug_mode.dart';
+import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
+import '../../utils/logging.dart';
 import '../gatt_constants.dart';
 
 abstract class DeviceBase {
@@ -28,6 +30,7 @@ abstract class DeviceBase {
 
   final prefService = Get.find<BasePrefService>();
   bool uxDebug = appDebugModeDefault;
+  int logLevel = logLevelDefault;
 
   DeviceBase({
     required this.serviceId,
@@ -35,6 +38,7 @@ abstract class DeviceBase {
     this.device,
   }) {
     uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
+    logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
   }
 
   Future<bool> connect() async {
@@ -199,5 +203,17 @@ abstract class DeviceBase {
     connecting = false;
     discovering = false;
     discovered = false;
+  }
+
+  void logData(List<int> data, String tag) {
+    if (logLevel >= logLevelInfo) {
+      Logging.log(
+        logLevel,
+        logLevelInfo,
+        "DeviceBase",
+        "$tag logData",
+        data.toString(),
+      );
+    }
   }
 }
