@@ -15,6 +15,10 @@
         </intent>
     </queries>
 
+    <!-- Easy Folder Picker -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:label="Track My Indoor Workout"
         android:icon="@mipmap/ic_launcher">

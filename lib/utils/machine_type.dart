@@ -46,7 +46,7 @@ extension MachineTypeEx on MachineType {
       case MachineType.stairClimber:
         return ActivityType.run;
       case MachineType.rower:
-        return ActivityType.kayaking;
+        return ActivityType.rowing;
       default:
         return "";
     }
@@ -59,7 +59,7 @@ extension MachineTypeEx on MachineType {
       case MachineType.treadmill:
         return Icons.directions_run;
       case MachineType.rower:
-        return Icons.kayaking;
+        return Icons.rowing;
       case MachineType.heartRateMonitor:
         return Icons.favorite;
       case MachineType.crossTrainer:

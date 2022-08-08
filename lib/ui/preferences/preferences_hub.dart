@@ -1,8 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
-import '../../preferences/enforced_time_zone.dart';
 import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/constants.dart';
@@ -240,14 +238,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
             padding: const EdgeInsets.all(5.0),
             margin: const EdgeInsets.all(5.0),
             child: ElevatedButton(
-              onPressed: () async {
-                final timeZoneChoicesFixed = await FlutterNativeTimezone.getAvailableTimezones();
-                List<String> timeZoneChoices = [];
-                timeZoneChoices.addAll(timeZoneChoicesFixed);
-                timeZoneChoices.sort();
-                timeZoneChoices.insert(0, enforcedTimeZoneDefault);
-                Get.to(() => ExpertPreferencesScreen(timeZoneChoices: timeZoneChoices));
-              },
+              onPressed: () => Get.to(() => const ExpertPreferencesScreen()),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,

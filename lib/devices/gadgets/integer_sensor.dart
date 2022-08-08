@@ -19,6 +19,7 @@ abstract class IntegerSensor extends SensorBase {
       leading: false,
       trailing: true,
     )) {
+      logData(byteList, "IntegerSensor");
       if (!canMeasurementProcessed(byteList)) continue;
 
       metric = processMeasurement(byteList);

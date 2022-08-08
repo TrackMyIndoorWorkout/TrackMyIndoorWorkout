@@ -23,6 +23,7 @@ import '../preferences/generic.dart';
 import '../preferences/has_logged_messages.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
+import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
@@ -130,6 +131,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     timeDisplayModeTag: timeDisplayModeDefault,
     welcomePresentedTag: welcomePresentedDefault,
     hasLoggedMessagesTag: hasLoggedMessagesDefault,
+    instantExportTag: instantExportDefault,
+    instantExportLocationTag: instantExportLocationDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

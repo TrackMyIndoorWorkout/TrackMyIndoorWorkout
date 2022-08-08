@@ -3,11 +3,11 @@ import 'package:pref/pref.dart';
 import '../../preferences/metric_spec.dart';
 import '../../preferences/speed_spec.dart';
 import '../../utils/constants.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 
 RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
 
-class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
+class MeasurementZonesPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
   static String shortTitle = "Zones";
   static String title = "$shortTitle Preferences";
   final String sport;

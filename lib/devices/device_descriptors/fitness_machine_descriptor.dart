@@ -47,7 +47,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     }
 
     final dataLength = data.length;
-    return byteCounter >= flagByteSize && dataLength == byteCounter;
+    return byteCounter >= flagByteSize &&
+        (!hasFutureReservedBytes && dataLength == byteCounter ||
+            hasFutureReservedBytes && dataLength >= byteCounter);
   }
 
   int advanceFlag(int flag) {

@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
-
-abstract class PreferencesScreenBase extends StatelessWidget {
+class PreferencesScreenMixin {
   static String shortTitle = "";
   static String title = shortTitle;
-
-  const PreferencesScreenBase({Key? key}) : super(key: key);
 
   bool isNumber(String str, double lowerLimit, double upperLimit) {
     double? number = double.tryParse(str);

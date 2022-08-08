@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_logs/flutter_logs.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
@@ -16,14 +17,33 @@ import '../../preferences/log_level.dart';
 import '../../preferences/should_signal_start_stop.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 
-class ExpertPreferencesScreen extends PreferencesScreenBase {
+class ExpertPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "Expert";
   static String title = "$shortTitle Preferences";
-  final List<String> timeZoneChoices;
 
-  const ExpertPreferencesScreen({Key? key, required this.timeZoneChoices}) : super(key: key);
+  const ExpertPreferencesScreen({Key? key}) : super(key: key);
+
+  @override
+  ExpertPreferencesScreenState createState() => ExpertPreferencesScreenState();
+}
+
+class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
+  final List<String> timeZoneChoices = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    FlutterNativeTimezone.getAvailableTimezones().then((timeZoneChoicesFixed) {
+      setState(() {
+        timeZoneChoices.addAll(timeZoneChoicesFixed);
+        timeZoneChoices.sort();
+        timeZoneChoices.insert(0, enforcedTimeZoneDefault);
+      });
+    });
+  }
 
   Future<void> displayNotInitializedDialog() async {
     await Get.defaultDialog(
@@ -118,9 +138,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
             .toList(growable: false),
       ),
       const PrefLabel(title: Divider(height: 1)),
-      const PrefLabel(
-        title: Text(logLevel),
-        subtitle: Text(logLevelDescription),
+      PrefLabel(
+        title: Text(logLevel, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(logLevelDescription),
       ),
       PrefRadio<int>(
         title: const Text(logLevelNoneDescription),
@@ -195,7 +215,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         onTap: () async {
           if (PrefService.of(context).get<bool>(hasLoggedMessagesTag) ?? hasLoggedMessagesDefault) {
             FlutterLogs.clearLogs();
-            PrefService.of(context).set(hasLoggedMessagesTag, hasLoggedMessagesDefault);
+            setState(() {
+              PrefService.of(context).set(hasLoggedMessagesTag, hasLoggedMessagesDefault);
+            });
           }
 
           if (Logging.initialized) {
@@ -224,7 +246,7 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(ExpertPreferencesScreen.title)),
       body: PrefPage(children: expertPreferences),
     );
   }

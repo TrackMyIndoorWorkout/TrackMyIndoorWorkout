@@ -70,6 +70,9 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     flag = processElapsedTimeFlag(flag);
     flag = skipFlag(flag); // Remaining Time
     flag = processForceAndPowerFlag(flag);
+
+    // #320 The Reserved flag is set
+    hasFutureReservedBytes = flag > 0;
   }
 
   @override

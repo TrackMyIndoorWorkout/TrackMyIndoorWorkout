@@ -2,11 +2,11 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.113+113
+version: 1.1.114+114
 
 environment:
-  sdk: ">=2.17.5 <3.0.0"
-  flutter: ">=3.0.3"
+  sdk: ">=2.17.6 <3.0.0"
+  flutter: ">=3.0.5"
 
 dependencies:
   assorted_layout_widgets: ^6.0.0
@@ -14,55 +14,52 @@ dependencies:
     git:
       url: https://github.com/CsabaConsulting/bluetooth_enable_fork.git
   collection: ^1.16.0
-  datetime_picker_formfield:
-    git:
-      url: https://github.com/tainanfochesatto/datetime_picker_formfield.git
-      ref: fix-widgets-binding-warning
-  device_info_plus: ^4.0.0
+  datetime_picker_formfield: ^2.0.1
+  device_info_plus: ^4.0.1
+  easy_folder_picker: ^1.3.0
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^4.5.1
+  file_picker: ^5.0.1
   floor: ^1.2.0
-  flutter_blue_plus:
-    git:
-      url: https://github.com/CsabaConsulting/flutter_blue_plus.git
+  flutter_blue_plus: ^1.3.0
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.1
   flutter_logs: ^2.1.7
   flutter_native_timezone: ^2.0.0
   flutter_spinbox: ^0.9.0
-  flutter_svg: ^1.1.1
+  flutter_svg: ^1.1.2
   get: ^4.6.1
   group_button: ^5.0.1
-  http: ^0.13.4
+  http: ^0.13.5
   http_parser: ^4.0.1
   internet_connection_checker: 0.0.1+4
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
-  package_info_plus: ^1.4.2
+  package_info_plus: ^1.4.3
+  path: ^1.8.1
   path_provider: ^2.0.10
   pref: ^2.6.0
   progress_indicators: ^1.0.0
-  rxdart: ^0.27.3
+  rxdart: ^0.27.5
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
   spinner_input:
     git:
       url: https://github.com/CsabaConsulting/spinner_input.git
-  sqflite: ^2.0.2
-  syncfusion_flutter_charts: ^20.2.36
+  sqflite: ^2.0.3
+  syncfusion_flutter_charts: ^20.2.40
   tuple: ^2.0.0
   uni_links: ^0.5.1
-  url_launcher: ^6.0.18
+  url_launcher: ^6.1.5
   vector_math: ^2.1.2
-  wakelock: ^0.6.1+2
+  wakelock: ^0.6.2
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^4.2.0
-  build_runner: ^2.1.11
+  analyzer: ^4.3.1
+  build_runner: ^2.2.0
   floor_generator: ^1.3.0
   flutter_driver:
     sdk: flutter

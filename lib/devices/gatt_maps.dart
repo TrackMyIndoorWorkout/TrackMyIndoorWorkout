@@ -4,7 +4,7 @@ import 'gatt_constants.dart';
 const Map<String, String> uuidToSport = {
   treadmillUuid: ActivityType.run,
   indoorBikeUuid: ActivityType.ride,
-  rowerDeviceUuid: ActivityType.kayaking,
+  rowerDeviceUuid: ActivityType.rowing,
   crossTrainerUuid: ActivityType.elliptical,
   stepClimberUuid: ActivityType.run,
   stairClimberUuid: ActivityType.run,
