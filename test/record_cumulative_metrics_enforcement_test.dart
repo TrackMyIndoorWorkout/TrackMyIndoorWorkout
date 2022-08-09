@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/preferences/log_level.dart';
 import 'utils.dart';
 
 void main() {
@@ -19,7 +20,7 @@ void main() {
         final record = Record(distance: distancePair[0]);
         final lastRecord = Record(distance: distancePair[1]);
 
-        record.cumulativeDistanceEnforcement(lastRecord);
+        record.cumulativeDistanceEnforcement(lastRecord, logLevelNone);
 
         expect(record.distance, distancePair[0]);
       });
@@ -34,7 +35,7 @@ void main() {
         final record = Record(distance: meters);
         final lastRecord = Record(distance: lastMeters);
 
-        record.cumulativeDistanceEnforcement(lastRecord);
+        record.cumulativeDistanceEnforcement(lastRecord, logLevelNone);
 
         expect(record.distance, max(meters, lastMeters));
       });
@@ -55,7 +56,7 @@ void main() {
         final record = Record(elapsed: elapsedTimePair[0]);
         final lastRecord = Record(elapsed: elapsedTimePair[1]);
 
-        record.cumulativeElapsedTimeEnforcement(lastRecord);
+        record.cumulativeElapsedTimeEnforcement(lastRecord, logLevelNone);
 
         expect(record.elapsed, elapsedTimePair[0]);
       });
@@ -70,7 +71,7 @@ void main() {
         final record = Record(elapsed: seconds);
         final lastRecord = Record(elapsed: lastElapsed);
 
-        record.cumulativeElapsedTimeEnforcement(lastRecord);
+        record.cumulativeElapsedTimeEnforcement(lastRecord, logLevelNone);
 
         expect(record.elapsed, max(seconds, lastElapsed));
       });
@@ -87,7 +88,7 @@ void main() {
         final record = Record()..movingTime = movingTimePair[0];
         final lastRecord = Record()..movingTime = movingTimePair[1];
 
-        record.cumulativeMovingTimeEnforcement(lastRecord);
+        record.cumulativeMovingTimeEnforcement(lastRecord, logLevelNone);
 
         expect(record.movingTime, movingTimePair[0]);
       });
@@ -102,7 +103,7 @@ void main() {
         final record = Record()..movingTime = seconds;
         final lastRecord = Record()..movingTime = lastMoving;
 
-        record.cumulativeMovingTimeEnforcement(lastRecord);
+        record.cumulativeMovingTimeEnforcement(lastRecord, logLevelNone);
 
         expect(record.movingTime, max(seconds, lastMoving));
       });
@@ -123,7 +124,7 @@ void main() {
         final record = Record(calories: caloriePair[0]);
         final lastRecord = Record(calories: caloriePair[1]);
 
-        record.cumulativeCaloriesEnforcement(lastRecord);
+        record.cumulativeCaloriesEnforcement(lastRecord, logLevelNone);
 
         expect(record.calories, caloriePair[0]);
       });
@@ -138,7 +139,7 @@ void main() {
         final record = Record(calories: calories);
         final lastRecord = Record(calories: lastCalories);
 
-        record.cumulativeCaloriesEnforcement(lastRecord);
+        record.cumulativeCaloriesEnforcement(lastRecord, logLevelNone);
 
         expect(record.calories, max(calories, lastCalories));
       });

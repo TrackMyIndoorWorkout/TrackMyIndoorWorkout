@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "TrackMyIndoorWorkout",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "TrackMyIndoorWorkout (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "TrackMyIndoorWorkout (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "All Tests",
+            "type": "dart",
+            "request": "launch",
+            "program": "test/",
+            "args": ["--dart-define=testing_mode=true"]
+        },
+        {
+            "name": "Specific Test",
+            "type": "dart",
+            "request": "launch",
+            "program": "test/technogym_aquafeel_test.dart",
+            "args": ["--dart-define=testing_mode=true"]
+        }
+    ]
+}

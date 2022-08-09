@@ -302,4 +302,16 @@ abstract class DeviceBase {
     discovering = false;
     discovered = false;
   }
+
+  void logData(List<int> data, String tag) {
+    if (logLevel >= logLevelInfo) {
+      Logging.log(
+        logLevel,
+        logLevelInfo,
+        "DeviceBase",
+        "$tag logData",
+        data.toString(),
+      );
+    }
+  }
 }

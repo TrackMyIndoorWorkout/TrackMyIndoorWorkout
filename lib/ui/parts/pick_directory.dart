@@ -4,7 +4,7 @@ import 'package:easy_folder_picker/FolderPicker.dart';
 import 'package:flutter/widgets.dart';
 
 Future<String> pickDirectory(BuildContext context, String existingPath) async {
-  final directory = Directory(existingPath.isEmpty ? FolderPicker.ROOTPATH : existingPath);
+  final directory = Directory(existingPath.isEmpty ? FolderPicker.rootPath : existingPath);
   final newDirectory = await FolderPicker.pick(
     allowFolderCreation: true,
     context: context,

@@ -7,6 +7,7 @@ abstract class DataHandler {
   final int flagByteSize;
   int featuresFlag = -1;
   int byteCounter = 0;
+  bool hasFutureReservedBytes = false;
 
   int? heartRateByteIndex;
 

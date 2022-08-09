@@ -23,6 +23,7 @@ abstract class ComplexSensor extends SensorBase {
       leading: false,
       trailing: true,
     )) {
+      logData(byteList, "ComplexSensor");
       if (!canMeasurementProcessed(byteList)) continue;
 
       record = processMeasurement(byteList);
