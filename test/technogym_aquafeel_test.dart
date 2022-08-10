@@ -20,11 +20,9 @@ void main() {
   test('Technogym Aquafeel Rower Device constructor tests', () async {
     final rower = DeviceFactory.getGenericFTMSRower();
 
-    expect(rower.canMeasureHeartRate, true);
     expect(rower.defaultSport, ActivityType.rowing);
     expect(rower.fourCC, genericFTMSRowerFourCC);
     expect(rower.isMultiSport, false);
-    expect(rower.shouldSignalStartStop, false);
   });
 
   test('Rower Device interprets Technogym Aquafeel flags 1 properly', () async {
