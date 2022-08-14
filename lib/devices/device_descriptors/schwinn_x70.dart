@@ -52,7 +52,6 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           model: "",
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
-          extraCharacteristicId: schwinnX70ExtraMeasurementUuid,
           controlCharacteristicId: schwinnX70ControlUuid,
           listenOnControl: false,
           timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1.0),

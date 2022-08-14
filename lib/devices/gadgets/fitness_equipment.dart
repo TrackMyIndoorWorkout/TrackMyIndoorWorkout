@@ -25,7 +25,6 @@ import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
-import '../../utils/guid_ex.dart';
 import '../../utils/hr_based_calories.dart';
 import '../../utils/logging.dart';
 import '../bluetooth_device_ex.dart';
@@ -115,7 +114,6 @@ class FitnessEquipment extends DeviceBase {
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
           characteristicId: descriptor?.dataCharacteristicId ?? "",
-          extraCharacteristicId: descriptor?.extraCharacteristicId ?? "",
           controlCharacteristicId: descriptor?.controlCharacteristicId ?? "",
           listenOnControl: descriptor?.listenOnControl ?? true,
           device: device,
@@ -367,15 +365,9 @@ class FitnessEquipment extends DeviceBase {
     }
 
     if (descriptor != null && device != null) {
-      if (services
-              .firstWhereOrNull((service) => service.uuid.uuidString() == extraCharacteristicId) !=
-          null) {
-        _extraSensor = descriptor!.getExtraSensor(device!);
-        await _extraSensor?.discoverCore();
-        await _extraSensor?.attach();
-      } else {
-        _extraSensor = null;
-      }
+      _extraSensor = descriptor!.getExtraSensor(device!);
+      await _extraSensor?.discoverCore();
+      await _extraSensor?.attach();
     } else {
       _extraSensor = null;
     }

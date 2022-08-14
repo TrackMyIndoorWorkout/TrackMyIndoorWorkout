@@ -24,7 +24,6 @@ abstract class DeviceBase {
   BluetoothCharacteristic? characteristic;
   StreamSubscription? subscription;
 
-  String extraCharacteristicId;
   String controlCharacteristicId;
   bool listenOnControl;
   BluetoothCharacteristic? controlPoint;
@@ -50,7 +49,6 @@ abstract class DeviceBase {
     required this.serviceId,
     required this.characteristicId,
     required this.device,
-    this.extraCharacteristicId = "",
     this.controlCharacteristicId = "",
     this.listenOnControl = true,
     this.statusCharacteristicId = "",
