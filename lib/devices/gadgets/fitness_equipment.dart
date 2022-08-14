@@ -116,6 +116,7 @@ class FitnessEquipment extends DeviceBase {
           characteristicId: descriptor?.dataCharacteristicId ?? "",
           controlCharacteristicId: descriptor?.controlCharacteristicId ?? "",
           listenOnControl: descriptor?.listenOnControl ?? true,
+          statusCharacteristicId: descriptor?.statusCharacteristicId ?? "",
           device: device,
         ) {
     readConfiguration();
@@ -507,7 +508,7 @@ class FitnessEquipment extends DeviceBase {
   }
 
   @override
-  Future<void> connectToControlPoint(obtainControl) async {
+  Future<void> connectToControlPoint(bool obtainControl) async {
     if (controlCharacteristicId.isEmpty) {
       return;
     }
