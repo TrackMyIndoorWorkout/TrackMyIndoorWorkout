@@ -119,7 +119,7 @@ abstract class DeviceBase {
     await connectToControlPoint(true);
   }
 
-  Future<void> connectToControlPoint(obtainControl) async {
+  Future<void> connectToControlPoint(bool obtainControl) async {
     if (controlCharacteristicId.isEmpty) {
       return;
     }
@@ -129,7 +129,7 @@ abstract class DeviceBase {
           .firstWhereOrNull((ch) => ch.uuid.uuidString() == controlCharacteristicId);
     }
 
-    if (status != null && statusCharacteristicId.isNotEmpty) {
+    if (status == null && statusCharacteristicId.isNotEmpty) {
       status = service!.characteristics
           .firstWhereOrNull((ch) => ch.uuid.uuidString() == statusCharacteristicId);
     }
