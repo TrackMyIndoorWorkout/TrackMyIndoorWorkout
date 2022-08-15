@@ -367,6 +367,7 @@ class FitnessEquipment extends DeviceBase {
 
     if (descriptor != null && device != null) {
       _extraSensor = descriptor!.getExtraSensor(device!);
+      _extraSensor?.services = services;
       await _extraSensor?.discoverCore();
       await _extraSensor?.attach();
     } else {
