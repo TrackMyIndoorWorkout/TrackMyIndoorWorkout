@@ -997,6 +997,7 @@ class FitnessEquipment extends DeviceBase {
   @override
   void readConfiguration() {
     super.readConfiguration();
+    _extraSensor?.readConfiguration();
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
         prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
