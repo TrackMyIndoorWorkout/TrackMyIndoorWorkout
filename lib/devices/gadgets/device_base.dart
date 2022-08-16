@@ -306,8 +306,8 @@ abstract class DeviceBase {
       Logging.log(
         logLevel,
         logLevelInfo,
-        "DeviceBase",
-        "$tag logData",
+        tag,
+        "_listenToData",
         data.toString(),
       );
     }
