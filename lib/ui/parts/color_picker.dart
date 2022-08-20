@@ -60,7 +60,7 @@ class ColorPickerBottomSheetState extends State<ColorPickerBottomSheet> {
       floatingActionButton: Container(
         margin: const EdgeInsets.all(10.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _themeManager.getBlueFab(Icons.clear, () => Get.back()),
