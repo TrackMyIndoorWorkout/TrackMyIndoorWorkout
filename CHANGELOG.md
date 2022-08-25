@@ -1,3 +1,10 @@
+## 1.1.115
+* Schwinn 170/270/570 heart rate support
+* Giant refactoring of core functionality related to extra sensors
+* Galaxy App Store: CSV Import survives when migration CSV is mistakenly selected as MPower import
+* Galaxy App Store: reorganize palette selector bottom sheet in landscape mode
+* Galaxy App Store: all bottom sheets occupy full screen to deal with landscape mode
+
 ## 1.1.114
 * Galaxy App Store find: orientation change disturbs opened circular menu
 * Instant save feature (right after workout, FIT format)
