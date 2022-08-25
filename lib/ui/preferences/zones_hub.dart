@@ -71,7 +71,15 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
         child: ElevatedButton(
           onPressed: () async {
             final Tuple3<bool, bool, int>? paletteSelection = await Get.bottomSheet(
-              const PalettePickerBottomSheet(),
+              const SafeArea(
+                child: Expanded(
+                  child: Center(
+                    child: PalettePickerBottomSheet(),
+                  ),
+                ),
+              ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
 

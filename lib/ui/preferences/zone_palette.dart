@@ -63,7 +63,15 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
           style: ButtonStyle(backgroundColor: MaterialStateProperty.all(color)),
           onPressed: () async {
             final Color? newColor = await Get.bottomSheet(
-              ColorPickerBottomSheet(color: color),
+              SafeArea(
+                child: Expanded(
+                  child: Center(
+                    child: ColorPickerBottomSheet(color: color),
+                  ),
+                ),
+              ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
 
