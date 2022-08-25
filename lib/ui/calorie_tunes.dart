@@ -54,7 +54,15 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
           iconSize: size,
           onPressed: () async {
             final result = await Get.bottomSheet(
-              CalorieFactorTuneBottomSheet(calorieTune: calorieTune),
+              SafeArea(
+                child: Expanded(
+                  child: Center(
+                    child: CalorieFactorTuneBottomSheet(calorieTune: calorieTune),
+                  ),
+                ),
+              ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
             if (result != null) {

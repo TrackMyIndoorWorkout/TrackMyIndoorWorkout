@@ -57,7 +57,18 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
           iconSize: size,
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
-              SportPickerBottomSheet(sportChoices: allSports, initialSport: deviceUsage.sport),
+              SafeArea(
+                child: Expanded(
+                  child: Center(
+                    child: SportPickerBottomSheet(
+                      sportChoices: allSports,
+                      initialSport: deviceUsage.sport,
+                    ),
+                  ),
+                ),
+              ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
             if (sportPick != null) {

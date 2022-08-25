@@ -856,7 +856,15 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     Get.bottomSheet(
-      UploadPortalPickerBottomSheet(activity: _activity!),
+      SafeArea(
+        child: Expanded(
+          child: Center(
+            child: UploadPortalPickerBottomSheet(activity: _activity!),
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
       enableDrag: false,
     );
   }
@@ -1007,10 +1015,18 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     final verdict = await Get.bottomSheet(
-      const BooleanQuestionBottomSheet(
-        title: "About to navigate away",
-        content: "The workout in progress will be finished. Are you sure?",
+      const SafeArea(
+        child: Expanded(
+          child: Center(
+            child: BooleanQuestionBottomSheet(
+              title: "About to navigate away",
+              content: "The workout in progress will be finished. Are you sure?",
+            ),
+          ),
+        ),
       ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
       isDismissible: false,
       enableDrag: false,
     );
@@ -1441,13 +1457,21 @@ class RecordingState extends State<RecordingScreen> {
     if (_measuring) {
       if (_circuitWorkout) {
         final selection = await Get.bottomSheet(
-          const ThreeChoicesBottomSheet(
-            title: "Circuit workout in progress",
-            verticalActions: true,
-            firstChoice: "Continue workout",
-            secondChoice: "Finish on THIS machine for good",
-            thirdChoice: "Finish an ALL machines (the whole circuit workout is over)",
+          const SafeArea(
+            child: Expanded(
+              child: Center(
+                child: ThreeChoicesBottomSheet(
+                  title: "Circuit workout in progress",
+                  verticalActions: true,
+                  firstChoice: "Continue workout",
+                  secondChoice: "Finish on THIS machine for good",
+                  thirdChoice: "Finish an ALL machines (the whole circuit workout is over)",
+                ),
+              ),
+            ),
           ),
+          isScrollControlled: true,
+          ignoreSafeArea: false,
           isDismissible: false,
           enableDrag: false,
         );
@@ -1905,7 +1929,15 @@ class RecordingState extends State<RecordingScreen> {
           }),
           _themeManager.getBlueFab(Icons.battery_unknown, () async {
             Get.bottomSheet(
-              const BatteryStatusBottomSheet(),
+              const SafeArea(
+                child: Expanded(
+                  child: Center(
+                    child: BatteryStatusBottomSheet(),
+                  ),
+                ),
+              ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
           }),
@@ -1914,7 +1946,15 @@ class RecordingState extends State<RecordingScreen> {
               Get.snackbar("Error", "Not compatible with the calibration method");
             } else {
               Get.bottomSheet(
-                const SpinDownBottomSheet(),
+                const SafeArea(
+                  child: Expanded(
+                    child: Center(
+                      child: SpinDownBottomSheet(),
+                    ),
+                  ),
+                ),
+                isScrollControlled: true,
+                ignoreSafeArea: false,
                 isDismissible: false,
                 enableDrag: false,
               );
@@ -1926,7 +1966,15 @@ class RecordingState extends State<RecordingScreen> {
       menuButtons.addAll([
         _themeManager.getBlueFab(Icons.favorite, () async {
           await Get.bottomSheet(
-            const HeartRateMonitorPairingBottomSheet(),
+            const SafeArea(
+              child: Expanded(
+                child: Center(
+                  child: HeartRateMonitorPairingBottomSheet(),
+                ),
+              ),
+            ),
+            isScrollControlled: true,
+            ignoreSafeArea: false,
             isDismissible: false,
             enableDrag: false,
           );
