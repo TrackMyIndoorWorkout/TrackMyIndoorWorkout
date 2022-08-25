@@ -142,9 +142,8 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     if (!(_fitnessEquipment?.discovered ?? false)) return false;
-
-    // #117 Attach the handler way ahead of the spin down start command write
-    await _fitnessEquipment?.connectToControlPoint(false);
+    // #117 ControlPoint is attached as part of the discover()
+    // (so way ahead of the spin down start command write)
 
     if (!(_fitnessEquipment?.supportsSpinDown ?? false)) return false;
 
@@ -408,14 +407,12 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         .listen((status) {
       if (status.length == 2 && status[0] == spinDownStatus) {
         if (status[1] == spinDownStatusSuccess) {
-          _reset();
           setState(() {
             _step = stepDone;
             _calibrationState = CalibrationState.calibrationSuccess;
           });
         }
         if (status[1] == spinDownStatusError) {
-          _reset();
           setState(() {
             _step = stepDone;
             _calibrationState = CalibrationState.calibrationFail;
@@ -440,36 +437,15 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     });
   }
 
-  Future<void> _detachControlPoint() async {
-    await _fitnessEquipment?.controlPoint?.setNotifyValue(false);
-    _controlPointSubscription?.cancel();
-  }
-
   Future<void> _detachWeightData() async {
     await _weightData?.setNotifyValue(false);
     _weightDataSubscription?.cancel();
   }
 
-  Future<void> _detachFitnessMachineStatus() async {
-    _fitnessEquipment?.status?.setNotifyValue(false);
-    _fitnessEquipment?.statusSubscription?.cancel();
-  }
-
-  Future<void> _detachFitnessMachine() async {
-    _fitnessEquipment?.calibrating = false;
-    await _fitnessEquipment?.detach();
-  }
-
-  Future<void> _reset() async {
-    await _detachControlPoint();
-    await _detachWeightData();
-    await _detachFitnessMachineStatus();
-    await _detachFitnessMachine();
-  }
-
   @override
   void dispose() {
-    _reset();
+    _controlPointSubscription?.cancel();
+    _detachWeightData();
 
     super.dispose();
   }

@@ -32,10 +32,8 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     model,
     dataServiceId = fitnessMachineUuid,
     dataCharacteristicId = rowerDeviceUuid,
-    canMeasureHeartRate = true,
     heartRateByteIndex,
     isMultiSport = true,
-    shouldSignalStartStop = false,
   }) : super(
           defaultSport: defaultSport,
           isMultiSport: isMultiSport,
@@ -48,9 +46,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           model: model,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
-          canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
-          shouldSignalStartStop: shouldSignalStartStop,
         );
 
   @override
@@ -66,9 +62,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
         model: model,
         dataServiceId: dataServiceId,
         dataCharacteristicId: dataCharacteristicId,
-        canMeasureHeartRate: canMeasureHeartRate,
         heartRateByteIndex: heartRateByteIndex,
-        shouldSignalStartStop: shouldSignalStartStop,
       );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml

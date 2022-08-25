@@ -14,7 +14,6 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
     model,
     dataServiceId = fitnessMachineUuid,
     dataCharacteristicId = crossTrainerUuid,
-    canMeasureHeartRate = true,
     heartRateByteIndex,
   }) : super(
           defaultSport: ActivityType.elliptical,
@@ -29,7 +28,6 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
           flagByteSize: 3,
-          canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
         );
 
@@ -44,7 +42,6 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
         model: model,
         dataServiceId: dataServiceId,
         dataCharacteristicId: dataCharacteristicId,
-        canMeasureHeartRate: canMeasureHeartRate,
         heartRateByteIndex: heartRateByteIndex,
       );
 

@@ -15,11 +15,9 @@ void main() {
   test('Yesoul S3 constructor tests', () async {
     final bike = DeviceFactory.getYesoulS3();
 
-    expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, yesoulS3FourCC);
     expect(bike.isMultiSport, false);
-    expect(bike.shouldSignalStartStop, false);
   });
 
   test('Yesoul S3 interprets FTMS Indoor Bike Data 1 flags properly', () async {
@@ -73,7 +71,7 @@ void main() {
           power: null,
           speed: 25.82,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -89,7 +87,7 @@ void main() {
           power: null,
           speed: 20.88,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -105,7 +103,7 @@ void main() {
           power: null,
           speed: 0.0,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -121,7 +119,7 @@ void main() {
           power: 107,
           speed: null,
           cadence: 68,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -137,7 +135,7 @@ void main() {
           power: 105,
           speed: null,
           cadence: 67,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -153,7 +151,7 @@ void main() {
           power: 76,
           speed: null,
           cadence: 55,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,

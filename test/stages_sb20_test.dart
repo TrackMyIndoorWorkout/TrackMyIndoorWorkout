@@ -15,11 +15,9 @@ void main() {
   test('Stages SB20 constructor tests', () async {
     final bike = DeviceFactory.getStagesSB20();
 
-    expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, stagesSB20FourCC);
     expect(bike.isMultiSport, false);
-    expect(bike.shouldSignalStartStop, false);
   });
 
   test('Stages SB20 interprets FTMS Indoor Bike Data 1 flags properly', () async {
@@ -93,7 +91,7 @@ void main() {
           power: null,
           speed: 16.67,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -109,7 +107,7 @@ void main() {
           power: null,
           speed: 35.61,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -125,7 +123,7 @@ void main() {
           power: null,
           speed: null,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -141,7 +139,7 @@ void main() {
           power: null,
           speed: null,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -157,7 +155,7 @@ void main() {
           power: 605,
           speed: null,
           cadence: 91,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -173,7 +171,7 @@ void main() {
           power: 803,
           speed: null,
           cadence: 112,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,

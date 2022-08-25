@@ -23,7 +23,6 @@ void main() {
   test('Matrix Bike constructor tests', () async {
     final bike = MatrixBikeDescriptor();
 
-    expect(bike.canMeasureHeartRate, false);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, matrixBikeFourCC);
   });
@@ -64,7 +63,7 @@ void main() {
           power: 0,
           speed: 0.0,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -80,7 +79,7 @@ void main() {
           power: 0,
           speed: 0.0,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -96,7 +95,7 @@ void main() {
           power: 162,
           speed: 32.03,
           cadence: 67,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,

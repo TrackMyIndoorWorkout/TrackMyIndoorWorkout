@@ -1,5 +1,10 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../export/fit/fit_manufacturer.dart';
+import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
+import '../../utils/logging.dart';
 import '../device_fourcc.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
@@ -20,7 +25,6 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
           model: "1",
           dataServiceId: precorServiceUuid,
           dataCharacteristicId: precorMeasurementUuid,
-          canMeasureHeartRate: true,
           heartRateByteIndex: 5,
           timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4),
           caloriesMetric: ShortMetricDescriptor(lsb: 13, msb: 14),
@@ -46,4 +50,18 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
 
   @override
   void stopWorkout() {}
+
+  @override
+  Future<void> executeControlOperation(
+      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
+      {int? controlInfo}) async {
+    Logging.log(
+      logLevel,
+      logLevelError,
+      "PSCP",
+      "executeControlOperation",
+      "Not implemented!",
+    );
+    debugPrint("PSCP executeControlOperation Not implemented!");
+  }
 }

@@ -1,4 +1,4 @@
-const logLevel = "Debug Log Level";
+const logLevelTitle = "Debug Log Level";
 const logLevelTag = "log_level";
 const logLevelDescription = "(Select anything but none if you would like to "
     "log events of the internal working of the application)";

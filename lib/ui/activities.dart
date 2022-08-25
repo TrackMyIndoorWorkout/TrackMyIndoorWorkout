@@ -130,7 +130,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           }
 
           Get.bottomSheet(
-            UploadPortalPickerBottomSheet(activity: activity),
+            SafeArea(
+              child: Expanded(
+                child: Center(
+                  child: UploadPortalPickerBottomSheet(activity: activity),
+                ),
+              ),
+            ),
+            isScrollControlled: true,
+            ignoreSafeArea: false,
             enableDrag: false,
           );
         },
@@ -140,7 +148,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         iconSize: size,
         onPressed: () async {
           final formatPick = await Get.bottomSheet(
-            const ExportFormatPickerBottomSheet(),
+            const SafeArea(
+              child: Expanded(
+                child: Center(
+                  child: ExportFormatPickerBottomSheet(),
+                ),
+              ),
+            ),
+            isScrollControlled: true,
+            ignoreSafeArea: false,
             enableDrag: false,
           );
 
@@ -177,8 +193,18 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             return;
           }
           Get.bottomSheet(
-            PowerFactorTuneBottomSheet(
-                deviceId: activity.deviceId, oldPowerFactor: activity.powerFactor),
+            SafeArea(
+              child: Expanded(
+                child: Center(
+                  child: PowerFactorTuneBottomSheet(
+                    deviceId: activity.deviceId,
+                    oldPowerFactor: activity.powerFactor,
+                  ),
+                ),
+              ),
+            ),
+            isScrollControlled: true,
+            ignoreSafeArea: false,
             enableDrag: false,
           );
         },
@@ -192,7 +218,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             return;
           }
           Get.bottomSheet(
-            CalorieOverrideBottomSheet(activity: activity),
+            SafeArea(
+              child: Expanded(
+                child: Center(
+                  child: CalorieOverrideBottomSheet(activity: activity),
+                ),
+              ),
+            ),
+            isScrollControlled: true,
+            ignoreSafeArea: false,
             enableDrag: false,
           );
         },
@@ -206,7 +240,18 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           iconSize: size,
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
-              SportPickerBottomSheet(sportChoices: allSports, initialSport: activity.sport),
+              SafeArea(
+                child: Expanded(
+                  child: Center(
+                    child: SportPickerBottomSheet(
+                      sportChoices: allSports,
+                      initialSport: activity.sport,
+                    ),
+                  ),
+                ),
+              ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
             if (sportPick != null) {
@@ -289,7 +334,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       _themeManager.getAboutFab(),
       _themeManager.getBlueFab(Icons.file_upload, () async {
         final formatPick = await Get.bottomSheet(
-          const ImportFormatPickerBottomSheet(),
+          const SafeArea(
+            child: Expanded(
+              child: Center(
+                child: ImportFormatPickerBottomSheet(),
+              ),
+            ),
+          ),
+          isScrollControlled: true,
+          ignoreSafeArea: false,
           enableDrag: false,
         );
 
@@ -316,7 +369,18 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     if (_leaderboardFeature && widget.hasLeaderboardData) {
       floatingActionButtons.add(
         _themeManager.getBlueFab(Icons.leaderboard, () async {
-          Get.bottomSheet(const LeaderBoardTypeBottomSheet(), enableDrag: false);
+          Get.bottomSheet(
+            const SafeArea(
+              child: Expanded(
+                child: Center(
+                  child: LeaderBoardTypeBottomSheet(),
+                ),
+              ),
+            ),
+            isScrollControlled: true,
+            ignoreSafeArea: false,
+            enableDrag: false,
+          );
         }),
       );
     }

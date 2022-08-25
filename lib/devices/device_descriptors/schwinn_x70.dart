@@ -1,11 +1,19 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../export/fit/fit_manufacturer.dart';
+import '../../preferences/log_level.dart';
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
+import '../../utils/logging.dart';
 import '../../utils/power_speed_mixin.dart';
 import '../device_fourcc.dart';
 import '../gadgets/cadence_mixin.dart';
+import '../gadgets/complex_sensor.dart';
+import '../gadgets/schwinn_x70_hr_sensor.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
@@ -25,8 +33,6 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     1.72, 1.88, 2.04, // 20-22
     2.20, 2.36, 2.52 // 23-25
   ];
-  // static const kooiboyCalorieFactor = 1.25;
-  // static const kooiboyCalorieDivider = 1.0 / kooiboyCalorieFactor;
   late double lastTime;
   late double lastCalories;
   late double lastPower;
@@ -46,7 +52,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           model: "",
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
-          canMeasureHeartRate: false,
+          controlCharacteristicId: schwinnX70ControlUuid,
+          listenOnControl: false,
           timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1.0),
           caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 1.0),
           cadenceMetric: ThreeByteMetricDescriptor(lsb: 4, msb: 6, divider: 1.0),
@@ -140,5 +147,51 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     lastRecord = record;
 
     return record;
+  }
+
+  @override
+  Future<void> executeControlOperation(
+      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
+      {int? controlInfo}) async {
+    if (!await FlutterBluePlus.instance.isOn) {
+      return;
+    }
+
+    if (controlPoint == null || blockSignalStartStop) {
+      return;
+    }
+
+    if (opCode == startOrResumeControl /* requestControl */ || opCode == stopOrPauseControl) {
+      return;
+    }
+
+    if (opCode == requestControl /* startOrResumeControl */) {
+      List<int> startHrStreamCommand = [
+        0x5 /* length */,
+        0x3 /* seq-с ceiling */,
+        0xd9 /* crc = sum to 0 */,
+        0x0,
+        0x1f /* command */
+      ];
+
+      try {
+        await controlPoint.write(startHrStreamCommand);
+      } on PlatformException catch (e, stack) {
+        Logging.log(
+          logLevel,
+          logLevelError,
+          "Sch x70",
+          "executeControlOperation",
+          "${e.message}",
+        );
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
+    }
+  }
+
+  @override
+  ComplexSensor? getExtraSensor(BluetoothDevice device) {
+    return SchwinnX70HrSensor(device);
   }
 }

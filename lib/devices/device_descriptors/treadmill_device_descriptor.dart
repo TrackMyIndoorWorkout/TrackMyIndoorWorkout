@@ -19,7 +19,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     model,
     dataServiceId = fitnessMachineUuid,
     dataCharacteristicId = treadmillUuid,
-    canMeasureHeartRate = false,
     heartRateByteIndex,
   }) : super(
           defaultSport: ActivityType.run,
@@ -33,7 +32,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
           model: model,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
-          canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
         );
 
@@ -48,7 +46,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
         model: model,
         dataServiceId: dataServiceId,
         dataCharacteristicId: dataCharacteristicId,
-        canMeasureHeartRate: canMeasureHeartRate,
         heartRateByteIndex: heartRateByteIndex,
       );
 

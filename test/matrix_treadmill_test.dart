@@ -23,7 +23,6 @@ void main() {
   test('Matrix Treadmill constructor tests', () async {
     final treadmill = MatrixTreadmillDescriptor();
 
-    expect(treadmill.canMeasureHeartRate, false);
     expect(treadmill.defaultSport, ActivityType.run);
     expect(treadmill.fourCC, matrixTreadmillFourCC);
   });
@@ -64,7 +63,7 @@ void main() {
           power: null,
           speed: 0.0,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,
@@ -80,7 +79,7 @@ void main() {
           power: null,
           speed: 0.81,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,
@@ -96,7 +95,7 @@ void main() {
           power: null,
           speed: 0.81,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,
@@ -112,7 +111,7 @@ void main() {
           power: null,
           speed: 9.66,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,
@@ -128,7 +127,7 @@ void main() {
           power: null,
           speed: 9.66,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,

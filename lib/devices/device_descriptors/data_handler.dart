@@ -104,7 +104,7 @@ abstract class DataHandler {
   }
 
   double? getHeartRate(List<int> data) {
-    if (heartRateByteIndex == null) return 0;
+    if (heartRateByteIndex == null || heartRateByteIndex! >= data.length) return null;
 
     return data[heartRateByteIndex!].toDouble();
   }

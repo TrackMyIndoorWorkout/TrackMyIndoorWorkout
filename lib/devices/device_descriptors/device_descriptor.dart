@@ -1,4 +1,7 @@
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../track/tracks.dart';
+import '../gadgets/complex_sensor.dart';
 import '../gatt_constants.dart';
 import 'data_handler.dart';
 
@@ -17,13 +20,14 @@ abstract class DeviceDescriptor extends DataHandler {
   final String manufacturerPrefix;
   final int manufacturerFitId;
   final String model;
-  String? dataServiceId;
-  String? dataCharacteristicId;
+  String dataServiceId;
+  String dataCharacteristicId;
+  String controlCharacteristicId;
+  bool listenOnControl;
+  String statusCharacteristicId;
   final bool antPlus;
 
-  bool canMeasureHeartRate;
   bool canMeasureCalories;
-  bool shouldSignalStartStop;
 
   double? slowPace;
 
@@ -37,12 +41,13 @@ abstract class DeviceDescriptor extends DataHandler {
     required this.manufacturerPrefix,
     required this.manufacturerFitId,
     required this.model, // Maybe eradicate?
-    this.dataServiceId,
-    this.dataCharacteristicId,
+    this.dataServiceId = "",
+    this.dataCharacteristicId = "",
+    this.controlCharacteristicId = "",
+    this.listenOnControl = true,
+    this.statusCharacteristicId = "",
     this.antPlus = false,
-    this.canMeasureHeartRate = true,
     this.canMeasureCalories = true,
-    this.shouldSignalStartStop = false,
     hasFeatureFlags = true,
     flagByteSize = 2,
     heartRateByteIndex,
@@ -69,4 +74,12 @@ abstract class DeviceDescriptor extends DataHandler {
   bool get isFitnessMachine => dataServiceId == fitnessMachineUuid;
 
   void stopWorkout();
+
+  Future<void> executeControlOperation(
+      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
+      {int? controlInfo});
+
+  ComplexSensor? getExtraSensor(BluetoothDevice device) {
+    return null;
+  }
 }

@@ -20,11 +20,9 @@ void main() {
   test('KayakPro Rower Device constructor tests', () async {
     final rower = DeviceFactory.getKayaPro();
 
-    expect(rower.canMeasureHeartRate, false);
     expect(rower.defaultSport, ActivityType.kayaking);
     expect(rower.fourCC, kayakProGenesisPortFourCC);
     expect(rower.isMultiSport, true);
-    expect(rower.shouldSignalStartStop, false);
   });
 
   test('Rower Device interprets KayakPro flags properly', () async {
@@ -72,7 +70,7 @@ void main() {
           power: 0,
           speed: null,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: 0.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 0.0,
@@ -88,7 +86,7 @@ void main() {
           power: 12,
           speed: null,
           cadence: 39,
-          heartRate: 0,
+          heartRate: null,
           pace: 342.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 345.0,
@@ -124,7 +122,7 @@ void main() {
           power: 16,
           speed: null,
           cadence: 76,
-          heartRate: 0,
+          heartRate: null,
           pace: 316.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 353.0,
@@ -160,7 +158,7 @@ void main() {
           power: 20,
           speed: null,
           cadence: 42,
-          heartRate: 0,
+          heartRate: null,
           pace: 295.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 363.0,
@@ -176,7 +174,7 @@ void main() {
           power: 30,
           speed: null,
           cadence: 88,
-          heartRate: 0,
+          heartRate: null,
           pace: 256.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 389.0,

@@ -5,22 +5,35 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:rxdart/rxdart.dart';
 import '../../devices/gatt_maps.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
+import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
 import '../gatt_constants.dart';
 
 abstract class DeviceBase {
   final String serviceId;
-  String? characteristicsId;
+  String characteristicId;
   BluetoothDevice? device;
-  BluetoothService? service;
   List<BluetoothService> services = [];
+  BluetoothService? service;
   BluetoothCharacteristic? characteristic;
   StreamSubscription? subscription;
+
+  String controlCharacteristicId;
+  bool listenOnControl;
+  BluetoothCharacteristic? controlPoint;
+  StreamSubscription? controlPointSubscription;
+  bool controlNotification = false;
+  bool gotControl = false;
+
+  String statusCharacteristicId;
+  BluetoothCharacteristic? status;
+  StreamSubscription? statusSubscription;
 
   bool connecting = false;
   bool connected = false;
@@ -34,9 +47,17 @@ abstract class DeviceBase {
 
   DeviceBase({
     required this.serviceId,
-    this.characteristicsId,
-    this.device,
+    required this.characteristicId,
+    required this.device,
+    this.controlCharacteristicId = "",
+    this.listenOnControl = true,
+    this.statusCharacteristicId = "",
   }) {
+    readConfiguration();
+  }
+
+  void readConfiguration() {
+    final prefService = Get.find<BasePrefService>();
     uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
     logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
   }
@@ -63,7 +84,7 @@ abstract class DeviceBase {
     return connected;
   }
 
-  bool discoverCore() {
+  Future<bool> discoverCore() async {
     discovering = false;
     discovered = true;
     service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
@@ -73,25 +94,98 @@ abstract class DeviceBase {
       return false;
     }
 
-    setCharacteristicById(characteristicsId);
+    await setCharacteristicById(characteristicId);
+
     return characteristic != null;
   }
 
-  void setCharacteristicById(String? newCharacteristicsId) {
-    if (newCharacteristicsId != null &&
-        newCharacteristicsId == characteristicsId &&
+  Future<void> setCharacteristicById(String newCharacteristicId) async {
+    if (newCharacteristicId.isNotEmpty &&
+        newCharacteristicId == characteristicId &&
         characteristic != null) {
       return;
     }
 
-    characteristicsId = newCharacteristicsId;
-    if (characteristicsId != null) {
+    characteristicId = newCharacteristicId;
+    if (characteristicId.isNotEmpty) {
       characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicsId);
+          .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicId);
     } else {
       characteristic = service!.characteristics
           .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
-      characteristicsId = characteristic?.uuid.uuidString();
+      characteristicId = characteristic?.uuid.uuidString() ?? "";
+    }
+
+    await connectToControlPoint(true);
+  }
+
+  Future<void> connectToControlPoint(bool obtainControl) async {
+    if (controlCharacteristicId.isEmpty) {
+      return;
+    }
+
+    if (controlPoint == null && controlCharacteristicId.isNotEmpty) {
+      controlPoint = service!.characteristics
+          .firstWhereOrNull((ch) => ch.uuid.uuidString() == controlCharacteristicId);
+    }
+
+    if (status == null && statusCharacteristicId.isNotEmpty) {
+      status = service!.characteristics
+          .firstWhereOrNull((ch) => ch.uuid.uuidString() == statusCharacteristicId);
+    }
+
+    if (listenOnControl && !controlNotification && controlPoint != null) {
+      try {
+        controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
+      } on PlatformException catch (e, stack) {
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
+
+      controlPointSubscription = controlPoint?.value
+          .throttleTime(
+        const Duration(milliseconds: ftmsStatusThreshold),
+        leading: false,
+        trailing: true,
+      )
+          .listen((controlResponse) async {
+        if (logLevel >= logLevelInfo) {
+          Logging.log(
+            logLevel,
+            logLevelInfo,
+            "FITNESS_EQUIPMENT",
+            "connectToControlPoint controlPointSubscription",
+            controlResponse.toString(),
+          );
+        }
+
+        if (controlResponse.length >= 3 &&
+            controlResponse[0] == controlOpcode &&
+            controlResponse[2] == successResponse) {
+          String logMessage = "Unknown success";
+          switch (controlResponse[1]) {
+            case requestControl:
+              gotControl = true;
+              logMessage = "Got control!";
+              break;
+            case startOrResumeControl:
+              logMessage = "Started!";
+              break;
+            case stopOrPauseControl:
+              logMessage = "Stopped!";
+              break;
+          }
+          if (logLevel >= logLevelInfo) {
+            Logging.log(
+              logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "connectToControlPoint controlPointSubscription",
+              logMessage,
+            );
+          }
+        }
+      });
     }
   }
 
@@ -121,10 +215,12 @@ abstract class DeviceBase {
       await discover(retry: true);
     }
 
-    return discoverCore();
+    final success = await discoverCore();
+
+    return success;
   }
 
-  List<String> inferSportsFromCharacteristicsIds() {
+  List<String> inferSportsFromCharacteristicIds() {
     if (discovered) {
       return service!.characteristics
           .where((char) => ftmsSportCharacteristics.contains(char.uuid.uuidString()))
@@ -134,15 +230,15 @@ abstract class DeviceBase {
     }
 
     List<String> sports = [];
-    if (characteristicsId == treadmillUuid ||
-        characteristicsId == stepClimberUuid ||
-        characteristicsId == stairClimberUuid) {
+    if (characteristicId == treadmillUuid ||
+        characteristicId == stepClimberUuid ||
+        characteristicId == stairClimberUuid) {
       sports.add(ActivityType.run);
-    } else if (characteristicsId == precorMeasurementUuid || characteristicsId == indoorBikeUuid) {
+    } else if (characteristicId == precorMeasurementUuid || characteristicId == indoorBikeUuid) {
       sports.add(ActivityType.ride);
-    } else if (characteristicsId == rowerDeviceUuid) {
+    } else if (characteristicId == rowerDeviceUuid) {
       sports.addAll(waterSports);
-    } else if (characteristicsId == crossTrainerUuid) {
+    } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
     }
 
@@ -210,8 +306,8 @@ abstract class DeviceBase {
       Logging.log(
         logLevel,
         logLevelInfo,
-        "DeviceBase",
-        "$tag logData",
+        tag,
+        "_listenToData",
         data.toString(),
       );
     }

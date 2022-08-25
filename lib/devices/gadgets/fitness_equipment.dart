@@ -8,12 +8,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:rxdart/rxdart.dart';
-import '../../preferences/app_debug_mode.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
+import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../persistence/database.dart';
 import '../../preferences/extend_tuning.dart';
@@ -22,22 +21,20 @@ import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/log_level.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
-import '../../preferences/should_signal_start_stop.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
-import '../../utils/guid_ex.dart';
 import '../../utils/hr_based_calories.dart';
 import '../../utils/logging.dart';
 import '../bluetooth_device_ex.dart';
 import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../device_fourcc.dart';
+import '../gadgets/complex_sensor.dart';
 import '../gatt_constants.dart';
 import 'device_base.dart';
 import 'heart_rate_monitor.dart';
-import 'running_cadence_sensor.dart';
 import 'write_support_parameters.dart';
 
 typedef RecordHandlerFunction = Function(RecordWithSport data);
@@ -74,7 +71,7 @@ class FitnessEquipment extends DeviceBase {
   late Record continuationRecord;
   bool continuation = false;
   HeartRateMonitor? heartRateMonitor;
-  RunningCadenceSensor? _runningCadenceSensor;
+  ComplexSensor? _extraSensor;
   String _heartRateGapWorkaround = heartRateGapWorkaroundDefault;
   int _heartRateUpperLimit = heartRateUpperLimitDefault;
   String _heartRateLimitingMethod = heartRateLimitingMethodDefault;
@@ -96,7 +93,6 @@ class FitnessEquipment extends DeviceBase {
   double? slowPace;
   bool _equipmentDiscovery = false;
   bool _extendTuning = false;
-  int _logLevel = logLevelDefault;
 
   int readFeatures = 0;
   int writeFeatures = 0;
@@ -106,13 +102,7 @@ class FitnessEquipment extends DeviceBase {
   WriteSupportParameters? _heartRateLevels;
   WriteSupportParameters? _powerLevels;
   bool supportsSpinDown = false;
-  BluetoothCharacteristic? controlPoint;
-  StreamSubscription? controlPointSubscription;
-  bool controlNotification = false;
-  bool gotControl = false;
-  BluetoothCharacteristic? status;
-  StreamSubscription? statusSubscription;
-  bool _shouldSignalStartStop = shouldSignalStartStopDefault;
+  bool _blockSignalStartStop = blockSignalStartStopDefault;
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
@@ -123,7 +113,10 @@ class FitnessEquipment extends DeviceBase {
   FitnessEquipment({this.descriptor, device, this.firstCalories = true, this.firstDistance = true})
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
-          characteristicsId: descriptor?.dataCharacteristicId,
+          characteristicId: descriptor?.dataCharacteristicId ?? "",
+          controlCharacteristicId: descriptor?.controlCharacteristicId ?? "",
+          listenOnControl: descriptor?.listenOnControl ?? true,
+          statusCharacteristicId: descriptor?.statusCharacteristicId ?? "",
           device: device,
         ) {
     readConfiguration();
@@ -154,9 +147,9 @@ class FitnessEquipment extends DeviceBase {
 
     _listDeduplicationMap = {};
     if (values.isEmpty) {
-      if (_logLevel >= logLevelInfo) {
+      if (logLevel >= logLevelInfo) {
         Logging.log(
-          _logLevel,
+          logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
           "mergedToYield",
@@ -170,9 +163,9 @@ class FitnessEquipment extends DeviceBase {
           values.first,
           (prev, element) => prev.merge(element, true, true),
         );
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "mergedToYield",
@@ -184,9 +177,9 @@ class FitnessEquipment extends DeviceBase {
 
   void _throttlingTimerCallback() {
     _throttleTimer = null;
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "listenToData",
@@ -253,9 +246,9 @@ class FitnessEquipment extends DeviceBase {
   ///   needed about first positive values and workout start and stop conditions
   ///   in processRecord
   Stream<RecordWithSport> get _listenToData async* {
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "listenToData",
@@ -265,9 +258,9 @@ class FitnessEquipment extends DeviceBase {
     if (!attached || characteristic == null || descriptor == null) return;
 
     await for (final byteList in characteristic!.value) {
-      if (_logLevel >= logLevelInfo) {
+      if (logLevel >= logLevelInfo) {
         Logging.log(
-          _logLevel,
+          logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
           "listenToData",
@@ -277,9 +270,9 @@ class FitnessEquipment extends DeviceBase {
       if (!measuring && !calibrating) continue;
 
       final key = keySelector(byteList);
-      if (_logLevel >= logLevelInfo) {
+      if (logLevel >= logLevelInfo) {
         Logging.log(
-          _logLevel,
+          logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
           "listenToData",
@@ -289,9 +282,9 @@ class FitnessEquipment extends DeviceBase {
       bool processable = false;
       if (key >= 0) {
         if (!dataHandlers.containsKey(key)) {
-          if (_logLevel >= logLevelInfo) {
+          if (logLevel >= logLevelInfo) {
             Logging.log(
-              _logLevel,
+              logLevel,
               logLevelInfo,
               "FITNESS_EQUIPMENT",
               "listenToData",
@@ -309,9 +302,9 @@ class FitnessEquipment extends DeviceBase {
       }
 
       bool timerActive = _throttleTimer?.isActive ?? false;
-      if (_logLevel >= logLevelInfo) {
+      if (logLevel >= logLevelInfo) {
         Logging.log(
-          _logLevel,
+          logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
           "listenToData",
@@ -353,7 +346,7 @@ class FitnessEquipment extends DeviceBase {
         },
       );
     } else {
-      _runningCadenceSensor?.pumpData(null);
+      _extraSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
         pumpDataCore(recordStub, false);
       });
@@ -367,19 +360,18 @@ class FitnessEquipment extends DeviceBase {
   Future<void> additionalSensorsOnDemand() async {
     await refreshFactors();
 
-    if (_runningCadenceSensor != null && _runningCadenceSensor?.device?.id.id != device?.id.id) {
-      await _runningCadenceSensor?.detach();
-      _runningCadenceSensor = null;
+    if (_extraSensor != null && _extraSensor?.device?.id.id != device?.id.id) {
+      await _extraSensor?.detach();
+      _extraSensor = null;
     }
-    if (sport == ActivityType.run) {
-      if (services.firstWhereOrNull(
-              (service) => service.uuid.uuidString() == runningCadenceServiceUuid) !=
-          null) {
-        _runningCadenceSensor = RunningCadenceSensor(device, powerFactor);
-        _runningCadenceSensor?.services = services;
-        _runningCadenceSensor?.discoverCore();
-        await _runningCadenceSensor?.attach();
-      }
+
+    if (descriptor != null && device != null) {
+      _extraSensor = descriptor!.getExtraSensor(device!);
+      _extraSensor?.services = services;
+      await _extraSensor?.discoverCore();
+      await _extraSensor?.attach();
+    } else {
+      _extraSensor = null;
     }
   }
 
@@ -391,9 +383,9 @@ class FitnessEquipment extends DeviceBase {
       final lastRecord = await database.recordDao.findLastRecordOfActivity(activity.id!).first;
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
-      if (_logLevel >= logLevelInfo) {
+      if (logLevel >= logLevelInfo) {
         Logging.log(
-          _logLevel,
+          logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
           "setActivity",
@@ -428,14 +420,14 @@ class FitnessEquipment extends DeviceBase {
   Future<WriteSupportParameters?> getWriteSupportParameters(
     int writeFeaturesFlag,
     int supportBit,
-    String supportCharacteristicsId,
+    String supportCharacteristicId,
     String description,
     int division, {
     int numberBytes = 2,
   }) async {
     if (writeFeaturesFlag & supportBit > 0) {
-      final writeTargets = BluetoothDeviceEx.filterCharacteristic(
-          service!.characteristics, supportCharacteristicsId);
+      final writeTargets =
+          BluetoothDeviceEx.filterCharacteristic(service!.characteristics, supportCharacteristicId);
       try {
         final writeTargetValues = await writeTargets?.read();
         if (writeTargetValues != null) {
@@ -516,100 +508,20 @@ class FitnessEquipment extends DeviceBase {
     }
   }
 
-  Future<void> _executeControlOperation(int opCode, {int? controlInfo}) async {
-    if (!await FlutterBluePlus.instance.isOn) {
+  @override
+  Future<void> connectToControlPoint(bool obtainControl) async {
+    if (controlCharacteristicId.isEmpty) {
       return;
     }
 
-    if (controlPoint == null ||
-        (!_shouldSignalStartStop && !(descriptor?.shouldSignalStartStop ?? false))) {
-      return;
-    }
-
-    List<int> requestInfo = [opCode];
-    if (controlInfo != null) {
-      requestInfo.add(controlInfo);
-    }
-
-    try {
-      await controlPoint?.write(requestInfo);
-      // Response could be picked up in the subscription listener
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-  }
-
-  Future<void> connectToControlPoint(obtainControl) async {
-    if (controlPoint == null) {
-      controlPoint = BluetoothDeviceEx.filterCharacteristic(
-        service!.characteristics,
-        fitnessMachineControlPointUuid,
+    await super.connectToControlPoint(obtainControl);
+    if (obtainControl && !_blockSignalStartStop && descriptor != null) {
+      await descriptor!.executeControlOperation(
+        controlPoint,
+        _blockSignalStartStop,
+        logLevel,
+        requestControl,
       );
-
-      status = BluetoothDeviceEx.filterCharacteristic(
-        service!.characteristics,
-        fitnessMachineStatusUuid,
-      );
-    }
-
-    if (!controlNotification && controlPoint != null) {
-      try {
-        controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
-      } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-      }
-
-      controlPointSubscription = controlPoint?.value
-          .throttleTime(
-        const Duration(milliseconds: ftmsStatusThreshold),
-        leading: false,
-        trailing: true,
-      )
-          .listen((controlResponse) async {
-        if (_logLevel >= logLevelInfo) {
-          Logging.log(
-            _logLevel,
-            logLevelInfo,
-            "FITNESS_EQUIPMENT",
-            "connectToControlPoint controlPointSubscription",
-            controlResponse.toString(),
-          );
-        }
-
-        if (controlResponse.length >= 3 &&
-            controlResponse[0] == controlOpcode &&
-            controlResponse[2] == successResponse) {
-          String logMessage = "Unknown success";
-          switch (controlResponse[1]) {
-            case requestControl:
-              gotControl = true;
-              logMessage = "Got control!";
-              break;
-            case startOrResumeControl:
-              logMessage = "Started!";
-              break;
-            case stopOrPauseControl:
-              logMessage = "Stopped!";
-              break;
-          }
-          if (_logLevel >= logLevelInfo) {
-            Logging.log(
-              _logLevel,
-              logLevelInfo,
-              "FITNESS_EQUIPMENT",
-              "connectToControlPoint controlPointSubscription",
-              logMessage,
-            );
-          }
-        }
-      });
-
-      if (obtainControl &&
-          (_shouldSignalStartStop || (descriptor?.shouldSignalStartStop ?? false))) {
-        await _executeControlOperation(requestControl);
-      }
     }
   }
 
@@ -625,7 +537,6 @@ class FitnessEquipment extends DeviceBase {
     _equipmentDiscovery = true;
 
     await _fitnessMachineFeature();
-    await connectToControlPoint(true);
 
     // Check manufacturer name
     if (manufacturerName == null) {
@@ -638,9 +549,9 @@ class FitnessEquipment extends DeviceBase {
   }
 
   bool _checkManufacturerName() {
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "_checkManufacturerName",
@@ -674,9 +585,9 @@ class FitnessEquipment extends DeviceBase {
       manufacturerName = String.fromCharCodes(nameBytes);
       return manufacturerName;
     } on PlatformException catch (e, stack) {
-      if (_logLevel > logLevelNone) {
+      if (logLevel > logLevelNone) {
         Logging.logException(
-          _logLevel,
+          logLevel,
           "FITNESS_EQUIPMENT",
           "discover",
           "Could not read name${secondTry ? ' 2nd try' : ''}",
@@ -707,9 +618,9 @@ class FitnessEquipment extends DeviceBase {
     // State Machine for #231 and #235
     // (intelligent start and elapsed time tracking)
     bool isNotMoving = stub.isNotMoving();
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "processRecord",
@@ -767,9 +678,9 @@ class FitnessEquipment extends DeviceBase {
 
     if (descriptor != null) {
       stub.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-      if (_logLevel >= logLevelInfo) {
+      if (logLevel >= logLevelInfo) {
         Logging.log(
-          _logLevel,
+          logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
           "processRecord",
@@ -778,9 +689,9 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "processRecord",
@@ -847,24 +758,11 @@ class FitnessEquipment extends DeviceBase {
       return lastRecord;
     }
 
-    if (sport == ActivityType.run &&
-        _runningCadenceSensor != null &&
-        (_runningCadenceSensor?.attached ?? false)) {
-      RecordWithSport? rscRecord = _runningCadenceSensor?.record;
-      if (rscRecord != null) {
-        rscRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-
-        if ((stub.cadence == null || stub.cadence == 0) && (rscRecord.cadence ?? 0) > 0) {
-          stub.cadence = rscRecord.cadence;
-        }
-
-        if ((stub.speed == null || stub.speed == 0) && (rscRecord.speed ?? 0.0) > eps) {
-          stub.speed = rscRecord.speed;
-        }
-
-        if ((stub.distance == null || stub.distance == 0) && (rscRecord.distance ?? 0.0) > eps) {
-          stub.distance = rscRecord.distance;
-        }
+    if (_extraSensor != null && (_extraSensor?.attached ?? false)) {
+      RecordWithSport? extraRecord = _extraSensor?.record;
+      if (extraRecord != null) {
+        extraRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
+        stub.merge(extraRecord, true, true);
       }
     }
 
@@ -999,9 +897,9 @@ class FitnessEquipment extends DeviceBase {
         assert(calories >= _startingCalories);
       }
 
-      if (_logLevel >= logLevelInfo) {
+      if (logLevel >= logLevelInfo) {
         Logging.log(
-          _logLevel,
+          logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
           "processRecord",
@@ -1016,9 +914,9 @@ class FitnessEquipment extends DeviceBase {
     stub.activityId = _activity?.id ?? 0;
     stub.sport = descriptor?.defaultSport ?? ActivityType.ride;
 
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "processRecord",
@@ -1029,16 +927,16 @@ class FitnessEquipment extends DeviceBase {
     if (!uxDebug) {
       stub.cumulativeMetricsEnforcements(
         lastRecord,
-        _logLevel,
+        logLevel,
         forDistance: !firstDistance,
         forTime: true,
         forCalories: !firstCalories,
       );
     }
 
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "processRecord",
@@ -1046,9 +944,9 @@ class FitnessEquipment extends DeviceBase {
       );
     }
 
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "processRecord",
@@ -1082,9 +980,9 @@ class FitnessEquipment extends DeviceBase {
     hrmCalorieFactor =
         await database.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
 
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "refreshFactors",
@@ -1096,11 +994,13 @@ class FitnessEquipment extends DeviceBase {
     }
   }
 
+  @override
   void readConfiguration() {
+    super.readConfiguration();
+    _extraSensor?.readConfiguration();
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
         prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
-    uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
     _heartRateGapWorkaround =
         prefService.get<String>(heartRateGapWorkaroundTag) ?? heartRateGapWorkaroundDefault;
     _heartRateUpperLimit =
@@ -1118,13 +1018,12 @@ class FitnessEquipment extends DeviceBase {
     _vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
     _useHrBasedCalorieCounting &= (_weight > athleteBodyWeightMin && _age > athleteAgeMin);
     _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
-    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-    _shouldSignalStartStop =
-        prefService.get<bool>(shouldSignalStartStopTag) ?? shouldSignalStartStopDefault;
+    _blockSignalStartStop =
+        testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
 
-    if (_logLevel >= logLevelInfo) {
+    if (logLevel >= logLevelInfo) {
       Logging.log(
-        _logLevel,
+        logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "readConfiguration",
@@ -1141,7 +1040,7 @@ class FitnessEquipment extends DeviceBase {
             "vo2Max $_vo2Max, "
             "useHrBasedCalorieCounting $_useHrBasedCalorieCounting, "
             "extendTuning $_extendTuning, "
-            "logLevel $_logLevel",
+            "logLevel $logLevel",
       );
     }
 
@@ -1159,14 +1058,25 @@ class FitnessEquipment extends DeviceBase {
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
-    if ((descriptor?.shouldSignalStartStop ?? false) || _shouldSignalStartStop) {
-      await _executeControlOperation(startOrResumeControl);
+    if (!_blockSignalStartStop && descriptor != null) {
+      await descriptor!.executeControlOperation(
+        controlPoint,
+        _blockSignalStartStop,
+        logLevel,
+        startOrResumeControl,
+      );
     }
   }
 
   void stopWorkout() {
-    if ((descriptor?.shouldSignalStartStop ?? false) || _shouldSignalStartStop) {
-      _executeControlOperation(stopOrPauseControl, controlInfo: stopControlInfo);
+    if (!_blockSignalStartStop && descriptor != null) {
+      descriptor!.executeControlOperation(
+        controlPoint,
+        _blockSignalStartStop,
+        logLevel,
+        stopOrPauseControl,
+        controlInfo: stopControlInfo,
+      );
     }
 
     readConfiguration();
@@ -1178,7 +1088,7 @@ class FitnessEquipment extends DeviceBase {
 
   @override
   Future<void> detach() async {
+    await _extraSensor?.detach();
     await super.detach();
-    await _runningCadenceSensor?.detach();
   }
 }

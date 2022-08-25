@@ -18,6 +18,9 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
   bool _lightOrDark = false;
   bool _fgOrBg = false;
   int _size = 5;
+  double _mediaHeight = 0;
+  double _mediaWidth = 0;
+  bool _landscape = false;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _textStyle = const TextStyle();
   TextStyle _largerTextStyle = const TextStyle();
@@ -25,7 +28,8 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
   final _darknessController = GroupButtonController(selectedIndex: 0);
   final _fgBgController = GroupButtonController(selectedIndex: 0);
   final _sizeController = GroupButtonController(selectedIndex: 0);
-  GroupButtonOptions? _groupButtonOptions;
+  GroupButtonOptions? _landscapeGroupButtonOptions;
+  GroupButtonOptions? _portraitGroupButtonOptions;
 
   @override
   void initState() {
@@ -42,7 +46,15 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
       fontFamily: fontFamily,
       color: _themeManager.getAntagonistColor(),
     );
-    _groupButtonOptions = GroupButtonOptions(
+    _landscapeGroupButtonOptions = GroupButtonOptions(
+      borderRadius: BorderRadius.circular(4),
+      selectedTextStyle: _groupStyle,
+      selectedColor: _themeManager.getGreenColor(),
+      unselectedTextStyle: _groupStyle,
+      unselectedColor: _themeManager.getBlueColor(),
+      direction: Axis.vertical,
+    );
+    _portraitGroupButtonOptions = GroupButtonOptions(
       borderRadius: BorderRadius.circular(4),
       selectedTextStyle: _groupStyle,
       selectedColor: _themeManager.getGreenColor(),
@@ -53,48 +65,119 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final size = Get.mediaQuery.size;
+    if (size.width != _mediaWidth || size.height != _mediaHeight) {
+      _mediaWidth = size.width;
+      _mediaHeight = size.height;
+      _landscape = _mediaWidth > _mediaHeight;
+    }
+
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("Palette type:", style: _largerTextStyle),
-            Text("Theme:", style: _textStyle),
-            GroupButton(
-              controller: _darknessController,
-              isRadio: true,
-              buttons: const ["Dark", "Light"],
-              maxSelected: 1,
-              options: _groupButtonOptions!,
-              onSelected: (_, i, selected) =>
-                  _lightOrDark = (i == 1 && selected || i == 0 && !selected),
+      body: _landscape
+          ? Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      Text("Palette", style: _largerTextStyle),
+                      Text("type:", style: _largerTextStyle),
+                    ],
+                  ),
+                  const VerticalDivider(),
+                  Column(
+                    children: [
+                      Text("Theme:", style: _textStyle),
+                      GroupButton(
+                        controller: _darknessController,
+                        isRadio: true,
+                        buttons: const ["Dark", "Light"],
+                        maxSelected: 1,
+                        options: _landscapeGroupButtonOptions!,
+                        onSelected: (_, i, selected) =>
+                            _lightOrDark = (i == 1 && selected || i == 0 && !selected),
+                      ),
+                    ],
+                  ),
+                  const VerticalDivider(),
+                  Column(
+                    children: [
+                      Text("Fg./Bg.:", style: _textStyle),
+                      GroupButton(
+                        controller: _fgBgController,
+                        isRadio: true,
+                        buttons: const ["Foregr.", "Backgr."],
+                        maxSelected: 1,
+                        options: _landscapeGroupButtonOptions!,
+                        onSelected: (_, i, selected) =>
+                            _fgOrBg = (i == 1 && selected || i == 0 && !selected),
+                      ),
+                    ],
+                  ),
+                  const VerticalDivider(),
+                  Column(
+                    children: [
+                      Text("Size:", style: _textStyle),
+                      GroupButton(
+                        controller: _sizeController,
+                        isRadio: true,
+                        buttons: const ["5", "6", "7"],
+                        maxSelected: 1,
+                        options: _landscapeGroupButtonOptions!,
+                        onSelected: (_, i, selected) {
+                          if (selected) {
+                            _size = i + 5;
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Palette type:", style: _largerTextStyle),
+                  Text("Theme:", style: _textStyle),
+                  GroupButton(
+                    controller: _darknessController,
+                    isRadio: true,
+                    buttons: const ["Dark", "Light"],
+                    maxSelected: 1,
+                    options: _portraitGroupButtonOptions!,
+                    onSelected: (_, i, selected) =>
+                        _lightOrDark = (i == 1 && selected || i == 0 && !selected),
+                  ),
+                  Text("Fg./Bg.:", style: _textStyle),
+                  GroupButton(
+                    controller: _fgBgController,
+                    isRadio: true,
+                    buttons: const ["Foregr.", "Backgr."],
+                    maxSelected: 1,
+                    options: _portraitGroupButtonOptions!,
+                    onSelected: (_, i, selected) =>
+                        _fgOrBg = (i == 1 && selected || i == 0 && !selected),
+                  ),
+                  Text("Size:", style: _textStyle),
+                  GroupButton(
+                    controller: _sizeController,
+                    isRadio: true,
+                    buttons: const ["5", "6", "7"],
+                    maxSelected: 1,
+                    options: _portraitGroupButtonOptions!,
+                    onSelected: (_, i, selected) {
+                      if (selected) {
+                        _size = i + 5;
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-            Text("Fg./Bg.:", style: _textStyle),
-            GroupButton(
-              controller: _fgBgController,
-              isRadio: true,
-              buttons: const ["Foregr.", "Backgr."],
-              maxSelected: 1,
-              options: _groupButtonOptions!,
-              onSelected: (_, i, selected) => _fgOrBg = (i == 1 && selected || i == 0 && !selected),
-            ),
-            Text("Size:", style: _textStyle),
-            GroupButton(
-              controller: _sizeController,
-              isRadio: true,
-              buttons: const ["5", "6", "7"],
-              maxSelected: 1,
-              options: _groupButtonOptions!,
-              onSelected: (_, i, selected) {
-                if (selected) {
-                  _size = i + 5;
-                }
-              },
-            ),
-          ],
-        ),
-      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: Container(
         margin: const EdgeInsets.all(10.0),

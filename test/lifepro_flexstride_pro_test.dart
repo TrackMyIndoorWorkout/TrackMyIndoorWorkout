@@ -15,11 +15,9 @@ void main() {
   test('LifePro FlexStride Pro Device constructor tests', () async {
     final xTrainer = DeviceFactory.getGenericFTMSCrossTrainer();
 
-    expect(xTrainer.canMeasureHeartRate, true);
     expect(xTrainer.defaultSport, ActivityType.elliptical);
     expect(xTrainer.fourCC, genericFTMSCrossTrainerFourCC);
     expect(xTrainer.isMultiSport, false);
-    expect(xTrainer.shouldSignalStartStop, false);
   });
 
   test('Cross Trainer Device interprets LifePro FlexStride Pro flags properly', () async {
@@ -53,7 +51,7 @@ void main() {
           power: 0,
           speed: 0.0,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,
@@ -68,7 +66,7 @@ void main() {
           power: 5,
           speed: 0.02,
           cadence: 6,
-          heartRate: 0,
+          heartRate: null,
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,
@@ -83,7 +81,7 @@ void main() {
           power: 90,
           speed: 1.16,
           cadence: 100,
-          heartRate: 0,
+          heartRate: null,
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,
@@ -98,7 +96,7 @@ void main() {
           power: 66,
           speed: 0.84,
           cadence: 74,
-          heartRate: 0,
+          heartRate: null,
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,

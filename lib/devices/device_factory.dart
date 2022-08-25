@@ -42,7 +42,6 @@ class DeviceFactory {
       manufacturerPrefix: "Nautilus",
       manufacturerFitId: nautilusFitId,
       model: "SCH BIKE",
-      shouldSignalStartStop: true,
     );
   }
 
@@ -80,19 +79,6 @@ class DeviceFactory {
       manufacturerPrefix: "North Pole Engineering",
       manufacturerFitId: northPoleEngineeringFitId,
       model: "64",
-      canMeasureHeartRate: false,
-    );
-  }
-
-  static TreadmillDeviceDescriptor getNpeRunn() {
-    return TreadmillDeviceDescriptor(
-      fourCC: npeRunnFourCC,
-      vendorName: "North Pole Engineering Inc.",
-      modelName: "Generic Treadmill",
-      namePrefixes: ["RUNN"],
-      manufacturerPrefix: "North Pole Engineering",
-      manufacturerFitId: northPoleEngineeringFitId,
-      model: "77",
     );
   }
 

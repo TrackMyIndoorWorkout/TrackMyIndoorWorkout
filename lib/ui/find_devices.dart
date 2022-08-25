@@ -360,22 +360,30 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
           fitnessEquipment = FitnessEquipment(device: device);
           final success = await fitnessEquipment.connectOnDemand(identify: true);
-          if (success && fitnessEquipment.characteristicsId != null) {
-            final inferredSports = fitnessEquipment.inferSportsFromCharacteristicsIds();
+          if (success) {
+            final inferredSports = fitnessEquipment.inferSportsFromCharacteristicIds();
             if (inferredSports.isNotEmpty) {
               if (inferredSports.length == 1) {
                 inferredSport = inferredSports.first;
               } else {
                 inferredSport = await Get.bottomSheet(
-                  SportPickerBottomSheet(
-                    sportChoices: inferredSports,
-                    initialSport: inferredSports.first,
+                  SafeArea(
+                    child: Expanded(
+                      child: Center(
+                        child: SportPickerBottomSheet(
+                          sportChoices: inferredSports,
+                          initialSport: inferredSports.first,
+                        ),
+                      ),
+                    ),
                   ),
+                  isScrollControlled: true,
+                  ignoreSafeArea: false,
                   isDismissible: false,
                   enableDrag: false,
                 );
                 pickedAlready = inferredSport != null;
-                fitnessEquipment.setCharacteristicById(sportToUuid[inferredSport]!);
+                await fitnessEquipment.setCharacteristicById(sportToUuid[inferredSport]!);
               }
             }
           }
@@ -422,7 +430,18 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (deviceUsage == null || multiSportSupport) {
         final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
         final sportPick = await Get.bottomSheet(
-          SportPickerBottomSheet(sportChoices: waterSports, initialSport: initialSport),
+          SafeArea(
+            child: Expanded(
+              child: Center(
+                child: SportPickerBottomSheet(
+                  sportChoices: waterSports,
+                  initialSport: initialSport,
+                ),
+              ),
+            ),
+          ),
+          isScrollControlled: true,
+          ignoreSafeArea: false,
           isDismissible: false,
           enableDrag: false,
         );
@@ -794,10 +813,18 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   ? 'Disconnect from the selected HRM?'
                                   : 'Disconnect from that HRM to connect to the selected one?';
                               final verdict = await Get.bottomSheet(
-                                BooleanQuestionBottomSheet(
-                                  title: title,
-                                  content: content,
+                                SafeArea(
+                                  child: Expanded(
+                                    child: Center(
+                                      child: BooleanQuestionBottomSheet(
+                                        title: title,
+                                        content: content,
+                                      ),
+                                    ),
+                                  ),
                                 ),
+                                isScrollControlled: true,
+                                ignoreSafeArea: false,
                                 isDismissible: false,
                                 enableDrag: false,
                               );

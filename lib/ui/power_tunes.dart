@@ -54,10 +54,18 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
           iconSize: size,
           onPressed: () async {
             final result = await Get.bottomSheet(
-              PowerFactorTuneBottomSheet(
-                deviceId: powerTune.mac,
-                oldPowerFactor: powerTune.powerFactor,
+              SafeArea(
+                child: Expanded(
+                  child: Center(
+                    child: PowerFactorTuneBottomSheet(
+                      deviceId: powerTune.mac,
+                      oldPowerFactor: powerTune.powerFactor,
+                    ),
+                  ),
+                ),
               ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
             if (result != null) {

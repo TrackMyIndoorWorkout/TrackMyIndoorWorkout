@@ -11,7 +11,6 @@ void main() {
   test('Schwinn AC Performance Plus constructor tests', () async {
     final bike = SchwinnACPerformancePlus();
 
-    expect(bike.canMeasureHeartRate, true);
     expect(bike.defaultSport, ActivityType.ride);
     expect(bike.fourCC, schwinnACPerfPlusFourCC);
   });

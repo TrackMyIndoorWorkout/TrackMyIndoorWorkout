@@ -481,6 +481,16 @@ class CSVImporter with PowerSpeedMixin {
       hrBasedCalories = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
           useHeartRateBasedCalorieCountingDefault;
       powerFactor = factors.item1;
+      if (start == null) {
+        // User choose the wrong type of import
+        Get.snackbar(
+          "Not CSV migration data",
+          "The current time will be assumed as workout time. "
+              "Select MPower import to specify time",
+        );
+        start = DateTime.now();
+      }
+
       startTime = start!.millisecondsSinceEpoch;
       endTime = start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch;
     }
