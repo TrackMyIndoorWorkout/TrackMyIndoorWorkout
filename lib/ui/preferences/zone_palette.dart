@@ -55,7 +55,6 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
   @override
   Widget build(BuildContext context) {
     List<Widget> items = _palette.mapIndexed((index, color) {
-      debugPrint("$index $color");
       return Container(
         padding: const EdgeInsets.all(5.0),
         margin: const EdgeInsets.all(5.0),
