@@ -368,13 +368,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
               } else {
                 inferredSport = await Get.bottomSheet(
                   SafeArea(
-                    child: Expanded(
-                      child: Center(
-                        child: SportPickerBottomSheet(
-                          sportChoices: inferredSports,
-                          initialSport: inferredSports.first,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: SportPickerBottomSheet(
+                              sportChoices: inferredSports,
+                              initialSport: inferredSports.first,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                   isScrollControlled: true,
@@ -431,13 +435,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
         final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
         final sportPick = await Get.bottomSheet(
           SafeArea(
-            child: Expanded(
-              child: Center(
-                child: SportPickerBottomSheet(
-                  sportChoices: waterSports,
-                  initialSport: initialSport,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: SportPickerBottomSheet(
+                      sportChoices: waterSports,
+                      initialSport: initialSport,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
           isScrollControlled: true,
@@ -814,13 +822,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   : 'Disconnect from that HRM to connect to the selected one?';
                               final verdict = await Get.bottomSheet(
                                 SafeArea(
-                                  child: Expanded(
-                                    child: Center(
-                                      child: BooleanQuestionBottomSheet(
-                                        title: title,
-                                        content: content,
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: Center(
+                                          child: BooleanQuestionBottomSheet(
+                                            title: title,
+                                            content: content,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
                                 isScrollControlled: true,
