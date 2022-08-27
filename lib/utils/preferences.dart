@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/preferences/theme_selection.dart';
 import 'package:tuple/tuple.dart';
 import '../preferences/data_connection_addresses.dart';
 import 'constants.dart';
@@ -86,4 +88,22 @@ Future<bool> hasInternetConnection() async {
   }
 
   return await connectionChecker.hasConnection;
+}
+
+ThemeMode preferredThemeMode(BasePrefService prefService) {
+  final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
+  ThemeMode themeMode = ThemeMode.system;
+  switch (themeSelection) {
+    case themeSelectionLight:
+      themeMode = ThemeMode.light;
+      break;
+    case themeSelectionDark:
+      themeMode = ThemeMode.dark;
+      break;
+    case themeSelectionSystem:
+    default:
+      themeMode = ThemeMode.system;
+      break;
+  }
+  return themeMode;
 }

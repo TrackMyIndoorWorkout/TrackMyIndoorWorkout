@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/auto_connect.dart';
@@ -14,11 +15,12 @@ import '../../preferences/simpler_ui.dart';
 import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
 import '../../preferences/unit_system.dart';
+import '../../providers/theme_mode.dart';
 import '../parts/pick_directory.dart';
 import 'preferences_screen_mixin.dart';
 import 'row_configuration_dialog.dart';
 
-class UXPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
+class UXPreferencesScreen extends ConsumerStatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "UX";
   static String title = "$shortTitle Preferences";
 
@@ -28,7 +30,7 @@ class UXPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   UXPreferencesScreenState createState() => UXPreferencesScreenState();
 }
 
-class UXPreferencesScreenState extends State<UXPreferencesScreen> {
+class UXPreferencesScreenState extends ConsumerState<UXPreferencesScreen> {
   int _locationEdit = 0;
 
   @override
@@ -38,20 +40,23 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
         title: Text(themeSelection, style: Get.textTheme.headline5!, maxLines: 3),
         subtitle: const Text(themeSelectionDescription),
       ),
-      const PrefRadio<String>(
-        title: Text(themeSelectionSystemDescription),
+      PrefRadio<String>(
+        title: const Text(themeSelectionSystemDescription),
         value: themeSelectionSystem,
         pref: themeSelectionTag,
+        onSelect: () => ref.refresh(themeModeProvider).reactive.value = ThemeMode.system,
       ),
-      const PrefRadio<String>(
-        title: Text(themeSelectionLightDescription),
+      PrefRadio<String>(
+        title: const Text(themeSelectionLightDescription),
         value: themeSelectionLight,
         pref: themeSelectionTag,
+        onSelect: () => ref.refresh(themeModeProvider).reactive.value = ThemeMode.light,
       ),
-      const PrefRadio<String>(
-        title: Text(themeSelectionDarkDescription),
+      PrefRadio<String>(
+        title: const Text(themeSelectionDarkDescription),
         value: themeSelectionDark,
         pref: themeSelectionTag,
+        onSelect: () => ref.refresh(themeModeProvider).reactive.value = ThemeMode.dark,
       ),
       const PrefLabel(title: Divider(height: 1)),
       const PrefCheckbox(
