@@ -252,6 +252,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _themeManager.getBlueFab(Icons.clear, () => Get.back(result: true)),
+            const SizedBox(width: 10, height: 10),
             StreamBuilder<bool>(
               stream: FlutterBluePlus.instance.isScanning,
               initialData: true,
