@@ -1,29 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pref/pref.dart';
 import '../ui/about.dart';
-import '../preferences/theme_selection.dart';
 import '../utils/constants.dart';
 
 class ThemeManager {
-  ThemeMode getThemeMode() {
-    final prefService = Get.find<BasePrefService>();
-    final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
-    if (themeSelection == "light") {
-      return ThemeMode.light;
-    } else if (themeSelection == "dark") {
-      return ThemeMode.dark;
-    } else {
-      return ThemeMode.system;
-    }
-  }
-
-  bool isDark() {
-    final prefService = Get.find<BasePrefService>();
-    final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
-    if (themeSelection == "light") {
+  bool isDark(ThemeMode themeMode) {
+    if (themeMode == ThemeMode.light) {
       return false;
-    } else if (themeSelection == "dark") {
+    } else if (themeMode == ThemeMode.dark) {
       return true;
     }
 
@@ -31,76 +15,76 @@ class ThemeManager {
     return Get.isPlatformDarkMode;
   }
 
-  Icon getDeleteIcon(double size) {
+  Icon getDeleteIcon(double size, ThemeMode themeMode) {
     return Icon(
       Icons.delete,
-      color: isDark() ? Colors.amberAccent : Colors.redAccent,
+      color: isDark(themeMode) ? Colors.amberAccent : Colors.redAccent,
       size: size,
     );
   }
 
-  Color getHeaderColor() {
-    return isDark() ? Colors.indigo : Colors.lightBlue;
+  Color getHeaderColor(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.indigo : Colors.lightBlue;
   }
 
-  Color getBlueColor() {
-    return isDark() ? Colors.cyanAccent : Colors.indigo;
+  Color getBlueColor(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.cyanAccent : Colors.indigo;
   }
 
-  Color getRedColor() {
-    return isDark() ? Colors.orangeAccent : Colors.red.shade700;
+  Color getRedColor(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.orangeAccent : Colors.red.shade700;
   }
 
-  Color getBlueColorInverse() {
-    return isDark() ? Colors.indigo : Colors.cyanAccent;
+  Color getBlueColorInverse(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.indigo : Colors.cyanAccent;
   }
 
-  Color getGreenColor() {
-    return isDark() ? Colors.lightGreenAccent : Colors.green;
+  Color getGreenColor(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.lightGreenAccent : Colors.green;
   }
 
-  Color getYellowColor() {
-    return isDark() ? Colors.yellowAccent : Colors.yellow;
+  Color getYellowColor(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.yellowAccent : Colors.yellow;
   }
 
-  Color getOrangeColor() {
-    return isDark() ? Colors.orange : Colors.deepOrangeAccent;
+  Color getOrangeColor(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.orange : Colors.deepOrangeAccent;
   }
 
-  Color getSuuntoRedColor() {
-    return isDark() ? Colors.redAccent : Colors.red;
+  Color getSuuntoRedColor(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.redAccent : Colors.red;
   }
 
-  Color getGreyColor() {
-    return isDark() ? Colors.grey.shade400 : Colors.grey.shade600;
+  Color getGreyColor(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.grey.shade400 : Colors.grey.shade600;
   }
 
-  Color getAntagonistColor() {
-    return isDark() ? Colors.black : Colors.white;
+  Color getAntagonistColor(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.black : Colors.white;
   }
 
-  Color getProtagonistColor() {
-    return isDark() ? Colors.white : Colors.black;
+  Color getProtagonistColor(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.white : Colors.black;
   }
 
-  Icon getBlueIcon(IconData icon, double size) {
-    return Icon(icon, color: getBlueColor(), size: size);
+  Icon getBlueIcon(IconData icon, double size, ThemeMode themeMode) {
+    return Icon(icon, color: getBlueColor(themeMode), size: size);
   }
 
-  Icon getRedIcon(IconData icon, double size) {
-    return Icon(icon, color: getRedColor(), size: size);
+  Icon getRedIcon(IconData icon, double size, ThemeMode themeMode) {
+    return Icon(icon, color: getRedColor(themeMode), size: size);
   }
 
-  Icon getGreyIcon(IconData icon, double size) {
-    return Icon(icon, color: getGreyColor(), size: size);
+  Icon getGreyIcon(IconData icon, double size, ThemeMode themeMode) {
+    return Icon(icon, color: getGreyColor(themeMode), size: size);
   }
 
-  Icon getActionIcon(IconData icon, double size) {
-    return Icon(icon, color: getProtagonistColor(), size: size);
+  Icon getActionIcon(IconData icon, double size, ThemeMode themeMode) {
+    return Icon(icon, color: getProtagonistColor(themeMode), size: size);
   }
 
-  TextStyle getBlueTextStyle(double fontSize) {
-    return TextStyle(fontFamily: fontFamily, fontSize: fontSize, color: getBlueColor());
+  TextStyle getBlueTextStyle(double fontSize, ThemeMode themeMode) {
+    return TextStyle(fontFamily: fontFamily, fontSize: fontSize, color: getBlueColor(themeMode));
   }
 
   Widget _getFabCore(
@@ -120,9 +104,9 @@ class ThemeManager {
     );
   }
 
-  Widget getIconFab(Color color, IconData icon, VoidCallback? onPressed) {
+  Widget getIconFab(Color color, IconData icon, ThemeMode themeMode, VoidCallback? onPressed) {
     return _getFabCore(
-      getAntagonistColor(),
+      getAntagonistColor(themeMode),
       color,
       Icon(icon),
       onPressed,
@@ -133,11 +117,12 @@ class ThemeManager {
   Widget getIconFabWKey(
     Color color,
     IconData icon,
+    ThemeMode themeMode,
     VoidCallback? onPressed,
     GlobalKey? key,
   ) {
     return _getFabCore(
-      getAntagonistColor(),
+      getAntagonistColor(themeMode),
       color,
       Icon(icon),
       onPressed,
@@ -145,41 +130,51 @@ class ThemeManager {
     );
   }
 
-  Widget getBlueFab(IconData icon, VoidCallback? onPressed) {
-    return getIconFab(getBlueColor(), icon, onPressed);
+  Widget getBlueFab(IconData icon, ThemeMode themeMode, VoidCallback? onPressed) {
+    return getIconFab(getBlueColor(themeMode), icon, themeMode, onPressed);
   }
 
-  Widget getGreenFab(IconData icon, VoidCallback? onPressed) {
-    return getIconFab(getGreenColor(), icon, onPressed);
+  Widget getGreenFab(IconData icon, ThemeMode themeMode, VoidCallback? onPressed) {
+    return getIconFab(getGreenColor(themeMode), icon, themeMode, onPressed);
   }
 
-  Widget getBlueFabWKey(IconData icon, VoidCallback? onPressed, GlobalKey? key) {
-    return getIconFabWKey(getBlueColor(), icon, onPressed, key);
+  Widget getBlueFabWKey(
+    IconData icon,
+    ThemeMode themeMode,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return getIconFabWKey(getBlueColor(themeMode), icon, themeMode, onPressed, key);
   }
 
-  Widget getGreenFabWKey(IconData icon, VoidCallback? onPressed, GlobalKey? key) {
-    return getIconFabWKey(getGreenColor(), icon, onPressed, key);
+  Widget getGreenFabWKey(
+    IconData icon,
+    ThemeMode themeMode,
+    VoidCallback? onPressed,
+    GlobalKey? key,
+  ) {
+    return getIconFabWKey(getGreenColor(themeMode), icon, themeMode, onPressed, key);
   }
 
-  Widget getGreenGenericFab(Widget widget, VoidCallback? onPressed) {
+  Widget getGreenGenericFab(Widget widget, ThemeMode themeMode, VoidCallback? onPressed) {
     return _getFabCore(
-      getAntagonistColor(),
-      getGreenColor(),
+      getAntagonistColor(themeMode),
+      getGreenColor(themeMode),
       widget,
       onPressed,
       null,
     );
   }
 
-  Widget getGreyFab(IconData icon, VoidCallback? onPressed) {
-    return getIconFab(getGreyColor(), icon, onPressed);
+  Widget getGreyFab(IconData icon, ThemeMode themeMode, VoidCallback? onPressed) {
+    return getIconFab(getGreyColor(themeMode), icon, themeMode, onPressed);
   }
 
-  Widget getRankIcon(int rank) {
+  Widget getRankIcon(int rank, ThemeMode themeMode) {
     final textStyle = Get.textTheme.headline4!.apply(fontFamily: fontFamily, color: Colors.black);
     return _getFabCore(
       Colors.black,
-      getYellowColor(),
+      getYellowColor(themeMode),
       Text(rank.toString(), style: textStyle),
       () {},
       null,

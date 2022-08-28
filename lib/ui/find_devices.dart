@@ -4,6 +4,7 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide LogLevel;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pref/pref.dart';
@@ -29,6 +30,7 @@ import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
+import '../providers/theme_mode.dart';
 import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
@@ -47,14 +49,14 @@ import 'about.dart';
 import 'activities.dart';
 import 'recording.dart';
 
-class FindDevicesScreen extends StatefulWidget {
+class FindDevicesScreen extends ConsumerStatefulWidget {
   const FindDevicesScreen({Key? key}) : super(key: key);
 
   @override
   FindDevicesState createState() => FindDevicesState();
 }
 
-class FindDevicesState extends State<FindDevicesScreen> {
+class FindDevicesState extends ConsumerState<FindDevicesScreen> {
   bool _instantScan = instantScanDefault;
   int _scanDuration = scanDurationDefault;
   bool _autoConnect = autoConnectDefault;
@@ -557,6 +559,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(_filterDevices ? 'Supported Devices:' : 'Devices'),
@@ -673,6 +676,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             if (snapshot.data == BluetoothDeviceState.connected) {
                               return _themeManager.getGreenGenericFab(
                                 const Icon(Icons.favorite),
+                                themeMode,
                                 () {
                                   Get.snackbar("Info", "HRM Already connected");
 
@@ -688,7 +692,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 },
                               );
                             } else {
-                              return _themeManager.getGreyFab(Icons.bluetooth, () {
+                              return _themeManager.getGreyFab(Icons.bluetooth, themeMode, () {
                                 setState(() {
                                   _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                       ? Get.find<HeartRateMonitor>()
@@ -722,6 +726,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             if (snapshot.data == BluetoothDeviceState.connected) {
                               return _themeManager.getGreenGenericFab(
                                 const Icon(Icons.open_in_new),
+                                themeMode,
                                 () async {
                                   if (_isScanning) {
                                     await FlutterBluePlus.instance.stopScan();
@@ -739,6 +744,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             } else {
                               return _themeManager.getGreenFab(
                                 Icons.bluetooth_disabled,
+                                themeMode,
                                 () {
                                   setState(() {
                                     _fitnessEquipment = Get.isRegistered<FitnessEquipment>()
@@ -910,11 +916,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: CircularFabMenu(
-        fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
-        fabOpenColor: _themeManager.getBlueColor(),
-        fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-        fabCloseColor: _themeManager.getBlueColor(),
-        ringColor: _themeManager.getBlueColorInverse(),
+        fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor(themeMode)),
+        fabOpenColor: _themeManager.getBlueColor(themeMode),
+        fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor(themeMode)),
+        fabCloseColor: _themeManager.getBlueColor(themeMode),
+        ringColor: _themeManager.getBlueColorInverse(themeMode),
         children: [
           _themeManager.getTutorialFab(
             () async {
@@ -933,7 +939,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             },
           ),
           _themeManager.getAboutFab(),
-          _themeManager.getBlueFab(Icons.list_alt, () async {
+          _themeManager.getBlueFab(Icons.list_alt, themeMode, () async {
             final database = Get.find<AppDatabase>();
             final hasLeaderboardData = await database.hasLeaderboardData();
             Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
@@ -945,19 +951,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
               if (snapshot.data == null) {
                 return Container();
               } else if (snapshot.data!) {
-                return _themeManager.getBlueFab(Icons.stop, () async {
+                return _themeManager.getBlueFab(Icons.stop, themeMode, () async {
                   if (_isScanning) {
                     await FlutterBluePlus.instance.stopScan();
                     await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
                   }
                 });
               } else {
-                return _themeManager.getGreenFab(Icons.search, () => _startScan(false));
+                return _themeManager.getGreenFab(Icons.search, themeMode, () => _startScan(false));
               }
             },
           ),
           _themeManager.getBlueFab(
             Icons.settings,
+            themeMode,
             () async => Get.to(() => const PreferencesHubScreen()),
           ),
         ],

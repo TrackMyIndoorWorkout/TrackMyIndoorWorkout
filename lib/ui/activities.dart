@@ -5,6 +5,7 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
@@ -25,6 +26,7 @@ import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/time_display_mode.dart';
 import '../preferences/unit_system.dart';
+import '../providers/theme_mode.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/preferences.dart';
@@ -44,7 +46,7 @@ import 'parts/upload_portal_picker.dart';
 import 'power_tunes.dart';
 import 'records.dart';
 
-class ActivitiesScreen extends StatefulWidget {
+class ActivitiesScreen extends ConsumerStatefulWidget {
   final bool hasLeaderboardData;
 
   const ActivitiesScreen({key, required this.hasLeaderboardData}) : super(key: key);
@@ -53,7 +55,7 @@ class ActivitiesScreen extends StatefulWidget {
   ActivitiesScreenState createState() => ActivitiesScreenState();
 }
 
-class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingObserver {
+class ActivitiesScreenState extends ConsumerState<ActivitiesScreen> with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   bool _si = unitSystemDefault;
@@ -90,7 +92,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
     final sizeAdjustInt =
         prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
     if (sizeAdjustInt != 100) {
@@ -118,10 +123,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     }
   }
 
-  Widget _actionButtonRow(Activity activity, double size) {
+  Widget _actionButtonRow(Activity activity, double size, ThemeMode themeMode) {
     final actionsRow = <Widget>[
       IconButton(
-        icon: _themeManager.getActionIcon(Icons.cloud_upload, size),
+        icon: _themeManager.getActionIcon(Icons.cloud_upload, size, themeMode),
         iconSize: size,
         onPressed: () async {
           if (!await hasInternetConnection()) {
@@ -148,7 +153,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         },
       ),
       IconButton(
-        icon: _themeManager.getActionIcon(Icons.file_download, size),
+        icon: _themeManager.getActionIcon(Icons.file_download, size, themeMode),
         iconSize: size,
         onPressed: () async {
           final formatPick = await Get.bottomSheet(
@@ -193,7 +198,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         },
       ),
       IconButton(
-        icon: _themeManager.getActionIcon(Icons.bolt, size),
+        icon: _themeManager.getActionIcon(Icons.bolt, size, themeMode),
         iconSize: size,
         onPressed: () async {
           if (activity.powerFactor < eps) {
@@ -222,7 +227,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         },
       ),
       IconButton(
-        icon: _themeManager.getActionIcon(Icons.whatshot, size),
+        icon: _themeManager.getActionIcon(Icons.whatshot, size, themeMode),
         iconSize: size,
         onPressed: () async {
           if (activity.calories == 0) {
@@ -252,7 +257,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     if (kDebugMode) {
       actionsRow.add(
         IconButton(
-          icon: _themeManager.getActionIcon(Icons.edit, size),
+          icon: _themeManager.getActionIcon(Icons.edit, size, themeMode),
           iconSize: size,
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
@@ -289,7 +294,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     actionsRow.addAll([
       const Spacer(),
       IconButton(
-        icon: _themeManager.getDeleteIcon(size),
+        icon: _themeManager.getDeleteIcon(size, themeMode),
         iconSize: size,
         onPressed: () async {
           Get.defaultDialog(
@@ -315,7 +320,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       ),
       const Spacer(),
       IconButton(
-        icon: _themeManager.getActionIcon(Icons.chevron_right, size),
+        icon: _themeManager.getActionIcon(Icons.chevron_right, size, themeMode),
         iconSize: size,
         onPressed: () async =>
             await Get.to(() => RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
@@ -330,6 +335,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
@@ -347,12 +353,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         fontFamily: fontFamily,
         fontSize: _sizeDefault2,
       );
-      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3, themeMode);
     }
 
     List<Widget> floatingActionButtons = [
       _themeManager.getAboutFab(),
-      _themeManager.getBlueFab(Icons.file_upload, () async {
+      _themeManager.getBlueFab(Icons.file_upload, themeMode, () async {
         final formatPick = await Get.bottomSheet(
           SafeArea(
             child: Column(
@@ -379,20 +385,20 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                   _editCount++;
                 }));
       }),
-      _themeManager.getBlueFab(Icons.collections_bookmark, () async {
+      _themeManager.getBlueFab(Icons.collections_bookmark, themeMode, () async {
         await Get.to(() => const DeviceUsagesScreen());
       }),
-      _themeManager.getBlueFab(Icons.bolt, () async {
+      _themeManager.getBlueFab(Icons.bolt, themeMode, () async {
         await Get.to(() => const PowerTunesScreen());
       }),
-      _themeManager.getBlueFab(Icons.whatshot, () async {
+      _themeManager.getBlueFab(Icons.whatshot, themeMode, () async {
         await Get.to(() => const CalorieTunesScreen());
       }),
     ];
 
     if (_leaderboardFeature && widget.hasLeaderboardData) {
       floatingActionButtons.add(
-        _themeManager.getBlueFab(Icons.leaderboard, () async {
+        _themeManager.getBlueFab(Icons.leaderboard, themeMode, () async {
           Get.bottomSheet(
             SafeArea(
               child: Column(
@@ -414,11 +420,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     }
 
     final circularFabMenu = CircularFabMenu(
-      fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
-      fabOpenColor: _themeManager.getBlueColor(),
-      fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-      fabCloseColor: _themeManager.getBlueColor(),
-      ringColor: _themeManager.getBlueColorInverse(),
+      fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor(themeMode)),
+      fabOpenColor: _themeManager.getBlueColor(themeMode),
+      fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor(themeMode)),
+      fabCloseColor: _themeManager.getBlueColor(themeMode),
+      ringColor: _themeManager.getBlueColorInverse(themeMode),
       children: floatingActionButtons,
     );
 
@@ -487,7 +493,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault2),
+                      _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault2, themeMode),
                       Text(dateString, style: _headerStyle),
                     ],
                   ),
@@ -495,7 +501,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _themeManager.getBlueIcon(Icons.watch, _sizeDefault2),
+                      _themeManager.getBlueIcon(Icons.watch, _sizeDefault2, themeMode),
                       Text(timeString, style: _headerStyle),
                     ],
                   ),
@@ -513,7 +519,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(getSportIcon(activity.sport), _sizeDefault),
+                        _themeManager.getBlueIcon(
+                          getSportIcon(activity.sport),
+                          _sizeDefault,
+                          themeMode,
+                        ),
                         Expanded(
                           child: TextOneLine(
                             activity.deviceName,
@@ -528,7 +538,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.timer, _sizeDefault, themeMode),
                         const Spacer(),
                         FitHorizontally(
                           child: Text(
@@ -544,7 +554,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.add_road, _sizeDefault, themeMode),
                         const Spacer(),
                         Text(activity.distanceString(_si, _highRes), style: _measurementStyle),
                         SizedBox(
@@ -557,7 +567,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault, themeMode),
                         const Spacer(),
                         Text('${activity.calories}', style: _measurementStyle),
                         SizedBox(
@@ -566,7 +576,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                         ),
                       ],
                     ),
-                    _actionButtonRow(activity, _sizeDefault2),
+                    _actionButtonRow(activity, _sizeDefault2, themeMode),
                   ],
                 ),
               ),

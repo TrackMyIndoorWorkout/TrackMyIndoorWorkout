@@ -29,30 +29,30 @@ class PortalChoiceDescriptor {
   PortalChoiceDescriptor(this.name, this.assetName, this.color, this.heightMultiplier);
 }
 
-List<PortalChoiceDescriptor> getPortalChoices(ThemeManager themeManager) {
+List<PortalChoiceDescriptor> getPortalChoices(ThemeManager themeManager, ThemeMode themeMode) {
   return [
     PortalChoiceDescriptor(
       portalNames[0],
       "assets/${portalLogos[0]}",
-      themeManager.getOrangeColor(),
+      themeManager.getOrangeColor(themeMode),
       1.0,
     ),
     PortalChoiceDescriptor(
       portalNames[1],
       "assets/${portalLogos[1]}",
-      themeManager.getSuuntoRedColor(),
+      themeManager.getSuuntoRedColor(themeMode),
       1.5,
     ),
     PortalChoiceDescriptor(
       portalNames[2],
       "assets/${portalLogos[2]}",
-      themeManager.getSuuntoRedColor(),
+      themeManager.getSuuntoRedColor(themeMode),
       1.5,
     ),
     PortalChoiceDescriptor(
       portalNames[3],
       "assets/${portalLogos[3]}",
-      themeManager.getBlueColor(),
+      themeManager.getBlueColor(themeMode),
       1.5,
     ),
   ];

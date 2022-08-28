@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/power_tune.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class PowerFactorTuneBottomSheet extends StatefulWidget {
+class PowerFactorTuneBottomSheet extends ConsumerStatefulWidget {
   final String deviceId;
   final double oldPowerFactor;
 
@@ -17,7 +19,7 @@ class PowerFactorTuneBottomSheet extends StatefulWidget {
   PowerFactorTuneBottomSheetState createState() => PowerFactorTuneBottomSheetState();
 }
 
-class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> {
+class PowerFactorTuneBottomSheetState extends ConsumerState<PowerFactorTuneBottomSheet> {
   double _powerFactorPercent = 100.0;
   TextStyle _largerTextStyle = const TextStyle();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
@@ -26,14 +28,16 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
   void initState() {
     super.initState();
     _powerFactorPercent = widget.oldPowerFactor * 100.0;
+    final themeMode = ref.watch(themeModeProvider);
     _largerTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: ListView(
         children: [
@@ -54,9 +58,9 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(Icons.check, () async {
+            _themeManager.getGreenFab(Icons.check, themeMode, () async {
               final database = Get.find<AppDatabase>();
               final powerFactor = _powerFactorPercent / 100.0;
               PowerTune? powerTune;

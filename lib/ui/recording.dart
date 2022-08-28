@@ -10,6 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
@@ -53,6 +54,7 @@ import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
+import '../providers/theme_mode.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
@@ -88,7 +90,7 @@ enum TargetHrState {
   over,
 }
 
-class RecordingScreen extends StatefulWidget {
+class RecordingScreen extends ConsumerStatefulWidget {
   final BluetoothDevice device;
   final DeviceDescriptor descriptor;
   final BluetoothDeviceState initialState;
@@ -108,7 +110,7 @@ class RecordingScreen extends StatefulWidget {
   RecordingState createState() => RecordingState();
 }
 
-class RecordingState extends State<RecordingScreen> {
+class RecordingState extends ConsumerState<RecordingScreen> {
   static const double _markerStyleSizeAdjust = 1.4;
   static const double _markerStyleSmallSizeAdjust = 0.9;
   static const int _unlockChoices = 6;
@@ -521,10 +523,11 @@ class RecordingState extends State<RecordingScreen> {
     // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
     _themeManager = Get.find<ThemeManager>();
-    _isLight = !_themeManager.isDark();
+    final themeMode = ref.watch(themeModeProvider);
+    _isLight = !_themeManager.isDark(themeMode);
     _unitStyle = TextStyle(
       fontFamily: fontFamily,
-      color: _themeManager.getBlueColor(),
+      color: _themeManager.getBlueColor(themeMode),
     );
     final prefService = Get.find<BasePrefService>();
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
@@ -634,7 +637,7 @@ class RecordingState extends State<RecordingScreen> {
       "hr": _hRChartData,
     };
 
-    _chartTextColor = _themeManager.getProtagonistColor();
+    _chartTextColor = _themeManager.getProtagonistColor(themeMode);
     _chartLabelStyle = TextStyle(
       fontFamily: fontFamily,
       fontSize: 11 * _sizeAdjust,
@@ -642,7 +645,7 @@ class RecordingState extends State<RecordingScreen> {
     );
     _expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
-      iconColor: _themeManager.getProtagonistColor(),
+      iconColor: _themeManager.getProtagonistColor(themeMode),
     );
     _rowConfig = [
       RowConfiguration(
@@ -748,13 +751,13 @@ class RecordingState extends State<RecordingScreen> {
       _rankInfoColumnCount += 1;
     }
 
-    final isLight = !_themeManager.isDark();
-    _darkRed = isLight ? Colors.red.shade900 : Colors.redAccent.shade100;
-    _darkGreen = isLight ? Colors.green.shade900 : Colors.lightGreenAccent.shade100;
-    _darkBlue = isLight ? Colors.indigo.shade900 : Colors.lightBlueAccent.shade100;
-    _lightRed = isLight ? Colors.redAccent.shade100 : Colors.red.shade900;
-    _lightGreen = isLight ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
-    _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
+    final isDark = _themeManager.isDark(themeMode);
+    _darkRed = isDark ? Colors.redAccent.shade100 : Colors.red.shade900;
+    _darkGreen = isDark ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
+    _darkBlue = isDark ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
+    _lightRed = isDark ? Colors.red.shade900 : Colors.redAccent.shade100;
+    _lightGreen = isDark ? Colors.green.shade900 : Colors.lightGreenAccent.shade100;
+    _lightBlue = isDark ? Colors.indigo.shade900 : Colors.lightBlueAccent.shade100;
 
     _zoneIndexColoring =
         prefService.get<bool>(zoneIndexDisplayColoringTag) ?? zoneIndexDisplayColoringDefault;
@@ -1046,9 +1049,9 @@ class RecordingState extends State<RecordingScreen> {
     return verdict;
   }
 
-  Color _getZoneColor({required metricIndex, required bool background}) {
+  Color _getZoneColor(ThemeMode themeMode, {required metricIndex, required bool background}) {
     if (_zoneIndexes[metricIndex] == null) {
-      return background ? Colors.transparent : _themeManager.getProtagonistColor();
+      return background ? Colors.transparent : _themeManager.getProtagonistColor(themeMode);
     }
 
     if (background) {
@@ -1114,9 +1117,9 @@ class RecordingState extends State<RecordingScreen> {
     return ["#${_getRankString(_selfRank, _leaderboard)}", "(Self)"];
   }
 
-  Color _getPaceLightColor(int selfRank, {required bool background}) {
+  Color _getPaceLightColor(int selfRank, ThemeMode themeMode, {required bool background}) {
     if (!_leaderboardFeature || selfRank == 0) {
-      return background ? Colors.transparent : _themeManager.getBlueColor();
+      return background ? Colors.transparent : _themeManager.getBlueColor(themeMode);
     }
 
     if (selfRank <= 1) {
@@ -1125,12 +1128,14 @@ class RecordingState extends State<RecordingScreen> {
     return background ? _lightBlue : _darkBlue;
   }
 
-  TextStyle _getPaceLightTextStyle(int selfRank) {
+  TextStyle _getPaceLightTextStyle(int selfRank, ThemeMode themeMode) {
     if (!_leaderboardFeature) {
       return _measurementStyle;
     }
 
-    return _measurementStyle.apply(color: _getPaceLightColor(selfRank, background: false));
+    return _measurementStyle.apply(
+      color: _getPaceLightColor(selfRank, themeMode, background: false),
+    );
   }
 
   TargetHrState _getTargetHrState() {
@@ -1147,9 +1152,9 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  Color _getTargetHrColor(TargetHrState hrState, bool background) {
+  Color _getTargetHrColor(TargetHrState hrState, bool background, ThemeMode themeMode) {
     if (hrState == TargetHrState.off) {
-      return _getZoneColor(metricIndex: 3, background: background);
+      return _getZoneColor(themeMode, metricIndex: 3, background: background);
     }
 
     if (hrState == TargetHrState.under) {
@@ -1161,16 +1166,18 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  TextStyle _getTargetHrTextStyle(TargetHrState hrState) {
+  TextStyle _getTargetHrTextStyle(TargetHrState hrState, ThemeMode themeMode) {
     if (hrState == TargetHrState.off) {
       if (_zoneIndexes[3] == null) {
         return _measurementStyle;
       } else {
-        return _measurementStyle.apply(color: _getZoneColor(metricIndex: 3, background: false));
+        return _measurementStyle.apply(
+          color: _getZoneColor(themeMode, metricIndex: 3, background: false),
+        );
       }
     }
 
-    return _measurementStyle.apply(color: _getTargetHrColor(hrState, false));
+    return _measurementStyle.apply(color: _getTargetHrColor(hrState, false, themeMode));
   }
 
   String _getTargetHrText(TargetHrState hrState) {
@@ -1527,6 +1534,7 @@ class RecordingState extends State<RecordingScreen> {
       _landscape = _mediaWidth > _mediaHeight;
     }
 
+    final themeMode = ref.watch(themeModeProvider);
     final mediaSizeMin =
         _landscape && _twoColumnLayout ? _mediaWidth / 2 : min(_mediaWidth, _mediaHeight);
     if (_mediaSizeMin < eps || (_mediaSizeMin - mediaSizeMin).abs() > eps) {
@@ -1536,7 +1544,7 @@ class RecordingState extends State<RecordingScreen> {
         fontFamily: fontFamily,
         fontSize: _sizeDefault,
       );
-      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3, themeMode);
     }
 
     if (_measuring &&
@@ -1578,8 +1586,8 @@ class RecordingState extends State<RecordingScreen> {
 
     var timeIcon = (_timeDisplayMode == timeDisplayModeHIITMoving &&
             (workoutState == WorkoutState.startedMoving || workoutState == WorkoutState.moving))
-        ? _themeManager.getRedIcon(Icons.timer, _sizeDefault)
-        : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
+        ? _themeManager.getRedIcon(Icons.timer, _sizeDefault, themeMode)
+        : _themeManager.getBlueIcon(Icons.timer, _sizeDefault, themeMode);
 
     List<Widget> rows = [
       Row(
@@ -1594,13 +1602,13 @@ class RecordingState extends State<RecordingScreen> {
     ];
 
     final targetHrState = _getTargetHrState();
-    final targetHrTextStyle = _getTargetHrTextStyle(targetHrState);
+    final targetHrTextStyle = _getTargetHrTextStyle(targetHrState, themeMode);
 
     for (var entry in _rowConfig.asMap().entries) {
       var measurementStyle = _measurementStyle;
 
       if (entry.key == 2 && _leaderboardFeature) {
-        measurementStyle = _getPaceLightTextStyle(_selfRank);
+        measurementStyle = _getPaceLightTextStyle(_selfRank, themeMode);
       }
 
       if (entry.key == 4 && _targetHrMode != targetHeartRateModeNone || _zoneIndexes[3] != null) {
@@ -1609,14 +1617,14 @@ class RecordingState extends State<RecordingScreen> {
 
       if ((entry.key == 1 || entry.key == 3) && _zoneIndexes[entry.key - 1] != null) {
         measurementStyle = _measurementStyle.apply(
-            color: _getZoneColor(metricIndex: entry.key - 1, background: false));
+            color: _getZoneColor(themeMode, metricIndex: entry.key - 1, background: false));
       }
 
       rows.add(Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
+          _themeManager.getBlueIcon(entry.value.icon, _sizeDefault, themeMode),
           const Spacer(),
           Text(_values[entry.key], style: measurementStyle),
           SizedBox(
@@ -1690,7 +1698,7 @@ class RecordingState extends State<RecordingScreen> {
             _leaderboardFeature &&
             _rankRibbonVisualization) {
           List<Widget> extraExtras = [];
-          final paceLightColor = _getPaceLightTextStyle(_selfRank);
+          final paceLightColor = _getPaceLightTextStyle(_selfRank, themeMode);
           extraExtras.add(Text(_selfRankString.join(" "), style: paceLightColor));
 
           if (widget.descriptor.defaultSport != ActivityType.ride) {
@@ -1733,7 +1741,7 @@ class RecordingState extends State<RecordingScreen> {
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = _getPaceLightColor(_selfRank, background: true).value;
+          selfMarkerColor = _getPaceLightColor(_selfRank, themeMode, background: true).value;
         } else if (_displayLapCounter) {
           markers.add(Center(
             child: Text("Lap $_lapCount", style: _measurementStyle),
@@ -1772,7 +1780,7 @@ class RecordingState extends State<RecordingScreen> {
                   rows[1],
                   const Divider(height: separatorHeight),
                   ColoredBox(
-                    color: _getZoneColor(metricIndex: 0, background: true),
+                    color: _getZoneColor(themeMode, metricIndex: 0, background: true),
                     child: ExpandablePanel(
                       theme: _expandableThemeData,
                       header: rows[2],
@@ -1783,7 +1791,7 @@ class RecordingState extends State<RecordingScreen> {
                   ),
                   const Divider(height: separatorHeight),
                   ColoredBox(
-                    color: _getPaceLightColor(_selfRank, background: true),
+                    color: _getPaceLightColor(_selfRank, themeMode, background: true),
                     child: ExpandablePanel(
                       theme: _expandableThemeData,
                       header: rows[3],
@@ -1797,7 +1805,7 @@ class RecordingState extends State<RecordingScreen> {
               ListView(
                 children: [
                   ColoredBox(
-                    color: _getZoneColor(metricIndex: 2, background: true),
+                    color: _getZoneColor(themeMode, metricIndex: 2, background: true),
                     child: ExpandablePanel(
                       theme: _expandableThemeData,
                       header: rows[4],
@@ -1808,7 +1816,7 @@ class RecordingState extends State<RecordingScreen> {
                   ),
                   const Divider(height: separatorHeight),
                   ColoredBox(
-                    color: _getTargetHrColor(targetHrState, true),
+                    color: _getTargetHrColor(targetHrState, true, themeMode),
                     child: ExpandablePanel(
                       theme: _expandableThemeData,
                       header: rows[5],
@@ -1836,7 +1844,7 @@ class RecordingState extends State<RecordingScreen> {
               rows[1],
               const Divider(height: separatorHeight),
               ColoredBox(
-                color: _getZoneColor(metricIndex: 0, background: true),
+                color: _getZoneColor(themeMode, metricIndex: 0, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[2],
@@ -1847,7 +1855,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               const Divider(height: separatorHeight),
               ColoredBox(
-                color: _getPaceLightColor(_selfRank, background: true),
+                color: _getPaceLightColor(_selfRank, themeMode, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[3],
@@ -1858,7 +1866,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               const Divider(height: separatorHeight),
               ColoredBox(
-                color: _getZoneColor(metricIndex: 2, background: true),
+                color: _getZoneColor(themeMode, metricIndex: 2, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[4],
@@ -1869,7 +1877,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               const Divider(height: separatorHeight),
               ColoredBox(
-                color: _getTargetHrColor(targetHrState, true),
+                color: _getTargetHrColor(targetHrState, true, themeMode),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
                   header: rows[5],
@@ -1893,12 +1901,12 @@ class RecordingState extends State<RecordingScreen> {
     if (_isLocked) {
       for (var i = 0; i < _unlockChoices; ++i) {
         final button = i == _unlockButtonIndex
-            ? _themeManager.getGreenFabWKey(Icons.lock_open, () {
+            ? _themeManager.getGreenFabWKey(Icons.lock_open, themeMode, () {
                 setState(() {
                   _isLocked = false;
                 });
               }, _unlockKeys[i])
-            : _themeManager.getBlueFabWKey(Icons.adjust, null, _unlockKeys[i]);
+            : _themeManager.getBlueFabWKey(Icons.adjust, themeMode, null, _unlockKeys[i]);
         menuButtons.add(button);
       }
     } else {
@@ -1923,7 +1931,7 @@ class RecordingState extends State<RecordingScreen> {
       ]);
 
       if (_measuring) {
-        menuButtons.add(_themeManager.getGreenFab(Icons.lock_open, () {
+        menuButtons.add(_themeManager.getGreenFab(Icons.lock_open, themeMode, () {
           _unlockButtonIndex = _rng.nextInt(_unlockChoices);
           _fabKey.currentState?.close();
           setState(() {
@@ -1932,14 +1940,14 @@ class RecordingState extends State<RecordingScreen> {
         }));
       } else {
         menuButtons.addAll([
-          _themeManager.getBlueFab(Icons.cloud_upload, () async {
+          _themeManager.getBlueFab(Icons.cloud_upload, themeMode, () async {
             await _workoutUpload(false);
           }),
-          _themeManager.getBlueFab(Icons.list_alt, () async {
+          _themeManager.getBlueFab(Icons.list_alt, themeMode, () async {
             final hasLeaderboardData = await _database.hasLeaderboardData();
             Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
           }),
-          _themeManager.getBlueFab(Icons.battery_unknown, () async {
+          _themeManager.getBlueFab(Icons.battery_unknown, themeMode, () async {
             Get.bottomSheet(
               SafeArea(
                 child: Column(
@@ -1957,7 +1965,7 @@ class RecordingState extends State<RecordingScreen> {
               enableDrag: false,
             );
           }),
-          _themeManager.getBlueFab(Icons.build, () async {
+          _themeManager.getBlueFab(Icons.build, themeMode, () async {
             if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
               Get.snackbar("Error", "Not compatible with the calibration method");
             } else {
@@ -1984,7 +1992,7 @@ class RecordingState extends State<RecordingScreen> {
       }
 
       menuButtons.addAll([
-        _themeManager.getBlueFab(Icons.favorite, () async {
+        _themeManager.getBlueFab(Icons.favorite, themeMode, () async {
           await Get.bottomSheet(
             SafeArea(
               child: Column(
@@ -2009,7 +2017,7 @@ class RecordingState extends State<RecordingScreen> {
             await _database.activityDao.updateActivity(_activity!);
           }
         }),
-        _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, () async {
+        _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, themeMode, () async {
           await startStopAction();
         }),
       ]);
@@ -2081,12 +2089,14 @@ class RecordingState extends State<RecordingScreen> {
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           floatingActionButton: CircularFabMenu(
             key: _fabKey,
-            fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
-                color: _themeManager.getAntagonistColor()),
-            fabOpenColor: _themeManager.getBlueColor(),
-            fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-            fabCloseColor: _themeManager.getBlueColor(),
-            ringColor: _themeManager.getBlueColorInverse(),
+            fabOpenIcon: Icon(
+              _isLocked ? Icons.lock : Icons.menu,
+              color: _themeManager.getAntagonistColor(themeMode),
+            ),
+            fabOpenColor: _themeManager.getBlueColor(themeMode),
+            fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor(themeMode)),
+            fabCloseColor: _themeManager.getBlueColor(themeMode),
+            ringColor: _themeManager.getBlueColorInverse(themeMode),
             children: menuButtons,
           ),
         ),

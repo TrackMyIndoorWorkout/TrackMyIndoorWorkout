@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -7,12 +8,13 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/activity.dart';
 import '../../preferences/calculate_gps.dart';
+import '../../providers/theme_mode.dart';
 import '../../upload/constants.dart';
 import '../../upload/strava/strava_status_code.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/theme_manager.dart';
 
-class UploadPortalPickerBottomSheet extends StatefulWidget {
+class UploadPortalPickerBottomSheet extends ConsumerStatefulWidget {
   final Activity activity;
 
   const UploadPortalPickerBottomSheet({Key? key, required this.activity}) : super(key: key);
@@ -21,7 +23,7 @@ class UploadPortalPickerBottomSheet extends StatefulWidget {
   UploadPortalPickerBottomSheetState createState() => UploadPortalPickerBottomSheetState();
 }
 
-class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomSheet> {
+class UploadPortalPickerBottomSheetState extends ConsumerState<UploadPortalPickerBottomSheet> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _largerTextStyle = const TextStyle();
   bool _calculateGps = calculateGpsDefault;
@@ -31,7 +33,10 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   @override
   void initState() {
     super.initState();
-    _largerTextStyle = Get.textTheme.headline4!.apply(color: _themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _largerTextStyle = Get.textTheme.headline4!.apply(
+      color: _themeManager.getProtagonistColor(themeMode),
+    );
     final prefService = Get.find<BasePrefService>();
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     for (final portalName in portalNames) {
@@ -79,6 +84,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     List<Widget> choiceRows = [
       uploadInProgress
           ? Row(
@@ -101,7 +107,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
             ),
     ];
     choiceRows.addAll(
-      getPortalChoices(_themeManager).asMap().entries.map(
+      getPortalChoices(_themeManager, themeMode).asMap().entries.map(
             (e) => Column(
               children: [
                 Padding(
@@ -125,8 +131,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                               (uploadStates[e.value.name] ?? false) ? Icons.check : Icons.upload,
                               size: _largerTextStyle.fontSize! * 1.5,
                               color: (uploadStates[e.value.name] ?? false)
-                                  ? _themeManager.getGreenColor()
-                                  : _themeManager.getProtagonistColor(),
+                                  ? _themeManager.getGreenColor(themeMode)
+                                  : _themeManager.getProtagonistColor(themeMode),
                             ),
                             SvgPicture.asset(
                               e.value.assetName,
@@ -143,8 +149,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                                 Icons.open_in_new,
                                 size: _largerTextStyle.fontSize! * 1.5,
                                 color: widget.activity.isSpecificWorkoutUrl(e.value.name)
-                                    ? _themeManager.getProtagonistColor()
-                                    : _themeManager.getGreyColor(),
+                                    ? _themeManager.getProtagonistColor(themeMode)
+                                    : _themeManager.getGreyColor(themeMode),
                               ),
                               onPressed: () async {
                                 final workoutUrl = widget.activity.workoutUrl(e.value.name);
@@ -167,7 +173,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     return Scaffold(
       body: ListView(children: choiceRows),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
     );
   }
 }

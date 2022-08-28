@@ -2,11 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class ColorPickerBottomSheet extends StatefulWidget {
+class ColorPickerBottomSheet extends ConsumerStatefulWidget {
   final Color color;
   const ColorPickerBottomSheet({Key? key, required this.color}) : super(key: key);
 
@@ -14,7 +16,7 @@ class ColorPickerBottomSheet extends StatefulWidget {
   ColorPickerBottomSheetState createState() => ColorPickerBottomSheetState();
 }
 
-class ColorPickerBottomSheetState extends State<ColorPickerBottomSheet> {
+class ColorPickerBottomSheetState extends ConsumerState<ColorPickerBottomSheet> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   late final CircleColorPickerController _controller;
   Color _color = Colors.white;
@@ -28,9 +30,10 @@ class ColorPickerBottomSheetState extends State<ColorPickerBottomSheet> {
     _controller = CircleColorPickerController(initialColor: widget.color);
     _color = Color(widget.color.value);
     _initialColor = Color(widget.color.value);
+    final themeMode = ref.watch(themeModeProvider);
     _textStyle = Get.textTheme.headline5!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
   }
 
@@ -41,6 +44,7 @@ class ColorPickerBottomSheetState extends State<ColorPickerBottomSheet> {
       _mediaWidth = mediaWidth;
     }
 
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: Center(
         child: CircleColorPicker(
@@ -63,11 +67,15 @@ class ColorPickerBottomSheetState extends State<ColorPickerBottomSheet> {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getBlueFab(Icons.refresh, () => _controller.color = _initialColor),
+            _themeManager.getBlueFab(
+              Icons.refresh,
+              themeMode,
+              () => _controller.color = _initialColor,
+            ),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(Icons.check, () => Get.back(result: _color)),
+            _themeManager.getGreenFab(Icons.check, themeMode, () => Get.back(result: _color)),
           ],
         ),
       ),

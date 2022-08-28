@@ -1,6 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
@@ -13,9 +14,10 @@ import '../../persistence/models/workout_summary.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/generic.dart';
 import '../../preferences/unit_system.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/theme_manager.dart';
 
-class SportLeaderboardScreen extends StatefulWidget {
+class SportLeaderboardScreen extends ConsumerStatefulWidget {
   final String sport;
 
   const SportLeaderboardScreen({key, required this.sport}) : super(key: key);
@@ -24,7 +26,7 @@ class SportLeaderboardScreen extends StatefulWidget {
   SportLeaderboardScreenState createState() => SportLeaderboardScreenState();
 }
 
-class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
+class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
     with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   bool _si = unitSystemDefault;
@@ -51,11 +53,16 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
     _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
-    _textStyle = Get.textTheme.headline5!
-        .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _textStyle = Get.textTheme.headline5!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getProtagonistColor(themeMode),
+    );
     _sizeDefault = _textStyle.fontSize!;
-    _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault, themeMode);
+    _expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
     if (widget.sport != ActivityType.ride) {
       _slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
     }
@@ -67,11 +74,11 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
     super.dispose();
   }
 
-  Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
+  Widget _actionButtonRow(WorkoutSummary workoutSummary, double size, ThemeMode themeMode) {
     return Row(
       children: [
         IconButton(
-          icon: _themeManager.getDeleteIcon(size),
+          icon: _themeManager.getDeleteIcon(size, themeMode),
           iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
@@ -100,6 +107,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(title: Text('${widget.sport} Leaderboard')),
       body: CustomListView(
@@ -149,7 +157,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
                       SizedBox(
                         width: _sizeDefault * 2,
                         height: _sizeDefault * 2,
-                        child: _themeManager.getRankIcon(index),
+                        child: _themeManager.getRankIcon(index, themeMode),
                       ),
                       Column(
                         children: [
@@ -191,7 +199,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault, themeMode),
                         Text(dateString, style: _textStyle),
                       ],
                     ),
@@ -199,11 +207,11 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault, themeMode),
                         Text(timeString, style: _textStyle),
                       ],
                     ),
-                    _actionButtonRow(workoutSummary, _sizeDefault),
+                    _actionButtonRow(workoutSummary, _sizeDefault, themeMode),
                   ],
                 ),
               ),

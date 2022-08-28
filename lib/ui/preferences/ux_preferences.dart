@@ -44,19 +44,75 @@ class UXPreferencesScreenState extends ConsumerState<UXPreferencesScreen> {
         title: const Text(themeSelectionSystemDescription),
         value: themeSelectionSystem,
         pref: themeSelectionTag,
-        onSelect: () => ref.refresh(themeModeProvider).reactive.value = ThemeMode.system,
+        onSelect: () {
+          final isDark = Get.isPlatformDarkMode;
+          final theme = isDark ? ThemeData.dark() : ThemeData.light();
+          setState(() {
+            Get.changeThemeMode(ThemeMode.system);
+            Get.changeTheme(theme);
+          });
+          setState(() {
+            Get.changeThemeMode(ThemeMode.system);
+            Get.changeTheme(theme);
+          });
+          ref.read(themeModeProvider.state).state = ThemeMode.system;
+          setState(() {
+            Get.changeThemeMode(ThemeMode.system);
+            Get.changeTheme(theme);
+          });
+          setState(() {
+            Get.changeThemeMode(ThemeMode.system);
+            Get.changeTheme(theme);
+          });
+        }
       ),
       PrefRadio<String>(
         title: const Text(themeSelectionLightDescription),
         value: themeSelectionLight,
         pref: themeSelectionTag,
-        onSelect: () => ref.refresh(themeModeProvider).reactive.value = ThemeMode.light,
+        onSelect: () {
+          setState(() {
+            Get.changeThemeMode(ThemeMode.light);
+            Get.changeTheme(ThemeData.light());
+          });
+          setState(() {
+            Get.changeThemeMode(ThemeMode.light);
+            Get.changeTheme(ThemeData.light());
+          });
+          ref.read(themeModeProvider.state).state = ThemeMode.light;
+          setState(() {
+            Get.changeThemeMode(ThemeMode.light);
+            Get.changeTheme(ThemeData.light());
+          });
+          setState(() {
+            Get.changeThemeMode(ThemeMode.light);
+            Get.changeTheme(ThemeData.light());
+          });
+        }
       ),
       PrefRadio<String>(
         title: const Text(themeSelectionDarkDescription),
         value: themeSelectionDark,
         pref: themeSelectionTag,
-        onSelect: () => ref.refresh(themeModeProvider).reactive.value = ThemeMode.dark,
+        onSelect: () {
+          setState(() {
+            Get.changeThemeMode(ThemeMode.dark);
+            Get.changeTheme(ThemeData.dark());
+          });
+          setState(() {
+            Get.changeThemeMode(ThemeMode.dark);
+            Get.changeTheme(ThemeData.dark());
+          });
+          ref.read(themeModeProvider.state).state = ThemeMode.dark;
+          setState(() {
+            Get.changeThemeMode(ThemeMode.dark);
+            Get.changeTheme(ThemeData.dark());
+          });
+          setState(() {
+            Get.changeThemeMode(ThemeMode.dark);
+            Get.changeTheme(ThemeData.dark());
+          });
+        }
       ),
       const PrefLabel(title: Divider(height: 1)),
       const PrefCheckbox(

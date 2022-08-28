@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
@@ -13,12 +14,13 @@ import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/unit_system.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
-class SpinDownBottomSheet extends StatefulWidget {
+class SpinDownBottomSheet extends ConsumerStatefulWidget {
   const SpinDownBottomSheet({Key? key}) : super(key: key);
 
   @override
@@ -41,7 +43,7 @@ enum CalibrationState {
   notSupported,
 }
 
-class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
+class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
   static const stepWeightInput = 0;
   static const stepCalibrating = 1;
   static const stepDone = 2;
@@ -104,15 +106,16 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _oldWeightMsb = weightBytes.item2;
     _newWeightLsb = weightBytes.item1;
     _newWeightMsb = weightBytes.item2;
-    _isLight = !_themeManager.isDark();
+    final themeMode = ref.watch(themeModeProvider);
+    _isLight = !_themeManager.isDark(themeMode);
     _smallerTextStyle = Get.textTheme.headline5!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
     _sizeDefault = _smallerTextStyle.fontSize!;
     _largerTextStyle = Get.textTheme.headline2!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
     _prepareSpinDown();
     super.initState();
@@ -358,16 +361,16 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     return "STOP!";
   }
 
-  TextStyle _calibrationInstructionStyle() {
-    var color = _themeManager.getRedColor();
+  TextStyle _calibrationInstructionStyle(ThemeMode themeMode) {
+    var color = _themeManager.getRedColor(themeMode);
 
     if (_calibrationState == CalibrationState.readyToCalibrate ||
         _calibrationState == CalibrationState.calibrationStarting) {
-      color = _themeManager.getGreenColor();
+      color = _themeManager.getGreenColor(themeMode);
     }
 
     if (_calibrationState == CalibrationState.calibrationInProgress) {
-      color = _themeManager.getBlueColor();
+      color = _themeManager.getBlueColor(themeMode);
     }
 
     return _largerTextStyle.merge(TextStyle(color: color));
@@ -452,6 +455,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: SingleChildScrollView(
         child: IndexedStack(
@@ -511,10 +515,12 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                       Text(_targetSpeedHighString, style: _smallerTextStyle),
                     ],
                   ),
-                  Text(_currentSpeedString,
-                      style:
-                          _largerTextStyle.merge(TextStyle(color: _themeManager.getBlueColor()))),
-                  Text(_calibrationInstruction(), style: _calibrationInstructionStyle()),
+                  Text(
+                    _currentSpeedString,
+                    style: _largerTextStyle
+                        .merge(TextStyle(color: _themeManager.getBlueColor(themeMode))),
+                  ),
+                  Text(_calibrationInstruction(), style: _calibrationInstructionStyle(themeMode)),
                   ElevatedButton(
                     style: _buttonBackgroundStyle(),
                     onPressed: () async => await onCalibrationButtonPressed(),
@@ -571,7 +577,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.close(1)),
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.close(1)),
     );
   }
 }

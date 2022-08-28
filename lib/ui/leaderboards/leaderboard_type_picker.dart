@@ -1,7 +1,9 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 import 'device_leaderboard.dart';
@@ -9,14 +11,14 @@ import 'leaderboard_device_hub.dart';
 import 'leaderboard_sport_hub.dart';
 import 'sport_leaderboard.dart';
 
-class LeaderBoardTypeBottomSheet extends StatefulWidget {
+class LeaderBoardTypeBottomSheet extends ConsumerStatefulWidget {
   const LeaderBoardTypeBottomSheet({Key? key}) : super(key: key);
 
   @override
   LeaderBoardTypeBottomSheetState createState() => LeaderBoardTypeBottomSheetState();
 }
 
-class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> {
+class LeaderBoardTypeBottomSheetState extends ConsumerState<LeaderBoardTypeBottomSheet> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
@@ -30,15 +32,17 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
       fontFamily: fontFamily,
       color: Colors.white,
     );
+    final themeMode = ref.watch(themeModeProvider);
     _inverseTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
     _sizeDefault = _textStyle.fontSize! * 2;
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: ListView(
         children: [
@@ -104,7 +108,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
     );
   }
 }

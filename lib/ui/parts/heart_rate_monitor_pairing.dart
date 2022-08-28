@@ -2,12 +2,14 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/scan_duration.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
@@ -15,7 +17,7 @@ import '../../utils/theme_manager.dart';
 import 'boolean_question.dart';
 import 'heart_rate_monitor_scan_result.dart';
 
-class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
+class HeartRateMonitorPairingBottomSheet extends ConsumerStatefulWidget {
   const HeartRateMonitorPairingBottomSheet({Key? key}) : super(key: key);
 
   @override
@@ -23,7 +25,8 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
       HeartRateMonitorPairingBottomSheetState();
 }
 
-class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
+class HeartRateMonitorPairingBottomSheetState
+    extends ConsumerState<HeartRateMonitorPairingBottomSheet> {
   static RegExp colonRegex = RegExp(r'\:');
 
   int _scanDuration = 4;
@@ -95,6 +98,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
@@ -125,11 +129,11 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                           initialData: BluetoothDeviceState.disconnected,
                           builder: (c, snapshot) {
                             if (snapshot.data == BluetoothDeviceState.connected) {
-                              return _themeManager.getGreenFab(Icons.favorite, () {
+                              return _themeManager.getGreenFab(Icons.favorite, themeMode, () {
                                 Get.snackbar("Info", "Already connected");
                               });
                             } else {
-                              return _themeManager.getGreyFab(Icons.bluetooth, () {
+                              return _themeManager.getGreyFab(Icons.bluetooth, themeMode, () {
                                 setState(() {
                                   _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                       ? Get.find<HeartRateMonitor>()
@@ -251,7 +255,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, () => Get.back(result: true)),
+            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back(result: true)),
             const SizedBox(width: 10, height: 10),
             StreamBuilder<bool>(
               stream: FlutterBluePlus.instance.isScanning,
@@ -260,7 +264,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                 if (snapshot.data == null || snapshot.data!) {
                   return JumpingDotsProgressIndicator(
                     fontSize: 30.0,
-                    color: _themeManager.getProtagonistColor(),
+                    color: _themeManager.getProtagonistColor(themeMode),
                   );
                 } else if (_pairingHrm) {
                   return HeartbeatProgressIndicator(

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class BooleanQuestionBottomSheet extends StatefulWidget {
+class BooleanQuestionBottomSheet extends ConsumerStatefulWidget {
   final String title;
   final String content;
 
@@ -14,7 +16,7 @@ class BooleanQuestionBottomSheet extends StatefulWidget {
   BooleanQuestionBottomSheetState createState() => BooleanQuestionBottomSheetState();
 }
 
-class BooleanQuestionBottomSheetState extends State<BooleanQuestionBottomSheet> {
+class BooleanQuestionBottomSheetState extends ConsumerState<BooleanQuestionBottomSheet> {
   TextStyle _largerTextStyle = const TextStyle();
   TextStyle _textStyle = const TextStyle();
   final _themeManager = Get.find<ThemeManager>();
@@ -22,13 +24,14 @@ class BooleanQuestionBottomSheetState extends State<BooleanQuestionBottomSheet> 
   @override
   void initState() {
     super.initState();
+    final themeMode = ref.watch(themeModeProvider);
     _largerTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
     _textStyle = Get.textTheme.headline5!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
   }
 

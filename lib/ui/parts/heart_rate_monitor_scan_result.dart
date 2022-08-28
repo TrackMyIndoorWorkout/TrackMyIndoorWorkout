@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/gatt_constants.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/advertisement_data_ex.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
@@ -33,7 +35,7 @@ extension HeartRateMonitorScanResult on ScanResult {
   bool get isHeartRateMonitor => hasService(heartRateServiceUuid);
 }
 
-class HeartRateMonitorScanResultTile extends StatelessWidget {
+class HeartRateMonitorScanResultTile extends ConsumerWidget {
   static RegExp colonRegex = RegExp(r'\:');
 
   const HeartRateMonitorScanResultTile({
@@ -66,12 +68,13 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     final captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
+    final themeMode = ref.watch(themeModeProvider);
 
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
@@ -81,9 +84,10 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
       ),
       trailing: themeManager.getIconFab(
         (heartRateMonitor?.device?.id.id ?? notAvailable) == result.device.id.id
-            ? themeManager.getGreenColor()
-            : themeManager.getBlueColor(),
+            ? themeManager.getGreenColor(themeMode)
+            : themeManager.getBlueColor(themeMode),
         Icons.favorite,
+        themeMode,
         onTap,
       ),
     );

@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:group_button/group_button.dart';
 import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
 import '../../preferences/palette_spec.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class PalettePickerBottomSheet extends StatefulWidget {
+class PalettePickerBottomSheet extends ConsumerStatefulWidget {
   const PalettePickerBottomSheet({Key? key}) : super(key: key);
 
   @override
   PalettePickerBottomSheetState createState() => PalettePickerBottomSheetState();
 }
 
-class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
+class PalettePickerBottomSheetState extends ConsumerState<PalettePickerBottomSheet> {
   bool _lightOrDark = false;
   bool _fgOrBg = false;
   int _size = 5;
@@ -34,32 +36,33 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
   @override
   void initState() {
     super.initState();
+    final themeMode = ref.watch(themeModeProvider);
     _largerTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
     _textStyle = Get.textTheme.headline5!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
     _groupStyle = Get.textTheme.headline5!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getAntagonistColor(),
+      color: _themeManager.getAntagonistColor(themeMode),
     );
     _landscapeGroupButtonOptions = GroupButtonOptions(
       borderRadius: BorderRadius.circular(4),
       selectedTextStyle: _groupStyle,
-      selectedColor: _themeManager.getGreenColor(),
+      selectedColor: _themeManager.getGreenColor(themeMode),
       unselectedTextStyle: _groupStyle,
-      unselectedColor: _themeManager.getBlueColor(),
+      unselectedColor: _themeManager.getBlueColor(themeMode),
       direction: Axis.vertical,
     );
     _portraitGroupButtonOptions = GroupButtonOptions(
       borderRadius: BorderRadius.circular(4),
       selectedTextStyle: _groupStyle,
-      selectedColor: _themeManager.getGreenColor(),
+      selectedColor: _themeManager.getGreenColor(themeMode),
       unselectedTextStyle: _groupStyle,
-      unselectedColor: _themeManager.getBlueColor(),
+      unselectedColor: _themeManager.getBlueColor(themeMode),
     );
   }
 
@@ -71,6 +74,7 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
       _mediaHeight = size.height;
       _landscape = _mediaWidth > _mediaHeight;
     }
+    final themeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
       body: _landscape
@@ -187,6 +191,7 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
           children: [
             _themeManager.getBlueFab(
                 Icons.refresh,
+                themeMode,
                 () => {
                       Get.defaultDialog(
                         title: 'Reset all colors to default!',
@@ -216,8 +221,11 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
                       )
                     }),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(Icons.arrow_forward,
-                () => Get.back(result: Tuple3<bool, bool, int>(_lightOrDark, _fgOrBg, _size))),
+            _themeManager.getGreenFab(
+              Icons.arrow_forward,
+              themeMode,
+              () => Get.back(result: Tuple3<bool, bool, int>(_lightOrDark, _fgOrBg, _size)),
+            ),
           ],
         ),
       ),

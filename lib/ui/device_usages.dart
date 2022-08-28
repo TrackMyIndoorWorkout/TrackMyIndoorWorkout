@@ -1,24 +1,27 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import '../persistence/models/device_usage.dart';
 import '../persistence/database.dart';
+import '../providers/theme_mode.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/theme_manager.dart';
 import 'parts/sport_picker.dart';
 
-class DeviceUsagesScreen extends StatefulWidget {
+class DeviceUsagesScreen extends ConsumerStatefulWidget {
   const DeviceUsagesScreen({key}) : super(key: key);
 
   @override
   DeviceUsagesScreenState createState() => DeviceUsagesScreenState();
 }
 
-class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBindingObserver {
+class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
+    with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
@@ -37,10 +40,15 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _textStyle = Get.textTheme.headline5!
-        .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _textStyle = Get.textTheme.headline5!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getProtagonistColor(themeMode),
+    );
     _sizeDefault = _textStyle.fontSize!;
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    _expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
   }
 
   @override
@@ -49,11 +57,11 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
     super.dispose();
   }
 
-  Widget _actionButtonRow(DeviceUsage deviceUsage, double size) {
+  Widget _actionButtonRow(DeviceUsage deviceUsage, double size, ThemeMode themeMode) {
     return Row(
       children: [
         IconButton(
-          icon: _themeManager.getActionIcon(Icons.edit, size),
+          icon: _themeManager.getActionIcon(Icons.edit, size, themeMode),
           iconSize: size,
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
@@ -87,7 +95,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         ),
         const Spacer(),
         IconButton(
-          icon: _themeManager.getDeleteIcon(size),
+          icon: _themeManager.getDeleteIcon(size, themeMode),
           iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
@@ -116,6 +124,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Device Usages')),
       body: CustomListView(
@@ -172,7 +181,11 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _themeManager.getBlueIcon(getSportIcon(deviceUsage.sport), _sizeDefault),
+                      _themeManager.getBlueIcon(
+                        getSportIcon(deviceUsage.sport),
+                        _sizeDefault,
+                        themeMode,
+                      ),
                       Text(deviceUsage.sport, style: _textStyle),
                     ],
                   ),
@@ -186,7 +199,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault, themeMode),
                         Text(dateString, style: _textStyle),
                       ],
                     ),
@@ -194,11 +207,11 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault, themeMode),
                         Text(timeString, style: _textStyle),
                       ],
                     ),
-                    _actionButtonRow(deviceUsage, _sizeDefault),
+                    _actionButtonRow(deviceUsage, _sizeDefault, themeMode),
                   ],
                 ),
               ),

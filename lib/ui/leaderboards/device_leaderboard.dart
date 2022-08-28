@@ -1,6 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
@@ -13,10 +14,11 @@ import '../../preferences/generic.dart';
 import '../../preferences/speed_spec.dart';
 import '../../preferences/sport_spec.dart';
 import '../../preferences/unit_system.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class DeviceLeaderboardScreen extends StatefulWidget {
+class DeviceLeaderboardScreen extends ConsumerStatefulWidget {
   final Tuple3<String, String, String> device;
 
   const DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
@@ -25,7 +27,7 @@ class DeviceLeaderboardScreen extends StatefulWidget {
   DeviceLeaderboardScreenState createState() => DeviceLeaderboardScreenState();
 }
 
-class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
+class DeviceLeaderboardScreenState extends ConsumerState<DeviceLeaderboardScreen>
     with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   bool _si = unitSystemDefault;
@@ -52,11 +54,16 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
     _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
-    _textStyle = Get.textTheme.headline5!
-        .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _textStyle = Get.textTheme.headline5!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getProtagonistColor(themeMode),
+    );
     _sizeDefault = _textStyle.fontSize!;
-    _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault, themeMode);
+    _expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
     if (widget.device.item3 != ActivityType.ride) {
       _slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.device.item3)]!;
     }
@@ -68,11 +75,11 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
     super.dispose();
   }
 
-  Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
+  Widget _actionButtonRow(WorkoutSummary workoutSummary, double size, ThemeMode themeMode) {
     return Row(
       children: [
         IconButton(
-          icon: _themeManager.getDeleteIcon(size),
+          icon: _themeManager.getDeleteIcon(size, themeMode),
           iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
@@ -101,6 +108,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(title: Text('${widget.device.item2} Leaderboard')),
       body: CustomListView(
@@ -148,7 +156,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
                   SizedBox(
                     width: _sizeDefault * 2,
                     height: _sizeDefault * 2,
-                    child: _themeManager.getRankIcon(index),
+                    child: _themeManager.getRankIcon(index, themeMode),
                   ),
                   Column(
                     children: [
@@ -182,7 +190,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault, themeMode),
                         Text(dateString, style: _textStyle),
                       ],
                     ),
@@ -190,11 +198,11 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault, themeMode),
                         Text(timeString, style: _textStyle),
                       ],
                     ),
-                    _actionButtonRow(workoutSummary, _sizeDefault),
+                    _actionButtonRow(workoutSummary, _sizeDefault, themeMode),
                   ],
                 ),
               ),

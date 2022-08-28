@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/instant_upload.dart';
 import '../../preferences/training_peaks_upload_public.dart';
+import '../../providers/theme_mode.dart';
 import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/preferences.dart';
 import '../../utils/theme_manager.dart';
 import 'preferences_screen_mixin.dart';
 
-class IntegrationPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
+class IntegrationPreferencesScreen extends ConsumerStatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "Integrations";
   static String title = "$shortTitle Preferences";
 
@@ -20,7 +22,7 @@ class IntegrationPreferencesScreen extends StatefulWidget with PreferencesScreen
   IntegrationPreferencesScreenState createState() => IntegrationPreferencesScreenState();
 }
 
-class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScreen> {
+class IntegrationPreferencesScreenState extends ConsumerState<IntegrationPreferencesScreen> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _largerTextStyle = const TextStyle();
   Map<String, bool> integrationStates = {};
@@ -88,8 +90,9 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
       ),
     ];
 
+    final themeMode = ref.watch(themeModeProvider);
     integrationPreferences.addAll(
-      getPortalChoices(_themeManager).asMap().entries.map(
+      getPortalChoices(_themeManager, themeMode).asMap().entries.map(
             (e) => PrefButton(
               child: GestureDetector(
                 onTap: () async {
@@ -102,7 +105,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
                     Icon(
                       (integrationStates[e.value.name] ?? false) ? Icons.link : Icons.link_off,
                       size: _largerTextStyle.fontSize! * 1.5,
-                      color: _themeManager.getProtagonistColor(),
+                      color: _themeManager.getProtagonistColor(themeMode),
                     ),
                     SvgPicture.asset(
                       e.value.assetName,

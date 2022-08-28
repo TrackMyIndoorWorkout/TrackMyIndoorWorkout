@@ -33,7 +33,7 @@ class TrackMyIndoorExerciseAppState extends ConsumerState<TrackMyIndoorExerciseA
       service: widget.prefService,
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        color: _themeManager.getHeaderColor(),
+        color: _themeManager.getHeaderColor(themeMode),
         theme: ThemeData.light(),
         darkTheme: ThemeData.dark(),
         themeMode: themeMode,

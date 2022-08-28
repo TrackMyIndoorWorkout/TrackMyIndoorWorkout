@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import '../../devices/company_registry.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/scan_result_ex.dart';
 import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
-class ScanResultTile extends StatelessWidget {
+class ScanResultTile extends ConsumerWidget {
   static RegExp colonRegex = RegExp(r'\:');
 
   const ScanResultTile({
@@ -85,24 +87,26 @@ class ScanResultTile extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final captionStyle = Get.textTheme.headline6!;
     final detailStyle = captionStyle.apply(fontSizeFactor: 1 / fontSizeFactor);
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
+    final themeMode = ref.watch(themeModeProvider);
 
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: Icon(
         result.getIcon([]),
         size: captionStyle.fontSize! * 2.5,
-        color: themeManager.getProtagonistColor(),
+        color: themeManager.getProtagonistColor(themeMode),
       ),
       trailing: themeManager.getIconFab(
         result.advertisementData.connectable
-            ? themeManager.getBlueColor()
-            : themeManager.getGreyColor(),
+            ? themeManager.getBlueColor(themeMode)
+            : themeManager.getGreyColor(themeMode),
         result.isHeartRateMonitor ? Icons.favorite : Icons.play_arrow,
+        themeMode,
         result.advertisementData.connectable
             ? (result.isHeartRateMonitor ? onHrmTap : onEquipmentTap)
             : null,

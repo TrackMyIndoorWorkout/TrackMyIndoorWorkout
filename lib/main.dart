@@ -3,11 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'devices/company_registry.dart';
-// import 'providers/theme_mode.dart';
 import 'track_my_indoor_exercise_app.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'utils/init_preferences.dart';
-// import 'utils/preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,9 +26,6 @@ void main() async {
 
   runApp(
     ProviderScope(
-      // overrides: [
-      //   themeModeProvider.overrideWithValue(preferredThemeMode(prefService)),
-      // ],
       child: TrackMyIndoorExerciseApp(prefService: prefService),
     ),
   );

@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:pref/pref.dart';
-import 'package:track_my_indoor_exercise/preferences/theme_selection.dart';
 import 'package:tuple/tuple.dart';
+
 import '../preferences/data_connection_addresses.dart';
+import '../preferences/theme_selection.dart';
 import 'constants.dart';
 
 bool isBoundedInteger(String integerString, int minValue, int maxValue) {
@@ -90,7 +91,8 @@ Future<bool> hasInternetConnection() async {
   return await connectionChecker.hasConnection;
 }
 
-ThemeMode preferredThemeMode(BasePrefService prefService) {
+ThemeMode initialPreferredThemeMode() {
+  final prefService = Get.find<BasePrefService>();
   final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
   ThemeMode themeMode = ThemeMode.system;
   switch (themeSelection) {

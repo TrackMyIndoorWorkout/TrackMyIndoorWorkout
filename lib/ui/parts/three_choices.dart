@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class ThreeChoicesBottomSheet extends StatefulWidget {
+class ThreeChoicesBottomSheet extends ConsumerStatefulWidget {
   final String title;
   final bool verticalActions;
   final String firstChoice;
@@ -23,16 +25,17 @@ class ThreeChoicesBottomSheet extends StatefulWidget {
   ThreeChoicesBottomSheetState createState() => ThreeChoicesBottomSheetState();
 }
 
-class ThreeChoicesBottomSheetState extends State<ThreeChoicesBottomSheet> {
+class ThreeChoicesBottomSheetState extends ConsumerState<ThreeChoicesBottomSheet> {
   TextStyle _largerTextStyle = const TextStyle();
   final _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
     super.initState();
+    final themeMode = ref.watch(themeModeProvider);
     _largerTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
   }
 

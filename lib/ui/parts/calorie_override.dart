@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/calorie_tune.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class CalorieOverrideBottomSheet extends StatefulWidget {
+class CalorieOverrideBottomSheet extends ConsumerStatefulWidget {
   late final String deviceId;
   late final double oldFactor;
   late final double oldCalories;
@@ -34,7 +36,7 @@ class CalorieOverrideBottomSheet extends StatefulWidget {
   CalorieOverrideBottomSheetState createState() => CalorieOverrideBottomSheetState();
 }
 
-class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> {
+class CalorieOverrideBottomSheetState extends ConsumerState<CalorieOverrideBottomSheet> {
   double _newCalorie = 0.0;
   TextStyle _largerTextStyle = const TextStyle();
   final _themeManager = Get.find<ThemeManager>();
@@ -43,14 +45,16 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
   void initState() {
     super.initState();
     _newCalorie = widget.oldCalories;
+    final themeMode = ref.watch(themeModeProvider);
     _largerTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: ListView(
         children: [
@@ -71,9 +75,9 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(Icons.check, () async {
+            _themeManager.getGreenFab(Icons.check, themeMode, () async {
               final database = Get.find<AppDatabase>();
               final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
               CalorieTune? calorieTune;

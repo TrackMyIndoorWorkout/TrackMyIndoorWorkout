@@ -3,24 +3,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import '../../devices/gadgets/device_base.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
-class BatteryStatusBottomSheet extends StatefulWidget {
+class BatteryStatusBottomSheet extends ConsumerStatefulWidget {
   const BatteryStatusBottomSheet({Key? key}) : super(key: key);
 
   @override
   BatteryStatusBottomSheetState createState() => BatteryStatusBottomSheetState();
 }
 
-class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
+class BatteryStatusBottomSheetState extends ConsumerState<BatteryStatusBottomSheet> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   String _hrmBatteryLevel = notAvailable;
@@ -121,9 +123,10 @@ class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
   @override
   void initState() {
     super.initState();
+    final themeMode = ref.watch(themeModeProvider);
     _textStyle = Get.textTheme.headline3!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
     _sizeDefault = _textStyle.fontSize!;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
@@ -134,6 +137,7 @@ class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: ListView(
         children: [
@@ -142,8 +146,11 @@ class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _themeManager.getBlueIcon(
-                  getSportIcon(_fitnessEquipment?.sport ?? ActivityType.workout), _sizeDefault),
-              _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
+                getSportIcon(_fitnessEquipment?.sport ?? ActivityType.workout),
+                _sizeDefault,
+                themeMode,
+              ),
+              _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault, themeMode),
               Text(_batteryLevel, style: _textStyle),
             ],
           ),
@@ -151,8 +158,8 @@ class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _themeManager.getBlueIcon(Icons.favorite, _sizeDefault),
-              _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
+              _themeManager.getBlueIcon(Icons.favorite, _sizeDefault, themeMode),
+              _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault, themeMode),
               Text(_hrmBatteryLevel, style: _textStyle),
             ],
           ),
@@ -163,7 +170,7 @@ class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.close(1)),
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.close(1)),
     );
   }
 }

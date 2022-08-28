@@ -1,17 +1,19 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/theme_manager.dart';
 
-class ImportFormatPickerBottomSheet extends StatefulWidget {
+class ImportFormatPickerBottomSheet extends ConsumerStatefulWidget {
   const ImportFormatPickerBottomSheet({Key? key}) : super(key: key);
 
   @override
   ImportFormatPickerBottomSheetState createState() => ImportFormatPickerBottomSheetState();
 }
 
-class ImportFormatPickerBottomSheetState extends State<ImportFormatPickerBottomSheet> {
+class ImportFormatPickerBottomSheetState extends ConsumerState<ImportFormatPickerBottomSheet> {
   int _formatIndex = 0;
   final List<String> _formatChoices = [
     "MPower Echelon",
@@ -26,11 +28,14 @@ class ImportFormatPickerBottomSheetState extends State<ImportFormatPickerBottomS
     super.initState();
     _formatIndex = max(0, _formatChoices.indexOf("MPower Echelon"));
     _largerTextStyle = Get.textTheme.headline4!;
-    _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _selectedTextStyle =
+        _largerTextStyle.apply(color: _themeManager.getProtagonistColor(themeMode));
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: ListView(
         children: _formatChoices
@@ -74,10 +79,11 @@ class ImportFormatPickerBottomSheetState extends State<ImportFormatPickerBottomS
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(
               Icons.check,
+              themeMode,
               () => Get.back(result: _formatChoices[_formatIndex]),
             ),
           ],

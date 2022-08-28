@@ -2,17 +2,19 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/theme_manager.dart';
 
-class ExportFormatPickerBottomSheet extends StatefulWidget {
+class ExportFormatPickerBottomSheet extends ConsumerStatefulWidget {
   const ExportFormatPickerBottomSheet({Key? key}) : super(key: key);
 
   @override
   ExportFormatPickerBottomSheetState createState() => ExportFormatPickerBottomSheetState();
 }
 
-class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomSheet> {
+class ExportFormatPickerBottomSheetState extends ConsumerState<ExportFormatPickerBottomSheet> {
   int _formatIndex = 0;
   final List<String> _formatChoices = ["FIT", "TCX", "CSV"];
   final ThemeManager _themeManager = Get.find<ThemeManager>();
@@ -27,11 +29,14 @@ class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomS
     }
     _formatIndex = max(0, _formatChoices.indexOf("FIT"));
     _largerTextStyle = Get.textTheme.headline4!;
-    _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _selectedTextStyle =
+        _largerTextStyle.apply(color: _themeManager.getProtagonistColor(themeMode));
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: ListView(
         children: _formatChoices
@@ -75,10 +80,11 @@ class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomS
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(
               Icons.check,
+              themeMode,
               () => Get.back(result: _formatChoices[_formatIndex]),
             ),
           ],

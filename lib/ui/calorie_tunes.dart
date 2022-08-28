@@ -1,22 +1,25 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import '../persistence/models/calorie_tune.dart';
 import '../persistence/database.dart';
+import '../providers/theme_mode.dart';
 import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
 
-class CalorieTunesScreen extends StatefulWidget {
+class CalorieTunesScreen extends ConsumerStatefulWidget {
   const CalorieTunesScreen({key}) : super(key: key);
 
   @override
   CalorieTunesScreenState createState() => CalorieTunesScreenState();
 }
 
-class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBindingObserver {
+class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
+    with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
@@ -37,7 +40,10 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
     WidgetsBinding.instance.addObserver(this);
     _textStyle = Get.textTheme.headline4!;
     _sizeDefault = _textStyle.fontSize!;
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
   }
 
   @override
@@ -46,11 +52,11 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
     super.dispose();
   }
 
-  Widget _actionButtonRow(CalorieTune calorieTune, double size) {
+  Widget _actionButtonRow(CalorieTune calorieTune, double size, ThemeMode themeMode) {
     return Row(
       children: [
         IconButton(
-          icon: _themeManager.getActionIcon(Icons.edit, size),
+          icon: _themeManager.getActionIcon(Icons.edit, size, themeMode),
           iconSize: size,
           onPressed: () async {
             final result = await Get.bottomSheet(
@@ -78,7 +84,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         ),
         const Spacer(),
         IconButton(
-          icon: _themeManager.getDeleteIcon(size),
+          icon: _themeManager.getDeleteIcon(size, themeMode),
           iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
@@ -107,6 +113,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Calorie Tunes')),
       body: CustomListView(
@@ -171,7 +178,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault, themeMode),
                         Text(dateString, style: _textStyle),
                       ],
                     ),
@@ -179,7 +186,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault, themeMode),
                         Text(timeString, style: _textStyle),
                       ],
                     ),
@@ -188,12 +195,12 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         calorieTune.hrBased
-                            ? _themeManager.getBlueIcon(Icons.favorite, _sizeDefault)
-                            : _themeManager.getGreyIcon(Icons.favorite, _sizeDefault),
+                            ? _themeManager.getBlueIcon(Icons.favorite, _sizeDefault, themeMode)
+                            : _themeManager.getGreyIcon(Icons.favorite, _sizeDefault, themeMode),
                         Text(hrBasedString, style: _textStyle),
                       ],
                     ),
-                    _actionButtonRow(calorieTune, _sizeDefault),
+                    _actionButtonRow(calorieTune, _sizeDefault, themeMode),
                   ],
                 ),
               ),

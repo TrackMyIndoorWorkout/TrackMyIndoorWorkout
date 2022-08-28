@@ -1,19 +1,21 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/measurement_ui_state.dart';
 import '../../preferences/metric_spec.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/theme_manager.dart';
 
-class RowConfigurationDialog extends StatefulWidget {
+class RowConfigurationDialog extends ConsumerStatefulWidget {
   const RowConfigurationDialog({Key? key}) : super(key: key);
 
   @override
   RowConfigurationDialogState createState() => RowConfigurationDialogState();
 }
 
-class RowConfigurationDialogState extends State<RowConfigurationDialog> {
+class RowConfigurationDialogState extends ConsumerState<RowConfigurationDialog> {
   TextStyle _textStyle = const TextStyle();
   List<bool> _expandedState = [];
   final List<int> _expandedHeights = [];
@@ -23,7 +25,8 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
     super.initState();
 
     final themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline3!.apply(color: themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _textStyle = Get.textTheme.headline3!.apply(color: themeManager.getProtagonistColor(themeMode));
     final prefService = Get.find<BasePrefService>();
     final expandedStateStr =
         prefService.get<String>(measurementPanelsExpandedTag) ?? measurementPanelsExpandedDefault;

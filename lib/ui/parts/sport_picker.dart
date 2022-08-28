@@ -1,11 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
-class SportPickerBottomSheet extends StatefulWidget {
+class SportPickerBottomSheet extends ConsumerStatefulWidget {
   final List<String> sportChoices;
   final String initialSport;
 
@@ -19,7 +21,7 @@ class SportPickerBottomSheet extends StatefulWidget {
   SportPickerBottomSheetState createState() => SportPickerBottomSheetState();
 }
 
-class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
+class SportPickerBottomSheetState extends ConsumerState<SportPickerBottomSheet> {
   int _sportIndex = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _largerTextStyle = const TextStyle();
@@ -28,14 +30,17 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
   @override
   void initState() {
     super.initState();
-
     _sportIndex = max(0, widget.sportChoices.indexOf(widget.initialSport));
     _largerTextStyle = Get.textTheme.headline4!;
-    _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _selectedTextStyle = _largerTextStyle.apply(
+      color: _themeManager.getProtagonistColor(themeMode),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: ListView(
         children: widget.sportChoices
@@ -65,9 +70,14 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
                       });
                     },
                     icon: _themeManager.getBlueIcon(
-                        getSportIcon(e.value), _largerTextStyle.fontSize!),
-                    label: Text(e.value,
-                        style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+                      getSportIcon(e.value),
+                      _largerTextStyle.fontSize!,
+                      themeMode,
+                    ),
+                    label: Text(
+                      e.value,
+                      style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle,
+                    ),
                   ),
                 ],
               ),
@@ -77,6 +87,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: _themeManager.getGreenFab(
         Icons.check,
+        themeMode,
         () => Get.back(result: widget.sportChoices[_sportIndex]),
       ),
     );

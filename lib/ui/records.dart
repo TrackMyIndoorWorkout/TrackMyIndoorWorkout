@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/unit_system.dart';
+import '../providers/theme_mode.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/statistics_accumulator.dart';
@@ -25,7 +27,7 @@ import 'models/measurement_counter.dart';
 import 'models/tile_configuration.dart';
 import 'about.dart';
 
-class RecordsScreen extends StatefulWidget {
+class RecordsScreen extends ConsumerStatefulWidget {
   final Activity activity;
   final Size size;
   const RecordsScreen({
@@ -38,7 +40,7 @@ class RecordsScreen extends StatefulWidget {
   RecordsScreenState createState() => RecordsScreenState();
 }
 
-class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserver {
+class RecordsScreenState extends ConsumerState<RecordsScreen> with WidgetsBindingObserver {
   int _editCount = 0;
   int _pointCount = 0;
   List<Record> _allRecords = [];
@@ -337,8 +339,9 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.activity.sport);
     widget.activity.hydrate();
-    _isLight = !_themeManager.isDark();
-    _chartTextColor = _themeManager.getProtagonistColor();
+    final themeMode = ref.watch(themeModeProvider);
+    _isLight = !_themeManager.isDark(themeMode);
+    _chartTextColor = _themeManager.getProtagonistColor(themeMode);
     final sizeAdjustInt =
         prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
     if (sizeAdjustInt != 100) {
@@ -349,7 +352,9 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
       fontSize: 11 * _sizeAdjust,
       color: _chartTextColor,
     );
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    _expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
 
     extraInit(prefService);
   }
@@ -482,6 +487,7 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
@@ -494,7 +500,7 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
       _textStyle = TextStyle(
         fontSize: _sizeDefault2,
       );
-      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3, themeMode);
     }
 
     final header = [
@@ -502,7 +508,7 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIcon(getSportIcon(widget.activity.sport), _sizeDefault),
+          _themeManager.getBlueIcon(getSportIcon(widget.activity.sport), _sizeDefault, themeMode),
           Expanded(
             child: TextOneLine(
               widget.activity.deviceName,
@@ -517,7 +523,7 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+          _themeManager.getBlueIcon(Icons.timer, _sizeDefault, themeMode),
           const Spacer(),
           FitHorizontally(
             child: Text(
@@ -545,7 +551,7 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+            _themeManager.getBlueIcon(Icons.timer, _sizeDefault, themeMode),
             const Spacer(),
             FitHorizontally(
               child: Text(
@@ -574,7 +580,7 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
+          _themeManager.getBlueIcon(Icons.add_road, _sizeDefault, themeMode),
           const Spacer(),
           FitHorizontally(
             child: Text(
@@ -595,7 +601,7 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
+          _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault, themeMode),
           const Spacer(),
           FitHorizontally(
             child: Text(
@@ -659,7 +665,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
+                            _themeManager.getBlueIcon(
+                              _preferencesSpecs[index].icon,
+                              _sizeDefault2,
+                              themeMode,
+                            ),
                             Text("MAX", style: _unitStyle),
                             const Spacer(),
                             FitHorizontally(
@@ -681,7 +691,11 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
+                            _themeManager.getBlueIcon(
+                              _preferencesSpecs[index].icon,
+                              _sizeDefault2,
+                              themeMode,
+                            ),
                             Text("AVG", style: _unitStyle),
                             const Spacer(),
                             FitHorizontally(

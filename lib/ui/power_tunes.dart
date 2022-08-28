@@ -1,22 +1,24 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
 import '../persistence/models/power_tune.dart';
 import '../persistence/database.dart';
+import '../providers/theme_mode.dart';
 import '../utils/theme_manager.dart';
 import 'parts/power_factor_tune.dart';
 
-class PowerTunesScreen extends StatefulWidget {
+class PowerTunesScreen extends ConsumerStatefulWidget {
   const PowerTunesScreen({key}) : super(key: key);
 
   @override
   PowerTunesScreenState createState() => PowerTunesScreenState();
 }
 
-class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingObserver {
+class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   double _sizeDefault = 10.0;
@@ -37,7 +39,10 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
     WidgetsBinding.instance.addObserver(this);
     _textStyle = Get.textTheme.headline4!;
     _sizeDefault = _textStyle.fontSize!;
-    _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    final themeMode = ref.watch(themeModeProvider);
+    _expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
   }
 
   @override
@@ -46,11 +51,11 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
     super.dispose();
   }
 
-  Widget _actionButtonRow(PowerTune powerTune, double size) {
+  Widget _actionButtonRow(PowerTune powerTune, double size, ThemeMode themeMode) {
     return Row(
       children: [
         IconButton(
-          icon: _themeManager.getActionIcon(Icons.edit, size),
+          icon: _themeManager.getActionIcon(Icons.edit, size, themeMode),
           iconSize: size,
           onPressed: () async {
             final result = await Get.bottomSheet(
@@ -81,7 +86,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
         ),
         const Spacer(),
         IconButton(
-          icon: _themeManager.getDeleteIcon(size),
+          icon: _themeManager.getDeleteIcon(size, themeMode),
           iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
@@ -110,6 +115,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Power Tunes')),
       body: CustomListView(
@@ -173,7 +179,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault, themeMode),
                         Text(
                           dateString,
                           style: _textStyle,
@@ -184,14 +190,14 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault, themeMode),
                         Text(
                           timeString,
                           style: _textStyle,
                         ),
                       ],
                     ),
-                    _actionButtonRow(powerTune, _sizeDefault),
+                    _actionButtonRow(powerTune, _sizeDefault, themeMode),
                   ],
                 ),
               ),

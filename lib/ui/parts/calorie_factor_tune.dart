@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
 import '../../persistence/database.dart';
 import '../../persistence/models/calorie_tune.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class CalorieFactorTuneBottomSheet extends StatefulWidget {
+class CalorieFactorTuneBottomSheet extends ConsumerStatefulWidget {
   late final String deviceId;
   late final double oldCalorieFactor;
   late final bool hrBased;
@@ -21,7 +23,7 @@ class CalorieFactorTuneBottomSheet extends StatefulWidget {
   CalorieFactorTuneBottomSheetState createState() => CalorieFactorTuneBottomSheetState();
 }
 
-class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomSheet> {
+class CalorieFactorTuneBottomSheetState extends ConsumerState<CalorieFactorTuneBottomSheet> {
   double _calorieFactorPercent = 100.0;
   TextStyle _largerTextStyle = const TextStyle();
   final _themeManager = Get.find<ThemeManager>();
@@ -30,14 +32,16 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
   void initState() {
     super.initState();
     _calorieFactorPercent = widget.oldCalorieFactor * 100.0;
+    final themeMode = ref.watch(themeModeProvider);
     _largerTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(themeMode),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: ListView(
         children: [
@@ -58,9 +62,9 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(Icons.check, () async {
+            _themeManager.getGreenFab(Icons.check, themeMode, () async {
               final database = Get.find<AppDatabase>();
               final calorieFactor = _calorieFactorPercent / 100.0;
               CalorieTune? calorieTune;
