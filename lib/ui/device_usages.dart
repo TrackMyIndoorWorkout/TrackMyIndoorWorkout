@@ -25,7 +25,6 @@ class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void didChangeMetrics() {
@@ -38,10 +37,6 @@ class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    final themeMode = ref.watch(themeModeProvider);
-    _expandableThemeData = ExpandableThemeData(
-      iconColor: _themeManager.getProtagonistColor(themeMode),
-    );
   }
 
   @override
@@ -123,6 +118,9 @@ class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
           color: _themeManager.getProtagonistColor(themeMode),
         );
     final sizeDefault = textStyle.fontSize!;
+    final expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Device Usages')),
@@ -161,7 +159,7 @@ class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${deviceUsage.id}"),
-              theme: _expandableThemeData,
+              theme: expandableThemeData,
               header: Column(
                 children: [
                   TextOneLine(

@@ -139,10 +139,6 @@ class RecordingState extends ConsumerState<RecordingScreen> {
   );
   TextStyle _markerStyle = const TextStyle();
   TextStyle _markerStyleSmall = const TextStyle();
-  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(
-    hasIcon: !simplerUiSlowDefault,
-    iconColor: Colors.black,
-  );
   List<bool> _expandedState = [];
   final List<ExpandableController> _rowControllers = [];
   final List<int> _expandedHeights = [];
@@ -523,12 +519,6 @@ class RecordingState extends ConsumerState<RecordingScreen> {
     // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
     _themeManager = Get.find<ThemeManager>();
-    final themeMode = ref.watch(themeModeProvider);
-    _isLight = !_themeManager.isDark(themeMode);
-    _unitStyle = TextStyle(
-      fontFamily: fontFamily,
-      color: _themeManager.getBlueColor(themeMode),
-    );
     final prefService = Get.find<BasePrefService>();
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     final sizeAdjustInt =
@@ -633,16 +623,6 @@ class RecordingState extends ConsumerState<RecordingScreen> {
       "hr": _hRChartData,
     };
 
-    _chartTextColor = _themeManager.getProtagonistColor(themeMode);
-    _chartLabelStyle = TextStyle(
-      fontFamily: fontFamily,
-      fontSize: 11 * _sizeAdjust,
-      color: _chartTextColor,
-    );
-    _expandableThemeData = ExpandableThemeData(
-      hasIcon: !_simplerUi,
-      iconColor: _themeManager.getProtagonistColor(themeMode),
-    );
     _rowConfig = [
       RowConfiguration(
         title: "Calories",
@@ -746,14 +726,6 @@ class RecordingState extends ConsumerState<RecordingScreen> {
     if (_avgSpeedOnTrack) {
       _rankInfoColumnCount += 1;
     }
-
-    final isDark = _themeManager.isDark(themeMode);
-    _darkRed = isDark ? Colors.redAccent.shade100 : Colors.red.shade900;
-    _darkGreen = isDark ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
-    _darkBlue = isDark ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
-    _lightRed = isDark ? Colors.red.shade900 : Colors.redAccent.shade100;
-    _lightGreen = isDark ? Colors.green.shade900 : Colors.lightGreenAccent.shade100;
-    _lightBlue = isDark ? Colors.indigo.shade900 : Colors.lightBlueAccent.shade100;
 
     _zoneIndexColoring =
         prefService.get<bool>(zoneIndexDisplayColoringTag) ?? zoneIndexDisplayColoringDefault;
@@ -1529,6 +1501,29 @@ class RecordingState extends ConsumerState<RecordingScreen> {
       Theme.of(context).textTheme.bodyText1!,
       fontSizeFactor: _markerStyleSmallSizeAdjust,
     );
+    final themeMode = ref.watch(themeModeProvider);
+    _isLight = !_themeManager.isDark(themeMode);
+    _unitStyle = TextStyle(
+      fontFamily: fontFamily,
+      color: _themeManager.getBlueColor(themeMode),
+    );
+    _chartTextColor = _themeManager.getProtagonistColor(themeMode);
+    _chartLabelStyle = TextStyle(
+      fontFamily: fontFamily,
+      fontSize: 11 * _sizeAdjust,
+      color: _chartTextColor,
+    );
+    final expandableThemeData = ExpandableThemeData(
+      hasIcon: !_simplerUi,
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
+    final isDark = _themeManager.isDark(themeMode);
+    _darkRed = isDark ? Colors.redAccent.shade100 : Colors.red.shade900;
+    _darkGreen = isDark ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
+    _darkBlue = isDark ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
+    _lightRed = isDark ? Colors.red.shade900 : Colors.redAccent.shade100;
+    _lightGreen = isDark ? Colors.green.shade900 : Colors.lightGreenAccent.shade100;
+    _lightBlue = isDark ? Colors.indigo.shade900 : Colors.lightBlueAccent.shade100;
 
     const separatorHeight = 1.0;
 
@@ -1539,7 +1534,6 @@ class RecordingState extends ConsumerState<RecordingScreen> {
       _landscape = _mediaWidth > _mediaHeight;
     }
 
-    final themeMode = ref.watch(themeModeProvider);
     final mediaSizeMin =
         _landscape && _twoColumnLayout ? _mediaWidth / 2 : min(_mediaWidth, _mediaHeight);
     if (_mediaSizeMin < eps || (_mediaSizeMin - mediaSizeMin).abs() > eps) {
@@ -1787,7 +1781,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
                   ColoredBox(
                     color: _getZoneColor(themeMode, metricIndex: 0, background: true),
                     child: ExpandablePanel(
-                      theme: _expandableThemeData,
+                      theme: expandableThemeData,
                       header: rows[2],
                       collapsed: Container(),
                       expanded: _simplerUi ? Container() : extras[0],
@@ -1798,7 +1792,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
                   ColoredBox(
                     color: _getPaceLightColor(_selfRank, themeMode, background: true),
                     child: ExpandablePanel(
-                      theme: _expandableThemeData,
+                      theme: expandableThemeData,
                       header: rows[3],
                       collapsed: Container(),
                       expanded: _simplerUi ? Container() : extras[1],
@@ -1812,7 +1806,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
                   ColoredBox(
                     color: _getZoneColor(themeMode, metricIndex: 2, background: true),
                     child: ExpandablePanel(
-                      theme: _expandableThemeData,
+                      theme: expandableThemeData,
                       header: rows[4],
                       collapsed: Container(),
                       expanded: _simplerUi ? Container() : extras[2],
@@ -1823,7 +1817,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
                   ColoredBox(
                     color: _getTargetHrColor(targetHrState, true, themeMode),
                     child: ExpandablePanel(
-                      theme: _expandableThemeData,
+                      theme: expandableThemeData,
                       header: rows[5],
                       collapsed: Container(),
                       expanded: _simplerUi ? Container() : extras[3],
@@ -1832,7 +1826,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
                   ),
                   const Divider(height: separatorHeight),
                   ExpandablePanel(
-                    theme: _expandableThemeData,
+                    theme: expandableThemeData,
                     header: rows[6],
                     collapsed: Container(),
                     expanded: _simplerUi ? Container() : extras[4],
@@ -1851,7 +1845,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
               ColoredBox(
                 color: _getZoneColor(themeMode, metricIndex: 0, background: true),
                 child: ExpandablePanel(
-                  theme: _expandableThemeData,
+                  theme: expandableThemeData,
                   header: rows[2],
                   collapsed: Container(),
                   expanded: _simplerUi ? Container() : extras[0],
@@ -1862,7 +1856,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
               ColoredBox(
                 color: _getPaceLightColor(_selfRank, themeMode, background: true),
                 child: ExpandablePanel(
-                  theme: _expandableThemeData,
+                  theme: expandableThemeData,
                   header: rows[3],
                   collapsed: Container(),
                   expanded: _simplerUi ? Container() : extras[1],
@@ -1873,7 +1867,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
               ColoredBox(
                 color: _getZoneColor(themeMode, metricIndex: 2, background: true),
                 child: ExpandablePanel(
-                  theme: _expandableThemeData,
+                  theme: expandableThemeData,
                   header: rows[4],
                   collapsed: Container(),
                   expanded: _simplerUi ? Container() : extras[2],
@@ -1884,7 +1878,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
               ColoredBox(
                 color: _getTargetHrColor(targetHrState, true, themeMode),
                 child: ExpandablePanel(
-                  theme: _expandableThemeData,
+                  theme: expandableThemeData,
                   header: rows[5],
                   collapsed: Container(),
                   expanded: _simplerUi ? Container() : extras[3],
@@ -1893,7 +1887,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
               ),
               const Divider(height: separatorHeight),
               ExpandablePanel(
-                theme: _expandableThemeData,
+                theme: expandableThemeData,
                 header: rows[6],
                 collapsed: Container(),
                 expanded: _simplerUi ? Container() : extras[4],

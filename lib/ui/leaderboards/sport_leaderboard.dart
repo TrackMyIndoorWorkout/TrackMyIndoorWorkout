@@ -33,7 +33,6 @@ class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
   bool _highRes = distanceResolutionDefault;
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
   double? _slowSpeed;
 
   @override
@@ -50,10 +49,6 @@ class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
     _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
-    final themeMode = ref.watch(themeModeProvider);
-    _expandableThemeData = ExpandableThemeData(
-      iconColor: _themeManager.getProtagonistColor(themeMode),
-    );
     if (widget.sport != ActivityType.ride) {
       _slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
     }
@@ -105,6 +100,9 @@ class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
         );
     final sizeDefault = textStyle.fontSize!;
     final textStyle2 = _themeManager.getBlueTextStyle(sizeDefault, themeMode);
+    final expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text('${widget.sport} Leaderboard')),
@@ -147,7 +145,7 @@ class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${workoutSummary.id}"),
-              theme: _expandableThemeData,
+              theme: expandableThemeData,
               header: Column(
                 children: [
                   Row(

@@ -103,8 +103,6 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
     _oldWeightMsb = weightBytes.item2;
     _newWeightLsb = weightBytes.item1;
     _newWeightMsb = weightBytes.item2;
-    final themeMode = ref.watch(themeModeProvider);
-    _isLight = !_themeManager.isDark(themeMode);
     _prepareSpinDown();
     super.initState();
   }
@@ -453,6 +451,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
           fontFamily: fontFamily,
           color: _themeManager.getProtagonistColor(themeMode),
         );
+    _isLight = !_themeManager.isDark(themeMode);
 
     return Scaffold(
       body: SingleChildScrollView(

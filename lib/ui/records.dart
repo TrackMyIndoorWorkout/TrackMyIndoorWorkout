@@ -70,7 +70,6 @@ class RecordsScreenState extends ConsumerState<RecordsScreen> with WidgetsBindin
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   Color _chartTextColor = Colors.black;
-  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
   TextStyle _chartLabelStyle = const TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
@@ -339,22 +338,11 @@ class RecordsScreenState extends ConsumerState<RecordsScreen> with WidgetsBindin
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.activity.sport);
     widget.activity.hydrate();
-    final themeMode = ref.watch(themeModeProvider);
-    _isLight = !_themeManager.isDark(themeMode);
-    _chartTextColor = _themeManager.getProtagonistColor(themeMode);
     final sizeAdjustInt =
         prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
     if (sizeAdjustInt != 100) {
       _sizeAdjust = sizeAdjustInt / 100.0;
     }
-    _chartLabelStyle = TextStyle(
-      fontFamily: fontFamily,
-      fontSize: 11 * _sizeAdjust,
-      color: _chartTextColor,
-    );
-    _expandableThemeData = ExpandableThemeData(
-      iconColor: _themeManager.getProtagonistColor(themeMode),
-    );
 
     extraInit(prefService);
   }
@@ -503,6 +491,17 @@ class RecordsScreenState extends ConsumerState<RecordsScreen> with WidgetsBindin
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3, themeMode);
     }
 
+    _isLight = !_themeManager.isDark(themeMode);
+    _chartTextColor = _themeManager.getProtagonistColor(themeMode);
+    _chartLabelStyle = TextStyle(
+      fontFamily: fontFamily,
+      fontSize: 11 * _sizeAdjust,
+      color: _chartTextColor,
+    );
+    final expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
+
     final header = [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -646,7 +645,7 @@ class RecordsScreenState extends ConsumerState<RecordsScreen> with WidgetsBindin
                 return Card(
                   elevation: 6,
                   child: ExpandablePanel(
-                    theme: _expandableThemeData,
+                    theme: expandableThemeData,
                     header: Column(
                       children: [
                         Row(

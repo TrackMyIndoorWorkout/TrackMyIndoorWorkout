@@ -22,7 +22,6 @@ class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with Widgets
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void didChangeMetrics() {
@@ -35,10 +34,6 @@ class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with Widgets
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    final themeMode = ref.watch(themeModeProvider);
-    _expandableThemeData = ExpandableThemeData(
-      iconColor: _themeManager.getProtagonistColor(themeMode),
-    );
   }
 
   @override
@@ -114,6 +109,9 @@ class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with Widgets
     final textStyle = Theme.of(context).textTheme.headline4!;
     final sizeDefault = textStyle.fontSize!;
     final themeMode = ref.watch(themeModeProvider);
+    final expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Power Tunes')),
@@ -153,7 +151,7 @@ class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with Widgets
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${powerTune.id}"),
-              theme: _expandableThemeData,
+              theme: expandableThemeData,
               header: Column(
                 children: [
                   TextOneLine(

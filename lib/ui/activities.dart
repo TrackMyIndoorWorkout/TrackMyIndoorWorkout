@@ -72,7 +72,6 @@ class ActivitiesScreenState extends ConsumerState<ActivitiesScreen> with Widgets
   TextStyle _headerStyle = const TextStyle();
   TextStyle _unitStyle = const TextStyle();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void didChangeMetrics() {
@@ -92,10 +91,6 @@ class ActivitiesScreenState extends ConsumerState<ActivitiesScreen> with Widgets
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
-    final themeMode = ref.watch(themeModeProvider);
-    _expandableThemeData = ExpandableThemeData(
-      iconColor: _themeManager.getProtagonistColor(themeMode),
-    );
     final sizeAdjustInt =
         prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
     if (sizeAdjustInt != 100) {
@@ -336,6 +331,10 @@ class ActivitiesScreenState extends ConsumerState<ActivitiesScreen> with Widgets
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
+
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
@@ -487,7 +486,7 @@ class ActivitiesScreenState extends ConsumerState<ActivitiesScreen> with Widgets
             elevation: 6,
             child: ExpandablePanel(
               key: Key(activity.uniqueIntegrationString()),
-              theme: _expandableThemeData,
+              theme: expandableThemeData,
               header: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,

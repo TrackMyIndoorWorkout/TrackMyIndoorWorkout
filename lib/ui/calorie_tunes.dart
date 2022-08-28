@@ -23,7 +23,6 @@ class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
   void didChangeMetrics() {
@@ -36,10 +35,6 @@ class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    final themeMode = ref.watch(themeModeProvider);
-    _expandableThemeData = ExpandableThemeData(
-      iconColor: _themeManager.getProtagonistColor(themeMode),
-    );
   }
 
   @override
@@ -112,6 +107,10 @@ class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
     final textStyle = Theme.of(context).textTheme.headline4!;
     final sizeDefault = textStyle.fontSize!;
     final themeMode = ref.watch(themeModeProvider);
+    final expandableThemeData = ExpandableThemeData(
+      iconColor: _themeManager.getProtagonistColor(themeMode),
+    );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Calorie Tunes')),
       body: CustomListView(
@@ -151,7 +150,7 @@ class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
             elevation: 6,
             child: ExpandablePanel(
               key: Key("${calorieTune.id}"),
-              theme: _expandableThemeData,
+              theme: expandableThemeData,
               header: Column(
                 children: [
                   TextOneLine(
