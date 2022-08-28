@@ -25,8 +25,6 @@ class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  double _sizeDefault = 10.0;
-  TextStyle _textStyle = const TextStyle();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
@@ -41,11 +39,6 @@ class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     final themeMode = ref.watch(themeModeProvider);
-    _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-    _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(
       iconColor: _themeManager.getProtagonistColor(themeMode),
     );
@@ -125,6 +118,12 @@ class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+    final sizeDefault = textStyle.fontSize!;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Device Usages')),
       body: CustomListView(
@@ -167,13 +166,13 @@ class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
                 children: [
                   TextOneLine(
                     deviceUsage.name,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextOneLine(
                     deviceUsage.mac,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -183,10 +182,10 @@ class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
                     children: [
                       _themeManager.getBlueIcon(
                         getSportIcon(deviceUsage.sport),
-                        _sizeDefault,
+                        sizeDefault,
                         themeMode,
                       ),
-                      Text(deviceUsage.sport, style: _textStyle),
+                      Text(deviceUsage.sport, style: textStyle),
                     ],
                   ),
                 ],
@@ -199,19 +198,19 @@ class DeviceUsagesScreenState extends ConsumerState<DeviceUsagesScreen>
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault, themeMode),
-                        Text(dateString, style: _textStyle),
+                        _themeManager.getBlueIcon(Icons.calendar_today, sizeDefault, themeMode),
+                        Text(dateString, style: textStyle),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault, themeMode),
-                        Text(timeString, style: _textStyle),
+                        _themeManager.getBlueIcon(Icons.watch, sizeDefault, themeMode),
+                        Text(timeString, style: textStyle),
                       ],
                     ),
-                    _actionButtonRow(deviceUsage, _sizeDefault, themeMode),
+                    _actionButtonRow(deviceUsage, sizeDefault, themeMode),
                   ],
                 ),
               ),

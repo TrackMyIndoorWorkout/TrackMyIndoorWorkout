@@ -139,7 +139,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefLabel(
-        title: Text(logLevelTitle, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(logLevelTitle, style: Theme.of(context).textTheme.headline5!, maxLines: 3),
         subtitle: const Text(logLevelDescription),
       ),
       PrefRadio<int>(

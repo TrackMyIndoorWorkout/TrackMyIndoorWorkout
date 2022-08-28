@@ -18,8 +18,6 @@ class ExportFormatPickerBottomSheetState extends ConsumerState<ExportFormatPicke
   int _formatIndex = 0;
   final List<String> _formatChoices = ["FIT", "TCX", "CSV"];
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _largerTextStyle = const TextStyle();
-  TextStyle _selectedTextStyle = const TextStyle();
 
   @override
   void initState() {
@@ -28,15 +26,16 @@ class ExportFormatPickerBottomSheetState extends ConsumerState<ExportFormatPicke
       _formatChoices.add("JSON");
     }
     _formatIndex = max(0, _formatChoices.indexOf("FIT"));
-    _largerTextStyle = Get.textTheme.headline4!;
-    final themeMode = ref.watch(themeModeProvider);
-    _selectedTextStyle =
-        _largerTextStyle.apply(color: _themeManager.getProtagonistColor(themeMode));
   }
 
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final largerTextStyle = Theme.of(context).textTheme.headline4!;
+    final selectedTextStyle = largerTextStyle.apply(
+      color: _themeManager.getProtagonistColor(themeMode),
+    );
+
     return Scaffold(
       body: ListView(
         children: _formatChoices
@@ -65,8 +64,10 @@ class ExportFormatPickerBottomSheetState extends ConsumerState<ExportFormatPicke
                         _formatIndex = e.key;
                       });
                     },
-                    child: Text(e.value,
-                        style: _formatIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+                    child: Text(
+                      e.value,
+                      style: _formatIndex == e.key ? selectedTextStyle : largerTextStyle,
+                    ),
                   ),
                 ],
               ),

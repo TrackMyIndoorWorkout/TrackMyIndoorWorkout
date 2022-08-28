@@ -17,35 +17,28 @@ class BooleanQuestionBottomSheet extends ConsumerStatefulWidget {
 }
 
 class BooleanQuestionBottomSheetState extends ConsumerState<BooleanQuestionBottomSheet> {
-  TextStyle _largerTextStyle = const TextStyle();
-  TextStyle _textStyle = const TextStyle();
-  final _themeManager = Get.find<ThemeManager>();
-
-  @override
-  void initState() {
-    super.initState();
-    final themeMode = ref.watch(themeModeProvider);
-    _largerTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-    _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+    final themeManager = Get.find<ThemeManager>();
+    final largerTextStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: themeManager.getProtagonistColor(themeMode),
+        );
+    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+          fontFamily: fontFamily,
+          color: themeManager.getProtagonistColor(themeMode),
+        );
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(widget.title, style: _largerTextStyle, textAlign: TextAlign.center),
+            Text(widget.title, style: largerTextStyle, textAlign: TextAlign.center),
             const Divider(),
-            Text(widget.content, style: _textStyle, textAlign: TextAlign.center),
+            Text(widget.content, style: textStyle, textAlign: TextAlign.center),
           ],
         ),
       ),

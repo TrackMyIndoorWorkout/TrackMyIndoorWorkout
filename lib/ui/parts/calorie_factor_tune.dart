@@ -25,33 +25,31 @@ class CalorieFactorTuneBottomSheet extends ConsumerStatefulWidget {
 
 class CalorieFactorTuneBottomSheetState extends ConsumerState<CalorieFactorTuneBottomSheet> {
   double _calorieFactorPercent = 100.0;
-  TextStyle _largerTextStyle = const TextStyle();
-  final _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
     super.initState();
     _calorieFactorPercent = widget.oldCalorieFactor * 100.0;
-    final themeMode = ref.watch(themeModeProvider);
-    _largerTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final themeManager = Get.find<ThemeManager>();
+    final largerTextStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: themeManager.getProtagonistColor(themeMode),
+        );
     return Scaffold(
       body: ListView(
         children: [
-          Text("Calorie Factor %", style: _largerTextStyle),
+          Text("Calorie Factor %", style: largerTextStyle),
           SpinBox(
             min: 1,
             max: 1000,
             value: _calorieFactorPercent,
             onChanged: (value) => _calorieFactorPercent = value,
-            textStyle: _largerTextStyle,
+            textStyle: largerTextStyle,
           ),
         ],
       ),
@@ -62,9 +60,9 @@ class CalorieFactorTuneBottomSheetState extends ConsumerState<CalorieFactorTuneB
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
+            themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(Icons.check, themeMode, () async {
+            themeManager.getGreenFab(Icons.check, themeMode, () async {
               final database = Get.find<AppDatabase>();
               final calorieFactor = _calorieFactorPercent / 100.0;
               CalorieTune? calorieTune;

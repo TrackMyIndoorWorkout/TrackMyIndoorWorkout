@@ -51,9 +51,6 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
 
   FitnessEquipment? _fitnessEquipment;
   StreamSubscription? _controlPointSubscription;
-  double _sizeDefault = 10.0;
-  TextStyle _smallerTextStyle = const TextStyle();
-  TextStyle _largerTextStyle = const TextStyle();
   bool _si = unitSystemDefault;
   int _step = stepWeightInput;
   int _weight = 80;
@@ -108,15 +105,6 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
     _newWeightMsb = weightBytes.item2;
     final themeMode = ref.watch(themeModeProvider);
     _isLight = !_themeManager.isDark(themeMode);
-    _smallerTextStyle = Get.textTheme.headline5!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-    _sizeDefault = _smallerTextStyle.fontSize!;
-    _largerTextStyle = Get.textTheme.headline2!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
     _prepareSpinDown();
     super.initState();
   }
@@ -287,8 +275,8 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
     return 'Wait...';
   }
 
-  TextStyle _weightInputButtonTextStyle() {
-    return _smallerTextStyle.merge(TextStyle(
+  TextStyle _weightInputButtonTextStyle(TextStyle smallerTextStyle) {
+    return smallerTextStyle.merge(TextStyle(
         color: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
             ? (_isLight ? Colors.black : Colors.white)
             : (_isLight ? Colors.black87 : Colors.white70)));
@@ -361,7 +349,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
     return "STOP!";
   }
 
-  TextStyle _calibrationInstructionStyle(ThemeMode themeMode) {
+  TextStyle _calibrationInstructionStyle(ThemeMode themeMode, TextStyle largerTextStyle) {
     var color = _themeManager.getRedColor(themeMode);
 
     if (_calibrationState == CalibrationState.readyToCalibrate ||
@@ -373,7 +361,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
       color = _themeManager.getBlueColor(themeMode);
     }
 
-    return _largerTextStyle.merge(TextStyle(color: color));
+    return largerTextStyle.merge(TextStyle(color: color));
   }
 
   String _calibrationButtonText() {
@@ -456,6 +444,16 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final smallerTextStyle = Theme.of(context).textTheme.headline5!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+    final sizeDefault = smallerTextStyle.fontSize!;
+    final largerTextStyle = Theme.of(context).textTheme.headline2!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+
     return Scaffold(
       body: SingleChildScrollView(
         child: IndexedStack(
@@ -467,21 +465,21 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text("Weight (${_si ? "kg" : "lbs"}):", style: _smallerTextStyle),
+                  Text("Weight (${_si ? "kg" : "lbs"}):", style: smallerTextStyle),
                   SpinnerInput(
                     spinnerValue: _weight.toDouble(),
                     minValue: 1,
                     maxValue: 800,
-                    middleNumberStyle: _largerTextStyle,
+                    middleNumberStyle: largerTextStyle,
                     plusButton: SpinnerButtonStyle(
-                      height: _sizeDefault * 2,
-                      width: _sizeDefault * 2,
-                      child: Icon(Icons.add, size: _sizeDefault * 2 - 10),
+                      height: sizeDefault * 2,
+                      width: sizeDefault * 2,
+                      child: Icon(Icons.add, size: sizeDefault * 2 - 10),
                     ),
                     minusButton: SpinnerButtonStyle(
-                      height: _sizeDefault * 2,
-                      width: _sizeDefault * 2,
-                      child: Icon(Icons.remove, size: _sizeDefault * 2 - 10),
+                      height: sizeDefault * 2,
+                      width: sizeDefault * 2,
+                      child: Icon(Icons.remove, size: sizeDefault * 2 - 10),
                     ),
                     onChange: (newValue) {
                       setState(() {
@@ -494,7 +492,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
                     onPressed: () async => await _onWeightInputButtonPressed(),
                     child: Text(
                       _weightInputButtonText(),
-                      style: _weightInputButtonTextStyle(),
+                      style: _weightInputButtonTextStyle(smallerTextStyle),
                     ),
                   ),
                 ],
@@ -510,21 +508,22 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(_targetSpeedLowString, style: _smallerTextStyle),
-                      Icon(Icons.compare_arrows, size: _sizeDefault),
-                      Text(_targetSpeedHighString, style: _smallerTextStyle),
+                      Text(_targetSpeedLowString, style: smallerTextStyle),
+                      Icon(Icons.compare_arrows, size: sizeDefault),
+                      Text(_targetSpeedHighString, style: smallerTextStyle),
                     ],
                   ),
                   Text(
                     _currentSpeedString,
-                    style: _largerTextStyle
+                    style: largerTextStyle
                         .merge(TextStyle(color: _themeManager.getBlueColor(themeMode))),
                   ),
-                  Text(_calibrationInstruction(), style: _calibrationInstructionStyle(themeMode)),
+                  Text(_calibrationInstruction(),
+                      style: _calibrationInstructionStyle(themeMode, largerTextStyle)),
                   ElevatedButton(
                     style: _buttonBackgroundStyle(),
                     onPressed: () async => await onCalibrationButtonPressed(),
-                    child: Text(_calibrationButtonText(), style: _smallerTextStyle),
+                    child: Text(_calibrationButtonText(), style: smallerTextStyle),
                   ),
                 ],
               ),
@@ -539,7 +538,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
                       _calibrationState == CalibrationState.calibrationSuccess
                           ? "SUCCESS"
                           : "ERROR",
-                      style: _largerTextStyle),
+                      style: largerTextStyle),
                   ElevatedButton(
                     style: _buttonBackgroundStyle(),
                     onPressed: () {
@@ -557,7 +556,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
                         _calibrationState == CalibrationState.calibrationSuccess
                             ? 'Close'
                             : 'Retry',
-                        style: _smallerTextStyle),
+                        style: smallerTextStyle),
                   ),
                 ],
               ),
@@ -569,7 +568,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
                 softWrap: true,
                 text: TextSpan(
                   text: "${_fitnessEquipment?.device?.name} doesn't seem to support calibration",
-                  style: _smallerTextStyle,
+                  style: smallerTextStyle,
                 ),
               ),
             ),

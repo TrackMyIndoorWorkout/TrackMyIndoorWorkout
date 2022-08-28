@@ -435,19 +435,22 @@ class ActivitiesScreenState extends ConsumerState<ActivitiesScreen> with Widgets
           IconButton(
               icon: const Icon(Icons.info_rounded),
               onPressed: () {
-                legendDialog([
-                  const Tuple2<IconData, String>(Icons.file_upload, "Import Workout"),
-                  const Tuple2<IconData, String>(Icons.collections_bookmark, "Device Usages"),
-                  const Tuple2<IconData, String>(Icons.bolt, "Power Tunes"),
-                  const Tuple2<IconData, String>(Icons.whatshot, "Calorie Tunes"),
-                  const Tuple2<IconData, String>(Icons.leaderboard, "Leaderboards"),
-                  const Tuple2<IconData, String>(Icons.help, "About"),
-                  const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
-                  const Tuple2<IconData, String>(Icons.cloud_upload, "Upload / Sync"),
-                  const Tuple2<IconData, String>(Icons.file_download, "Download Workout"),
-                  const Tuple2<IconData, String>(Icons.delete, "Delete Workout"),
-                  const Tuple2<IconData, String>(Icons.chevron_right, "Workout Details"),
-                ]);
+                legendDialog(
+                  [
+                    const Tuple2<IconData, String>(Icons.file_upload, "Import Workout"),
+                    const Tuple2<IconData, String>(Icons.collections_bookmark, "Device Usages"),
+                    const Tuple2<IconData, String>(Icons.bolt, "Power Tunes"),
+                    const Tuple2<IconData, String>(Icons.whatshot, "Calorie Tunes"),
+                    const Tuple2<IconData, String>(Icons.leaderboard, "Leaderboards"),
+                    const Tuple2<IconData, String>(Icons.help, "About"),
+                    const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
+                    const Tuple2<IconData, String>(Icons.cloud_upload, "Upload / Sync"),
+                    const Tuple2<IconData, String>(Icons.file_download, "Download Workout"),
+                    const Tuple2<IconData, String>(Icons.delete, "Delete Workout"),
+                    const Tuple2<IconData, String>(Icons.chevron_right, "Workout Details"),
+                  ],
+                  context,
+                );
               }),
         ],
       ),

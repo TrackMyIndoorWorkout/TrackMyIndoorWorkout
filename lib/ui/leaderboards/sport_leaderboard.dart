@@ -32,9 +32,6 @@ class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   int _editCount = 0;
-  double _sizeDefault = 10.0;
-  TextStyle _textStyle = const TextStyle();
-  TextStyle _textStyle2 = const TextStyle();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
   double? _slowSpeed;
@@ -54,12 +51,6 @@ class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     final themeMode = ref.watch(themeModeProvider);
-    _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-    _sizeDefault = _textStyle.fontSize!;
-    _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault, themeMode);
     _expandableThemeData = ExpandableThemeData(
       iconColor: _themeManager.getProtagonistColor(themeMode),
     );
@@ -108,6 +99,13 @@ class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+    final sizeDefault = textStyle.fontSize!;
+    final textStyle2 = _themeManager.getBlueTextStyle(sizeDefault, themeMode);
+
     return Scaffold(
       appBar: AppBar(title: Text('${widget.sport} Leaderboard')),
       body: CustomListView(
@@ -155,27 +153,27 @@ class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
                   Row(
                     children: [
                       SizedBox(
-                        width: _sizeDefault * 2,
-                        height: _sizeDefault * 2,
-                        child: _themeManager.getRankIcon(index, themeMode),
+                        width: sizeDefault * 2,
+                        height: sizeDefault * 2,
+                        child: _themeManager.getRankIcon(index, themeMode, context),
                       ),
                       Column(
                         children: [
                           TextOneLine(
                             speedString,
-                            style: _textStyle2,
+                            style: textStyle2,
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,
                           ),
                           TextOneLine(
                             '($distanceString /',
-                            style: _textStyle,
+                            style: textStyle,
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,
                           ),
                           TextOneLine(
                             '$timeDisplay)',
-                            style: _textStyle,
+                            style: textStyle,
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -185,7 +183,7 @@ class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
                   ),
                   TextOneLine(
                     workoutSummary.deviceName,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -199,19 +197,19 @@ class SportLeaderboardScreenState extends ConsumerState<SportLeaderboardScreen>
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault, themeMode),
-                        Text(dateString, style: _textStyle),
+                        _themeManager.getBlueIcon(Icons.calendar_today, sizeDefault, themeMode),
+                        Text(dateString, style: textStyle),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault, themeMode),
-                        Text(timeString, style: _textStyle),
+                        _themeManager.getBlueIcon(Icons.watch, sizeDefault, themeMode),
+                        Text(timeString, style: textStyle),
                       ],
                     ),
-                    _actionButtonRow(workoutSummary, _sizeDefault, themeMode),
+                    _actionButtonRow(workoutSummary, sizeDefault, themeMode),
                   ],
                 ),
               ),

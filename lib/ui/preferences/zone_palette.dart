@@ -32,10 +32,7 @@ class ZonePalettePreferencesScreenState extends ConsumerState<ZonePalettePrefere
   late final BasePrefService _prefService;
   late final PaletteSpec _paletteSpec;
   late final List<Color> _palette;
-  double _sizeDefault = 10.0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _lightTextStyle = const TextStyle();
-  TextStyle _darkTextStyle = const TextStyle();
 
   @override
   void initState() {
@@ -43,20 +40,21 @@ class ZonePalettePreferencesScreenState extends ConsumerState<ZonePalettePrefere
     _prefService = Get.find<BasePrefService>();
     _paletteSpec = Get.find<PaletteSpec>();
     _palette = _paletteSpec.getPalette(widget.lightOrDark, widget.fgOrBg, widget.size);
-    _sizeDefault = Get.textTheme.headline5!.fontSize! * 2;
-    final themeMode = ref.watch(themeModeProvider);
-    _lightTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-    _darkTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getAntagonistColor(themeMode),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final sizeDefault = Theme.of(context).textTheme.headline5!.fontSize! * 2;
+    final themeMode = ref.watch(themeModeProvider);
+    final lightTextStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+    final darkTextStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getAntagonistColor(themeMode),
+        );
+
     List<Widget> items = _palette.mapIndexed((index, color) {
       return Container(
         padding: const EdgeInsets.all(5.0),
@@ -101,9 +99,9 @@ class ZonePalettePreferencesScreenState extends ConsumerState<ZonePalettePrefere
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("Z${index + 1}", style: _lightTextStyle),
-              Text("Z${index + 1}", style: _darkTextStyle),
-              Icon(Icons.chevron_right, size: _sizeDefault),
+              Text("Z${index + 1}", style: lightTextStyle),
+              Text("Z${index + 1}", style: darkTextStyle),
+              Icon(Icons.chevron_right, size: sizeDefault),
             ],
           ),
         ),

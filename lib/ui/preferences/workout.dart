@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/time_display_mode.dart';
 import '../../preferences/workout_mode.dart';
@@ -15,7 +14,7 @@ class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMix
   Widget build(BuildContext context) {
     List<Widget> workoutPreferences = [
       PrefLabel(
-        title: Text(workoutMode, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(workoutMode, style: Theme.of(context).textTheme.headline5!, maxLines: 3),
       ),
       const PrefRadio<String>(
         title: Text(workoutModeIndividualTitle),
@@ -30,7 +29,7 @@ class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMix
         pref: workoutModeTag,
       ),
       PrefLabel(
-        title: Text(timeDisplayMode, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(timeDisplayMode, style: Theme.of(context).textTheme.headline5!, maxLines: 3),
       ),
       const PrefRadio<String>(
         title: Text(timeDisplayModeElapsedTitle),

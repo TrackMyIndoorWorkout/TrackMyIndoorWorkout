@@ -38,33 +38,31 @@ class CalorieOverrideBottomSheet extends ConsumerStatefulWidget {
 
 class CalorieOverrideBottomSheetState extends ConsumerState<CalorieOverrideBottomSheet> {
   double _newCalorie = 0.0;
-  TextStyle _largerTextStyle = const TextStyle();
-  final _themeManager = Get.find<ThemeManager>();
 
   @override
   void initState() {
     super.initState();
     _newCalorie = widget.oldCalories;
-    final themeMode = ref.watch(themeModeProvider);
-    _largerTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final themeManager = Get.find<ThemeManager>();
+    final largerTextStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: themeManager.getProtagonistColor(themeMode),
+        );
     return Scaffold(
       body: ListView(
         children: [
-          Text("Expected Calories", style: _largerTextStyle),
+          Text("Expected Calories", style: largerTextStyle),
           SpinBox(
             min: 1,
             max: 100000,
             value: _newCalorie,
             onChanged: (value) => _newCalorie = value,
-            textStyle: _largerTextStyle,
+            textStyle: largerTextStyle,
           ),
         ],
       ),
@@ -75,9 +73,9 @@ class CalorieOverrideBottomSheetState extends ConsumerState<CalorieOverrideBotto
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
+            themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(Icons.check, themeMode, () async {
+            themeManager.getGreenFab(Icons.check, themeMode, () async {
               final database = Get.find<AppDatabase>();
               final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
               CalorieTune? calorieTune;

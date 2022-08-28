@@ -37,83 +37,39 @@ class UXPreferencesScreenState extends ConsumerState<UXPreferencesScreen> {
   Widget build(BuildContext context) {
     List<Widget> uxPreferences = [
       PrefLabel(
-        title: Text(themeSelection, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(themeSelection, style: Theme.of(context).textTheme.headline5!, maxLines: 3),
         subtitle: const Text(themeSelectionDescription),
       ),
       PrefRadio<String>(
-        title: const Text(themeSelectionSystemDescription),
-        value: themeSelectionSystem,
-        pref: themeSelectionTag,
-        onSelect: () {
-          final isDark = Get.isPlatformDarkMode;
-          final theme = isDark ? ThemeData.dark() : ThemeData.light();
-          setState(() {
-            Get.changeThemeMode(ThemeMode.system);
-            Get.changeTheme(theme);
-          });
-          setState(() {
-            Get.changeThemeMode(ThemeMode.system);
-            Get.changeTheme(theme);
-          });
-          ref.read(themeModeProvider.state).state = ThemeMode.system;
-          setState(() {
-            Get.changeThemeMode(ThemeMode.system);
-            Get.changeTheme(theme);
-          });
-          setState(() {
-            Get.changeThemeMode(ThemeMode.system);
-            Get.changeTheme(theme);
-          });
-        }
-      ),
+          title: const Text(themeSelectionSystemDescription),
+          value: themeSelectionSystem,
+          pref: themeSelectionTag,
+          onSelect: () {
+            setState(() {
+              Get.changeThemeMode(ThemeMode.system);
+              ref.read(themeModeProvider.state).state = ThemeMode.system;
+            });
+          }),
       PrefRadio<String>(
-        title: const Text(themeSelectionLightDescription),
-        value: themeSelectionLight,
-        pref: themeSelectionTag,
-        onSelect: () {
-          setState(() {
-            Get.changeThemeMode(ThemeMode.light);
-            Get.changeTheme(ThemeData.light());
-          });
-          setState(() {
-            Get.changeThemeMode(ThemeMode.light);
-            Get.changeTheme(ThemeData.light());
-          });
-          ref.read(themeModeProvider.state).state = ThemeMode.light;
-          setState(() {
-            Get.changeThemeMode(ThemeMode.light);
-            Get.changeTheme(ThemeData.light());
-          });
-          setState(() {
-            Get.changeThemeMode(ThemeMode.light);
-            Get.changeTheme(ThemeData.light());
-          });
-        }
-      ),
+          title: const Text(themeSelectionLightDescription),
+          value: themeSelectionLight,
+          pref: themeSelectionTag,
+          onSelect: () {
+            setState(() {
+              Get.changeThemeMode(ThemeMode.light);
+              ref.read(themeModeProvider.state).state = ThemeMode.light;
+            });
+          }),
       PrefRadio<String>(
-        title: const Text(themeSelectionDarkDescription),
-        value: themeSelectionDark,
-        pref: themeSelectionTag,
-        onSelect: () {
-          setState(() {
-            Get.changeThemeMode(ThemeMode.dark);
-            Get.changeTheme(ThemeData.dark());
-          });
-          setState(() {
-            Get.changeThemeMode(ThemeMode.dark);
-            Get.changeTheme(ThemeData.dark());
-          });
-          ref.read(themeModeProvider.state).state = ThemeMode.dark;
-          setState(() {
-            Get.changeThemeMode(ThemeMode.dark);
-            Get.changeTheme(ThemeData.dark());
-          });
-          setState(() {
-            Get.changeThemeMode(ThemeMode.dark);
-            Get.changeTheme(ThemeData.dark());
-          });
-        }
-      ),
+          title: const Text(themeSelectionDarkDescription),
+          value: themeSelectionDark,
+          pref: themeSelectionTag,
+          onSelect: () {
+            setState(() {
+              Get.changeThemeMode(ThemeMode.dark);
+              ref.read(themeModeProvider.state).state = ThemeMode.dark;
+            });
+          }),
       const PrefLabel(title: Divider(height: 1)),
       const PrefCheckbox(
         title: Text(unitSystem),
@@ -160,10 +116,6 @@ class UXPreferencesScreenState extends ConsumerState<UXPreferencesScreen> {
         subtitle: Text(instantExportDescription),
         pref: instantExportTag,
       ),
-      // PrefLabel(
-      //   title: Text(instantExportLocation, style: Get.textTheme.headline5!, maxLines: 3),
-      //   subtitle: const Text(instantExportLocationDescription),
-      // ),
       PrefText(
         key: Key("instantExportLocation$_locationEdit"),
         label: instantExportLocationPasteCommand,

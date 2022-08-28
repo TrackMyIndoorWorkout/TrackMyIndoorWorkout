@@ -24,17 +24,9 @@ class PreferencesHubScreen extends StatefulWidget {
 }
 
 class PreferencesHubScreenState extends State<PreferencesHubScreen> {
-  double _sizeDefault = 10.0;
-  TextStyle _textStyle = const TextStyle();
-
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
-    _sizeDefault = _textStyle.fontSize! * 2;
     if (!Get.isRegistered<SoundService>()) {
       Get.put<SoundService>(SoundService(), permanent: true);
     }
@@ -42,6 +34,12 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+          fontFamily: fontFamily,
+          color: Colors.white,
+        );
+    final sizeDefault = textStyle.fontSize! * 2;
+
     final keyPart = portalNames
         .asMap()
         .entries
@@ -64,11 +62,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     UXPreferencesScreen.shortTitle,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),
@@ -84,11 +82,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     DataPreferencesScreen.shortTitle,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),
@@ -104,11 +102,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     TargetHrPreferencesScreen.shortTitle,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),
@@ -124,11 +122,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     ZonesHubScreen.shortTitle,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),
@@ -144,11 +142,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     LeaderboardPreferencesScreen.shortTitle,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),
@@ -164,11 +162,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     AthletePreferencesScreen.shortTitle,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),
@@ -184,11 +182,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     EquipmentPreferencesScreen.shortTitle,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),
@@ -204,11 +202,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     WorkoutPreferencesScreen.shortTitle,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),
@@ -225,11 +223,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     IntegrationPreferencesScreen.shortTitle,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),
@@ -245,11 +243,11 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     ExpertPreferencesScreen.shortTitle,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),

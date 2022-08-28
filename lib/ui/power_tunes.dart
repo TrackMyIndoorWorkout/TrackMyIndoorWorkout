@@ -21,8 +21,6 @@ class PowerTunesScreen extends ConsumerStatefulWidget {
 class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
-  double _sizeDefault = 10.0;
-  TextStyle _textStyle = const TextStyle();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
@@ -37,8 +35,6 @@ class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with Widgets
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _textStyle = Get.textTheme.headline4!;
-    _sizeDefault = _textStyle.fontSize!;
     final themeMode = ref.watch(themeModeProvider);
     _expandableThemeData = ExpandableThemeData(
       iconColor: _themeManager.getProtagonistColor(themeMode),
@@ -115,7 +111,10 @@ class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with Widgets
 
   @override
   Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.headline4!;
+    final sizeDefault = textStyle.fontSize!;
     final themeMode = ref.watch(themeModeProvider);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Power Tunes')),
       body: CustomListView(
@@ -159,13 +158,13 @@ class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with Widgets
                 children: [
                   TextOneLine(
                     powerTune.mac,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextOneLine(
                     "$powerPercent %",
-                    style: _textStyle.apply(fontSizeFactor: 2.0),
+                    style: textStyle.apply(fontSizeFactor: 2.0),
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -179,10 +178,10 @@ class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with Widgets
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault, themeMode),
+                        _themeManager.getBlueIcon(Icons.calendar_today, sizeDefault, themeMode),
                         Text(
                           dateString,
-                          style: _textStyle,
+                          style: textStyle,
                         ),
                       ],
                     ),
@@ -190,14 +189,14 @@ class PowerTunesScreenState extends ConsumerState<PowerTunesScreen> with Widgets
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault, themeMode),
+                        _themeManager.getBlueIcon(Icons.watch, sizeDefault, themeMode),
                         Text(
                           timeString,
-                          style: _textStyle,
+                          style: textStyle,
                         ),
                       ],
                     ),
-                    _actionButtonRow(powerTune, _sizeDefault, themeMode),
+                    _actionButtonRow(powerTune, sizeDefault, themeMode),
                   ],
                 ),
               ),

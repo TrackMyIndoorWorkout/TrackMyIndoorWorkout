@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 
-Future<void> legendDialog(List<Tuple2<IconData, String>> legendItems) async {
-  final fontSize = Get.textTheme.headline2!.fontSize!;
+Future<void> legendDialog(List<Tuple2<IconData, String>> legendItems, BuildContext context) async {
+  final fontSize = Theme.of(context).textTheme.headline2!.fontSize!;
   await Get.defaultDialog(
     title: 'Legend:',
     content: SizedBox(

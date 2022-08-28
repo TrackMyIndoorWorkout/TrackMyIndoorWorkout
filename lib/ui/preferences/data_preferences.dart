@@ -93,7 +93,11 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         child: const Text("Fix empty workouts"),
       ),
       PrefLabel(
-        title: Text(dataStreamGapSoundEffect, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(
+          dataStreamGapSoundEffect,
+          style: Theme.of(context).textTheme.headline5!,
+          maxLines: 3,
+        ),
         subtitle: const Text(dataStreamGapSoundEffectDescription),
       ),
       const PrefRadio<String>(
@@ -143,7 +147,7 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
       PrefLabel(
         title: Text(
           heartRateGapWorkaroundSelection,
-          style: Get.textTheme.headline5!,
+          style: Theme.of(context).textTheme.headline5!,
           maxLines: 3,
         ),
       ),
@@ -172,7 +176,12 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         max: heartRateUpperLimitMax,
         direction: Axis.vertical,
       ),
-      PrefLabel(title: Text(heartRateLimitingMethod, style: Get.textTheme.headline5!, maxLines: 3)),
+      PrefLabel(
+          title: Text(
+        heartRateLimitingMethod,
+        style: Theme.of(context).textTheme.headline5!,
+        maxLines: 3,
+      )),
       const PrefRadio<String>(
         title: Text(heartRateLimitingWriteZeroDescription),
         value: heartRateLimitingWriteZero,

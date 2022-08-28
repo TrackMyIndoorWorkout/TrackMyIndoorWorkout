@@ -14,21 +14,14 @@ class LeaderboardSportHubScreen extends StatefulWidget {
 }
 
 class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
-  double _sizeDefault = 10.0;
-  TextStyle _textStyle = const TextStyle();
-
-  @override
-  void initState() {
-    super.initState();
-    _textStyle = Get.textTheme.headline4!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
-    _sizeDefault = _textStyle.fontSize! * 2;
-  }
-
   @override
   Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: Colors.white,
+        );
+    final sizeDefault = textStyle.fontSize! * 2;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Leaderboard Sports')),
       body: ListView(
@@ -45,11 +38,11 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
                     children: [
                       TextOneLine(
                         sport,
-                        style: _textStyle,
+                        style: textStyle,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Icon(Icons.chevron_right, size: _sizeDefault),
+                      Icon(Icons.chevron_right, size: sizeDefault),
                     ],
                   ),
                 ),

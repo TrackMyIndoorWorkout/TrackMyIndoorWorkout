@@ -170,8 +170,11 @@ class ThemeManager {
     return getIconFab(getGreyColor(themeMode), icon, themeMode, onPressed);
   }
 
-  Widget getRankIcon(int rank, ThemeMode themeMode) {
-    final textStyle = Get.textTheme.headline4!.apply(fontFamily: fontFamily, color: Colors.black);
+  Widget getRankIcon(int rank, ThemeMode themeMode, BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: Colors.black,
+        );
     return _getFabCore(
       Colors.black,
       getYellowColor(themeMode),

@@ -23,24 +23,22 @@ class SportPickerBottomSheet extends ConsumerStatefulWidget {
 
 class SportPickerBottomSheetState extends ConsumerState<SportPickerBottomSheet> {
   int _sportIndex = 0;
-  final ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _largerTextStyle = const TextStyle();
-  TextStyle _selectedTextStyle = const TextStyle();
 
   @override
   void initState() {
     super.initState();
     _sportIndex = max(0, widget.sportChoices.indexOf(widget.initialSport));
-    _largerTextStyle = Get.textTheme.headline4!;
-    final themeMode = ref.watch(themeModeProvider);
-    _selectedTextStyle = _largerTextStyle.apply(
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final themeManager = Get.find<ThemeManager>();
+    final largerTextStyle = Theme.of(context).textTheme.headline4!;
+    final selectedTextStyle = largerTextStyle.apply(
+      color: themeManager.getProtagonistColor(themeMode),
+    );
+
     return Scaffold(
       body: ListView(
         children: widget.sportChoices
@@ -69,14 +67,14 @@ class SportPickerBottomSheetState extends ConsumerState<SportPickerBottomSheet> 
                         _sportIndex = e.key;
                       });
                     },
-                    icon: _themeManager.getBlueIcon(
+                    icon: themeManager.getBlueIcon(
                       getSportIcon(e.value),
-                      _largerTextStyle.fontSize!,
+                      largerTextStyle.fontSize!,
                       themeMode,
                     ),
                     label: Text(
                       e.value,
-                      style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle,
+                      style: _sportIndex == e.key ? selectedTextStyle : largerTextStyle,
                     ),
                   ),
                 ],
@@ -85,7 +83,7 @@ class SportPickerBottomSheetState extends ConsumerState<SportPickerBottomSheet> 
             .toList(growable: false),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(
+      floatingActionButton: themeManager.getGreenFab(
         Icons.check,
         themeMode,
         () => Get.back(result: widget.sportChoices[_sportIndex]),

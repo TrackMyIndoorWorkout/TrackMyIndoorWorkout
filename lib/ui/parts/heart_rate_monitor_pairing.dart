@@ -30,8 +30,6 @@ class HeartRateMonitorPairingBottomSheetState
   static RegExp colonRegex = RegExp(r'\:');
 
   int _scanDuration = 4;
-  TextStyle _captionStyle = const TextStyle();
-  TextStyle _subtitleStyle = const TextStyle();
   bool _isScanning = false;
   bool _pairingHrm = false;
   final List<String> _scanResults = [];
@@ -88,8 +86,6 @@ class HeartRateMonitorPairingBottomSheetState
     super.initState();
     final prefService = Get.find<BasePrefService>();
     _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
-    _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
-    _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
     _isScanning = false;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
@@ -99,6 +95,9 @@ class HeartRateMonitorPairingBottomSheetState
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final captionStyle = Theme.of(context).textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
+    final subtitleStyle = captionStyle.apply(fontFamily: fontFamily);
+
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
@@ -115,14 +114,14 @@ class HeartRateMonitorPairingBottomSheetState
                           _heartRateMonitor?.device?.name ?? emptyMeasurement,
                           overflow: TextOverflow.ellipsis,
                           style: _themeManager.boldStyle(
-                            _captionStyle,
+                            captionStyle,
                             fontSizeFactor: fontSizeFactor,
                           ),
                         ),
                         subtitle: Text(
                           _heartRateMonitor?.device?.id.id.replaceAll(colonRegex, '') ??
                               emptyMeasurement,
-                          style: _subtitleStyle,
+                          style: subtitleStyle,
                         ),
                         trailing: StreamBuilder<BluetoothDeviceState>(
                           stream: _heartRateMonitor?.device?.state,

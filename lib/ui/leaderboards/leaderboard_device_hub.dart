@@ -15,26 +15,18 @@ class LeaderboardDeviceHubScreen extends StatefulWidget {
 }
 
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {
-  double _sizeDefault = 10.0;
-  TextStyle _textStyle = const TextStyle();
-  TextStyle _subTextStyle = const TextStyle();
-
-  @override
-  void initState() {
-    super.initState();
-    _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
-    _sizeDefault = _textStyle.fontSize! * 3;
-    _subTextStyle = Get.textTheme.headline6!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+          fontFamily: fontFamily,
+          color: Colors.white,
+        );
+    final sizeDefault = textStyle.fontSize! * 3;
+    final subTextStyle = Theme.of(context).textTheme.headline6!.apply(
+          fontFamily: fontFamily,
+          color: Colors.white,
+        );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Leaderboard Devices')),
       body: ListView(
@@ -55,19 +47,19 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
                         children: [
                           TextOneLine(
                             device.item2,
-                            style: _textStyle,
+                            style: textStyle,
                             textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,
                           ),
                           TextOneLine(
                             "(${device.item1})",
-                            style: _subTextStyle,
+                            style: subTextStyle,
                             textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
-                      Icon(Icons.chevron_right, size: _sizeDefault),
+                      Icon(Icons.chevron_right, size: sizeDefault),
                     ],
                   ),
                 ),

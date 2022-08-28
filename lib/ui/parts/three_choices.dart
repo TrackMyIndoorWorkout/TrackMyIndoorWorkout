@@ -26,21 +26,15 @@ class ThreeChoicesBottomSheet extends ConsumerStatefulWidget {
 }
 
 class ThreeChoicesBottomSheetState extends ConsumerState<ThreeChoicesBottomSheet> {
-  TextStyle _largerTextStyle = const TextStyle();
-  final _themeManager = Get.find<ThemeManager>();
-
-  @override
-  void initState() {
-    super.initState();
-    final themeMode = ref.watch(themeModeProvider);
-    _largerTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final themeManager = Get.find<ThemeManager>();
+    final themeMode = ref.watch(themeModeProvider);
+    final largerTextStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: themeManager.getProtagonistColor(themeMode),
+        );
+
     final actions = [
       ElevatedButton(
         onPressed: () => Get.back(result: 0),
@@ -64,7 +58,7 @@ class ThreeChoicesBottomSheetState extends ConsumerState<ThreeChoicesBottomSheet
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(widget.title, style: _largerTextStyle, textAlign: TextAlign.center),
+            Text(widget.title, style: largerTextStyle, textAlign: TextAlign.center),
           ],
         ),
       ),

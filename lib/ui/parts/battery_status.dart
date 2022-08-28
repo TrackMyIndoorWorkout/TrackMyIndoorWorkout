@@ -30,8 +30,6 @@ class BatteryStatusBottomSheetState extends ConsumerState<BatteryStatusBottomShe
   String _readFeatures = "Features: $notAvailable";
   String _writeFeatures = "Write Features: $notAvailable";
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  double _sizeDefault = 10.0;
-  TextStyle _textStyle = const TextStyle();
 
   Future<String> _readBatteryLevelCore(List<BluetoothService> services) async {
     final batteryService = BluetoothDeviceEx.filterService(services, batteryServiceUuid);
@@ -123,12 +121,6 @@ class BatteryStatusBottomSheetState extends ConsumerState<BatteryStatusBottomShe
   @override
   void initState() {
     super.initState();
-    final themeMode = ref.watch(themeModeProvider);
-    _textStyle = Get.textTheme.headline3!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-    _sizeDefault = _textStyle.fontSize!;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _readBatteryLevels();
@@ -138,6 +130,12 @@ class BatteryStatusBottomSheetState extends ConsumerState<BatteryStatusBottomShe
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final textStyle = Theme.of(context).textTheme.headline3!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+    final sizeDefault = textStyle.fontSize!;
+
     return Scaffold(
       body: ListView(
         children: [
@@ -147,20 +145,20 @@ class BatteryStatusBottomSheetState extends ConsumerState<BatteryStatusBottomShe
             children: [
               _themeManager.getBlueIcon(
                 getSportIcon(_fitnessEquipment?.sport ?? ActivityType.workout),
-                _sizeDefault,
+                sizeDefault,
                 themeMode,
               ),
-              _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault, themeMode),
-              Text(_batteryLevel, style: _textStyle),
+              _themeManager.getBlueIcon(Icons.battery_full, sizeDefault, themeMode),
+              Text(_batteryLevel, style: textStyle),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _themeManager.getBlueIcon(Icons.favorite, _sizeDefault, themeMode),
-              _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault, themeMode),
-              Text(_hrmBatteryLevel, style: _textStyle),
+              _themeManager.getBlueIcon(Icons.favorite, sizeDefault, themeMode),
+              _themeManager.getBlueIcon(Icons.battery_full, sizeDefault, themeMode),
+              Text(_hrmBatteryLevel, style: textStyle),
             ],
           ),
           const Divider(),

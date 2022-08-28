@@ -20,33 +20,25 @@ class LeaderBoardTypeBottomSheet extends ConsumerStatefulWidget {
 
 class LeaderBoardTypeBottomSheetState extends ConsumerState<LeaderBoardTypeBottomSheet> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  double _sizeDefault = 10.0;
-  TextStyle _textStyle = const TextStyle();
-  TextStyle _inverseTextStyle = const TextStyle();
   final AppDatabase _database = Get.find<AppDatabase>();
-
-  @override
-  void initState() {
-    super.initState();
-    _textStyle = Get.textTheme.headline4!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
-    final themeMode = ref.watch(themeModeProvider);
-    _inverseTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-    _sizeDefault = _textStyle.fontSize! * 2;
-  }
 
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final textStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: Colors.white,
+        );
+    final inverseTextStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+    final sizeDefault = textStyle.fontSize! * 2;
+
     return Scaffold(
       body: ListView(
         children: [
-          Text("Leaderboards:", style: _inverseTextStyle),
+          Text("Leaderboards:", style: inverseTextStyle),
           Container(
             padding: const EdgeInsets.all(5.0),
             margin: const EdgeInsets.all(5.0),
@@ -67,11 +59,11 @@ class LeaderBoardTypeBottomSheetState extends ConsumerState<LeaderBoardTypeBotto
                 children: [
                   TextOneLine(
                     "Sport",
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),
@@ -96,11 +88,11 @@ class LeaderBoardTypeBottomSheetState extends ConsumerState<LeaderBoardTypeBotto
                 children: [
                   TextOneLine(
                     "Device",
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
+                  Icon(Icons.chevron_right, size: sizeDefault),
                 ],
               ),
             ),

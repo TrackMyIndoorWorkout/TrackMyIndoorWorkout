@@ -23,8 +23,6 @@ class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _textStyle = const TextStyle();
-  double _sizeDefault = 10.0;
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
@@ -38,8 +36,6 @@ class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _textStyle = Get.textTheme.headline4!;
-    _sizeDefault = _textStyle.fontSize!;
     final themeMode = ref.watch(themeModeProvider);
     _expandableThemeData = ExpandableThemeData(
       iconColor: _themeManager.getProtagonistColor(themeMode),
@@ -113,6 +109,8 @@ class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
 
   @override
   Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.headline4!;
+    final sizeDefault = textStyle.fontSize!;
     final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Calorie Tunes')),
@@ -158,13 +156,13 @@ class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
                 children: [
                   TextOneLine(
                     calorieTune.mac,
-                    style: _textStyle,
+                    style: textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextOneLine(
                     "$caloriePercent %",
-                    style: _textStyle.apply(fontSizeFactor: 2.0),
+                    style: textStyle.apply(fontSizeFactor: 2.0),
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -178,16 +176,16 @@ class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault, themeMode),
-                        Text(dateString, style: _textStyle),
+                        _themeManager.getBlueIcon(Icons.calendar_today, sizeDefault, themeMode),
+                        Text(dateString, style: textStyle),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault, themeMode),
-                        Text(timeString, style: _textStyle),
+                        _themeManager.getBlueIcon(Icons.watch, sizeDefault, themeMode),
+                        Text(timeString, style: textStyle),
                       ],
                     ),
                     Row(
@@ -195,12 +193,12 @@ class CalorieTunesScreenState extends ConsumerState<CalorieTunesScreen>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         calorieTune.hrBased
-                            ? _themeManager.getBlueIcon(Icons.favorite, _sizeDefault, themeMode)
-                            : _themeManager.getGreyIcon(Icons.favorite, _sizeDefault, themeMode),
-                        Text(hrBasedString, style: _textStyle),
+                            ? _themeManager.getBlueIcon(Icons.favorite, sizeDefault, themeMode)
+                            : _themeManager.getGreyIcon(Icons.favorite, sizeDefault, themeMode),
+                        Text(hrBasedString, style: textStyle),
                       ],
                     ),
-                    _actionButtonRow(calorieTune, _sizeDefault, themeMode),
+                    _actionButtonRow(calorieTune, sizeDefault, themeMode),
                   ],
                 ),
               ),

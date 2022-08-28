@@ -536,10 +536,6 @@ class RecordingState extends ConsumerState<RecordingScreen> {
     if (sizeAdjustInt != 100) {
       _sizeAdjust = sizeAdjustInt / 100.0;
     }
-    _markerStyle =
-        _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: _markerStyleSizeAdjust);
-    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!,
-        fontSizeFactor: _markerStyleSmallSizeAdjust);
     prefService.set<String>(
       lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),
       widget.device.id.id,
@@ -1525,6 +1521,15 @@ class RecordingState extends ConsumerState<RecordingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _markerStyle = _themeManager.boldStyle(
+      Theme.of(context).textTheme.bodyText1!,
+      fontSizeFactor: _markerStyleSizeAdjust,
+    );
+    _markerStyleSmall = _themeManager.boldStyle(
+      Theme.of(context).textTheme.bodyText1!,
+      fontSizeFactor: _markerStyleSmallSizeAdjust,
+    );
+
     const separatorHeight = 1.0;
 
     final size = Get.mediaQuery.size;
@@ -1913,19 +1918,22 @@ class RecordingState extends ConsumerState<RecordingScreen> {
       menuButtons.addAll([
         _themeManager.getTutorialFab(
           () async {
-            legendDialog([
-              const Tuple2<IconData, String>(Icons.whatshot, "Calories"),
-              const Tuple2<IconData, String>(Icons.add_road, "Distance"),
-              const Tuple2<IconData, String>(Icons.timer, "Elapsed / moving time"),
-              const Tuple2<IconData, String>(Icons.lock_open, "Lock Screen"),
-              const Tuple2<IconData, String>(Icons.cloud_upload, "Upload Workout"),
-              const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
-              const Tuple2<IconData, String>(Icons.battery_unknown, "Battery & Extras"),
-              const Tuple2<IconData, String>(Icons.build, "Calibration"),
-              const Tuple2<IconData, String>(Icons.favorite, "HRM Pairing"),
-              const Tuple2<IconData, String>(Icons.stop, "Stop Workout"),
-              const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
-            ]);
+            legendDialog(
+              [
+                const Tuple2<IconData, String>(Icons.whatshot, "Calories"),
+                const Tuple2<IconData, String>(Icons.add_road, "Distance"),
+                const Tuple2<IconData, String>(Icons.timer, "Elapsed / moving time"),
+                const Tuple2<IconData, String>(Icons.lock_open, "Lock Screen"),
+                const Tuple2<IconData, String>(Icons.cloud_upload, "Upload Workout"),
+                const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
+                const Tuple2<IconData, String>(Icons.battery_unknown, "Battery & Extras"),
+                const Tuple2<IconData, String>(Icons.build, "Calibration"),
+                const Tuple2<IconData, String>(Icons.favorite, "HRM Pairing"),
+                const Tuple2<IconData, String>(Icons.stop, "Stop Workout"),
+                const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
+              ],
+              context,
+            );
           },
         ),
       ]);

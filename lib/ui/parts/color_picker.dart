@@ -21,7 +21,6 @@ class ColorPickerBottomSheetState extends ConsumerState<ColorPickerBottomSheet> 
   late final CircleColorPickerController _controller;
   Color _color = Colors.white;
   Color _initialColor = Colors.white;
-  TextStyle _textStyle = const TextStyle();
   double? _mediaWidth;
 
   @override
@@ -30,21 +29,21 @@ class ColorPickerBottomSheetState extends ConsumerState<ColorPickerBottomSheet> 
     _controller = CircleColorPickerController(initialColor: widget.color);
     _color = Color(widget.color.value);
     _initialColor = Color(widget.color.value);
-    final themeMode = ref.watch(themeModeProvider);
-    _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     if (_mediaWidth == null || (_mediaWidth! - mediaWidth).abs() > eps) {
       _mediaWidth = mediaWidth;
     }
 
-    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       body: Center(
         child: CircleColorPicker(
@@ -57,7 +56,7 @@ class ColorPickerBottomSheetState extends ConsumerState<ColorPickerBottomSheet> 
           size: Size(_mediaWidth!, _mediaWidth!),
           strokeWidth: 5,
           thumbSize: _mediaWidth! / 5,
-          textStyle: _textStyle,
+          textStyle: textStyle,
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

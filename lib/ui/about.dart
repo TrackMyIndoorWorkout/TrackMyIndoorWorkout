@@ -30,14 +30,10 @@ class AboutScreenState extends State<AboutScreen> {
   late String _buildNumber;
   String _detectedTimeZone = "";
   String _enforcedTimeZone = "";
-  TextStyle _fieldStyle = const TextStyle();
-  TextStyle _valueStyle = const TextStyle();
 
   @override
   void initState() {
     super.initState();
-    _fieldStyle = Get.textTheme.headline5!;
-    _valueStyle = Get.textTheme.headline6!.apply(fontFamily: fontFamily);
     final packageInfo = Get.find<PackageInfo>();
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;
@@ -54,6 +50,8 @@ class AboutScreenState extends State<AboutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final fieldStyle = Theme.of(context).textTheme.headline5!;
+    final valueStyle = Theme.of(context).textTheme.headline6!.apply(fontFamily: fontFamily);
     final List<Widget> actions = [];
     if (kDebugMode) {
       actions.add(IconButton(
@@ -72,10 +70,32 @@ class AboutScreenState extends State<AboutScreen> {
       body: ListView(
         shrinkWrap: true,
         children: [
-          ..._valueWithTitle(title: 'Version:', value: _version, oneLine: true),
-          ..._valueWithTitle(title: 'Build#:', value: _buildNumber, oneLine: true),
-          ..._valueWithTitle(title: 'Detected Time Zone:', value: _detectedTimeZone),
-          ..._valueWithTitle(title: 'Enforced Time Zone:', value: _enforcedTimeZone),
+          ..._valueWithTitle(
+            fieldStyle,
+            valueStyle,
+            title: 'Version:',
+            value: _version,
+            oneLine: true,
+          ),
+          ..._valueWithTitle(
+            fieldStyle,
+            valueStyle,
+            title: 'Build#:',
+            value: _buildNumber,
+            oneLine: true,
+          ),
+          ..._valueWithTitle(
+            fieldStyle,
+            valueStyle,
+            title: 'Detected Time Zone:',
+            value: _detectedTimeZone,
+          ),
+          ..._valueWithTitle(
+            fieldStyle,
+            valueStyle,
+            title: 'Enforced Time Zone:',
+            value: _enforcedTimeZone,
+          ),
           const Divider(),
           _buttonWithLink(buttonText: "Privacy Policy", linkUrl: AboutScreen.privacyPolicyUrl),
           _buttonWithLink(buttonText: "Quick Start", linkUrl: AboutScreen.quickStartUrl),
@@ -102,24 +122,32 @@ class AboutScreenState extends State<AboutScreen> {
         ),
       );
 
-  List<Widget> _valueWithTitleCore({required String title, required String value}) => [
+  List<Widget> _valueWithTitleCore(
+    TextStyle fieldStyle,
+    TextStyle valueStyle, {
+    required String title,
+    required String value,
+  }) =>
+      [
         Text(
           title,
-          style: _fieldStyle,
+          style: fieldStyle,
           maxLines: 10,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
         ),
         Text(
           value,
-          style: _valueStyle,
+          style: valueStyle,
           maxLines: 10,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
         ),
       ];
 
-  List<Widget> _valueWithTitle({
+  List<Widget> _valueWithTitle(
+    TextStyle fieldStyle,
+    TextStyle valueStyle, {
     required String title,
     required String value,
     bool oneLine = false,
@@ -129,7 +157,8 @@ class AboutScreenState extends State<AboutScreen> {
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: _valueWithTitleCore(title: title, value: value)),
+                  children:
+                      _valueWithTitleCore(fieldStyle, valueStyle, title: title, value: value)),
             ]
-          : _valueWithTitleCore(title: title, value: value);
+          : _valueWithTitleCore(fieldStyle, valueStyle, title: title, value: value);
 }

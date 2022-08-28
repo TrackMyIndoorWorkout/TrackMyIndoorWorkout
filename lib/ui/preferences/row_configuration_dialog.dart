@@ -16,7 +16,6 @@ class RowConfigurationDialog extends ConsumerStatefulWidget {
 }
 
 class RowConfigurationDialogState extends ConsumerState<RowConfigurationDialog> {
-  TextStyle _textStyle = const TextStyle();
   List<bool> _expandedState = [];
   final List<int> _expandedHeights = [];
 
@@ -24,9 +23,6 @@ class RowConfigurationDialogState extends ConsumerState<RowConfigurationDialog> 
   void initState() {
     super.initState();
 
-    final themeManager = Get.find<ThemeManager>();
-    final themeMode = ref.watch(themeModeProvider);
-    _textStyle = Get.textTheme.headline3!.apply(color: themeManager.getProtagonistColor(themeMode));
     final prefService = Get.find<BasePrefService>();
     final expandedStateStr =
         prefService.get<String>(measurementPanelsExpandedTag) ?? measurementPanelsExpandedDefault;
@@ -42,16 +38,22 @@ class RowConfigurationDialogState extends ConsumerState<RowConfigurationDialog> 
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Get.find<ThemeManager>();
+    final themeMode = ref.watch(themeModeProvider);
+    final textStyle = Theme.of(context).textTheme.headline3!.apply(
+          color: themeManager.getProtagonistColor(themeMode),
+        );
+
     var rowConfigs = MetricSpec.getRowConfigurations();
     List<Widget> children = [
       Container(),
-      Text("\u00BC", style: _textStyle),
-      Text("\u2153", style: _textStyle),
-      Text("\u00BD", style: _textStyle),
-      Icon(Icons.keyboard_arrow_right, size: _textStyle.fontSize),
+      Text("\u00BC", style: textStyle),
+      Text("\u2153", style: textStyle),
+      Text("\u00BD", style: textStyle),
+      Icon(Icons.keyboard_arrow_right, size: textStyle.fontSize),
     ];
     rowConfigs.forEachIndexed((rowIndex, rowConfig) {
-      children.add(Icon(rowConfig.icon, size: _textStyle.fontSize));
+      children.add(Icon(rowConfig.icon, size: textStyle.fontSize));
       children.addAll(
         List<Widget>.generate(
           3,

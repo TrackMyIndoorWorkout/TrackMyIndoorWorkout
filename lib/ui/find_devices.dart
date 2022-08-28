@@ -71,8 +71,6 @@ class FindDevicesState extends ConsumerState<FindDevicesScreen> {
   bool _filterDevices = deviceFilteringDefault;
   HeartRateMonitor? _heartRateMonitor;
   FitnessEquipment? _fitnessEquipment;
-  TextStyle _captionStyle = const TextStyle();
-  TextStyle _subtitleStyle = const TextStyle();
   final AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   final RegExp _colonRegex = RegExp(r'\:');
@@ -229,9 +227,6 @@ class FindDevicesState extends ConsumerState<FindDevicesScreen> {
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _isScanning = false;
     _openDatabase().then((value) => _instantScan ? _startScan(true) : {});
-
-    _captionStyle = Get.textTheme.headline6!;
-    _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
@@ -559,7 +554,10 @@ class FindDevicesState extends ConsumerState<FindDevicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final captionStyle = Theme.of(context).textTheme.headline6!;
+    final subtitleStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeMode = ref.watch(themeModeProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_filterDevices ? 'Supported Devices:' : 'Devices'),
@@ -661,13 +659,13 @@ class FindDevicesState extends ConsumerState<FindDevicesScreen> {
                         title: TextOneLine(
                           _heartRateMonitor?.device?.name ?? emptyMeasurement,
                           overflow: TextOverflow.ellipsis,
-                          style: _themeManager.boldStyle(_captionStyle,
-                              fontSizeFactor: fontSizeFactor),
+                          style:
+                              _themeManager.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
                         ),
                         subtitle: Text(
                           _heartRateMonitor?.device?.id.id.replaceAll(_colonRegex, '') ??
                               emptyMeasurement,
-                          style: _subtitleStyle,
+                          style: subtitleStyle,
                         ),
                         trailing: StreamBuilder<BluetoothDeviceState>(
                           stream: _heartRateMonitor?.device?.state,
@@ -710,14 +708,14 @@ class FindDevicesState extends ConsumerState<FindDevicesScreen> {
                           _fitnessEquipment?.device?.name ?? emptyMeasurement,
                           overflow: TextOverflow.ellipsis,
                           style: _themeManager.boldStyle(
-                            _captionStyle,
+                            captionStyle,
                             fontSizeFactor: fontSizeFactor,
                           ),
                         ),
                         subtitle: Text(
                           _fitnessEquipment?.device?.id.id.replaceAll(_colonRegex, '') ??
                               emptyMeasurement,
-                          style: _subtitleStyle,
+                          style: subtitleStyle,
                         ),
                         trailing: StreamBuilder<BluetoothDeviceState>(
                           stream: _fitnessEquipment?.device?.state,
@@ -924,18 +922,21 @@ class FindDevicesState extends ConsumerState<FindDevicesScreen> {
         children: [
           _themeManager.getTutorialFab(
             () async {
-              legendDialog([
-                const Tuple2<IconData, String>(Icons.favorite, "HRM"),
-                const Tuple2<IconData, String>(Icons.search, "Start Scanning"),
-                const Tuple2<IconData, String>(Icons.stop, "Stop Scanning"),
-                const Tuple2<IconData, String>(Icons.refresh, "Scan Again"),
-                const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
-                const Tuple2<IconData, String>(Icons.open_in_new, "Workout Again"),
-                const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
-                const Tuple2<IconData, String>(Icons.settings, "Preferences"),
-                const Tuple2<IconData, String>(Icons.help, "About"),
-                const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
-              ]);
+              legendDialog(
+                [
+                  const Tuple2<IconData, String>(Icons.favorite, "HRM"),
+                  const Tuple2<IconData, String>(Icons.search, "Start Scanning"),
+                  const Tuple2<IconData, String>(Icons.stop, "Stop Scanning"),
+                  const Tuple2<IconData, String>(Icons.refresh, "Scan Again"),
+                  const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
+                  const Tuple2<IconData, String>(Icons.open_in_new, "Workout Again"),
+                  const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
+                  const Tuple2<IconData, String>(Icons.settings, "Preferences"),
+                  const Tuple2<IconData, String>(Icons.help, "About"),
+                  const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
+                ],
+                context,
+              );
             },
           ),
           _themeManager.getAboutFab(),

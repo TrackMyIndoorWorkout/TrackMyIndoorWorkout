@@ -88,7 +88,7 @@ class ScanResultTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final captionStyle = Get.textTheme.headline6!;
+    final captionStyle = Theme.of(context).textTheme.headline6!;
     final detailStyle = captionStyle.apply(fontSizeFactor: 1 / fontSizeFactor);
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();

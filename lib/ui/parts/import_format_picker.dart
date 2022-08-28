@@ -19,23 +19,22 @@ class ImportFormatPickerBottomSheetState extends ConsumerState<ImportFormatPicke
     "MPower Echelon",
     "Migration",
   ];
-  final ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _largerTextStyle = const TextStyle();
-  TextStyle _selectedTextStyle = const TextStyle();
 
   @override
   void initState() {
     super.initState();
     _formatIndex = max(0, _formatChoices.indexOf("MPower Echelon"));
-    _largerTextStyle = Get.textTheme.headline4!;
-    final themeMode = ref.watch(themeModeProvider);
-    _selectedTextStyle =
-        _largerTextStyle.apply(color: _themeManager.getProtagonistColor(themeMode));
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Get.find<ThemeManager>();
     final themeMode = ref.watch(themeModeProvider);
+    final largerTextStyle = Theme.of(context).textTheme.headline4!;
+    final selectedTextStyle = largerTextStyle.apply(
+      color: themeManager.getProtagonistColor(themeMode),
+    );
+
     return Scaffold(
       body: ListView(
         children: _formatChoices
@@ -65,7 +64,7 @@ class ImportFormatPickerBottomSheetState extends ConsumerState<ImportFormatPicke
                       });
                     },
                     child: Text(e.value,
-                        style: _formatIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+                        style: _formatIndex == e.key ? selectedTextStyle : largerTextStyle),
                   ),
                 ],
               ),
@@ -79,9 +78,9 @@ class ImportFormatPickerBottomSheetState extends ConsumerState<ImportFormatPicke
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
+            themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(
+            themeManager.getGreenFab(
               Icons.check,
               themeMode,
               () => Get.back(result: _formatChoices[_formatIndex]),

@@ -24,13 +24,11 @@ class IntegrationPreferencesScreen extends ConsumerStatefulWidget with Preferenc
 
 class IntegrationPreferencesScreenState extends ConsumerState<IntegrationPreferencesScreen> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _largerTextStyle = const TextStyle();
   Map<String, bool> integrationStates = {};
 
   @override
   void initState() {
     super.initState();
-    _largerTextStyle = Get.textTheme.headline4!;
     for (final portalName in portalNames) {
       integrationStates[portalName] = UploadService.isIntegrationEnabled(portalName);
     }
@@ -86,11 +84,16 @@ class IntegrationPreferencesScreenState extends ConsumerState<IntegrationPrefere
         pref: trainingPeaksUploadPublicTag,
       ),
       PrefLabel(
-        title: Text("Available Integrations:", style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(
+          "Available Integrations:",
+          style: Theme.of(context).textTheme.headline5!,
+          maxLines: 3,
+        ),
       ),
     ];
 
     final themeMode = ref.watch(themeModeProvider);
+    final largerTextStyle = Theme.of(context).textTheme.headline4!;
     integrationPreferences.addAll(
       getPortalChoices(_themeManager, themeMode).asMap().entries.map(
             (e) => PrefButton(
@@ -104,13 +107,13 @@ class IntegrationPreferencesScreenState extends ConsumerState<IntegrationPrefere
                   children: [
                     Icon(
                       (integrationStates[e.value.name] ?? false) ? Icons.link : Icons.link_off,
-                      size: _largerTextStyle.fontSize! * 1.5,
+                      size: largerTextStyle.fontSize! * 1.5,
                       color: _themeManager.getProtagonistColor(themeMode),
                     ),
                     SvgPicture.asset(
                       e.value.assetName,
                       color: e.value.color,
-                      height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
+                      height: largerTextStyle.fontSize! * e.value.heightMultiplier,
                       semanticsLabel: '${e.value.name} Logo',
                     ),
                   ],

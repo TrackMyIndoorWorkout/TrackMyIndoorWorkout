@@ -29,14 +29,12 @@ class ImportFormState extends State<ImportForm> {
   DateTime? _activityDateTime;
   bool _isLoading = false;
   double _progressValue = 0.0;
-  double _sizeDefault = 10.0;
   final TextEditingController _textController = TextEditingController();
   bool _leaderboardFeature = leaderboardFeatureDefault;
 
   @override
   void initState() {
     super.initState();
-    _sizeDefault = Get.textTheme.headline2!.fontSize!;
     final prefService = Get.find<BasePrefService>();
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
   }
@@ -49,6 +47,7 @@ class ImportFormState extends State<ImportForm> {
 
   @override
   Widget build(BuildContext context) {
+    final sizeDefault = Theme.of(context).textTheme.headline2!.fontSize!;
     return Scaffold(
       appBar: AppBar(
         title: const Text('MPower Workout Import'),
@@ -56,10 +55,10 @@ class ImportFormState extends State<ImportForm> {
       body: LoadingOverlay(
         isLoading: _isLoading,
         progressIndicator: SizedBox(
-          height: _sizeDefault * 2,
-          width: _sizeDefault * 2,
+          height: sizeDefault * 2,
+          width: sizeDefault * 2,
           child: CircularProgressIndicator(
-            strokeWidth: _sizeDefault,
+            strokeWidth: sizeDefault,
             value: _progressValue,
           ),
         ),

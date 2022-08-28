@@ -24,47 +24,9 @@ class PalettePickerBottomSheetState extends ConsumerState<PalettePickerBottomShe
   double _mediaWidth = 0;
   bool _landscape = false;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _textStyle = const TextStyle();
-  TextStyle _largerTextStyle = const TextStyle();
-  TextStyle _groupStyle = const TextStyle();
   final _darknessController = GroupButtonController(selectedIndex: 0);
   final _fgBgController = GroupButtonController(selectedIndex: 0);
   final _sizeController = GroupButtonController(selectedIndex: 0);
-  GroupButtonOptions? _landscapeGroupButtonOptions;
-  GroupButtonOptions? _portraitGroupButtonOptions;
-
-  @override
-  void initState() {
-    super.initState();
-    final themeMode = ref.watch(themeModeProvider);
-    _largerTextStyle = Get.textTheme.headline4!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-    _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
-    _groupStyle = Get.textTheme.headline5!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getAntagonistColor(themeMode),
-    );
-    _landscapeGroupButtonOptions = GroupButtonOptions(
-      borderRadius: BorderRadius.circular(4),
-      selectedTextStyle: _groupStyle,
-      selectedColor: _themeManager.getGreenColor(themeMode),
-      unselectedTextStyle: _groupStyle,
-      unselectedColor: _themeManager.getBlueColor(themeMode),
-      direction: Axis.vertical,
-    );
-    _portraitGroupButtonOptions = GroupButtonOptions(
-      borderRadius: BorderRadius.circular(4),
-      selectedTextStyle: _groupStyle,
-      selectedColor: _themeManager.getGreenColor(themeMode),
-      unselectedTextStyle: _groupStyle,
-      unselectedColor: _themeManager.getBlueColor(themeMode),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +36,35 @@ class PalettePickerBottomSheetState extends ConsumerState<PalettePickerBottomShe
       _mediaHeight = size.height;
       _landscape = _mediaWidth > _mediaHeight;
     }
+
     final themeMode = ref.watch(themeModeProvider);
+    final largerTextStyle = Theme.of(context).textTheme.headline4!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+    final groupStyle = Theme.of(context).textTheme.headline5!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getAntagonistColor(themeMode),
+        );
+    final landscapeGroupButtonOptions = GroupButtonOptions(
+      borderRadius: BorderRadius.circular(4),
+      selectedTextStyle: groupStyle,
+      selectedColor: _themeManager.getGreenColor(themeMode),
+      unselectedTextStyle: groupStyle,
+      unselectedColor: _themeManager.getBlueColor(themeMode),
+      direction: Axis.vertical,
+    );
+    final portraitGroupButtonOptions = GroupButtonOptions(
+      borderRadius: BorderRadius.circular(4),
+      selectedTextStyle: groupStyle,
+      selectedColor: _themeManager.getGreenColor(themeMode),
+      unselectedTextStyle: groupStyle,
+      unselectedColor: _themeManager.getBlueColor(themeMode),
+    );
 
     return Scaffold(
       body: _landscape
@@ -85,20 +75,20 @@ class PalettePickerBottomSheetState extends ConsumerState<PalettePickerBottomShe
                 children: [
                   Column(
                     children: [
-                      Text("Palette", style: _largerTextStyle),
-                      Text("type:", style: _largerTextStyle),
+                      Text("Palette", style: largerTextStyle),
+                      Text("type:", style: largerTextStyle),
                     ],
                   ),
                   const VerticalDivider(),
                   Column(
                     children: [
-                      Text("Theme:", style: _textStyle),
+                      Text("Theme:", style: textStyle),
                       GroupButton(
                         controller: _darknessController,
                         isRadio: true,
                         buttons: const ["Dark", "Light"],
                         maxSelected: 1,
-                        options: _landscapeGroupButtonOptions!,
+                        options: landscapeGroupButtonOptions,
                         onSelected: (_, i, selected) =>
                             _lightOrDark = (i == 1 && selected || i == 0 && !selected),
                       ),
@@ -107,13 +97,13 @@ class PalettePickerBottomSheetState extends ConsumerState<PalettePickerBottomShe
                   const VerticalDivider(),
                   Column(
                     children: [
-                      Text("Fg./Bg.:", style: _textStyle),
+                      Text("Fg./Bg.:", style: textStyle),
                       GroupButton(
                         controller: _fgBgController,
                         isRadio: true,
                         buttons: const ["Foregr.", "Backgr."],
                         maxSelected: 1,
-                        options: _landscapeGroupButtonOptions!,
+                        options: landscapeGroupButtonOptions,
                         onSelected: (_, i, selected) =>
                             _fgOrBg = (i == 1 && selected || i == 0 && !selected),
                       ),
@@ -122,13 +112,13 @@ class PalettePickerBottomSheetState extends ConsumerState<PalettePickerBottomShe
                   const VerticalDivider(),
                   Column(
                     children: [
-                      Text("Size:", style: _textStyle),
+                      Text("Size:", style: textStyle),
                       GroupButton(
                         controller: _sizeController,
                         isRadio: true,
                         buttons: const ["5", "6", "7"],
                         maxSelected: 1,
-                        options: _landscapeGroupButtonOptions!,
+                        options: landscapeGroupButtonOptions,
                         onSelected: (_, i, selected) {
                           if (selected) {
                             _size = i + 5;
@@ -145,34 +135,34 @@ class PalettePickerBottomSheetState extends ConsumerState<PalettePickerBottomShe
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text("Palette type:", style: _largerTextStyle),
-                  Text("Theme:", style: _textStyle),
+                  Text("Palette type:", style: largerTextStyle),
+                  Text("Theme:", style: textStyle),
                   GroupButton(
                     controller: _darknessController,
                     isRadio: true,
                     buttons: const ["Dark", "Light"],
                     maxSelected: 1,
-                    options: _portraitGroupButtonOptions!,
+                    options: portraitGroupButtonOptions,
                     onSelected: (_, i, selected) =>
                         _lightOrDark = (i == 1 && selected || i == 0 && !selected),
                   ),
-                  Text("Fg./Bg.:", style: _textStyle),
+                  Text("Fg./Bg.:", style: textStyle),
                   GroupButton(
                     controller: _fgBgController,
                     isRadio: true,
                     buttons: const ["Foregr.", "Backgr."],
                     maxSelected: 1,
-                    options: _portraitGroupButtonOptions!,
+                    options: portraitGroupButtonOptions,
                     onSelected: (_, i, selected) =>
                         _fgOrBg = (i == 1 && selected || i == 0 && !selected),
                   ),
-                  Text("Size:", style: _textStyle),
+                  Text("Size:", style: textStyle),
                   GroupButton(
                     controller: _sizeController,
                     isRadio: true,
                     buttons: const ["5", "6", "7"],
                     maxSelected: 1,
-                    options: _portraitGroupButtonOptions!,
+                    options: portraitGroupButtonOptions,
                     onSelected: (_, i, selected) {
                       if (selected) {
                         _size = i + 5;

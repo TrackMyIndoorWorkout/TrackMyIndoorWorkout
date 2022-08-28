@@ -24,8 +24,6 @@ class UploadPortalPickerBottomSheet extends ConsumerStatefulWidget {
 }
 
 class UploadPortalPickerBottomSheetState extends ConsumerState<UploadPortalPickerBottomSheet> {
-  final ThemeManager _themeManager = Get.find<ThemeManager>();
-  TextStyle _largerTextStyle = const TextStyle();
   bool _calculateGps = calculateGpsDefault;
   bool uploadInProgress = false;
   Map<String, bool> uploadStates = {};
@@ -33,10 +31,6 @@ class UploadPortalPickerBottomSheetState extends ConsumerState<UploadPortalPicke
   @override
   void initState() {
     super.initState();
-    final themeMode = ref.watch(themeModeProvider);
-    _largerTextStyle = Get.textTheme.headline4!.apply(
-      color: _themeManager.getProtagonistColor(themeMode),
-    );
     final prefService = Get.find<BasePrefService>();
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     for (final portalName in portalNames) {
@@ -85,6 +79,11 @@ class UploadPortalPickerBottomSheetState extends ConsumerState<UploadPortalPicke
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final themeManager = Get.find<ThemeManager>();
+    final largerTextStyle = Theme.of(context).textTheme.headline4!.apply(
+          color: themeManager.getProtagonistColor(themeMode),
+        );
+
     List<Widget> choiceRows = [
       uploadInProgress
           ? Row(
@@ -96,23 +95,23 @@ class UploadPortalPickerBottomSheetState extends ConsumerState<UploadPortalPicke
                 ),
                 JumpingText(
                   "Uploading...",
-                  style: _largerTextStyle,
+                  style: largerTextStyle,
                 ),
               ],
             )
           : Text(
               "Integrations:",
-              style: _largerTextStyle,
+              style: largerTextStyle,
               textAlign: TextAlign.center,
             ),
     ];
     choiceRows.addAll(
-      getPortalChoices(_themeManager, themeMode).asMap().entries.map(
+      getPortalChoices(themeManager, themeMode).asMap().entries.map(
             (e) => Column(
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(
-                    vertical: _largerTextStyle.fontSize! / 3,
+                    vertical: largerTextStyle.fontSize! / 3,
                     horizontal: 0.0,
                   ),
                   child: Row(
@@ -129,15 +128,15 @@ class UploadPortalPickerBottomSheetState extends ConsumerState<UploadPortalPicke
                           children: [
                             Icon(
                               (uploadStates[e.value.name] ?? false) ? Icons.check : Icons.upload,
-                              size: _largerTextStyle.fontSize! * 1.5,
+                              size: largerTextStyle.fontSize! * 1.5,
                               color: (uploadStates[e.value.name] ?? false)
-                                  ? _themeManager.getGreenColor(themeMode)
-                                  : _themeManager.getProtagonistColor(themeMode),
+                                  ? themeManager.getGreenColor(themeMode)
+                                  : themeManager.getProtagonistColor(themeMode),
                             ),
                             SvgPicture.asset(
                               e.value.assetName,
                               color: e.value.color,
-                              height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
+                              height: largerTextStyle.fontSize! * e.value.heightMultiplier,
                               semanticsLabel: '${e.value.name} Logo',
                             ),
                           ],
@@ -147,10 +146,10 @@ class UploadPortalPickerBottomSheetState extends ConsumerState<UploadPortalPicke
                           ? IconButton(
                               icon: Icon(
                                 Icons.open_in_new,
-                                size: _largerTextStyle.fontSize! * 1.5,
+                                size: largerTextStyle.fontSize! * 1.5,
                                 color: widget.activity.isSpecificWorkoutUrl(e.value.name)
-                                    ? _themeManager.getProtagonistColor(themeMode)
-                                    : _themeManager.getGreyColor(themeMode),
+                                    ? themeManager.getProtagonistColor(themeMode)
+                                    : themeManager.getGreyColor(themeMode),
                               ),
                               onPressed: () async {
                                 final workoutUrl = widget.activity.workoutUrl(e.value.name);
@@ -173,7 +172,7 @@ class UploadPortalPickerBottomSheetState extends ConsumerState<UploadPortalPicke
     return Scaffold(
       body: ListView(children: choiceRows),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
+      floatingActionButton: themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
     );
   }
 }
