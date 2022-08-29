@@ -29,7 +29,7 @@ dependencies:
   flutter_spinbox: ^0.9.0
   flutter_svg: ^1.1.4
   get: ^4.6.1
-  group_button: ^5.0.1
+  group_button: ^5.1.0
   http: ^0.13.5
   http_parser: ^4.0.1
   internet_connection_checker: 0.0.1+4
