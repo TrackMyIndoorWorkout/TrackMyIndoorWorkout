@@ -1,3 +1,9 @@
+## 1.1.116
+* Modify/correct full-screen bottom-sheet widget architecture
+* Adding close button to bottom sheets: Upload Picker, Leaderboard Type Picker
+* Adding cancel button to bottom sheets: Calorie Tune, Calorie Override, Export Format Picker,
+  Import Format Picker, Power Tune, Sport Picker
+
 ## 1.1.115
 * Schwinn 170/270/570 heart rate support
 * Giant refactoring of core functionality related to extra sensors
