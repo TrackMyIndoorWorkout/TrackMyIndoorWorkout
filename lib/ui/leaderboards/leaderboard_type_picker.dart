@@ -17,6 +17,7 @@ class LeaderBoardTypeBottomSheet extends StatefulWidget {
 }
 
 class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> {
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
   TextStyle _inverseTextStyle = const TextStyle();
@@ -25,14 +26,13 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
   @override
   void initState() {
     super.initState();
-    final themeManager = Get.find<ThemeManager>();
     _textStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
       color: Colors.white,
     );
     _inverseTextStyle = Get.textTheme.headline4!.apply(
       fontFamily: fontFamily,
-      color: themeManager.getProtagonistColor(),
+      color: _themeManager.getProtagonistColor(),
     );
     _sizeDefault = _textStyle.fontSize! * 2;
   }
@@ -103,6 +103,8 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.back()),
     );
   }
 }

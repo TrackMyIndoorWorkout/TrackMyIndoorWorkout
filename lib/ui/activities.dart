@@ -131,10 +131,14 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
 
           Get.bottomSheet(
             SafeArea(
-              child: Expanded(
-                child: Center(
-                  child: UploadPortalPickerBottomSheet(activity: activity),
-                ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: UploadPortalPickerBottomSheet(activity: activity),
+                    ),
+                  ),
+                ],
               ),
             ),
             isScrollControlled: true,
@@ -148,11 +152,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         iconSize: size,
         onPressed: () async {
           final formatPick = await Get.bottomSheet(
-            const SafeArea(
-              child: Expanded(
-                child: Center(
-                  child: ExportFormatPickerBottomSheet(),
-                ),
+            SafeArea(
+              child: Column(
+                children: const [
+                  Expanded(
+                    child: Center(
+                      child: ExportFormatPickerBottomSheet(),
+                    ),
+                  ),
+                ],
               ),
             ),
             isScrollControlled: true,
@@ -194,13 +202,17 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           }
           Get.bottomSheet(
             SafeArea(
-              child: Expanded(
-                child: Center(
-                  child: PowerFactorTuneBottomSheet(
-                    deviceId: activity.deviceId,
-                    oldPowerFactor: activity.powerFactor,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: PowerFactorTuneBottomSheet(
+                        deviceId: activity.deviceId,
+                        oldPowerFactor: activity.powerFactor,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
             isScrollControlled: true,
@@ -219,10 +231,14 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           }
           Get.bottomSheet(
             SafeArea(
-              child: Expanded(
-                child: Center(
-                  child: CalorieOverrideBottomSheet(activity: activity),
-                ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: CalorieOverrideBottomSheet(activity: activity),
+                    ),
+                  ),
+                ],
               ),
             ),
             isScrollControlled: true,
@@ -241,13 +257,17 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
               SafeArea(
-                child: Expanded(
-                  child: Center(
-                    child: SportPickerBottomSheet(
-                      sportChoices: allSports,
-                      initialSport: activity.sport,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: SportPickerBottomSheet(
+                          sportChoices: allSports,
+                          initialSport: activity.sport,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
               isScrollControlled: true,
@@ -334,11 +354,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       _themeManager.getAboutFab(),
       _themeManager.getBlueFab(Icons.file_upload, () async {
         final formatPick = await Get.bottomSheet(
-          const SafeArea(
-            child: Expanded(
-              child: Center(
-                child: ImportFormatPickerBottomSheet(),
-              ),
+          SafeArea(
+            child: Column(
+              children: const [
+                Expanded(
+                  child: Center(
+                    child: ImportFormatPickerBottomSheet(),
+                  ),
+                ),
+              ],
             ),
           ),
           isScrollControlled: true,
@@ -370,11 +394,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       floatingActionButtons.add(
         _themeManager.getBlueFab(Icons.leaderboard, () async {
           Get.bottomSheet(
-            const SafeArea(
-              child: Expanded(
-                child: Center(
-                  child: LeaderBoardTypeBottomSheet(),
-                ),
+            SafeArea(
+              child: Column(
+                children: const [
+                  Expanded(
+                    child: Center(
+                      child: LeaderBoardTypeBottomSheet(),
+                    ),
+                  ),
+                ],
               ),
             ),
             isScrollControlled: true,

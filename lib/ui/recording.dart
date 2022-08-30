@@ -857,10 +857,14 @@ class RecordingState extends State<RecordingScreen> {
 
     Get.bottomSheet(
       SafeArea(
-        child: Expanded(
-          child: Center(
-            child: UploadPortalPickerBottomSheet(activity: _activity!),
-          ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: UploadPortalPickerBottomSheet(activity: _activity!),
+              ),
+            ),
+          ],
         ),
       ),
       isScrollControlled: true,
@@ -1015,14 +1019,18 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     final verdict = await Get.bottomSheet(
-      const SafeArea(
-        child: Expanded(
-          child: Center(
-            child: BooleanQuestionBottomSheet(
-              title: "About to navigate away",
-              content: "The workout in progress will be finished. Are you sure?",
+      SafeArea(
+        child: Column(
+          children: const [
+            Expanded(
+              child: Center(
+                child: BooleanQuestionBottomSheet(
+                  title: "About to navigate away",
+                  content: "The workout in progress will be finished. Are you sure?",
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
       isScrollControlled: true,
@@ -1457,17 +1465,21 @@ class RecordingState extends State<RecordingScreen> {
     if (_measuring) {
       if (_circuitWorkout) {
         final selection = await Get.bottomSheet(
-          const SafeArea(
-            child: Expanded(
-              child: Center(
-                child: ThreeChoicesBottomSheet(
-                  title: "Circuit workout in progress",
-                  verticalActions: true,
-                  firstChoice: "Continue workout",
-                  secondChoice: "Finish on THIS machine for good",
-                  thirdChoice: "Finish an ALL machines (the whole circuit workout is over)",
+          SafeArea(
+            child: Column(
+              children: const [
+                Expanded(
+                  child: Center(
+                    child: ThreeChoicesBottomSheet(
+                      title: "Circuit workout in progress",
+                      verticalActions: true,
+                      firstChoice: "Continue workout",
+                      secondChoice: "Finish on THIS machine for good",
+                      thirdChoice: "Finish an ALL machines (the whole circuit workout is over)",
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
           isScrollControlled: true,
@@ -1929,11 +1941,15 @@ class RecordingState extends State<RecordingScreen> {
           }),
           _themeManager.getBlueFab(Icons.battery_unknown, () async {
             Get.bottomSheet(
-              const SafeArea(
-                child: Expanded(
-                  child: Center(
-                    child: BatteryStatusBottomSheet(),
-                  ),
+              SafeArea(
+                child: Column(
+                  children: const [
+                    Expanded(
+                      child: Center(
+                        child: BatteryStatusBottomSheet(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               isScrollControlled: true,
@@ -1946,11 +1962,15 @@ class RecordingState extends State<RecordingScreen> {
               Get.snackbar("Error", "Not compatible with the calibration method");
             } else {
               Get.bottomSheet(
-                const SafeArea(
-                  child: Expanded(
-                    child: Center(
-                      child: SpinDownBottomSheet(),
-                    ),
+                SafeArea(
+                  child: Column(
+                    children: const [
+                      Expanded(
+                        child: Center(
+                          child: SpinDownBottomSheet(),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 isScrollControlled: true,
@@ -1966,11 +1986,15 @@ class RecordingState extends State<RecordingScreen> {
       menuButtons.addAll([
         _themeManager.getBlueFab(Icons.favorite, () async {
           await Get.bottomSheet(
-            const SafeArea(
-              child: Expanded(
-                child: Center(
-                  child: HeartRateMonitorPairingBottomSheet(),
-                ),
+            SafeArea(
+              child: Column(
+                children: const [
+                  Expanded(
+                    child: Center(
+                      child: HeartRateMonitorPairingBottomSheet(),
+                    ),
+                  ),
+                ],
               ),
             ),
             isScrollControlled: true,

@@ -170,15 +170,19 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                             final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
                             if (existingId != notAvailable && existingId != r.device.id.id) {
                               final verdict = await Get.bottomSheet(
-                                const SafeArea(
-                                  child: Expanded(
-                                    child: Center(
-                                      child: BooleanQuestionBottomSheet(
-                                        title: "You are connected to a HRM right now",
-                                        content:
-                                            "Disconnect from that HRM to connect the selected one?",
+                                SafeArea(
+                                  child: Column(
+                                    children: const [
+                                      Expanded(
+                                        child: Center(
+                                          child: BooleanQuestionBottomSheet(
+                                            title: "You are connected to a HRM right now",
+                                            content:
+                                                "Disconnect from that HRM to connect the selected one?",
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
                                 isScrollControlled: true,
@@ -248,6 +252,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _themeManager.getBlueFab(Icons.clear, () => Get.back(result: true)),
+            const SizedBox(width: 10, height: 10),
             StreamBuilder<bool>(
               stream: FlutterBluePlus.instance.isScanning,
               initialData: true,

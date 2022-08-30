@@ -52,28 +52,39 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(Icons.check, () async {
-        final database = Get.find<AppDatabase>();
-        final calorieFactor = _calorieFactorPercent / 100.0;
-        CalorieTune? calorieTune;
-        if (await database.hasCalorieTune(widget.deviceId, widget.hrBased)) {
-          calorieTune = await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
-        }
+      floatingActionButton: Container(
+        margin: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            const SizedBox(width: 10, height: 10),
+            _themeManager.getGreenFab(Icons.check, () async {
+              final database = Get.find<AppDatabase>();
+              final calorieFactor = _calorieFactorPercent / 100.0;
+              CalorieTune? calorieTune;
+              if (await database.hasCalorieTune(widget.deviceId, widget.hrBased)) {
+                calorieTune = await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
+              }
 
-        if (calorieTune != null) {
-          calorieTune.calorieFactor = calorieFactor;
-          await database.calorieTuneDao.updateCalorieTune(calorieTune);
-        } else {
-          calorieTune = CalorieTune(
-            mac: widget.deviceId,
-            calorieFactor: calorieFactor,
-            hrBased: widget.hrBased,
-            time: DateTime.now().millisecondsSinceEpoch,
-          );
-          await database.calorieTuneDao.insertCalorieTune(calorieTune);
-        }
-        Get.back(result: calorieFactor);
-      }),
+              if (calorieTune != null) {
+                calorieTune.calorieFactor = calorieFactor;
+                await database.calorieTuneDao.updateCalorieTune(calorieTune);
+              } else {
+                calorieTune = CalorieTune(
+                  mac: widget.deviceId,
+                  calorieFactor: calorieFactor,
+                  hrBased: widget.hrBased,
+                  time: DateTime.now().millisecondsSinceEpoch,
+                );
+                await database.calorieTuneDao.insertCalorieTune(calorieTune);
+              }
+              Get.back(result: calorieFactor);
+            }),
+          ],
+        ),
+      ),
     );
   }
 }

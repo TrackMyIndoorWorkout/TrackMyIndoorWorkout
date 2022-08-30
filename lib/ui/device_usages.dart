@@ -58,13 +58,17 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
           onPressed: () async {
             final sportPick = await Get.bottomSheet(
               SafeArea(
-                child: Expanded(
-                  child: Center(
-                    child: SportPickerBottomSheet(
-                      sportChoices: allSports,
-                      initialSport: deviceUsage.sport,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: SportPickerBottomSheet(
+                          sportChoices: allSports,
+                          initialSport: deviceUsage.sport,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
               isScrollControlled: true,

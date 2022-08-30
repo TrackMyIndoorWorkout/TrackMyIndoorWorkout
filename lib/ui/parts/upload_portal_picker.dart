@@ -166,6 +166,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
 
     return Scaffold(
       body: ListView(children: choiceRows),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.back()),
     );
   }
 }
