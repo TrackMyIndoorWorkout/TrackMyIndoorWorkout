@@ -1,5 +1,5 @@
 ## 1.1.117
-* Fixing lock screen feature (went wrong after I removed the overlay tutorials 
+* Fixing lock screen feature (no pointer absorption after I removed the overlay tutorials 
   in favor of help modals) 
 
 ## 1.1.116
