@@ -2062,32 +2062,36 @@ class RecordingState extends State<RecordingScreen> {
             return;
           }
         },
-        child: Scaffold(
-          appBar: AppBar(
-            title: TextOneLine(
-              widget.device.name,
-              overflow: TextOverflow.ellipsis,
-            ),
-            actions: [
-              IconButton(
-                icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-                onPressed: () async {
-                  await startStopAction();
-                },
+        child: AbsorbPointer(
+          absorbing: _isLocked,
+          ignoringSemantics: true,
+          child: Scaffold(
+            appBar: AppBar(
+              title: TextOneLine(
+                widget.device.name,
+                overflow: TextOverflow.ellipsis,
               ),
-            ],
-          ),
-          body: body,
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: CircularFabMenu(
-            key: _fabKey,
-            fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
-                color: _themeManager.getAntagonistColor()),
-            fabOpenColor: _themeManager.getBlueColor(),
-            fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-            fabCloseColor: _themeManager.getBlueColor(),
-            ringColor: _themeManager.getBlueColorInverse(),
-            children: menuButtons,
+              actions: [
+                IconButton(
+                  icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+                  onPressed: () async {
+                    await startStopAction();
+                  },
+                ),
+              ],
+            ),
+            body: body,
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: CircularFabMenu(
+              key: _fabKey,
+              fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
+                  color: _themeManager.getAntagonistColor()),
+              fabOpenColor: _themeManager.getBlueColor(),
+              fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+              fabCloseColor: _themeManager.getBlueColor(),
+              ringColor: _themeManager.getBlueColorInverse(),
+              children: menuButtons,
+            ),
           ),
         ),
       ),

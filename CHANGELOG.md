@@ -1,3 +1,7 @@
+## 1.1.117
+* Fixing lock screen feature (no pointer absorption after I removed the overlay tutorials 
+  in favor of help modals) 
+
 ## 1.1.116
 * Modify/correct full-screen bottom-sheet widget architecture
 * Adding close button to bottom sheets: Upload Picker, Leaderboard Type Picker
