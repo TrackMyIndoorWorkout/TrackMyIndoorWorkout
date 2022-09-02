@@ -6,8 +6,8 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:spinner_input/spinner_input.dart';
 import 'package:tuple/tuple.dart';
+
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt_constants.dart';
@@ -17,6 +17,7 @@ import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
+import 'spinner_input.dart';
 
 class SpinDownBottomSheet extends StatefulWidget {
   const SpinDownBottomSheet({Key? key}) : super(key: key);
@@ -273,7 +274,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       backColor = _isLight ? Colors.lightGreen.shade100 : Colors.green.shade900;
     }
 
-    return ElevatedButton.styleFrom(primary: backColor);
+    return ElevatedButton.styleFrom(backgroundColor: backColor);
   }
 
   String _weightInputButtonText() {
@@ -293,7 +294,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   ButtonStyle _weightInputButtonStyle() {
     return ElevatedButton.styleFrom(
-      primary: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
+      backgroundColor: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
           ? (_isLight ? Colors.lightGreen.shade100 : Colors.green.shade900)
           : (_isLight ? Colors.black12 : Colors.black87),
     );
@@ -469,16 +470,10 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                     minValue: 1,
                     maxValue: 800,
                     middleNumberStyle: _largerTextStyle,
-                    plusButton: SpinnerButtonStyle(
-                      height: _sizeDefault * 2,
-                      width: _sizeDefault * 2,
-                      child: Icon(Icons.add, size: _sizeDefault * 2 - 10),
-                    ),
-                    minusButton: SpinnerButtonStyle(
-                      height: _sizeDefault * 2,
-                      width: _sizeDefault * 2,
-                      child: Icon(Icons.remove, size: _sizeDefault * 2 - 10),
-                    ),
+                    plusButtonSize: Size(_sizeDefault * 2, _sizeDefault * 2),
+                    plusButtonChild: Icon(Icons.add, size: _sizeDefault * 2 - 10),
+                    minusButtonSize: Size(_sizeDefault * 2, _sizeDefault * 2),
+                    minusButtonChild: Icon(Icons.remove, size: _sizeDefault * 2 - 10),
                     onChange: (newValue) {
                       setState(() {
                         _weight = newValue.toInt();
