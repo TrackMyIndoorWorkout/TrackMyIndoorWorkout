@@ -7,38 +7,38 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
-import '../persistence/database.dart';
-import '../preferences/distance_resolution.dart';
-import '../preferences/measurement_font_size_adjust.dart';
-import '../preferences/metric_spec.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
-import '../preferences/palette_spec.dart';
-import '../preferences/unit_system.dart';
-import '../utils/constants.dart';
-import '../utils/display.dart';
-import '../utils/statistics_accumulator.dart';
-import '../utils/theme_manager.dart';
-import 'models/display_record.dart';
-import 'models/histogram_data.dart';
-import 'models/measurement_counter.dart';
-import 'models/tile_configuration.dart';
-import 'about.dart';
+import '../../persistence/database.dart';
+import '../../preferences/distance_resolution.dart';
+import '../../preferences/measurement_font_size_adjust.dart';
+import '../../preferences/metric_spec.dart';
+import '../../persistence/models/activity.dart';
+import '../../persistence/models/record.dart';
+import '../../preferences/palette_spec.dart';
+import '../../preferences/unit_system.dart';
+import '../../utils/constants.dart';
+import '../../utils/display.dart';
+import '../../utils/statistics_accumulator.dart';
+import '../../utils/theme_manager.dart';
+import '../models/display_record.dart';
+import '../models/histogram_data.dart';
+import '../models/measurement_counter.dart';
+import '../models/tile_configuration.dart';
+import '../about.dart';
 
-class RecordsScreen extends StatefulWidget {
+class ActivityDetailsScreen extends StatefulWidget {
   final Activity activity;
   final Size size;
-  const RecordsScreen({
+  const ActivityDetailsScreen({
     Key? key,
     required this.activity,
     required this.size,
   }) : super(key: key);
 
   @override
-  RecordsScreenState createState() => RecordsScreenState();
+  ActivityDetailsScreenState createState() => ActivityDetailsScreenState();
 }
 
-class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserver {
+class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with WidgetsBindingObserver {
   int _editCount = 0;
   int _pointCount = 0;
   List<Record> _allRecords = [];

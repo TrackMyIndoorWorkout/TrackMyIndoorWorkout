@@ -847,7 +847,7 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  _workoutUpload(bool onlyWhenAuthenticated) async {
+  _activityUpload(bool onlyWhenAuthenticated) async {
     if (_activity == null) return;
 
     if (!await hasInternetConnection()) {
@@ -873,7 +873,7 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
-  _workoutExport() async {
+  _activityExport() async {
     if (_activity?.id == null || !_instantExport) return;
 
     if (_instantExportLocation.isEmpty) {
@@ -954,11 +954,11 @@ class RecordingState extends State<RecordingScreen> {
 
       if (!quick && _activity != null) {
         if (_instantUpload) {
-          await _workoutUpload(true);
+          await _activityUpload(true);
         }
 
         if (_instantExportLocation.isNotEmpty) {
-          await _workoutExport();
+          await _activityExport();
         }
       }
     }
@@ -1933,7 +1933,7 @@ class RecordingState extends State<RecordingScreen> {
       } else {
         menuButtons.addAll([
           _themeManager.getBlueFab(Icons.cloud_upload, () async {
-            await _workoutUpload(false);
+            await _activityUpload(false);
           }),
           _themeManager.getBlueFab(Icons.list_alt, () async {
             final hasLeaderboardData = await _database.hasLeaderboardData();
