@@ -15,7 +15,7 @@ main() {
   });
 
   group('discover', () {
-    BluetoothService _mockBluetoothService(
+    BluetoothService createMockBluetoothService(
         {required String serviceUid,
         required String characteristicUid,
         List<int> characteristicData = const []}) {
@@ -30,21 +30,21 @@ main() {
       return serviceMock;
     }
 
-    BluetoothService _mockFtmsService(
+    BluetoothService createMockFtmsService(
             {String serviceUid = '00001826-0000-1000-8000-00805f9b34fb',
             String characteristicUid = '00002ad2-0000-1000-8000-00805f9b34fb'}) =>
-        _mockBluetoothService(serviceUid: serviceUid, characteristicUid: characteristicUid);
+        createMockBluetoothService(serviceUid: serviceUid, characteristicUid: characteristicUid);
 
-    BluetoothService _mockDeviceInfoService({required String manufacturerName}) =>
-        _mockBluetoothService(
+    BluetoothService createMockDeviceInfoService({required String manufacturerName}) =>
+        createMockBluetoothService(
             serviceUid: '0000180a-0000-1000-8000-00805f9b34fb',
             characteristicUid: '00002a29-0000-1000-8000-00805f9b34fb',
             characteristicData: manufacturerName.codeUnits);
 
     test('ignores case in manufacturer check', () async {
       final mockDevice = MockBluetoothDevice();
-      final mockFtmsService = _mockFtmsService();
-      final mockDeviceInfoService = _mockDeviceInfoService(manufacturerName: 'FUJISAN YESOUL');
+      final mockFtmsService = createMockFtmsService();
+      final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJISAN YESOUL');
       when(mockDevice.discoverServices())
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
@@ -59,8 +59,8 @@ main() {
     test('handles manufacturer name being null in manufacturer check', () async {
       final mockDevice = MockBluetoothDevice();
       const anotherUid = '00000000-0000-1000-8000-00805f9b34fb';
-      final mockFtmsService = _mockFtmsService(characteristicUid: anotherUid);
-      final mockDeviceInfoService = _mockDeviceInfoService(manufacturerName: 'FUJISAN YESOUL');
+      final mockFtmsService = createMockFtmsService(characteristicUid: anotherUid);
+      final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJISAN YESOUL');
       when(mockDevice.discoverServices())
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
@@ -73,8 +73,8 @@ main() {
 
     test('handles descriptor being null in manufacturer check', () async {
       final mockDevice = MockBluetoothDevice();
-      final mockFtmsService = _mockFtmsService();
-      final mockDeviceInfoService = _mockDeviceInfoService(manufacturerName: 'FUJISAN YESOUL');
+      final mockFtmsService = createMockFtmsService();
+      final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJISAN YESOUL');
       when(mockDevice.discoverServices())
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 

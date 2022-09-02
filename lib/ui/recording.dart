@@ -1054,13 +1054,13 @@ class RecordingState extends State<RecordingScreen> {
     if (background) {
       return _paletteSpec?.bgColorByBin(
               _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
-          PaletteSpec?.bgColorByBinDefault(
+          PaletteSpec.bgColorByBinDefault(
               _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
     }
 
     return _paletteSpec?.fgColorByBin(
             _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
-        PaletteSpec?.fgColorByBinDefault(
+        PaletteSpec.fgColorByBinDefault(
             _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
   }
 

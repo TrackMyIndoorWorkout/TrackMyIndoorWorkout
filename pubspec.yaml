@@ -5,11 +5,11 @@ publish_to: "none"
 version: 1.1.117+117
 
 environment:
-  sdk: ">=2.17.6 <3.0.0"
-  flutter: ">=3.0.5"
+  sdk: ">=2.18.0 <3.0.0"
+  flutter: ">=3.3.0"
 
 dependencies:
-  assorted_layout_widgets: ^6.0.0
+  assorted_layout_widgets: ^7.0.0
   bluetooth_enable_fork:
     git:
       url: https://github.com/CsabaConsulting/bluetooth_enable_fork.git
@@ -29,7 +29,7 @@ dependencies:
   flutter_spinbox: ^0.9.0
   flutter_svg: ^1.1.4
   get: ^4.6.1
-  group_button: ^5.0.1
+  group_button: ^5.2.0
   http: ^0.13.5
   http_parser: ^4.0.1
   internet_connection_checker: 0.0.1+4
@@ -37,7 +37,7 @@ dependencies:
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
   package_info_plus: ^1.4.3+1
-  path: ^1.8.1
+  path: ^1.8.2
   path_provider: ^2.0.10
   pref: ^2.6.0
   progress_indicators: ^1.0.0
@@ -45,7 +45,7 @@ dependencies:
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
   sqflite: ^2.0.3+1
-  syncfusion_flutter_charts: ^20.2.45
+  syncfusion_flutter_charts: ^20.2.46
   tuple: ^2.0.0
   uni_links: ^0.5.1
   url_launcher: ^6.1.5
@@ -55,7 +55,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^4.6.0
+  analyzer: ^4.7.0
   build_runner: ^2.2.0
   floor_generator: ^1.3.0
   flutter_driver:
