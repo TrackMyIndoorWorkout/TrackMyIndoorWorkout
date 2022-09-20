@@ -69,8 +69,11 @@ class _$AppDatabase extends AppDatabase {
 
   WorkoutSummaryDao? _workoutSummaryDaoInstance;
 
-  Future<sqflite.Database> open(String path, List<Migration> migrations,
-      [Callback? callback]) async {
+  Future<sqflite.Database> open(
+    String path,
+    List<Migration> migrations, [
+    Callback? callback,
+  ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
       version: 17,
       onConfigure: (database) async {
@@ -148,8 +151,10 @@ class _$AppDatabase extends AppDatabase {
 }
 
 class _$ActivityDao extends ActivityDao {
-  _$ActivityDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+  _$ActivityDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _activityInsertionAdapter = InsertionAdapter(
             database,
             'activities',
@@ -349,7 +354,10 @@ class _$ActivityDao extends ActivityDao {
   }
 
   @override
-  Future<List<Activity>> findActivities(int limit, int offset) async {
+  Future<List<Activity>> findActivities(
+    int limit,
+    int offset,
+  ) async {
     return _queryAdapter.queryList(
         'SELECT * FROM `activities` ORDER BY `start` DESC LIMIT ?1 OFFSET ?2',
         mapper: (Map<String, Object?> row) => Activity(
@@ -477,8 +485,10 @@ class _$ActivityDao extends ActivityDao {
 }
 
 class _$RecordDao extends RecordDao {
-  _$RecordDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+  _$RecordDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _recordInsertionAdapter = InsertionAdapter(
             database,
             'records',
@@ -625,8 +635,10 @@ class _$RecordDao extends RecordDao {
 }
 
 class _$DeviceUsageDao extends DeviceUsageDao {
-  _$DeviceUsageDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+  _$DeviceUsageDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _deviceUsageInsertionAdapter = InsertionAdapter(
             database,
             'device_usage',
@@ -728,7 +740,10 @@ class _$DeviceUsageDao extends DeviceUsageDao {
   }
 
   @override
-  Future<List<DeviceUsage>> findDeviceUsages(int limit, int offset) async {
+  Future<List<DeviceUsage>> findDeviceUsages(
+    int limit,
+    int offset,
+  ) async {
     return _queryAdapter.queryList(
         'SELECT * FROM `device_usage` ORDER BY `time` DESC LIMIT ?1 OFFSET ?2',
         mapper: (Map<String, Object?> row) => DeviceUsage(
@@ -760,8 +775,10 @@ class _$DeviceUsageDao extends DeviceUsageDao {
 }
 
 class _$CalorieTuneDao extends CalorieTuneDao {
-  _$CalorieTuneDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+  _$CalorieTuneDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _calorieTuneInsertionAdapter = InsertionAdapter(
             database,
             'calorie_tune',
@@ -866,7 +883,10 @@ class _$CalorieTuneDao extends CalorieTuneDao {
   }
 
   @override
-  Future<List<CalorieTune>> findCalorieTunes(int limit, int offset) async {
+  Future<List<CalorieTune>> findCalorieTunes(
+    int limit,
+    int offset,
+  ) async {
     return _queryAdapter.queryList(
         'SELECT * FROM `calorie_tune` ORDER BY `time` DESC LIMIT ?1 OFFSET ?2',
         mapper: (Map<String, Object?> row) => CalorieTune(
@@ -896,8 +916,10 @@ class _$CalorieTuneDao extends CalorieTuneDao {
 }
 
 class _$PowerTuneDao extends PowerTuneDao {
-  _$PowerTuneDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+  _$PowerTuneDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _powerTuneInsertionAdapter = InsertionAdapter(
             database,
             'power_tune',
@@ -981,7 +1003,10 @@ class _$PowerTuneDao extends PowerTuneDao {
   }
 
   @override
-  Future<List<PowerTune>> findPowerTunes(int limit, int offset) async {
+  Future<List<PowerTune>> findPowerTunes(
+    int limit,
+    int offset,
+  ) async {
     return _queryAdapter.queryList(
         'SELECT * FROM `power_tune` ORDER BY `time` DESC LIMIT ?1 OFFSET ?2',
         mapper: (Map<String, Object?> row) => PowerTune(
@@ -1009,8 +1034,10 @@ class _$PowerTuneDao extends PowerTuneDao {
 }
 
 class _$WorkoutSummaryDao extends WorkoutSummaryDao {
-  _$WorkoutSummaryDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+  _$WorkoutSummaryDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _workoutSummaryInsertionAdapter = InsertionAdapter(
             database,
             'workout_summary',
@@ -1138,7 +1165,10 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
 
   @override
   Future<List<WorkoutSummary>> findWorkoutSummaryByDevice(
-      String deviceId, int limit, int offset) async {
+    String deviceId,
+    int limit,
+    int offset,
+  ) async {
     return _queryAdapter.queryList(
         'SELECT * FROM `workout_summary` WHERE `device_id` = ?1 ORDER BY `speed` DESC LIMIT ?2 OFFSET ?3',
         mapper: (Map<String, Object?> row) => WorkoutSummary(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, manufacturer: row['manufacturer'] as String, start: row['start'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, movingTime: row['moving_time'] as int, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double),
@@ -1166,7 +1196,10 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
 
   @override
   Future<List<WorkoutSummary>> findWorkoutSummaryBySport(
-      String sport, int limit, int offset) async {
+    String sport,
+    int limit,
+    int offset,
+  ) async {
     return _queryAdapter.queryList(
         'SELECT * FROM `workout_summary` WHERE `sport` = ?1 ORDER BY `speed` DESC LIMIT ?2 OFFSET ?3',
         mapper: (Map<String, Object?> row) => WorkoutSummary(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, manufacturer: row['manufacturer'] as String, start: row['start'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, movingTime: row['moving_time'] as int, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double),
