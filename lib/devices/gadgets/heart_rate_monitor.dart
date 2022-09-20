@@ -47,6 +47,7 @@ class HeartRateMonitor extends ComplexSensor {
         expectedLength += 2; // 1/1024 sec
       }
 
+      flag ~/= 2;
       featureFlag = flag;
     }
 

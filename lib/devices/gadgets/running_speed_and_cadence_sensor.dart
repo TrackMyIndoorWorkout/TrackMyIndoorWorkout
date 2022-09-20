@@ -49,6 +49,7 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
         expectedLength += 4;
       }
 
+      flag ~/= 2;
       featureFlag = flag;
     }
 
