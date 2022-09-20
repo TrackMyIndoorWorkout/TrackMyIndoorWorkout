@@ -56,7 +56,7 @@ dependencies:
 
 dev_dependencies:
   analyzer: ^4.7.0
-  build_runner: ^2.2.0
+  build_runner: ^2.2.1
   floor_generator: ^1.3.0
   flutter_driver:
     sdk: flutter
