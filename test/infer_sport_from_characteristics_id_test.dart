@@ -14,7 +14,7 @@ class TestPair {
   const TestPair({required this.characteristicId, required this.sports});
 }
 
-@GenerateMocks([BluetoothDevice])
+@GenerateNiceMocks([MockSpec<BluetoothDevice>()])
 void main() {
   group('DeviceBase infers sport as expected from characteristics ID', () {
     for (final testPair in [

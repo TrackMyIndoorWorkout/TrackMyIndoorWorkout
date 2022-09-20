@@ -8,7 +8,11 @@ import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 import 'fitness_equipment_test.mocks.dart';
 
-@GenerateMocks([BluetoothDevice, BluetoothService, BluetoothCharacteristic])
+@GenerateNiceMocks([
+  MockSpec<BluetoothDevice>(),
+  MockSpec<BluetoothService>(),
+  MockSpec<BluetoothCharacteristic>()
+])
 main() {
   setUpAll(() async {
     await initPrefServiceForTest();

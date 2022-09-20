@@ -19,7 +19,7 @@ class TestPair {
 
 const sampleData = [0, 145, 1, 187];
 
-@GenerateMocks([BluetoothDevice])
+@GenerateNiceMocks([MockSpec<BluetoothDevice>()])
 void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
