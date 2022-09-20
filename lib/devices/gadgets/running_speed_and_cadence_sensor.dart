@@ -8,13 +8,13 @@ import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import 'complex_sensor.dart';
 
-class RunningCadenceSensor extends ComplexSensor {
+class RunningSpeedAndCadenceSensor extends ComplexSensor {
   // Running cadence metrics
   MetricDescriptor? speedMetric;
   MetricDescriptor? cadenceMetric;
   MetricDescriptor? distanceMetric;
 
-  RunningCadenceSensor(device)
+  RunningSpeedAndCadenceSensor(device)
       : super(runningCadenceServiceUuid, runningCadenceMeasurementUuid, device);
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml

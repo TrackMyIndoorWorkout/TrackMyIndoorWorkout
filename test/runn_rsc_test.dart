@@ -4,7 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/npe_runn_treadmill.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/devices/gadgets/running_cadence_sensor.dart';
+import 'package:track_my_indoor_exercise/devices/gadgets/running_speed_and_cadence_sensor.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
@@ -34,7 +34,7 @@ void main() {
   });
 
   test('Runn RSC Device interprets flags properly', () async {
-    final runnRsc = RunningCadenceSensor(MockBluetoothDevice());
+    final runnRsc = RunningSpeedAndCadenceSensor(MockBluetoothDevice());
 
     final canProcess = runnRsc.canMeasurementProcessed(sampleData);
 
@@ -65,7 +65,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final runnRsc = RunningCadenceSensor(MockBluetoothDevice());
+        final runnRsc = RunningSpeedAndCadenceSensor(MockBluetoothDevice());
 
         final record = runnRsc.processMeasurement(testPair.data);
 
