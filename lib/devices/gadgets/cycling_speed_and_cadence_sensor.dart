@@ -36,10 +36,9 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
     if (data.isEmpty) return false;
 
     var flag = data[0];
-    // 16 bit revolution and 16 bit time
     if (featureFlag != flag && flag > 0) {
       expectedLength = 1; // The flag itself
-      // Has wheel revolution? (first bit)
+      // Has wheel revolution?
       if (flag % 2 == 1) {
         wheelRevolutionMetric = LongMetricDescriptor(lsb: expectedLength, msb: expectedLength + 3);
         expectedLength += 4; // 32 bit revolution
@@ -49,7 +48,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
       }
 
       flag ~/= 2;
-      // Has crank revolution? (second bit)
+      // Has crank revolution?
       if (flag % 2 == 1) {
         crankRevolutionMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
         expectedLength += 2; // 16 bit revolution
@@ -58,6 +57,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
         expectedLength += 2; // 16 bit time
       }
 
+      flag ~/= 2;
       featureFlag = flag;
 
       return data.length == expectedLength;
