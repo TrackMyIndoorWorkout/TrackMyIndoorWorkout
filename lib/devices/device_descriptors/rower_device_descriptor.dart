@@ -30,8 +30,6 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
-    dataServiceId = fitnessMachineUuid,
-    dataCharacteristicId = rowerDeviceUuid,
     heartRateByteIndex,
     isMultiSport = true,
   }) : super(
@@ -44,8 +42,8 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
           manufacturerPrefix: manufacturerPrefix,
           manufacturerFitId: manufacturerFitId,
           model: model,
-          dataServiceId: dataServiceId,
-          dataCharacteristicId: dataCharacteristicId,
+          dataServiceId: fitnessMachineUuid,
+          dataCharacteristicId: rowerDeviceUuid,
           heartRateByteIndex: heartRateByteIndex,
         );
 
@@ -60,8 +58,6 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
         manufacturerPrefix: manufacturerPrefix,
         manufacturerFitId: manufacturerFitId,
         model: model,
-        dataServiceId: dataServiceId,
-        dataCharacteristicId: dataCharacteristicId,
         heartRateByteIndex: heartRateByteIndex,
       );
 

@@ -17,8 +17,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
-    dataServiceId = fitnessMachineUuid,
-    dataCharacteristicId = treadmillUuid,
     heartRateByteIndex,
   }) : super(
           defaultSport: ActivityType.run,
@@ -30,8 +28,8 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
           manufacturerPrefix: manufacturerPrefix,
           manufacturerFitId: manufacturerFitId,
           model: model,
-          dataServiceId: dataServiceId,
-          dataCharacteristicId: dataCharacteristicId,
+          dataServiceId: fitnessMachineUuid,
+          dataCharacteristicId: treadmillUuid,
           heartRateByteIndex: heartRateByteIndex,
         );
 
@@ -44,8 +42,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
         manufacturerPrefix: manufacturerPrefix,
         manufacturerFitId: manufacturerFitId,
         model: model,
-        dataServiceId: dataServiceId,
-        dataCharacteristicId: dataCharacteristicId,
         heartRateByteIndex: heartRateByteIndex,
       );
 

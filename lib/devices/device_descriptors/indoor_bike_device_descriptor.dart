@@ -12,8 +12,6 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
-    dataServiceId = fitnessMachineUuid,
-    dataCharacteristicId = indoorBikeUuid,
     heartRateByteIndex,
     canMeasureCalories = true,
   }) : super(
@@ -26,8 +24,8 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
           manufacturerPrefix: manufacturerPrefix,
           manufacturerFitId: manufacturerFitId,
           model: model,
-          dataServiceId: dataServiceId,
-          dataCharacteristicId: dataCharacteristicId,
+          dataServiceId: fitnessMachineUuid,
+          dataCharacteristicId: indoorBikeUuid,
           heartRateByteIndex: heartRateByteIndex,
           canMeasureCalories: canMeasureCalories,
         );
@@ -41,8 +39,6 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
         manufacturerPrefix: manufacturerPrefix,
         manufacturerFitId: manufacturerFitId,
         model: model,
-        dataServiceId: dataServiceId,
-        dataCharacteristicId: dataCharacteristicId,
         heartRateByteIndex: heartRateByteIndex,
         canMeasureCalories: canMeasureCalories,
       );
