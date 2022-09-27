@@ -32,7 +32,7 @@ dependencies:
   group_button: ^5.2.2
   http: ^0.13.5
   http_parser: ^4.0.1
-  internet_connection_checker: 0.0.1+4
+  internet_connection_checker: ^1.0.0+1
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
