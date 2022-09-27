@@ -26,7 +26,7 @@ dependencies:
   flutter_layout_grid: ^2.0.1
   flutter_logs: ^2.1.7
   flutter_native_timezone: ^2.0.0
-  flutter_spinbox: ^0.9.0
+  flutter_spinbox: ^0.10.0
   flutter_svg: ^1.1.5
   get: ^4.6.1
   group_button: ^5.2.2
