@@ -6,7 +6,9 @@ import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
+import '../gadgets/complex_sensor.dart';
 import '../gadgets/cycling_power_sensor.dart';
+import '../gadgets/heart_rate_monitor.dart';
 import '../gatt_constants.dart';
 import 'device_descriptor.dart';
 
@@ -77,6 +79,20 @@ class CyclingPowerDescriptor extends DeviceDescriptor {
 
   @override
   void stopWorkout() {}
+
+  @override
+  ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
+    // TODO: ask the user if they prefer they pair to the console. We assume now yes.
+    final requiredService = services.firstWhereOrNull(
+            (service) => service.uuid.uuidString() == heartRateServiceUuid);
+    if (requiredService == null) {
+      return null;
+    }
+
+    final extraSensor = HeartRateMonitor(device);
+    extraSensor.services = services;
+    return extraSensor;
+  }
 
   @override
   Future<void> executeControlOperation(
