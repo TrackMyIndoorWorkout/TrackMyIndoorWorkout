@@ -1,6 +1,8 @@
 import '../export/fit/fit_manufacturer.dart';
 import '../utils/constants.dart';
 import 'device_descriptors/cross_trainer_device_descriptor.dart';
+import 'device_descriptors/cycling_power_meter_descriptor.dart';
+import 'device_descriptors/cycling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
 import 'device_descriptors/rower_device_descriptor.dart';
 import 'device_descriptors/treadmill_device_descriptor.dart';
@@ -186,6 +188,30 @@ class DeviceFactory {
       manufacturerPrefix: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Cross Trainer",
+    );
+  }
+
+  static CyclingPowerMeterDescriptor getPowerMeterBasedBike() {
+    return CyclingPowerMeterDescriptor(
+      fourCC: powerMeterBasedBikeFourCC,
+      vendorName: "Unknown",
+      modelName: "Power Meter Based Bike",
+      namePrefixes: ["Stages IC"],
+      manufacturerPrefix: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Power Meter Based Bike",
+    );
+  }
+
+  static CyclingSpeedAndCadenceDescriptor getCSCBasedBike() {
+    return CyclingSpeedAndCadenceDescriptor(
+      fourCC: powerMeterBasedBikeFourCC,
+      vendorName: "Unknown",
+      modelName: "Speed and Cadence Sensor Based Bike",
+      namePrefixes: ["N/A"],
+      manufacturerPrefix: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Speed and Cadence Sensor Based Bike",
     );
   }
 }
