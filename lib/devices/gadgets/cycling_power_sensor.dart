@@ -116,7 +116,8 @@ class CyclingPowerSensor extends ComplexSensor with CadenceMixin {
       flag ~/= 2;
       // Has Accumulated Energy
       if (flag % 2 == 1) {
-        caloriesMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1, divider: 1 / jToCal);
+        caloriesMetric = ShortMetricDescriptor(
+            lsb: expectedLength, msb: expectedLength + 1, divider: 1 / jToCal);
         expectedLength += 2; // uint16
       }
 
@@ -189,6 +190,7 @@ class CyclingPowerSensor extends ComplexSensor with CadenceMixin {
 
   @override
   void clearMetrics() {
+    caloriesMetric = null;
     powerMetric = null;
     wheelRevolutionMetric = null;
     wheelRevolutionTime = null;
