@@ -20,6 +20,7 @@ class CyclingPowerSensor extends ComplexSensor with CadenceMixin {
   // Secondary (Crank cadence) metrics
   MetricDescriptor? crankRevolutionMetric;
   MetricDescriptor? crankRevolutionTime;
+  MetricDescriptor? caloriesMetric;
 
   CyclingPowerSensor(device)
       : super(
@@ -113,9 +114,9 @@ class CyclingPowerSensor extends ComplexSensor with CadenceMixin {
       }
 
       flag ~/= 2;
-      // Has  Accumulated Energy
+      // Has Accumulated Energy
       if (flag % 2 == 1) {
-        // Skip it
+        caloriesMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1, divider: 1 / jToCal);
         expectedLength += 2; // uint16
       }
 
@@ -154,11 +155,16 @@ class CyclingPowerSensor extends ComplexSensor with CadenceMixin {
     return RecordWithSport(
       timeStamp: DateTime.now().millisecondsSinceEpoch,
       distance: distance,
+      calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: speed,
       cadence: crankCadence,
       sport: ActivityType.ride,
     );
+  }
+
+  double? getCalories(List<int> data) {
+    return caloriesMetric?.getMeasurementValue(data);
   }
 
   double? getPower(List<int> data) {
