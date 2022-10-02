@@ -79,7 +79,7 @@ abstract class DeviceDescriptor extends DataHandler {
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo});
 
-  ComplexSensor? getExtraSensor(BluetoothDevice device) {
+  ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
     return null;
   }
 }

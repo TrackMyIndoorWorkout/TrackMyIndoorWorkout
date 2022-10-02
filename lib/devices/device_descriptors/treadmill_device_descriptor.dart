@@ -1,5 +1,11 @@
+import 'package:collection/collection.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
+import '../../utils/guid_ex.dart';
+import '../gadgets/complex_sensor.dart';
+import '../gadgets/running_speed_and_cadence_sensor.dart';
 import '../gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
@@ -94,6 +100,19 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   void stopWorkout() {}
+
+  @override
+  ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
+    final requiredService = services.firstWhereOrNull(
+        (service) => service.uuid.uuidString() == RunningSpeedAndCadenceSensor.serviceUuid);
+    if (requiredService == null) {
+      return null;
+    }
+
+    final extraSensor = RunningSpeedAndCadenceSensor(device);
+    extraSensor.services = services;
+    return extraSensor;
+  }
 
   int processPaceFlag(int flag) {
     if (flag % 2 == 1) {
