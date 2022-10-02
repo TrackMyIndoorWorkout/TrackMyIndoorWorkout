@@ -41,6 +41,8 @@ extension ScanResultEx on ScanResult {
         if (serviceUuids.contains(fitnessMachineUuid) ||
             serviceUuids.contains(precorServiceUuid) ||
             serviceUuids.contains(schwinnX70ServiceUuid) ||
+            serviceUuids.contains(cyclingPowerServiceUuid) ||
+            serviceUuids.contains(cyclingCadenceServiceUuid) ||
             serviceUuids.contains(heartRateServiceUuid)) {
           return true;
         }
@@ -99,7 +101,10 @@ extension ScanResultEx on ScanResult {
   }
 
   MachineType getMachineType(List<MachineType> ftmsServiceDataMachineTypes) {
-    if (serviceUuids.contains(precorServiceUuid) || serviceUuids.contains(schwinnX70ServiceUuid)) {
+    if (serviceUuids.contains(precorServiceUuid) ||
+        serviceUuids.contains(schwinnX70ServiceUuid) ||
+        serviceUuids.contains(cyclingPowerServiceUuid) ||
+        serviceUuids.contains(cyclingCadenceServiceUuid)) {
       return MachineType.indoorBike;
     }
 
