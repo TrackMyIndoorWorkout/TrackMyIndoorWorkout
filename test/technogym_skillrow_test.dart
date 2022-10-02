@@ -17,7 +17,7 @@ void main() {
     await initPrefServiceForTest();
   });
 
-  test('Technogym Aquafeel Rower Device constructor tests', () async {
+  test('Technogym Skillrow Rower Device constructor tests', () async {
     final rower = DeviceFactory.getGenericFTMSRower();
 
     expect(rower.defaultSport, ActivityType.rowing);
@@ -25,7 +25,7 @@ void main() {
     expect(rower.isMultiSport, false);
   });
 
-  test('Rower Device interprets Technogym Aquafeel flags 1 properly', () async {
+  test('Rower Device interprets Technogym Skillrow flags 1 properly', () async {
     final rower = DeviceFactory.getGenericFTMSRower();
     const lsb = 2;
     const msb = 33;
@@ -48,7 +48,7 @@ void main() {
     expect(rower.heartRateByteIndex, null);
   });
 
-  test('Rower Device interprets Technogym Aquafeel flags 2 properly', () async {
+  test('Rower Device interprets Technogym Skillrow flags 2 properly', () async {
     final rower = DeviceFactory.getGenericFTMSRower();
     const lsb = 253;
     const msb = 12;
@@ -71,7 +71,7 @@ void main() {
     expect(rower.heartRateByteIndex, null);
   });
 
-  group('Rower Device interprets Technogym Aquafeel data properly', () {
+  group('Rower Device interprets Technogym Skillrow data properly', () {
     for (final testPair in [
       TestPair(
         data: [2, 33, 52, 19, 0, 49, 4, 0, 255, 255, 255, 184, 1, 0, 0],
