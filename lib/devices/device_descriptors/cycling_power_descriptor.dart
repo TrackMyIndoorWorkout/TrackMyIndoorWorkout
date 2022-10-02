@@ -83,8 +83,8 @@ class CyclingPowerDescriptor extends DeviceDescriptor {
   @override
   ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
     // TODO: ask the user if they prefer they pair to the console. We assume now yes.
-    final requiredService = services.firstWhereOrNull(
-            (service) => service.uuid.uuidString() == heartRateServiceUuid);
+    final requiredService =
+        services.firstWhereOrNull((service) => service.uuid.uuidString() == heartRateServiceUuid);
     if (requiredService == null) {
       return null;
     }
