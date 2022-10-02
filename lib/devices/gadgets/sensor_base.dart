@@ -12,6 +12,8 @@ abstract class SensorBase extends DeviceBase {
           device: device,
         );
 
+  void processFlag(int flag);
+
   bool canMeasurementProcessed(List<int> data);
 
   void clearMetrics();

@@ -19,14 +19,8 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
 
   RunningSpeedAndCadenceSensor(device) : super(serviceUuid, characteristicUuid, device);
 
-  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml
   @override
-  bool canMeasurementProcessed(List<int> data) {
-    if (data.length < 3) return false;
-
-    var flag = data[0];
-    // Clear out status bits so status change won't cause metric re-creation
-    flag &= 3; // 1 + 2
+  void processFlag(int flag) {
     if (featureFlag != flag && flag >= 0) {
       expectedLength = 1; // The flag itself + instant speed and cadence
       // UInt16, m/s with 1/256 resolution -> immediately convert it to km/h with the divider
@@ -54,6 +48,17 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
       flag ~/= 2;
       featureFlag = flag;
     }
+  }
+
+  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml
+  @override
+  bool canMeasurementProcessed(List<int> data) {
+    if (data.length < 3) return false;
+
+    var flag = data[0];
+    // Clear out status bits so status change won't cause metric re-creation
+    flag &= 3; // 1 + 2
+    processFlag(flag);
 
     return featureFlag >= 0 && data.length == expectedLength;
   }

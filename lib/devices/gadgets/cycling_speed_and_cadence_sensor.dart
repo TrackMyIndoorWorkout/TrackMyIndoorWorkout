@@ -27,12 +27,8 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
     wheelCadence.initCadence(10, 64, maxUint32);
   }
 
-  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
   @override
-  bool canMeasurementProcessed(List<int> data) {
-    if (data.isEmpty) return false;
-
-    var flag = data[0];
+  void processFlag(int flag) {
     if (featureFlag != flag && flag > 0) {
       expectedLength = 1; // The flag itself
       // Has wheel revolution?
@@ -56,9 +52,16 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
 
       flag ~/= 2;
       featureFlag = flag;
-
-      return data.length == expectedLength;
     }
+  }
+
+  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
+  @override
+  bool canMeasurementProcessed(List<int> data) {
+    if (data.isEmpty) return false;
+
+    var flag = data[0];
+    processFlag(flag);
 
     return featureFlag >= 0 && data.length == expectedLength;
   }

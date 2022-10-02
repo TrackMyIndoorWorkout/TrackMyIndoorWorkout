@@ -30,12 +30,8 @@ class CyclingPowerSensor extends ComplexSensor with CadenceMixin {
     wheelCadence.initCadence(10, 32, maxUint32);
   }
 
-  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.cycling_power_measurement.xml
   @override
-  bool canMeasurementProcessed(List<int> data) {
-    if (data.isEmpty) return false;
-
-    var flag = data[0] + maxUint8 * data[1];
+  void processFlag(int flag) {
     if (featureFlag != flag && flag > 0) {
       expectedLength = 2; // The flag itself + sint16 mandatory power
       // SInt16, Watts
@@ -121,9 +117,16 @@ class CyclingPowerSensor extends ComplexSensor with CadenceMixin {
       flag ~/= 2;
       // Offset Compensation Indicator ???
       featureFlag = flag;
-
-      return data.length == expectedLength;
     }
+  }
+
+  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.cycling_power_measurement.xml
+  @override
+  bool canMeasurementProcessed(List<int> data) {
+    if (data.isEmpty) return false;
+
+    var flag = data[0] + maxUint8 * data[1];
+    processFlag(flag);
 
     return featureFlag >= 0 && data.length == expectedLength;
   }

@@ -12,14 +12,8 @@ class HeartRateMonitor extends ComplexSensor {
 
   HeartRateMonitor(device) : super(heartRateServiceUuid, heartRateMeasurementUuid, device);
 
-  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.heart_rate_measurement.xml
   @override
-  bool canMeasurementProcessed(List<int> data) {
-    if (data.isEmpty) return false;
-
-    var flag = data[0];
-    // Clear out status bits so status change won't cause metric re-creation
-    flag &= 25; // 1 + 8 + 16 = 2^5 - 6
+  void processFlag(int flag) {
     if (featureFlag != flag) {
       expectedLength = 1; // The flag
       // Heart rate value format (first bit)
@@ -50,6 +44,17 @@ class HeartRateMonitor extends ComplexSensor {
       flag ~/= 2;
       featureFlag = flag;
     }
+  }
+
+  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.heart_rate_measurement.xml
+  @override
+  bool canMeasurementProcessed(List<int> data) {
+    if (data.isEmpty) return false;
+
+    var flag = data[0];
+    // Clear out status bits so status change won't cause metric re-creation
+    flag &= 25; // 1 + 8 + 16 = 2^5 - 6
+    processFlag(flag);
 
     return featureFlag >= 0 && data.length == expectedLength;
   }

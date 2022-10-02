@@ -14,6 +14,9 @@ class SchwinnX70HrSensor extends ComplexSensor {
 
   SchwinnX70HrSensor(device) : super(serviceUuid, characteristicUuid, device);
 
+  @override
+  void processFlag(int flag) {}
+
   // https://github.com/ursoft/ANT_Libraries/blob/e122c007f5e1935a9b11c05e601a71f2992bad45/ANT_DLL/WROOM_esp32/WROOM_esp32.ino#L865
   @override
   bool canMeasurementProcessed(List<int> data) {
