@@ -27,6 +27,7 @@ import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/hr_based_calories.dart';
 import '../../utils/logging.dart';
+import '../../utils/power_speed_mixin.dart';
 import '../bluetooth_device_ex.dart';
 import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
@@ -49,7 +50,7 @@ enum WorkoutState {
   stopped,
 }
 
-class FitnessEquipment extends DeviceBase {
+class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   static const badKey = -1;
 
   DeviceDescriptor? descriptor;
@@ -214,7 +215,7 @@ class FitnessEquipment extends DeviceBase {
   /// Stages SB20, Yesoul S3 and several other machines don't gather up
   /// all the relevant feature data into one packet, but instead supply
   /// various packets with distinct features. For example:
-  /// * Stages has three packet types: 1. speed, 2. distance, 3.
+  /// * Stages SB20 has three packet types: 1. speed, 2. distance, 3.
   ///   cadence + power
   /// * Yesoul has two: 1. speed + elapsed time 2. cadence + distance +
   ///   power + calories
@@ -765,6 +766,10 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
+    if (sport == ActivityType.ride && stub.sport == null && (stub.power ?? 0) > eps) {
+      stub.speed = velocityForPowerCardano(stub.power!);
+    }
+
     final dTMillis = elapsedMillis - (lastRecord.elapsedMillis ?? 0);
     final dT = dTMillis / 1000.0;
     if ((stub.distance ?? 0.0) < eps) {
@@ -978,6 +983,8 @@ class FitnessEquipment extends DeviceBase {
     hrCalorieFactor = factors.item3;
     hrmCalorieFactor =
         await database.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
+
+    initPower2SpeedConstants();
 
     if (logLevel >= logLevelInfo) {
       Logging.log(
