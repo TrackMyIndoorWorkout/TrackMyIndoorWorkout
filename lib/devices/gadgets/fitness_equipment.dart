@@ -401,7 +401,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   Future<bool> connectOnDemand({identify = false}) async {
     await connect();
 
-    return await discover(identify: identify);
+    final success = await discover(identify: identify);
+    if (success) {
+      descriptor!.setDevice(device!, services);
+    }
+
+    return success;
   }
 
   /// Needed to check if any of the last seen data stubs for each

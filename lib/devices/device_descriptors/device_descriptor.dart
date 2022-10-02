@@ -82,4 +82,6 @@ abstract class DeviceDescriptor extends DataHandler {
   ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
     return null;
   }
+
+  void setDevice(BluetoothDevice device, List<BluetoothService> services) {}
 }
