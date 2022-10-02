@@ -7,8 +7,8 @@ import '../gatt_constants.dart';
 import 'complex_sensor.dart';
 
 class HeartRateMonitor extends ComplexSensor {
-  MetricDescriptor? _heartRateMetric;
-  MetricDescriptor? _caloriesMetric;
+  MetricDescriptor? heartRateMetric;
+  MetricDescriptor? caloriesMetric;
 
   HeartRateMonitor(device) : super(heartRateServiceUuid, heartRateMeasurementUuid, device);
 
@@ -18,10 +18,10 @@ class HeartRateMonitor extends ComplexSensor {
       expectedLength = 1; // The flag
       // Heart rate value format (first bit)
       if (flag % 2 == 0) {
-        _heartRateMetric = ByteMetricDescriptor(lsb: expectedLength);
+        heartRateMetric = ByteMetricDescriptor(lsb: expectedLength);
         expectedLength += 1; // 8 bit HR
       } else {
-        _heartRateMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
+        heartRateMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
         expectedLength += 2; // 16 bit HR
       }
 
@@ -30,7 +30,7 @@ class HeartRateMonitor extends ComplexSensor {
       flag ~/= 4;
       // Energy Expended Status
       if (flag % 2 == 1) {
-        _caloriesMetric =
+        caloriesMetric =
             ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1, divider: calToJ);
         expectedLength += 2; // 16 bit, kJ
       }
@@ -74,11 +74,11 @@ class HeartRateMonitor extends ComplexSensor {
   }
 
   int? getHeartRate(List<int> data) {
-    return _heartRateMetric?.getMeasurementValue(data)?.toInt();
+    return heartRateMetric?.getMeasurementValue(data)?.toInt();
   }
 
   double? getCalories(List<int> data) {
-    return _caloriesMetric?.getMeasurementValue(data);
+    return caloriesMetric?.getMeasurementValue(data);
   }
 
   @override
