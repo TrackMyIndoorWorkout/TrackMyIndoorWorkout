@@ -7,15 +7,15 @@ import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
-import '../gadgets/cycling_power_sensor.dart';
+import '../gadgets/cycling_power_meter_sensor.dart';
 import '../gadgets/heart_rate_monitor.dart';
 import '../gatt_constants.dart';
 import 'device_descriptor.dart';
 
-class CyclingPowerDescriptor extends DeviceDescriptor {
-  CyclingPowerSensor? sensor;
+class CyclingPowerMeterDescriptor extends DeviceDescriptor {
+  CyclingPowerMeterSensor? sensor;
 
-  CyclingPowerDescriptor({
+  CyclingPowerMeterDescriptor({
     required fourCC,
     required vendorName,
     required modelName,
@@ -41,7 +41,7 @@ class CyclingPowerDescriptor extends DeviceDescriptor {
         );
 
   @override
-  CyclingPowerDescriptor clone() => CyclingPowerDescriptor(
+  CyclingPowerMeterDescriptor clone() => CyclingPowerMeterDescriptor(
         fourCC: fourCC,
         vendorName: vendorName,
         modelName: modelName,
@@ -110,13 +110,13 @@ class CyclingPowerDescriptor extends DeviceDescriptor {
 
   @override
   void setDevice(BluetoothDevice device, List<BluetoothService> services) {
-    final requiredService = services
-        .firstWhereOrNull((service) => service.uuid.uuidString() == CyclingPowerSensor.serviceUuid);
+    final requiredService = services.firstWhereOrNull(
+        (service) => service.uuid.uuidString() == CyclingPowerMeterSensor.serviceUuid);
     if (requiredService == null) {
       return;
     }
 
-    final sensor = CyclingPowerSensor(device);
+    final sensor = CyclingPowerMeterSensor(device);
     sensor.services = services;
   }
 }

@@ -7,7 +7,7 @@ import '../gatt_constants.dart';
 import 'cadence_mixin.dart';
 import 'complex_sensor.dart';
 
-class CyclingPowerSensor extends ComplexSensor with CadenceMixin {
+class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
   static const serviceUuid = cyclingPowerServiceUuid;
   static const characteristicUuid = cyclingPowerMeasurementUuid;
   static const roadBikeWheelCircumference = 2.105; // m
@@ -24,7 +24,7 @@ class CyclingPowerSensor extends ComplexSensor with CadenceMixin {
   MetricDescriptor? crankRevolutionTime;
   MetricDescriptor? caloriesMetric;
 
-  CyclingPowerSensor(device) : super(serviceUuid, characteristicUuid, device) {
+  CyclingPowerMeterSensor(device) : super(serviceUuid, characteristicUuid, device) {
     initCadence(10, 64, maxUint16);
     wheelCadence = CadenceMixin();
     wheelCadence.initCadence(10, 32, maxUint32);

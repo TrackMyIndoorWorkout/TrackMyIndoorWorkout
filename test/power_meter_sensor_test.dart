@@ -1,7 +1,7 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:track_my_indoor_exercise/devices/gadgets/cycling_power_sensor.dart';
+import 'package:track_my_indoor_exercise/devices/gadgets/cycling_power_meter_sensor.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
@@ -23,7 +23,7 @@ void main() {
   });
 
   test('Power meter interprets flags properly', () async {
-    final powerMeter = CyclingPowerSensor(MockBluetoothDevice());
+    final powerMeter = CyclingPowerMeterSensor(MockBluetoothDevice());
 
     final canProcess = powerMeter.canMeasurementProcessed(sampleData);
 
@@ -55,7 +55,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final powerMeter = CyclingPowerSensor(MockBluetoothDevice());
+        final powerMeter = CyclingPowerMeterSensor(MockBluetoothDevice());
 
         final record = powerMeter.processMeasurement(testPair.data);
 
