@@ -8,6 +8,8 @@ import 'cadence_mixin.dart';
 import 'complex_sensor.dart';
 
 class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
+  static const serviceUuid = cyclingCadenceServiceUuid;
+  static const characteristicUuid = cyclingCadenceMeasurementUuid;
   static const roadBikeWheelCircumference = 2.105; // m
   // Wheel revolution metrics
   // (can correlate to speed if it is a proper speed shifter bike on a trainer
@@ -19,12 +21,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
   MetricDescriptor? crankRevolutionMetric;
   MetricDescriptor? crankRevolutionTime;
 
-  CyclingSpeedAndCadenceSensor(device)
-      : super(
-          cyclingCadenceServiceUuid,
-          cyclingCadenceMeasurementUuid,
-          device,
-        ) {
+  CyclingSpeedAndCadenceSensor(device) : super(serviceUuid, characteristicUuid, device) {
     initCadence(10, 64, maxUint16);
     wheelCadence = CadenceMixin();
     wheelCadence.initCadence(10, 64, maxUint32);
