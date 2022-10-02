@@ -78,9 +78,9 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   RecordWithSport? stubRecord(List<int> data) {
     double? speed = getSpeed(data);
     double? pace = getPace(data); // km / minute
-    speed ??= (pace ?? 0.0) * 60.0; // km / h
     // Run pace is not really a pace (speed reciprocal) but it's km/min
     if (pace != null && pace > 0) {
+      speed ??= pace * 60.0; // km/min -> km / h
       pace = 1 / pace; // now minutes / km
     }
 
