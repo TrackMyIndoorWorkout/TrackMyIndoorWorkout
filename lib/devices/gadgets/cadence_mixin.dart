@@ -71,14 +71,14 @@ class CadenceMixin {
 
     final firstData = cadenceData.first;
     final lastData = cadenceData.last;
-    if ((lastData.time - firstData.time).abs() < displayEps) {
-      return 0;
-    }
-
     var secondsDiff = lastData.time - firstData.time;
     // Check overflow
     if (secondsDiff < 0) {
       secondsDiff += eventTimeOverflow;
+    }
+
+    if (secondsDiff < displayEps) {
+      return 0;
     }
 
     return (lastData.revolutions - firstData.revolutions) * 60 ~/ secondsDiff;
