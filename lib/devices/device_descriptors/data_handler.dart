@@ -51,7 +51,15 @@ abstract class DataHandler {
 
   void preProcessFlag(List<int> data) {
     if (data.length > flagByteSize) {
-      var flag = data[0] + maxUint8 * data[1];
+      var flag = data[0];
+      if (flagByteSize > 1) {
+        flag += maxUint8 * data[1];
+      }
+
+      if (flagByteSize > 1) {
+        flag += maxUint16 * data[2];
+      }
+
       if (flag != featuresFlag) {
         featuresFlag = flag;
         processFlag(flag);
