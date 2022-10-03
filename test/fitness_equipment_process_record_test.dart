@@ -55,6 +55,7 @@ void main() {
           device: MockBluetoothDevice(),
           firstCalories: false,
         );
+        equipment.initPower2SpeedConstants();
         equipment.workoutState = WorkoutState.moving;
 
         equipment.processRecord(RecordWithSport(
@@ -85,6 +86,7 @@ void main() {
       device: MockBluetoothDevice(),
       firstCalories: false,
     );
+    equipment.initPower2SpeedConstants();
     equipment.workoutState = WorkoutState.moving;
 
     // calories: null
@@ -111,6 +113,7 @@ void main() {
       device: MockBluetoothDevice(),
       firstCalories: false,
     );
+    equipment.initPower2SpeedConstants();
     equipment.workoutState = WorkoutState.moving;
 
     equipment.processRecord(
@@ -148,6 +151,7 @@ void main() {
       device: MockBluetoothDevice(),
       firstCalories: false,
     );
+    equipment.initPower2SpeedConstants();
     equipment.workoutState = WorkoutState.moving;
 
     equipment.processRecord(RecordWithSport(
@@ -364,6 +368,7 @@ void main() {
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
+        equipment.initPower2SpeedConstants();
         equipment.lastRecord = RecordWithSport(
           timeStamp: oneSecondAgo.millisecondsSinceEpoch,
           elapsedMillis: 0,
@@ -414,6 +419,7 @@ void main() {
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
+        equipment.initPower2SpeedConstants();
         final adjustedRecord = RecordWithSport(sport: descriptor.defaultSport, distance: distance);
         adjustedRecord.adjustByFactors(powerFactor, calorieFactor, true);
         equipment.lastRecord = RecordWithSport(
