@@ -53,11 +53,7 @@ class CyclingSpeedAndCadenceDescriptor extends DeviceDescriptor {
 
   @override
   bool isDataProcessable(List<int> data) {
-    if (sensor == null) {
-      return false;
-    }
-
-    return sensor!.canMeasurementProcessed(data);
+    return sensor?.canMeasurementProcessed(data) ?? false;
   }
 
   @override
