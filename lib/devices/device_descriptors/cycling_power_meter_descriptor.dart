@@ -53,7 +53,15 @@ class CyclingPowerMeterDescriptor extends DeviceDescriptor {
 
   @override
   bool isDataProcessable(List<int> data) {
-    return sensor?.canMeasurementProcessed(data) ?? false;
+    if (sensor == null) {
+      return false;
+    }
+
+    final isProcessable = sensor!.canMeasurementProcessed(data);
+    featuresFlag = sensor!.featureFlag;
+    byteCounter = sensor!.expectedLength;
+
+    return isProcessable;
   }
 
   @override
