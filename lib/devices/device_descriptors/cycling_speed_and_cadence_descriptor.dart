@@ -38,6 +38,7 @@ class CyclingSpeedAndCadenceDescriptor extends DeviceDescriptor {
           controlCharacteristicId: "",
           listenOnControl: false,
           hasFeatureFlags: true,
+          flagByteSize: 1,
         );
 
   @override
