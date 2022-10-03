@@ -162,7 +162,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     final merged = values.skip(1).fold<RecordWithSport>(
           values.first,
-          (prev, element) => prev.merge(element, true, true),
+          (prev, element) => prev.merge(element, true, true, true),
         );
     if (logLevel >= logLevelInfo) {
       Logging.log(
@@ -751,6 +751,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         lastRecord,
         _cadenceGapWorkaround,
         _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
+        workoutState != WorkoutState.stopped,
       );
     }
 
@@ -767,7 +768,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       RecordWithSport? extraRecord = _extraSensor?.record;
       if (extraRecord != null) {
         extraRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-        stub.merge(extraRecord, true, true);
+        stub.merge(extraRecord, true, true, true);
       }
     }
 
