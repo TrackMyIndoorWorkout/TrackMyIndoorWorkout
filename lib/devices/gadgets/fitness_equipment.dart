@@ -774,7 +774,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (sport == ActivityType.ride && stub.speed == null && (stub.power ?? 0) > eps) {
       // When cycling supplement speed from power if missing
       // via https://www.gribble.org/cycling/power_v_speed.html
-      stub.speed = velocityForPowerCardano(stub.power!);
+      stub.speed = velocityForPowerCardano(stub.power!) * DeviceDescriptor.ms2kmh;
     }
 
     final dTMillis = elapsedMillis - (lastRecord.elapsedMillis ?? 0);
@@ -864,7 +864,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         } else if (sport == ActivityType.ride && (stub.speed ?? 0) > displayEps) {
           // When cycling supplement power from speed if missing
           // via https://www.gribble.org/cycling/power_v_speed.html
-          stub.power = powerForVelocity(stub.speed).toInt();
+          stub.power = powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms).toInt();
         }
 
         if (stub.power != null) {
