@@ -16,6 +16,7 @@ class HeartRateMonitor extends ComplexSensor {
   void processFlag(int flag) {
     if (featureFlag != flag && flag >= 0) {
       clearMetrics();
+      featureFlag = flag;
       expectedLength = 1; // The flag
       // Heart rate value format (first bit)
       if (flag % 2 == 0) {
@@ -43,7 +44,6 @@ class HeartRateMonitor extends ComplexSensor {
       }
 
       flag ~/= 2;
-      featureFlag = flag;
     }
   }
 

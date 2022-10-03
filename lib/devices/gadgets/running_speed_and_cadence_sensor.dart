@@ -22,6 +22,8 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
   @override
   void processFlag(int flag) {
     if (featureFlag != flag && flag >= 0) {
+      clearMetrics();
+      featureFlag = flag;
       expectedLength = 1; // The flag itself + instant speed and cadence
       // UInt16, m/s with 1/256 resolution -> immediately convert it to km/h with the divider
       speedMetric = ShortMetricDescriptor(
@@ -46,7 +48,6 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
       }
 
       flag ~/= 2;
-      featureFlag = flag;
     }
   }
 

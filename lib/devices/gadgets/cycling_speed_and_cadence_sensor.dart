@@ -32,6 +32,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
   void processFlag(int flag) {
     if (featureFlag != flag && flag >= 0) {
       clearMetrics();
+      featureFlag = flag;
       expectedLength = 1; // The flag itself
       // Has wheel revolution?
       if (flag % 2 == 1) {
@@ -53,7 +54,6 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
       }
 
       flag ~/= 2;
-      featureFlag = flag;
     }
   }
 
