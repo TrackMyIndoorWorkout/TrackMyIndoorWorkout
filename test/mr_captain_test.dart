@@ -45,6 +45,7 @@ void main() {
     const flag = maxUint8 * msb + lsb;
     rower.stopWorkout();
 
+    rower.initFlag();
     rower.processFlag(flag);
 
     expect(rower.strokeRateMetric, isNotNull);
