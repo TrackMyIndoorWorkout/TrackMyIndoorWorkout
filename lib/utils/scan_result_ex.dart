@@ -58,8 +58,6 @@ extension ScanResultEx on ScanResult {
     return serviceUuids.contains(serviceId);
   }
 
-  bool get isHeartRateMonitor => hasService(heartRateServiceUuid);
-
   String manufacturerName() {
     final companyRegistry = Get.find<CompanyRegistry>();
 

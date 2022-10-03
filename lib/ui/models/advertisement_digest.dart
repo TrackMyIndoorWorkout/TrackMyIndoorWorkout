@@ -1,5 +1,4 @@
 import '../../devices/company_registry.dart';
-import '../../devices/gatt_constants.dart';
 import '../../utils/machine_type.dart';
 
 class AdvertisementDigest {
@@ -22,10 +21,6 @@ class AdvertisementDigest {
     required this.machineType,
     required this.machineTypes,
   });
-
-  bool isHeartRateMonitor() {
-    return serviceUuids.contains(heartRateServiceUuid);
-  }
 
   // #239 SOLE E25 elliptical: Treadmill, Indoor Bike, Cross Trainer
   bool isMultiFtms() => machineTypes.where((element) => element.isFtms).length > 1;
