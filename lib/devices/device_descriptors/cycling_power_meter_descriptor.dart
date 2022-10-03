@@ -78,7 +78,7 @@ class CyclingPowerMeterDescriptor extends DeviceDescriptor {
 
   @override
   ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
-    // TODO: ask the user if they prefer they pair to the console. We assume now yes.
+    // TODO: ask the user whether they prefer to pair the HRM to the console or not. We assume yes now.
     final requiredService =
         services.firstWhereOrNull((service) => service.uuid.uuidString() == heartRateServiceUuid);
     if (requiredService == null) {
