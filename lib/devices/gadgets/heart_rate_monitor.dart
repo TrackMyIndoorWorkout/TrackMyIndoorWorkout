@@ -82,5 +82,8 @@ class HeartRateMonitor extends ComplexSensor {
   }
 
   @override
-  void clearMetrics() {}
+  void clearMetrics() {
+    caloriesMetric = null;
+    heartRateMetric = null;
+  }
 }
