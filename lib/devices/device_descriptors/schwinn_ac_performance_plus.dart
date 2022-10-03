@@ -38,6 +38,20 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   }
 
   @override
+  void processFlag(int flag) {
+    final prefService = Get.find<BasePrefService>();
+    final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    Logging.log(
+      logLevel,
+      logLevelError,
+      "Schwinn AC Perf+",
+      "processFlag",
+      "Not implemented!",
+    );
+    debugPrint("Schwinn AC Perf+ processFlag Not implemented!");
+  }
+
+  @override
   RecordWithSport? stubRecord(List<int> data) {
     final prefService = Get.find<BasePrefService>();
     final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;

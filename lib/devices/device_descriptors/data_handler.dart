@@ -45,9 +45,7 @@ abstract class DataHandler {
     byteCounter = flagByteSize;
   }
 
-  void processFlag(int flag) {
-    initFlag();
-  }
+  void processFlag(int flag);
 
   void preProcessFlag(List<int> data) {
     if (data.length > flagByteSize) {
@@ -61,6 +59,7 @@ abstract class DataHandler {
       }
 
       if (flag != featuresFlag) {
+        initFlag();
         featuresFlag = flag;
         processFlag(flag);
       }

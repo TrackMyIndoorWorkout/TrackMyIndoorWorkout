@@ -54,7 +54,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
   void processFlag(int flag) {
-    super.processFlag(flag);
     // negated first bit!
     flag = processSpeedFlag(flag);
     flag = skipFlag(flag); // Average Speed

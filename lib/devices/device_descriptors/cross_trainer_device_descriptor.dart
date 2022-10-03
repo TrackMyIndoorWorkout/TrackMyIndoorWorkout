@@ -44,7 +44,6 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.cross_trainer_data.xml
   @override
   void processFlag(int flag) {
-    super.processFlag(flag);
     // LifePro FlexStride Pro
     // 12 0000 1100 instant speed, total distance, cadence (step rate)
     // 33 0010 0001 instant power, elapsed time

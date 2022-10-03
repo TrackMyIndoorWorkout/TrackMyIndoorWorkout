@@ -48,6 +48,11 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         );
 
   @override
+  void processFlag(int flag) {
+    // Empty implementation, hard coded layouts overlook flags
+  }
+
+  @override
   RecordWithSport? stubRecord(List<int> data) {
     return RecordWithSport(
       distance: getDistance(data),

@@ -64,7 +64,6 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override
   void processFlag(int flag) {
-    super.processFlag(flag);
     final prefService = Get.find<BasePrefService>();
     if (defaultSport == ActivityType.rowing) {
       _strokeRateWindowSize = 0;

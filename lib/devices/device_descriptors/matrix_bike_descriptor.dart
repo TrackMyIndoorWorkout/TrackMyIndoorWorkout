@@ -20,7 +20,6 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
   void processFlag(int flag) {
-    initFlag();
     // Matrix violates the FTMS Indoor Bike protocol and promises every feature
     // except the Heart Rate (C10)
     // Flag bytes:
