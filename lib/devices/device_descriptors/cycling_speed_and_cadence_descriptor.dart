@@ -106,13 +106,17 @@ class CyclingSpeedAndCadenceDescriptor extends DeviceDescriptor {
 
   @override
   void setDevice(BluetoothDevice device, List<BluetoothService> services) {
+    if (sensor != null) {
+      return;
+    }
+
     final requiredService = services.firstWhereOrNull(
         (service) => service.uuid.uuidString() == CyclingSpeedAndCadenceSensor.serviceUuid);
     if (requiredService == null) {
       return;
     }
 
-    final sensor = CyclingSpeedAndCadenceSensor(device);
-    sensor.services = services;
+    sensor = CyclingSpeedAndCadenceSensor(device);
+    sensor!.services = services;
   }
 }
