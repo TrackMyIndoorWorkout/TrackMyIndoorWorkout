@@ -508,7 +508,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       fitnessEquipment = ftmsWithoutServiceData;
     }
 
-    if (fitnessEquipment != null) {
+    if (fitnessEquipment != null &&
+        fitnessEquipment.serviceId == descriptor.dataServiceId &&
+        fitnessEquipment.characteristicId == descriptor.dataCharacteristicId) {
       fitnessEquipment.descriptor = descriptor;
     } else {
       fitnessEquipment = FitnessEquipment(
