@@ -12,6 +12,11 @@ abstract class SensorBase extends DeviceBase {
           device: device,
         );
 
+  void initFlag() {
+    featureFlag = -1;
+    expectedLength = 0;
+  }
+
   void processFlag(int flag);
 
   bool canMeasurementProcessed(List<int> data);

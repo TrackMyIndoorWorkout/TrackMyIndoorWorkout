@@ -30,7 +30,8 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
   @override
   void processFlag(int flag) {
-    if (featureFlag != flag && flag > 0) {
+    if (featureFlag != flag && flag >= 0) {
+      clearMetrics();
       expectedLength = 1; // The flag itself
       // Has wheel revolution?
       if (flag % 2 == 1) {

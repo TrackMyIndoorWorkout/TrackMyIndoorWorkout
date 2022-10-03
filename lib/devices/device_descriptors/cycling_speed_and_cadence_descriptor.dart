@@ -60,13 +60,18 @@ class CyclingSpeedAndCadenceDescriptor extends DeviceDescriptor {
   @override
   void initFlag() {
     super.initFlag();
-    sensor?.clearMetrics();
+    sensor?.initFlag();
   }
 
   @override
   void processFlag(int flag) {
-    super.processFlag(flag);
-    sensor?.processFlag(flag);
+    if (sensor == null) {
+      return;
+    }
+
+    sensor!.processFlag(flag);
+    featuresFlag = sensor!.featureFlag;
+    byteCounter = sensor!.expectedLength;
   }
 
   @override
