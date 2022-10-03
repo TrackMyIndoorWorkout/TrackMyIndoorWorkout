@@ -49,7 +49,7 @@ class CyclingPowerMeterDescriptor extends DeviceDescriptor {
         manufacturerPrefix: manufacturerPrefix,
         manufacturerFitId: manufacturerFitId,
         model: model,
-      );
+      )..sensor = sensor;
 
   @override
   bool isDataProcessable(List<int> data) {
