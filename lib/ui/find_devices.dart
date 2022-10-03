@@ -735,6 +735,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                         const Duration(milliseconds: uiIntermittentDelay));
                                   }
 
+                                  // TODO: Check if it's primary and not secondary sensor
                                   await goToRecording(
                                     _fitnessEquipment!.device!,
                                     snapshot.data!,
@@ -801,6 +802,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   const Duration(milliseconds: uiIntermittentDelay));
                             }
 
+                            // TODO: if primary sensor is picked (wheel cadence + speed or power meter)
+                            //  then don't navigate but wait for optional secondary sensor
+                            // TODO: if it's only a pedal cadence sensor (secondary) then either refuse
+                            //  and tell to pick a primary sensor (if it's not already picked)
+                            //  or instantiate secondary sensor, add to primary, then navigate
                             await goToRecording(r.device, BluetoothDeviceState.disconnected, true);
                           },
                           onHrmTap: () async {
