@@ -325,6 +325,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
         descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
       } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
         descriptor = deviceMap[schwinnX70BikeFourCC];
+      } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
+        descriptor = deviceMap[powerMeterBasedBikeFourCC];
+      } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
+        descriptor = deviceMap[cscSensorBasedBikeFourCC];
       } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
         if (advertisementDigest.machineType == MachineType.treadmill) {
           descriptor = deviceMap[matrixTreadmillFourCC];
