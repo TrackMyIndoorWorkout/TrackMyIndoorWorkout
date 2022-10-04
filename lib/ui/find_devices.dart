@@ -346,79 +346,215 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     FitnessEquipment? fitnessEquipment;
 
-    // Step 3. Try to infer from DeviceUsage, FTMS advertisement service data or characteristics
-    bool pickedAlready = false;
-    if (descriptor == null) {
-      if (deviceUsage != null) {
-        descriptor = genericDescriptorForSport(deviceUsage.sport);
-      } else {
-        String? inferredSport;
-        if (advertisementDigest.machineType.isFtms) {
-          // Determine FTMS sport by Service Data bits
-          inferredSport = advertisementDigest.machineType.sport;
-        } else if (advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
-          // Determine FTMS sport by analyzing 0x1826 service's characteristics
+    bool preConnectLogic = true;
+    bool navigate = true;
+    if (manual) {
+      if (_fitnessEquipment != null &&
+          _fitnessEquipment!.device != null &&
+          _fitnessEquipment!.device!.name == device.name &&
+          _fitnessEquipment!.descriptor != null &&
+          (_fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor ||
+              _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.secondarySensor)) {
+        if (_fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor) {
+          // The user clicked twice on a primary sensor, probably there's no secondary sensor
+          // And the user wants to navigate
+          fitnessEquipment = _fitnessEquipment;
+          preConnectLogic = false;
+        } else if (_fitnessEquipment!.descriptor!.deviceCategory ==
+            DeviceCategory.secondarySensor) {
+          // The user clicked twice on a secondary sensor, ignore
+          // But secondary sensor shouldn't have a FitnessEquipment anyway
+          Get.snackbar("Warning", "Cannot measure with a secondary sensor only!");
           setState(() {
-            _goingToRecording = true;
+            _goingToRecording = false;
           });
 
-          fitnessEquipment = FitnessEquipment(device: device);
-          final success = await fitnessEquipment.connectOnDemand(identify: true);
-          if (success) {
-            final inferredSports = fitnessEquipment.inferSportsFromCharacteristicIds();
-            if (inferredSports.isNotEmpty) {
-              if (inferredSports.length == 1) {
-                inferredSport = inferredSports.first;
-              } else {
-                inferredSport = await Get.bottomSheet(
-                  SafeArea(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: Center(
-                            child: SportPickerBottomSheet(
-                              sportChoices: inferredSports,
-                              initialSport: inferredSports.first,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  isScrollControlled: true,
-                  ignoreSafeArea: false,
-                  isDismissible: false,
-                  enableDrag: false,
-                );
-                pickedAlready = inferredSport != null;
-                await fitnessEquipment.setCharacteristicById(sportToUuid[inferredSport]!);
-              }
-            }
-          }
+          return false;
         }
-
-        if (inferredSport == null) {
-          Get.snackbar("Error", "Could not infer sport of the device");
-          if (_logLevel > logLevelNone) {
-            Logging.log(
-              _logLevel,
-              logLevelError,
-              "FIND_DEVICES",
-              "goToRecording",
-              "Could not infer sport of the device",
+      } else if (descriptor != null &&
+          (descriptor.deviceCategory == DeviceCategory.secondarySensor ||
+              descriptor.deviceCategory == DeviceCategory.primarySensor)) {
+        bool isPrimarySensor = descriptor.deviceCategory == DeviceCategory.primarySensor;
+        if (descriptor.deviceCategory == DeviceCategory.secondarySensor) {
+          bool isWheelSensor = false;
+          if (device.name.toLowerCase().contains("speed")) {
+            isWheelSensor = true;
+          } else {
+            isWheelSensor = await Get.defaultDialog(
+              barrierDismissible: false,
+              title: "CSC sensor location",
+              middleText: "Is it a Wheel or a Pedal / Crank sensor?",
+              confirm: TextButton(
+                child: const Text("Wheel"),
+                onPressed: () => Get.back(result: true),
+              ),
+              cancel: TextButton(
+                child: const Text("Crank"),
+                onPressed: () => Get.back(result: false),
+              ),
             );
           }
 
+          if (isWheelSensor) {
+            descriptor.deviceCategory = DeviceCategory.primarySensor;
+            isPrimarySensor = true;
+          }
+        }
+
+        bool currentPrimarySensor = _fitnessEquipment != null &&
+            _fitnessEquipment!.descriptor != null &&
+            _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor;
+        if (isPrimarySensor && !currentPrimarySensor) {
+          navigate = false;
+        } else if (!isPrimarySensor && !currentPrimarySensor) {
+          Get.snackbar("Warning",
+              "Please select a primary (preferably a wheel speed and cadence) sensor first!");
           setState(() {
             _goingToRecording = false;
           });
 
           return false;
         } else {
-          descriptor = genericDescriptorForSport(inferredSport);
-          if (!descriptor.isMultiSport) {
+          // currentPrimarySensor, instantiate this primary and secondary sensor,
+          // connect and discover and add it as a companion sensor to the primary
+          // and then navigate
+          _fitnessEquipment!.addCompanionSensor(descriptor, device);
+          fitnessEquipment = _fitnessEquipment;
+          device = _fitnessEquipment!.device!;
+          descriptor = _fitnessEquipment!.descriptor;
+          preConnectLogic = false;
+        }
+      }
+    }
+
+    if (preConnectLogic) {
+      // Step 3. Try to infer from DeviceUsage, FTMS advertisement service data or characteristics
+      bool pickedAlready = false;
+      if (descriptor == null) {
+        if (deviceUsage != null) {
+          descriptor = genericDescriptorForSport(deviceUsage.sport);
+        } else {
+          String? inferredSport;
+          if (advertisementDigest.machineType.isFtms) {
+            // Determine FTMS sport by Service Data bits
+            inferredSport = advertisementDigest.machineType.sport;
+          } else if (advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
+            // Determine FTMS sport by analyzing 0x1826 service's characteristics
+            setState(() {
+              _goingToRecording = true;
+            });
+
+            fitnessEquipment = FitnessEquipment(device: device);
+            final success = await fitnessEquipment.connectOnDemand(identify: true);
+            if (success) {
+              final inferredSports = fitnessEquipment.inferSportsFromCharacteristicIds();
+              if (inferredSports.isNotEmpty) {
+                if (inferredSports.length == 1) {
+                  inferredSport = inferredSports.first;
+                } else {
+                  inferredSport = await Get.bottomSheet(
+                    SafeArea(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: SportPickerBottomSheet(
+                                sportChoices: inferredSports,
+                                initialSport: inferredSports.first,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    isScrollControlled: true,
+                    ignoreSafeArea: false,
+                    isDismissible: false,
+                    enableDrag: false,
+                  );
+                  pickedAlready = inferredSport != null;
+                  await fitnessEquipment.setCharacteristicById(sportToUuid[inferredSport]!);
+                }
+              }
+            }
+          }
+
+          if (inferredSport == null) {
+            Get.snackbar("Error", "Could not infer sport of the device");
+            if (_logLevel > logLevelNone) {
+              Logging.log(
+                _logLevel,
+                logLevelError,
+                "FIND_DEVICES",
+                "goToRecording",
+                "Could not infer sport of the device",
+              );
+            }
+
+            setState(() {
+              _goingToRecording = false;
+            });
+
+            return false;
+          } else {
+            descriptor = genericDescriptorForSport(inferredSport);
+            if (!descriptor.isMultiSport) {
+              deviceUsage = DeviceUsage(
+                sport: inferredSport,
+                mac: device.id.id,
+                name: device.name,
+                manufacturer: advertisementDigest.manufacturer,
+                time: DateTime.now().millisecondsSinceEpoch,
+              );
+              await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
+            }
+          }
+        }
+      }
+
+      final prefService = Get.find<BasePrefService>();
+
+      if (descriptor.isMultiSport && !pickedAlready) {
+        final multiSportSupport =
+            prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;
+        if (deviceUsage == null || multiSportSupport) {
+          final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
+          final sportPick = await Get.bottomSheet(
+            SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: SportPickerBottomSheet(
+                        sportChoices: waterSports,
+                        initialSport: initialSport,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            isScrollControlled: true,
+            ignoreSafeArea: false,
+            isDismissible: false,
+            enableDrag: false,
+          );
+          if (sportPick == null) {
+            setState(() {
+              _goingToRecording = false;
+            });
+
+            return false;
+          }
+
+          descriptor.defaultSport = sportPick;
+          if (deviceUsage != null) {
+            deviceUsage.sport = sportPick;
+            deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
+            await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
+          } else {
             deviceUsage = DeviceUsage(
-              sport: inferredSport,
+              sport: sportPick,
               mac: device.id.id,
               name: device.name,
               manufacturer: advertisementDigest.manufacturer,
@@ -426,119 +562,64 @@ class FindDevicesState extends State<FindDevicesScreen> {
             );
             await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
           }
+        } else {
+          descriptor.defaultSport = deviceUsage.sport;
+          await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
         }
       }
-    }
 
-    final prefService = Get.find<BasePrefService>();
+      FitnessEquipment? ftmsWithoutServiceData = fitnessEquipment;
+      fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
 
-    if (descriptor.isMultiSport && !pickedAlready) {
-      final multiSportSupport =
-          prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;
-      if (deviceUsage == null || multiSportSupport) {
-        final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
-        final sportPick = await Get.bottomSheet(
-          SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Center(
-                    child: SportPickerBottomSheet(
-                      sportChoices: waterSports,
-                      initialSport: initialSport,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          isScrollControlled: true,
-          ignoreSafeArea: false,
-          isDismissible: false,
-          enableDrag: false,
-        );
-        if (sportPick == null) {
-          setState(() {
-            _goingToRecording = false;
-          });
+      await Get.delete<FitnessEquipment>(force: true);
+      if (fitnessEquipment != null) {
+        if (fitnessEquipment.device?.id.id != device.id.id) {
+          try {
+            await fitnessEquipment.detach();
+            if (!_circuitWorkout) {
+              await fitnessEquipment.disconnect();
+            }
+          } on PlatformException catch (e, stack) {
+            debugPrint("$e");
+            debugPrintStack(stackTrace: stack, label: "trace:");
+          }
 
-          return false;
-        }
-
-        descriptor.defaultSport = sportPick;
-        if (deviceUsage != null) {
-          deviceUsage.sport = sportPick;
-          deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
-          await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
-        } else {
-          deviceUsage = DeviceUsage(
-            sport: sportPick,
-            mac: device.id.id,
-            name: device.name,
-            manufacturer: advertisementDigest.manufacturer,
-            time: DateTime.now().millisecondsSinceEpoch,
-          );
-          await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
+          fitnessEquipment = null;
         }
       } else {
-        descriptor.defaultSport = deviceUsage.sport;
-        await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
+        fitnessEquipment = ftmsWithoutServiceData;
       }
-    }
 
-    FitnessEquipment? ftmsWithoutServiceData = fitnessEquipment;
-    fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-
-    await Get.delete<FitnessEquipment>(force: true);
-    if (fitnessEquipment != null) {
-      if (fitnessEquipment.device?.id.id != device.id.id) {
-        try {
-          await fitnessEquipment.detach();
-          if (!_circuitWorkout) {
-            await fitnessEquipment.disconnect();
-          }
-        } on PlatformException catch (e, stack) {
-          debugPrint("$e");
-          debugPrintStack(stackTrace: stack, label: "trace:");
-        }
-
-        fitnessEquipment = null;
+      if (fitnessEquipment != null &&
+          fitnessEquipment.serviceId == descriptor.dataServiceId &&
+          fitnessEquipment.characteristicId == descriptor.dataCharacteristicId) {
+        fitnessEquipment.descriptor = descriptor;
+      } else {
+        fitnessEquipment = FitnessEquipment(
+          descriptor: descriptor,
+          device: device,
+        );
       }
-    } else {
-      fitnessEquipment = ftmsWithoutServiceData;
+
+      Get.put<FitnessEquipment>(fitnessEquipment, permanent: true);
+
+      setState(() {
+        _fitnessEquipment = fitnessEquipment;
+      });
     }
 
-    if (fitnessEquipment != null &&
-        fitnessEquipment.serviceId == descriptor.dataServiceId &&
-        fitnessEquipment.characteristicId == descriptor.dataCharacteristicId) {
-      fitnessEquipment.descriptor = descriptor;
-    } else {
-      fitnessEquipment = FitnessEquipment(
-        descriptor: descriptor,
-        device: device,
-      );
-    }
-
-    Get.put<FitnessEquipment>(fitnessEquipment, permanent: true);
-
-    setState(() {
-      _fitnessEquipment = fitnessEquipment;
-    });
-
-    final success = await fitnessEquipment.connectOnDemand();
+    final success = await fitnessEquipment!.connectOnDemand();
     if (!success) {
       Get.defaultDialog(
-        middleText: 'Problem connecting to ${descriptor.fullName}.',
+        middleText: 'Problem connecting to ${descriptor!.fullName}.',
         confirm: TextButton(
           child: const Text("Ok"),
           onPressed: () => Get.close(1),
         ),
       );
+    }
 
-      setState(() {
-        _goingToRecording = false;
-      });
-    } else {
+    if (success && navigate) {
       if (deviceUsage != null) {
         deviceUsage.manufacturerName = fitnessEquipment.manufacturerName;
         deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
@@ -556,9 +637,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
           _goingToRecording = false;
         });
       });
+    } else {
+      setState(() {
+        _goingToRecording = false;
+      });
     }
 
-    return true;
+    return success;
   }
 
   @override
@@ -735,7 +820,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                         const Duration(milliseconds: uiIntermittentDelay));
                                   }
 
-                                  // TODO: Check if it's primary and not secondary sensor
                                   await goToRecording(
                                     _fitnessEquipment!.device!,
                                     snapshot.data!,
@@ -802,11 +886,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   const Duration(milliseconds: uiIntermittentDelay));
                             }
 
-                            // TODO: if primary sensor is picked (wheel cadence + speed or power meter)
-                            //  then don't navigate but wait for optional secondary sensor
-                            // TODO: if it's only a pedal cadence sensor (secondary) then either refuse
-                            //  and tell to pick a primary sensor (if it's not already picked)
-                            //  or instantiate secondary sensor, add to primary, then navigate
                             await goToRecording(r.device, BluetoothDeviceState.disconnected, true);
                           },
                           onHrmTap: () async {

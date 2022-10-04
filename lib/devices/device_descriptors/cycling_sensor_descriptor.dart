@@ -25,6 +25,7 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
+    required deviceCategory,
     required this.tag,
     required this.serviceUuid,
     required this.characteristicUuid,
@@ -39,6 +40,7 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
           manufacturerPrefix: manufacturerPrefix,
           manufacturerFitId: manufacturerFitId,
           model: model,
+          deviceCategory: deviceCategory,
           dataServiceId: serviceUuid,
           dataCharacteristicId: characteristicUuid,
           controlCharacteristicId: "",
@@ -89,8 +91,6 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
 
   @override
   void stopWorkout() {}
-
-  ComplexSensor? getSensor(BluetoothDevice device);
 
   @override
   ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {

@@ -25,7 +25,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           manufacturerPrefix: "Schwinn",
           manufacturerFitId: stravaFitId,
           model: "Schwinn AC Perf+",
-          antPlus: true,
+          deviceCategory: DeviceCategory.antPlusDevice,
           canMeasureCalories: true, // #258 avoid over inflation
         );
 

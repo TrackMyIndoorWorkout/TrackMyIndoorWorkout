@@ -36,6 +36,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           manufacturerPrefix: manufacturerPrefix,
           manufacturerFitId: manufacturerFitId,
           model: model,
+          deviceCategory: DeviceCategory.smartDevice,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
           controlCharacteristicId: fitnessMachineControlPointUuid,

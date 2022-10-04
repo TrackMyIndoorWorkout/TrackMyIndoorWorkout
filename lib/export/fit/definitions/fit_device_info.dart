@@ -1,3 +1,4 @@
+import '../../../devices/device_descriptors/device_descriptor.dart';
 import '../../export_model.dart';
 import '../enums/fit_device_type.dart';
 import '../enums/fit_source_type.dart';
@@ -32,8 +33,9 @@ class FitDeviceInfo extends FitDefinitionMessage {
     data.addLong(FitSerializable.fitDateTime(DateTime.now()));
     data.addByte(FitDeviceType.fitnessEquipment);
     data.addShort(model.descriptor.manufacturerFitId);
-    data.addByte(
-        model.descriptor.antPlus ? FitSourceType.antPlus : FitSourceType.bluetoothLowEnergy);
+    data.addByte(model.descriptor.deviceCategory == DeviceCategory.antPlusDevice
+        ? FitSourceType.antPlus
+        : FitSourceType.bluetoothLowEnergy);
     assert(productTextLength == model.descriptor.fullName.length);
     data.addString(model.descriptor.fullName);
 

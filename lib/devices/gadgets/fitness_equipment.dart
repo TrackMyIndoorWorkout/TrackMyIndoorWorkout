@@ -74,6 +74,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   late Record continuationRecord;
   bool continuation = false;
   HeartRateMonitor? heartRateMonitor;
+  ComplexSensor? _companionSensor;
+  DeviceDescriptor? _companionDescriptor;
   ComplexSensor? _extraSensor;
   String _heartRateGapWorkaround = heartRateGapWorkaroundDefault;
   int _heartRateUpperLimit = heartRateUpperLimitDefault;
@@ -355,6 +357,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       );
     } else {
       _extraSensor?.pumpData(null);
+      _companionSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
         pumpDataCore(recordStub, false);
       });
@@ -380,6 +383,17 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     } else {
       _extraSensor = null;
     }
+  }
+
+  Future<void> addCompanionSensor(
+    DeviceDescriptor companionDescriptor,
+    BluetoothDevice companionDevice,
+  ) async {
+    _companionDescriptor = companionDescriptor;
+    _companionSensor = _companionDescriptor?.getSensor(companionDevice);
+    await _companionSensor?.connect();
+    await _companionSensor?.discover();
+    await _companionSensor?.attach();
   }
 
   Future<void> setActivity(Activity activity) async {
@@ -778,9 +792,25 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (_extraSensor != null && (_extraSensor?.attached ?? false)) {
       RecordWithSport? extraRecord = _extraSensor?.record;
+      hasTotalDistanceReporting |= extraRecord?.distance != null;
+      deviceHasTotalCalorieReporting |= !idle && extraRecord?.calories != null;
+      hasPowerReporting |= (extraRecord?.power ?? 0) > 0;
+      hasSpeedReporting |= (extraRecord?.speed ?? 0.0) > 0.0;
       if (extraRecord != null) {
         extraRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
         stub.merge(extraRecord, true, true, true, true, true);
+      }
+    }
+
+    if (_companionSensor != null && (_companionSensor?.attached ?? false)) {
+      RecordWithSport? companionRecord = _companionSensor?.record;
+      hasTotalDistanceReporting |= companionRecord?.distance != null;
+      deviceHasTotalCalorieReporting |= !idle && companionRecord?.calories != null;
+      hasPowerReporting |= (companionRecord?.power ?? 0) > 0;
+      hasSpeedReporting |= (companionRecord?.speed ?? 0.0) > 0.0;
+      if (companionRecord != null) {
+        companionRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
+        stub.merge(companionRecord, true, true, true, true, true);
       }
     }
 
@@ -1119,6 +1149,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   @override
   Future<void> detach() async {
     await _extraSensor?.detach();
+    await _companionSensor?.detach();
     await super.detach();
   }
 }
