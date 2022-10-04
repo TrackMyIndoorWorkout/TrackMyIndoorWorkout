@@ -418,10 +418,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
           // currentPrimarySensor, instantiate this primary and secondary sensor,
           // connect and discover and add it as a companion sensor to the primary
           // and then navigate
-          fitnessEquipment = _fitnessEquipment;
-          preConnectLogic = false;
-
           _fitnessEquipment!.addCompanionSensor(descriptor, device);
+          fitnessEquipment = _fitnessEquipment;
+          device = _fitnessEquipment!.device!;
+          descriptor = _fitnessEquipment!.descriptor;
+          preConnectLogic = false;
         }
       }
     }
