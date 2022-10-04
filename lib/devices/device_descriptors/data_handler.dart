@@ -45,6 +45,8 @@ abstract class DataHandler {
     byteCounter = flagByteSize;
   }
 
+  bool isFlagValid(int flag);
+
   void processFlag(int flag);
 
   void preProcessFlag(List<int> data) {

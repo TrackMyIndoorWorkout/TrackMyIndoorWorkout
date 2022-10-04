@@ -286,7 +286,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
       bool processable = false;
-      if (key >= 0) {
+      if (key >= 0 && descriptor!.isFlagValid(key)) {
         if (!dataHandlers.containsKey(key)) {
           if (logLevel >= logLevelInfo) {
             Logging.log(

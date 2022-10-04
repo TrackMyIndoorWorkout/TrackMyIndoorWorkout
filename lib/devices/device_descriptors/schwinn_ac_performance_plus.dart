@@ -38,6 +38,11 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   }
 
   @override
+  bool isFlagValid(int flag) {
+    return false;
+  }
+
+  @override
   void processFlag(int flag) {
     final prefService = Get.find<BasePrefService>();
     final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;

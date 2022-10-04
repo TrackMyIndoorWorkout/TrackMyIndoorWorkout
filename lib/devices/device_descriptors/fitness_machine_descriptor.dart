@@ -57,6 +57,11 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
             hasFutureReservedBytes && dataLength >= byteCounter);
   }
 
+  @override
+  bool isFlagValid(int flag) {
+    return flag >= 0;
+  }
+
   int advanceFlag(int flag) {
     flag ~/= 2;
     return flag;

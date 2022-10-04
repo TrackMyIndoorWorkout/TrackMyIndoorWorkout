@@ -26,6 +26,9 @@ import 'device_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
 
 class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpeedMixin {
+  static const magicNumbers = [17, 32, 0];
+  static const magicFlag = 32 * 256 + 17;
+
   MetricDescriptor? resistanceMetric;
   // From https://github.com/ursoft/connectivity-samples/blob/main/BluetoothLeGatt/Application/src/main/java/com/example/android/bluetoothlegatt/BluetoothLeService.java
   static const List<double> resistancePowerFactor = [
@@ -76,12 +79,17 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   bool isDataProcessable(List<int> data) {
     if (data.length != 17) return false;
 
-    const measurementPrefix = [17, 32, 0];
+    const measurementPrefix = magicNumbers;
     for (int i = 0; i < measurementPrefix.length; i++) {
       if (data[i] != measurementPrefix[i]) return false;
     }
 
     return true;
+  }
+
+  @override
+  bool isFlagValid(int flag) {
+    return flag == magicFlag;
   }
 
   @override
