@@ -140,4 +140,35 @@ void main() {
       });
     });
   });
+
+  group('keySelector handles single byte flag devices', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 256, rnd).forEach((lsb) {
+      final msb = rnd.nextInt(256);
+      test('[$lsb $msb]', () async {
+        final descriptor = DeviceFactory.getCSCBasedBike();
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+
+        final key = equipment.keySelector([lsb, msb]);
+
+        expect(key, lsb);
+      });
+    });
+  });
+
+  group('keySelector handles triple byte flag devices', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 256, rnd).forEach((lsb) {
+      final ssb = rnd.nextInt(256);
+      final msb = rnd.nextInt(256);
+      test('[$lsb $ssb $msb]', () async {
+        final descriptor = DeviceFactory.getGenericFTMSCrossTrainer();
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+
+        final key = equipment.keySelector([lsb, ssb, msb]);
+
+        expect(key, lsb + 256 * ssb + 65536 * msb);
+      });
+    });
+  });
 }

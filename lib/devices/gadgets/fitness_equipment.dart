@@ -134,10 +134,15 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return badKey;
     }
 
-    if (l.length == 1) {
+    if (l.length == 1 || descriptor?.flagByteSize == 1) {
       return l[0];
     }
 
+    if (l.length >= 3 && (descriptor?.flagByteSize ?? 2) == 3) {
+      return l[2] * 65536 + l[1] * 256 + l[0];
+    }
+
+    // Default flagByteSize is 2
     return l[1] * 256 + l[0];
   }
 
