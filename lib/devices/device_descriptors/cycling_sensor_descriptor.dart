@@ -92,8 +92,6 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
   @override
   void stopWorkout() {}
 
-  ComplexSensor? getSensor(BluetoothDevice device);
-
   @override
   ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
     // TODO: ask the user whether they prefer to pair the HRM to the console or not. We assume yes now.
