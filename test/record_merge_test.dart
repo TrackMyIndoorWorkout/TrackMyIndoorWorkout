@@ -19,21 +19,60 @@ void main() {
         ..elapsed = rndElapsed
         ..caloriesPerMinute = rndCaloriesPerMinute
         ..caloriesPerHour = rndCaloriesPerHour;
+      final mergePower = rnd.nextBool();
+      final mergeSpeed = rnd.nextBool();
       final mergeCadence = rnd.nextBool();
       final mergeHr = rnd.nextBool();
       test(
           "$idx: $mergeCadence $mergeHr ${rndRecord.calories} ${rndRecord.power} ${rndRecord.speed} ${rndRecord.cadence} ${rndRecord.heartRate} ${rndRecord.distance} ${rndRecord.elapsed}",
           () async {
         final blankRecord = RecordWithSport(sport: ActivityType.ride);
-        final merged = blankRecord.merge(rndRecord, mergeCadence, mergeHr, true);
+        final merged =
+            blankRecord.merge(rndRecord, true, mergePower, mergeSpeed, mergeCadence, mergeHr);
 
         expect(merged.distance, closeTo(rndDistance, eps));
         expect(merged.elapsed, rndElapsed);
         expect(merged.calories, rndRecord.calories!);
-        expect(merged.power, rndRecord.power!);
-        expect(merged.speed, closeTo(rndRecord.speed!, eps));
+        expect(merged.power, mergePower ? rndRecord.power! : null);
+        expect(merged.speed, mergeSpeed ? closeTo(rndRecord.speed!, eps) : null);
         expect(merged.cadence, mergeCadence ? rndRecord.cadence! : null);
         expect(merged.heartRate, mergeHr ? rndRecord.heartRate! : null);
+        expect(merged.caloriesPerMinute, null);
+        expect(merged.caloriesPerHour, null);
+      });
+    }
+  });
+
+  group('Record merge mergeNonCumulative false prevent noncumulative merges', () {
+    final rnd = Random();
+    for (var idx in List<int>.generate(smallRepetition, (index) => index)) {
+      final rndDistance = rnd.nextDouble() * 1000;
+      final rndElapsed = rnd.nextInt(600);
+      final rndCaloriesPerMinute = rnd.nextDouble() * 12;
+      final rndCaloriesPerHour = rnd.nextDouble() * 500;
+      final rndRecord = RecordWithSport.getRandom(ActivityType.ride, rnd)
+        ..distance = rndDistance
+        ..elapsed = rndElapsed
+        ..caloriesPerMinute = rndCaloriesPerMinute
+        ..caloriesPerHour = rndCaloriesPerHour;
+      final mergePower = rnd.nextBool();
+      final mergeSpeed = rnd.nextBool();
+      final mergeCadence = rnd.nextBool();
+      final mergeHr = rnd.nextBool();
+      test(
+          "$idx: $mergeCadence $mergeHr ${rndRecord.calories} ${rndRecord.power} ${rndRecord.speed} ${rndRecord.cadence} ${rndRecord.heartRate} ${rndRecord.distance} ${rndRecord.elapsed}",
+          () async {
+        final blankRecord = RecordWithSport(sport: ActivityType.ride);
+        final merged =
+            blankRecord.merge(rndRecord, false, mergePower, mergeSpeed, mergeCadence, mergeHr);
+
+        expect(merged.distance, closeTo(rndDistance, eps));
+        expect(merged.elapsed, rndElapsed);
+        expect(merged.calories, rndRecord.calories!);
+        expect(merged.power, null);
+        expect(merged.speed, null);
+        expect(merged.cadence, null);
+        expect(merged.heartRate, null);
         expect(merged.caloriesPerMinute, null);
         expect(merged.caloriesPerHour, null);
       });
@@ -52,6 +91,8 @@ void main() {
         ..elapsed = rndElapsed
         ..caloriesPerMinute = rndCaloriesPerMinute
         ..caloriesPerHour = rndCaloriesPerHour;
+      final mergePower = rnd.nextBool();
+      final mergeSpeed = rnd.nextBool();
       final mergeCadence = rnd.nextBool();
       final mergeHr = rnd.nextBool();
       test(
@@ -60,7 +101,8 @@ void main() {
         final blankRecord = RecordWithSport.getZero(ActivityType.ride)
           ..caloriesPerHour = 0.0
           ..caloriesPerMinute = 0.0;
-        final merged = blankRecord.merge(rndRecord, mergeCadence, mergeHr, true);
+        final merged =
+            blankRecord.merge(rndRecord, true, mergePower, mergeSpeed, mergeCadence, mergeHr);
 
         expect(merged.distance, closeTo(0.0, eps));
         expect(merged.elapsed, 0);
@@ -87,6 +129,8 @@ void main() {
         ..elapsed = rndElapsed
         ..caloriesPerMinute = rndCaloriesPerMinute
         ..caloriesPerHour = rndCaloriesPerHour;
+      final mergePower = rnd.nextBool();
+      final mergeSpeed = rnd.nextBool();
       final mergeCadence = rnd.nextBool();
       final mergeHr = rnd.nextBool();
       test(
@@ -101,7 +145,8 @@ void main() {
           ..elapsed = targetElapsed
           ..caloriesPerMinute = targetCaloriesPerMinute
           ..caloriesPerHour = targetCaloriesPerHour;
-        final merged = targetRecord.merge(rndRecord, mergeCadence, mergeHr, true);
+        final merged =
+            targetRecord.merge(rndRecord, true, mergePower, mergeSpeed, mergeCadence, mergeHr);
 
         expect(merged.distance, closeTo(targetDistance, eps));
         expect(merged.elapsed, targetElapsed);
@@ -120,6 +165,8 @@ void main() {
     final rnd = Random();
     for (var idx in List<int>.generate(smallRepetition, (index) => index)) {
       final blankRecord = RecordWithSport(sport: ActivityType.ride);
+      final mergePower = rnd.nextBool();
+      final mergeSpeed = rnd.nextBool();
       final mergeCadence = rnd.nextBool();
       final mergeHr = rnd.nextBool();
       final rndDistance = rnd.nextDouble() * 1000;
@@ -134,7 +181,8 @@ void main() {
       test(
           "$idx: $mergeCadence $mergeHr ${targetRecord.calories} ${targetRecord.power} ${targetRecord.speed} ${targetRecord.cadence} ${targetRecord.heartRate} ${targetRecord.distance} ${targetRecord.elapsed}",
           () async {
-        final merged = targetRecord.merge(blankRecord, mergeCadence, mergeHr, true);
+        final merged =
+            targetRecord.merge(blankRecord, true, mergePower, mergeSpeed, mergeCadence, mergeHr);
 
         expect(merged.distance, closeTo(rndDistance, eps));
         expect(merged.elapsed, rndElapsed);
@@ -155,6 +203,8 @@ void main() {
       final blankRecord = RecordWithSport.getZero(ActivityType.ride)
         ..caloriesPerHour = 0.0
         ..caloriesPerMinute = 0.0;
+      final mergePower = rnd.nextBool();
+      final mergeSpeed = rnd.nextBool();
       final mergeCadence = rnd.nextBool();
       final mergeHr = rnd.nextBool();
       final rndDistance = rnd.nextDouble() * 1000;
@@ -169,7 +219,8 @@ void main() {
       test(
           "$idx: $mergeCadence $mergeHr ${targetRecord.calories} ${targetRecord.power} ${targetRecord.speed} ${targetRecord.cadence} ${targetRecord.heartRate} ${targetRecord.distance} ${targetRecord.elapsed}",
           () async {
-        final merged = targetRecord.merge(blankRecord, mergeCadence, mergeHr, true);
+        final merged =
+            targetRecord.merge(blankRecord, true, mergePower, mergeSpeed, mergeCadence, mergeHr);
 
         expect(merged.distance, closeTo(rndDistance, eps));
         expect(merged.elapsed, rndElapsed);
@@ -192,13 +243,16 @@ void main() {
       final rndRecord = RecordWithSport.getRandom(ActivityType.ride, rnd)
         ..distance = rndDistance
         ..elapsed = rndElapsed;
+      final mergePower = rnd.nextBool();
+      final mergeSpeed = rnd.nextBool();
       final mergeCadence = rnd.nextBool();
       final mergeHr = rnd.nextBool();
       test(
           "$idx: $mergeCadence $mergeHr ${rndRecord.calories} ${rndRecord.power} ${rndRecord.speed} ${rndRecord.cadence} ${rndRecord.heartRate} ${rndRecord.distance} ${rndRecord.elapsed}",
           () async {
         final blankRecord = RecordWithSport(sport: ActivityType.ride);
-        final merged = blankRecord.merge(rndRecord, mergeCadence, mergeHr, false);
+        final merged =
+            blankRecord.merge(rndRecord, false, mergePower, mergeSpeed, mergeCadence, mergeHr);
 
         expect(merged.distance, closeTo(rndRecord.distance!, eps));
         expect(merged.elapsed, rndRecord.elapsed);

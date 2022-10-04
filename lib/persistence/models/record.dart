@@ -431,16 +431,24 @@ class RecordWithSport extends Record {
 
   RecordWithSport merge(
     RecordWithSport record,
+    bool mergeNonCumulative,
+    bool mergePower,
+    bool mergeSpeed,
     bool mergeCadence,
     bool mergeHr,
-    bool mergeNonCumulative,
   ) {
     distance ??= record.distance;
     elapsed ??= record.elapsed;
     calories ??= record.calories;
     if (mergeNonCumulative) {
-      power ??= record.power;
-      speed ??= record.speed;
+      if (mergePower) {
+        power ??= record.power;
+      }
+
+      if (mergeSpeed) {
+        speed ??= record.speed;
+      }
+
       if (mergeCadence) {
         cadence ??= record.cadence;
       }

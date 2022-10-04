@@ -67,6 +67,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   bool deviceHasTotalCalorieReporting = false;
   bool hrmHasTotalCalorieReporting = false;
   bool hasTotalDistanceReporting = false;
+  bool hasPowerReporting = false;
+  bool hasSpeedReporting = false;
   Timer? _timer;
   late RecordWithSport lastRecord;
   late Record continuationRecord;
@@ -167,7 +169,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     final merged = values.skip(1).fold<RecordWithSport>(
           values.first,
-          (prev, element) => prev.merge(element, true, true, true),
+          (prev, element) => prev.merge(element, true, true, true, true, true),
         );
     if (logLevel >= logLevelInfo) {
       Logging.log(
@@ -751,12 +753,17 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       firstDistance = false;
     }
 
+    hasPowerReporting |= (stub.power ?? 0) > 0;
+    hasSpeedReporting |= (stub.speed ?? 0.0) > 0.0;
+
     if (shouldMerge) {
       stub.merge(
         lastRecord,
+        workoutState != WorkoutState.stopped,
+        hasPowerReporting,
+        hasSpeedReporting,
         _cadenceGapWorkaround,
         _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
-        workoutState != WorkoutState.stopped,
       );
     }
 
@@ -773,7 +780,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       RecordWithSport? extraRecord = _extraSensor?.record;
       if (extraRecord != null) {
         extraRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-        stub.merge(extraRecord, true, true, true);
+        stub.merge(extraRecord, true, true, true, true, true);
       }
     }
 
@@ -892,7 +899,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
     }
 
-    if (stub.pace != null && stub.pace! > 0 && slowPace != null && stub.pace! < slowPace! ||
+    if (stub.pace != null && stub.pace! > 0.0 && slowPace != null && stub.pace! < slowPace! ||
         stub.speed != null && stub.speed! > eps) {
       // #101, #122
       if ((stub.cadence == null || stub.cadence == 0) &&
