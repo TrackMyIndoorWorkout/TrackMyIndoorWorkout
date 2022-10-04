@@ -4,10 +4,6 @@ import '../gadgets/cycling_speed_and_cadence_sensor.dart';
 import 'cycling_sensor_descriptor.dart';
 
 class CyclingSpeedAndCadenceDescriptor extends CyclingSensorDescriptor {
-  static const tag = "Cycling Speed and Cadence Device";
-  static const serviceUuid = CyclingSpeedAndCadenceSensor.serviceUuid;
-  static const characteristicUuid = CyclingSpeedAndCadenceSensor.characteristicUuid;
-
   CyclingSpeedAndCadenceDescriptor({
     required fourCC,
     required vendorName,
@@ -25,6 +21,9 @@ class CyclingSpeedAndCadenceDescriptor extends CyclingSensorDescriptor {
           manufacturerFitId: manufacturerFitId,
           model: model,
           flagByteSize: 1,
+          tag: "Cycling Speed and Cadence Device",
+          serviceUuid: CyclingSpeedAndCadenceSensor.serviceUuid,
+          characteristicUuid: CyclingSpeedAndCadenceSensor.characteristicUuid,
         );
 
   @override

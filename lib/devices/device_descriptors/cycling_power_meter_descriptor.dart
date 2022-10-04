@@ -4,10 +4,6 @@ import '../gadgets/cycling_power_meter_sensor.dart';
 import 'cycling_sensor_descriptor.dart';
 
 class CyclingPowerMeterDescriptor extends CyclingSensorDescriptor {
-  static const tag = "Cycling Power Meter Device";
-  static const serviceUuid = CyclingPowerMeterSensor.serviceUuid;
-  static const characteristicUuid = CyclingPowerMeterSensor.characteristicUuid;
-
   CyclingPowerMeterDescriptor({
     required fourCC,
     required vendorName,
@@ -24,6 +20,9 @@ class CyclingPowerMeterDescriptor extends CyclingSensorDescriptor {
           manufacturerPrefix: manufacturerPrefix,
           manufacturerFitId: manufacturerFitId,
           model: model,
+          tag: "Cycling Power Meter Device",
+          serviceUuid: CyclingPowerMeterSensor.serviceUuid,
+          characteristicUuid: CyclingPowerMeterSensor.characteristicUuid,
         );
 
   @override

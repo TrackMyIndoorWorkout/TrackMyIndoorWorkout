@@ -12,9 +12,9 @@ import '../gatt_constants.dart';
 import 'device_descriptor.dart';
 
 abstract class CyclingSensorDescriptor extends DeviceDescriptor {
-  static const tag = "Generic Cycling Sensor";
-  static const serviceUuid = "";
-  static const characteristicUuid = "";
+  final String tag;
+  final String serviceUuid;
+  final String characteristicUuid;
   ComplexSensor? sensor;
 
   CyclingSensorDescriptor({
@@ -25,6 +25,9 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
+    required this.tag,
+    required this.serviceUuid,
+    required this.characteristicUuid,
     flagByteSize = 2,
   }) : super(
           defaultSport: ActivityType.ride,
