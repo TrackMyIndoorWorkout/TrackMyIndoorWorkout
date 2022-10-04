@@ -401,8 +401,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           }
         }
 
-        bool currentPrimarySensor = _fitnessEquipment != null ||
-            _fitnessEquipment!.descriptor != null ||
+        bool currentPrimarySensor = _fitnessEquipment != null &&
+            _fitnessEquipment!.descriptor != null &&
             _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor;
         if (isPrimarySensor && !currentPrimarySensor) {
           navigate = false;
