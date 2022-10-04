@@ -223,7 +223,7 @@ void main() {
         ));
 
         final expected = (calPerHour / (60 * 60) * seconds * calorieFactor).floor();
-        expect(record.calories, expected);
+        expect(record.calories, closeTo(expected, 1));
       });
     });
   });
