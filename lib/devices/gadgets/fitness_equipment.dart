@@ -391,7 +391,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   ) async {
     _companionDescriptor = companionDescriptor;
     _companionSensor = _companionDescriptor?.getSensor(companionDevice);
-    await _companionSensor?.discoverCore();
+    await _companionSensor?.connect();
+    await _companionSensor?.discover();
     await _companionSensor?.attach();
   }
 
