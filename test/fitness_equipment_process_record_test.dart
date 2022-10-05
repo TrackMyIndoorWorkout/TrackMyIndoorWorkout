@@ -14,7 +14,7 @@ import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'utils.dart';
 import 'fitness_equipment_process_record_test.mocks.dart';
 
-@GenerateMocks([BluetoothDevice])
+@GenerateNiceMocks([MockSpec<BluetoothDevice>()])
 void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
@@ -55,6 +55,7 @@ void main() {
           device: MockBluetoothDevice(),
           firstCalories: false,
         );
+        equipment.initPower2SpeedConstants();
         equipment.workoutState = WorkoutState.moving;
 
         equipment.processRecord(RecordWithSport(
@@ -85,6 +86,7 @@ void main() {
       device: MockBluetoothDevice(),
       firstCalories: false,
     );
+    equipment.initPower2SpeedConstants();
     equipment.workoutState = WorkoutState.moving;
 
     // calories: null
@@ -111,6 +113,7 @@ void main() {
       device: MockBluetoothDevice(),
       firstCalories: false,
     );
+    equipment.initPower2SpeedConstants();
     equipment.workoutState = WorkoutState.moving;
 
     equipment.processRecord(
@@ -148,6 +151,7 @@ void main() {
       device: MockBluetoothDevice(),
       firstCalories: false,
     );
+    equipment.initPower2SpeedConstants();
     equipment.workoutState = WorkoutState.moving;
 
     equipment.processRecord(RecordWithSport(
@@ -219,7 +223,7 @@ void main() {
         ));
 
         final expected = (calPerHour / (60 * 60) * seconds * calorieFactor).floor();
-        expect(record.calories, expected);
+        expect(record.calories, closeTo(expected, 1));
       });
     });
   });
@@ -364,6 +368,7 @@ void main() {
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
+        equipment.initPower2SpeedConstants();
         equipment.lastRecord = RecordWithSport(
           timeStamp: oneSecondAgo.millisecondsSinceEpoch,
           elapsedMillis: 0,
@@ -414,6 +419,7 @@ void main() {
         );
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
+        equipment.initPower2SpeedConstants();
         final adjustedRecord = RecordWithSport(sport: descriptor.defaultSport, distance: distance);
         adjustedRecord.adjustByFactors(powerFactor, calorieFactor, true);
         equipment.lastRecord = RecordWithSport(

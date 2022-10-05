@@ -79,7 +79,7 @@ Future<bool> hasInternetConnection() async {
     final addressTuples = parseIpAddresses(addressesString);
     connectionChecker.addresses = addressTuples
         .map((addressTuple) => AddressCheckOptions(
-              InternetAddress(addressTuple.item1),
+              address: InternetAddress(addressTuple.item1),
               port: addressTuple.item2,
             ))
         .toList(growable: false);

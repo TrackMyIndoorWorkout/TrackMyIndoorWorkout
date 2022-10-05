@@ -1,5 +1,15 @@
+## 1.1.118
+* Stages SC3 support (SIC2 console relays power meter (and also HRM if paired));
+  speed and distance is estimated
+* Cycling Power Meter support (speed and distance is estimated)
+* Cycling Speed and Cadence Sensor (CSC) support: wheel cadence + speed and pedal cadence
+* DIY indoor bike possibility via power meter and CSC support
+* More robust CSV import in case the type is picked wrong
+* Flutter version upgrades
+* Many package version upgrades
+
 ## 1.1.117
-* Fixing lock screen feature (no pointer absorption after I removed the overlay tutorials 
+* Fixing lock screen feature (no pointer absorption after the overlay tutorials were removed
   in favor of help modals) 
 
 ## 1.1.116

@@ -52,7 +52,6 @@ class MrCaptainDescriptor extends RowerDeviceDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
   void processFlag(int flag) {
-    initFlag();
     // Mr Captain violates the FTMS Rower protocol several places f-ed up
     // Flag bytes:
     // 66  0011 1100

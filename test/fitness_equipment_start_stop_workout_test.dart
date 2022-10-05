@@ -13,7 +13,7 @@ import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'utils.dart';
 import 'fitness_equipment_process_record_test.mocks.dart';
 
-@GenerateMocks([BluetoothDevice])
+@GenerateNiceMocks([MockSpec<BluetoothDevice>()])
 void main() {
   test('startWorkout blanks out leftover lastRecord', () async {
     final rnd = Random();
@@ -137,6 +137,37 @@ void main() {
         final key = equipment.keySelector([lsb, msb]);
 
         expect(key, lsb + 256 * msb);
+      });
+    });
+  });
+
+  group('keySelector handles single byte flag devices', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 256, rnd).forEach((lsb) {
+      final msb = rnd.nextInt(256);
+      test('[$lsb $msb]', () async {
+        final descriptor = DeviceFactory.getCSCBasedBike();
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+
+        final key = equipment.keySelector([lsb, msb]);
+
+        expect(key, lsb);
+      });
+    });
+  });
+
+  group('keySelector handles triple byte flag devices', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 256, rnd).forEach((lsb) {
+      final ssb = rnd.nextInt(256);
+      final msb = rnd.nextInt(256);
+      test('[$lsb $ssb $msb]', () async {
+        final descriptor = DeviceFactory.getGenericFTMSCrossTrainer();
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+
+        final key = equipment.keySelector([lsb, ssb, msb]);
+
+        expect(key, lsb + 256 * ssb + 65536 * msb);
       });
     });
   });

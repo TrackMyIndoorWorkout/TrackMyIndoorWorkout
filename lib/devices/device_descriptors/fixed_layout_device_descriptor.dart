@@ -16,6 +16,7 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     dataCharacteristicId,
     controlCharacteristicId = "",
     listenOnControl = true,
+    flagByteSize = 3,
     heartRateByteIndex,
     timeMetric,
     caloriesMetric,
@@ -33,11 +34,13 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
           manufacturerPrefix: manufacturerPrefix,
           manufacturerFitId: manufacturerFitId,
           model: model,
+          deviceCategory: DeviceCategory.smartDevice,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
           controlCharacteristicId: controlCharacteristicId,
           listenOnControl: listenOnControl,
           hasFeatureFlags: false,
+          flagByteSize: flagByteSize,
           heartRateByteIndex: heartRateByteIndex,
           timeMetric: timeMetric,
           caloriesMetric: caloriesMetric,
@@ -46,6 +49,11 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
           cadenceMetric: cadenceMetric,
           distanceMetric: distanceMetric,
         );
+
+  @override
+  void processFlag(int flag) {
+    // Empty implementation, hard coded layouts overlook flags
+  }
 
   @override
   RecordWithSport? stubRecord(List<int> data) {

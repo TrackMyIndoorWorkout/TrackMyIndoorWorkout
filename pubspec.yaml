@@ -2,14 +2,14 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.117+117
+version: 1.1.118+118
 
 environment:
-  sdk: ">=2.17.6 <3.0.0"
-  flutter: ">=3.0.5"
+  sdk: ">=2.18.2 <3.0.0"
+  flutter: ">=3.3.3"
 
 dependencies:
-  assorted_layout_widgets: ^6.0.0
+  assorted_layout_widgets: ^7.0.0
   bluetooth_enable_fork:
     git:
       url: https://github.com/CsabaConsulting/bluetooth_enable_fork.git
@@ -19,47 +19,44 @@ dependencies:
   easy_folder_picker: ^1.3.0
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^5.0.1
+  file_picker: ^5.2.0+1
   floor: ^1.2.0
   flutter_blue_plus: ^1.3.1
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.1
   flutter_logs: ^2.1.7
   flutter_native_timezone: ^2.0.0
-  flutter_spinbox: ^0.9.0
-  flutter_svg: ^1.1.4
+  flutter_spinbox: ^0.10.0
+  flutter_svg: ^1.1.5
   get: ^4.6.1
-  group_button: ^5.0.1
+  group_button: ^5.2.2
   http: ^0.13.5
   http_parser: ^4.0.1
-  internet_connection_checker: 0.0.1+4
+  internet_connection_checker: ^1.0.0+1
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
   package_info_plus: ^1.4.3+1
-  path: ^1.8.1
+  path: ^1.8.2
   path_provider: ^2.0.10
   pref: ^2.6.0
   progress_indicators: ^1.0.0
   rxdart: ^0.27.5
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
-  spinner_input:
-    git:
-      url: https://github.com/CsabaConsulting/spinner_input.git
-  sqflite: ^2.0.3+1
-  syncfusion_flutter_charts: ^20.2.45
+  sqflite: ^2.1.0
+  syncfusion_flutter_charts: ^20.3.47
   tuple: ^2.0.0
   uni_links: ^0.5.1
-  url_launcher: ^6.1.5
+  url_launcher: ^6.1.6
   vector_math: ^2.1.2
   wakelock: ^0.6.2
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^4.6.0
-  build_runner: ^2.2.0
+  analyzer: ^4.7.0
+  build_runner: ^2.2.1
   floor_generator: ^1.3.0
   flutter_driver:
     sdk: flutter
@@ -68,7 +65,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  mockito: ^5.2.0
+  mockito: ^5.3.2
   mock_data: ^2.0.0
   yaml: ^3.1.1
 

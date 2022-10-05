@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -8,6 +9,7 @@ import '../../export/fit/fit_manufacturer.dart';
 import '../../preferences/log_level.dart';
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
+import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
 import '../../utils/power_speed_mixin.dart';
 import '../device_fourcc.dart';
@@ -24,6 +26,9 @@ import 'device_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
 
 class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpeedMixin {
+  static const magicNumbers = [17, 32, 0];
+  static const magicFlag = 32 * 256 + 17;
+
   MetricDescriptor? resistanceMetric;
   // From https://github.com/ursoft/connectivity-samples/blob/main/BluetoothLeGatt/Application/src/main/java/com/example/android/bluetoothlegatt/BluetoothLeService.java
   static const List<double> resistancePowerFactor = [
@@ -74,12 +79,17 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   bool isDataProcessable(List<int> data) {
     if (data.length != 17) return false;
 
-    const measurementPrefix = [17, 32, 0];
+    const measurementPrefix = magicNumbers;
     for (int i = 0; i < measurementPrefix.length; i++) {
       if (data[i] != measurementPrefix[i]) return false;
     }
 
     return true;
+  }
+
+  @override
+  bool isFlagValid(int flag) {
+    return flag == magicFlag;
   }
 
   @override
@@ -191,7 +201,21 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   }
 
   @override
-  ComplexSensor? getExtraSensor(BluetoothDevice device) {
-    return SchwinnX70HrSensor(device);
+  ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
+    final requiredService = services
+        .firstWhereOrNull((service) => service.uuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
+    if (requiredService == null) {
+      return null;
+    }
+
+    final requiredCharacteristic = requiredService.characteristics
+        .firstWhereOrNull((ch) => ch.uuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
+    if (requiredCharacteristic == null) {
+      return null;
+    }
+
+    final extraSensor = SchwinnX70HrSensor(device);
+    extraSensor.services = services;
+    return extraSensor;
   }
 }

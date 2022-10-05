@@ -12,6 +12,9 @@ import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
 
 class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
+  static const magicNumbers = [83, 89, 22];
+  static const magicFlag = 22 * 65536 + 89 * 256 + 83;
+
   PrecorSpinnerChronoPower()
       : super(
           defaultSport: ActivityType.ride,
@@ -25,6 +28,8 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
           model: "1",
           dataServiceId: precorServiceUuid,
           dataCharacteristicId: precorMeasurementUuid,
+          listenOnControl: false,
+          flagByteSize: 3,
           heartRateByteIndex: 5,
           timeMetric: ShortMetricDescriptor(lsb: 3, msb: 4),
           caloriesMetric: ShortMetricDescriptor(lsb: 13, msb: 14),
@@ -41,11 +46,16 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
   bool isDataProcessable(List<int> data) {
     if (data.length != 19) return false;
 
-    const measurementPrefix = [83, 89, 22];
+    const measurementPrefix = magicNumbers;
     for (int i = 0; i < measurementPrefix.length; i++) {
       if (data[i] != measurementPrefix[i]) return false;
     }
     return true;
+  }
+
+  @override
+  bool isFlagValid(int flag) {
+    return flag == magicFlag;
   }
 
   @override

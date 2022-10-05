@@ -7,38 +7,39 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
-import '../persistence/database.dart';
-import '../preferences/distance_resolution.dart';
-import '../preferences/measurement_font_size_adjust.dart';
-import '../preferences/metric_spec.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
-import '../preferences/palette_spec.dart';
-import '../preferences/unit_system.dart';
-import '../utils/constants.dart';
-import '../utils/display.dart';
-import '../utils/statistics_accumulator.dart';
-import '../utils/theme_manager.dart';
-import 'models/display_record.dart';
-import 'models/histogram_data.dart';
-import 'models/measurement_counter.dart';
-import 'models/tile_configuration.dart';
-import 'about.dart';
+import '../../persistence/database.dart';
+import '../../preferences/distance_resolution.dart';
+import '../../preferences/measurement_font_size_adjust.dart';
+import '../../preferences/metric_spec.dart';
+import '../../persistence/models/activity.dart';
+import '../../persistence/models/record.dart';
+import '../../preferences/palette_spec.dart';
+import '../../preferences/unit_system.dart';
+import '../../utils/constants.dart';
+import '../../utils/display.dart';
+import '../../utils/statistics_accumulator.dart';
+import '../../utils/theme_manager.dart';
+import '../models/display_record.dart';
+import '../models/histogram_data.dart';
+import '../models/measurement_counter.dart';
+import '../models/tile_configuration.dart';
+import '../about.dart';
+import 'activity_detail_graphs.dart';
 
-class RecordsScreen extends StatefulWidget {
+class ActivityDetailsScreen extends StatefulWidget {
   final Activity activity;
   final Size size;
-  const RecordsScreen({
+  const ActivityDetailsScreen({
     Key? key,
     required this.activity,
     required this.size,
   }) : super(key: key);
 
   @override
-  RecordsScreenState createState() => RecordsScreenState();
+  ActivityDetailsScreenState createState() => ActivityDetailsScreenState();
 }
 
-class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserver {
+class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with WidgetsBindingObserver {
   int _editCount = 0;
   int _pointCount = 0;
   List<Record> _allRecords = [];
@@ -72,20 +73,6 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
   TextStyle _chartLabelStyle = const TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
-  );
-
-  final charts.TooltipBehavior _tooltipBehavior = charts.TooltipBehavior(enable: true);
-  final charts.ZoomPanBehavior _zoomPanBehavior = charts.ZoomPanBehavior(
-    enableDoubleTapZooming: true,
-    enablePinching: true,
-    enableSelectionZooming: true,
-    zoomMode: charts.ZoomMode.x,
-    enablePanning: true,
-  );
-  final charts.TrackballBehavior _trackballBehavior = charts.TrackballBehavior(
-    enable: true,
-    activationMode: charts.ActivationMode.singleTap,
-    tooltipDisplayMode: charts.TrackballDisplayMode.groupAllPoints,
   );
 
   Future<void> extraInit(BasePrefService prefService) async {
@@ -637,129 +624,24 @@ class RecordsScreenState extends State<RecordsScreen> with WidgetsBindingObserve
               ),
               adapter: StaticListAdapter(data: _tiles),
               itemBuilder: (context, index, item) {
-                return Card(
-                  elevation: 6,
-                  child: ExpandablePanel(
-                    theme: _expandableThemeData,
-                    header: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            TextOneLine(
-                              _tileConfigurations[item]!.title,
-                              style: _textStyle,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
-                            Text("MAX", style: _unitStyle),
-                            const Spacer(),
-                            FitHorizontally(
-                              child: Text(
-                                _tileConfigurations[item]!.maxString,
-                                style: _measurementStyle,
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              _preferencesSpecs[index].multiLineUnit,
-                              textAlign: TextAlign.left,
-                              maxLines: 2,
-                              style: _unitStyle,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            _themeManager.getBlueIcon(_preferencesSpecs[index].icon, _sizeDefault2),
-                            Text("AVG", style: _unitStyle),
-                            const Spacer(),
-                            FitHorizontally(
-                              child: Text(
-                                _tileConfigurations[item]!.avgString,
-                                style: _measurementStyle,
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              _preferencesSpecs[index].multiLineUnit,
-                              textAlign: TextAlign.left,
-                              maxLines: 2,
-                              style: _unitStyle,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    collapsed: Container(),
-                    expanded: Column(children: [
-                      item == "speed" && widget.activity.sport != ActivityType.ride
-                          ? TextOneLine(
-                              "Speed ${_si ? 'km' : 'mi'}/h",
-                              style: _textStyle,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            )
-                          : Container(),
-                      SizedBox(
-                        width: widget.size.width,
-                        height: widget.size.height / 2,
-                        child: charts.SfCartesianChart(
-                          primaryXAxis: charts.DateTimeAxis(
-                            labelStyle: _chartLabelStyle,
-                            axisLine: charts.AxisLine(color: _chartTextColor),
-                            majorTickLines: charts.MajorTickLines(color: _chartTextColor),
-                            minorTickLines: charts.MinorTickLines(color: _chartTextColor),
-                            majorGridLines: charts.MajorGridLines(color: _chartTextColor),
-                            minorGridLines: charts.MinorGridLines(color: _chartTextColor),
-                          ),
-                          primaryYAxis: charts.NumericAxis(
-                            plotBands: _preferencesSpecs[index].plotBands,
-                            labelStyle: _chartLabelStyle,
-                            axisLine: charts.AxisLine(color: _chartTextColor),
-                            majorTickLines: charts.MajorTickLines(color: _chartTextColor),
-                            minorTickLines: charts.MinorTickLines(color: _chartTextColor),
-                            majorGridLines: charts.MajorGridLines(color: _chartTextColor),
-                            minorGridLines: charts.MinorGridLines(color: _chartTextColor),
-                          ),
-                          margin: const EdgeInsets.all(0),
-                          series: _tileConfigurations[item]!.dataFn(),
-                          zoomPanBehavior: _zoomPanBehavior,
-                          trackballBehavior: _trackballBehavior,
-                        ),
-                      ),
-                      const Divider(height: 20, thickness: 2),
-                      TextOneLine(
-                        _tileConfigurations[item]!.histogramTitle,
-                        style: _textStyle,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(
-                        width: widget.size.width,
-                        height: widget.size.height / 3,
-                        child: charts.SfCircularChart(
-                          margin: const EdgeInsets.all(0),
-                          legend: charts.Legend(isVisible: true, textStyle: _pieChartLabelStyle),
-                          series: _tileConfigurations[item]!.histogramFn!(),
-                          palette: _paletteSpec?.getPiePalette(
-                                  _isLight, _preferencesSpecs[index]) ??
-                              PaletteSpec.getPiePaletteDefault(_isLight, _preferencesSpecs[index]),
-                          tooltipBehavior: _tooltipBehavior,
-                        ),
-                      ),
-                    ]),
-                  ),
+                return ActivityDetailGraphs(
+                  item: item,
+                  index: index,
+                  size: widget.size,
+                  expandableThemeData: _expandableThemeData,
+                  textStyle: _textStyle,
+                  measurementStyle: _measurementStyle,
+                  unitStyle: _unitStyle,
+                  chartLabelStyle: _chartLabelStyle,
+                  chartTextColor: _chartTextColor,
+                  tileConfiguration: _tileConfigurations[item]!,
+                  preferencesSpec: _preferencesSpecs[index],
+                  si: _si,
+                  sport: widget.activity.sport,
+                  isLight: _isLight,
+                  sizeDefault: _sizeDefault2,
+                  paletteSpec: _paletteSpec!,
+                  themeManager: _themeManager,
                 );
               },
             ),

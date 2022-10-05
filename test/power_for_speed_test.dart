@@ -1,4 +1,3 @@
-// import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -30,7 +29,6 @@ void main() {
 
         final power = speed2Power.powerForVelocity(testData.speed * DeviceDescriptor.kmh2ms);
         expect(power, closeTo(testData.watts, testData.watts * workaroundEpsRatio));
-        // debugPrint("${testData.speed} -> $power");
       });
     }
   });

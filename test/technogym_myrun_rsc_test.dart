@@ -2,13 +2,13 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/npe_runn_treadmill.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/running_speed_and_cadence_sensor.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
-import 'runn_rsc_test.mocks.dart';
+import 'technogym_myrun_rsc_test.mocks.dart';
 
 class TestPair {
   final List<int> data;
@@ -17,7 +17,7 @@ class TestPair {
   const TestPair({required this.data, required this.record});
 }
 
-const sampleData = [0, 145, 1, 187];
+const sampleData = [2, 185, 0, 51, 138, 2, 0, 0];
 
 @GenerateNiceMocks([MockSpec<BluetoothDevice>()])
 void main() {
@@ -25,31 +25,33 @@ void main() {
     await initPrefServiceForTest();
   });
 
-  test('Runn RSC constructor tests', () async {
-    final treadmill = NpeRunnTreadmill();
+  test('Technogym MyRun RSC constructor tests', () async {
+    final treadmill = DeviceFactory.getGenericFTMSTreadmill();
 
     expect(treadmill.defaultSport, ActivityType.run);
-    expect(treadmill.fourCC, npeRunnFourCC);
+    expect(treadmill.fourCC, genericFTMSTreadmillFourCC);
     expect(treadmill.isMultiSport, false);
   });
 
-  test('Runn RSC Device interprets flags properly', () async {
-    final runnRsc = RunningSpeedAndCadenceSensor(MockBluetoothDevice());
+  test('Technogym MyRun RSC Device interprets flags properly', () async {
+    final treadmill = RunningSpeedAndCadenceSensor(MockBluetoothDevice());
 
-    final canProcess = runnRsc.canMeasurementProcessed(sampleData);
+    final canProcess = treadmill.canMeasurementProcessed(sampleData);
 
     expect(canProcess, true);
-    expect(runnRsc.speedMetric, isNotNull);
-    expect(runnRsc.cadenceMetric, isNotNull);
-    expect(runnRsc.distanceMetric, null);
+    expect(treadmill.speedMetric, isNotNull);
+    expect(treadmill.cadenceMetric, isNotNull);
+    expect(treadmill.distanceMetric, isNotNull);
   });
 
-  group('Runn RSC Device interprets RSC data properly', () {
+  group('Technogym MyRun RSC Device interprets RSC data properly', () {
     for (final testPair in [
       TestPair(
         data: sampleData,
         record: RecordWithSport(
-          distance: null,
+          distance: (((sampleData[7] * 256 + sampleData[6]) * 256 + sampleData[5]) * 256 +
+                  sampleData[4]) /
+              10.0,
           elapsed: null,
           calories: null,
           power: null,
@@ -65,9 +67,9 @@ void main() {
     ]) {
       final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
       test("$sum", () async {
-        final runnRsc = RunningSpeedAndCadenceSensor(MockBluetoothDevice());
+        final treadmill = RunningSpeedAndCadenceSensor(MockBluetoothDevice());
 
-        final record = runnRsc.processMeasurement(testPair.data);
+        final record = treadmill.processMeasurement(testPair.data);
 
         expect(record.id, null);
         expect(record.id, testPair.record.id);

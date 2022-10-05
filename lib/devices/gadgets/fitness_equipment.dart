@@ -27,6 +27,7 @@ import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/hr_based_calories.dart';
 import '../../utils/logging.dart';
+import '../../utils/power_speed_mixin.dart';
 import '../bluetooth_device_ex.dart';
 import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
@@ -49,7 +50,7 @@ enum WorkoutState {
   stopped,
 }
 
-class FitnessEquipment extends DeviceBase {
+class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   static const badKey = -1;
 
   DeviceDescriptor? descriptor;
@@ -66,11 +67,15 @@ class FitnessEquipment extends DeviceBase {
   bool deviceHasTotalCalorieReporting = false;
   bool hrmHasTotalCalorieReporting = false;
   bool hasTotalDistanceReporting = false;
+  bool hasPowerReporting = false;
+  bool hasSpeedReporting = false;
   Timer? _timer;
   late RecordWithSport lastRecord;
   late Record continuationRecord;
   bool continuation = false;
   HeartRateMonitor? heartRateMonitor;
+  ComplexSensor? _companionSensor;
+  DeviceDescriptor? _companionDescriptor;
   ComplexSensor? _extraSensor;
   String _heartRateGapWorkaround = heartRateGapWorkaroundDefault;
   int _heartRateUpperLimit = heartRateUpperLimitDefault;
@@ -133,10 +138,15 @@ class FitnessEquipment extends DeviceBase {
       return badKey;
     }
 
-    if (l.length == 1) {
+    if (l.length == 1 || descriptor?.flagByteSize == 1) {
       return l[0];
     }
 
+    if (l.length >= 3 && (descriptor?.flagByteSize ?? 2) == 3) {
+      return l[2] * 65536 + l[1] * 256 + l[0];
+    }
+
+    // Default flagByteSize is 2
     return l[1] * 256 + l[0];
   }
 
@@ -161,7 +171,7 @@ class FitnessEquipment extends DeviceBase {
 
     final merged = values.skip(1).fold<RecordWithSport>(
           values.first,
-          (prev, element) => prev.merge(element, true, true),
+          (prev, element) => prev.merge(element, true, true, true, true, true),
         );
     if (logLevel >= logLevelInfo) {
       Logging.log(
@@ -214,7 +224,7 @@ class FitnessEquipment extends DeviceBase {
   /// Stages SB20, Yesoul S3 and several other machines don't gather up
   /// all the relevant feature data into one packet, but instead supply
   /// various packets with distinct features. For example:
-  /// * Stages has three packet types: 1. speed, 2. distance, 3.
+  /// * Stages SB20 has three packet types: 1. speed, 2. distance, 3.
   ///   cadence + power
   /// * Yesoul has two: 1. speed + elapsed time 2. cadence + distance +
   ///   power + calories
@@ -280,7 +290,7 @@ class FitnessEquipment extends DeviceBase {
         );
       }
       bool processable = false;
-      if (key >= 0) {
+      if (key >= 0 && descriptor!.isFlagValid(key)) {
         if (!dataHandlers.containsKey(key)) {
           if (logLevel >= logLevelInfo) {
             Logging.log(
@@ -347,6 +357,7 @@ class FitnessEquipment extends DeviceBase {
       );
     } else {
       _extraSensor?.pumpData(null);
+      _companionSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
         pumpDataCore(recordStub, false);
       });
@@ -366,13 +377,23 @@ class FitnessEquipment extends DeviceBase {
     }
 
     if (descriptor != null && device != null) {
-      _extraSensor = descriptor!.getExtraSensor(device!);
-      _extraSensor?.services = services;
+      _extraSensor = descriptor!.getExtraSensor(device!, services);
       await _extraSensor?.discoverCore();
       await _extraSensor?.attach();
     } else {
       _extraSensor = null;
     }
+  }
+
+  Future<void> addCompanionSensor(
+    DeviceDescriptor companionDescriptor,
+    BluetoothDevice companionDevice,
+  ) async {
+    _companionDescriptor = companionDescriptor;
+    _companionSensor = _companionDescriptor?.getSensor(companionDevice);
+    await _companionSensor?.connect();
+    await _companionSensor?.discover();
+    await _companionSensor?.attach();
   }
 
   Future<void> setActivity(Activity activity) async {
@@ -401,7 +422,12 @@ class FitnessEquipment extends DeviceBase {
   Future<bool> connectOnDemand({identify = false}) async {
     await connect();
 
-    return await discover(identify: identify);
+    final success = await discover(identify: identify);
+    if (success) {
+      descriptor!.setDevice(device!, services);
+    }
+
+    return success;
   }
 
   /// Needed to check if any of the last seen data stubs for each
@@ -741,9 +767,15 @@ class FitnessEquipment extends DeviceBase {
       firstDistance = false;
     }
 
+    hasPowerReporting |= (stub.power ?? 0) > 0;
+    hasSpeedReporting |= (stub.speed ?? 0.0) > 0.0;
+
     if (shouldMerge) {
       stub.merge(
         lastRecord,
+        workoutState != WorkoutState.stopped,
+        hasPowerReporting,
+        hasSpeedReporting,
         _cadenceGapWorkaround,
         _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
       );
@@ -760,10 +792,32 @@ class FitnessEquipment extends DeviceBase {
 
     if (_extraSensor != null && (_extraSensor?.attached ?? false)) {
       RecordWithSport? extraRecord = _extraSensor?.record;
+      hasTotalDistanceReporting |= extraRecord?.distance != null;
+      deviceHasTotalCalorieReporting |= !idle && extraRecord?.calories != null;
+      hasPowerReporting |= (extraRecord?.power ?? 0) > 0;
+      hasSpeedReporting |= (extraRecord?.speed ?? 0.0) > 0.0;
       if (extraRecord != null) {
         extraRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-        stub.merge(extraRecord, true, true);
+        stub.merge(extraRecord, true, true, true, true, true);
       }
+    }
+
+    if (_companionSensor != null && (_companionSensor?.attached ?? false)) {
+      RecordWithSport? companionRecord = _companionSensor?.record;
+      hasTotalDistanceReporting |= companionRecord?.distance != null;
+      deviceHasTotalCalorieReporting |= !idle && companionRecord?.calories != null;
+      hasPowerReporting |= (companionRecord?.power ?? 0) > 0;
+      hasSpeedReporting |= (companionRecord?.speed ?? 0.0) > 0.0;
+      if (companionRecord != null) {
+        companionRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
+        stub.merge(companionRecord, true, true, true, true, true);
+      }
+    }
+
+    if (sport == ActivityType.ride && stub.speed == null && (stub.power ?? 0) > eps) {
+      // When cycling supplement speed from power if missing
+      // via https://www.gribble.org/cycling/power_v_speed.html
+      stub.speed = velocityForPowerCardano(stub.power!) * DeviceDescriptor.ms2kmh;
     }
 
     final dTMillis = elapsedMillis - (lastRecord.elapsedMillis ?? 0);
@@ -844,12 +898,16 @@ class FitnessEquipment extends DeviceBase {
         deltaCalories = stub.caloriesPerMinute! / 60 * dT;
       }
 
-      // Supplement power from calories https://www.braydenwm.com/calburn.htm
       if ((stub.power ?? 0) < eps) {
+        // Supplement power from calories https://www.braydenwm.com/calburn.htm
         if ((stub.caloriesPerMinute ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
         } else if ((stub.caloriesPerHour ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
+        } else if (sport == ActivityType.ride && (stub.speed ?? 0) > displayEps) {
+          // When cycling supplement power from speed if missing
+          // via https://www.gribble.org/cycling/power_v_speed.html
+          stub.power = powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms).toInt();
         }
 
         if (stub.power != null) {
@@ -871,7 +929,7 @@ class FitnessEquipment extends DeviceBase {
       }
     }
 
-    if (stub.pace != null && stub.pace! > 0 && slowPace != null && stub.pace! < slowPace! ||
+    if (stub.pace != null && stub.pace! > 0.0 && slowPace != null && stub.pace! < slowPace! ||
         stub.speed != null && stub.speed! > eps) {
       // #101, #122
       if ((stub.cadence == null || stub.cadence == 0) &&
@@ -979,6 +1037,8 @@ class FitnessEquipment extends DeviceBase {
     hrCalorieFactor = factors.item3;
     hrmCalorieFactor =
         await database.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
+
+    initPower2SpeedConstants();
 
     if (logLevel >= logLevelInfo) {
       Logging.log(
@@ -1089,6 +1149,7 @@ class FitnessEquipment extends DeviceBase {
   @override
   Future<void> detach() async {
     await _extraSensor?.detach();
+    await _companionSensor?.detach();
     await super.detach();
   }
 }

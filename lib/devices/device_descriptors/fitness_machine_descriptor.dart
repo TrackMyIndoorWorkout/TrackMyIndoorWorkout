@@ -36,6 +36,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           manufacturerPrefix: manufacturerPrefix,
           manufacturerFitId: manufacturerFitId,
           model: model,
+          deviceCategory: DeviceCategory.smartDevice,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
           controlCharacteristicId: fitnessMachineControlPointUuid,
@@ -55,6 +56,11 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return byteCounter >= flagByteSize &&
         (!hasFutureReservedBytes && dataLength == byteCounter ||
             hasFutureReservedBytes && dataLength >= byteCounter);
+  }
+
+  @override
+  bool isFlagValid(int flag) {
+    return flag >= 0;
   }
 
   int advanceFlag(int flag) {

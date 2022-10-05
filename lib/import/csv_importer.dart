@@ -100,21 +100,24 @@ class CSVImporter with PowerSpeedMixin {
       return null;
     }
 
+    _migration = false;
     _linePointer = 0;
     final firstLine = _lines[0].split(",");
     if (firstLine.length > 1) {
       if (firstLine[0] != csvMagic) {
-        message = "Cannot recognize migration CSV magic";
-        return null;
-      }
+        if (firstLine[0].isNotEmpty) {
+          message = "Cannot recognize migration CSV magic";
+          return null;
+        }
+      } else {
+        if (!firstLine[1].isNumericOnly) {
+          message = "CSV version number is not an integer";
+          return null;
+        }
 
-      if (!firstLine[1].isNumericOnly) {
-        message = "CSV version number is not an integer";
-        return null;
+        _migration = true;
+        _version = int.parse(firstLine[1]);
       }
-
-      _migration = true;
-      _version = int.parse(firstLine[1]);
     }
 
     if (!_findLine(rideSummaryTag)) {

@@ -33,6 +33,8 @@ Map<String, DeviceDescriptor> deviceMap = {
   // Delete this?
   genericFTMSEllipticalFourCC: DeviceFactory.getGenericFTMSElliptical(),
   genericFTMSCrossTrainerFourCC: DeviceFactory.getGenericFTMSCrossTrainer(),
+  powerMeterBasedBikeFourCC: DeviceFactory.getPowerMeterBasedBike(),
+  cscSensorBasedBikeFourCC: DeviceFactory.getCSCBasedBike(),
 };
 
 DeviceDescriptor genericDescriptorForSport(String sport) {

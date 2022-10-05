@@ -12,8 +12,6 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
     manufacturerPrefix,
     manufacturerFitId,
     model,
-    dataServiceId = fitnessMachineUuid,
-    dataCharacteristicId = crossTrainerUuid,
     heartRateByteIndex,
   }) : super(
           defaultSport: ActivityType.elliptical,
@@ -25,8 +23,8 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
           manufacturerPrefix: manufacturerPrefix,
           manufacturerFitId: manufacturerFitId,
           model: model,
-          dataServiceId: dataServiceId,
-          dataCharacteristicId: dataCharacteristicId,
+          dataServiceId: fitnessMachineUuid,
+          dataCharacteristicId: crossTrainerUuid,
           flagByteSize: 3,
           heartRateByteIndex: heartRateByteIndex,
         );
@@ -40,15 +38,12 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
         manufacturerPrefix: manufacturerPrefix,
         manufacturerFitId: manufacturerFitId,
         model: model,
-        dataServiceId: dataServiceId,
-        dataCharacteristicId: dataCharacteristicId,
         heartRateByteIndex: heartRateByteIndex,
       );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.cross_trainer_data.xml
   @override
   void processFlag(int flag) {
-    super.processFlag(flag);
     // LifePro FlexStride Pro
     // 12 0000 1100 instant speed, total distance, cadence (step rate)
     // 33 0010 0001 instant power, elapsed time

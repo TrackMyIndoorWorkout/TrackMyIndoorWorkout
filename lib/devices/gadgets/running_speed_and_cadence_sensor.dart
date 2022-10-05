@@ -8,24 +8,22 @@ import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import 'complex_sensor.dart';
 
-class RunningCadenceSensor extends ComplexSensor {
+class RunningSpeedAndCadenceSensor extends ComplexSensor {
+  static const serviceUuid = runningCadenceServiceUuid;
+  static const characteristicUuid = runningCadenceMeasurementUuid;
+
   // Running cadence metrics
   MetricDescriptor? speedMetric;
   MetricDescriptor? cadenceMetric;
   MetricDescriptor? distanceMetric;
 
-  RunningCadenceSensor(device)
-      : super(runningCadenceServiceUuid, runningCadenceMeasurementUuid, device);
+  RunningSpeedAndCadenceSensor(device) : super(serviceUuid, characteristicUuid, device);
 
-  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml
   @override
-  bool canMeasurementProcessed(List<int> data) {
-    if (data.length < 3) return false;
-
-    var flag = data[0];
-    // Clear out status bits so status change won't cause metric re-creation
-    flag &= 3; // 1 + 2
+  void processFlag(int flag) {
     if (featureFlag != flag && flag >= 0) {
+      clearMetrics();
+      featureFlag = flag;
       expectedLength = 1; // The flag itself + instant speed and cadence
       // UInt16, m/s with 1/256 resolution -> immediately convert it to km/h with the divider
       speedMetric = ShortMetricDescriptor(
@@ -49,8 +47,19 @@ class RunningCadenceSensor extends ComplexSensor {
         expectedLength += 4;
       }
 
-      featureFlag = flag;
+      flag ~/= 2;
     }
+  }
+
+  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml
+  @override
+  bool canMeasurementProcessed(List<int> data) {
+    if (data.length < 3) return false;
+
+    var flag = data[0];
+    // Clear out status bits so status change won't cause metric re-creation
+    flag &= 3; // 1 + 2
+    processFlag(flag);
 
     return featureFlag >= 0 && data.length == expectedLength;
   }

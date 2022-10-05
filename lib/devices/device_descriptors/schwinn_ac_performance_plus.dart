@@ -25,7 +25,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           manufacturerPrefix: "Schwinn",
           manufacturerFitId: stravaFitId,
           model: "Schwinn AC Perf+",
-          antPlus: true,
+          deviceCategory: DeviceCategory.antPlusDevice,
           canMeasureCalories: true, // #258 avoid over inflation
         );
 
@@ -35,6 +35,25 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   @override
   bool isDataProcessable(List<int> data) {
     return false;
+  }
+
+  @override
+  bool isFlagValid(int flag) {
+    return false;
+  }
+
+  @override
+  void processFlag(int flag) {
+    final prefService = Get.find<BasePrefService>();
+    final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    Logging.log(
+      logLevel,
+      logLevelError,
+      "Schwinn AC Perf+",
+      "processFlag",
+      "Not implemented!",
+    );
+    debugPrint("Schwinn AC Perf+ processFlag Not implemented!");
   }
 
   @override

@@ -5,6 +5,13 @@ import '../gadgets/complex_sensor.dart';
 import '../gatt_constants.dart';
 import 'data_handler.dart';
 
+enum DeviceCategory {
+  smartDevice,
+  antPlusDevice,
+  primarySensor,
+  secondarySensor,
+}
+
 abstract class DeviceDescriptor extends DataHandler {
   static const double ms2kmh = 3.6;
   static const double kmh2ms = 1 / ms2kmh;
@@ -20,12 +27,12 @@ abstract class DeviceDescriptor extends DataHandler {
   final String manufacturerPrefix;
   final int manufacturerFitId;
   final String model;
+  DeviceCategory deviceCategory;
   String dataServiceId;
   String dataCharacteristicId;
   String controlCharacteristicId;
   bool listenOnControl;
   String statusCharacteristicId;
-  final bool antPlus;
 
   bool canMeasureCalories;
 
@@ -41,12 +48,12 @@ abstract class DeviceDescriptor extends DataHandler {
     required this.manufacturerPrefix,
     required this.manufacturerFitId,
     required this.model, // Maybe eradicate?
+    required this.deviceCategory,
     this.dataServiceId = "",
     this.dataCharacteristicId = "",
     this.controlCharacteristicId = "",
     this.listenOnControl = true,
     this.statusCharacteristicId = "",
-    this.antPlus = false,
     this.canMeasureCalories = true,
     hasFeatureFlags = true,
     flagByteSize = 2,
@@ -79,7 +86,13 @@ abstract class DeviceDescriptor extends DataHandler {
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo});
 
-  ComplexSensor? getExtraSensor(BluetoothDevice device) {
+  ComplexSensor? getSensor(BluetoothDevice device) {
     return null;
   }
+
+  ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
+    return null;
+  }
+
+  void setDevice(BluetoothDevice device, List<BluetoothService> services) {}
 }

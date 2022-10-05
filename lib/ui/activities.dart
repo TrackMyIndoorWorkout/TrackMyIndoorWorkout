@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
@@ -42,7 +41,7 @@ import 'parts/power_factor_tune.dart';
 import 'parts/sport_picker.dart';
 import 'parts/upload_portal_picker.dart';
 import 'power_tunes.dart';
-import 'records.dart';
+import 'details/activity_details.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   final bool hasLeaderboardData;
@@ -317,8 +316,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       IconButton(
         icon: _themeManager.getActionIcon(Icons.chevron_right, size),
         iconSize: size,
-        onPressed: () async =>
-            await Get.to(() => RecordsScreen(activity: activity, size: Get.mediaQuery.size)),
+        onPressed: () async => await Get.to(
+            () => ActivityDetailsScreen(activity: activity, size: Get.mediaQuery.size)),
       ),
     ]);
 
@@ -506,7 +505,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                 contentPadding: const EdgeInsets.symmetric(horizontal: 1.0),
                 minLeadingWidth: 0,
                 horizontalTitleGap: 0,
-                onTap: () => Get.to(() => RecordsScreen(activity: item, size: Get.mediaQuery.size)),
+                onTap: () =>
+                    Get.to(() => ActivityDetailsScreen(activity: item, size: Get.mediaQuery.size)),
                 title: Column(
                   children: [
                     Row(
