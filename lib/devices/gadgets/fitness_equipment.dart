@@ -33,7 +33,7 @@ import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';
-import '../gatt_constants.dart';
+import '../gatt/gatt_constants.dart';
 import 'device_base.dart';
 import 'heart_rate_monitor.dart';
 import 'write_support_parameters.dart';

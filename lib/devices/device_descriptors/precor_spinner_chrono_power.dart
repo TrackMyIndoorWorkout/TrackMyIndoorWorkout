@@ -5,10 +5,10 @@ import '../../export/fit/fit_manufacturer.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
-import '../device_fourcc.dart';
-import '../gatt_constants.dart';
+import '../gatt/gatt_constants.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
+import '../device_fourcc.dart';
 import 'fixed_layout_device_descriptor.dart';
 
 class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {

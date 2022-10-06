@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 import '../devices/company_registry.dart';
 import '../devices/device_map.dart';
-import '../devices/gatt_constants.dart';
+import '../devices/gatt/gatt_constants.dart';
 import 'advertisement_data_ex.dart';
 import 'constants.dart';
 import 'display.dart';

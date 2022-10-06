@@ -6,10 +6,10 @@ import 'package:pref/pref.dart';
 import '../../persistence/models/record.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
 import '../../utils/constants.dart';
+import '../gatt/gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
-import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 
 class RowerDeviceDescriptor extends FitnessMachineDescriptor {

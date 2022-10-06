@@ -1,6 +1,6 @@
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
-import '../gatt_constants.dart';
+import '../gatt/gatt_constants.dart';
 import 'complex_sensor.dart';
 
 class SchwinnX70HrSensor extends ComplexSensor {

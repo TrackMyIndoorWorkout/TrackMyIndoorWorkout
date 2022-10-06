@@ -16,7 +16,7 @@ import '../device_fourcc.dart';
 import '../gadgets/cadence_mixin.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gadgets/schwinn_x70_hr_sensor.dart';
-import '../gatt_constants.dart';
+import '../gatt/gatt_constants.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/six_byte_metric_descriptor.dart';

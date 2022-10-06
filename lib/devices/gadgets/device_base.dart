@@ -13,7 +13,7 @@ import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
-import '../gatt_constants.dart';
+import '../gatt/gatt_constants.dart';
 
 abstract class DeviceBase {
   final String serviceId;

@@ -15,7 +15,7 @@ import '../devices/device_fourcc.dart';
 import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
-import '../devices/gatt_constants.dart';
+import '../devices/gatt/gatt_constants.dart';
 import '../devices/gatt_maps.dart';
 import '../preferences/auto_connect.dart';
 import '../persistence/database.dart';
