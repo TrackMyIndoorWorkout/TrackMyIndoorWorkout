@@ -10,7 +10,8 @@ import 'package:tuple/tuple.dart';
 
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/bluetooth_device_ex.dart';
-import '../../devices/gatt/gatt_constants.dart';
+import '../../devices/gatt/ftms.dart';
+import '../../devices/gatt/generic.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';

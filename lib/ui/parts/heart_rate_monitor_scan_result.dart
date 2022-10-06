@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
-import '../../devices/gatt/gatt_constants.dart';
+import '../../devices/gatt/hrm.dart';
 import '../../utils/advertisement_data_ex.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';

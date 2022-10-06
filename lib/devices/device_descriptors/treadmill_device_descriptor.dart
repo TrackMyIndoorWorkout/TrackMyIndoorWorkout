@@ -6,7 +6,7 @@ import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gadgets/running_speed_and_cadence_sensor.dart';
-import '../gatt/gatt_constants.dart';
+import '../gatt/ftms.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';

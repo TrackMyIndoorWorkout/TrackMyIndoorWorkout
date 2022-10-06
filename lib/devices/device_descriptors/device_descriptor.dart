@@ -2,7 +2,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../track/tracks.dart';
 import '../gadgets/complex_sensor.dart';
-import '../gatt/gatt_constants.dart';
+import '../gatt/ftms.dart';
 import 'data_handler.dart';
 
 enum DeviceCategory {

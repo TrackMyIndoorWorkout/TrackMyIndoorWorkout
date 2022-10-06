@@ -1,6 +1,6 @@
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
-import '../gatt/gatt_constants.dart';
+import '../gatt/hrm.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';

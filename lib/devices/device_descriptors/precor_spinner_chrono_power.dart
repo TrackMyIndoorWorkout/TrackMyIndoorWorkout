@@ -5,7 +5,7 @@ import '../../export/fit/fit_manufacturer.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
-import '../gatt/gatt_constants.dart';
+import '../gatt/precor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import '../device_fourcc.dart';

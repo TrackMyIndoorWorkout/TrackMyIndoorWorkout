@@ -4,7 +4,12 @@ import 'package:get/get.dart';
 
 import '../devices/company_registry.dart';
 import '../devices/device_map.dart';
-import '../devices/gatt/gatt_constants.dart';
+import '../devices/gatt/csc.dart';
+import '../devices/gatt/ftms.dart';
+import '../devices/gatt/hrm.dart';
+import '../devices/gatt/power_meter.dart';
+import '../devices/gatt/precor.dart';
+import '../devices/gatt/schwinn_x70.dart';
 import 'advertisement_data_ex.dart';
 import 'constants.dart';
 import 'display.dart';
