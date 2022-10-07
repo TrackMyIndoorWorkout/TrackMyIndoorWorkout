@@ -78,7 +78,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   HeartRateMonitor? heartRateMonitor;
   ComplexSensor? _companionSensor;
   DeviceDescriptor? _companionDescriptor;
-  ComplexSensor? _extraSensor;
+  List<ComplexSensor> _additionalSensors = [];
   String _heartRateGapWorkaround = heartRateGapWorkaroundDefault;
   int _heartRateUpperLimit = heartRateUpperLimitDefault;
   String _heartRateLimitingMethod = heartRateLimitingMethodDefault;
@@ -359,7 +359,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         },
       );
     } else {
-      _extraSensor?.pumpData(null);
+      for (final sensor in _additionalSensors) {
+        sensor.pumpData(null);
+      }
+
       _companionSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
         pumpDataCore(recordStub, false);
@@ -374,17 +377,27 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   Future<void> additionalSensorsOnDemand() async {
     await refreshFactors();
 
-    if (_extraSensor != null && _extraSensor?.device?.id.id != device?.id.id) {
-      await _extraSensor?.detach();
-      _extraSensor = null;
+    bool hadDetach = false;
+    for (final sensor in _additionalSensors) {
+      if (sensor.device?.id.id != device?.id.id) {
+        await sensor.detach();
+        hadDetach = true;
+      }
+    }
+
+    if (hadDetach) {
+      _additionalSensors =
+          _additionalSensors.where((sensor) => sensor.device?.id.id == device?.id.id).toList();
     }
 
     if (descriptor != null && device != null) {
-      _extraSensor = descriptor!.getExtraSensor(device!, services);
-      await _extraSensor?.discoverCore();
-      await _extraSensor?.attach();
+      _additionalSensors = descriptor!.getAdditionalSensors(device!, services);
+      for (final sensor in _additionalSensors) {
+        await sensor.discoverCore();
+        await sensor.attach();
+      }
     } else {
-      _extraSensor = null;
+      _additionalSensors = [];
     }
   }
 
@@ -793,15 +806,15 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return lastRecord;
     }
 
-    if (_extraSensor != null && (_extraSensor?.attached ?? false)) {
-      RecordWithSport? extraRecord = _extraSensor?.record;
-      hasTotalDistanceReporting |= extraRecord?.distance != null;
-      deviceHasTotalCalorieReporting |= !idle && extraRecord?.calories != null;
-      hasPowerReporting |= (extraRecord?.power ?? 0) > 0;
-      hasSpeedReporting |= (extraRecord?.speed ?? 0.0) > 0.0;
-      if (extraRecord != null) {
-        extraRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-        stub.merge(extraRecord, true, true, true, true, true);
+    for (final sensor in _additionalSensors) {
+      if (sensor.attached) {
+        RecordWithSport? additionalRecord = sensor.record;
+        hasTotalDistanceReporting |= additionalRecord.distance != null;
+        deviceHasTotalCalorieReporting |= !idle && additionalRecord.calories != null;
+        hasPowerReporting |= (additionalRecord.power ?? 0) > 0;
+        hasSpeedReporting |= (additionalRecord.speed ?? 0.0) > 0.0;
+        additionalRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
+        stub.merge(additionalRecord, true, true, true, true, true);
       }
     }
 
@@ -1061,7 +1074,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   @override
   void readConfiguration() {
     super.readConfiguration();
-    _extraSensor?.readConfiguration();
+    for (final sensor in _additionalSensors) {
+      sensor.readConfiguration();
+    }
+
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
         prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
@@ -1153,7 +1169,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   @override
   Future<void> detach() async {
-    await _extraSensor?.detach();
+    for (final sensor in _additionalSensors) {
+      await sensor.detach();
+    }
+
     await _companionSensor?.detach();
     await super.detach();
   }

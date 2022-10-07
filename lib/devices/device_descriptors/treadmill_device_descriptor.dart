@@ -101,16 +101,17 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   void stopWorkout() {}
 
   @override
-  ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
+  List<ComplexSensor> getAdditionalSensors(
+      BluetoothDevice device, List<BluetoothService> services) {
     final requiredService = services.firstWhereOrNull(
         (service) => service.uuid.uuidString() == RunningSpeedAndCadenceSensor.serviceUuid);
     if (requiredService == null) {
-      return null;
+      return [];
     }
 
-    final extraSensor = RunningSpeedAndCadenceSensor(device);
-    extraSensor.services = services;
-    return extraSensor;
+    final additionalSensor = RunningSpeedAndCadenceSensor(device);
+    additionalSensor.services = services;
+    return [additionalSensor];
   }
 
   int processPaceFlag(int flag) {
