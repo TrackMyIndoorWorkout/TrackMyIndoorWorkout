@@ -16,6 +16,7 @@ import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../persistence/database.dart';
 import '../../preferences/extend_tuning.dart';
+import '../../preferences/enable_asserts.dart';
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/log_level.dart';
@@ -109,6 +110,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   WriteSupportParameters? _powerLevels;
   bool supportsSpinDown = false;
   bool _blockSignalStartStop = blockSignalStartStopDefault;
+  bool _enableAsserts = enableAssertsDefault;
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
@@ -951,7 +953,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     // #197
     if (_startingCalories > eps) {
-      if (kDebugMode) {
+      if (kDebugMode && _enableAsserts) {
         assert(deviceHasTotalCalorieReporting || hrmHasTotalCalorieReporting);
         assert(calories >= _startingCalories);
       }
@@ -987,6 +989,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       stub.cumulativeMetricsEnforcements(
         lastRecord,
         logLevel,
+        _enableAsserts,
         forDistance: !firstDistance,
         forTime: true,
         forCalories: !firstCalories,
@@ -1081,6 +1084,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
     _blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
+    _enableAsserts = prefService.get<bool>(enableAssertsTag) ?? enableAssertsDefault;
 
     if (logLevel >= logLevelInfo) {
       Logging.log(

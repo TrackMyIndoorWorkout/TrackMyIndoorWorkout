@@ -13,6 +13,7 @@ import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enforced_time_zone.dart';
+import '../../preferences/enable_asserts.dart';
 import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/logging.dart';
@@ -242,6 +243,11 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         title: Text(appDebugMode),
         subtitle: Text(appDebugModeDescription),
         pref: appDebugModeTag,
+      ));
+      expertPreferences.add(const PrefCheckbox(
+        title: Text(enableAsserts),
+        subtitle: Text(enableAssertsDescription),
+        pref: enableAssertsTag,
       ));
     }
 
