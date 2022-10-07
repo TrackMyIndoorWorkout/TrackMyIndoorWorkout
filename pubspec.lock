@@ -46,12 +46,10 @@ packages:
   bluetooth_enable_fork:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: d86b9b4c7ee46383bc5fa2e68c680249583a68d1
-      url: "https://github.com/CsabaConsulting/bluetooth_enable_fork.git"
-    source: git
-    version: "0.1.4"
+      name: bluetooth_enable_fork
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   boolean_selector:
     dependency: transitive
     description:
