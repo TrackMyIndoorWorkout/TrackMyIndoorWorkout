@@ -16,6 +16,7 @@ import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt/csc.dart';
+import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
 import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';
@@ -329,6 +330,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
         descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
       } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
         descriptor = deviceMap[schwinnX70BikeFourCC];
+      } else if (advertisementDigest.serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
+        descriptor = deviceMap[concept2RowerFourCC];
       } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
         descriptor = deviceMap[powerMeterBasedBikeFourCC];
       } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {

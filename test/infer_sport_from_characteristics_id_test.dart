@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/heart_rate_monitor.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/csc.dart';
+import 'package:track_my_indoor_exercise/devices/gatt/concept2.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/hrm.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/ftms.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/precor.dart';
@@ -30,6 +31,7 @@ void main() {
       const TestPair(characteristicId: cyclingPowerMeasurementUuid, sports: [ActivityType.ride]),
       const TestPair(characteristicId: indoorBikeUuid, sports: [ActivityType.ride]),
       const TestPair(characteristicId: rowerDeviceUuid, sports: waterSports),
+      const TestPair(characteristicId: c2RowingGeneralStatusUuid, sports: [ActivityType.rowing]),
       const TestPair(characteristicId: crossTrainerUuid, sports: [ActivityType.elliptical]),
       const TestPair(characteristicId: heartRateMeasurementUuid, sports: [])
     ]) {

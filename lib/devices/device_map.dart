@@ -1,4 +1,5 @@
 import '../utils/constants.dart';
+import 'device_descriptors/concept2_rower.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
@@ -35,6 +36,7 @@ Map<String, DeviceDescriptor> deviceMap = {
   genericFTMSCrossTrainerFourCC: DeviceFactory.getGenericFTMSCrossTrainer(),
   powerMeterBasedBikeFourCC: DeviceFactory.getPowerMeterBasedBike(),
   cscSensorBasedBikeFourCC: DeviceFactory.getCSCBasedBike(),
+  concept2RowerFourCC: Concept2Rower(),
 };
 
 DeviceDescriptor genericDescriptorForSport(String sport) {

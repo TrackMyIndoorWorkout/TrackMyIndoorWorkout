@@ -14,6 +14,7 @@ import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
 import '../gatt/csc.dart';
+import '../gatt/concept2.dart';
 import '../gatt/ftms.dart';
 import '../gatt/precor.dart';
 import '../gatt/power_meter.dart';
@@ -244,6 +245,8 @@ abstract class DeviceBase {
         characteristicId == cyclingCadenceMeasurementUuid ||
         characteristicId == cyclingPowerMeasurementUuid) {
       sports.add(ActivityType.ride);
+    } else if (characteristicId == c2RowingGeneralStatusUuid) {
+      sports.add(ActivityType.rowing);
     } else if (characteristicId == rowerDeviceUuid) {
       sports.addAll(waterSports);
     } else if (characteristicId == crossTrainerUuid) {
