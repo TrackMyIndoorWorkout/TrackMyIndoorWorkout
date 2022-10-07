@@ -36,7 +36,7 @@ class C2AdditionalStatus1 extends ComplexSensor {
       paceMetric = ShortMetricDescriptor(
         lsb: paceLsbByteIndex,
         msb: paceLsbByteIndex + 1,
-        divider: 100,
+        divider: 100.0,
       );
     }
   }

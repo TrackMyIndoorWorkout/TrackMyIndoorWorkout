@@ -39,7 +39,7 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
           distanceMetric: ThreeByteMetricDescriptor(
             lsb: distanceLsbByteIndex,
             msb: distanceLsbByteIndex + 2,
-            divider: 10,
+            divider: 10.0,
           ),
         );
 
