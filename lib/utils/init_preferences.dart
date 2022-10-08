@@ -17,6 +17,7 @@ import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
+import '../preferences/drag_force_tune.dart';
 import '../preferences/drive_train_loss.dart';
 import '../preferences/enable_asserts.dart';
 import '../preferences/enforced_time_zone.dart';
@@ -135,6 +136,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     instantExportTag: instantExportDefault,
     instantExportLocationTag: instantExportLocationDefault,
     enableAssertsTag: enableAssertsDefault,
+    dragForceTuneTag: dragForceTuneDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
