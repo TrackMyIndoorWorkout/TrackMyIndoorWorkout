@@ -72,7 +72,7 @@ void main() {
         expect(merged.power, null);
         expect(merged.speed, null);
         expect(merged.cadence, null);
-        expect(merged.heartRate, null);
+        expect(merged.heartRate, mergeHr ? rndRecord.heartRate : null);
         expect(merged.caloriesPerMinute, null);
         expect(merged.caloriesPerHour, null);
       });
@@ -260,7 +260,7 @@ void main() {
         expect(merged.power, null);
         expect(merged.speed, null);
         expect(merged.cadence, null);
-        expect(merged.heartRate, null);
+        expect(merged.heartRate, mergeHr ? rndRecord.heartRate : null);
         expect(merged.caloriesPerMinute, null);
         expect(merged.caloriesPerHour, null);
       });
