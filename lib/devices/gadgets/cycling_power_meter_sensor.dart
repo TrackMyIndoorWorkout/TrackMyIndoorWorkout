@@ -147,7 +147,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
       speed = wheelCadence.computeCadence() * 60 * roadBikeWheelCircumference / 1000.0;
     }
 
-    int? crankCadence;
+    double? crankCadence;
     if (crankRevolutionMetric != null) {
       addCadenceData(getCrankRevolutionTime(data), getCrankRevolutions(data));
       processData();
@@ -160,7 +160,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: speed,
-      cadence: crankCadence,
+      cadence: crankCadence?.toInt(),
       sport: ActivityType.ride,
     );
   }
@@ -173,16 +173,16 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
     return powerMetric?.getMeasurementValue(data);
   }
 
-  int? getWheelRevolutions(List<int> data) {
-    return wheelRevolutionMetric?.getMeasurementValue(data)?.toInt();
+  double? getWheelRevolutions(List<int> data) {
+    return wheelRevolutionMetric?.getMeasurementValue(data);
   }
 
   double? getWheelRevolutionTime(List<int> data) {
     return wheelRevolutionTime?.getMeasurementValue(data);
   }
 
-  int? getCrankRevolutions(List<int> data) {
-    return crankRevolutionMetric?.getMeasurementValue(data)?.toInt();
+  double? getCrankRevolutions(List<int> data) {
+    return crankRevolutionMetric?.getMeasurementValue(data);
   }
 
   double? getCrankRevolutionTime(List<int> data) {

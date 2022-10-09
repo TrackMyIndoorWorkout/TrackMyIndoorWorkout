@@ -115,7 +115,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       return lastRecord ?? RecordWithSport(sport: defaultSport);
     }
 
-    addCadenceData(time! / 1024, getCadence(data)?.toInt());
+    addCadenceData(time! / 1024, getCadence(data));
     final resistance = max((resistanceMetric?.getMeasurementValue(data)?.toInt() ?? 1) - 1, 0);
     final deltaCalories = max(calories! - lastCalories, 0);
     lastCalories = calories;
