@@ -143,14 +143,12 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
     if (wheelRevolutionMetric != null) {
       wheelCadence.addCadenceData(getWheelRevolutionTime(data), getWheelRevolutions(data));
       distance = wheelCadence.cadenceData.last.revolutions * roadBikeWheelCircumference;
-      wheelCadence.processData();
       speed = wheelCadence.computeCadence() * 60 * roadBikeWheelCircumference / 1000.0;
     }
 
     double? crankCadence;
     if (crankRevolutionMetric != null) {
       addCadenceData(getCrankRevolutionTime(data), getCrankRevolutions(data));
-      processData();
       crankCadence = computeCadence();
     }
 
