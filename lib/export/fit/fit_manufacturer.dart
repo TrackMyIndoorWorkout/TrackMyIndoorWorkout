@@ -3,6 +3,7 @@ import '../../devices/device_descriptors/matrix_treadmill_descriptor.dart';
 import 'fit_base_type.dart';
 
 const nautilusFitId = 14;
+const concept2FitId = 40;
 const northPoleEngineeringFitId = 66;
 const stagesCyclingFitId = 69;
 const johnsonHealthTechId = 122;
@@ -49,7 +50,7 @@ Map<int, String> fitManufacturer = {
   37: 'magellan',
   38: 'osynce',
   39: 'holux',
-  40: 'concept2',
+  concept2FitId: 'concept2',
   42: 'one giant leap',
   43: 'ace sensor',
   44: 'brim brothers',

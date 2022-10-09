@@ -1,5 +1,5 @@
 import '../utils/constants.dart';
-import 'gatt_constants.dart';
+import 'gatt/ftms.dart';
 
 const Map<String, String> uuidToSport = {
   treadmillUuid: ActivityType.run,

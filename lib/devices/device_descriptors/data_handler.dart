@@ -56,7 +56,7 @@ abstract class DataHandler {
         flag += maxUint8 * data[1];
       }
 
-      if (flagByteSize > 1) {
+      if (flagByteSize > 2) {
         flag += maxUint16 * data[2];
       }
 
@@ -112,10 +112,10 @@ abstract class DataHandler {
     return timeMetric?.getMeasurementValue(data);
   }
 
-  double? getHeartRate(List<int> data) {
+  int? getHeartRate(List<int> data) {
     if (heartRateByteIndex == null || heartRateByteIndex! >= data.length) return null;
 
-    return data[heartRateByteIndex!].toDouble();
+    return data[heartRateByteIndex!];
   }
 
   void clearMetrics() {

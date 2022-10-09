@@ -27,7 +27,7 @@ void main() {
     for (var lenMinusTwo in getRandomInts(smallRepetition, 20, rnd)) {
       final len = lenMinusTwo + 2;
       final deltaTimes = getRandomDoubles(len, 1.5, rnd);
-      final deltaRevolutions = getRandomInts(len, 100, rnd);
+      final deltaRevolutions = getRandomDoubles(len, 100.0, rnd);
       test("len $len, ", () async {
         final cadenceMixin = CadenceMixin();
         for (final i in List<int>.generate(len, (i) => i, growable: false)) {
@@ -46,7 +46,7 @@ void main() {
     for (var lenMinusOne in getRandomInts(smallRepetition, 10, rnd)) {
       final len = lenMinusOne + 1;
       final deltaTimes = getRandomDoubles(len, 1.5, rnd);
-      final deltaRevolutions = getRandomInts(len, 2, rnd);
+      final deltaRevolutions = getRandomDoubles(len, 2.0, rnd);
       final timeSum = deltaTimes.sum;
       final revolutionSum = deltaRevolutions.sum;
       test(
@@ -54,7 +54,7 @@ void main() {
           () async {
         final cadenceMixin = CadenceMixin();
         var cumulativeTime = 0.0;
-        var cumulativeRevolution = 0;
+        var cumulativeRevolution = 0.0;
         for (final i in List<int>.generate(len, (i) => i, growable: false)) {
           cumulativeTime += deltaTimes[i];
           cumulativeRevolution += deltaRevolutions[i];
@@ -62,7 +62,7 @@ void main() {
         }
 
         expect(cadenceMixin.cadenceData.length, len);
-        final cadence = cadenceMixin.computeCadence();
+        final cadence = cadenceMixin.computeCadence().toInt();
         if (len == 1) {
           expect(cadence, 0);
         } else {

@@ -1,6 +1,6 @@
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
-import '../gatt_constants.dart';
+import '../gatt/ftms.dart';
 import 'fitness_machine_descriptor.dart';
 
 class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
@@ -77,7 +77,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
-      heartRate: getHeartRate(data)?.toInt(),
+      heartRate: getHeartRate(data),
       sport: defaultSport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),

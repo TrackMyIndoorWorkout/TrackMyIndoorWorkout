@@ -11,7 +11,7 @@ import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'utils.dart';
-import 'fitness_equipment_process_record_test.mocks.dart';
+import 'fitness_equipment_start_stop_workout_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<BluetoothDevice>()])
 void main() {

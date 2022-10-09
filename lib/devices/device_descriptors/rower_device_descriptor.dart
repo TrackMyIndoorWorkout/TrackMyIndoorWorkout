@@ -6,10 +6,10 @@ import 'package:pref/pref.dart';
 import '../../persistence/models/record.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
 import '../../utils/constants.dart';
+import '../gatt/ftms.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
-import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 
 class RowerDeviceDescriptor extends FitnessMachineDescriptor {
@@ -120,7 +120,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
       cadence: strokeRate,
-      heartRate: getHeartRate(data)?.toInt(),
+      heartRate: getHeartRate(data),
       pace: pace,
       sport: defaultSport,
       caloriesPerHour: getCaloriesPerHour(data),

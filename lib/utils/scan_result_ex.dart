@@ -4,7 +4,13 @@ import 'package:get/get.dart';
 
 import '../devices/company_registry.dart';
 import '../devices/device_map.dart';
-import '../devices/gatt_constants.dart';
+import '../devices/gatt/csc.dart';
+import '../devices/gatt/concept2.dart';
+import '../devices/gatt/ftms.dart';
+import '../devices/gatt/hrm.dart';
+import '../devices/gatt/power_meter.dart';
+import '../devices/gatt/precor.dart';
+import '../devices/gatt/schwinn_x70.dart';
 import 'advertisement_data_ex.dart';
 import 'constants.dart';
 import 'display.dart';
@@ -43,6 +49,7 @@ extension ScanResultEx on ScanResult {
             serviceUuids.contains(schwinnX70ServiceUuid) ||
             serviceUuids.contains(cyclingPowerServiceUuid) ||
             serviceUuids.contains(cyclingCadenceServiceUuid) ||
+            serviceUuids.contains(c2RowingPrimaryServiceUuid) ||
             serviceUuids.contains(heartRateServiceUuid)) {
           return true;
         }
@@ -104,6 +111,10 @@ extension ScanResultEx on ScanResult {
         serviceUuids.contains(cyclingPowerServiceUuid) ||
         serviceUuids.contains(cyclingCadenceServiceUuid)) {
       return MachineType.indoorBike;
+    }
+
+    if (serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
+      return MachineType.rower;
     }
 
     if (serviceUuids.contains(heartRateServiceUuid)) {

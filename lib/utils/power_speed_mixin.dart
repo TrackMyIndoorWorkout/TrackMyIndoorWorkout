@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/athlete_body_weight.dart';
 import '../preferences/bike_weight.dart';
+import '../preferences/drag_force_tune.dart';
 import '../preferences/drive_train_loss.dart';
 import 'constants.dart';
 import 'init_preferences.dart';
@@ -28,6 +29,8 @@ class PowerSpeedMixin {
   static double c = 0.0; // fRolling, but also c in Cardano's Formula
   static double q = 0.0; // See Cardano's Formula
   static double driveTrainFraction = 0.0;
+  static int dragForceTuneFactor = dragForceTuneDefault;
+  static double dragForceTunePercent = dragForceTuneFactor / 100.0;
 
   // https://en.wikipedia.org/wiki/Density_of_air
   static final Map<int, double> _airTemperatureToDensity = {
@@ -83,11 +86,18 @@ class PowerSpeedMixin {
       clearDictionary = true;
     }
 
+    final dragForceTuneNewest = prefService.get<int>(dragForceTuneTag) ?? dragForceTuneDefault;
+    if (dragForceTuneNewest != dragForceTuneFactor) {
+      dragForceTuneFactor = dragForceTuneNewest;
+      dragForceTunePercent = dragForceTuneFactor / 100.0;
+      clearDictionary = true;
+    }
+
     if (clearDictionary) {
       velocityForPowerDict.clear();
     }
 
-    a = 0.5 * frontalArea * dragCoefficient * airDensity;
+    a = 0.5 * frontalArea * dragCoefficient * airDensity * dragForceTunePercent;
     c = gConst * (athleteWeight + bikeWeight) * rollingResistanceCoefficient;
     q = c / (3 * a);
     driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);

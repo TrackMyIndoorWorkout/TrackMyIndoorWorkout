@@ -16,7 +16,8 @@ import '../device_fourcc.dart';
 import '../gadgets/cadence_mixin.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gadgets/schwinn_x70_hr_sensor.dart';
-import '../gatt_constants.dart';
+import '../gatt/ftms.dart';
+import '../gatt/schwinn_x70.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/six_byte_metric_descriptor.dart';
@@ -114,7 +115,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       return lastRecord ?? RecordWithSport(sport: defaultSport);
     }
 
-    addCadenceData(time! / 1024, getCadence(data)?.toInt());
+    addCadenceData(time! / 1024, getCadence(data));
     final resistance = max((resistanceMetric?.getMeasurementValue(data)?.toInt() ?? 1) - 1, 0);
     final deltaCalories = max(calories! - lastCalories, 0);
     lastCalories = calories;
@@ -201,21 +202,22 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   }
 
   @override
-  ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
+  List<ComplexSensor> getAdditionalSensors(
+      BluetoothDevice device, List<BluetoothService> services) {
     final requiredService = services
         .firstWhereOrNull((service) => service.uuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
     if (requiredService == null) {
-      return null;
+      return [];
     }
 
     final requiredCharacteristic = requiredService.characteristics
         .firstWhereOrNull((ch) => ch.uuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
     if (requiredCharacteristic == null) {
-      return null;
+      return [];
     }
 
-    final extraSensor = SchwinnX70HrSensor(device);
-    extraSensor.services = services;
-    return extraSensor;
+    final additionalSensor = SchwinnX70HrSensor(device);
+    additionalSensor.services = services;
+    return [additionalSensor];
   }
 }

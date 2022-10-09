@@ -1,9 +1,9 @@
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
+import '../gatt/power_meter.dart';
 import '../metric_descriptors/long_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
-import '../gatt_constants.dart';
 import 'cadence_mixin.dart';
 import 'complex_sensor.dart';
 
@@ -143,14 +143,12 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
     if (wheelRevolutionMetric != null) {
       wheelCadence.addCadenceData(getWheelRevolutionTime(data), getWheelRevolutions(data));
       distance = wheelCadence.cadenceData.last.revolutions * roadBikeWheelCircumference;
-      wheelCadence.processData();
       speed = wheelCadence.computeCadence() * 60 * roadBikeWheelCircumference / 1000.0;
     }
 
-    int? crankCadence;
+    double? crankCadence;
     if (crankRevolutionMetric != null) {
       addCadenceData(getCrankRevolutionTime(data), getCrankRevolutions(data));
-      processData();
       crankCadence = computeCadence();
     }
 
@@ -160,7 +158,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: speed,
-      cadence: crankCadence,
+      cadence: crankCadence?.toInt(),
       sport: ActivityType.ride,
     );
   }
@@ -173,16 +171,16 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
     return powerMetric?.getMeasurementValue(data);
   }
 
-  int? getWheelRevolutions(List<int> data) {
-    return wheelRevolutionMetric?.getMeasurementValue(data)?.toInt();
+  double? getWheelRevolutions(List<int> data) {
+    return wheelRevolutionMetric?.getMeasurementValue(data);
   }
 
   double? getWheelRevolutionTime(List<int> data) {
     return wheelRevolutionTime?.getMeasurementValue(data);
   }
 
-  int? getCrankRevolutions(List<int> data) {
-    return crankRevolutionMetric?.getMeasurementValue(data)?.toInt();
+  double? getCrankRevolutions(List<int> data) {
+    return crankRevolutionMetric?.getMeasurementValue(data);
   }
 
   double? getCrankRevolutionTime(List<int> data) {

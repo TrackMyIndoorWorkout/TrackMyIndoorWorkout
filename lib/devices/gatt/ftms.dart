@@ -1,5 +1,3 @@
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.service.device_information.xml
-const deviceInformationUuid = '180a';
 // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.service.fitness_machine.xml
 const fitnessMachineUuid = '1826';
 // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
@@ -14,61 +12,9 @@ const crossTrainerUuid = '2ace';
 const stairClimberUuid = '2ad0';
 // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.step_climber_data.xml
 const stepClimberUuid = '2acf';
-/*
-const deviceNameUuid = '2a00';
-const appearanceUuid = '2a01';
-const modelNumberUuid = '2a24';
-const serialNumberUuid = '2a25';
-const firmwareRevisionUuid = '2a26';
-const hardwareRevisionUuid = '2a27';
-const softwareRevisionUuid = '2a28';
-*/
-const manufacturerNameUuid = '2a29';
 
 const ftmsSportCharacteristics = [treadmillUuid, indoorBikeUuid, rowerDeviceUuid, crossTrainerUuid];
 
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.service.battery_service.xml
-const batteryServiceUuid = '180f';
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.battery_level.xml
-const batteryLevelUuid = '2a19';
-
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.service.heart_rate.xml
-const heartRateServiceUuid = '180d';
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.heart_rate_measurement.xml
-const heartRateMeasurementUuid = '2a37';
-
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.service.cycling_speed_and_cadence.xml
-const cyclingCadenceServiceUuid = '1816';
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
-const cyclingCadenceMeasurementUuid = '2a5b';
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_feature.xml
-const cyclingCadenceFeaturesUuid = '2a5c';
-
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.service.cycling_power.xml
-const cyclingPowerServiceUuid = '1818';
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.cycling_power_measurement.xml
-const cyclingPowerMeasurementUuid = '2a63';
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.cycling_power_feature.xml
-const cyclingPowerFeatureUuid = '2a65';
-
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.service.running_speed_and_cadence.xml
-const runningCadenceServiceUuid = '1814';
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml
-const runningCadenceMeasurementUuid = '2a53';
-
-const precorServiceUuid = 'ee07';
-const precorMeasurementUuid = 'e01d';
-
-const schwinnX70ServiceUuid = '8980';
-const schwinnX70MeasurementUuid = '82a0';
-const schwinnX70ControlUuid = 'b3c0';
-const schwinnX70ExtraMeasurementUuid = 'f580';
-
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.service.user_data.xml
-const userDataServiceUuid = '181c';
-// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.weight.xml
-const weightCharacteristicUuid = '2a98';
-const weightSuccessOpcode = 0x13;
 // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.fitness_machine_status.xml
 const fitnessMachineStatusUuid = '2ada';
 
