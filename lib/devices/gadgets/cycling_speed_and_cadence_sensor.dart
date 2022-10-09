@@ -61,8 +61,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
   bool canMeasurementProcessed(List<int> data) {
     if (data.isEmpty) return false;
 
-    var flag = data[0];
-    processFlag(flag);
+    processFlag(data[0]);
 
     return featureFlag >= 0 && data.length == expectedLength;
   }
