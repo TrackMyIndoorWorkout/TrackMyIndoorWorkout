@@ -1,9 +1,9 @@
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
+import '../gatt/csc.dart';
 import '../metric_descriptors/long_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
-import '../gatt_constants.dart';
 import 'cadence_mixin.dart';
 import 'complex_sensor.dart';
 
@@ -61,8 +61,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
   bool canMeasurementProcessed(List<int> data) {
     if (data.isEmpty) return false;
 
-    var flag = data[0];
-    processFlag(flag);
+    processFlag(data[0]);
 
     return featureFlag >= 0 && data.length == expectedLength;
   }
@@ -78,14 +77,12 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
     if (wheelRevolutionMetric != null) {
       wheelCadence.addCadenceData(getWheelRevolutionTime(data), getWheelRevolutions(data));
       distance = wheelCadence.cadenceData.last.revolutions * roadBikeWheelCircumference;
-      wheelCadence.processData();
       speed = wheelCadence.computeCadence() * 60 * roadBikeWheelCircumference / 1000.0;
     }
 
-    int? crankCadence;
+    double? crankCadence;
     if (crankRevolutionMetric != null) {
       addCadenceData(getCrankRevolutionTime(data), getCrankRevolutions(data));
-      processData();
       crankCadence = computeCadence();
     }
 
@@ -93,21 +90,21 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
       timeStamp: DateTime.now().millisecondsSinceEpoch,
       distance: distance,
       speed: speed,
-      cadence: crankCadence,
+      cadence: crankCadence?.toInt(),
       sport: ActivityType.ride,
     );
   }
 
-  int? getWheelRevolutions(List<int> data) {
-    return wheelRevolutionMetric?.getMeasurementValue(data)?.toInt();
+  double? getWheelRevolutions(List<int> data) {
+    return wheelRevolutionMetric?.getMeasurementValue(data);
   }
 
   double? getWheelRevolutionTime(List<int> data) {
     return wheelRevolutionTime?.getMeasurementValue(data);
   }
 
-  int? getCrankRevolutions(List<int> data) {
-    return crankRevolutionMetric?.getMeasurementValue(data)?.toInt();
+  double? getCrankRevolutions(List<int> data) {
+    return crankRevolutionMetric?.getMeasurementValue(data);
   }
 
   double? getCrankRevolutionTime(List<int> data) {

@@ -1,6 +1,6 @@
 class CadenceData {
   final double time;
-  int revolutions;
+  double revolutions;
 
   CadenceData({
     required this.time,

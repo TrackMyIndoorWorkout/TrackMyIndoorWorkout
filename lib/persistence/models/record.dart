@@ -151,9 +151,9 @@ class Record {
     return (distance ?? 0.0) > eps || (elapsed ?? 0) > 0 || (calories ?? 0) > 0;
   }
 
-  void cumulativeDistanceEnforcement(Record lastRecord, int logLevel) {
+  void cumulativeDistanceEnforcement(Record lastRecord, int logLevel, bool enableAsserts) {
     if (distance != null && lastRecord.distance != null) {
-      if (!testing && kDebugMode) {
+      if (!testing && kDebugMode && enableAsserts) {
         assert(distance! >= lastRecord.distance!);
       }
 
@@ -173,9 +173,9 @@ class Record {
     }
   }
 
-  void cumulativeElapsedTimeEnforcement(Record lastRecord, int logLevel) {
+  void cumulativeElapsedTimeEnforcement(Record lastRecord, int logLevel, bool enableAsserts) {
     if (elapsed != null && lastRecord.elapsed != null) {
-      if (!testing && kDebugMode) {
+      if (!testing && kDebugMode && enableAsserts) {
         assert(elapsed! >= lastRecord.elapsed!);
       }
 
@@ -195,8 +195,8 @@ class Record {
     }
   }
 
-  void cumulativeMovingTimeEnforcement(Record lastRecord, int logLevel) {
-    if (!testing && kDebugMode) {
+  void cumulativeMovingTimeEnforcement(Record lastRecord, int logLevel, bool enableAsserts) {
+    if (!testing && kDebugMode && enableAsserts) {
       assert(movingTime >= lastRecord.movingTime);
     }
 
@@ -215,9 +215,9 @@ class Record {
     }
   }
 
-  void cumulativeCaloriesEnforcement(Record lastRecord, int logLevel) {
+  void cumulativeCaloriesEnforcement(Record lastRecord, int logLevel, bool enableAsserts) {
     if (calories != null && lastRecord.calories != null) {
-      if (!testing && kDebugMode) {
+      if (!testing && kDebugMode && enableAsserts) {
         assert(calories! >= lastRecord.calories!);
       }
 
@@ -237,9 +237,9 @@ class Record {
     }
   }
 
-  void nonNegativeEnforcement(int logLevel) {
+  void nonNegativeEnforcement(int logLevel, bool enableAsserts) {
     if (distance != null) {
-      if (kDebugMode) {
+      if (kDebugMode && enableAsserts) {
         assert(distance! >= 0.0);
       }
 
@@ -259,7 +259,7 @@ class Record {
     }
 
     if (elapsed != null) {
-      if (kDebugMode) {
+      if (kDebugMode && enableAsserts) {
         assert(elapsed! >= 0);
       }
 
@@ -278,7 +278,7 @@ class Record {
       }
     }
 
-    if (kDebugMode) {
+    if (kDebugMode && enableAsserts) {
       assert(movingTime >= 0);
     }
 
@@ -297,7 +297,7 @@ class Record {
     }
 
     if (calories != null) {
-      if (kDebugMode) {
+      if (kDebugMode && enableAsserts) {
         assert(calories! >= 0);
       }
 
@@ -319,26 +319,27 @@ class Record {
 
   void cumulativeMetricsEnforcements(
     Record lastRecord,
-    int logLevel, {
+    int logLevel,
+    bool enableAsserts, {
     bool forDistance = false,
     bool forTime = false,
     bool forCalories = false,
   }) {
     // Ensure that cumulative fields cannot decrease over time
     if (forDistance) {
-      cumulativeDistanceEnforcement(lastRecord, logLevel);
+      cumulativeDistanceEnforcement(lastRecord, logLevel, enableAsserts);
     }
 
     if (forTime) {
-      cumulativeElapsedTimeEnforcement(lastRecord, logLevel);
-      cumulativeMovingTimeEnforcement(lastRecord, logLevel);
+      cumulativeElapsedTimeEnforcement(lastRecord, logLevel, enableAsserts);
+      cumulativeMovingTimeEnforcement(lastRecord, logLevel, enableAsserts);
     }
 
     if (forCalories) {
-      cumulativeCaloriesEnforcement(lastRecord, logLevel);
+      cumulativeCaloriesEnforcement(lastRecord, logLevel, enableAsserts);
     }
 
-    nonNegativeEnforcement(logLevel);
+    nonNegativeEnforcement(logLevel, enableAsserts);
   }
 
   @override
@@ -452,10 +453,10 @@ class RecordWithSport extends Record {
       if (mergeCadence) {
         cadence ??= record.cadence;
       }
+    }
 
-      if (mergeHr) {
-        heartRate ??= record.heartRate;
-      }
+    if (mergeHr) {
+      heartRate ??= record.heartRate;
     }
 
     return this;

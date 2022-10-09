@@ -1,7 +1,7 @@
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../device_descriptors/device_descriptor.dart';
-import '../gatt_constants.dart';
+import '../gatt/rsc.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/long_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';

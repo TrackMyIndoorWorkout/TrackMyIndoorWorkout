@@ -22,3 +22,4 @@ const genericFTMSEllipticalFourCC = "GEll";
 const genericFTMSCrossTrainerFourCC = "GXtr";
 const powerMeterBasedBikeFourCC = "PowB";
 const cscSensorBasedBikeFourCC = "CSCB";
+const concept2RowerFourCC = "Cpt2";

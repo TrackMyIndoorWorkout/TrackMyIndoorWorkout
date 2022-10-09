@@ -16,13 +16,32 @@ class CadenceMixin {
     this.revolutionOverflow = revolutionOverflow;
   }
 
-  void addCadenceData(double? time, int? revolutions) {
+  double _getDiffCore(double last, double first, int overflow) {
+    var diff = last - first;
+    // Check overflow
+    if (diff < 0) {
+      diff += overflow;
+    }
+
+    return diff;
+  }
+
+  double _getTimeDiff(double last, double first) {
+    return _getDiffCore(last, first, eventTimeOverflow);
+  }
+
+  double _getRevDiff(double last, double first) {
+    return _getDiffCore(last, first, revolutionOverflow);
+  }
+
+  void addCadenceData(double? time, double? revolutions) {
     final nonNullTime = time ?? 0.0;
     final nonNullRevolutions = revolutions ?? 0;
     if (cadenceData.isNotEmpty) {
       // Prevent duplicate recording
-      final last = cadenceData.last;
-      if ((last.time - nonNullTime).abs() < eps && last.revolutions == nonNullRevolutions) {
+      final timeDiff = _getTimeDiff(cadenceData.last.time, nonNullTime);
+      final revDiff = _getRevDiff(cadenceData.last.revolutions, nonNullRevolutions);
+      if (timeDiff < eps && revDiff < eps) {
         return;
       }
     }
@@ -32,56 +51,31 @@ class CadenceMixin {
       revolutions: nonNullRevolutions,
     ));
 
-    processData();
+    _processData();
   }
 
-  void processData() {
+  void _processData() {
     if (cadenceData.length <= 1) {
       return;
     }
 
-    var firstData = cadenceData.first;
-    var lastData = cadenceData.last;
-    var revDiff = lastData.revolutions - firstData.revolutions;
-    // Check overflow
-    if (revDiff < 0) {
-      revDiff += revolutionOverflow;
-    }
-
-    var secondsDiff = lastData.time - firstData.time;
-    // Check overflow
-    if (secondsDiff < 0) {
-      secondsDiff += eventTimeOverflow;
-    }
-
-    while (secondsDiff > revolutionSlidingWindow && cadenceData.length > 2) {
+    var timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
+    while (timeDiff > revolutionSlidingWindow && cadenceData.length > 2) {
       cadenceData.removeFirst();
-      secondsDiff = cadenceData.last.time - cadenceData.first.time;
-      // Check overflow
-      if (secondsDiff < 0) {
-        secondsDiff += eventTimeOverflow;
-      }
+      timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
     }
   }
 
-  int computeCadence() {
+  double computeCadence() {
     if (cadenceData.length <= 1) {
       return 0;
     }
 
-    final firstData = cadenceData.first;
-    final lastData = cadenceData.last;
-    var secondsDiff = lastData.time - firstData.time;
-    // Check overflow
-    if (secondsDiff < 0) {
-      secondsDiff += eventTimeOverflow;
-    }
-
-    if (secondsDiff < displayEps) {
-      return 0;
-    }
-
-    return (lastData.revolutions - firstData.revolutions) * 60 ~/ secondsDiff;
+    var firstData = cadenceData.first;
+    var lastData = cadenceData.last;
+    final timeDiff = _getTimeDiff(lastData.time, firstData.time);
+    final revDiff = _getRevDiff(lastData.revolutions, firstData.revolutions);
+    return timeDiff < eps ? 0.0 : revDiff * 60 / timeDiff;
   }
 
   void clearCadenceData() {

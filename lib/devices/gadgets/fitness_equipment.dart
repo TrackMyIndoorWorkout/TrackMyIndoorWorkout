@@ -16,6 +16,7 @@ import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../persistence/database.dart';
 import '../../preferences/extend_tuning.dart';
+import '../../preferences/enable_asserts.dart';
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/log_level.dart';
@@ -33,7 +34,8 @@ import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';
-import '../gatt_constants.dart';
+import '../gatt/ftms.dart';
+import '../gatt/generic.dart';
 import 'device_base.dart';
 import 'heart_rate_monitor.dart';
 import 'write_support_parameters.dart';
@@ -76,7 +78,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   HeartRateMonitor? heartRateMonitor;
   ComplexSensor? _companionSensor;
   DeviceDescriptor? _companionDescriptor;
-  ComplexSensor? _extraSensor;
+  List<ComplexSensor> _additionalSensors = [];
   String _heartRateGapWorkaround = heartRateGapWorkaroundDefault;
   int _heartRateUpperLimit = heartRateUpperLimitDefault;
   String _heartRateLimitingMethod = heartRateLimitingMethodDefault;
@@ -108,6 +110,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   WriteSupportParameters? _powerLevels;
   bool supportsSpinDown = false;
   bool _blockSignalStartStop = blockSignalStartStopDefault;
+  bool _enableAsserts = enableAssertsDefault;
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
@@ -356,7 +359,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         },
       );
     } else {
-      _extraSensor?.pumpData(null);
+      for (final sensor in _additionalSensors) {
+        sensor.pumpData(null);
+      }
+
       _companionSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
         pumpDataCore(recordStub, false);
@@ -371,17 +377,27 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   Future<void> additionalSensorsOnDemand() async {
     await refreshFactors();
 
-    if (_extraSensor != null && _extraSensor?.device?.id.id != device?.id.id) {
-      await _extraSensor?.detach();
-      _extraSensor = null;
+    bool hadDetach = false;
+    for (final sensor in _additionalSensors) {
+      if (sensor.device?.id.id != device?.id.id) {
+        await sensor.detach();
+        hadDetach = true;
+      }
+    }
+
+    if (hadDetach) {
+      _additionalSensors =
+          _additionalSensors.where((sensor) => sensor.device?.id.id == device?.id.id).toList();
     }
 
     if (descriptor != null && device != null) {
-      _extraSensor = descriptor!.getExtraSensor(device!, services);
-      await _extraSensor?.discoverCore();
-      await _extraSensor?.attach();
+      _additionalSensors = descriptor!.getAdditionalSensors(device!, services);
+      for (final sensor in _additionalSensors) {
+        await sensor.discoverCore();
+        await sensor.attach();
+      }
     } else {
-      _extraSensor = null;
+      _additionalSensors = [];
     }
   }
 
@@ -790,15 +806,15 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return lastRecord;
     }
 
-    if (_extraSensor != null && (_extraSensor?.attached ?? false)) {
-      RecordWithSport? extraRecord = _extraSensor?.record;
-      hasTotalDistanceReporting |= extraRecord?.distance != null;
-      deviceHasTotalCalorieReporting |= !idle && extraRecord?.calories != null;
-      hasPowerReporting |= (extraRecord?.power ?? 0) > 0;
-      hasSpeedReporting |= (extraRecord?.speed ?? 0.0) > 0.0;
-      if (extraRecord != null) {
-        extraRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-        stub.merge(extraRecord, true, true, true, true, true);
+    for (final sensor in _additionalSensors) {
+      if (sensor.attached) {
+        RecordWithSport? additionalRecord = sensor.record;
+        hasTotalDistanceReporting |= additionalRecord.distance != null;
+        deviceHasTotalCalorieReporting |= !idle && additionalRecord.calories != null;
+        hasPowerReporting |= (additionalRecord.power ?? 0) > 0;
+        hasSpeedReporting |= (additionalRecord.speed ?? 0.0) > 0.0;
+        additionalRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
+        stub.merge(additionalRecord, true, true, true, true, true);
       }
     }
 
@@ -950,7 +966,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     // #197
     if (_startingCalories > eps) {
-      if (kDebugMode) {
+      if (kDebugMode && _enableAsserts) {
         assert(deviceHasTotalCalorieReporting || hrmHasTotalCalorieReporting);
         assert(calories >= _startingCalories);
       }
@@ -986,6 +1002,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       stub.cumulativeMetricsEnforcements(
         lastRecord,
         logLevel,
+        _enableAsserts,
         forDistance: !firstDistance,
         forTime: true,
         forCalories: !firstCalories,
@@ -1057,7 +1074,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   @override
   void readConfiguration() {
     super.readConfiguration();
-    _extraSensor?.readConfiguration();
+    for (final sensor in _additionalSensors) {
+      sensor.readConfiguration();
+    }
+
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
         prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
@@ -1080,6 +1100,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
     _blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
+    _enableAsserts = prefService.get<bool>(enableAssertsTag) ?? enableAssertsDefault;
 
     if (logLevel >= logLevelInfo) {
       Logging.log(
@@ -1148,7 +1169,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   @override
   Future<void> detach() async {
-    await _extraSensor?.detach();
+    for (final sensor in _additionalSensors) {
+      await sensor.detach();
+    }
+
     await _companionSensor?.detach();
     await super.detach();
   }

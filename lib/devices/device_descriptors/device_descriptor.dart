@@ -2,7 +2,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../track/tracks.dart';
 import '../gadgets/complex_sensor.dart';
-import '../gatt_constants.dart';
+import '../gatt/ftms.dart';
 import 'data_handler.dart';
 
 enum DeviceCategory {
@@ -90,8 +90,9 @@ abstract class DeviceDescriptor extends DataHandler {
     return null;
   }
 
-  ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
-    return null;
+  List<ComplexSensor> getAdditionalSensors(
+      BluetoothDevice device, List<BluetoothService> services) {
+    return [];
   }
 
   void setDevice(BluetoothDevice device, List<BluetoothService> services) {}

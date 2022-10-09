@@ -64,7 +64,7 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
-      heartRate: getHeartRate(data)?.toInt(),
+      heartRate: getHeartRate(data),
       sport: defaultSport,
     );
   }

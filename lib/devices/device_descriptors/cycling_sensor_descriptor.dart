@@ -8,7 +8,7 @@ import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gadgets/heart_rate_monitor.dart';
-import '../gatt_constants.dart';
+import '../gatt/hrm.dart';
 import 'device_descriptor.dart';
 
 abstract class CyclingSensorDescriptor extends DeviceDescriptor {
@@ -93,17 +93,18 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
   void stopWorkout() {}
 
   @override
-  ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
+  List<ComplexSensor> getAdditionalSensors(
+      BluetoothDevice device, List<BluetoothService> services) {
     // TODO: ask the user whether they prefer to pair the HRM to the console or not. We assume yes now.
     final requiredService =
         services.firstWhereOrNull((service) => service.uuid.uuidString() == heartRateServiceUuid);
     if (requiredService == null) {
-      return null;
+      return [];
     }
 
-    final extraSensor = HeartRateMonitor(device);
-    extraSensor.services = services;
-    return extraSensor;
+    final additionalSensor = HeartRateMonitor(device);
+    additionalSensor.services = services;
+    return [additionalSensor];
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -7,6 +9,7 @@ import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart'
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 import 'fitness_equipment_test.mocks.dart';
+import 'utils.dart';
 
 @GenerateNiceMocks([
   MockSpec<BluetoothDevice>(),
@@ -86,6 +89,60 @@ main() {
       equipment.connected = true;
 
       expect(await equipment.discover(), false);
+    });
+  });
+
+  group('keySelector handles 1 byte flags as expected', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 255, rnd).forEach((flag) {
+      test('$flag', () async {
+        final descriptor = DeviceFactory.getCSCBasedBike();
+        final equipment = FitnessEquipment(
+          descriptor: descriptor,
+          device: MockBluetoothDevice(),
+        );
+
+        final selector = equipment.keySelector([flag]);
+
+        expect(selector, flag);
+      });
+    });
+  });
+
+  group('keySelector handles 2 byte flags as expected', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 255, rnd).forEach((flagLsb) {
+      final flagMsb = rnd.nextInt(255);
+      test('[$flagLsb, $flagMsb]', () async {
+        final descriptor = DeviceFactory.getPowerMeterBasedBike();
+        final equipment = FitnessEquipment(
+          descriptor: descriptor,
+          device: MockBluetoothDevice(),
+        );
+
+        final selector = equipment.keySelector([flagLsb, flagMsb]);
+
+        expect(selector, flagLsb + 256 * flagMsb);
+      });
+    });
+  });
+
+  group('keySelector handles 3 byte flags as expected', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 255, rnd).forEach((flagLsb) {
+      final flagMid = rnd.nextInt(255);
+      final flagMsb = rnd.nextInt(255);
+      test('[$flagLsb, $flagMid, $flagMsb]', () async {
+        final descriptor = DeviceFactory.getGenericFTMSCrossTrainer();
+        final equipment = FitnessEquipment(
+          descriptor: descriptor,
+          device: MockBluetoothDevice(),
+        );
+
+        final selector = equipment.keySelector([flagLsb, flagMid, flagMsb]);
+
+        expect(selector, flagLsb + 256 * flagMid + 65536 * flagMsb);
+      });
     });
   });
 }

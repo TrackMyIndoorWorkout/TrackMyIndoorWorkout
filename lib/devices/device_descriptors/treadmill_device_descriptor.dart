@@ -6,7 +6,7 @@ import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gadgets/running_speed_and_cadence_sensor.dart';
-import '../gatt_constants.dart';
+import '../gatt/ftms.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
@@ -89,7 +89,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: speed,
-      heartRate: getHeartRate(data)?.toInt(),
+      heartRate: getHeartRate(data),
       pace: pace,
       sport: defaultSport,
       caloriesPerHour: getCaloriesPerHour(data),
@@ -101,16 +101,17 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   void stopWorkout() {}
 
   @override
-  ComplexSensor? getExtraSensor(BluetoothDevice device, List<BluetoothService> services) {
+  List<ComplexSensor> getAdditionalSensors(
+      BluetoothDevice device, List<BluetoothService> services) {
     final requiredService = services.firstWhereOrNull(
         (service) => service.uuid.uuidString() == RunningSpeedAndCadenceSensor.serviceUuid);
     if (requiredService == null) {
-      return null;
+      return [];
     }
 
-    final extraSensor = RunningSpeedAndCadenceSensor(device);
-    extraSensor.services = services;
-    return extraSensor;
+    final additionalSensor = RunningSpeedAndCadenceSensor(device);
+    additionalSensor.services = services;
+    return [additionalSensor];
   }
 
   int processPaceFlag(int flag) {
