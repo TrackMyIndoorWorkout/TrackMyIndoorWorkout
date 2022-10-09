@@ -56,7 +56,7 @@ abstract class DataHandler {
         flag += maxUint8 * data[1];
       }
 
-      if (flagByteSize > 1) {
+      if (flagByteSize > 2) {
         flag += maxUint16 * data[2];
       }
 
