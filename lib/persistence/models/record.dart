@@ -453,10 +453,10 @@ class RecordWithSport extends Record {
       if (mergeCadence) {
         cadence ??= record.cadence;
       }
+    }
 
-      if (mergeHr) {
-        heartRate ??= record.heartRate;
-      }
+    if (mergeHr) {
+      heartRate ??= record.heartRate;
     }
 
     return this;
