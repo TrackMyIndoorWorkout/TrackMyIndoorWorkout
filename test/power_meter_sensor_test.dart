@@ -1,6 +1,7 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/cycling_power_meter_sensor.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -99,6 +100,7 @@ void main() {
 
   test('Stages SC3 Power meter Device interprets cadence data properly', () async {
     final powerMeter = CyclingPowerMeterSensor(MockBluetoothDevice());
+    final powerMeterDescriptor = DeviceFactory.getPowerMeterBasedBike()..sensor = powerMeter;
     for (final testData in [
       const CadenceTestData(
         data: [44, 0, 139, 0, 221, 102, 6, 12, 178, 74],
@@ -539,10 +541,10 @@ void main() {
         cadence: 73,
       ),
     ]) {
-      final record = powerMeter.processMeasurement(testData.data);
-
+      powerMeterDescriptor.isDataProcessable(testData.data);
+      final record = powerMeterDescriptor.wrappedStubRecord(testData.data);
       expect(powerMeter.cadenceData.length, testData.queueLength);
-      expect(record.cadence, testData.cadence);
+      expect(record!.cadence, testData.cadence);
     }
   });
 }
