@@ -77,7 +77,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
-      heartRate: getHeartRate(data)?.toInt(),
+      heartRate: getHeartRate(data),
       sport: defaultSport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
