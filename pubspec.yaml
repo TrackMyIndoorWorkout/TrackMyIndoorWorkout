@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   assorted_layout_widgets: ^7.0.0
-  bluetooth_enable_fork: ^0.1.5
+  bluetooth_enable_fork: ^0.1.6
   collection: ^1.16.0
   datetime_picker_formfield: ^2.0.1
   device_info_plus: ^5.0.5
