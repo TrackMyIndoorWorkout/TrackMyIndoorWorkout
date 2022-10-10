@@ -1,4 +1,3 @@
-// import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -544,7 +543,6 @@ void main() {
     ]) {
       powerMeterDescriptor.isDataProcessable(testData.data);
       final record = powerMeterDescriptor.wrappedStubRecord(testData.data);
-      // debugPrint('const CadenceTestData(data: ${testData.data}, timeStamp: "${testData.timeStamp}", queueLength: ${powerMeter.cadenceData.length}, cadence: ${powerMeter.computeCadence().toInt()},),');
       expect(powerMeter.cadenceData.length, testData.queueLength);
       expect(record!.cadence, testData.cadence);
     }
