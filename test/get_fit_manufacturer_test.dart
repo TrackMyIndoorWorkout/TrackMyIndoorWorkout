@@ -13,9 +13,9 @@ void main() {
   group('getFitManufacturer test', () {
     deviceMap.forEach((fourCC, deviceDescriptor) {
       test(
-          "$fourCC (${deviceDescriptor.manufacturerPrefix}) -> ${deviceDescriptor.manufacturerFitId}",
+          "$fourCC (${deviceDescriptor.manufacturerNamePart}) -> ${deviceDescriptor.manufacturerFitId}",
           () async {
-        expect(getFitManufacturer(deviceDescriptor.manufacturerPrefix),
+        expect(getFitManufacturer(deviceDescriptor.manufacturerNamePart),
             deviceDescriptor.manufacturerFitId);
       });
     });

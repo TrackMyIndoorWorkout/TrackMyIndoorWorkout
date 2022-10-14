@@ -179,7 +179,7 @@ int getFitManufacturer(String manufacturer) {
   }
 
   final matrixDescriptor = MatrixTreadmillDescriptor();
-  if (manufacturer.startsWith(matrixDescriptor.manufacturerPrefix)) {
+  if (manufacturer.startsWith(matrixDescriptor.manufacturerNamePart)) {
     return johnsonHealthTechId;
   }
 

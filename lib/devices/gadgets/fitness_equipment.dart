@@ -597,15 +597,17 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         logLevelInfo,
         "FITNESS_EQUIPMENT",
         "_checkManufacturerName",
-        "ensuring that manufacturer name ($manufacturerName) contains manufacturer prefix ${descriptor!.manufacturerPrefix}",
+        "ensuring that manufacturer name ($manufacturerName) contains manufacturer name part ${descriptor!.manufacturerNamePart}",
       );
     }
 
-    if (descriptor!.manufacturerPrefix == "Unknown") {
+    if (descriptor!.manufacturerNamePart == "Unknown") {
       return true;
     }
 
-    return manufacturerName?.toLowerCase().contains(descriptor!.manufacturerPrefix.toLowerCase()) ??
+    return manufacturerName
+            ?.toLowerCase()
+            .contains(descriptor!.manufacturerNamePart.toLowerCase()) ??
         false;
   }
 

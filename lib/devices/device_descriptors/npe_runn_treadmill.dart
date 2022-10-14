@@ -9,7 +9,7 @@ class NpeRunnTreadmill extends TreadmillDeviceDescriptor {
           vendorName: "North Pole Engineering Inc.",
           modelName: "Generic Treadmill",
           namePrefixes: ["RUNN"],
-          manufacturerPrefix: "North Pole Engineering",
+          manufacturerNamePart: "North Pole Engineering",
           manufacturerFitId: northPoleEngineeringFitId,
           model: "77",
         );
