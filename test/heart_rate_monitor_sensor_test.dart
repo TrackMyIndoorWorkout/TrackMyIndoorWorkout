@@ -14,7 +14,13 @@ class TestPair {
   const TestPair({required this.data, required this.record});
 }
 
-const sampleData = [4, 84];
+const byteHrmSampleData = [4, 84];
+const moreHrmSampleData = [
+  [22, 89, 162, 2],
+  [22, 90, 154, 2],
+  [22, 92, 140, 2],
+  [22, 93, 133, 2]
+];
 
 @GenerateNiceMocks([MockSpec<BluetoothDevice>()])
 void main() {
@@ -22,20 +28,21 @@ void main() {
     await initPrefServiceForTest();
   });
 
-  test('HRM interprets flags properly', () async {
+  test('Byte HRM interprets flags properly', () async {
     final hrm = HeartRateMonitor(MockBluetoothDevice());
 
-    final canProcess = hrm.canMeasurementProcessed(sampleData);
+    final canProcess = hrm.canMeasurementProcessed(byteHrmSampleData);
 
     expect(canProcess, true);
+    expect(hrm.expectedLength, byteHrmSampleData.length);
     expect(hrm.heartRateMetric, isNotNull);
     expect(hrm.caloriesMetric, null);
   });
 
-  group('HRM Device interprets HR data properly', () {
+  group('Byte HRM Device interprets HR data properly', () {
     for (final testPair in [
       TestPair(
-        data: sampleData,
+        data: byteHrmSampleData,
         record: RecordWithSport(
           distance: null,
           elapsed: null,
@@ -43,7 +50,7 @@ void main() {
           power: null,
           speed: null,
           cadence: null,
-          heartRate: sampleData[1],
+          heartRate: byteHrmSampleData[1],
           pace: null,
           sport: ActivityType.workout,
           caloriesPerHour: null,
@@ -51,7 +58,7 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum", () async {
         final hrm = HeartRateMonitor(MockBluetoothDevice());
 
@@ -78,6 +85,69 @@ void main() {
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+      });
+    }
+  });
+
+  group('More HRM Device interprets flags properly', () {
+    for (final moreTestData in moreHrmSampleData) {
+      final sum = moreTestData.fold<int>(0, (a, b) => a + b);
+      test("$sum", () async {
+        final hrm = HeartRateMonitor(MockBluetoothDevice());
+
+        final canProcess = hrm.canMeasurementProcessed(moreTestData);
+
+        expect(canProcess, true);
+        expect(hrm.expectedLength, moreTestData.length);
+        expect(hrm.heartRateMetric, isNotNull);
+        expect(hrm.caloriesMetric, null);
+      });
+    }
+  });
+
+  group('More HRM Device interprets HR data properly', () {
+    for (final moreTestData in moreHrmSampleData) {
+      final expectedRecord = RecordWithSport(
+        distance: null,
+        elapsed: null,
+        calories: null,
+        power: null,
+        speed: null,
+        cadence: null,
+        heartRate: moreTestData[1],
+        pace: null,
+        sport: ActivityType.workout,
+        caloriesPerHour: null,
+        caloriesPerMinute: null,
+      );
+
+      final sum = moreTestData.fold<int>(0, (a, b) => a + b);
+      test("$sum", () async {
+        final hrm = HeartRateMonitor(MockBluetoothDevice());
+
+        final record = hrm.processMeasurement(moreTestData);
+
+        expect(record.id, null);
+        expect(record.id, expectedRecord.id);
+        expect(record.activityId, null);
+        expect(record.activityId, expectedRecord.activityId);
+        expect(record.distance, expectedRecord.distance);
+        expect(record.elapsed, expectedRecord.elapsed);
+        expect(record.calories, expectedRecord.calories);
+        expect(record.power, expectedRecord.power);
+        if (expectedRecord.speed != null) {
+          expect(record.speed, closeTo(expectedRecord.speed!, eps));
+        } else {
+          expect(record.speed, null);
+        }
+        expect(record.cadence, expectedRecord.cadence);
+        expect(record.heartRate, expectedRecord.heartRate);
+        expect(record.elapsedMillis, expectedRecord.elapsedMillis);
+        expect(record.pace, expectedRecord.pace);
+        expect(record.strokeCount, expectedRecord.strokeCount);
+        expect(record.sport, expectedRecord.sport);
+        expect(record.caloriesPerHour, expectedRecord.caloriesPerHour);
+        expect(record.caloriesPerMinute, expectedRecord.caloriesPerMinute);
       });
     }
   });
