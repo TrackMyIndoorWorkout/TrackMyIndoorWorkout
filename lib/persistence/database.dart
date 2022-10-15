@@ -8,6 +8,7 @@ import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_fourcc.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../utils/constants.dart';
 import '../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
 import 'dao/calorie_tune_dao.dart';
@@ -237,6 +238,37 @@ abstract class AppDatabase extends FloorDatabase {
     }
 
     return updated > 0;
+  }
+
+  Future<bool> recalculateDistance(Activity activity, [force = false]) async {
+    final records = await recordDao.findAllActivityRecords(activity.id ?? 0);
+    if (records.length <= 1) {
+      return false;
+    }
+
+    var previousRecord = records.first;
+    for (final record in records.skip(1)) {
+      final dTMillis = record.timeStamp! - previousRecord.timeStamp!;
+      final dT = dTMillis / 1000.0;
+      if ((record.distance ?? 0.0) < eps || force) {
+        record.distance = (previousRecord.distance ?? 0.0);
+        if ((record.speed ?? 0.0) > 0 && dT > eps) {
+          // Speed already should have powerFactor effect
+          double dD = (record.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
+          record.distance = record.distance! + dD;
+          await recordDao.updateRecord(record);
+        }
+      }
+
+      previousRecord = record;
+    }
+
+    if ((previousRecord.distance ?? 0.0) > eps && (activity.distance < eps || force)) {
+      activity.distance = previousRecord.distance!;
+      await activityDao.updateActivity(activity);
+    }
+
+    return true;
   }
 }
 
