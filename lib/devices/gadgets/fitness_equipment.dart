@@ -1,4 +1,3 @@
-// ignore_for_file: unused_field
 import 'dart:async';
 import 'dart:math';
 
@@ -544,6 +543,19 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       );
       supportsSpinDown = (writeFeatures & spinDownControlSupported > 0) ||
           descriptor?.fourCC == kayakProGenesisPortFourCC;
+
+      if (logLevel >= logLevelInfo) {
+        Logging.log(
+          logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "_fitnessMachineFeature",
+          "readFeatures $readFeatures writeFeatures $writeFeatures "
+              "_speedLevels $_speedLevels _inclinationLevels $_inclinationLevels "
+              "_resistanceLevels $_resistanceLevels _heartRateLevels $_heartRateLevels "
+              "_powerLevels $_powerLevels supportsSpinDown $supportsSpinDown",
+        );
+      }
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
