@@ -6,7 +6,7 @@ version: 1.1.119+119
 
 environment:
   sdk: ">=2.18.2 <3.0.0"
-  flutter: ">=3.3.3"
+  flutter: ">=3.3.4"
 
 dependencies:
   assorted_layout_widgets: ^7.0.0
@@ -17,7 +17,7 @@ dependencies:
   easy_folder_picker: ^1.3.0
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^5.2.0+1
+  file_picker: ^5.2.1
   floor: ^1.2.0
   flutter_blue_plus: ^1.3.1
   flutter_circle_color_picker: ^0.3.0
@@ -29,7 +29,7 @@ dependencies:
   get: ^4.6.1
   group_button: ^5.2.2
   http: ^0.13.5
-  http_parser: ^4.0.1
+  http_parser: ^4.0.2
   internet_connection_checker: ^1.0.0+1
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
@@ -43,7 +43,7 @@ dependencies:
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
   sqflite: ^2.1.0+1
-  syncfusion_flutter_charts: ^20.3.48
+  syncfusion_flutter_charts: ^20.3.49
   tuple: ^2.0.1
   uni_links: ^0.5.1
   url_launcher: ^6.1.6
