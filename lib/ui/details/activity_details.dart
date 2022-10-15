@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -601,9 +602,14 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
       ),
     ]);
 
+    final startStamp = DateTime.fromMillisecondsSinceEpoch(widget.activity.start);
+    final dateString = DateFormat.Md().format(startStamp);
+    final timeString = DateFormat.Hm().format(startStamp);
+    final title = "$dateString $timeString";
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Activities'),
+        title: Text(title),
         actions: [
           IconButton(
             icon: const Icon(Icons.help),
