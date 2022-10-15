@@ -810,7 +810,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     for (final sensor in _additionalSensors) {
       if (sensor.attached) {
-        RecordWithSport? additionalRecord = sensor.record;
+        final additionalRecord = sensor.record;
         hasTotalDistanceReporting |= additionalRecord.distance != null;
         deviceHasTotalCalorieReporting |= !idle && additionalRecord.calories != null;
         hasPowerReporting |= (additionalRecord.power ?? 0) > 0;
@@ -820,16 +820,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
     }
 
-    if (_companionSensor != null && (_companionSensor?.attached ?? false)) {
-      RecordWithSport? companionRecord = _companionSensor?.record;
-      hasTotalDistanceReporting |= companionRecord?.distance != null;
-      deviceHasTotalCalorieReporting |= !idle && companionRecord?.calories != null;
-      hasPowerReporting |= (companionRecord?.power ?? 0) > 0;
-      hasSpeedReporting |= (companionRecord?.speed ?? 0.0) > 0.0;
-      if (companionRecord != null) {
-        companionRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-        stub.merge(companionRecord, true, true, true, true, true);
-      }
+    if (_companionSensor != null && _companionSensor!.attached) {
+      final companionRecord = _companionSensor!.record;
+      hasTotalDistanceReporting |= companionRecord.distance != null;
+      deviceHasTotalCalorieReporting |= !idle && companionRecord.calories != null;
+      hasPowerReporting |= (companionRecord.power ?? 0) > 0;
+      hasSpeedReporting |= (companionRecord.speed ?? 0.0) > 0.0;
+      companionRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
+      stub.merge(companionRecord, true, true, true, true, true);
     }
 
     if (sport == ActivityType.ride && stub.speed == null && (stub.power ?? 0) > eps) {
