@@ -29,7 +29,6 @@ abstract class IntegerSensor extends SensorBase {
 
   void pumpData(IntegerMetricProcessingFunction? metricProcessingFunction) {
     subscription = _listenToData.listen((newValue) {
-      metric = newValue;
       if (metricProcessingFunction != null) {
         metricProcessingFunction(newValue);
       }
