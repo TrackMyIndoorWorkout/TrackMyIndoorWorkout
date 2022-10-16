@@ -51,6 +51,15 @@ enum WorkoutState {
   stopped,
 }
 
+class DataEntry {
+  final List<int> byteList;
+  late final DateTime timeStamp;
+
+  DataEntry(this.byteList) {
+    timeStamp = DateTime.now();
+  }
+}
+
 class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   static const badKey = -1;
 
@@ -113,7 +122,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
-  Map<int, List<int>> _listDeduplicationMap = {};
+  final Map<int, DataEntry> _listDeduplicationMap = {};
   Timer? _throttleTimer;
   RecordHandlerFunction? _recordHandlerFunction;
 
@@ -154,10 +163,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   RecordWithSport? _mergedForYield() {
     final values = _listDeduplicationMap.entries
-        .map((entry) => dataHandlers[entry.key]!.wrappedStubRecord(entry.value))
+        .map((entry) => dataHandlers[entry.key]!.wrappedStubRecord(entry.value.byteList))
         .whereNotNull();
 
-    _listDeduplicationMap = {};
+    // Evict too old data entries from map
+    final now = DateTime.now();
+    _listDeduplicationMap.removeWhere(
+        (key, value) => value.timeStamp.difference(now).inMilliseconds > dataMapExpiry);
+
     if (values.isEmpty) {
       if (logLevel >= logLevelInfo) {
         Logging.log(
@@ -310,7 +323,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         final dataHandler = dataHandlers[key]!;
         processable = dataHandler.isDataProcessable(byteList);
         if (processable) {
-          _listDeduplicationMap[key] = byteList;
+          _listDeduplicationMap[key] = DataEntry(byteList);
         }
       }
 
@@ -825,16 +838,16 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     hasPowerReporting |= (stub.power ?? 0) > 0;
     hasSpeedReporting |= (stub.speed ?? 0.0) > 0.0;
 
-    if (shouldMerge) {
-      stub.merge(
-        lastRecord,
-        workoutState != WorkoutState.stopped,
-        hasPowerReporting,
-        hasSpeedReporting,
-        _cadenceGapWorkaround,
-        _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
-      );
-    }
+    // if (shouldMerge) {
+    //   stub.merge(
+    //     lastRecord,
+    //     workoutState != WorkoutState.stopped,
+    //     hasPowerReporting,
+    //     hasSpeedReporting,
+    //     _cadenceGapWorkaround,
+    //     _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
+    //   );
+    // }
 
     stub.elapsed = elapsed.round();
     stub.elapsedMillis = elapsedMillis;
