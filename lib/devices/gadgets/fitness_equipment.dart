@@ -371,6 +371,24 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   void setHeartRateMonitor(HeartRateMonitor heartRateMonitor) {
     this.heartRateMonitor = heartRateMonitor;
+    final hrmId = heartRateMonitor.device?.id.id;
+    if (hrmId == null) {
+      return;
+    }
+
+    if (_companionSensor?.device?.id.id == hrmId) {
+      // Remove companion because external initiated HRM's lifecycle
+      // spans beyond the FitnessMachine (so we should prevent detach)
+      _companionSensor = null;
+    }
+
+    if (_additionalSensors.where((sensor) => sensor.device?.id.id == hrmId).isNotEmpty) {
+      // Present as an additional sensor
+      // Remove from additional sensor list, because the lifecycle
+      // spans beyond the FitnessMachine (so we should prevent detach)
+      _additionalSensors =
+          _additionalSensors.where((sensor) => sensor.device?.id.id != hrmId).toList();
+    }
   }
 
   Future<void> additionalSensorsOnDemand() async {
@@ -404,6 +422,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     DeviceDescriptor companionDescriptor,
     BluetoothDevice companionDevice,
   ) async {
+    if (heartRateMonitor?.device?.id.id == companionDevice.id.id) {
+      // It's a HRM and already set
+      return;
+    }
+
     _companionDescriptor = companionDescriptor;
     _companionSensor = _companionDescriptor?.getSensor(companionDevice);
     await _companionSensor?.connect();
