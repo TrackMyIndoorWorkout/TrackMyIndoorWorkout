@@ -184,6 +184,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         "merged $merged",
       );
     }
+
     return merged;
   }
 
@@ -706,6 +707,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         "workoutState $workoutState isNotMoving $isNotMoving",
       );
     }
+
     if (workoutState == WorkoutState.waitingForFirstMove) {
       if (isNotMoving) {
         if (_activity != null && _activity!.startDateTime != null) {
