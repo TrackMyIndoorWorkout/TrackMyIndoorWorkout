@@ -708,6 +708,46 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   RecordWithSport processRecord(RecordWithSport stub, [bool idle = false]) {
     final now = DateTime.now();
+    if (logLevel >= logLevelInfo) {
+      Logging.log(
+        logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "processRecord",
+        "stub at $now $stub",
+      );
+    }
+
+    for (final sensor in _additionalSensors) {
+      if (sensor.attached) {
+        if (logLevel >= logLevelInfo) {
+          Logging.log(
+            logLevel,
+            logLevelInfo,
+            "FITNESS_EQUIPMENT",
+            "processRecord",
+            "merging additional sensor ${sensor.record}",
+          );
+        }
+
+        stub.merge(sensor.record, true, true, true, true, true);
+      }
+    }
+
+    if (_companionSensor != null && _companionSensor!.attached) {
+      if (logLevel >= logLevelInfo) {
+        Logging.log(
+          logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "processRecord",
+          "merging companion sensor ${_companionSensor!.record}",
+        );
+      }
+
+      stub.merge(_companionSensor!.record, true, true, true, true, true);
+    }
+
     // State Machine for #231 and #235
     // (intelligent start and elapsed time tracking)
     bool isNotMoving = stub.isNotMoving();
@@ -856,28 +896,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       // We have to track the time ticking even when the workout paused #235
       lastRecord.adjustTime(stub.elapsed!, stub.elapsedMillis!);
       return lastRecord;
-    }
-
-    for (final sensor in _additionalSensors) {
-      if (sensor.attached) {
-        final additionalRecord = sensor.record;
-        hasTotalDistanceReporting |= additionalRecord.distance != null;
-        deviceHasTotalCalorieReporting |= !idle && additionalRecord.calories != null;
-        hasPowerReporting |= (additionalRecord.power ?? 0) > 0;
-        hasSpeedReporting |= (additionalRecord.speed ?? 0.0) > 0.0;
-        additionalRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-        stub.merge(additionalRecord, true, true, true, true, true);
-      }
-    }
-
-    if (_companionSensor != null && _companionSensor!.attached) {
-      final companionRecord = _companionSensor!.record;
-      hasTotalDistanceReporting |= companionRecord.distance != null;
-      deviceHasTotalCalorieReporting |= !idle && companionRecord.calories != null;
-      hasPowerReporting |= (companionRecord.power ?? 0) > 0;
-      hasSpeedReporting |= (companionRecord.speed ?? 0.0) > 0.0;
-      companionRecord.adjustByFactors(powerFactor, calorieFactor, _extendTuning);
-      stub.merge(companionRecord, true, true, true, true, true);
     }
 
     if (sport == ActivityType.ride && stub.speed == null && (stub.power ?? 0) > eps) {
