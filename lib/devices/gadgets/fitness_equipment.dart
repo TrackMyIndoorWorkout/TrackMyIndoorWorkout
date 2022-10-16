@@ -897,7 +897,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     // #197
     stub.distance ??= 0.0;
     if (_startingDistance > eps) {
-      stub.distance = stub.distance! - _startingDistance;
+      stub.distance = max(stub.distance! - _startingDistance, 0.0);
     }
 
     if ((stub.heartRate == null || stub.heartRate == 0) && (hrmRecord?.heartRate ?? 0) > 0) {
