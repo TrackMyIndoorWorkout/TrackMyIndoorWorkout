@@ -995,6 +995,15 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
     }
 
+    if ((stub.power ?? 0) < eps &&
+        sport == ActivityType.ride &&
+        stub.speed != null &&
+        stub.speed! > displayEps) {
+      // When cycling supplement power from speed if missing
+      // via https://www.gribble.org/cycling/power_v_speed.html
+      stub.power = powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms).toInt();
+    }
+
     if (stub.pace != null && stub.pace! > 0.0 && slowPace != null && stub.pace! < slowPace! ||
         stub.speed != null && stub.speed! > eps) {
       // #101, #122
