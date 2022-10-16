@@ -186,7 +186,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     final merged = values.skip(1).fold<RecordWithSport>(
           values.first,
-          (prev, element) => prev.merge(element, true, true, true, true, true),
+          (prev, element) => prev.merge(element),
         );
     if (logLevel >= logLevelInfo) {
       Logging.log(
@@ -744,7 +744,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           );
         }
 
-        stub.merge(sensor.record, true, true, true, true, true);
+        stub.merge(sensor.record);
       }
     }
 
@@ -759,7 +759,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
 
-      stub.merge(_companionSensor!.record, true, true, true, true, true);
+      stub.merge(_companionSensor!.record);
     }
 
     // State Machine for #231 and #235
@@ -891,17 +891,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     hasPowerReporting |= (stub.power ?? 0) > 0;
     hasSpeedReporting |= (stub.speed ?? 0.0) > 0.0;
-
-    // if (shouldMerge) {
-    //   stub.merge(
-    //     lastRecord,
-    //     workoutState != WorkoutState.stopped,
-    //     hasPowerReporting,
-    //     hasSpeedReporting,
-    //     _cadenceGapWorkaround,
-    //     _heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue,
-    //   );
-    // }
 
     stub.elapsed = elapsed.round();
     stub.elapsedMillis = elapsedMillis;
