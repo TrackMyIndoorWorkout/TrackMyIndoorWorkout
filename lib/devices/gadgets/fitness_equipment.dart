@@ -706,6 +706,20 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _extendTuning = extendTuning;
   }
 
+  RecordWithSport pausedRecord(int newElapsed, int newElapsedMillis) {
+    final record = RecordWithSport(sport: sport);
+    record.cumulativeMetricsEnforcements(
+      lastRecord,
+      logLevel,
+      _enableAsserts,
+      forDistance: !firstDistance,
+      forTime: true,
+      forCalories: !firstCalories,
+    );
+    record.adjustTime(newElapsed, newElapsedMillis);
+    return record;
+  }
+
   RecordWithSport processRecord(RecordWithSport stub, [bool idle = false]) {
     final now = DateTime.now();
     if (logLevel >= logLevelInfo) {
@@ -765,10 +779,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       if (isNotMoving) {
         if (_activity != null && _activity!.startDateTime != null) {
           int elapsedMillis = now.difference(_activity!.startDateTime!).inMilliseconds;
-          lastRecord.adjustTime(elapsedMillis ~/ 1000, elapsedMillis);
+          return pausedRecord(elapsedMillis ~/ 1000, elapsedMillis);
         }
 
-        return lastRecord;
+        return pausedRecord(lastRecord.elapsed!, lastRecord.elapsedMillis!);
       } else {
         dataHandlers = {};
         if (workoutState == WorkoutState.startedMoving) {
@@ -894,8 +908,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (workoutState == WorkoutState.stopped) {
       // We have to track the time ticking even when the workout paused #235
-      lastRecord.adjustTime(stub.elapsed!, stub.elapsedMillis!);
-      return lastRecord;
+      return pausedRecord(stub.elapsed!, stub.elapsedMillis!);
     }
 
     if (sport == ActivityType.ride && stub.speed == null && (stub.power ?? 0) > eps) {
