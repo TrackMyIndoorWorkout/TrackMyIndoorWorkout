@@ -874,7 +874,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     final dTMillis = elapsedMillis - (lastRecord.elapsedMillis ?? 0);
     final dT = dTMillis / 1000.0;
     if ((stub.distance ?? 0.0) < eps) {
-      stub.distance = (lastRecord.distance ?? 0);
+      stub.distance = (lastRecord.distance ?? 0.0);
       if ((stub.speed ?? 0.0) > 0 && dT > eps) {
         // Speed possibly already has powerFactor effect
         double dD = (stub.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
