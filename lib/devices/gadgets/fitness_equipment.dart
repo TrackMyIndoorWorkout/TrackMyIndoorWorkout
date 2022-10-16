@@ -838,7 +838,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     stub.elapsedMillis = elapsedMillis;
 
     if (workoutState == WorkoutState.stopped) {
-      // We have to track the time ticking still #235
+      // We have to track the time ticking even when the workout paused #235
       lastRecord.adjustTime(stub.elapsed!, stub.elapsedMillis!);
       return lastRecord;
     }
