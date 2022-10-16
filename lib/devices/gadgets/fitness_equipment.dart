@@ -1154,7 +1154,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
             "age $_age, "
             "isMale $_isMale, "
             "vo2Max $_vo2Max, "
-            "useHrBasedCalorieCounting $_useHrBasedCalorieCounting, "
             "extendTuning $_extendTuning, "
             "logLevel $logLevel",
       );
