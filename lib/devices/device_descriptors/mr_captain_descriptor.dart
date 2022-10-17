@@ -13,7 +13,7 @@ class MrCaptainDescriptor extends RowerDeviceDescriptor {
           vendorName: "Mr Captain",
           modelName: "Rower",
           namePrefixes: ["XG"],
-          manufacturerPrefix: "XG",
+          manufacturerNamePart: "XG",
           manufacturerFitId: stravaFitId,
           model: "000000",
         );

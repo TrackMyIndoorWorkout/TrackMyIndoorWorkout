@@ -29,7 +29,7 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
           vendorName: "Concept2",
           modelName: "PM5",
           namePrefixes: ["PM5"],
-          manufacturerPrefix: "Concept2",
+          manufacturerNamePart: "Concept2",
           manufacturerFitId: concept2FitId,
           model: "PM5",
           dataServiceId: c2RowingPrimaryServiceUuid,

@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -601,15 +603,33 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
       ),
     ]);
 
+    final startStamp = DateTime.fromMillisecondsSinceEpoch(widget.activity.start);
+    final dateString = DateFormat.Md().format(startStamp);
+    final timeString = DateFormat.Hm().format(startStamp);
+    final title = "$dateString $timeString";
+
+    final appBarActions = [
+      IconButton(
+        icon: const Icon(Icons.help),
+        onPressed: () => Get.to(() => const AboutScreen()),
+      ),
+    ];
+    if (kDebugMode) {
+      appBarActions.add(
+        IconButton(
+          icon: const Icon(Icons.build),
+          onPressed: () async {
+            final database = Get.find<AppDatabase>();
+            await database.recalculateDistance(widget.activity, true);
+          },
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Activities'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help),
-            onPressed: () => Get.to(() => const AboutScreen()),
-          ),
-        ],
+        title: Text(title),
+        actions: appBarActions,
       ),
       body: !_initialized
           ? const Text('Initializing...')

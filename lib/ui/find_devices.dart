@@ -326,16 +326,18 @@ class FindDevicesState extends State<FindDevicesScreen> {
     // Step 2. Try to infer from if it has proprietary Precor service
     // Or other dedicated workarounds
     if (descriptor == null) {
-      if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
-        descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
-      } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
-        descriptor = deviceMap[schwinnX70BikeFourCC];
-      } else if (advertisementDigest.serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
-        descriptor = deviceMap[concept2RowerFourCC];
-      } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
-        descriptor = deviceMap[powerMeterBasedBikeFourCC];
-      } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
-        descriptor = deviceMap[cscSensorBasedBikeFourCC];
+      if (!advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
+        if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
+          descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+        } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
+          descriptor = deviceMap[schwinnX70BikeFourCC];
+        } else if (advertisementDigest.serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
+          descriptor = deviceMap[concept2RowerFourCC];
+        } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
+          descriptor = deviceMap[powerMeterBasedBikeFourCC];
+        } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
+          descriptor = deviceMap[cscSensorBasedBikeFourCC];
+        }
       } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
         if (advertisementDigest.machineType == MachineType.treadmill) {
           descriptor = deviceMap[matrixTreadmillFourCC];
@@ -425,7 +427,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           // currentPrimarySensor, instantiate this primary and secondary sensor,
           // connect and discover and add it as a companion sensor to the primary
           // and then navigate
-          _fitnessEquipment!.addCompanionSensor(descriptor, device);
+          await _fitnessEquipment!.addCompanionSensor(descriptor, device);
           fitnessEquipment = _fitnessEquipment;
           device = _fitnessEquipment!.device!;
           descriptor = _fitnessEquipment!.descriptor;

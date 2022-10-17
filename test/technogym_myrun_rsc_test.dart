@@ -65,7 +65,7 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum", () async {
         final treadmill = RunningSpeedAndCadenceSensor(MockBluetoothDevice());
 

@@ -89,6 +89,7 @@ void main() {
           calories: 0,
           sport: descriptor.defaultSport,
         );
+        equipment.initPower2SpeedConstants();
         equipment.workoutState = WorkoutState.moving;
         equipment.processRecord(RecordWithSport(
           sport: descriptor.defaultSport,

@@ -5,3 +5,4 @@ const sensorDataThreshold = ftmsDataThreshold;
 const uiIntermittentDelay = 100;
 const spinDownThreshold = 500;
 const ftmsStatusThreshold = 250;
+const dataMapExpiry = 2000;

@@ -53,7 +53,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           vendorName: "Schwinn",
           modelName: "SCHWINN 170/270",
           namePrefixes: ["SCHWINN 170", "SCHWINN 270", "SCHWINN 570"],
-          manufacturerPrefix: "Nautilus", // "SCHWINN 170/270"
+          manufacturerNamePart: "Nautilus", // "SCHWINN 170/270"
           manufacturerFitId: nautilusFitId,
           model: "",
           dataServiceId: schwinnX70ServiceUuid,

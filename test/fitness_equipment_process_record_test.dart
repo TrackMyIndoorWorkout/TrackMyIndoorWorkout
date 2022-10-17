@@ -31,6 +31,7 @@ void main() {
           device: MockBluetoothDevice(),
           firstCalories: false,
         );
+        equipment.initPower2SpeedConstants();
         equipment.workoutState = WorkoutState.moving;
 
         equipment.processRecord(RecordWithSport(

@@ -10,7 +10,7 @@ class CyclingSpeedAndCadenceDescriptor extends CyclingSensorDescriptor {
     required vendorName,
     required modelName,
     required namePrefixes,
-    manufacturerPrefix,
+    manufacturerNamePart,
     manufacturerFitId,
     model,
   }) : super(
@@ -18,7 +18,7 @@ class CyclingSpeedAndCadenceDescriptor extends CyclingSensorDescriptor {
           vendorName: vendorName,
           modelName: modelName,
           namePrefixes: namePrefixes,
-          manufacturerPrefix: manufacturerPrefix,
+          manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
           deviceCategory: DeviceCategory.secondarySensor,
@@ -34,7 +34,7 @@ class CyclingSpeedAndCadenceDescriptor extends CyclingSensorDescriptor {
         vendorName: vendorName,
         modelName: modelName,
         namePrefixes: namePrefixes,
-        manufacturerPrefix: manufacturerPrefix,
+        manufacturerNamePart: manufacturerNamePart,
         manufacturerFitId: manufacturerFitId,
         model: model,
       )..sensor = sensor;

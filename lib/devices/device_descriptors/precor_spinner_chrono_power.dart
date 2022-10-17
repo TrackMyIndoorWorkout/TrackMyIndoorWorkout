@@ -23,7 +23,7 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
           vendorName: "Precor",
           modelName: "Spinner Chrono Power",
           namePrefixes: ["CHRONO"],
-          manufacturerPrefix: "Precor",
+          manufacturerNamePart: "Precor",
           manufacturerFitId: precorFitId,
           model: "1",
           dataServiceId: precorServiceUuid,

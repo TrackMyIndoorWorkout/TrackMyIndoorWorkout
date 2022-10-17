@@ -24,7 +24,7 @@ abstract class DeviceDescriptor extends DataHandler {
   final String vendorName;
   final String modelName;
   final List<String> namePrefixes;
-  final String manufacturerPrefix;
+  final String manufacturerNamePart;
   final int manufacturerFitId;
   final String model;
   DeviceCategory deviceCategory;
@@ -45,7 +45,7 @@ abstract class DeviceDescriptor extends DataHandler {
     required this.vendorName,
     required this.modelName,
     required this.namePrefixes,
-    required this.manufacturerPrefix,
+    required this.manufacturerNamePart,
     required this.manufacturerFitId,
     required this.model, // Maybe eradicate?
     required this.deviceCategory,

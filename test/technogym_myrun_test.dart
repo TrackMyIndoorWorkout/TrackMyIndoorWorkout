@@ -101,7 +101,7 @@ void main() {
 
   group('Technogym MyRun interprets FTMS Treadmill Data properly', () {
     for (final testPair in sampleData) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
         final treadmill = DeviceFactory.getGenericFTMSTreadmill();
         treadmill.initFlag();

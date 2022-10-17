@@ -22,7 +22,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
           vendorName: "Schwinn",
           modelName: "AC Performance Plus",
           namePrefixes: ["Schwinn AC Perf+"],
-          manufacturerPrefix: "Schwinn",
+          manufacturerNamePart: "Schwinn",
           manufacturerFitId: stravaFitId,
           model: "Schwinn AC Perf+",
           deviceCategory: DeviceCategory.antPlusDevice,

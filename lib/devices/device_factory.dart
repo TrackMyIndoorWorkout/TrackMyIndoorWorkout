@@ -15,7 +15,7 @@ class DeviceFactory {
       vendorName: "Nautilus, Inc",
       modelName: "Schwinn IC4/IC8",
       namePrefixes: ["IC Bike"],
-      manufacturerPrefix: "Nautilus",
+      manufacturerNamePart: "Nautilus",
       manufacturerFitId: nautilusFitId,
       model: "IC BIKE",
       canMeasureCalories: false,
@@ -28,7 +28,7 @@ class DeviceFactory {
       vendorName: "Nautilus Inc.",
       modelName: "Bowflex C7",
       namePrefixes: ["C7-"],
-      manufacturerPrefix: "Nautilus",
+      manufacturerNamePart: "Nautilus",
       manufacturerFitId: nautilusFitId,
       model: "Bowflex C7",
       canMeasureCalories: false,
@@ -41,7 +41,7 @@ class DeviceFactory {
       vendorName: "Nautilus, Inc",
       modelName: "Schwinn 230/510",
       namePrefixes: ["SCH130", "SCH230", "SCH510"],
-      manufacturerPrefix: "Nautilus",
+      manufacturerNamePart: "Nautilus",
       manufacturerFitId: nautilusFitId,
       model: "SCH BIKE",
     );
@@ -53,7 +53,7 @@ class DeviceFactory {
       vendorName: "Stages Cycling",
       modelName: "SB20",
       namePrefixes: ["Stages Bike"],
-      manufacturerPrefix: "Stages",
+      manufacturerNamePart: "Stages",
       manufacturerFitId: stagesCyclingFitId,
       model: "SB20",
     );
@@ -65,7 +65,7 @@ class DeviceFactory {
       vendorName: "Yesoul",
       modelName: "S3",
       namePrefixes: ["Yesoul"],
-      manufacturerPrefix: "Yesoul",
+      manufacturerNamePart: "Yesoul",
       manufacturerFitId: stravaFitId,
       model: "S3",
     );
@@ -78,7 +78,7 @@ class DeviceFactory {
       vendorName: "KayakPro",
       modelName: "KayakPro Compact",
       namePrefixes: ["KayakPro", "KP"],
-      manufacturerPrefix: "North Pole Engineering",
+      manufacturerNamePart: "North Pole Engineering",
       manufacturerFitId: northPoleEngineeringFitId,
       model: "64",
     );
@@ -90,7 +90,7 @@ class DeviceFactory {
       vendorName: "Unknown",
       modelName: "Generic Treadmill",
       namePrefixes: ["FTMS Treadmill"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Treadmill",
     );
@@ -102,7 +102,7 @@ class DeviceFactory {
       vendorName: "Unknown",
       modelName: "Generic Indoor Bike",
       namePrefixes: ["FTMS Bike"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Indoor Bike",
     );
@@ -116,7 +116,7 @@ class DeviceFactory {
       vendorName: "Unknown",
       modelName: "Generic Kayak Ergometer",
       namePrefixes: ["FTMS Kayak"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Kayak Ergometer",
     );
@@ -130,7 +130,7 @@ class DeviceFactory {
       vendorName: "Unknown",
       modelName: "Generic Canoe Ergometer",
       namePrefixes: ["FTMS Canoe"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Canoe Ergometer",
     );
@@ -144,7 +144,7 @@ class DeviceFactory {
       vendorName: "Unknown",
       modelName: "Generic Rower Ergometer",
       namePrefixes: ["FTMS Rower"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Rower Ergometer",
     );
@@ -158,7 +158,7 @@ class DeviceFactory {
       vendorName: "Unknown",
       modelName: "Generic Swim Ergometer",
       namePrefixes: ["FTMS Swim"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Swim Ergometer",
     );
@@ -173,7 +173,7 @@ class DeviceFactory {
       vendorName: "Unknown",
       modelName: "Generic Cross Elliptical",
       namePrefixes: ["FTMS Elliptical"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Elliptical",
     );
@@ -185,7 +185,7 @@ class DeviceFactory {
       vendorName: "Unknown",
       modelName: "Generic Cross Trainer",
       namePrefixes: ["FTMS Cross Trainer"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Cross Trainer",
     );
@@ -197,7 +197,7 @@ class DeviceFactory {
       vendorName: "Unknown",
       modelName: "Power Meter Based Bike",
       namePrefixes: ["Stages IC"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Power Meter Based Bike",
     );
@@ -209,7 +209,7 @@ class DeviceFactory {
       vendorName: "Unknown",
       modelName: "Speed and Cadence Sensor Based Bike",
       namePrefixes: ["N/A"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Speed and Cadence Sensor Based Bike",
     );
