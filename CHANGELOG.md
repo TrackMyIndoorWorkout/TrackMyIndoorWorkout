@@ -1,3 +1,9 @@
+## 1.1.120
+* Treat Wahoo KICKR as FTMS indoor bike instead of a power meter
+* Try to fix power flickering
+* Try to fix heart rate flickering
+* Try to fix power zone 7 jump when HRM based calories are applied and pedaling stops
+
 ## 1.1.119
 * Foundations for Concept2 rower support (experimental only, includes refactoring)
 * Data processing bugfix
