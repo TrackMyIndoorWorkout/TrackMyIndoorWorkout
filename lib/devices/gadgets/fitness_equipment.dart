@@ -901,7 +901,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return pausedRecord(stub.elapsed!, stub.elapsedMillis!);
     }
 
-    if (sport == ActivityType.ride && stub.speed == null && (stub.power ?? 0) > eps) {
+    if (!hasSpeedReporting &&
+        sport == ActivityType.ride &&
+        stub.speed == null &&
+        (stub.power ?? 0) > eps) {
       // When cycling supplement speed from power if missing
       // via https://www.gribble.org/cycling/power_v_speed.html
       stub.speed = velocityForPowerCardano(stub.power!) * DeviceDescriptor.ms2kmh;
@@ -991,7 +994,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
         } else if ((stub.caloriesPerHour ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
-        } else if (sport == ActivityType.ride && (stub.speed ?? 0) > displayEps) {
+        } else if (!hasPowerReporting &&
+            sport == ActivityType.ride &&
+            (stub.speed ?? 0) > displayEps) {
           // When cycling supplement power from speed if missing
           // via https://www.gribble.org/cycling/power_v_speed.html
           stub.power = powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms).toInt();
@@ -1016,13 +1021,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
     }
 
-    if ((stub.power ?? 0) < eps &&
+    if (!hasPowerReporting &&
         sport == ActivityType.ride &&
+        (stub.power ?? 0) < eps &&
         stub.speed != null &&
         stub.speed! > displayEps) {
       // When cycling supplement power from speed if missing
       // via https://www.gribble.org/cycling/power_v_speed.html
-      stub.power = powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms).toInt();
+      stub.power = (powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms) * powerFactor).round();
     }
 
     if (stub.pace != null && stub.pace! > 0.0 && slowPace != null && stub.pace! < slowPace! ||
