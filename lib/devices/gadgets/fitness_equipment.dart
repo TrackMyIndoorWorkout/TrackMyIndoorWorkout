@@ -1028,7 +1028,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         stub.speed! > displayEps) {
       // When cycling supplement power from speed if missing
       // via https://www.gribble.org/cycling/power_v_speed.html
-      stub.power = powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms).toInt();
+      stub.power = (powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms) * powerFactor).round();
     }
 
     if (stub.pace != null && stub.pace! > 0.0 && slowPace != null && stub.pace! < slowPace! ||
