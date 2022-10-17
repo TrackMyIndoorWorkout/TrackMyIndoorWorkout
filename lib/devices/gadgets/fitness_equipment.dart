@@ -162,14 +162,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   RecordWithSport? _mergedForYield() {
-    final values = _listDeduplicationMap.entries
-        .map((entry) => dataHandlers[entry.key]!.wrappedStubRecord(entry.value.byteList))
-        .whereNotNull();
-
-    // Evict too old data entries from map
+    // Only look at data entries not older than 2 seconds
     final now = DateTime.now();
-    _listDeduplicationMap.removeWhere(
-        (key, value) => value.timeStamp.difference(now).inMilliseconds > dataMapExpiry);
+    final values = _listDeduplicationMap.entries
+        .where((entry1) => now.difference(entry1.value.timeStamp).inMilliseconds <= dataMapExpiry)
+        .map((entry2) => dataHandlers[entry2.key]?.wrappedStubRecord(entry2.value.byteList))
+        .whereNotNull()
+        .toList(growable: false);
 
     if (values.isEmpty) {
       if (logLevel >= logLevelInfo) {
@@ -184,10 +183,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return null;
     }
 
-    final merged = values.skip(1).fold<RecordWithSport>(
-          values.first,
-          (prev, element) => prev.merge(element),
-        );
+    final merged = values.length == 1
+        ? values.first
+        : values.skip(1).fold<RecordWithSport>(
+              values.first,
+              (prev, element) => prev.merge(element),
+            );
     if (logLevel >= logLevelInfo) {
       Logging.log(
         logLevel,
@@ -1117,6 +1118,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       );
     }
 
+    // debugPrint("$stub");
     lastRecord = stub;
     return continuation ? RecordWithSport.offsetForward(stub, continuationRecord) : stub;
   }
