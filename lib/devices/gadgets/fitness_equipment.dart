@@ -709,13 +709,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   RecordWithSport pausedRecord(int newElapsed, int newElapsedMillis) {
-    final record = RecordWithSport(sport: sport);
+    final record = RecordWithSport.getZero(sport);
     record.cumulativeMetricsEnforcements(
       lastRecord,
       logLevel,
       _enableAsserts,
       forDistance: !firstDistance,
-      forTime: true,
+      forTime: false,
       forCalories: !firstCalories,
     );
     record.adjustTime(newElapsed, newElapsedMillis);
