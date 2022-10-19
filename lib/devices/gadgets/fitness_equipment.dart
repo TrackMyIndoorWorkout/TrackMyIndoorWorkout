@@ -47,8 +47,8 @@ enum WorkoutState {
   waitingForFirstMove,
   startedMoving,
   moving,
-  justStopped,
-  stopped,
+  justPaused,
+  paused,
 }
 
 class DataEntry {
@@ -222,7 +222,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         pumpDataCore(merged, false);
       }
 
-      if (workoutState == WorkoutState.justStopped || workoutState == WorkoutState.stopped) {
+      if (workoutState == WorkoutState.justPaused || workoutState == WorkoutState.paused) {
         if (merged == null) {
           pumpDataCore(lastRecord, true);
         }
@@ -812,9 +812,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       // that the workout is stopped.
       if (isNotMoving && wasNotMoving()) {
         if (workoutState == WorkoutState.moving || workoutState == WorkoutState.startedMoving) {
-          workoutState = WorkoutState.justStopped;
+          workoutState = WorkoutState.justPaused;
         } else {
-          workoutState = WorkoutState.stopped;
+          workoutState = WorkoutState.paused;
         }
       } else {
         if (workoutState == WorkoutState.startedMoving) {
@@ -896,7 +896,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     stub.elapsed = elapsed.round();
     stub.elapsedMillis = elapsedMillis;
 
-    if (workoutState == WorkoutState.stopped) {
+    if (workoutState == WorkoutState.paused) {
       // We have to track the time ticking even when the workout paused #235
       return pausedRecord(stub.elapsed!, stub.elapsedMillis!);
     }
