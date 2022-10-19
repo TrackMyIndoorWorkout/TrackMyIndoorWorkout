@@ -142,7 +142,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
   double get residueCalories => _residueCalories;
   double get lastPositiveCalories => _lastPositiveCalories;
-  bool get shouldMerge => dataHandlers.length > 1;
 
   int keySelector(List<int> l) {
     if (l.isEmpty) {
