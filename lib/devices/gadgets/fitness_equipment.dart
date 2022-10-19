@@ -142,6 +142,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
   double get residueCalories => _residueCalories;
   double get lastPositiveCalories => _lastPositiveCalories;
+  bool get isMoving =>
+      workoutState == WorkoutState.moving || workoutState == WorkoutState.startedMoving;
 
   int keySelector(List<int> l) {
     if (l.isEmpty) {
@@ -810,7 +812,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       // Once all types of packets indicate non movement we can be sure
       // that the workout is stopped.
       if (isNotMoving && wasNotMoving()) {
-        if (workoutState == WorkoutState.moving || workoutState == WorkoutState.startedMoving) {
+        if (isMoving) {
           workoutState = WorkoutState.justPaused;
         } else {
           workoutState = WorkoutState.paused;
@@ -901,6 +903,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     if (!hasSpeedReporting &&
+        isMoving &&
         sport == ActivityType.ride &&
         stub.speed == null &&
         (stub.power ?? 0) > eps) {
@@ -993,7 +996,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
         } else if ((stub.caloriesPerHour ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
-        } else if (!hasPowerReporting &&
+        } else if (isMoving &&
+            !hasPowerReporting &&
             sport == ActivityType.ride &&
             (stub.speed ?? 0) > displayEps) {
           // When cycling supplement power from speed if missing
@@ -1020,7 +1024,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
     }
 
-    if (!hasPowerReporting &&
+    if (isMoving &&
+        !hasPowerReporting &&
         sport == ActivityType.ride &&
         (stub.power ?? 0) < eps &&
         stub.speed != null &&
