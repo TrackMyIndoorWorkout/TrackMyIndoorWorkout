@@ -65,7 +65,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           cadenceMetric: ThreeByteMetricDescriptor(lsb: 4, msb: 6, divider: 1.0),
         ) {
     resistanceMetric = ByteMetricDescriptor(lsb: 16);
-    initCadence(10, 64, maxUint24);
+    initCadence(5, 64, maxUint24);
     initPower2SpeedConstants();
     lastTime = -1.0;
     lastCalories = -1.0;
@@ -147,7 +147,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       calories: calories ~/ 2097152,
       power: integerPower,
       speed: speed,
-      cadence: computeCadence(),
+      cadence: min(computeCadence(), maxByte),
       heartRate: null,
       sport: defaultSport,
     );
@@ -219,5 +219,10 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     final additionalSensor = SchwinnX70HrSensor(device);
     additionalSensor.services = services;
     return [additionalSensor];
+  }
+
+  @override
+  void trimQueues() {
+    trimQueue();
   }
 }

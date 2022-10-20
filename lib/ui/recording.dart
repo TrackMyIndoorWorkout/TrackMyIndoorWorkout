@@ -364,7 +364,7 @@ class RecordingState extends State<RecordingScreen> {
         if (!_uxDebug &&
             (workoutState == WorkoutState.moving ||
                 workoutState == WorkoutState.startedMoving ||
-                workoutState == WorkoutState.justStopped)) {
+                workoutState == WorkoutState.justPaused)) {
           await _database.recordDao.insertRecord(record);
         }
 
@@ -383,7 +383,7 @@ class RecordingState extends State<RecordingScreen> {
 
           _elapsed = record.elapsed ?? 0;
           if (_timeDisplayMode == timeDisplayModeHIITMoving) {
-            if (workoutState == WorkoutState.justStopped ||
+            if (workoutState == WorkoutState.justPaused ||
                 workoutState == WorkoutState.startedMoving) {
               _markedTime = _elapsed;
             }
@@ -1570,9 +1570,7 @@ class RecordingState extends State<RecordingScreen> {
     if (_timeDisplayMode == timeDisplayModeHIITMoving &&
         workoutState != WorkoutState.waitingForFirstMove) {
       final timeColorIndex =
-          (workoutState == WorkoutState.justStopped || workoutState == WorkoutState.stopped)
-              ? 0
-              : 4;
+          (workoutState == WorkoutState.justPaused || workoutState == WorkoutState.paused) ? 0 : 4;
       timeStyle = _measurementStyle.apply(color: _paletteSpec?.lightFgPalette[5]![timeColorIndex]);
     }
 

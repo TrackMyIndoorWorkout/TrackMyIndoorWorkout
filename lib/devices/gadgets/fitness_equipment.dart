@@ -47,8 +47,8 @@ enum WorkoutState {
   waitingForFirstMove,
   startedMoving,
   moving,
-  justStopped,
-  stopped,
+  justPaused,
+  paused,
 }
 
 class DataEntry {
@@ -142,7 +142,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
   double get residueCalories => _residueCalories;
   double get lastPositiveCalories => _lastPositiveCalories;
-  bool get shouldMerge => dataHandlers.length > 1;
+  bool get isMoving =>
+      workoutState == WorkoutState.moving || workoutState == WorkoutState.startedMoving;
 
   int keySelector(List<int> l) {
     if (l.isEmpty) {
@@ -222,7 +223,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         pumpDataCore(merged, false);
       }
 
-      if (workoutState == WorkoutState.justStopped || workoutState == WorkoutState.stopped) {
+      if (workoutState == WorkoutState.justPaused || workoutState == WorkoutState.paused) {
         if (merged == null) {
           pumpDataCore(lastRecord, true);
         }
@@ -447,6 +448,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     await _companionSensor?.connect();
     await _companionSensor?.discover();
     await _companionSensor?.attach();
+  }
+
+  void trimQueues() {
+    descriptor?.trimQueues();
+    _companionSensor?.trimQueues();
+    for (final sensor in _additionalSensors) {
+      sensor.trimQueues();
+    }
   }
 
   Future<void> setActivity(Activity activity) async {
@@ -708,13 +717,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   RecordWithSport pausedRecord(int newElapsed, int newElapsedMillis) {
-    final record = RecordWithSport(sport: sport);
+    trimQueues();
+    final record = RecordWithSport.getZero(sport);
     record.cumulativeMetricsEnforcements(
       lastRecord,
       logLevel,
       _enableAsserts,
       forDistance: !firstDistance,
-      forTime: true,
+      forTime: false,
       forCalories: !firstCalories,
     );
     record.adjustTime(newElapsed, newElapsedMillis);
@@ -811,10 +821,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       // Once all types of packets indicate non movement we can be sure
       // that the workout is stopped.
       if (isNotMoving && wasNotMoving()) {
-        if (workoutState == WorkoutState.moving || workoutState == WorkoutState.startedMoving) {
-          workoutState = WorkoutState.justStopped;
+        if (isMoving) {
+          workoutState = WorkoutState.justPaused;
         } else {
-          workoutState = WorkoutState.stopped;
+          workoutState = WorkoutState.paused;
         }
       } else {
         if (workoutState == WorkoutState.startedMoving) {
@@ -896,12 +906,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     stub.elapsed = elapsed.round();
     stub.elapsedMillis = elapsedMillis;
 
-    if (workoutState == WorkoutState.stopped) {
+    if (workoutState == WorkoutState.paused) {
       // We have to track the time ticking even when the workout paused #235
       return pausedRecord(stub.elapsed!, stub.elapsedMillis!);
     }
 
     if (!hasSpeedReporting &&
+        isMoving &&
         sport == ActivityType.ride &&
         stub.speed == null &&
         (stub.power ?? 0) > eps) {
@@ -994,7 +1005,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
         } else if ((stub.caloriesPerHour ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
-        } else if (!hasPowerReporting &&
+        } else if (isMoving &&
+            !hasPowerReporting &&
             sport == ActivityType.ride &&
             (stub.speed ?? 0) > displayEps) {
           // When cycling supplement power from speed if missing
@@ -1021,7 +1033,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
     }
 
-    if (!hasPowerReporting &&
+    if (isMoving &&
+        !hasPowerReporting &&
         sport == ActivityType.ride &&
         (stub.power ?? 0) < eps &&
         stub.speed != null &&

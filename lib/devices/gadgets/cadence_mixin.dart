@@ -1,12 +1,17 @@
 import 'dart:collection';
 
 import '../../utils/constants.dart';
+import '../../utils/delays.dart';
 import 'cadence_data.dart';
 
 class CadenceMixin {
-  int revolutionSlidingWindow = 10; // Seconds
-  int eventTimeOverflow = 64; // Overflows every 64 seconds
-  int revolutionOverflow = maxUint16;
+  static int defaultRevolutionSlidingWindow = 10; // Seconds
+  static int defaultEventTimeOverflow = 64; // Overflows every 64 seconds
+  static int defaultRevolutionOverflow = maxUint16;
+
+  int revolutionSlidingWindow = defaultRevolutionSlidingWindow;
+  int eventTimeOverflow = defaultEventTimeOverflow;
+  int revolutionOverflow = defaultRevolutionOverflow;
 
   ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
 
@@ -16,8 +21,8 @@ class CadenceMixin {
     this.revolutionOverflow = revolutionOverflow;
   }
 
-  double _getDiffCore(double last, double first, int overflow) {
-    var diff = last - first;
+  double _getDiffCore(double later, double earlier, int overflow) {
+    var diff = later - earlier;
     // Check overflow
     if (diff < 0) {
       diff += overflow;
@@ -26,12 +31,12 @@ class CadenceMixin {
     return diff;
   }
 
-  double _getTimeDiff(double last, double first) {
-    return _getDiffCore(last, first, eventTimeOverflow);
+  double _getTimeDiff(double later, double earlier) {
+    return _getDiffCore(later, earlier, eventTimeOverflow);
   }
 
-  double _getRevDiff(double last, double first) {
-    return _getDiffCore(last, first, revolutionOverflow);
+  double _getRevDiff(double later, double earlier) {
+    return _getDiffCore(later, earlier, revolutionOverflow);
   }
 
   void addCadenceData(double? time, double? revolutions) {
@@ -39,8 +44,8 @@ class CadenceMixin {
     final nonNullRevolutions = revolutions ?? 0;
     if (cadenceData.isNotEmpty) {
       // Prevent duplicate recording
-      final timeDiff = _getTimeDiff(cadenceData.last.time, nonNullTime);
-      final revDiff = _getRevDiff(cadenceData.last.revolutions, nonNullRevolutions);
+      final timeDiff = _getTimeDiff(nonNullTime, cadenceData.last.time);
+      final revDiff = _getRevDiff(nonNullRevolutions, cadenceData.last.revolutions);
       if (timeDiff < eps && revDiff < eps) {
         return;
       }
@@ -51,16 +56,20 @@ class CadenceMixin {
       revolutions: nonNullRevolutions,
     ));
 
-    _processData();
+    trimQueue();
   }
 
-  void _processData() {
+  void trimQueue() {
     if (cadenceData.length <= 1) {
       return;
     }
 
     var timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
-    while (timeDiff > revolutionSlidingWindow && cadenceData.length > 2) {
+    var timeStampDiff =
+        cadenceData.last.timeStamp.difference(cadenceData.first.timeStamp).inSeconds -
+            sensorDataThreshold / 1000.0;
+    while (cadenceData.length > 1 &&
+        (timeDiff > revolutionSlidingWindow || timeStampDiff > revolutionSlidingWindow)) {
       cadenceData.removeFirst();
       timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
     }

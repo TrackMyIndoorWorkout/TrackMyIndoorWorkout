@@ -68,14 +68,19 @@ class FitDataRecord extends FitDefinitionMessage {
         model.record.heartRate = FitBaseTypes.uint8Type.invalidValue;
       }
     } else {
-      model.record.heartRate = FitBaseTypes.uint8Type.invalidValue;
+      if (heartRateGapWorkaround != dataGapWorkaroundDoNotWriteZeros &&
+          heartRateLimitingMethod != heartRateLimitingWriteNothing) {
+        model.record.heartRate = 0;
+      } else {
+        model.record.heartRate = FitBaseTypes.uint8Type.invalidValue;
+      }
     }
 
-    data.addByte(model.record.heartRate ?? FitBaseTypes.uint8Type.invalidValue);
-    data.addByte(model.record.cadence ?? FitBaseTypes.uint8Type.invalidValue);
+    data.addByte(model.record.heartRate ?? 0);
+    data.addByte(model.record.cadence ?? 0);
     data.addLong(((model.record.distance ?? 0.0) * 100).round());
     data.addShort(((model.record.speed ?? 0.0) * 1000).round());
-    data.addShort(model.record.power?.round() ?? FitBaseTypes.uint16Type.invalidValue);
+    data.addShort(model.record.power?.round() ?? 0);
 
     return data.output;
   }

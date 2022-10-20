@@ -1,8 +1,15 @@
+## 1.1.121
+* Treat remaining power zone spike when HRM based calorie counting is on
+* Fix for the new pause logic blanked out too many metrics
+* Try to treat cadence, so it'd also zero out when the workout is paused
+* Fix case when larger than 255 cadence value prevented FIT file uploads (Strava, Training Peaks)
+* Flutter version upgrade and package version upgrades
+
 ## 1.1.120
 * Treat Wahoo KICKR as an FTMS indoor bike instead of a power meter
-* Try to fix power flickering
-* Try to fix heart rate flickering
-* Try to fix power zone 7 jump when HRM based calories are applied and pedaling stops
+* Try to treat power flickering
+* Try to treat heart rate flickering
+* Try to treat power zone 7 jump when HRM based calories are applied and pedaling stops
 
 ## 1.1.119
 * Foundations for Concept2 rower support (experimental only, includes refactoring)

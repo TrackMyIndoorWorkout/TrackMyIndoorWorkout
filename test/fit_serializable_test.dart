@@ -28,6 +28,20 @@ void main() {
     });
   });
 
+  group('addByte overflow test', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, maxUint8, rnd).forEach((byte) {
+      final overflown = byte + maxUint8;
+      test('$overflown -> $maxUint8', () async {
+        final subject = TestSubject();
+
+        subject.addByte(overflown);
+
+        expect(listEquals(subject.output, [maxUint8 - 2]), true);
+      });
+    });
+  });
+
   group('addByte negative numbers (2 complement) test', () {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint8 ~/ 2, rnd).forEach((byte) {
@@ -66,6 +80,22 @@ void main() {
         final subject = TestSubject();
 
         subject.addShort(short);
+
+        expect(listEquals(subject.output, expected), true);
+      });
+    });
+  });
+
+  group('addShort overflow test', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, maxUint16, rnd).forEach((short) {
+      const limited = maxUint16 - 2;
+      final expected = [limited % maxUint8, limited ~/ maxUint8];
+      final overflown = short + maxUint16;
+      test('$overflown -> $expected', () async {
+        final subject = TestSubject();
+
+        subject.addShort(overflown);
 
         expect(listEquals(subject.output, expected), true);
       });
@@ -116,6 +146,27 @@ void main() {
         final subject = TestSubject();
 
         subject.addLong(long);
+
+        expect(listEquals(subject.output, expected), true);
+      });
+    });
+  });
+
+  group('addLong overflow test', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, maxUint32, rnd).forEach((long) {
+      const limited = maxUint32 - 2;
+      final expected = [
+        limited % maxUint8,
+        limited ~/ maxUint8 % maxUint8,
+        limited ~/ maxUint16 % maxUint8,
+        limited ~/ maxUint24
+      ];
+      final overflown = long + maxUint32;
+      test('$overflown -> $expected', () async {
+        final subject = TestSubject();
+
+        subject.addLong(overflown);
 
         expect(listEquals(subject.output, expected), true);
       });
