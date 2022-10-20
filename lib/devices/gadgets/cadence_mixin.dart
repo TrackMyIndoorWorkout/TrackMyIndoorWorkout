@@ -64,7 +64,7 @@ class CadenceMixin {
     }
 
     var timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
-    while (timeDiff > revolutionSlidingWindow && cadenceData.length > 2) {
+    while (timeDiff > revolutionSlidingWindow && cadenceData.length > 1) {
       cadenceData.removeFirst();
       timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
     }
