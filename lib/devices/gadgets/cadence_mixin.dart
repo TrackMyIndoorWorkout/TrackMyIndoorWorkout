@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import '../../utils/constants.dart';
+import '../../utils/delays.dart';
 import 'cadence_data.dart';
 
 class CadenceMixin {
@@ -64,7 +65,11 @@ class CadenceMixin {
     }
 
     var timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
-    while (timeDiff > revolutionSlidingWindow && cadenceData.length > 1) {
+    var timeStampDiff =
+        cadenceData.last.timeStamp.difference(cadenceData.first.timeStamp).inSeconds -
+            sensorDataThreshold / 1000.0;
+    while (cadenceData.length > 1 &&
+        (timeDiff > revolutionSlidingWindow || timeStampDiff > revolutionSlidingWindow)) {
       cadenceData.removeFirst();
       timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
     }
