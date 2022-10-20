@@ -4,9 +4,13 @@ import '../../utils/constants.dart';
 import 'cadence_data.dart';
 
 class CadenceMixin {
-  int revolutionSlidingWindow = 10; // Seconds
-  int eventTimeOverflow = 64; // Overflows every 64 seconds
-  int revolutionOverflow = maxUint16;
+  static int defaultRevolutionSlidingWindow = 10; // Seconds
+  static int defaultEventTimeOverflow = 64; // Overflows every 64 seconds
+  static int defaultRevolutionOverflow = maxUint16;
+
+  int revolutionSlidingWindow = defaultRevolutionSlidingWindow;
+  int eventTimeOverflow = defaultEventTimeOverflow;
+  int revolutionOverflow = defaultRevolutionOverflow;
 
   ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
 

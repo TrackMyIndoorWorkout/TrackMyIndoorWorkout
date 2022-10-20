@@ -72,4 +72,29 @@ void main() {
       });
     }
   });
+
+  group('Cadence Mixin trimQueue empties queue when entries are old', () {
+    final rnd = Random();
+    for (var numRevolutions in getRandomInts(
+        smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
+      numRevolutions += 1;
+      test('# revolutions $numRevolutions', () async {
+        final cadenceMixin = CadenceMixin();
+        final deltaRevolutions = getRandomDoubles(numRevolutions, 5.0, rnd);
+        var timeTick = 0.0;
+        var revolutions = 0.0;
+        for (final deltaRevolution in deltaRevolutions) {
+          cadenceMixin.addCadenceData(timeTick, revolutions);
+          revolutions += deltaRevolution;
+          timeTick += (rnd.nextDouble() * 0.001 + 0.001);
+        }
+
+        expect(cadenceMixin.cadenceData.length, numRevolutions);
+        cadenceMixin.addCadenceData(
+            timeTick + CadenceMixin.defaultRevolutionSlidingWindow * 2, revolutions * 100.0);
+
+        expect(cadenceMixin.cadenceData.length, 1);
+      });
+    }
+  });
 }
