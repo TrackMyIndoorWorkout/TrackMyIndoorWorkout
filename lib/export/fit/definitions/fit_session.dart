@@ -93,23 +93,17 @@ class FitSession extends FitDefinitionMessage {
     data.addShort(model.activity.calories > 0
         ? model.activity.calories
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.averageSpeed > eps
-        ? (model.averageSpeed * 1000).round()
-        : FitBaseTypes.uint16Type.invalidValue);
+    data.addShort(model.averageSpeed > eps ? (model.averageSpeed * 1000).round() : 0);
     data.addShort(model.maximumSpeed > eps
         ? (model.maximumSpeed * 1000).round()
         : FitBaseTypes.uint16Type.invalidValue);
-    data.addByte(
-        model.averageHeartRate > 0 ? model.averageHeartRate : FitBaseTypes.uint8Type.invalidValue);
+    data.addByte(model.averageHeartRate > 0 ? model.averageHeartRate : 0);
     data.addByte(
         model.maximumHeartRate > 0 ? model.maximumHeartRate : FitBaseTypes.uint8Type.invalidValue);
-    data.addByte(
-        model.averageCadence > 0 ? model.averageCadence : FitBaseTypes.uint8Type.invalidValue);
+    data.addByte(model.averageCadence > 0 ? model.averageCadence : 0);
     data.addByte(
         model.maximumCadence > 0 ? model.maximumCadence : FitBaseTypes.uint8Type.invalidValue);
-    data.addShort(model.averagePower > eps
-        ? model.averagePower.round()
-        : FitBaseTypes.uint16Type.invalidValue);
+    data.addShort(model.averagePower > eps ? model.averagePower.round() : 0);
     data.addShort(model.maximumPower > eps
         ? model.maximumPower.round()
         : FitBaseTypes.uint16Type.invalidValue);
