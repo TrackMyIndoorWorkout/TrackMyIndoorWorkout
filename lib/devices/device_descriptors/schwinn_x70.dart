@@ -220,4 +220,9 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     additionalSensor.services = services;
     return [additionalSensor];
   }
+
+  @override
+  void trimQueues() {
+    trimQueue();
+  }
 }

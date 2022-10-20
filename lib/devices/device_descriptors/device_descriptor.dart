@@ -96,4 +96,6 @@ abstract class DeviceDescriptor extends DataHandler {
   }
 
   void setDevice(BluetoothDevice device, List<BluetoothService> services) {}
+
+  void trimQueues() {}
 }

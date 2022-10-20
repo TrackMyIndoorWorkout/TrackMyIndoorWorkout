@@ -450,6 +450,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     await _companionSensor?.attach();
   }
 
+  void trimQueues() {
+    descriptor?.trimQueues();
+    _companionSensor?.trimQueues();
+    for (final sensor in _additionalSensors) {
+      sensor.trimQueues();
+    }
+  }
+
   Future<void> setActivity(Activity activity) async {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
@@ -709,6 +717,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   RecordWithSport pausedRecord(int newElapsed, int newElapsedMillis) {
+    trimQueues();
     final record = RecordWithSport.getZero(sport);
     record.cumulativeMetricsEnforcements(
       lastRecord,

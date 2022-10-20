@@ -51,10 +51,10 @@ class CadenceMixin {
       revolutions: nonNullRevolutions,
     ));
 
-    _processData();
+    trimQueue();
   }
 
-  void _processData() {
+  void trimQueue() {
     if (cadenceData.length <= 1) {
       return;
     }

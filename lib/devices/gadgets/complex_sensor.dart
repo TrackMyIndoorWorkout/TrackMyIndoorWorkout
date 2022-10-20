@@ -40,4 +40,6 @@ abstract class ComplexSensor extends SensorBase {
   }
 
   RecordWithSport processMeasurement(List<int> data);
+
+  void trimQueues() {}
 }

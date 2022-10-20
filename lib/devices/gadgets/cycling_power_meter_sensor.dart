@@ -163,6 +163,11 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
     );
   }
 
+  @override
+  void trimQueues() {
+    trimQueue();
+  }
+
   double? getCalories(List<int> data) {
     return caloriesMetric?.getMeasurementValue(data);
   }

@@ -95,6 +95,12 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
     );
   }
 
+  @override
+  void trimQueues() {
+    trimQueue();
+    wheelCadence.trimQueue();
+  }
+
   double? getWheelRevolutions(List<int> data) {
     return wheelRevolutionMetric?.getMeasurementValue(data);
   }
