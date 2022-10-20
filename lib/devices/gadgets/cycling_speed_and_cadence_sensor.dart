@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/csc.dart';
@@ -80,10 +82,10 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
       speed = wheelCadence.computeCadence() * 60 * roadBikeWheelCircumference / 1000.0;
     }
 
-    double? crankCadence;
+    int? crankCadence;
     if (crankRevolutionMetric != null) {
       addCadenceData(getCrankRevolutionTime(data), getCrankRevolutions(data));
-      crankCadence = computeCadence();
+      crankCadence = min(computeCadence().toInt(), maxByte);
     }
 
     return RecordWithSport(

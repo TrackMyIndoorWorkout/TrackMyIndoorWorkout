@@ -147,7 +147,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       calories: calories ~/ 2097152,
       power: integerPower,
       speed: speed,
-      cadence: computeCadence(),
+      cadence: min(computeCadence(), maxByte),
       heartRate: null,
       sport: defaultSport,
     );
