@@ -74,6 +74,8 @@ class CadenceMixin {
         (timeDiff > revolutionSlidingWindow || timeStampDiff > revolutionSlidingWindow)) {
       cadenceData.removeFirst();
       timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
+      timeStampDiff = cadenceData.last.timeStamp.difference(cadenceData.first.timeStamp).inSeconds -
+          sensorDataThreshold / 1000.0;
     }
   }
 
