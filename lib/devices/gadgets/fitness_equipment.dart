@@ -166,7 +166,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     // Only look at data entries not older than 2 seconds
     final now = DateTime.now();
     final values = _listDeduplicationMap.entries
-        .where((entry1) => now.difference(entry1.value.timeStamp).inMilliseconds <= dataMapExpiry)
+        .where((entry1) {
+          final diff = now.difference(entry1.value.timeStamp).inMilliseconds;
+          debugPrint("timeStamp diff $diff");
+          return diff <= dataMapExpiry;
+        })
         .map((entry2) => dataHandlers[entry2.key]?.wrappedStubRecord(entry2.value.byteList))
         .whereNotNull()
         .toList(growable: false);
@@ -726,6 +730,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       forTime: false,
       forCalories: !firstCalories,
     );
+
+    if ((heartRateMonitor?.record.heartRate ?? 0) > 0) {
+      record.heartRate = heartRateMonitor?.record.heartRate;
+    }
+
     return record;
   }
 
