@@ -24,9 +24,9 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
   MetricDescriptor? crankRevolutionTime;
 
   CyclingSpeedAndCadenceSensor(device) : super(serviceUuid, characteristicUuid, device) {
-    initCadence(3, 64, maxUint16);
+    initCadence(5, 64, maxUint16);
     wheelCadence = CadenceMixin();
-    wheelCadence.initCadence(3, 64, maxUint32);
+    wheelCadence.initCadence(5, 64, maxUint32);
   }
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
