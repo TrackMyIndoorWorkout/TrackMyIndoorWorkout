@@ -29,7 +29,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
   CyclingPowerMeterSensor(device) : super(serviceUuid, characteristicUuid, device) {
     initCadence(5, 64, maxUint16);
     wheelCadence = CadenceMixin();
-    wheelCadence.initCadence(5, 32, maxUint32);
+    wheelCadence.initCadence(10, 32, maxUint32);
   }
 
   @override
