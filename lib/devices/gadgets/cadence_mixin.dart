@@ -47,6 +47,8 @@ class CadenceMixin {
       final timeDiff = _getTimeDiff(nonNullTime, cadenceData.last.time);
       final revDiff = _getRevDiff(nonNullRevolutions, cadenceData.last.revolutions);
       if (timeDiff < eps && revDiff < eps) {
+        // Update the duplicate's timestamp
+        cadenceData.last.timeStamp = DateTime.now();
         return;
       }
     }
@@ -72,6 +74,8 @@ class CadenceMixin {
         (timeDiff > revolutionSlidingWindow || timeStampDiff > revolutionSlidingWindow)) {
       cadenceData.removeFirst();
       timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
+      timeStampDiff = cadenceData.last.timeStamp.difference(cadenceData.first.timeStamp).inSeconds -
+          sensorDataThreshold / 1000.0;
     }
   }
 

@@ -27,9 +27,9 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
   MetricDescriptor? caloriesMetric;
 
   CyclingPowerMeterSensor(device) : super(serviceUuid, characteristicUuid, device) {
-    initCadence(3, 64, maxUint16);
+    initCadence(4, 64, maxUint16);
     wheelCadence = CadenceMixin();
-    wheelCadence.initCadence(3, 32, maxUint32);
+    wheelCadence.initCadence(4, 32, maxUint32);
   }
 
   @override
@@ -145,7 +145,10 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
     if (wheelRevolutionMetric != null) {
       wheelCadence.addCadenceData(getWheelRevolutionTime(data), getWheelRevolutions(data));
       distance = wheelCadence.cadenceData.last.revolutions * roadBikeWheelCircumference;
-      speed = wheelCadence.computeCadence() * 60 * roadBikeWheelCircumference / 1000.0;
+      // https://endless-sphere.com/forums/viewtopic.php?t=16114
+      // 26" wheel approx cadence at 80mph => 1024.0
+      speed =
+          min(wheelCadence.computeCadence(), 1024.0) * 60.0 * roadBikeWheelCircumference / 1000.0;
     }
 
     int? crankCadence;
