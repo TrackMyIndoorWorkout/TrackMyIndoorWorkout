@@ -82,7 +82,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
       // https://endless-sphere.com/forums/viewtopic.php?t=16114
       // 26" wheel approx cadence at 80mph => 1024.0
       speed =
-          min(wheelCadence.computeCadence() * 60.0, 1024.0) * roadBikeWheelCircumference / 1000.0;
+          min(wheelCadence.computeCadence(), 1024.0) * 60.0 * roadBikeWheelCircumference / 1000.0;
     }
 
     int? crankCadence;
