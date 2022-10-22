@@ -47,6 +47,8 @@ class CadenceMixin {
       final timeDiff = _getTimeDiff(nonNullTime, cadenceData.last.time);
       final revDiff = _getRevDiff(nonNullRevolutions, cadenceData.last.revolutions);
       if (timeDiff < eps && revDiff < eps) {
+        // Update the duplicate's timestamp
+        cadenceData.last.timeStamp = DateTime.now();
         return;
       }
     }
