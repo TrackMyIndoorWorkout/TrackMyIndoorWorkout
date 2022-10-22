@@ -716,9 +716,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _extendTuning = extendTuning;
   }
 
-  RecordWithSport pausedRecord(int newElapsed, int newElapsedMillis) {
+  RecordWithSport pausedRecord(RecordWithSport record) {
     trimQueues();
-    final record = RecordWithSport.getZero(sport);
     record.cumulativeMetricsEnforcements(
       lastRecord,
       logLevel,
@@ -727,7 +726,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       forTime: false,
       forCalories: !firstCalories,
     );
-    record.adjustTime(newElapsed, newElapsedMillis);
     return record;
   }
 
@@ -790,10 +788,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       if (isNotMoving) {
         if (_activity != null && _activity!.startDateTime != null) {
           int elapsedMillis = now.difference(_activity!.startDateTime!).inMilliseconds;
-          return pausedRecord(elapsedMillis ~/ 1000, elapsedMillis);
+          stub.adjustTime(elapsedMillis ~/ 1000, elapsedMillis);
+          return pausedRecord(stub);
         }
 
-        return pausedRecord(lastRecord.elapsed!, lastRecord.elapsedMillis!);
+        return pausedRecord(stub);
       } else {
         dataHandlers = {};
         if (workoutState == WorkoutState.startedMoving) {
@@ -908,7 +907,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (workoutState == WorkoutState.paused) {
       // We have to track the time ticking even when the workout paused #235
-      return pausedRecord(stub.elapsed!, stub.elapsedMillis!);
+      return pausedRecord(stub);
     }
 
     if (!hasSpeedReporting &&
