@@ -229,7 +229,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
       if (workoutState == WorkoutState.justPaused || workoutState == WorkoutState.paused) {
         if (merged == null) {
-          pumpDataCore(lastRecord, true);
+          pumpDataCore(pausedRecord(RecordWithSport(sport: sport)), true);
         }
 
         _startThrottlingTimer();
