@@ -1,3 +1,9 @@
+## 1.1.122
+* Further changes to avoid heart rate glitching (when the heart rate monitor is paired with the app)
+* Avoiding speed sensor intermittent drops to 0
+* Avoiding cadence sensor glitches
+* Pause state related changes / fixes
+
 ## 1.1.121
 * Treat remaining power zone spike when HRM based calorie counting is on
 * Fix for the new pause logic blanked out too many metrics
