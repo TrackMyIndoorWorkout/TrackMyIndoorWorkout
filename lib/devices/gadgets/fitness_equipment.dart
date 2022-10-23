@@ -166,11 +166,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     // Only look at data entries not older than 2 seconds
     final now = DateTime.now();
     final values = _listDeduplicationMap.entries
-        .where((entry1) {
-          final diff = now.difference(entry1.value.timeStamp).inMilliseconds;
-          debugPrint("timeStamp diff $diff");
-          return diff <= dataMapExpiry;
-        })
+        .where((entry1) => now.difference(entry1.value.timeStamp).inMilliseconds <= dataMapExpiry)
         .map((entry2) => dataHandlers[entry2.key]?.wrappedStubRecord(entry2.value.byteList))
         .whereNotNull()
         .toList(growable: false);
