@@ -1,3 +1,8 @@
+## 1.1.124
+* Prevent distance jump when moving after a pause in case of some fitness equipment
+* Prevent zeroing out of distance and time during full pause
+* Verifying Wahoo KICKR FTMS support (preferred over the Power Meter Profile)
+
 ## 1.1.123
 * Further changes to avoid heart rate glitching (when the heart rate monitor is paired with the app)
 * Avoiding speed sensor intermittent drops to 0
