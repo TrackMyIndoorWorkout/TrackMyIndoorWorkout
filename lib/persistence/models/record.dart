@@ -151,45 +151,55 @@ class Record {
     return (distance ?? 0.0) > eps || (elapsed ?? 0) > 0 || (calories ?? 0) > 0;
   }
 
-  void cumulativeDistanceEnforcement(Record lastRecord, int logLevel, bool enableAsserts) {
-    if (distance != null && lastRecord.distance != null) {
-      if (!testing && kDebugMode && enableAsserts) {
-        assert(distance! >= lastRecord.distance!);
-      }
-
-      if (distance! < lastRecord.distance!) {
-        if (logLevel >= logLevelError) {
-          Logging.log(
-            logLevel,
-            logLevelError,
-            "RECORD",
-            "cumulativeDistanceEnforcement",
-            "violation $distance < ${lastRecord.distance}",
-          );
+  void cumulativeDistanceEnforcement(
+      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    if (lastRecord.distance != null) {
+      if (distance != null) {
+        if (!testing && kDebugMode && enableAsserts) {
+          assert(distance! >= lastRecord.distance!);
         }
 
+        if (distance! < lastRecord.distance!) {
+          if (logLevel >= logLevelError) {
+            Logging.log(
+              logLevel,
+              logLevelError,
+              "RECORD",
+              "cumulativeDistanceEnforcement",
+              "violation $distance < ${lastRecord.distance}",
+            );
+          }
+
+          distance = lastRecord.distance;
+        }
+      } else if (force) {
         distance = lastRecord.distance;
       }
     }
   }
 
-  void cumulativeElapsedTimeEnforcement(Record lastRecord, int logLevel, bool enableAsserts) {
-    if (elapsed != null && lastRecord.elapsed != null) {
-      if (!testing && kDebugMode && enableAsserts) {
-        assert(elapsed! >= lastRecord.elapsed!);
-      }
-
-      if (elapsed! < lastRecord.elapsed!) {
-        if (logLevel >= logLevelError) {
-          Logging.log(
-            logLevel,
-            logLevelError,
-            "RECORD",
-            "cumulativeElapsedTimeEnforcement",
-            "violation $elapsed < ${lastRecord.elapsed}",
-          );
+  void cumulativeElapsedTimeEnforcement(
+      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    if (lastRecord.elapsed != null) {
+      if (elapsed != null) {
+        if (!testing && kDebugMode && enableAsserts) {
+          assert(elapsed! >= lastRecord.elapsed!);
         }
 
+        if (elapsed! < lastRecord.elapsed!) {
+          if (logLevel >= logLevelError) {
+            Logging.log(
+              logLevel,
+              logLevelError,
+              "RECORD",
+              "cumulativeElapsedTimeEnforcement",
+              "violation $elapsed < ${lastRecord.elapsed}",
+            );
+          }
+
+          elapsed = lastRecord.elapsed;
+        }
+      } else if (force) {
         elapsed = lastRecord.elapsed;
       }
     }
@@ -215,23 +225,28 @@ class Record {
     }
   }
 
-  void cumulativeCaloriesEnforcement(Record lastRecord, int logLevel, bool enableAsserts) {
-    if (calories != null && lastRecord.calories != null) {
-      if (!testing && kDebugMode && enableAsserts) {
-        assert(calories! >= lastRecord.calories!);
-      }
-
-      if (calories! < lastRecord.calories!) {
-        if (logLevel >= logLevelError) {
-          Logging.log(
-            logLevel,
-            logLevelError,
-            "RECORD",
-            "cumulativeCaloriesEnforcement",
-            "violation $calories < ${lastRecord.calories}",
-          );
+  void cumulativeCaloriesEnforcement(
+      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    if (lastRecord.calories != null) {
+      if (calories != null) {
+        if (!testing && kDebugMode && enableAsserts) {
+          assert(calories! >= lastRecord.calories!);
         }
 
+        if (calories! < lastRecord.calories!) {
+          if (logLevel >= logLevelError) {
+            Logging.log(
+              logLevel,
+              logLevelError,
+              "RECORD",
+              "cumulativeCaloriesEnforcement",
+              "violation $calories < ${lastRecord.calories}",
+            );
+          }
+
+          calories = lastRecord.calories;
+        }
+      } else if (force) {
         calories = lastRecord.calories;
       }
     }
@@ -322,21 +337,19 @@ class Record {
     int logLevel,
     bool enableAsserts, {
     bool forDistance = false,
-    bool forTime = false,
     bool forCalories = false,
+    bool force = false,
   }) {
     // Ensure that cumulative fields cannot decrease over time
     if (forDistance) {
-      cumulativeDistanceEnforcement(lastRecord, logLevel, enableAsserts);
+      cumulativeDistanceEnforcement(lastRecord, logLevel, enableAsserts, force);
     }
 
-    if (forTime) {
-      cumulativeElapsedTimeEnforcement(lastRecord, logLevel, enableAsserts);
-      cumulativeMovingTimeEnforcement(lastRecord, logLevel, enableAsserts);
-    }
+    cumulativeElapsedTimeEnforcement(lastRecord, logLevel, enableAsserts, force);
+    cumulativeMovingTimeEnforcement(lastRecord, logLevel, enableAsserts);
 
     if (forCalories) {
-      cumulativeCaloriesEnforcement(lastRecord, logLevel, enableAsserts);
+      cumulativeCaloriesEnforcement(lastRecord, logLevel, enableAsserts, force);
     }
 
     nonNegativeEnforcement(logLevel, enableAsserts);

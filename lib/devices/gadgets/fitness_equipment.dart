@@ -166,11 +166,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     // Only look at data entries not older than 2 seconds
     final now = DateTime.now();
     final values = _listDeduplicationMap.entries
-        .where((entry1) {
-          final diff = now.difference(entry1.value.timeStamp).inMilliseconds;
-          debugPrint("timeStamp diff $diff");
-          return diff <= dataMapExpiry;
-        })
+        .where((entry1) => now.difference(entry1.value.timeStamp).inMilliseconds <= dataMapExpiry)
         .map((entry2) => dataHandlers[entry2.key]?.wrappedStubRecord(entry2.value.byteList))
         .whereNotNull()
         .toList(growable: false);
@@ -727,8 +723,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       logLevel,
       _enableAsserts,
       forDistance: !firstDistance,
-      forTime: false,
       forCalories: !firstCalories,
+      force: true,
     );
 
     if ((heartRateMonitor?.record.heartRate ?? 0) > 0) {
@@ -798,6 +794,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         if (_activity != null && _activity!.startDateTime != null) {
           int elapsedMillis = now.difference(_activity!.startDateTime!).inMilliseconds;
           stub.adjustTime(elapsedMillis ~/ 1000, elapsedMillis);
+          lastRecord.adjustTime(elapsedMillis ~/ 1000, elapsedMillis);
           return pausedRecord(stub);
         }
 
@@ -916,6 +913,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (workoutState == WorkoutState.paused) {
       // We have to track the time ticking even when the workout paused #235
+      lastRecord.adjustTime(stub.elapsed!, elapsedMillis);
       return pausedRecord(stub);
     }
 
@@ -1111,7 +1109,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         logLevel,
         _enableAsserts,
         forDistance: !firstDistance,
-        forTime: true,
         forCalories: !firstCalories,
       );
     }
