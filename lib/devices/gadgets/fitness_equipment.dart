@@ -727,8 +727,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       logLevel,
       _enableAsserts,
       forDistance: !firstDistance,
-      forTime: false,
       forCalories: !firstCalories,
+      force: true,
     );
 
     if ((heartRateMonitor?.record.heartRate ?? 0) > 0) {
@@ -1111,7 +1111,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         logLevel,
         _enableAsserts,
         forDistance: !firstDistance,
-        forTime: true,
         forCalories: !firstCalories,
       );
     }
