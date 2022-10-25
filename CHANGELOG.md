@@ -1,3 +1,6 @@
+## 1.1.125
+* Fix remaining power spike when HRM based calorie counting is on and the workout pauses
+
 ## 1.1.124
 * Prevent distance jump when moving after a pause in case of some fitness equipment
 * Prevent zeroing out of distance and time during full pause
