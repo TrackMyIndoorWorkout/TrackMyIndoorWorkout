@@ -1005,14 +1005,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         deltaCalories = stub.caloriesPerMinute! / 60 * dT;
       }
 
-      if ((stub.power ?? 0) < eps) {
+      // Only do supplementation when moving #
+      if (isMoving && (stub.power ?? 0) < eps) {
         // Supplement power from calories https://www.braydenwm.com/calburn.htm
         if ((stub.caloriesPerMinute ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
         } else if ((stub.caloriesPerHour ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
-        } else if (isMoving &&
-            !hasPowerReporting &&
+        } else if (!hasPowerReporting &&
             sport == ActivityType.ride &&
             (stub.speed ?? 0) > displayEps) {
           // When cycling supplement power from speed if missing
