@@ -472,6 +472,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  isar:
+    dependency: "direct main"
+    description:
+      name: isar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.2"
   js:
     dependency: transitive
     description:
