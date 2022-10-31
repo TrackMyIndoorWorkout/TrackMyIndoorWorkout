@@ -9,6 +9,7 @@ import 'complex_sensor.dart';
 class HeartRateMonitor extends ComplexSensor {
   MetricDescriptor? heartRateMetric;
   MetricDescriptor? caloriesMetric;
+  bool hasRRIntervals = false;
 
   HeartRateMonitor(device) : super(heartRateServiceUuid, heartRateMeasurementUuid, device);
 
@@ -40,6 +41,7 @@ class HeartRateMonitor extends ComplexSensor {
       flag ~/= 2;
       // RR Interval bit
       if (flag % 2 == 1) {
+        hasRRIntervals = true;
         expectedLength += 2; // 1/1024 sec
       }
 
@@ -57,7 +59,11 @@ class HeartRateMonitor extends ComplexSensor {
     flag &= 25; // 1 + 8 + 16 = 2^5 - 6
     processFlag(flag);
 
-    return featureFlag >= 0 && data.length == expectedLength;
+    return featureFlag >= 0 &&
+        (data.length == expectedLength ||
+            hasRRIntervals &&
+                data.length >= expectedLength &&
+                (data.length - expectedLength) % 2 == 0);
   }
 
   @override
@@ -86,5 +92,6 @@ class HeartRateMonitor extends ComplexSensor {
   void clearMetrics() {
     caloriesMetric = null;
     heartRateMetric = null;
+    hasRRIntervals = false;
   }
 }

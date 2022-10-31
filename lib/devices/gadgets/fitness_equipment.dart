@@ -95,11 +95,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   double hrCalorieFactor = 1.0;
   double hrmCalorieFactor = 1.0;
   bool _useHrmReportedCalories = useHrMonitorReportedCaloriesDefault;
-  bool _useHrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
-  int _weight = athleteBodyWeightDefault;
-  int _age = athleteAgeDefault;
-  bool _isMale = true;
-  int _vo2Max = athleteVO2MaxDefault;
+  bool useHrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
+  int weight = athleteBodyWeightDefault;
+  int age = athleteAgeDefault;
+  bool isMale = true;
+  int vo2Max = athleteVO2MaxDefault;
   Activity? _activity;
   bool measuring = false;
   WorkoutState workoutState = WorkoutState.waitingForFirstMove;
@@ -982,18 +982,18 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (deviceHasTotalCalorieReporting &&
         calories1 > eps &&
         (!_useHrmReportedCalories || calories2 < eps) &&
-        (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
+        (!useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
       calories = calories1;
     } else if (hrmHasTotalCalorieReporting &&
         calories2 > eps &&
         (_useHrmReportedCalories || calories1 < eps) &&
-        (!_useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
+        (!useHrBasedCalorieCounting || stub.heartRate == null || stub.heartRate == 0)) {
       calories = calories2;
     } else {
       var deltaCalories = 0.0;
-      if (_useHrBasedCalorieCounting && (stub.heartRate ?? 0) > 0) {
+      if (useHrBasedCalorieCounting && (stub.heartRate ?? 0) > 0) {
         stub.caloriesPerMinute =
-            hrBasedCaloriesPerMinute(stub.heartRate!, _weight, _age, _isMale, _vo2Max) *
+            hrBasedCaloriesPerMinute(stub.heartRate!, weight, age, isMale, vo2Max) *
                 hrCalorieFactor;
       }
 
@@ -1194,14 +1194,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         prefService.get<String>(heartRateLimitingMethodTag) ?? heartRateLimitingMethodDefault;
     _useHrmReportedCalories = prefService.get<bool>(useHrMonitorReportedCaloriesTag) ??
         useHrMonitorReportedCaloriesDefault;
-    _useHrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
+    useHrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
         useHeartRateBasedCalorieCountingDefault;
-    _weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
-    _age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
-    _isMale =
+    weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
+    age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
+    isMale =
         (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) == athleteGenderMale;
-    _vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
-    _useHrBasedCalorieCounting &= (_weight > athleteBodyWeightMin && _age > athleteAgeMin);
+    vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
+    useHrBasedCalorieCounting &= (weight > athleteBodyWeightMin && age > athleteAgeMin);
     _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
     _blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
@@ -1219,11 +1219,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
             "heartRateUpperLimit $_heartRateUpperLimit, "
             "heartRateLimitingMethod $_heartRateLimitingMethod, "
             "useHrmReportedCalories $_useHrmReportedCalories, "
-            "useHrBasedCalorieCounting $_useHrBasedCalorieCounting, "
-            "weight $_weight, "
-            "age $_age, "
-            "isMale $_isMale, "
-            "vo2Max $_vo2Max, "
+            "useHrBasedCalorieCounting $useHrBasedCalorieCounting, "
+            "weight $weight, "
+            "age $age, "
+            "isMale $isMale, "
+            "vo2Max $vo2Max, "
             "extendTuning $_extendTuning, "
             "logLevel $logLevel",
       );

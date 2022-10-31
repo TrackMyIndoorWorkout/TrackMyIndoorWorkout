@@ -21,6 +21,12 @@ const moreHrmSampleData = [
   [22, 92, 140, 2],
   [22, 93, 133, 2]
 ];
+const polarH7SampleData = [
+  [22, 115, 16, 2, 13, 2],
+  [22, 115, 15, 2, 17, 2],
+  [22, 116, 20, 2, 22, 2],
+  [22, 116, 41, 2],
+];
 
 @GenerateNiceMocks([MockSpec<BluetoothDevice>()])
 void main() {
@@ -126,6 +132,74 @@ void main() {
         final hrm = HeartRateMonitor(MockBluetoothDevice());
 
         final record = hrm.processMeasurement(moreTestData);
+
+        expect(record.id, null);
+        expect(record.id, expectedRecord.id);
+        expect(record.activityId, null);
+        expect(record.activityId, expectedRecord.activityId);
+        expect(record.distance, expectedRecord.distance);
+        expect(record.elapsed, expectedRecord.elapsed);
+        expect(record.calories, expectedRecord.calories);
+        expect(record.power, expectedRecord.power);
+        if (expectedRecord.speed != null) {
+          expect(record.speed, closeTo(expectedRecord.speed!, eps));
+        } else {
+          expect(record.speed, null);
+        }
+        expect(record.cadence, expectedRecord.cadence);
+        expect(record.heartRate, expectedRecord.heartRate);
+        expect(record.elapsedMillis, expectedRecord.elapsedMillis);
+        expect(record.pace, expectedRecord.pace);
+        expect(record.strokeCount, expectedRecord.strokeCount);
+        expect(record.sport, expectedRecord.sport);
+        expect(record.caloriesPerHour, expectedRecord.caloriesPerHour);
+        expect(record.caloriesPerMinute, expectedRecord.caloriesPerMinute);
+      });
+    }
+  });
+
+  group('HRM interprets Polar H7 flags + data length properly', () {
+    for (final polarH7TestData in polarH7SampleData) {
+      final sum = polarH7TestData.fold<int>(0, (a, b) => a + b);
+      test("$sum", () async {
+        final hrm = HeartRateMonitor(MockBluetoothDevice());
+
+        final canProcess = hrm.canMeasurementProcessed(polarH7TestData);
+
+        expect(canProcess, true);
+        if (hrm.hasRRIntervals) {
+          expect(hrm.expectedLength <= polarH7TestData.length, true);
+          expect((polarH7TestData.length - hrm.expectedLength) % 2, 0);
+        } else {
+          expect(hrm.expectedLength, polarH7TestData.length);
+        }
+        expect(hrm.heartRateMetric, isNotNull);
+        expect(hrm.caloriesMetric, null);
+      });
+    }
+  });
+
+  group('More HRM Device interprets HR data properly', () {
+    for (final polarH7TestData in polarH7SampleData) {
+      final expectedRecord = RecordWithSport(
+        distance: null,
+        elapsed: null,
+        calories: null,
+        power: null,
+        speed: null,
+        cadence: null,
+        heartRate: polarH7TestData[1],
+        pace: null,
+        sport: ActivityType.workout,
+        caloriesPerHour: null,
+        caloriesPerMinute: null,
+      );
+
+      final sum = polarH7TestData.fold<int>(0, (a, b) => a + b);
+      test("$sum", () async {
+        final hrm = HeartRateMonitor(MockBluetoothDevice());
+
+        final record = hrm.processMeasurement(polarH7TestData);
 
         expect(record.id, null);
         expect(record.id, expectedRecord.id);

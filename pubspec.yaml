@@ -2,30 +2,30 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.125+125
+version: 1.1.126+126
 
 environment:
   sdk: ">=2.18.2 <3.0.0"
-  flutter: ">=3.3.5"
+  flutter: ">=3.3.6"
 
 dependencies:
   assorted_layout_widgets: ^7.0.0
   bluetooth_enable_fork: ^0.1.6
   collection: ^1.16.0
   datetime_picker_formfield: ^2.0.1
-  device_info_plus: ^5.0.5
+  device_info_plus: ^8.0.0
   easy_folder_picker: ^1.3.0
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^5.2.1
+  file_picker: ^5.2.2
   floor: ^1.2.0
   flutter_blue_plus: ^1.3.1
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.1
-  flutter_logs: ^2.1.7
+  flutter_logs: ^2.1.8
   flutter_native_timezone: ^2.0.0
   flutter_spinbox: ^0.10.0
-  flutter_svg: ^1.1.5
+  flutter_svg: ^1.1.6
   get: ^4.6.1
   group_button: ^5.2.2
   http: ^0.13.5
@@ -34,7 +34,7 @@ dependencies:
   intl: ^0.17.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
-  package_info_plus: ^1.4.3+1
+  package_info_plus: ^3.0.1
   path: ^1.8.2
   path_provider: ^2.0.10
   pref: ^2.6.0
@@ -42,8 +42,8 @@ dependencies:
   rxdart: ^0.27.5
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
-  sqflite: ^2.1.0+1
-  syncfusion_flutter_charts: ^20.3.50
+  sqflite: ^2.2.0+2
+  syncfusion_flutter_charts: ^20.3.52
   tuple: ^2.0.1
   uni_links: ^0.5.1
   url_launcher: ^6.1.6

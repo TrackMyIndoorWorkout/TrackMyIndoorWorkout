@@ -10,6 +10,7 @@ import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart'
 import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/hr_based_calories.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'utils.dart';
 import 'fitness_equipment_process_record_test.mocks.dart';
@@ -280,6 +281,235 @@ void main() {
         final expected =
             (150 + pow) * powerFactor * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault;
         expect(record.calories, expected.floor());
+      });
+    });
+  });
+
+  group('processRecord calculates power from caloriesPerMinute', () {
+    final rnd = Random();
+    getRandomDoubles(smallRepetition, 6.0, rnd).forEach((caloriesPerMinute) {
+      final descriptor = DeviceFactory.getSchwinnIcBike();
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrmCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
+      caloriesPerMinute += 1.0; // Making sure not close to zero
+      test('$caloriesPerMinute', () async {
+        final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
+        final activity = Activity(
+          deviceId: mPowerImportDeviceId,
+          deviceName: descriptor.modelName,
+          hrmId: "",
+          start: oneSecondAgo.millisecondsSinceEpoch,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrmCalorieFactor: hrmCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
+          timeZone: "America/Los_Angeles",
+        );
+        final equipment = FitnessEquipment(
+          descriptor: descriptor,
+          device: MockBluetoothDevice(),
+          firstCalories: false,
+        );
+        equipment.setActivity(activity);
+        equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
+        equipment.lastRecord = RecordWithSport(
+          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          elapsedMillis: 0,
+          calories: 0,
+          sport: descriptor.defaultSport,
+        );
+        equipment.workoutState = WorkoutState.moving;
+
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          caloriesPerMinute: caloriesPerMinute,
+        ));
+
+        final expected =
+            ((caloriesPerMinute * calorieFactor * 50.0 / 3.0).round() * powerFactor).round();
+        expect(record.power, expected);
+      });
+    });
+  });
+
+  group('processRecord calculates power from caloriesPerHour', () {
+    final rnd = Random();
+    getRandomDoubles(smallRepetition, 1000.0, rnd).forEach((caloriesPerHour) {
+      final descriptor = DeviceFactory.getSchwinnIcBike();
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrmCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
+      caloriesPerHour += 100.0; // Making sure not close to zero
+      test('$caloriesPerHour', () async {
+        final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
+        final activity = Activity(
+          deviceId: mPowerImportDeviceId,
+          deviceName: descriptor.modelName,
+          hrmId: "",
+          start: oneSecondAgo.millisecondsSinceEpoch,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrmCalorieFactor: hrmCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
+          timeZone: "America/Los_Angeles",
+        );
+        final equipment = FitnessEquipment(
+          descriptor: descriptor,
+          device: MockBluetoothDevice(),
+          firstCalories: false,
+        );
+        equipment.setActivity(activity);
+        equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
+        equipment.lastRecord = RecordWithSport(
+          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          elapsedMillis: 0,
+          calories: 0,
+          sport: descriptor.defaultSport,
+        );
+        equipment.workoutState = WorkoutState.moving;
+
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          caloriesPerHour: caloriesPerHour,
+        ));
+
+        final expected =
+            ((caloriesPerHour * calorieFactor * 5.0 / 18.0).round() * powerFactor).round();
+        expect(record.power, expected);
+      });
+    });
+  });
+
+  group('processRecord calculates power from HRM based calories', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 80, rnd).forEach((heartRate) {
+      final descriptor = DeviceFactory.getSchwinnIcBike();
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrmCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
+      heartRate += 100; // Making sure in good range
+      test('$heartRate', () async {
+        final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
+        final activity = Activity(
+          deviceId: mPowerImportDeviceId,
+          deviceName: descriptor.modelName,
+          hrmId: "",
+          start: oneSecondAgo.millisecondsSinceEpoch,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrmCalorieFactor: hrmCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
+          timeZone: "America/Los_Angeles",
+        );
+        final equipment = FitnessEquipment(
+          descriptor: descriptor,
+          device: MockBluetoothDevice(),
+          firstCalories: false,
+        );
+        equipment.setActivity(activity);
+        equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
+        equipment.lastRecord = RecordWithSport(
+          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          elapsedMillis: 0,
+          calories: 0,
+          sport: descriptor.defaultSport,
+        );
+        equipment.useHrBasedCalorieCounting = true;
+        equipment.workoutState = WorkoutState.moving;
+
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          speed: 8.0,
+          heartRate: heartRate,
+        ));
+
+        final expectedCaloriesPerMinute = hrBasedCaloriesPerMinute(
+                heartRate, equipment.weight, equipment.age, equipment.isMale, equipment.vo2Max) *
+            hrCalorieFactor;
+        expect(record.caloriesPerMinute, closeTo(expectedCaloriesPerMinute, eps));
+
+        final expectedPower =
+            ((expectedCaloriesPerMinute * 50.0 / 3.0).round() * powerFactor).round();
+        expect(record.power, expectedPower);
+      });
+    });
+  });
+
+  group('processRecord does not calculate power from HRM based calories when paused', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 80, rnd).forEach((heartRate) {
+      final descriptor = DeviceFactory.getSchwinnIcBike();
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrmCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
+      heartRate += 100; // Making sure in good range
+      test('$heartRate', () async {
+        final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
+        final activity = Activity(
+          deviceId: mPowerImportDeviceId,
+          deviceName: descriptor.modelName,
+          hrmId: "",
+          start: oneSecondAgo.millisecondsSinceEpoch,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrmCalorieFactor: hrmCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
+          timeZone: "America/Los_Angeles",
+        );
+        final equipment = FitnessEquipment(
+          descriptor: descriptor,
+          device: MockBluetoothDevice(),
+          firstCalories: false,
+        );
+        equipment.setActivity(activity);
+        equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
+        equipment.lastRecord = RecordWithSport(
+          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          elapsedMillis: 0,
+          calories: 0,
+          sport: descriptor.defaultSport,
+        );
+        equipment.useHrBasedCalorieCounting = true;
+        equipment.workoutState =
+            WorkoutState.moving; // Will transition to justPaused => isNotMoving
+
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          heartRate: heartRate,
+        ));
+
+        final expectedCaloriesPerMinute = hrBasedCaloriesPerMinute(
+                heartRate, equipment.weight, equipment.age, equipment.isMale, equipment.vo2Max) *
+            hrCalorieFactor;
+        expect(record.caloriesPerMinute, closeTo(expectedCaloriesPerMinute, eps));
+        expect(record.power, null);
       });
     });
   });
