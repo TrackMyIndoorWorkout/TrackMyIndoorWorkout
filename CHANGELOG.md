@@ -2,6 +2,8 @@
 * Fix data flow with heart rate monitors when they send multiple RR-Interval readings in one
   data packet. Happened with a Polar H7 but it can happen with other monitors as well. The symptom
   was that the heart rate may only updated haphazardly.
+* Flutter version upgrade
+* Several package version upgrades
 
 ## 1.1.125
 * Fix remaining power spike when HRM based calorie counting is on and the workout pauses
