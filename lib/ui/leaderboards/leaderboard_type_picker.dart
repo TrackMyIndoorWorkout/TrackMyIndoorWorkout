@@ -1,7 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../persistence/database.dart';
+import '../../persistence/floor/database.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 import 'device_leaderboard.dart';

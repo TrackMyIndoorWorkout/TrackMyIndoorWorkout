@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
-import '../persistence/models/calorie_tune.dart';
-import '../persistence/database.dart';
+import '../persistence/floor/models/calorie_tune.dart';
+import '../persistence/floor/database.dart';
 import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
 

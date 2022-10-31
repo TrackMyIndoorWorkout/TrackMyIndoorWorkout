@@ -1,7 +1,7 @@
 import '../../export/export_target.dart';
 import '../../export/fit/fit_export.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/floor/models/activity.dart';
+import '../../persistence/floor/models/record.dart';
 import '../../secret.dart';
 import '../upload_service.dart';
 import 'strava_status_code.dart';

@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/floor/models/activity.dart';
+import '../../persistence/floor/models/record.dart';
 import 'strava/constants.dart';
 import 'strava/strava_service.dart';
 import 'suunto/constants.dart';

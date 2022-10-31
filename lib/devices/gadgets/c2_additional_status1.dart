@@ -1,4 +1,4 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/floor/models/record.dart';
 import '../../utils/constants.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../gatt/concept2.dart';

@@ -5,7 +5,7 @@ import 'package:pref/pref.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
 import '../../preferences/log_level.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/floor/models/record.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
 import '../device_fourcc.dart';

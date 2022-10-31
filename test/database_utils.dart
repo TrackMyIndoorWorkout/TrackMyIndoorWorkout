@@ -1,15 +1,15 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:track_my_indoor_exercise/persistence/dao/activity_dao.dart';
-import 'package:track_my_indoor_exercise/persistence/dao/calorie_tune_dao.dart';
-import 'package:track_my_indoor_exercise/persistence/dao/device_usage_dao.dart';
-import 'package:track_my_indoor_exercise/persistence/dao/power_tune_dao.dart';
-import 'package:track_my_indoor_exercise/persistence/dao/record_dao.dart';
-import 'package:track_my_indoor_exercise/persistence/dao/workout_summary_dao.dart';
-import 'package:track_my_indoor_exercise/persistence/database.dart';
-import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/floor/dao/activity_dao.dart';
+import 'package:track_my_indoor_exercise/persistence/floor/dao/calorie_tune_dao.dart';
+import 'package:track_my_indoor_exercise/persistence/floor/dao/device_usage_dao.dart';
+import 'package:track_my_indoor_exercise/persistence/floor/dao/power_tune_dao.dart';
+import 'package:track_my_indoor_exercise/persistence/floor/dao/record_dao.dart';
+import 'package:track_my_indoor_exercise/persistence/floor/dao/workout_summary_dao.dart';
+import 'package:track_my_indoor_exercise/persistence/floor/database.dart';
+import 'package:track_my_indoor_exercise/persistence/floor/models/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/floor/models/record.dart';
 
 class InMemoryActivityDao extends ActivityDao {
   int idCounter = Random().nextInt(1000);

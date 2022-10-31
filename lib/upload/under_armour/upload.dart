@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../export/activity_export.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/database.dart';
+import '../../persistence/floor/models/activity.dart';
+import '../../persistence/floor/database.dart';
 
 import 'constants.dart';
 import 'under_armour_token.dart';

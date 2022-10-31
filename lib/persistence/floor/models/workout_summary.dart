@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:floor/floor.dart';
-import '../../devices/device_descriptors/device_descriptor.dart';
-import '../../preferences/generic.dart';
-import '../../utils/constants.dart';
-import '../../utils/display.dart';
+import '../../../devices/device_descriptors/device_descriptor.dart';
+import '../../../preferences/generic.dart';
+import '../../../utils/constants.dart';
+import '../../../utils/display.dart';
 
 const workoutSummariesTableName = 'workout_summary';
 const pacerIdentifier = "Pacer";

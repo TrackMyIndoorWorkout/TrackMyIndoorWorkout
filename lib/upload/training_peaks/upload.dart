@@ -7,8 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import '../../export/activity_export.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/database.dart';
+import '../../persistence/floor/models/activity.dart';
+import '../../persistence/floor/database.dart';
 import '../../preferences/training_peaks_upload_public.dart';
 import '../../utils/constants.dart';
 

@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pref/pref.dart';
 import '../import/csv_importer.dart';
-import '../persistence/database.dart';
+import '../persistence/floor/database.dart';
 import '../preferences/leaderboard_and_rank.dart';
 
 typedef SetProgress = void Function(double progress);

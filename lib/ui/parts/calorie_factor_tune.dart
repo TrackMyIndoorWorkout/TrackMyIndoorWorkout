@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import '../../persistence/database.dart';
-import '../../persistence/models/calorie_tune.dart';
+import '../../persistence/floor/database.dart';
+import '../../persistence/floor/models/calorie_tune.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 

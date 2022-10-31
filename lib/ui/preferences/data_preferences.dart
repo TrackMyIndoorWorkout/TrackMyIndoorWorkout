@@ -4,7 +4,7 @@ import 'package:pref/pref.dart';
 import '../../preferences/audio_volume.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../preferences/calculate_gps.dart';
-import '../../persistence/database.dart';
+import '../../persistence/floor/database.dart';
 import '../../preferences/data_stream_gap_sound_effect.dart';
 import '../../preferences/data_stream_gap_watchdog_time.dart';
 import '../../preferences/extend_tuning.dart';

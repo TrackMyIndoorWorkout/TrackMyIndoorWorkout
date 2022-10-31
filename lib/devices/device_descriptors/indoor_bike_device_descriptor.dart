@@ -1,4 +1,4 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/floor/models/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/ftms.dart';
 import 'fitness_machine_descriptor.dart';
