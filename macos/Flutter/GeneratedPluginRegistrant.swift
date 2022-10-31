@@ -5,9 +5,9 @@
 import FlutterMacOS
 import Foundation
 
-import device_info_plus_macos
+import device_info_plus
 import flutter_native_timezone
-import package_info_plus_macos
+import package_info_plus
 import path_provider_macos
 import shared_preferences_macos
 import soundpool_macos
