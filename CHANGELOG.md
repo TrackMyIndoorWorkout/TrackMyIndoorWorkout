@@ -1,3 +1,7 @@
+## 1.1.127
+* Fix distance and calorie bump when workout is paused (and both metrics
+  "bump back" when workout continues)
+
 ## 1.1.126
 * Fix data flow with heart rate monitors when they send multiple RR-Interval readings in one
   data packet. Happened with a Polar H7 but it can happen with other monitors as well. The symptom

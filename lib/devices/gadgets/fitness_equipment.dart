@@ -718,6 +718,15 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   RecordWithSport pausedRecord(RecordWithSport record) {
     trimQueues();
+
+    if (record.calories != null) {
+      record.calories = max(record.calories! - _startingCalories.round(), 0);
+    }
+
+    if (record.distance != null) {
+      record.distance = max(record.distance! - _startingDistance, 0.0);
+    }
+
     record.cumulativeMetricsEnforcements(
       lastRecord,
       logLevel,
@@ -951,6 +960,20 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     // #197
     stub.distance ??= 0.0;
     if (_startingDistance > eps) {
+      if (kDebugMode && _enableAsserts) {
+        assert(stub.distance! >= _startingDistance);
+      }
+
+      if (logLevel >= logLevelInfo) {
+        Logging.log(
+          logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "processRecord",
+          "starting distance adj ${stub.distance!} - $_startingDistance",
+        );
+      }
+
       stub.distance = max(stub.distance! - _startingDistance, 0.0);
     }
 
@@ -1086,7 +1109,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
 
-      calories -= _startingCalories;
+      calories = max(calories - _startingCalories, 0.0);
     }
 
     stub.calories = calories.floor();

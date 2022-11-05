@@ -35,8 +35,8 @@ void main() {
       test(flagBytes.description, () async {
         final treadmill = MatrixTreadmillDescriptor();
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
+        treadmill.initFlag();
         treadmill.stopWorkout();
-
         treadmill.processFlag(flag);
 
         expect(treadmill.speedMetric, isNotNull);

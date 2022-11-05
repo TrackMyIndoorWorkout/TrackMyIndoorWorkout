@@ -25,8 +25,8 @@ void main() {
     const lsb = 68;
     const msb = 2;
     const flag = maxUint8 * msb + lsb;
+    bike.initFlag();
     bike.stopWorkout();
-
     bike.processFlag(flag);
 
     expect(bike.speedMetric, isNotNull);
@@ -37,7 +37,7 @@ void main() {
     expect(bike.timeMetric, null);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
-    expect(bike.heartRateByteIndex, isNotNull);
+    expect(bike.heartRateByteIndex, 8);
   });
 
   group('Schwinn IC4 interprets FTMS Indoor Bike Data properly', () {
