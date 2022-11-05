@@ -71,6 +71,29 @@ void main() {
     expect(rower.heartRateByteIndex, null);
   });
 
+  test('Rower Device interprets Technogym Skillrow flags 2 w heart rate properly', () async {
+    final rower = DeviceFactory.getGenericFTMSRower();
+    const lsb = 253;
+    const msb = 14;
+    const flag = maxUint8 * msb + lsb;
+    rower.initFlag();
+    rower.stopWorkout();
+    rower.processFlag(flag);
+
+    expect(rower.strokeRateMetric, null);
+    expect(rower.strokeCountMetric, null);
+    expect(rower.paceMetric, isNotNull);
+    expect(rower.speedMetric, null);
+    expect(rower.cadenceMetric, null);
+    expect(rower.distanceMetric, isNotNull);
+    expect(rower.powerMetric, isNotNull);
+    expect(rower.caloriesMetric, null);
+    expect(rower.timeMetric, isNotNull);
+    expect(rower.caloriesPerHourMetric, null);
+    expect(rower.caloriesPerMinuteMetric, null);
+    expect(rower.heartRateByteIndex, 15);
+  });
+
   group('Rower Device interprets Technogym Skillrow data properly', () {
     for (final testPair in [
       TestPair(
@@ -100,6 +123,22 @@ void main() {
           cadence: null,
           heartRate: null,
           pace: 164.0,
+          sport: ActivityType.rowing,
+          caloriesPerHour: null,
+          caloriesPerMinute: null,
+        ),
+      ),
+      TestPair(
+        data: [253, 14, 65, 2, 0, 210, 0, 58, 1, 38, 0, 37, 0, 7, 0, 74, 30, 105, 1],
+        record: RecordWithSport(
+          distance: 577.0,
+          elapsed: 361,
+          calories: null,
+          power: 38,
+          speed: 8.571428571428571,
+          cadence: null,
+          heartRate: 74,
+          pace: 210.0,
           sport: ActivityType.rowing,
           caloriesPerHour: null,
           caloriesPerMinute: null,
