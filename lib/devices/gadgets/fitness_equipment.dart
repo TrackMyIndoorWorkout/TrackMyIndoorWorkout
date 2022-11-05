@@ -70,9 +70,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   int _lastPositiveCadence = 0; // #101
   bool _cadenceGapWorkaround = cadenceGapWorkaroundDefault;
   double _lastPositiveCalories = 0.0; // #111
-  bool firstCalories; // #197 #234 #259
+  bool _firstCalories = true; // #197 #234 #259
   double _startingCalories = 0.0;
-  bool firstDistance; // #197 #234 #259
+  bool _firstDistance = true; // #197 #234 #259
   double _startingDistance = 0.0;
   bool deviceHasTotalCalorieReporting = false;
   bool hrmHasTotalCalorieReporting = false;
@@ -126,7 +126,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   Timer? _throttleTimer;
   RecordHandlerFunction? _recordHandlerFunction;
 
-  FitnessEquipment({this.descriptor, device, this.firstCalories = true, this.firstDistance = true})
+  FitnessEquipment({this.descriptor, device})
       : super(
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
           characteristicId: descriptor?.dataCharacteristicId ?? "",
@@ -716,6 +716,24 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _extendTuning = extendTuning;
   }
 
+  @visibleForTesting
+  void setFirstDistance(bool firstDistance) {
+    _firstDistance = firstDistance;
+  }
+
+  @visibleForTesting
+  void setFirstCalories(bool firstCalories) {
+    _firstCalories = firstCalories;
+  }
+
+  @visibleForTesting
+  void setStartingValues(double startingDistance, double startingCalories) {
+    _startingDistance = startingDistance;
+    _firstDistance = false;
+    _startingCalories = startingCalories;
+    _firstCalories = false;
+  }
+
   RecordWithSport pausedRecord(RecordWithSport record) {
     trimQueues();
 
@@ -731,8 +749,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       lastRecord,
       logLevel,
       _enableAsserts,
-      forDistance: !firstDistance,
-      forCalories: !firstCalories,
+      forDistance: !_firstDistance,
+      forCalories: !_firstCalories,
       force: true,
     );
 
@@ -871,9 +889,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         "#1 _residueCalories $_residueCalories, "
             "_lastPositiveCadence $_lastPositiveCadence, "
             "_lastPositiveCalories $_lastPositiveCalories, "
-            "firstCalories $firstCalories, "
+            "_firstCalories $_firstCalories, "
             "_startingCalories $_startingCalories, "
-            "firstDistance $firstDistance, "
+            "_firstDistance $_firstDistance, "
             "_startingDistance $_startingDistance, "
             "deviceHasTotalCalorieReporting $deviceHasTotalCalorieReporting, "
             "hrmHasTotalCalorieReporting $hrmHasTotalCalorieReporting, "
@@ -896,22 +914,22 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     hrmHasTotalCalorieReporting |= hrmReportsCalories;
     // All of these starting* and hasTotal* codes have to come before the (optional) merge
     // and after tuning / factoring adjustments #197
-    if (firstCalories) {
+    if (_firstCalories) {
       if (_useHrmReportedCalories) {
         if (hrmHasTotalCalorieReporting && (hrmRecord?.calories ?? 0) > 0) {
           _startingCalories = hrmRecord!.calories!.toDouble();
-          firstCalories = false;
+          _firstCalories = false;
         }
       } else if (deviceHasTotalCalorieReporting && (stub.calories ?? 0) > 0) {
         _startingCalories = stub.calories!.toDouble();
-        firstCalories = false;
+        _firstCalories = false;
       }
     }
 
     hasTotalDistanceReporting |= stub.distance != null;
-    if (hasTotalDistanceReporting && firstDistance && (stub.distance ?? 0.0) >= 50.0) {
+    if (hasTotalDistanceReporting && _firstDistance && (stub.distance ?? 0.0) >= 50.0) {
       _startingDistance = stub.distance!;
-      firstDistance = false;
+      _firstDistance = false;
     }
 
     hasPowerReporting |= (stub.power ?? 0) > 0;
@@ -953,8 +971,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     // and it should have been decided if there's total distance / calories
     // time reporting or not
     if (stub.movingTime >= 2000) {
-      firstDistance = false;
-      firstCalories = false;
+      _firstDistance = false;
+      _firstCalories = false;
     }
 
     // #197
@@ -1131,8 +1149,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         lastRecord,
         logLevel,
         _enableAsserts,
-        forDistance: !firstDistance,
-        forCalories: !firstCalories,
+        forDistance: !_firstDistance,
+        forCalories: !_firstCalories,
       );
     }
 
@@ -1155,9 +1173,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         "#2 _residueCalories $_residueCalories, "
             "_lastPositiveCadence $_lastPositiveCadence, "
             "_lastPositiveCalories $_lastPositiveCalories, "
-            "firstCalories $firstCalories, "
+            "_firstCalories $_firstCalories, "
             "_startingCalories $_startingCalories, "
-            "firstDistance $firstDistance, "
+            "_firstDistance $_firstDistance, "
             "_startingDistance $_startingDistance, "
             "deviceHasTotalCalorieReporting $deviceHasTotalCalorieReporting, "
             "hrmHasTotalCalorieReporting $hrmHasTotalCalorieReporting, "
@@ -1259,8 +1277,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     readConfiguration();
     _residueCalories = 0.0;
     _lastPositiveCalories = 0.0;
-    firstCalories = true;
-    firstDistance = true;
+    _firstCalories = true;
+    _firstDistance = true;
     _startingCalories = 0.0;
     _startingDistance = 0.0;
     dataHandlers = {};
