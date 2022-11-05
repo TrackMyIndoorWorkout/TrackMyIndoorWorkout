@@ -1086,7 +1086,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
 
-      calories -= _startingCalories;
+      calories = max(calories - _startingCalories, 0.0);
     }
 
     stub.calories = calories.floor();
