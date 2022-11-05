@@ -35,8 +35,8 @@ void main() {
       test(flagBytes.description, () async {
         final bike = MatrixBikeDescriptor();
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
+        bike.initFlag();
         bike.stopWorkout();
-
         bike.processFlag(flag);
 
         expect(bike.speedMetric, isNotNull);
