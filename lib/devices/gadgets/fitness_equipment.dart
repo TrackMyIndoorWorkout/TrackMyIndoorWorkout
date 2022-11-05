@@ -951,6 +951,20 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     // #197
     stub.distance ??= 0.0;
     if (_startingDistance > eps) {
+      if (kDebugMode && _enableAsserts) {
+        assert(stub.distance! >= _startingDistance);
+      }
+
+      if (logLevel >= logLevelInfo) {
+        Logging.log(
+          logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "processRecord",
+          "starting distance adj ${stub.distance!} - $_startingDistance",
+        );
+      }
+
       stub.distance = max(stub.distance! - _startingDistance, 0.0);
     }
 
