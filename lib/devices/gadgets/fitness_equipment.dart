@@ -718,6 +718,15 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   RecordWithSport pausedRecord(RecordWithSport record) {
     trimQueues();
+
+    if (record.calories != null) {
+      record.calories = max(record.calories! - _startingCalories.round(), 0);
+    }
+
+    if (record.distance != null) {
+      record.distance = max(record.distance! - _startingDistance, 0.0);
+    }
+
     record.cumulativeMetricsEnforcements(
       lastRecord,
       logLevel,
