@@ -25,8 +25,8 @@ void main() {
     const lsb = 12;
     const msb = 33;
     const flag = maxUint8 * msb + lsb;
+    xTrainer.initFlag();
     xTrainer.stopWorkout();
-
     xTrainer.processFlag(flag);
 
     expect(xTrainer.speedMetric, isNotNull);

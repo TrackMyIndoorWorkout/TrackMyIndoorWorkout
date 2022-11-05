@@ -43,9 +43,8 @@ void main() {
     // C12 elapsed time uint16 (s) 1
     // total length (1 + 2 + 3 + 2 + 2 + 2) + (2 + 2 + 1 + 1 + 2) = 12 + 8 = 20
     const flag = maxUint8 * msb + lsb;
-    rower.stopWorkout();
-
     rower.initFlag();
+    rower.stopWorkout();
     rower.processFlag(flag);
 
     expect(rower.strokeRateMetric, isNotNull);

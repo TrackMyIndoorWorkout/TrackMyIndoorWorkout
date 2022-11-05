@@ -25,8 +25,8 @@ void main() {
     const lsb = 0;
     const msb = 0;
     const flag = maxUint8 * msb + lsb;
+    bike.initFlag();
     bike.stopWorkout();
-
     bike.processFlag(flag);
 
     expect(bike.speedMetric, isNotNull);
@@ -45,8 +45,8 @@ void main() {
     const lsb = 17; // 0x11
     const msb = 0;
     const flag = maxUint8 * msb + lsb;
+    bike.initFlag();
     bike.stopWorkout();
-
     bike.processFlag(flag);
 
     expect(bike.speedMetric, null);
@@ -65,8 +65,8 @@ void main() {
     const lsb = 197; // 0xC5
     const msb = 0;
     const flag = maxUint8 * msb + lsb;
+    bike.initFlag();
     bike.stopWorkout();
-
     bike.processFlag(flag);
 
     expect(bike.speedMetric, null);

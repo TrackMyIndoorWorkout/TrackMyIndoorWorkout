@@ -65,8 +65,8 @@ void main() {
   test('Technogym MyRun interprets FTMS Treadmill Data 1 flags properly', () async {
     final treadmill = DeviceFactory.getGenericFTMSTreadmill();
     final flag = maxUint8 * sampleData[0].data[1] + sampleData[0].data[0];
+    treadmill.initFlag();
     treadmill.stopWorkout();
-
     treadmill.processFlag(flag);
 
     expect(treadmill.speedMetric, null); // only average speed
@@ -84,8 +84,8 @@ void main() {
   test('Technogym MyRun interprets FTMS Treadmill Data 2 flags properly', () async {
     final treadmill = DeviceFactory.getGenericFTMSTreadmill();
     final flag = maxUint8 * sampleData[1].data[1] + sampleData[1].data[0];
+    treadmill.initFlag();
     treadmill.stopWorkout();
-
     treadmill.processFlag(flag);
 
     expect(treadmill.speedMetric, isNotNull);
