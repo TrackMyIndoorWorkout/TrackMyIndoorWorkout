@@ -24,7 +24,7 @@ dependencies:
   flutter_layout_grid: ^2.0.1
   flutter_logs: ^2.1.8
   flutter_timezone: ^1.0.2
-  flutter_spinbox: ^0.10.0
+  flutter_spinbox: ^0.11.0
   flutter_svg: ^1.1.6
   get: ^4.6.1
   group_button: ^5.2.2
@@ -43,7 +43,7 @@ dependencies:
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
   sqflite: ^2.2.0+3
-  syncfusion_flutter_charts: ^20.3.52
+  syncfusion_flutter_charts: ^20.3.56
   tuple: ^2.0.1
   uni_links: ^0.5.1
   url_launcher: ^6.1.6
