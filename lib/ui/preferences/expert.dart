@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_logs/flutter_logs.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
@@ -37,7 +37,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
   void initState() {
     super.initState();
 
-    FlutterNativeTimezone.getAvailableTimezones().then((timeZoneChoicesFixed) {
+    FlutterTimezone.getAvailableTimezones().then((timeZoneChoicesFixed) {
       setState(() {
         timeZoneChoices.addAll(timeZoneChoicesFixed);
         timeZoneChoices.sort();

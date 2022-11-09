@@ -23,7 +23,7 @@ dependencies:
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.1
   flutter_logs: ^2.1.8
-  flutter_native_timezone: ^2.0.0
+  flutter_timezone: ^1.0.2
   flutter_spinbox: ^0.10.0
   flutter_svg: ^1.1.6
   get: ^4.6.1

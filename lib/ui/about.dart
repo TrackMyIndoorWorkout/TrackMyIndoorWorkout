@@ -1,4 +1,4 @@
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,7 +42,7 @@ class AboutScreenState extends State<AboutScreen> {
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;
 
-    FlutterNativeTimezone.getLocalTimezone().then((String timeZone) {
+    FlutterTimezone.getLocalTimezone().then((String timeZone) {
       setState(() {
         _detectedTimeZone = timeZone;
       });

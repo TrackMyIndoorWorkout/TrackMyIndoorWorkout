@@ -1,4 +1,4 @@
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../preferences/enforced_time_zone.dart';
@@ -11,5 +11,5 @@ Future<String> getTimeZone() async {
     return timeZone;
   }
 
-  return await FlutterNativeTimezone.getLocalTimezone();
+  return await FlutterTimezone.getLocalTimezone();
 }

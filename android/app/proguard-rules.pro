@@ -32,8 +32,8 @@
 -keepclassmembernames class com.boskokg.flutter_blue_plus.* { *; }
 -keep class com.flutter.logs.plogs.flutter_logs.** { *; }
 -keepclassmembernames class com.flutter.logs.plogs.flutter_logs.* { *; }
--keep class com.whelksoft.flutter_native_timezone.** { *; }
--keepclassmembernames class com.whelksoft.flutter_native_timezone.* { *; }
+-keep class net.wolverinebeach.flutter_timezone.** { *; }
+-keepclassmembernames class net.wolverinebeach.flutter_timezone.* { *; }
 -keep class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keepclassmembernames class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keep class dev.fluttercommunity.plus.packageinfo.** { *; }
