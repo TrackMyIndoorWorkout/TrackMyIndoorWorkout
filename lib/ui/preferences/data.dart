@@ -8,12 +8,8 @@ import '../../persistence/database.dart';
 import '../../preferences/data_stream_gap_sound_effect.dart';
 import '../../preferences/data_stream_gap_watchdog_time.dart';
 import '../../preferences/extend_tuning.dart';
-import '../../preferences/heart_rate_gap_workaround.dart';
-import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/sound_effects.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
-import '../../preferences/use_heart_rate_based_calorie_counting.dart';
-import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/sound.dart';
 import 'preferences_screen_mixin.dart';
 
@@ -37,16 +33,6 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         title: Text(extendTuning),
         subtitle: Text(extendTuningDescription),
         pref: extendTuningTag,
-      ),
-      const PrefCheckbox(
-        title: Text(useHrMonitorReportedCalories),
-        subtitle: Text(useHrMonitorReportedCaloriesDescription),
-        pref: useHrMonitorReportedCaloriesTag,
-      ),
-      const PrefCheckbox(
-        title: Text(useHeartRateBasedCalorieCounting),
-        subtitle: Text(useHeartRateBasedCalorieCountingDescription),
-        pref: useHeartRateBasedCalorieCountingTag,
       ),
       PrefSlider<int>(
         title: const Text(strokeRateSmoothing),
@@ -139,59 +125,6 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         title: Text(cadenceGapWorkaround),
         subtitle: Text(cadenceGapWorkaroundDescription),
         pref: cadenceGapWorkaroundTag,
-      ),
-      PrefLabel(
-        title: Text(
-          heartRateGapWorkaroundSelection,
-          style: Get.textTheme.headline5!,
-          maxLines: 3,
-        ),
-      ),
-      const PrefRadio<String>(
-        title: Text(dataGapWorkaroundLastPositiveValueDescription),
-        value: dataGapWorkaroundLastPositiveValue,
-        pref: heartRateGapWorkaroundTag,
-      ),
-      const PrefRadio<String>(
-        title: Text(dataGapWorkaroundNoWorkaroundDescription),
-        value: dataGapWorkaroundNoWorkaround,
-        pref: heartRateGapWorkaroundTag,
-      ),
-      const PrefRadio<String>(
-        title: Text(dataGapWorkaroundDoNotWriteZerosDescription),
-        value: dataGapWorkaroundDoNotWriteZeros,
-        pref: heartRateGapWorkaroundTag,
-      ),
-      const PrefLabel(title: Divider(height: 1)),
-      PrefSlider<int>(
-        title: const Text(heartRateUpperLimit),
-        subtitle: const Text(heartRateUpperLimitDescription),
-        pref: heartRateUpperLimitIntTag,
-        trailing: (num value) => Text("$value"),
-        min: heartRateUpperLimitMin,
-        max: heartRateUpperLimitMax,
-        direction: Axis.vertical,
-      ),
-      PrefLabel(title: Text(heartRateLimitingMethod, style: Get.textTheme.headline5!, maxLines: 3)),
-      const PrefRadio<String>(
-        title: Text(heartRateLimitingWriteZeroDescription),
-        value: heartRateLimitingWriteZero,
-        pref: heartRateLimitingMethodTag,
-      ),
-      const PrefRadio<String>(
-        title: Text(heartRateLimitingWriteNothingDescription),
-        value: heartRateLimitingWriteNothing,
-        pref: heartRateLimitingMethodTag,
-      ),
-      const PrefRadio<String>(
-        title: Text(heartRateLimitingCapAtLimitDescription),
-        value: heartRateLimitingCapAtLimit,
-        pref: heartRateLimitingMethodTag,
-      ),
-      const PrefRadio<String>(
-        title: Text(heartRateLimitingNoLimitDescription),
-        value: heartRateLimitingNoLimit,
-        pref: heartRateLimitingMethodTag,
       ),
     ];
 

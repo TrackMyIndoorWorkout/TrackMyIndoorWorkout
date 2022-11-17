@@ -18,6 +18,7 @@ import '../../preferences/extend_tuning.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
+import '../../preferences/heart_rate_monitor_priority.dart';
 import '../../preferences/log_level.dart';
 import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
@@ -96,6 +97,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   double _hrmCalorieFactor = 1.0;
   bool _useHrmReportedCalories = useHrMonitorReportedCaloriesDefault;
   bool useHrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
+  bool _heartRateMonitorPriority = heartRateMonitorPriorityDefault;
   int weight = athleteBodyWeightDefault;
   int age = athleteAgeDefault;
   bool isMale = true;
@@ -758,7 +760,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       force: true,
     );
 
-    if ((heartRateMonitor?.record.heartRate ?? 0) > 0) {
+    if ((heartRateMonitor?.record.heartRate ?? 0) > 0 &&
+        (record.heartRate == null || record.heartRate == 0 || _heartRateMonitorPriority)) {
       record.heartRate = heartRateMonitor?.record.heartRate;
     }
 
@@ -999,7 +1002,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       stub.distance = max(stub.distance! - _startingDistance, 0.0);
     }
 
-    if ((stub.heartRate == null || stub.heartRate == 0) && (hrmRecord?.heartRate ?? 0) > 0) {
+    // #376
+    if ((hrmRecord?.heartRate ?? 0) > 0 &&
+        (stub.heartRate == null || stub.heartRate == 0 || _heartRateMonitorPriority)) {
       stub.heartRate = hrmRecord!.heartRate;
     }
 
@@ -1244,6 +1249,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         useHrMonitorReportedCaloriesDefault;
     useHrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
         useHeartRateBasedCalorieCountingDefault;
+    _heartRateMonitorPriority =
+        prefService.get<bool>(heartRateMonitorPriorityTag) ?? heartRateMonitorPriorityDefault;
     weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
     isMale =
