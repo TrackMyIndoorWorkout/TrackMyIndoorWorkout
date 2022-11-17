@@ -1,3 +1,9 @@
+## 1.1.128
+* Explicit switch if the app should prioritize the HRM directly paired to the app or the heart rate
+  coming from the fitness machine console
+* Upgrading Flutter version
+* Upgrading many Flutter plugins
+
 ## 1.1.127
 * Fix distance and calorie bump when workout is paused (and both metrics
   "bump back" when workout continues)
