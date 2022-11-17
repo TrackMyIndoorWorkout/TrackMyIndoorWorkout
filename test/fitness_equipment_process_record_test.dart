@@ -27,11 +27,8 @@ void main() {
       final calorie = calorieBase + 100;
       test('$calorie', () async {
         final descriptor = DeviceFactory.getSchwinnIcBike();
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstCalories(false);
         equipment.initPower2SpeedConstants();
         equipment.workoutState = WorkoutState.moving;
 
@@ -52,11 +49,8 @@ void main() {
       calorie++;
       test('$calorie', () async {
         final descriptor = DeviceFactory.getSchwinnIcBike();
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstCalories(false);
         equipment.initPower2SpeedConstants();
         equipment.workoutState = WorkoutState.moving;
 
@@ -83,11 +77,8 @@ void main() {
 
   test('processRecord recognizes lack total calorie counting capability', () async {
     final descriptor = DeviceFactory.getSchwinnIcBike();
-    final equipment = FitnessEquipment(
-      descriptor: descriptor,
-      device: MockBluetoothDevice(),
-      firstCalories: false,
-    );
+    final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+    equipment.setFirstCalories(false);
     equipment.initPower2SpeedConstants();
     equipment.workoutState = WorkoutState.moving;
 
@@ -110,11 +101,8 @@ void main() {
 
   test('processRecord recognizes lack total calorie counting capability when idle', () async {
     final descriptor = DeviceFactory.getSchwinnIcBike();
-    final equipment = FitnessEquipment(
-      descriptor: descriptor,
-      device: MockBluetoothDevice(),
-      firstCalories: false,
-    );
+    final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+    equipment.setFirstCalories(false);
     equipment.initPower2SpeedConstants();
     equipment.workoutState = WorkoutState.moving;
 
@@ -148,11 +136,8 @@ void main() {
 
   test('processRecord decides total calorie counting capability when not idle', () async {
     final descriptor = DeviceFactory.getSchwinnIcBike();
-    final equipment = FitnessEquipment(
-      descriptor: descriptor,
-      device: MockBluetoothDevice(),
-      firstCalories: false,
-    );
+    final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+    equipment.setFirstCalories(false);
     equipment.initPower2SpeedConstants();
     equipment.workoutState = WorkoutState.moving;
 
@@ -203,11 +188,8 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstCalories(false);
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
@@ -257,11 +239,8 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstCalories(false);
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
@@ -312,11 +291,8 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstCalories(false);
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
@@ -367,11 +343,8 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstCalories(false);
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
@@ -422,11 +395,8 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstCalories(false);
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
@@ -483,11 +453,8 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstCalories(false);
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
@@ -497,8 +464,8 @@ void main() {
           sport: descriptor.defaultSport,
         );
         equipment.useHrBasedCalorieCounting = true;
-        equipment.workoutState =
-            WorkoutState.moving; // Will transition to justPaused => isNotMoving
+        // Will transition to justPaused => isNotMoving
+        equipment.workoutState = WorkoutState.moving;
 
         final record = equipment.processRecord(RecordWithSport(
           sport: descriptor.defaultSport,
@@ -540,11 +507,8 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstCalories(false);
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
@@ -592,11 +556,8 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstDistance: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstDistance(false);
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.initPower2SpeedConstants();
@@ -643,11 +604,8 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstDistance: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstDistance(false);
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.initPower2SpeedConstants();
@@ -701,12 +659,9 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-          firstDistance: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstDistance(false);
+        equipment.setFirstCalories(false);
         equipment.setActivity(activity);
         equipment.setFactors(
           powerFactor,
@@ -770,12 +725,9 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: false,
-          firstDistance: false,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstDistance(false);
+        equipment.setFirstCalories(false);
         equipment.setActivity(activity);
         equipment.setFactors(
           powerFactor,
@@ -843,12 +795,7 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: true,
-          firstDistance: true,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.setFactors(
           powerFactor,
@@ -907,12 +854,7 @@ void main() {
           hrBasedCalories: hrBasedCalories,
           timeZone: "America/Los_Angeles",
         );
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-          firstCalories: true,
-          firstDistance: true,
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.setFactors(
           powerFactor,
@@ -952,6 +894,126 @@ void main() {
 
         expect(record.distance, closeTo(deltaRecord.distance!, eps));
         expect(record.calories, closeTo(deltaRecord.calories!, 1));
+      });
+    });
+  });
+
+  group('processRecord adjusts calories by starting calories when paused', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 100, rnd).forEach((startingCalories) {
+      final descriptor = DeviceFactory.getSchwinnIcBike();
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrmCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
+      startingCalories += 50; // Making sure in good range
+      // Make sure mid workout is large enough that the cumulative check wouldn't trump over it
+      final midWorkoutCalories = rnd.nextDouble() * 350.0 + 150.0;
+      final unadjustedUnoffsettedCalories =
+          (startingCalories + midWorkoutCalories.round()) / calorieFactor;
+      test(
+          '($startingCalories + $midWorkoutCalories) / $calorieFactor = $unadjustedUnoffsettedCalories',
+          () async {
+        final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
+        final activity = Activity(
+          deviceId: mPowerImportDeviceId,
+          deviceName: descriptor.modelName,
+          hrmId: "",
+          start: oneSecondAgo.millisecondsSinceEpoch,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrmCalorieFactor: hrmCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
+          timeZone: "America/Los_Angeles",
+        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstDistance(false);
+        equipment.setActivity(activity);
+        equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
+        equipment.setStartingValues(0.0, startingCalories.toDouble());
+        final adjustedRecord = RecordWithSport(
+          sport: descriptor.defaultSport,
+          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          elapsed: 0,
+          calories: 0,
+        );
+        adjustedRecord.adjustByFactors(powerFactor, calorieFactor, true);
+        equipment.lastRecord = adjustedRecord;
+        equipment.workoutState = WorkoutState.paused;
+
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          calories: unadjustedUnoffsettedCalories.round(),
+        ));
+
+        expect(record.distance, null);
+        expect(record.calories, closeTo(midWorkoutCalories.round(), 1.0));
+        expect(record.power, null);
+      });
+    });
+  });
+
+  group('processRecord adjusts distance by starting distance when paused', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, 100, rnd).forEach((startingDistance) {
+      final descriptor = DeviceFactory.getSchwinnIcBike();
+      final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrmCalorieFactor = rnd.nextDouble() * 2.0 + 0.1;
+      final hrBasedCalories = rnd.nextBool();
+      startingDistance += 50; // Making sure in good range
+      // Make sure mid workout is large enough that the cumulative check wouldn't trump over it
+      final midWorkoutDistance = rnd.nextDouble() * 350.0 + 150.0;
+      final unadjustedUnoffsettedDistance = (startingDistance + midWorkoutDistance) / powerFactor;
+      test(
+          '($startingDistance + $midWorkoutDistance) / $powerFactor = $unadjustedUnoffsettedDistance',
+          () async {
+        final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
+        final activity = Activity(
+          deviceId: mPowerImportDeviceId,
+          deviceName: descriptor.modelName,
+          hrmId: "",
+          start: oneSecondAgo.millisecondsSinceEpoch,
+          startDateTime: oneSecondAgo,
+          fourCC: descriptor.fourCC,
+          sport: descriptor.defaultSport,
+          powerFactor: powerFactor,
+          calorieFactor: calorieFactor,
+          hrCalorieFactor: hrCalorieFactor,
+          hrmCalorieFactor: hrmCalorieFactor,
+          hrBasedCalories: hrBasedCalories,
+          timeZone: "America/Los_Angeles",
+        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
+        equipment.setFirstDistance(false);
+        equipment.setActivity(activity);
+        equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
+        equipment.setStartingValues(startingDistance.toDouble(), 0.0);
+        // We are already doubled the starting distance at this imaginary point of workout
+        final adjustedRecord = RecordWithSport(
+          sport: descriptor.defaultSport,
+          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          elapsed: 0,
+          distance: 0.0,
+        );
+        adjustedRecord.adjustByFactors(powerFactor, calorieFactor, true);
+        equipment.lastRecord = adjustedRecord;
+        equipment.workoutState = WorkoutState.paused;
+
+        final record = equipment.processRecord(RecordWithSport(
+          sport: descriptor.defaultSport,
+          distance: unadjustedUnoffsettedDistance,
+        ));
+
+        expect(record.distance, closeTo(midWorkoutDistance, displayEps));
+        expect(record.calories, null);
+        expect(record.power, null);
       });
     });
   });
