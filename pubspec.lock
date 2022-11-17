@@ -348,10 +348,12 @@ packages:
   flutter_timezone:
     dependency: "direct main"
     description:
-      name: flutter_timezone
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
+      path: "."
+      ref: HEAD
+      resolved-ref: "7d0e5d57260c9c4d97e82ff6174e5155e6cec1ce"
+      url: "https://github.com/CsabaConsulting/flutter_timezone.git"
+    source: git
+    version: "1.0.3"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
