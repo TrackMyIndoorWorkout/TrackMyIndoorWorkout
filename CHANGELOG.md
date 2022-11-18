@@ -1,6 +1,7 @@
 ## 1.1.128
 * Explicit switch if the app should prioritize the HRM directly paired to the app or the heart rate
   coming from the fitness machine console
+* CSV export empty string instead of null values
 * Upgrading Flutter version
 * Upgrading many Flutter plugins
 
