@@ -23,6 +23,7 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         trailing: (num value) => Text("$value kg"),
         min: bikeWeightMin,
         max: bikeWeightMax,
+        divisions: bikeWeightDivisions,
         direction: Axis.vertical,
       ),
       PrefSlider<int>(
@@ -32,6 +33,7 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         trailing: (num value) => Text("$value %"),
         min: driveTrainLossMin,
         max: driveTrainLossMax,
+        divisions: driveTrainLossDivisions,
         direction: Axis.vertical,
       ),
       PrefSlider<int>(
