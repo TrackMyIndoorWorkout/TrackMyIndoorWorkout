@@ -6,6 +6,7 @@ const athleteBodyWeightIntTag = athleteBodyWeightTag + intTagPostfix;
 const athleteBodyWeightMin = 1;
 const athleteBodyWeightDefault = 80;
 const athleteBodyWeightMax = 300;
+const athleteBodyWeightDivisions = athleteBodyWeightMax - athleteBodyWeightMin;
 const athleteBodyWeightDescription =
     "This settings is optional. It could be used either for heart rate based calorie counting equations "
     "or spin-down capable devices to set "
