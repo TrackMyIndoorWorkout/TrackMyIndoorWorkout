@@ -22,7 +22,7 @@ dependencies:
   flutter_blue_plus: ^1.3.1
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.1
-  flutter_logs: ^2.1.8
+  flutter_logs: ^2.1.9
   flutter_timezone: ^1.0.4
   flutter_spinbox: ^0.11.0
   flutter_svg: ^1.1.6
@@ -43,10 +43,10 @@ dependencies:
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
   sqflite: ^2.2.0+3
-  syncfusion_flutter_charts: ^20.3.57
+  syncfusion_flutter_charts: ^20.3.58
   tuple: ^2.0.1
   uni_links: ^0.5.1
-  url_launcher: ^6.1.6
+  url_launcher: ^6.1.7
   vector_math: ^2.1.4
   wakelock: ^0.6.2
   flutter:
