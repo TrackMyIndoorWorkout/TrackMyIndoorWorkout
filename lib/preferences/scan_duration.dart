@@ -3,5 +3,6 @@ const scanDurationTag = "scan_duration";
 const scanDurationMin = 6;
 const scanDurationDefault = 6;
 const scanDurationMax = 15;
+const scanDurationDivisions = scanDurationMax - scanDurationMin;
 const scanDurationDescription =
     "Duration in seconds the app will spend looking Bluetooth Low Energy equipment.";
