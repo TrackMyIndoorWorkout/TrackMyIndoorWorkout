@@ -89,7 +89,9 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
     double? speed;
     if (wheelRevolutionMetric != null) {
       wheelCadence.addCadenceData(getWheelRevolutionTime(data), getWheelRevolutions(data));
-      distance = wheelCadence.cadenceData.last.revolutions * _wheelCircumference;
+      distance = (wheelCadence.overflowCounter * wheelCadence.revolutionOverflow +
+              wheelCadence.cadenceData.last.revolutions) *
+          _wheelCircumference;
       // https://endless-sphere.com/forums/viewtopic.php?t=16114
       // 26" wheel approx cadence at 80mph => 1024.0
       speed = min(wheelCadence.computeCadence(), 1024.0) * 60.0 * _wheelCircumference / 1000.0;

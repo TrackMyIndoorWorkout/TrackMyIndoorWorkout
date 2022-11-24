@@ -12,6 +12,7 @@ class CadenceMixin {
   int revolutionSlidingWindow = defaultRevolutionSlidingWindow;
   int eventTimeOverflow = defaultEventTimeOverflow;
   int revolutionOverflow = defaultRevolutionOverflow;
+  int overflowCounter = 0;
 
   ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
 
@@ -50,6 +51,10 @@ class CadenceMixin {
         // Update the duplicate's timestamp
         cadenceData.last.timeStamp = DateTime.now();
         return;
+      } else {
+        if (nonNullRevolutions < cadenceData.last.revolutions) {
+          overflowCounter++;
+        }
       }
     }
 
