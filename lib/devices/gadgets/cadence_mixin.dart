@@ -1,7 +1,11 @@
 import 'dart:collection';
 
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
+import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
+import '../../utils/logging.dart';
 import 'cadence_data.dart';
 
 class CadenceMixin {
@@ -15,11 +19,14 @@ class CadenceMixin {
   int overflowCounter = 0;
 
   ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
+  int logLevel = logLevelDefault;
 
   initCadence([revolutionSlidingWindow, eventTimeOverflow, revolutionOverflow]) {
     this.revolutionSlidingWindow = revolutionSlidingWindow;
     this.eventTimeOverflow = eventTimeOverflow;
     this.revolutionOverflow = revolutionOverflow;
+    final prefService = Get.find<BasePrefService>();
+    logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
   }
 
   double _getDiffCore(double later, double earlier, int overflow) {
@@ -97,6 +104,16 @@ class CadenceMixin {
     }
 
     final revDiff = _getRevDiff(lastData.revolutions, firstData.revolutions);
+    if (logLevel >= logLevelInfo) {
+      Logging.log(
+        logLevel,
+        logLevelInfo,
+        "CadenceMixin",
+        "computeCadence",
+        "cadenceData $cadenceData, $revDiff * 60 / $timeDiff",
+      );
+    }
+
     return revDiff * 60 / timeDiff; // rpm (rev/sec * 60 = rev/min)
   }
 
