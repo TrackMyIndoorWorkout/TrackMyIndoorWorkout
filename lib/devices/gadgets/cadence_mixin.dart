@@ -25,8 +25,11 @@ class CadenceMixin {
     this.revolutionSlidingWindow = revolutionSlidingWindow;
     this.eventTimeOverflow = eventTimeOverflow;
     this.revolutionOverflow = revolutionOverflow;
-    final prefService = Get.find<BasePrefService>();
-    logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+
+    if (!testing) {
+      final prefService = Get.find<BasePrefService>();
+      logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    }
   }
 
   double _getDiffCore(double later, double earlier, int overflow) {

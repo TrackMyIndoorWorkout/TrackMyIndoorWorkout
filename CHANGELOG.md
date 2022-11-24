@@ -1,3 +1,12 @@
+## 1.1.129
+* Adding wheel circumference settings for CSC (Cycling Speed and Cadence) sensor speed and distance
+  calculations
+* Some modifications to cadence calculations (trying to chase a bug)
+* Adding detailed cadence calculations logging (trying to chase a bug)
+* Add divisions for almost all of slider type settings
+* Upgrading Flutter version
+* Upgrading many Flutter plugins
+
 ## 1.1.128
 * Explicit switch if the app should prioritize the HRM directly paired to the app or the heart rate
   coming from the fitness machine console
