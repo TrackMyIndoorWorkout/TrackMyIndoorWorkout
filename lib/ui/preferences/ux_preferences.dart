@@ -72,6 +72,7 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
         trailing: (num value) => Text("$value s"),
         min: scanDurationMin,
         max: scanDurationMax,
+        divisions: scanDurationDivisions,
         direction: Axis.vertical,
       ),
       const PrefCheckbox(
@@ -138,6 +139,7 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
         trailing: (num value) => Text("$value %"),
         min: measurementFontSizeAdjustMin,
         max: measurementFontSizeAdjustMax,
+        divisions: measurementFontSizeAdjustDivisions,
         direction: Axis.vertical,
       ),
       const PrefCheckbox(

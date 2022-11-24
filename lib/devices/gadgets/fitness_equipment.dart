@@ -380,11 +380,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         },
       );
     } else {
+      _companionSensor?.pumpData(null);
       for (final sensor in _additionalSensors) {
         sensor.pumpData(null);
       }
 
-      _companionSensor?.pumpData(null);
       subscription = _listenToData.listen((recordStub) {
         pumpDataCore(recordStub, false);
       });
@@ -780,6 +780,20 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       );
     }
 
+    if (_companionSensor != null && _companionSensor!.attached) {
+      if (logLevel >= logLevelInfo) {
+        Logging.log(
+          logLevel,
+          logLevelInfo,
+          "FITNESS_EQUIPMENT",
+          "processRecord",
+          "merging companion sensor ${_companionSensor!.record}",
+        );
+      }
+
+      stub.merge(_companionSensor!.record);
+    }
+
     for (final sensor in _additionalSensors) {
       if (sensor.attached) {
         if (logLevel >= logLevelInfo) {
@@ -794,20 +808,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
         stub.merge(sensor.record);
       }
-    }
-
-    if (_companionSensor != null && _companionSensor!.attached) {
-      if (logLevel >= logLevelInfo) {
-        Logging.log(
-          logLevel,
-          logLevelInfo,
-          "FITNESS_EQUIPMENT",
-          "processRecord",
-          "merging companion sensor ${_companionSensor!.record}",
-        );
-      }
-
-      stub.merge(_companionSensor!.record);
     }
 
     // State Machine for #231 and #235

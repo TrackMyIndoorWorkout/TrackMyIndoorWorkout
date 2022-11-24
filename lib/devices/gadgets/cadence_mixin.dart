@@ -1,7 +1,11 @@
 import 'dart:collection';
 
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
+import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
+import '../../utils/logging.dart';
 import 'cadence_data.dart';
 
 class CadenceMixin {
@@ -12,13 +16,20 @@ class CadenceMixin {
   int revolutionSlidingWindow = defaultRevolutionSlidingWindow;
   int eventTimeOverflow = defaultEventTimeOverflow;
   int revolutionOverflow = defaultRevolutionOverflow;
+  int overflowCounter = 0;
 
   ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
+  int logLevel = logLevelDefault;
 
   initCadence([revolutionSlidingWindow, eventTimeOverflow, revolutionOverflow]) {
     this.revolutionSlidingWindow = revolutionSlidingWindow;
     this.eventTimeOverflow = eventTimeOverflow;
     this.revolutionOverflow = revolutionOverflow;
+
+    if (!testing) {
+      final prefService = Get.find<BasePrefService>();
+      logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    }
   }
 
   double _getDiffCore(double later, double earlier, int overflow) {
@@ -50,6 +61,10 @@ class CadenceMixin {
         // Update the duplicate's timestamp
         cadenceData.last.timeStamp = DateTime.now();
         return;
+      } else {
+        if (nonNullRevolutions < cadenceData.last.revolutions) {
+          overflowCounter++;
+        }
       }
     }
 
@@ -87,8 +102,22 @@ class CadenceMixin {
     var firstData = cadenceData.first;
     var lastData = cadenceData.last;
     final timeDiff = _getTimeDiff(lastData.time, firstData.time);
+    if (timeDiff < eps) {
+      return 0.0;
+    }
+
     final revDiff = _getRevDiff(lastData.revolutions, firstData.revolutions);
-    return timeDiff < eps ? 0.0 : revDiff * 60 / timeDiff;
+    if (logLevel >= logLevelInfo) {
+      Logging.log(
+        logLevel,
+        logLevelInfo,
+        "CadenceMixin",
+        "computeCadence",
+        "cadenceData $cadenceData, $revDiff * 60 / $timeDiff",
+      );
+    }
+
+    return revDiff * 60 / timeDiff; // rpm (rev/sec * 60 = rev/min)
   }
 
   void clearCadenceData() {

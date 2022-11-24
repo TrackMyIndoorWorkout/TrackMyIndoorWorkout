@@ -8,11 +8,26 @@ import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import 'preferences_screen_mixin.dart';
 
-class HeartRatePreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
+class HeartRatePreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "Heart Rate";
   static String title = "$shortTitle Preferences";
 
   const HeartRatePreferencesScreen({Key? key}) : super(key: key);
+
+  @override
+  HeartRatePreferencesScreenState createState() => HeartRatePreferencesScreenState();
+}
+
+class HeartRatePreferencesScreenState extends State<HeartRatePreferencesScreen> {
+  int _hrUpperLimitEdit = 0;
+
+  void onHeartRateUpperLimitSpinTap(int delta) {
+    setState(() {
+      final hrUpperLimit = PrefService.of(context).get(heartRateUpperLimitIntTag);
+      PrefService.of(context).set(heartRateUpperLimitIntTag, hrUpperLimit + delta);
+      _hrUpperLimitEdit++;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,13 +73,31 @@ class HeartRatePreferencesScreen extends StatelessWidget with PreferencesScreenM
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(
+        key: Key("heartRateUpperLimit$_hrUpperLimitEdit"),
         title: const Text(heartRateUpperLimit),
         subtitle: const Text(heartRateUpperLimitDescription),
         pref: heartRateUpperLimitIntTag,
         trailing: (num value) => Text("$value"),
         min: heartRateUpperLimitMin,
         max: heartRateUpperLimitMax,
+        divisions: heartRateUpperLimitDivisions,
         direction: Axis.vertical,
+      ),
+      PrefButton(
+        onTap: () => onHeartRateUpperLimitSpinTap(1),
+        child: const Text("+1 beat"),
+      ),
+      PrefButton(
+        onTap: () => onHeartRateUpperLimitSpinTap(-1),
+        child: const Text("-1 beat"),
+      ),
+      PrefButton(
+        onTap: () => onHeartRateUpperLimitSpinTap(10),
+        child: const Text("+10 beats"),
+      ),
+      PrefButton(
+        onTap: () => onHeartRateUpperLimitSpinTap(-10),
+        child: const Text("-10 beats"),
       ),
       PrefLabel(title: Text(heartRateLimitingMethod, style: Get.textTheme.headline5!, maxLines: 3)),
       const PrefRadio<String>(
@@ -90,7 +123,7 @@ class HeartRatePreferencesScreen extends StatelessWidget with PreferencesScreenM
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(HeartRatePreferencesScreen.title)),
       body: PrefPage(children: heartRatePreferences),
     );
   }

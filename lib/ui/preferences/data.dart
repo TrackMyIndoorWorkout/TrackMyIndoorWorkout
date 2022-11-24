@@ -41,6 +41,7 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         trailing: (num value) => Text("$value"),
         min: strokeRateSmoothingMin,
         max: strokeRateSmoothingMax,
+        divisions: strokeRateSmoothingDivisions,
         direction: Axis.vertical,
       ),
       const PrefTitle(title: Text("Workarounds")),
@@ -51,6 +52,7 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         trailing: (num value) => Text("$value s"),
         min: dataStreamGapWatchdogMin,
         max: dataStreamGapWatchdogMax,
+        divisions: dataStreamGapWatchdogDivisions,
         direction: Axis.vertical,
       ),
       PrefButton(
@@ -119,6 +121,7 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         trailing: (num value) => Text("$value %"),
         min: audioVolumeMin,
         max: audioVolumeMax,
+        divisions: audioVolumeDivisions,
         direction: Axis.vertical,
       ),
       const PrefCheckbox(
