@@ -17,8 +17,11 @@ void main() {
   group('addByte test', () {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint8, rnd).forEach((byte) {
-      final expected = [byte];
-      test('$byte -> $expected', () async {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
+      final expectedByte = byte < maxUint8 - 1 ? byte : maxUint8 - 2;
+      final expected = [expectedByte];
+      test('$byte -> $expectedByte', () async {
         final subject = TestSubject();
 
         subject.addByte(byte);
@@ -45,6 +48,8 @@ void main() {
   group('addByte negative numbers (2 complement) test', () {
     final rnd = Random();
     getRandomInts(repetition, maxUint8 ~/ 2, rnd).forEach((byte) {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
       final expected = byte != 0 ? (byte != 1 ? [maxUint8 - byte] : [maxUint8 - 2]) : [0];
       test('-$byte -> $expected', () async {
         final subject = TestSubject();
@@ -75,8 +80,11 @@ void main() {
   group('addShort test', () {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint16, rnd).forEach((short) {
-      final expected = [short % maxUint8, short ~/ maxUint8];
-      test('$short -> $expected', () async {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
+      final expectedShort = short < maxUint16 - 1 ? short : maxUint16 - 2;
+      final expected = [expectedShort % maxUint8, expectedShort ~/ maxUint8];
+      test('$short /$expectedShort/ -> $expected', () async {
         final subject = TestSubject();
 
         subject.addShort(short);
@@ -89,6 +97,8 @@ void main() {
   group('addShort overflow test', () {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint16, rnd).forEach((short) {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
       const limited = maxUint16 - 2;
       final expected = [limited % maxUint8, limited ~/ maxUint8];
       final overflown = short + maxUint16;
@@ -140,13 +150,16 @@ void main() {
   group('addLong test', () {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint32, rnd).forEach((long) {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
+      final expectedLong = long < maxUint32 - 1 ? long : maxUint32 - 2;
       final expected = [
-        long % maxUint8,
-        long ~/ maxUint8 % maxUint8,
-        long ~/ maxUint16 % maxUint8,
-        long ~/ maxUint24
+        expectedLong % maxUint8,
+        expectedLong ~/ maxUint8 % maxUint8,
+        expectedLong ~/ maxUint16 % maxUint8,
+        expectedLong ~/ maxUint24
       ];
-      test('$long -> $expected', () async {
+      test('$long /$expectedLong/ -> $expected', () async {
         final subject = TestSubject();
 
         subject.addLong(long);
@@ -159,6 +172,8 @@ void main() {
   group('addLong overflow test', () {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint32, rnd).forEach((long) {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
       const limited = maxUint32 - 2;
       final expected = [
         limited % maxUint8,

@@ -55,6 +55,7 @@ import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
 import '../preferences/welcome_presented.dart';
+import '../preferences/wheel_circumference.dart';
 import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
@@ -139,6 +140,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     enableAssertsTag: enableAssertsDefault,
     dragForceTuneTag: dragForceTuneDefault,
     heartRateMonitorPriorityTag: heartRateMonitorPriorityDefault,
+    wheelCircumferenceTag: wheelCircumferenceDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

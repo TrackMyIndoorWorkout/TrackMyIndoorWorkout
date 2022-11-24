@@ -49,6 +49,7 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value"),
         min: targetHeartRateLowerBpmMin,
         max: targetHeartRateUpperBpmMax,
+        divisions: targetHeartRateUpperBpmMax - targetHeartRateLowerBpmMin,
         direction: Axis.vertical,
         onChange: (num value) {
           final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperBpmIntTag) ??
@@ -67,6 +68,7 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value"),
         min: targetHeartRateLowerBpmMin,
         max: targetHeartRateUpperBpmMax,
+        divisions: targetHeartRateUpperBpmMax - targetHeartRateLowerBpmMin,
         direction: Axis.vertical,
         onChange: (num value) {
           final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerBpmIntTag) ??
@@ -85,6 +87,7 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value"),
         min: targetHeartRateLowerZoneMin,
         max: targetHeartRateUpperZoneMax,
+        divisions: targetHeartRateUpperZoneMax - targetHeartRateLowerZoneMin,
         direction: Axis.vertical,
         onChange: (num value) {
           final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperZoneIntTag) ??
@@ -103,6 +106,7 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value"),
         min: targetHeartRateLowerZoneMin,
         max: targetHeartRateUpperZoneMax,
+        divisions: targetHeartRateUpperZoneMax - targetHeartRateLowerZoneMin,
         direction: Axis.vertical,
         onChange: (num value) {
           final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerZoneIntTag) ??
@@ -126,6 +130,7 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value s"),
         min: targetHeartRateAudioPeriodMin,
         max: targetHeartRateAudioPeriodMax,
+        divisions: targetHeartRateAudioPeriodMax - targetHeartRateAudioPeriodMin,
         direction: Axis.vertical,
       ),
       PrefLabel(
@@ -164,6 +169,7 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value %"),
         min: audioVolumeMin,
         max: audioVolumeMax,
+        divisions: audioVolumeDivisions,
         direction: Axis.vertical,
       ),
     ];
