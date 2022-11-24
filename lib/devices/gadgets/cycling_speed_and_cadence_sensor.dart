@@ -94,6 +94,8 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
           _wheelCircumference;
       // https://endless-sphere.com/forums/viewtopic.php?t=16114
       // 26" wheel approx cadence at 80mph => 1024.0
+      // Unit: rpm * 60 = rph (rotations / minute * 60 = rotations / hour)
+      //       rph * m / 1000 = rph * km = kmh
       speed = min(wheelCadence.computeCadence(), 1024.0) * 60.0 * _wheelCircumference / 1000.0;
     }
 

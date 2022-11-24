@@ -92,8 +92,12 @@ class CadenceMixin {
     var firstData = cadenceData.first;
     var lastData = cadenceData.last;
     final timeDiff = _getTimeDiff(lastData.time, firstData.time);
+    if (timeDiff < eps) {
+      return 0.0;
+    }
+
     final revDiff = _getRevDiff(lastData.revolutions, firstData.revolutions);
-    return timeDiff < eps ? 0.0 : revDiff * 60 / timeDiff;
+    return revDiff * 60 / timeDiff; // rpm (rev/sec * 60 = rev/min)
   }
 
   void clearCadenceData() {
