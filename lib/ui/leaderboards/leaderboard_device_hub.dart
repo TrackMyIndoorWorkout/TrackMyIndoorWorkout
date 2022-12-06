@@ -22,7 +22,7 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline5!.apply(
+    _textStyle = Get.textTheme.headline6!.apply(
       fontFamily: fontFamily,
       color: Colors.white,
     );
