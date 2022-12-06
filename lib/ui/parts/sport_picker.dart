@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/display.dart';
@@ -66,8 +67,12 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
                     },
                     icon: _themeManager.getBlueIcon(
                         getSportIcon(e.value), _largerTextStyle.fontSize!),
-                    label: Text(e.value,
-                        style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+                    label: TextOneLine(
+                      e.value,
+                      style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
