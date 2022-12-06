@@ -1,3 +1,6 @@
+## 1.1.130
+* Fix pixel overflow cosmetic bug on the Device Leaderboard's device selector screen
+
 ## 1.1.129
 * Adding wheel circumference settings for CSC (Cycling Speed and Cadence) sensor speed and distance
   calculations
