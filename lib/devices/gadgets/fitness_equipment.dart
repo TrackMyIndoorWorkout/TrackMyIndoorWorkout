@@ -141,7 +141,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     lastRecord = RecordWithSport(sport: sport);
   }
 
-  String get sport => _activity?.sport ?? (descriptor?.defaultSport ?? ActivityType.ride);
+  String get sport => _activity?.sport ?? (descriptor?.sport ?? ActivityType.ride);
   double get residueCalories => _residueCalories;
   double get lastPositiveCalories => _lastPositiveCalories;
   bool get isMoving =>
@@ -1144,7 +1144,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     stub.calories = calories.floor();
     stub.activityId = _activity?.id ?? 0;
-    stub.sport = descriptor?.defaultSport ?? ActivityType.ride;
+    stub.sport = descriptor?.sport ?? ActivityType.ride;
 
     if (logLevel >= logLevelInfo) {
       Logging.log(

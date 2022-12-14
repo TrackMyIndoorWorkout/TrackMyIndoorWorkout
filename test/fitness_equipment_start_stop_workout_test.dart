@@ -20,7 +20,7 @@ void main() {
     await initPrefServiceForTest();
     final descriptor = DeviceFactory.getSchwinnIcBike();
     final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
-    equipment.lastRecord = RecordWithSport.getRandom(descriptor.defaultSport, rnd);
+    equipment.lastRecord = RecordWithSport.getRandom(descriptor.sport, rnd);
 
     equipment.startWorkout();
 
@@ -32,7 +32,7 @@ void main() {
     expect(equipment.lastRecord.cadence, 0);
     expect(equipment.lastRecord.heartRate, 0);
     expect(equipment.lastRecord.elapsedMillis, 0);
-    expect(equipment.lastRecord.sport, descriptor.defaultSport);
+    expect(equipment.lastRecord.sport, descriptor.sport);
     expect(equipment.lastRecord.pace, null);
     expect(equipment.lastRecord.strokeCount, null);
     expect(equipment.lastRecord.caloriesPerHour, null);
@@ -47,7 +47,7 @@ void main() {
     await initPrefServiceForTest();
     final descriptor = DeviceFactory.getSchwinnIcBike();
     final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
-    equipment.continuationRecord = RecordWithSport.getRandom(descriptor.defaultSport, rnd)
+    equipment.continuationRecord = RecordWithSport.getRandom(descriptor.sport, rnd)
       ..distance = rnd.nextDouble() + 100
       ..elapsed = rnd.nextInt(1000) + 60
       ..calories = rnd.nextInt(1000) + 10;
@@ -73,7 +73,7 @@ void main() {
           start: oneSecondAgo.millisecondsSinceEpoch,
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
-          sport: descriptor.defaultSport,
+          sport: descriptor.sport,
           powerFactor: 1.0,
           calorieFactor: 1.0,
           hrCalorieFactor: 1.0,
@@ -87,12 +87,12 @@ void main() {
           timeStamp: oneSecondAgo.millisecondsSinceEpoch,
           elapsedMillis: 0,
           calories: 0,
-          sport: descriptor.defaultSport,
+          sport: descriptor.sport,
         );
         equipment.initPower2SpeedConstants();
         equipment.workoutState = WorkoutState.moving;
         equipment.processRecord(RecordWithSport(
-          sport: descriptor.defaultSport,
+          sport: descriptor.sport,
           speed: 8.0,
           calories: calories,
         ));

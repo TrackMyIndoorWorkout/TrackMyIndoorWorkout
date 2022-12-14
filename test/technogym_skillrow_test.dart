@@ -20,7 +20,7 @@ void main() {
   test('Technogym Skillrow Rower Device constructor tests', () async {
     final rower = DeviceFactory.getGenericFTMSRower();
 
-    expect(rower.defaultSport, ActivityType.rowing);
+    expect(rower.sport, ActivityType.rowing);
     expect(rower.fourCC, genericFTMSRowerFourCC);
     expect(rower.isMultiSport, false);
   });

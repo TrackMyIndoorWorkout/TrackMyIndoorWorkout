@@ -3,7 +3,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 
 import '../devices/company_registry.dart';
-import '../devices/device_map.dart';
+import '../devices/device_fourcc.dart';
 import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
@@ -35,8 +35,8 @@ extension ScanResultEx on ScanResult {
       return true;
     }
 
-    for (var dev in deviceMap.values) {
-      for (var prefix in dev.namePrefixes) {
+    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
+      for (var prefix in mapEntry.value) {
         if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
           return true;
         }
@@ -141,10 +141,14 @@ extension ScanResultEx on ScanResult {
   }
 
   IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes) {
-    for (var dev in deviceMap.values.where((d) => !d.isMultiSport)) {
-      for (var prefix in dev.namePrefixes) {
+    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
+      if (multiSportFourCCs.contains(mapEntry.key)) {
+        continue;
+      }
+
+      for (var prefix in mapEntry.value) {
         if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
-          return getSportIcon(dev.defaultSport);
+          return getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport);
         }
       }
     }

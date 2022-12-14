@@ -8,7 +8,6 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
           fourCC: matrixBikeFourCC,
           vendorName: "Matrix",
           modelName: "Matrix Bike",
-          namePrefixes: ["CTM", "Johnson", "Matrix"],
           manufacturerNamePart: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Bike",

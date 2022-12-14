@@ -3,12 +3,11 @@ import 'device_descriptor.dart';
 
 abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   FixedLayoutDeviceDescriptor({
-    required defaultSport,
+    required sport,
     required isMultiSport,
     required fourCC,
     required vendorName,
     required modelName,
-    required namePrefixes,
     manufacturerNamePart,
     manufacturerFitId,
     model,
@@ -25,12 +24,11 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     cadenceMetric,
     distanceMetric,
   }) : super(
-          defaultSport: defaultSport,
+          sport: sport,
           isMultiSport: isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,
-          namePrefixes: namePrefixes,
           manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
@@ -65,7 +63,7 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
       heartRate: getHeartRate(data),
-      sport: defaultSport,
+      sport: sport,
     );
   }
 }

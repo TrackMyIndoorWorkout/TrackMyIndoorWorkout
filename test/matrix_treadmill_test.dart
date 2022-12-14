@@ -23,7 +23,7 @@ void main() {
   test('Matrix Treadmill constructor tests', () async {
     final treadmill = MatrixTreadmillDescriptor();
 
-    expect(treadmill.defaultSport, ActivityType.run);
+    expect(treadmill.sport, ActivityType.run);
     expect(treadmill.fourCC, matrixTreadmillFourCC);
   });
 

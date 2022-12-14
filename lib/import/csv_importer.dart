@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_descriptors/schwinn_ac_performance_plus.dart';
+import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
-import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
@@ -473,11 +473,11 @@ class CSVImporter with PowerSpeedMixin {
         _linePointer++;
       }
     } else {
-      DeviceDescriptor device = deviceMap[schwinnACPerfPlusFourCC]!;
+      DeviceDescriptor device = DeviceFactory.getDescriptorForFourCC(schwinnACPerfPlusFourCC);
       final factors = await database.getFactors(deviceId);
-      deviceName = device.namePrefixes[0];
       fourCC = device.fourCC;
-      sport = device.defaultSport;
+      deviceName = deviceNamePrefixes[fourCC]![0];
+      sport = device.sport;
       calorieFactor = factors.item2 *
           (device.canMeasureCalories ? 1.0 : DeviceDescriptor.powerCalorieFactorDefault);
       hrCalorieFactor = factors.item3;

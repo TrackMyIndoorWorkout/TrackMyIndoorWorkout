@@ -11,8 +11,8 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
-import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt/csc.dart';
@@ -312,10 +312,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
     // Device determination logics
     // Step 1. Try to infer from the Bluetooth advertised name
     DeviceDescriptor? descriptor;
-    for (var dev in deviceMap.values) {
-      for (var prefix in dev.namePrefixes) {
+    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
+      for (var prefix in mapEntry.value) {
         if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
-          descriptor = dev;
+          descriptor = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
           break;
         }
       }
@@ -328,21 +328,21 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (descriptor == null) {
       if (!advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
         if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
-          descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(precorSpinnerChronoPowerFourCC);
         } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
-          descriptor = deviceMap[schwinnX70BikeFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(schwinnX70BikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
-          descriptor = deviceMap[concept2RowerFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(concept2RowerFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
-          descriptor = deviceMap[powerMeterBasedBikeFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedBikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
-          descriptor = deviceMap[cscSensorBasedBikeFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedBikeFourCC);
         }
       } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
         if (advertisementDigest.machineType == MachineType.treadmill) {
-          descriptor = deviceMap[matrixTreadmillFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(matrixTreadmillFourCC);
         } else if (advertisementDigest.machineType == MachineType.indoorBike) {
-          descriptor = deviceMap[matrixBikeFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(matrixBikeFourCC);
         }
       }
     }
@@ -441,7 +441,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       bool pickedAlready = false;
       if (descriptor == null) {
         if (deviceUsage != null) {
-          descriptor = genericDescriptorForSport(deviceUsage.sport);
+          descriptor = DeviceFactory.genericDescriptorForSport(deviceUsage.sport);
         } else {
           String? inferredSport;
           if (advertisementDigest.machineType.isFtms) {
@@ -506,7 +506,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
             return false;
           } else {
-            descriptor = genericDescriptorForSport(inferredSport);
+            descriptor = DeviceFactory.genericDescriptorForSport(inferredSport);
             if (!descriptor.isMultiSport) {
               deviceUsage = DeviceUsage(
                 sport: inferredSport,
@@ -527,7 +527,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         final multiSportSupport =
             prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;
         if (deviceUsage == null || multiSportSupport) {
-          final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
+          final initialSport = deviceUsage?.sport ?? descriptor.sport;
           final sportPick = await Get.bottomSheet(
             SafeArea(
               child: Column(
@@ -556,7 +556,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             return false;
           }
 
-          descriptor.defaultSport = sportPick;
+          descriptor.sport = sportPick;
           if (deviceUsage != null) {
             deviceUsage.sport = sportPick;
             deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
@@ -572,7 +572,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
           }
         } else {
-          descriptor.defaultSport = deviceUsage.sport;
+          descriptor.sport = deviceUsage.sport;
           await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
         }
       }
@@ -640,7 +640,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             descriptor: descriptor!,
             initialState: initialState,
             size: Get.mediaQuery.size,
-            sport: descriptor.defaultSport,
+            sport: descriptor.sport,
           ))?.then((_) {
         setState(() {
           _goingToRecording = false;

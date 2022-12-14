@@ -92,7 +92,7 @@ abstract class ActivityExport {
   ) async {
     activity.hydrate();
     final descriptor = activity.deviceDescriptor();
-    final track = getDefaultTrack(activity.sport);
+    final track = getTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     final exportRecords = records.map((r) {
       final record = recordToExport(r, activity, calculator, calculateGps, rawData);

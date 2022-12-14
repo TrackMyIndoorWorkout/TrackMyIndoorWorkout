@@ -3,7 +3,6 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
 import '../../preferences/log_level.dart';
-import '../../utils/constants.dart';
 import '../../utils/logging.dart';
 import '../gatt/precor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
@@ -17,12 +16,11 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
 
   PrecorSpinnerChronoPower()
       : super(
-          defaultSport: ActivityType.ride,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[precorSpinnerChronoPowerFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[precorSpinnerChronoPowerFourCC]!.isMultiSport,
           fourCC: precorSpinnerChronoPowerFourCC,
           vendorName: "Precor",
           modelName: "Spinner Chrono Power",
-          namePrefixes: ["CHRONO"],
           manufacturerNamePart: "Precor",
           manufacturerFitId: precorFitId,
           model: "1",

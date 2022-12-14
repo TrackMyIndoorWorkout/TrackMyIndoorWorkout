@@ -28,7 +28,7 @@ void main() {
   test('Technogym MyRun RSC constructor tests', () async {
     final treadmill = DeviceFactory.getGenericFTMSTreadmill();
 
-    expect(treadmill.defaultSport, ActivityType.run);
+    expect(treadmill.sport, ActivityType.run);
     expect(treadmill.fourCC, genericFTMSTreadmillFourCC);
     expect(treadmill.isMultiSport, false);
   });

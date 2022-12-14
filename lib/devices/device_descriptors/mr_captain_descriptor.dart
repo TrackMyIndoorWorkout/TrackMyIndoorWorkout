@@ -1,5 +1,4 @@
 import '../../export/fit/fit_manufacturer.dart';
-import '../../utils/constants.dart';
 import '../device_fourcc.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import 'rower_device_descriptor.dart';
@@ -7,12 +6,11 @@ import 'rower_device_descriptor.dart';
 class MrCaptainDescriptor extends RowerDeviceDescriptor {
   MrCaptainDescriptor()
       : super(
-          defaultSport: ActivityType.rowing,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[mrCaptainRowerFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[mrCaptainRowerFourCC]!.isMultiSport,
           fourCC: mrCaptainRowerFourCC,
           vendorName: "Mr Captain",
           modelName: "Rower",
-          namePrefixes: ["XG"],
           manufacturerNamePart: "XG",
           manufacturerFitId: stravaFitId,
           model: "000000",
