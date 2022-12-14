@@ -78,7 +78,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   TextStyle _subtitleStyle = const TextStyle();
   final AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  final RegExp _colonRegex = RegExp(r'\:');
+  final RegExp _colonRegex = RegExp(r':');
   bool _privacyStatementViews = false;
 
   @override
