@@ -385,26 +385,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
               descriptor.deviceCategory == DeviceCategory.primarySensor)) {
         bool isPrimarySensor = descriptor.deviceCategory == DeviceCategory.primarySensor;
         if (descriptor.deviceCategory == DeviceCategory.secondarySensor) {
-          bool isWheelSensor = false;
+          // TODO: Old Danube here
           if (device.name.toLowerCase().contains("speed")) {
-            isWheelSensor = true;
-          } else {
-            isWheelSensor = await Get.defaultDialog(
-              barrierDismissible: false,
-              title: "CSC sensor location",
-              middleText: "Is it a Wheel or a Pedal / Crank sensor?",
-              confirm: TextButton(
-                child: const Text("Wheel"),
-                onPressed: () => Get.back(result: true),
-              ),
-              cancel: TextButton(
-                child: const Text("Crank"),
-                onPressed: () => Get.back(result: false),
-              ),
-            );
-          }
-
-          if (isWheelSensor) {
+            // TODO: test this
             descriptor.deviceCategory = DeviceCategory.primarySensor;
             isPrimarySensor = true;
           }
