@@ -39,6 +39,7 @@ import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
 import '../preferences/multi_sport_device_support.dart';
+import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
@@ -141,6 +142,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     dragForceTuneTag: dragForceTuneDefault,
     heartRateMonitorPriorityTag: heartRateMonitorPriorityDefault,
     wheelCircumferenceTag: wheelCircumferenceDefault,
+    paddlingWithCyclingSensorsTag: paddlingWithCyclingSensorsDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
