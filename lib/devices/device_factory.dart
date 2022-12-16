@@ -201,10 +201,10 @@ class DeviceFactory {
     return CyclingSpeedAndCadenceDescriptor(
       fourCC: cscSensorBasedBikeFourCC,
       vendorName: "Unknown",
-      modelName: "Speed and Cadence Sensor Based Bike",
+      modelName: "Speed and Cadence Sensor Bike",
       manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
-      model: "Speed and Cadence Sensor Based Bike",
+      model: "Speed and Cadence Sensor Bike",
     );
   }
 
