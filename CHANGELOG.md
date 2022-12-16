@@ -1,3 +1,6 @@
+## 1.1.132
+* Hotfix for Garmin CSC speed sensor identification (setting it apart from cadence sensor)
+
 ## 1.1.131
 * Experimental support for Old Danube ergometers by allowing the use of CSC sensors
   for kayaking by a configuration switch in the Equipment preferences
