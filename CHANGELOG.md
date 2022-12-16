@@ -1,3 +1,8 @@
+## 1.1.131
+* Experimental support for Old Danube ergometers by allowing the use of CSC sensors
+  for kayaking by a configuration switch in the Equipment preferences
+* Refactoring internals of device and equipment handling related to recent developments
+
 ## 1.1.130
 * Fix pixel overflow cosmetic bug on the Device Leaderboard's device selector screen
 

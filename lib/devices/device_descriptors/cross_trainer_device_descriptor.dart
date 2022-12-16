@@ -1,5 +1,5 @@
+import '../../devices/device_fourcc.dart';
 import '../../persistence/models/record.dart';
-import '../../utils/constants.dart';
 import '../gatt/ftms.dart';
 import 'fitness_machine_descriptor.dart';
 
@@ -8,18 +8,16 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
     required fourCC,
     required vendorName,
     required modelName,
-    required namePrefixes,
     manufacturerNamePart,
     manufacturerFitId,
     model,
     heartRateByteIndex,
   }) : super(
-          defaultSport: ActivityType.elliptical,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[genericFTMSCrossTrainerFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[genericFTMSCrossTrainerFourCC]!.isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,
-          namePrefixes: namePrefixes,
           manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
@@ -34,7 +32,6 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
         fourCC: fourCC,
         vendorName: vendorName,
         modelName: modelName,
-        namePrefixes: namePrefixes,
         manufacturerNamePart: manufacturerNamePart,
         manufacturerFitId: manufacturerFitId,
         model: model,
@@ -78,7 +75,7 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
       heartRate: getHeartRate(data),
-      sport: defaultSport,
+      sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
     );

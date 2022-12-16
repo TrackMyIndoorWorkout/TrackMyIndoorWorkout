@@ -1,5 +1,5 @@
+import '../../devices/device_fourcc.dart';
 import '../../persistence/models/record.dart';
-import '../../utils/constants.dart';
 import '../gatt/ftms.dart';
 import 'fitness_machine_descriptor.dart';
 
@@ -8,19 +8,17 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     required fourCC,
     required vendorName,
     required modelName,
-    required namePrefixes,
     manufacturerNamePart,
     manufacturerFitId,
     model,
     heartRateByteIndex,
     canMeasureCalories = true,
   }) : super(
-          defaultSport: ActivityType.ride,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[genericFTMSBikeFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[genericFTMSBikeFourCC]!.isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,
-          namePrefixes: namePrefixes,
           manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
@@ -35,7 +33,6 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
         fourCC: fourCC,
         vendorName: vendorName,
         modelName: modelName,
-        namePrefixes: namePrefixes,
         manufacturerNamePart: manufacturerNamePart,
         manufacturerFitId: manufacturerFitId,
         model: model,
@@ -78,7 +75,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
       heartRate: getHeartRate(data),
-      sport: defaultSport,
+      sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
     );

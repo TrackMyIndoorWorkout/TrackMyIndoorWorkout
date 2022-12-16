@@ -5,6 +5,7 @@ import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/drag_force_tune.dart';
 import '../../preferences/drive_train_loss.dart';
+import '../../preferences/paddling_with_cycling_sensors.dart';
 import '../../preferences/wheel_circumference.dart';
 import 'preferences_screen_mixin.dart';
 
@@ -103,6 +104,11 @@ class EquipmentPreferencesScreenState extends State<EquipmentPreferencesScreen> 
         title: Text(blockSignalStartStop),
         subtitle: Text(blockSignalStartStopDescription),
         pref: blockSignalStartStopTag,
+      ),
+      const PrefCheckbox(
+        title: Text(paddlingWithCyclingSensors),
+        subtitle: Text(paddlingWithCyclingSensorsDescription),
+        pref: paddlingWithCyclingSensorsTag,
       ),
     ];
 

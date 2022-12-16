@@ -16,6 +16,7 @@ import 'complex_sensor.dart';
 class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
   static const serviceUuid = cyclingCadenceServiceUuid;
   static const characteristicUuid = cyclingCadenceMeasurementUuid;
+  String sport = ActivityType.ride;
   // Wheel revolution metrics
   // (can correlate to speed if it is a proper speed shifter bike on a trainer
   //  and not a spinning bike (fixed gear/fixie))
@@ -82,7 +83,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
   @override
   RecordWithSport processMeasurement(List<int> data) {
     if (!canMeasurementProcessed(data)) {
-      return RecordWithSport(sport: ActivityType.ride);
+      return RecordWithSport(sport: sport);
     }
 
     double? distance;
@@ -110,7 +111,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
       distance: distance,
       speed: speed,
       cadence: crankCadence?.toInt(),
-      sport: ActivityType.ride,
+      sport: sport,
     );
   }
 

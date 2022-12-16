@@ -285,7 +285,7 @@ class RecordingState extends State<RecordingScreen> {
         hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
         start: now.millisecondsSinceEpoch,
         startDateTime: now,
-        sport: widget.descriptor.defaultSport,
+        sport: widget.descriptor.sport,
         powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
         calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
         hrCalorieFactor: _fitnessEquipment?.hrCalorieFactor ?? 1.0,
@@ -311,7 +311,7 @@ class RecordingState extends State<RecordingScreen> {
       if (_leaderboardFeature) {
         _leaderboard = _rankingForSportOrDevice
             ? await _database.workoutSummaryDao
-                .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport)
+                .findAllWorkoutSummariesBySport(widget.descriptor.sport)
             : await _database.workoutSummaryDao
                 .findAllWorkoutSummariesByDevice(widget.device.id.id);
 
@@ -409,7 +409,7 @@ class RecordingState extends State<RecordingScreen> {
           _values = [
             record.calories?.toString() ?? emptyMeasurement,
             record.power?.toString() ?? emptyMeasurement,
-            record.speedOrPaceStringByUnit(_si, widget.descriptor.defaultSport),
+            record.speedOrPaceStringByUnit(_si, widget.descriptor.sport),
             record.cadence?.toString() ?? emptyMeasurement,
             record.heartRate?.toString() ?? emptyMeasurement,
             record.distanceStringByUnit(_si, _highRes),
@@ -591,7 +591,7 @@ class RecordingState extends State<RecordingScreen> {
 
     _paletteSpec = PaletteSpec.getInstance(prefService);
 
-    _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
+    _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.descriptor.sport);
     for (var prefSpec in _preferencesSpecs) {
       prefSpec.calculateBounds(
         0,
@@ -1691,7 +1691,7 @@ class RecordingState extends State<RecordingScreen> {
           final paceLightColor = _getPaceLightTextStyle(_selfRank);
           extraExtras.add(Text(_selfRankString.join(" "), style: paceLightColor));
 
-          if (widget.descriptor.defaultSport != ActivityType.ride) {
+          if (widget.descriptor.sport != ActivityType.ride) {
             extraExtras.add(Text("Speed ${_si ? 'km' : 'mi'}/h"));
           }
 

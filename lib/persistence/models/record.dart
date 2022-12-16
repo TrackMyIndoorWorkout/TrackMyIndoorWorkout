@@ -355,6 +355,52 @@ class Record {
     nonNegativeEnforcement(logLevel, enableAsserts);
   }
 
+  void adjustTime(int newElapsed, int newElapsedMillis) {
+    if (elapsedMillis != null && dt != null) {
+      final dMillis = newElapsedMillis - elapsedMillis!;
+      dt = dt!.add(Duration(milliseconds: dMillis));
+    }
+
+    elapsed = newElapsed;
+    elapsedMillis = newElapsedMillis;
+  }
+
+  void adjustByFactors(double powerFactor, double calorieFactor, bool extendTuning) {
+    if ((powerFactor - 1.0).abs() > eps) {
+      if (power != null) {
+        power = (power! * powerFactor).round();
+      }
+
+      if (extendTuning) {
+        if (speed != null) {
+          speed = speed! * powerFactor;
+        }
+
+        if (distance != null) {
+          distance = distance! * powerFactor;
+        }
+
+        if (pace != null) {
+          pace = pace! / powerFactor;
+        }
+      }
+    }
+
+    if ((calorieFactor - 1.0).abs() > eps) {
+      if (calories != null) {
+        calories = (calories! * calorieFactor).round();
+      }
+
+      if (caloriesPerHour != null) {
+        caloriesPerHour = caloriesPerHour! * calorieFactor;
+      }
+
+      if (caloriesPerMinute != null) {
+        caloriesPerMinute = caloriesPerMinute! * calorieFactor;
+      }
+    }
+  }
+
   @override
   String toString() {
     return "id $id | "
@@ -520,51 +566,5 @@ class RecordWithSport extends Record {
     }
 
     return clone;
-  }
-
-  void adjustTime(int newElapsed, int newElapsedMillis) {
-    if (elapsedMillis != null && dt != null) {
-      final dMillis = newElapsedMillis - elapsedMillis!;
-      dt = dt!.add(Duration(milliseconds: dMillis));
-    }
-
-    elapsed = newElapsed;
-    elapsedMillis = newElapsedMillis;
-  }
-
-  void adjustByFactors(double powerFactor, double calorieFactor, bool extendTuning) {
-    if ((powerFactor - 1.0).abs() > eps) {
-      if (power != null) {
-        power = (power! * powerFactor).round();
-      }
-
-      if (extendTuning) {
-        if (speed != null) {
-          speed = speed! * powerFactor;
-        }
-
-        if (distance != null) {
-          distance = distance! * powerFactor;
-        }
-
-        if (pace != null) {
-          pace = pace! / powerFactor;
-        }
-      }
-    }
-
-    if ((calorieFactor - 1.0).abs() > eps) {
-      if (calories != null) {
-        calories = (calories! * calorieFactor).round();
-      }
-
-      if (caloriesPerHour != null) {
-        caloriesPerHour = caloriesPerHour! * calorieFactor;
-      }
-
-      if (caloriesPerMinute != null) {
-        caloriesPerMinute = caloriesPerMinute! * calorieFactor;
-      }
-    }
   }
 }

@@ -18,12 +18,11 @@ abstract class DeviceDescriptor extends DataHandler {
   static const double oldPowerCalorieFactorDefault = 3.6;
   static const double powerCalorieFactorDefault = 4.0;
 
-  String defaultSport;
+  String sport;
   final bool isMultiSport;
   final String fourCC;
   final String vendorName;
   final String modelName;
-  final List<String> namePrefixes;
   final String manufacturerNamePart;
   final int manufacturerFitId;
   final String model;
@@ -39,12 +38,11 @@ abstract class DeviceDescriptor extends DataHandler {
   double? slowPace;
 
   DeviceDescriptor({
-    required this.defaultSport,
+    required this.sport,
     required this.isMultiSport,
     required this.fourCC,
     required this.vendorName,
     required this.modelName,
-    required this.namePrefixes,
     required this.manufacturerNamePart,
     required this.manufacturerFitId,
     required this.model, // Maybe eradicate?
@@ -77,7 +75,7 @@ abstract class DeviceDescriptor extends DataHandler {
         );
 
   String get fullName => '$vendorName $modelName';
-  double get lengthFactor => getDefaultTrack(defaultSport).lengthFactor;
+  double get lengthFactor => getTrack(sport).lengthFactor;
   bool get isFitnessMachine => dataServiceId == fitnessMachineUuid;
 
   void stopWorkout();
