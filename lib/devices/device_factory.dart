@@ -199,7 +199,7 @@ class DeviceFactory {
 
   static CyclingSpeedAndCadenceDescriptor getCSCBasedBike() {
     return CyclingSpeedAndCadenceDescriptor(
-      fourCC: powerMeterBasedBikeFourCC,
+      fourCC: cscSensorBasedBikeFourCC,
       vendorName: "Unknown",
       modelName: "Speed and Cadence Sensor Based Bike",
       manufacturerNamePart: "Unknown",
