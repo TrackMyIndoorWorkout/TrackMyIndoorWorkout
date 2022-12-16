@@ -30,6 +30,7 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/log_level.dart';
 import '../persistence/models/device_usage.dart';
 import '../preferences/multi_sport_device_support.dart';
+import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/welcome_presented.dart';
@@ -64,6 +65,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   int _scanDuration = scanDurationDefault;
   bool _autoConnect = autoConnectDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
+  bool _paddlingWithCyclingSensors = paddlingWithCyclingSensorsDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   bool _goingToRecording = false;
@@ -133,6 +135,26 @@ class FindDevicesState extends State<FindDevicesScreen> {
     Get.put<AppDatabase>(database, permanent: true);
   }
 
+  void _readPreferencesValues() {
+    final prefService = Get.find<BasePrefService>();
+    _instantScan = prefService.get<bool>(instantScanTag) ?? instantScanDefault;
+    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
+    _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
+    for (var sport in SportSpec.sportPrefixes) {
+      final lastEquipmentId = prefService.get<String>(lastEquipmentIdTagPrefix + sport) ?? "";
+      if (lastEquipmentId.isNotEmpty) {
+        _lastEquipmentIds.add(lastEquipmentId);
+      }
+    }
+
+    _circuitWorkout =
+        (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
+    _paddlingWithCyclingSensors =
+        prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
+    _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
+    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+  }
+
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
       if (_logLevel >= logLevelInfo) {
@@ -172,13 +194,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       );
     }
 
-    final prefService = Get.find<BasePrefService>();
-    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
-    _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
-    _circuitWorkout =
-        (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
-    _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
-    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    _readPreferencesValues();
     _scannedDevices.clear();
     _isScanning = true;
     _autoConnectLatch = true;
@@ -218,18 +234,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   void initState() {
     initializeDateFormatting();
     super.initState();
-    final prefService = Get.find<BasePrefService>();
-    _instantScan = prefService.get<bool>(instantScanTag) ?? instantScanDefault;
-    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
-    _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
-    for (var sport in SportSpec.sportPrefixes) {
-      final lastEquipmentId = prefService.get<String>(lastEquipmentIdTagPrefix + sport) ?? "";
-      if (lastEquipmentId.isNotEmpty) {
-        _lastEquipmentIds.add(lastEquipmentId);
-      }
-    }
-    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-    _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
+    _readPreferencesValues();
     _isScanning = false;
     _openDatabase().then((value) => _instantScan ? _startScan(true) : {});
 
@@ -240,7 +245,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
 
     if (huaweiAppGalleryBuild) {
-      if (!prefService.get(welcomePresentedTag)) {
+      final prefService = Get.find<BasePrefService>();
+      final welcomePresented =
+          Get.find<BasePrefService>().get<bool>(welcomePresentedTag) ?? welcomePresentedDefault;
+      if (!welcomePresented) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           final agreed = await Get.defaultDialog(
             barrierDismissible: false,
@@ -336,7 +344,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
         } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedBikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedBikeFourCC);
+          if (_paddlingWithCyclingSensors) {
+            descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedPaddleFourCC);
+          } else {
+            descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedBikeFourCC);
+          }
         }
       } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
         if (advertisementDigest.machineType == MachineType.treadmill) {

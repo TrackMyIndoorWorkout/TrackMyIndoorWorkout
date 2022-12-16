@@ -10,6 +10,7 @@ import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/mr_captain_descriptor.dart';
 import 'device_descriptors/npe_runn_treadmill.dart';
+import 'device_descriptors/paddling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/precor_spinner_chrono_power.dart';
 import 'device_descriptors/rower_device_descriptor.dart';
 import 'device_descriptors/schwinn_ac_performance_plus.dart';
@@ -208,6 +209,17 @@ class DeviceFactory {
     );
   }
 
+  static PaddlingSpeedAndCadenceDescriptor getCSCBasedPaddler() {
+    return PaddlingSpeedAndCadenceDescriptor(
+      fourCC: cscSensorBasedPaddleFourCC,
+      vendorName: "Old Danube",
+      modelName: "Old Danube",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Old Danube",
+    );
+  }
+
   static DeviceDescriptor getDescriptorForFourCC(String fourCC) {
     switch (fourCC) {
       case precorSpinnerChronoPowerFourCC:
@@ -257,6 +269,8 @@ class DeviceFactory {
         return DeviceFactory.getPowerMeterBasedBike();
       case cscSensorBasedBikeFourCC:
         return DeviceFactory.getCSCBasedBike();
+      case cscSensorBasedPaddleFourCC:
+        return DeviceFactory.getCSCBasedPaddler();
       case concept2RowerFourCC:
         return Concept2Rower();
     }
