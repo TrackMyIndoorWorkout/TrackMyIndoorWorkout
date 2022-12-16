@@ -397,9 +397,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
               descriptor.deviceCategory == DeviceCategory.primarySensor)) {
         bool isPrimarySensor = descriptor.deviceCategory == DeviceCategory.primarySensor;
         if (descriptor.deviceCategory == DeviceCategory.secondarySensor) {
-          // TODO: Old Danube here
-          if (device.name.toLowerCase().contains("speed")) {
-            // TODO: test this
+          final nameLowerCase = device.name.toLowerCase();
+          if (nameLowerCase.contains("speed") || nameLowerCase.contains("spd")) {
             descriptor.deviceCategory = DeviceCategory.primarySensor;
             isPrimarySensor = true;
           }
