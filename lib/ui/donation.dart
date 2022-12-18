@@ -11,64 +11,63 @@ class DonationScreen extends StatelessWidget {
 
   Widget getListTile(String vendorName, String logoSvgPath, String url, String qrPostfix) {
     return ListTile(
-        title: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey.shade200
+      title: ElevatedButton(
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+          child: SvgPicture.asset(
+            "assets/$logoSvgPath.svg",
+            color: vendorName == "CashApp" ? Colors.green : null,
+            height: Get.textTheme.headline2!.fontSize!,
+            semanticsLabel: "$vendorName Button",
           ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-            child: SvgPicture.asset(
-              "assets/$logoSvgPath.svg",
-              color: vendorName == "CashApp" ? Colors.green : null,
-              height: Get.textTheme.headline2!.fontSize!,
-              semanticsLabel: "$vendorName Button",
-            ),
-          ),
-          onPressed: () async {
-            if (await canLaunchUrlString(url)) {
-              try {
-                launchUrlString(url);
-              } catch (e) {
-                debugPrint("Error: $e");
-              }
-            }
-          },
         ),
-        subtitle: ElevatedButton.icon(
-          icon: Icon(Icons.qr_code_scanner, size: Get.textTheme.headline1!.fontSize!),
-          label: const Text("Display QR"),
-          onPressed: () {
-            Get.bottomSheet(
-              backgroundColor: Colors.white,
-              SafeArea(
-                child: Column(
-                  children: [
-                    SvgPicture.asset(
-                      "assets/$logoSvgPath.svg",
-                      color: vendorName == "CashApp" ? Colors.green : null,
-                      height: Get.textTheme.headline2!.fontSize!,
-                      semanticsLabel: "$vendorName Button",
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: QrImage(
-                          data: "$url$qrPostfix",
-                          version: QrVersions.auto,
-                          size: min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 2 / 3,
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                        ),
+        onPressed: () async {
+          if (await canLaunchUrlString(url)) {
+            try {
+              launchUrlString(url);
+            } catch (e) {
+              debugPrint("Error: $e");
+            }
+          }
+        },
+      ),
+      subtitle: ElevatedButton.icon(
+        icon: Icon(Icons.qr_code_scanner, size: Get.textTheme.headline1!.fontSize!),
+        label: const Text("Display QR"),
+        onPressed: () {
+          Get.bottomSheet(
+            backgroundColor: Colors.white,
+            SafeArea(
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    "assets/$logoSvgPath.svg",
+                    color: vendorName == "CashApp" ? Colors.green : null,
+                    height: Get.textTheme.headline2!.fontSize!,
+                    semanticsLabel: "$vendorName Button",
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: QrImage(
+                        data: "$url$qrPostfix",
+                        version: QrVersions.auto,
+                        size: min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 2 / 3,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              isScrollControlled: true,
-              ignoreSafeArea: false,
-              enableDrag: false,
-            );
-          },
-        ));
+            ),
+            isScrollControlled: true,
+            ignoreSafeArea: false,
+            enableDrag: false,
+          );
+        },
+      ),
+    );
   }
 
   @override
