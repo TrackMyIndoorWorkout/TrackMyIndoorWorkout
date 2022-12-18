@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:track_my_indoor_exercise/ui/donation.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -1021,12 +1022,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 const Tuple2<IconData, String>(Icons.open_in_new, "Workout Again"),
                 const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
                 const Tuple2<IconData, String>(Icons.settings, "Preferences"),
+                const Tuple2<IconData, String>(Icons.coffee, "Donation"),
                 const Tuple2<IconData, String>(Icons.help, "About"),
                 const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
               ]);
             },
           ),
           _themeManager.getAboutFab(),
+          _themeManager.getBlueFab(Icons.coffee, () async {
+            Get.to(() => const DonationScreen());
+          }),
           _themeManager.getBlueFab(Icons.list_alt, () async {
             final database = Get.find<AppDatabase>();
             final hasLeaderboardData = await database.hasLeaderboardData();
