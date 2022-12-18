@@ -83,7 +83,7 @@ Map<String, String> defaultTrackMap = {
   ActivityType.swim: "SanJoaquinBluffPointe",
 };
 
-TrackDescriptor getDefaultTrack(String sport) {
+TrackDescriptor getTrack(String sport) {
   String trackName = defaultTrackMap[sport] ?? "Marymoor";
   return trackMap[trackName]!;
 }

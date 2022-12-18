@@ -6,7 +6,6 @@ import 'package:pref/pref.dart';
 import '../../export/fit/fit_manufacturer.dart';
 import '../../preferences/log_level.dart';
 import '../../persistence/floor/models/record.dart';
-import '../../utils/constants.dart';
 import '../../utils/logging.dart';
 import '../device_fourcc.dart';
 import 'device_descriptor.dart';
@@ -16,12 +15,11 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
 
   SchwinnACPerformancePlus()
       : super(
-          defaultSport: ActivityType.ride,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[schwinnACPerfPlusFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[schwinnACPerfPlusFourCC]!.isMultiSport,
           fourCC: schwinnACPerfPlusFourCC,
           vendorName: "Schwinn",
           modelName: "AC Performance Plus",
-          namePrefixes: ["Schwinn AC Perf+"],
           manufacturerNamePart: "Schwinn",
           manufacturerFitId: stravaFitId,
           model: "Schwinn AC Perf+",

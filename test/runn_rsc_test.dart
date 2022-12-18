@@ -28,7 +28,7 @@ void main() {
   test('Runn RSC constructor tests', () async {
     final treadmill = NpeRunnTreadmill();
 
-    expect(treadmill.defaultSport, ActivityType.run);
+    expect(treadmill.sport, ActivityType.run);
     expect(treadmill.fourCC, npeRunnFourCC);
     expect(treadmill.isMultiSport, false);
   });

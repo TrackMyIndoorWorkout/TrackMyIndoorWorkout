@@ -8,7 +8,6 @@ class NpeRunnTreadmill extends TreadmillDeviceDescriptor {
           fourCC: npeRunnFourCC,
           vendorName: "North Pole Engineering Inc.",
           modelName: "Generic Treadmill",
-          namePrefixes: ["RUNN"],
           manufacturerNamePart: "North Pole Engineering",
           manufacturerFitId: northPoleEngineeringFitId,
           model: "77",

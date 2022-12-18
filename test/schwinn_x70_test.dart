@@ -20,7 +20,7 @@ void main() {
   test('Schwinn X70 constructor tests', () async {
     final bike = SchwinnX70();
 
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, schwinnX70BikeFourCC);
   });
 

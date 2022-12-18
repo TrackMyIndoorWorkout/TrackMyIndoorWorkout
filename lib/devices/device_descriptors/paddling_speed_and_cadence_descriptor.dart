@@ -1,11 +1,13 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import '../../utils/constants.dart';
 import '../gadgets/complex_sensor.dart';
-import '../gadgets/cycling_power_meter_sensor.dart';
+import '../gadgets/cycling_speed_and_cadence_sensor.dart';
+import '../gadgets/paddling_speed_and_cadence_sensor.dart';
 import 'cycling_sensor_descriptor.dart';
 import 'device_descriptor.dart';
 
-class CyclingPowerMeterDescriptor extends CyclingSensorDescriptor {
-  CyclingPowerMeterDescriptor({
+class PaddlingSpeedAndCadenceDescriptor extends CyclingSensorDescriptor {
+  PaddlingSpeedAndCadenceDescriptor({
     required fourCC,
     required vendorName,
     required modelName,
@@ -19,14 +21,17 @@ class CyclingPowerMeterDescriptor extends CyclingSensorDescriptor {
           manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
-          deviceCategory: DeviceCategory.primarySensor,
-          tag: "Cycling Power Meter Device",
-          serviceUuid: CyclingPowerMeterSensor.serviceUuid,
-          characteristicUuid: CyclingPowerMeterSensor.characteristicUuid,
-        );
+          deviceCategory: DeviceCategory.secondarySensor,
+          tag: "Paddling Speed and Cadence Device",
+          serviceUuid: CyclingSpeedAndCadenceSensor.serviceUuid,
+          characteristicUuid: CyclingSpeedAndCadenceSensor.characteristicUuid,
+          flagByteSize: 1,
+        ) {
+    sport = ActivityType.kayaking;
+  }
 
   @override
-  CyclingPowerMeterDescriptor clone() => CyclingPowerMeterDescriptor(
+  PaddlingSpeedAndCadenceDescriptor clone() => PaddlingSpeedAndCadenceDescriptor(
         fourCC: fourCC,
         vendorName: vendorName,
         modelName: modelName,
@@ -37,6 +42,6 @@ class CyclingPowerMeterDescriptor extends CyclingSensorDescriptor {
 
   @override
   ComplexSensor? getSensor(BluetoothDevice device) {
-    return CyclingPowerMeterSensor(device);
+    return PaddlingSpeedAndCadenceSensor(device);
   }
 }

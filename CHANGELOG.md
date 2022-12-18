@@ -1,3 +1,19 @@
+## 1.1.133
+* Adding a donation screen (PayPal, Buy Me A Coffee, Ko-fi me, Venmo, CashApp, Zelle)
+* Upgrading Flutter version
+* Upgrading numerous Flutter plugins
+
+## 1.1.132
+* Hotfix for Garmin CSC speed sensor identification (setting it apart from cadence sensor)
+
+## 1.1.131
+* Experimental support for Old Danube ergometers by allowing the use of CSC sensors
+  for kayaking by a configuration switch in the Equipment preferences
+* Refactoring internals of device and equipment handling related to recent developments
+
+## 1.1.130
+* Fix pixel overflow cosmetic bug on the Device Leaderboard's device selector screen
+
 ## 1.1.129
 * Adding wheel circumference settings for CSC (Cycling Speed and Cadence) sensor speed and distance
   calculations

@@ -15,7 +15,7 @@ void main() {
   test('Precor Spinner Chrono Power constructor tests', () async {
     final bike = PrecorSpinnerChronoPower();
 
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, precorSpinnerChronoPowerFourCC);
   });
 

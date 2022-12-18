@@ -20,7 +20,7 @@ void main() {
   test('KayakPro Rower Device constructor tests', () async {
     final rower = DeviceFactory.getKayaPro();
 
-    expect(rower.defaultSport, ActivityType.kayaking);
+    expect(rower.sport, ActivityType.kayaking);
     expect(rower.fourCC, kayakProGenesisPortFourCC);
     expect(rower.isMultiSport, true);
   });

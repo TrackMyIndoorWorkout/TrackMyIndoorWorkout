@@ -78,7 +78,7 @@ void main() {
           trainingPeaksWorkoutId: rnd.nextInt(1000000),
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
-          sport: descriptor.defaultSport,
+          sport: descriptor.sport,
           powerFactor: rnd.nextDouble(),
           calorieFactor: rnd.nextDouble(),
           hrCalorieFactor: rnd.nextDouble(),
@@ -103,7 +103,7 @@ void main() {
               cadence: 0,
               heartRate: rnd.nextInt(180),
               elapsedMillis: index * 1000,
-              sport: descriptor.defaultSport,
+              sport: descriptor.sport,
             ),
           ),
         );
@@ -122,7 +122,7 @@ void main() {
               cadence: rnd.nextInt(120),
               heartRate: rnd.nextInt(180),
               elapsedMillis: index * 1000,
-              sport: descriptor.defaultSport,
+              sport: descriptor.sport,
             ),
           ),
         );
@@ -141,7 +141,7 @@ void main() {
               cadence: 0,
               heartRate: rnd.nextInt(180),
               elapsedMillis: (index + countChunk + movingCount) * 1000,
-              sport: descriptor.defaultSport,
+              sport: descriptor.sport,
             ),
           ),
         );
@@ -274,7 +274,7 @@ void main() {
           trainingPeaksWorkoutId: rnd.nextInt(1000000),
           startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
-          sport: descriptor.defaultSport,
+          sport: descriptor.sport,
           powerFactor: rnd.nextDouble(),
           calorieFactor: rnd.nextDouble(),
           hrCalorieFactor: rnd.nextDouble(),
@@ -299,7 +299,7 @@ void main() {
               cadence: null,
               heartRate: null,
               elapsedMillis: null,
-              sport: descriptor.defaultSport,
+              sport: descriptor.sport,
             ),
           ),
         );

@@ -8,11 +8,12 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:track_my_indoor_exercise/ui/donation.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
-import '../devices/device_map.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt/csc.dart';
@@ -30,6 +31,7 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/log_level.dart';
 import '../persistence/floor/models/device_usage.dart';
 import '../preferences/multi_sport_device_support.dart';
+import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/welcome_presented.dart';
@@ -64,6 +66,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   int _scanDuration = scanDurationDefault;
   bool _autoConnect = autoConnectDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
+  bool _paddlingWithCyclingSensors = paddlingWithCyclingSensorsDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   bool _goingToRecording = false;
@@ -78,7 +81,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   TextStyle _subtitleStyle = const TextStyle();
   final AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  final RegExp _colonRegex = RegExp(r'\:');
+  final RegExp _colonRegex = RegExp(r':');
   bool _privacyStatementViews = false;
 
   @override
@@ -134,6 +137,26 @@ class FindDevicesState extends State<FindDevicesScreen> {
     Get.put<AppDatabase>(database, permanent: true);
   }
 
+  void _readPreferencesValues() {
+    final prefService = Get.find<BasePrefService>();
+    _instantScan = prefService.get<bool>(instantScanTag) ?? instantScanDefault;
+    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
+    _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
+    for (var sport in SportSpec.sportPrefixes) {
+      final lastEquipmentId = prefService.get<String>(lastEquipmentIdTagPrefix + sport) ?? "";
+      if (lastEquipmentId.isNotEmpty) {
+        _lastEquipmentIds.add(lastEquipmentId);
+      }
+    }
+
+    _circuitWorkout =
+        (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
+    _paddlingWithCyclingSensors =
+        prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
+    _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
+    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+  }
+
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
       if (_logLevel >= logLevelInfo) {
@@ -173,13 +196,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       );
     }
 
-    final prefService = Get.find<BasePrefService>();
-    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
-    _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
-    _circuitWorkout =
-        (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
-    _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
-    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    _readPreferencesValues();
     _scannedDevices.clear();
     _isScanning = true;
     _autoConnectLatch = true;
@@ -219,18 +236,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   void initState() {
     initializeDateFormatting();
     super.initState();
-    final prefService = Get.find<BasePrefService>();
-    _instantScan = prefService.get<bool>(instantScanTag) ?? instantScanDefault;
-    _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
-    _autoConnect = prefService.get<bool>(autoConnectTag) ?? autoConnectDefault;
-    for (var sport in SportSpec.sportPrefixes) {
-      final lastEquipmentId = prefService.get<String>(lastEquipmentIdTagPrefix + sport) ?? "";
-      if (lastEquipmentId.isNotEmpty) {
-        _lastEquipmentIds.add(lastEquipmentId);
-      }
-    }
-    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-    _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
+    _readPreferencesValues();
     _isScanning = false;
     _openDatabase().then((value) => _instantScan ? _startScan(true) : {});
 
@@ -241,7 +247,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
 
     if (huaweiAppGalleryBuild) {
-      if (!prefService.get(welcomePresentedTag)) {
+      final prefService = Get.find<BasePrefService>();
+      final welcomePresented =
+          Get.find<BasePrefService>().get<bool>(welcomePresentedTag) ?? welcomePresentedDefault;
+      if (!welcomePresented) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           final agreed = await Get.defaultDialog(
             barrierDismissible: false,
@@ -313,10 +322,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
     // Device determination logics
     // Step 1. Try to infer from the Bluetooth advertised name
     DeviceDescriptor? descriptor;
-    for (var dev in deviceMap.values) {
-      for (var prefix in dev.namePrefixes) {
+    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
+      for (var prefix in mapEntry.value) {
         if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
-          descriptor = dev;
+          descriptor = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
           break;
         }
       }
@@ -329,21 +338,25 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (descriptor == null) {
       if (!advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
         if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
-          descriptor = deviceMap[precorSpinnerChronoPowerFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(precorSpinnerChronoPowerFourCC);
         } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
-          descriptor = deviceMap[schwinnX70BikeFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(schwinnX70BikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
-          descriptor = deviceMap[concept2RowerFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(concept2RowerFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
-          descriptor = deviceMap[powerMeterBasedBikeFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedBikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
-          descriptor = deviceMap[cscSensorBasedBikeFourCC];
+          if (_paddlingWithCyclingSensors) {
+            descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedPaddleFourCC);
+          } else {
+            descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedBikeFourCC);
+          }
         }
       } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
         if (advertisementDigest.machineType == MachineType.treadmill) {
-          descriptor = deviceMap[matrixTreadmillFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(matrixTreadmillFourCC);
         } else if (advertisementDigest.machineType == MachineType.indoorBike) {
-          descriptor = deviceMap[matrixBikeFourCC];
+          descriptor = DeviceFactory.getDescriptorForFourCC(matrixBikeFourCC);
         }
       }
     }
@@ -386,26 +399,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
               descriptor.deviceCategory == DeviceCategory.primarySensor)) {
         bool isPrimarySensor = descriptor.deviceCategory == DeviceCategory.primarySensor;
         if (descriptor.deviceCategory == DeviceCategory.secondarySensor) {
-          bool isWheelSensor = false;
-          if (device.name.toLowerCase().contains("speed")) {
-            isWheelSensor = true;
-          } else {
-            isWheelSensor = await Get.defaultDialog(
-              barrierDismissible: false,
-              title: "CSC sensor location",
-              middleText: "Is it a Wheel or a Pedal / Crank sensor?",
-              confirm: TextButton(
-                child: const Text("Wheel"),
-                onPressed: () => Get.back(result: true),
-              ),
-              cancel: TextButton(
-                child: const Text("Crank"),
-                onPressed: () => Get.back(result: false),
-              ),
-            );
-          }
-
-          if (isWheelSensor) {
+          final nameLowerCase = device.name.toLowerCase();
+          if (nameLowerCase.contains("speed") || nameLowerCase.contains("spd")) {
             descriptor.deviceCategory = DeviceCategory.primarySensor;
             isPrimarySensor = true;
           }
@@ -442,7 +437,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       bool pickedAlready = false;
       if (descriptor == null) {
         if (deviceUsage != null) {
-          descriptor = genericDescriptorForSport(deviceUsage.sport);
+          descriptor = DeviceFactory.genericDescriptorForSport(deviceUsage.sport);
         } else {
           String? inferredSport;
           if (advertisementDigest.machineType.isFtms) {
@@ -507,7 +502,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
             return false;
           } else {
-            descriptor = genericDescriptorForSport(inferredSport);
+            descriptor = DeviceFactory.genericDescriptorForSport(inferredSport);
             if (!descriptor.isMultiSport) {
               deviceUsage = DeviceUsage(
                 sport: inferredSport,
@@ -528,7 +523,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         final multiSportSupport =
             prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;
         if (deviceUsage == null || multiSportSupport) {
-          final initialSport = deviceUsage?.sport ?? descriptor.defaultSport;
+          final initialSport = deviceUsage?.sport ?? descriptor.sport;
           final sportPick = await Get.bottomSheet(
             SafeArea(
               child: Column(
@@ -557,7 +552,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             return false;
           }
 
-          descriptor.defaultSport = sportPick;
+          descriptor.sport = sportPick;
           if (deviceUsage != null) {
             deviceUsage.sport = sportPick;
             deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
@@ -573,7 +568,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
           }
         } else {
-          descriptor.defaultSport = deviceUsage.sport;
+          descriptor.sport = deviceUsage.sport;
           await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
         }
       }
@@ -641,7 +636,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             descriptor: descriptor!,
             initialState: initialState,
             size: Get.mediaQuery.size,
-            sport: descriptor.defaultSport,
+            sport: descriptor.sport,
           ))?.then((_) {
         setState(() {
           _goingToRecording = false;
@@ -1028,12 +1023,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 const Tuple2<IconData, String>(Icons.open_in_new, "Workout Again"),
                 const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
                 const Tuple2<IconData, String>(Icons.settings, "Preferences"),
+                const Tuple2<IconData, String>(Icons.coffee, "Donation"),
                 const Tuple2<IconData, String>(Icons.help, "About"),
                 const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
               ]);
             },
           ),
           _themeManager.getAboutFab(),
+          _themeManager.getBlueFab(Icons.coffee, () async {
+            Get.to(() => const DonationScreen());
+          }),
           _themeManager.getBlueFab(Icons.list_alt, () async {
             final database = Get.find<AppDatabase>();
             final hasLeaderboardData = await database.hasLeaderboardData();

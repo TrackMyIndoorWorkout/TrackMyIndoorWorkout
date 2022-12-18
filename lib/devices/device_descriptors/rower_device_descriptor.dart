@@ -22,23 +22,21 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   int _strokeRateSum = 0;
 
   RowerDeviceDescriptor({
-    required defaultSport,
+    required sport,
     required fourCC,
     required vendorName,
     required modelName,
-    required namePrefixes,
     manufacturerNamePart,
     manufacturerFitId,
     model,
     heartRateByteIndex,
     isMultiSport = true,
   }) : super(
-          defaultSport: defaultSport,
+          sport: sport,
           isMultiSport: isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,
-          namePrefixes: namePrefixes,
           manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
@@ -49,12 +47,11 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   RowerDeviceDescriptor clone() => RowerDeviceDescriptor(
-        defaultSport: defaultSport,
+        sport: sport,
         isMultiSport: isMultiSport,
         fourCC: fourCC,
         vendorName: vendorName,
         modelName: modelName,
-        namePrefixes: namePrefixes,
         manufacturerNamePart: manufacturerNamePart,
         manufacturerFitId: manufacturerFitId,
         model: model,
@@ -65,7 +62,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   @override
   void processFlag(int flag) {
     final prefService = Get.find<BasePrefService>();
-    if (defaultSport == ActivityType.rowing) {
+    if (sport == ActivityType.rowing) {
       _strokeRateWindowSize = 0;
     } else {
       _strokeRateWindowSize =
@@ -122,7 +119,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       cadence: strokeRate,
       heartRate: getHeartRate(data),
       pace: pace,
-      sport: defaultSport,
+      sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
     );

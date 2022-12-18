@@ -9,7 +9,7 @@ import 'utils.dart';
 void main() {
   test('adjustRecord survives null values', () async {
     final descriptor = DeviceFactory.getSchwinnIcBike();
-    final record = RecordWithSport(sport: descriptor.defaultSport);
+    final record = RecordWithSport(sport: descriptor.sport);
     final rnd = Random();
     final powerFactor = rnd.nextDouble() * 2.0 + 0.1;
     final calorieFactor = rnd.nextDouble() * 2.0 + 0.1;
@@ -34,7 +34,7 @@ void main() {
       final extendTuning = rnd.nextBool();
       final power = (pow * powerFactor).round();
       test('$power = $pow * $powerFactor', () async {
-        final record = RecordWithSport(sport: descriptor.defaultSport, power: pow);
+        final record = RecordWithSport(sport: descriptor.sport, power: pow);
 
         record.adjustByFactors(powerFactor, calorieFactor, extendTuning);
 
@@ -54,7 +54,7 @@ void main() {
       final pace = rnd.nextDouble() * 10.0;
       test('$powerFactor | $power, $speed, $distance, $pace', () async {
         final record = RecordWithSport(
-          sport: descriptor.defaultSport,
+          sport: descriptor.sport,
           power: power,
           speed: speed,
           distance: distance,
@@ -82,7 +82,7 @@ void main() {
       final pace = rnd.nextDouble() * 10.0;
       test('$powerFactor | $power, $speed, $distance, $pace', () async {
         final record = RecordWithSport(
-          sport: descriptor.defaultSport,
+          sport: descriptor.sport,
           power: power,
           speed: speed,
           distance: distance,
@@ -110,7 +110,7 @@ void main() {
       final caloriesPerMinute = rnd.nextDouble() * 10.0;
       test('$calories, $calorieFactor', () async {
         final record = RecordWithSport(
-          sport: descriptor.defaultSport,
+          sport: descriptor.sport,
           calories: calories,
           caloriesPerHour: caloriesPerHour,
           caloriesPerMinute: caloriesPerMinute,

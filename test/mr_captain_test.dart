@@ -20,7 +20,7 @@ void main() {
   test('Mr Captain Rower Device constructor tests', () async {
     final rower = MrCaptainDescriptor();
 
-    expect(rower.defaultSport, ActivityType.rowing);
+    expect(rower.sport, ActivityType.rowing);
     expect(rower.fourCC, mrCaptainRowerFourCC);
     expect(rower.isMultiSport, false);
   });

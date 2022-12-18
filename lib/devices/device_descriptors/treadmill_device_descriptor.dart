@@ -2,8 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../persistence/floor/models/record.dart';
-import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
+import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gadgets/running_speed_and_cadence_sensor.dart';
 import '../gatt/ftms.dart';
@@ -19,18 +19,16 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     required fourCC,
     required vendorName,
     required modelName,
-    required namePrefixes,
     manufacturerNamePart,
     manufacturerFitId,
     model,
     heartRateByteIndex,
   }) : super(
-          defaultSport: ActivityType.run,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,
-          namePrefixes: namePrefixes,
           manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
@@ -44,7 +42,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
         fourCC: fourCC,
         vendorName: vendorName,
         modelName: modelName,
-        namePrefixes: namePrefixes,
         manufacturerNamePart: manufacturerNamePart,
         manufacturerFitId: manufacturerFitId,
         model: model,
@@ -91,7 +88,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       speed: speed,
       heartRate: getHeartRate(data),
       pace: pace,
-      sport: defaultSport,
+      sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
     );

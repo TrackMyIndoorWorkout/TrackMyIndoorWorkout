@@ -15,7 +15,7 @@ void main() {
   test('LifePro FlexStride Pro Device constructor tests', () async {
     final xTrainer = DeviceFactory.getGenericFTMSCrossTrainer();
 
-    expect(xTrainer.defaultSport, ActivityType.elliptical);
+    expect(xTrainer.sport, ActivityType.elliptical);
     expect(xTrainer.fourCC, genericFTMSCrossTrainerFourCC);
     expect(xTrainer.isMultiSport, false);
   });

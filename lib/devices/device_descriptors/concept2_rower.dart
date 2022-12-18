@@ -23,12 +23,11 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
 
   Concept2Rower()
       : super(
-          defaultSport: ActivityType.rowing,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[concept2RowerFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[concept2RowerFourCC]!.isMultiSport,
           fourCC: concept2RowerFourCC,
           vendorName: "Concept2",
           modelName: "PM5",
-          namePrefixes: ["PM5"],
           manufacturerNamePart: "Concept2",
           manufacturerFitId: concept2FitId,
           model: "PM5",

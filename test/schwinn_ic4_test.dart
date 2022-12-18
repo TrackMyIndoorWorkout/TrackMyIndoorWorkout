@@ -15,7 +15,7 @@ void main() {
   test('Schwinn IC4 constructor tests', () async {
     final bike = DeviceFactory.getSchwinnIcBike();
 
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, schwinnICBikeFourCC);
     expect(bike.isMultiSport, false);
   });

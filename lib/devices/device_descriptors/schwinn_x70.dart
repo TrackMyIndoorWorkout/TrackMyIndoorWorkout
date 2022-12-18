@@ -47,12 +47,11 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
 
   SchwinnX70()
       : super(
-          defaultSport: ActivityType.ride,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[schwinnX70BikeFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[schwinnX70BikeFourCC]!.isMultiSport,
           fourCC: schwinnX70BikeFourCC,
           vendorName: "Schwinn",
           modelName: "SCHWINN 170/270",
-          namePrefixes: ["SCHWINN 170", "SCHWINN 270", "SCHWINN 570"],
           manufacturerNamePart: "Nautilus", // "SCHWINN 170/270"
           manufacturerFitId: nautilusFitId,
           model: "",
@@ -110,9 +109,9 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       lastCalories = calories!;
       lastPower = 0.0;
       lastRecord = null;
-      return RecordWithSport(sport: defaultSport);
+      return RecordWithSport(sport: sport);
     } else if (time == lastTime) {
-      return lastRecord ?? RecordWithSport(sport: defaultSport);
+      return lastRecord ?? RecordWithSport(sport: sport);
     }
 
     addCadenceData(time! / 1024, getCadence(data));
@@ -149,7 +148,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       speed: speed,
       cadence: min(computeCadence(), maxByte),
       heartRate: null,
-      sport: defaultSport,
+      sport: sport,
     );
     if (testing) {
       record.elapsedMillis = time ~/ 1.024;

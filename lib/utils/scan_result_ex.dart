@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 
 import '../devices/company_registry.dart';
-import '../devices/device_map.dart';
+import '../devices/device_fourcc.dart';
 import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
@@ -11,6 +12,7 @@ import '../devices/gatt/hrm.dart';
 import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';
 import '../devices/gatt/schwinn_x70.dart';
+import '../preferences/paddling_with_cycling_sensors.dart';
 import 'advertisement_data_ex.dart';
 import 'constants.dart';
 import 'display.dart';
@@ -35,8 +37,8 @@ extension ScanResultEx on ScanResult {
       return true;
     }
 
-    for (var dev in deviceMap.values) {
-      for (var prefix in dev.namePrefixes) {
+    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
+      for (var prefix in mapEntry.value) {
         if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
           return true;
         }
@@ -108,9 +110,20 @@ extension ScanResultEx on ScanResult {
   MachineType getMachineType(List<MachineType> ftmsServiceDataMachineTypes) {
     if (serviceUuids.contains(precorServiceUuid) ||
         serviceUuids.contains(schwinnX70ServiceUuid) ||
-        serviceUuids.contains(cyclingPowerServiceUuid) ||
-        serviceUuids.contains(cyclingCadenceServiceUuid)) {
+        serviceUuids.contains(cyclingPowerServiceUuid)) {
       return MachineType.indoorBike;
+    }
+
+    if (serviceUuids.contains(cyclingCadenceServiceUuid)) {
+      final prefService = Get.find<BasePrefService>();
+      final kayakingWithCyclingSensors =
+          prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
+
+      if (kayakingWithCyclingSensors) {
+        return MachineType.rower;
+      } else {
+        return MachineType.indoorBike;
+      }
     }
 
     if (serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
@@ -141,10 +154,14 @@ extension ScanResultEx on ScanResult {
   }
 
   IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes) {
-    for (var dev in deviceMap.values.where((d) => !d.isMultiSport)) {
-      for (var prefix in dev.namePrefixes) {
+    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
+      if (multiSportFourCCs.contains(mapEntry.key)) {
+        continue;
+      }
+
+      for (var prefix in mapEntry.value) {
         if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
-          return getSportIcon(dev.defaultSport);
+          return getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport);
         }
       }
     }

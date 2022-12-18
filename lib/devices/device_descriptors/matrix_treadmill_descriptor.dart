@@ -8,7 +8,6 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
           fourCC: matrixTreadmillFourCC,
           vendorName: "Matrix",
           modelName: "Matrix Treadmill",
-          namePrefixes: ["CTM", "Johnson", "Matrix"],
           manufacturerNamePart: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Treadmill",
