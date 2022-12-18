@@ -1,3 +1,8 @@
+## 1.1.133
+* Adding a donation screen (PayPal, Buy Me A Coffee, Ko-fi me, Venmo, CashApp, Zelle)
+* Upgrading Flutter version
+* Upgrading numerous Flutter plugins
+
 ## 1.1.132
 * Hotfix for Garmin CSC speed sensor identification (setting it apart from cadence sensor)
 
