@@ -2,11 +2,11 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.132+132
+version: 1.1.133+133
 
 environment:
-  sdk: ">=2.18.4 <3.0.0"
-  flutter: ">=3.3.8"
+  sdk: ">=2.18.6 <3.0.0"
+  flutter: ">=3.3.10"
 
 dependencies:
   assorted_layout_widgets: ^7.0.0
@@ -39,11 +39,12 @@ dependencies:
   path_provider: ^2.0.10
   pref: ^2.6.0
   progress_indicators: ^1.0.0
+  qr_flutter: ^4.0.0
   rxdart: ^0.27.7
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
-  sqflite: ^2.2.0+3
-  syncfusion_flutter_charts: ^20.3.58
+  sqflite: ^2.2.2
+  syncfusion_flutter_charts: ^20.3.61
   tuple: ^2.0.1
   uni_links: ^0.5.1
   url_launcher: ^6.1.7
@@ -54,7 +55,7 @@ dependencies:
 
 dev_dependencies:
   analyzer: ^4.7.0
-  build_runner: ^2.3.2
+  build_runner: ^2.3.3
   floor_generator: ^1.3.0
   flutter_driver:
     sdk: flutter
