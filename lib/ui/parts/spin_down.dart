@@ -89,7 +89,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   int getWeightFromBytes(int weightLsb, int weightMsb) {
-    return (weightLsb + weightMsb * maxUint8) / (_si ? 1.0 : lbToKg) ~/ 200;
+    return (weightLsb + weightMsb * maxUint8) * (_si ? 1.0 : kgToLb) ~/ 200;
   }
 
   @override
