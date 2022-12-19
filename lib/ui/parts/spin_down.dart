@@ -83,13 +83,13 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   bool get _canSubmitWeight =>
       _spinDownPossible && _calibrationState == CalibrationState.readyToWeighIn;
 
-  Tuple2<int, int> getWeightBytes(int weight) {
-    final weightTransport = (weight * (_si ? 1.0 : lbToKg) * 200).round();
+  static Tuple2<int, int> getWeightBytes(int weight, bool si) {
+    final weightTransport = (weight * (si ? 1.0 : lbToKg) * 200).round();
     return Tuple2<int, int>(weightTransport % maxUint8, weightTransport ~/ maxUint8);
   }
 
-  int getWeightFromBytes(int weightLsb, int weightMsb) {
-    return (weightLsb + weightMsb * maxUint8) * (_si ? 1.0 : kgToLb) ~/ 200;
+  static int getWeightFromBytes(int weightLsb, int weightMsb, bool si) {
+    return (weightLsb + weightMsb * maxUint8) * (si ? 1.0 : kgToLb) ~/ 200;
   }
 
   @override
@@ -101,7 +101,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         prefService.get<bool>(rememberAthleteBodyWeightTag) ?? rememberAthleteBodyWeightDefault;
     _preferencesWeight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     _weight = (_preferencesWeight * (_si ? 1.0 : kgToLb)).round();
-    final weightBytes = getWeightBytes(_weight);
+    final weightBytes = getWeightBytes(_weight, _si);
     _oldWeightLsb = weightBytes.item1;
     _oldWeightMsb = weightBytes.item2;
     _newWeightLsb = weightBytes.item1;
@@ -184,7 +184,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
             _calibrationState = CalibrationState.weighInProblem;
             _oldWeightLsb = response[0];
             _oldWeightMsb = response[1];
-            _weight = getWeightFromBytes(_oldWeightLsb, _oldWeightMsb);
+            _weight = getWeightFromBytes(_oldWeightLsb, _oldWeightMsb, _si);
           });
         } else {
           if (response[0] == _newWeightLsb && response[1] == _newWeightMsb) {
@@ -319,7 +319,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     setState(() {
       _calibrationState = CalibrationState.weightSubmitting;
     });
-    final newWeightBytes = getWeightBytes(_weight);
+    final newWeightBytes = getWeightBytes(_weight, _si);
     _newWeightLsb = newWeightBytes.item1;
     _newWeightMsb = newWeightBytes.item2;
     try {
