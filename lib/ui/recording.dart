@@ -113,6 +113,26 @@ class RecordingState extends State<RecordingScreen> {
   static const double _markerStyleSizeAdjust = 1.4;
   static const double _markerStyleSmallSizeAdjust = 0.9;
   static const int _unlockChoices = 6;
+  // Measurement display indexes
+  static const int _calories0Index = 0;
+  static const int _power0Index = _calories0Index + 1;
+  static const int _speed0Index = _power0Index + 1;
+  static const int _cadence0Index = _speed0Index + 1;
+  static const int _hr0Index = _cadence0Index + 1;
+  static const int _distance0Index = _hr0Index + 1;
+  static const int _time1Index = 0;
+  static const int _calories1Index = _calories0Index + 1;
+  static const int _power1Index = _power0Index + 1;
+  static const int _speed1Index = _speed0Index + 1;
+  static const int _cadence1Index = _cadence0Index + 1;
+  static const int _hr1Index = _hr0Index + 1;
+  static const int _distance1Index = _distance0Index + 1;
+  // static const int _caloriesNIndex = _calories0Index - 1;
+  static const int _powerNIndex = _power0Index - 1;
+  static const int _speedNIndex = _speed0Index - 1;
+  static const int _cadenceNIndex = _cadence0Index - 1;
+  static const int _hrNIndex = _hr0Index - 1;
+  static const int _distanceNIndex = _distance0Index - 1;
 
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
@@ -130,7 +150,10 @@ class RecordingState extends State<RecordingScreen> {
   double _sizeAdjust = 1.0;
   bool _landscape = false;
   TextStyle _measurementStyle = const TextStyle();
+  TextStyle _fullMeasurementStyle = const TextStyle();
+  TextStyle _timeStyle = const TextStyle();
   TextStyle _unitStyle = const TextStyle();
+  TextStyle _fullUnitStyle = const TextStyle();
   Color _chartTextColor = Colors.black;
   TextStyle _chartLabelStyle = const TextStyle(
     fontFamily: fontFamily,
@@ -169,6 +192,7 @@ class RecordingState extends State<RecordingScreen> {
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig = [];
   List<String> _values = [];
+  List<String> _averages = [];
   List<int?> _zoneIndexes = [];
   double _distance = 0.0;
   int _elapsed = 0;
@@ -423,6 +447,26 @@ class RecordingState extends State<RecordingScreen> {
 
           _accu?.processRecord(record);
 
+          _accu?.processRecord(record);
+          _averages = _accu != null
+              ? [
+                  emptyMeasurement,
+                  _accu!.avgPower.toInt().toString(),
+                  speedOrPaceString(_accu!.avgSpeed, _si, widget.descriptor.sport,
+                      limitSlowSpeed: true),
+                  _accu!.avgCadence.toInt().toString(),
+                  _accu!.avgHeartRate.toInt().toString(),
+                  emptyMeasurement,
+                ]
+              : [
+                  emptyMeasurement,
+                  emptyMeasurement,
+                  emptyMeasurement,
+                  emptyMeasurement,
+                  emptyMeasurement,
+                  emptyMeasurement,
+                ];
+
           _values = [
             record.calories?.toString() ?? emptyMeasurement,
             record.power?.toString() ?? emptyMeasurement,
@@ -431,9 +475,10 @@ class RecordingState extends State<RecordingScreen> {
             record.heartRate?.toString() ?? emptyMeasurement,
             record.distanceStringByUnit(_si, _highRes),
           ];
-          amendZoneToValue(0, record.power ?? 0);
-          amendZoneToValue(2, record.cadence ?? 0);
-          amendZoneToValue(3, record.heartRate ?? 0);
+
+          amendZoneToValue(_powerNIndex, record.power ?? 0);
+          amendZoneToValue(_cadenceNIndex, record.cadence ?? 0);
+          amendZoneToValue(_hrNIndex, record.heartRate ?? 0);
         });
       }
     });
@@ -447,23 +492,23 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   void _onTogglePower() {
-    _onToggleDetails(0);
+    _onToggleDetails(_powerNIndex);
   }
 
   void _onToggleSpeed() {
-    _onToggleDetails(1);
+    _onToggleDetails(_speedNIndex);
   }
 
   void _onToggleRpm() {
-    _onToggleDetails(2);
+    _onToggleDetails(_cadenceNIndex);
   }
 
   void _onToggleHr() {
-    _onToggleDetails(3);
+    _onToggleDetails(_hrNIndex);
   }
 
   void _onToggleDistance() {
-    _onToggleDetails(4);
+    _onToggleDetails(_distanceNIndex);
   }
 
   void _rotateChartHeight(int index) {
@@ -516,8 +561,8 @@ class RecordingState extends State<RecordingScreen> {
                 (record.heartRate != null && record.heartRate! > 0)) {
               _heartRate = record.heartRate;
             }
-            _values[4] = record.heartRate?.toString() ?? emptyMeasurement;
-            amendZoneToValue(3, record.heartRate ?? 0);
+            _values[_hr0Index] = record.heartRate?.toString() ?? emptyMeasurement;
+            amendZoneToValue(_hrNIndex, record.heartRate ?? 0);
           });
         });
       });
@@ -540,6 +585,10 @@ class RecordingState extends State<RecordingScreen> {
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
     _unitStyle = TextStyle(
+      fontFamily: fontFamily,
+      color: _themeManager.getBlueColor(),
+    );
+    _fullUnitStyle = TextStyle(
       fontFamily: fontFamily,
       color: _themeManager.getBlueColor(),
     );
@@ -669,27 +718,27 @@ class RecordingState extends State<RecordingScreen> {
         expandable: false,
       ),
       RowConfiguration(
-        title: _preferencesSpecs[0].title,
-        icon: _preferencesSpecs[0].icon,
-        unit: _preferencesSpecs[0].unit,
+        title: _preferencesSpecs[_powerNIndex].title,
+        icon: _preferencesSpecs[_powerNIndex].icon,
+        unit: _preferencesSpecs[_powerNIndex].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
-        title: _preferencesSpecs[1].title,
-        icon: _preferencesSpecs[1].icon,
-        unit: _preferencesSpecs[1].unit,
+        title: _preferencesSpecs[_speedNIndex].title,
+        icon: _preferencesSpecs[_speedNIndex].icon,
+        unit: _preferencesSpecs[_speedNIndex].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
-        title: _preferencesSpecs[2].title,
-        icon: _preferencesSpecs[2].icon,
-        unit: _preferencesSpecs[2].unit,
+        title: _preferencesSpecs[_cadenceNIndex].title,
+        icon: _preferencesSpecs[_cadenceNIndex].icon,
+        unit: _preferencesSpecs[_cadenceNIndex].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
-        title: _preferencesSpecs[3].title,
-        icon: _preferencesSpecs[3].icon,
-        unit: _preferencesSpecs[3].unit,
+        title: _preferencesSpecs[_hrNIndex].title,
+        icon: _preferencesSpecs[_hrNIndex].icon,
+        unit: _preferencesSpecs[_hrNIndex].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
@@ -708,19 +757,19 @@ class RecordingState extends State<RecordingScreen> {
       ExpandableController rowController = ExpandableController(initialExpanded: expanded);
       _rowControllers.add(rowController);
       switch (index) {
-        case 0:
+        case _powerNIndex:
           rowController.addListener(_onTogglePower);
           break;
-        case 1:
+        case _speedNIndex:
           rowController.addListener(_onToggleSpeed);
           break;
-        case 2:
+        case _cadenceNIndex:
           rowController.addListener(_onToggleRpm);
           break;
-        case 3:
+        case _hrNIndex:
           rowController.addListener(_onToggleHr);
           break;
-        case 4:
+        case _distanceNIndex:
         default:
           rowController.addListener(_onToggleDistance);
           break;
@@ -734,6 +783,14 @@ class RecordingState extends State<RecordingScreen> {
     _uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
     _fitnessEquipment?.measuring = false;
     _values = [
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+    ];
+    _averages = [
       emptyMeasurement,
       emptyMeasurement,
       emptyMeasurement,
@@ -1180,7 +1237,7 @@ class RecordingState extends State<RecordingScreen> {
 
   TextStyle _getTargetHrTextStyle(TargetHrState hrState) {
     if (hrState == TargetHrState.off) {
-      if (_zoneIndexes[3] == null) {
+      if (_zoneIndexes[_hrNIndex] == null) {
         return _measurementStyle;
       } else {
         return _measurementStyle.apply(color: _getZoneColor(metricIndex: 3, background: false));
@@ -1551,9 +1608,18 @@ class RecordingState extends State<RecordingScreen> {
       _sizeDefault = mediaSizeMin / 8 * _sizeAdjust;
       _measurementStyle = TextStyle(
         fontFamily: fontFamily,
+        fontSize: _sizeDefault * 0.75,
+      );
+      _fullMeasurementStyle = TextStyle(
+        fontFamily: fontFamily,
         fontSize: _sizeDefault,
       );
-      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
+      _timeStyle = TextStyle(
+        fontFamily: fontFamily,
+        fontSize: _sizeDefault / 1.8,
+      );
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 6);
+      _fullUnitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
     if (_measuring &&
@@ -1578,12 +1644,10 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final timeDisplay = Duration(
-            seconds: _timeDisplayMode == timeDisplayModeMoving ? _movingTime ~/ 1000 : _elapsed)
-        .toDisplay();
-
+    final movingTimeDisplay = Duration(seconds: _movingTime ~/ 1000).toDisplay();
+    final elapsedTimeDisplay = Duration(seconds: _elapsed).toDisplay();
     final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
-    var timeStyle = _measurementStyle;
+    var timeStyle = _timeStyle;
     if (_timeDisplayMode == timeDisplayModeHIITMoving &&
         workoutState != WorkoutState.waitingForFirstMove) {
       final timeColorIndex =
@@ -1597,13 +1661,33 @@ class RecordingState extends State<RecordingScreen> {
         : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
 
     List<Widget> rows = [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          timeIcon,
-          Text(timeDisplay, style: timeStyle),
-          SizedBox(width: _sizeDefault / 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Spacer(),
+              Text("moving", style: _fullUnitStyle),
+              const Spacer(),
+              Text("elapsed", style: _fullUnitStyle),
+              const Spacer(),
+            ],
+          ),
+          const Divider(height: separatorHeight),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Spacer(),
+              Text(movingTimeDisplay, style: timeStyle),
+              timeIcon,
+              const Spacer(),
+              Text(elapsedTimeDisplay, style: timeStyle),
+            ],
+          ),
         ],
       ),
     ];
@@ -1614,38 +1698,90 @@ class RecordingState extends State<RecordingScreen> {
     for (var entry in _rowConfig.asMap().entries) {
       var measurementStyle = _measurementStyle;
 
-      if (entry.key == 2 && _leaderboardFeature) {
+      if (entry.key == _speed0Index && _leaderboardFeature) {
         measurementStyle = _getPaceLightTextStyle(_selfRank);
       }
 
-      if (entry.key == 4 && _targetHrMode != targetHeartRateModeNone || _zoneIndexes[3] != null) {
+      if (entry.key == _hr0Index && _targetHrMode != targetHeartRateModeNone ||
+          _zoneIndexes[3] != null) {
         measurementStyle = targetHrTextStyle;
       }
 
-      if ((entry.key == 1 || entry.key == 3) && _zoneIndexes[entry.key - 1] != null) {
+      if ((entry.key == _power0Index || entry.key == _cadence0Index) &&
+          _zoneIndexes[entry.key - 1] != null) {
         measurementStyle = _measurementStyle.apply(
             color: _getZoneColor(metricIndex: entry.key - 1, background: false));
       }
 
-      rows.add(Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
-          const Spacer(),
-          Text(_values[entry.key], style: measurementStyle),
-          SizedBox(
-            width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
-            child: Center(
-              child: Text(
-                entry.value.unit,
-                maxLines: 2,
-                style: _unitStyle,
+      final rowChildren = (entry.key == _calories0Index || entry.key == _distance0Index)
+          ? [
+              _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
+              const Spacer(),
+              Text(_values[entry.key], style: _fullMeasurementStyle),
+              SizedBox(
+                width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
+                child: Center(
+                  child: Text(
+                    entry.value.unit,
+                    maxLines: 2,
+                    style: _fullUnitStyle,
+                  ),
+                ),
               ),
+            ]
+          : [
+              const Spacer(),
+              Text(_values[entry.key], style: measurementStyle),
+              Column(
+                children: [
+                  _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
+                  SizedBox(
+                    width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
+                    child: Center(
+                      child: Text(
+                        entry.value.unit,
+                        maxLines: 2,
+                        style: _unitStyle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Text(_averages[entry.key], style: measurementStyle),
+            ];
+
+      if (entry.key == _power0Index) {
+        rows.add(Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Spacer(),
+                Text("current", style: _fullUnitStyle),
+                const Spacer(),
+                Text("average", style: _fullUnitStyle),
+                const Spacer(),
+              ],
             ),
-          ),
-        ],
-      ));
+            const Divider(height: separatorHeight),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: rowChildren,
+            ),
+          ],
+        ));
+      } else {
+        rows.add(Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: rowChildren,
+        ));
+      }
     }
 
     var extras = [];
@@ -1782,15 +1918,15 @@ class RecordingState extends State<RecordingScreen> {
             children: [
               ListView(
                 children: [
-                  rows[0],
+                  rows[_time1Index],
                   const Divider(height: separatorHeight),
-                  rows[1],
+                  rows[_calories1Index],
                   const Divider(height: separatorHeight),
                   ColoredBox(
                     color: _getZoneColor(metricIndex: 0, background: true),
                     child: ExpandablePanel(
                       theme: _expandableThemeData,
-                      header: rows[2],
+                      header: rows[_power1Index],
                       collapsed: Container(),
                       expanded: _simplerUi ? Container() : extras[0],
                       controller: _rowControllers[0],
@@ -1801,7 +1937,7 @@ class RecordingState extends State<RecordingScreen> {
                     color: _getPaceLightColor(_selfRank, background: true),
                     child: ExpandablePanel(
                       theme: _expandableThemeData,
-                      header: rows[3],
+                      header: rows[_speed1Index],
                       collapsed: Container(),
                       expanded: _simplerUi ? Container() : extras[1],
                       controller: _rowControllers[1],
@@ -1815,7 +1951,7 @@ class RecordingState extends State<RecordingScreen> {
                     color: _getZoneColor(metricIndex: 2, background: true),
                     child: ExpandablePanel(
                       theme: _expandableThemeData,
-                      header: rows[4],
+                      header: rows[_cadence1Index],
                       collapsed: Container(),
                       expanded: _simplerUi ? Container() : extras[2],
                       controller: _rowControllers[2],
@@ -1826,7 +1962,7 @@ class RecordingState extends State<RecordingScreen> {
                     color: _getTargetHrColor(targetHrState, true),
                     child: ExpandablePanel(
                       theme: _expandableThemeData,
-                      header: rows[5],
+                      header: rows[_hr1Index],
                       collapsed: Container(),
                       expanded: _simplerUi ? Container() : extras[3],
                       controller: _rowControllers[3],
@@ -1835,7 +1971,7 @@ class RecordingState extends State<RecordingScreen> {
                   const Divider(height: separatorHeight),
                   ExpandablePanel(
                     theme: _expandableThemeData,
-                    header: rows[6],
+                    header: rows[_distance1Index],
                     collapsed: Container(),
                     expanded: _simplerUi ? Container() : extras[4],
                     controller: _rowControllers[4],
@@ -1846,15 +1982,15 @@ class RecordingState extends State<RecordingScreen> {
           )
         : ListView(
             children: [
-              rows[0],
+              rows[_time1Index],
               const Divider(height: separatorHeight),
-              rows[1],
+              rows[_calories1Index],
               const Divider(height: separatorHeight),
               ColoredBox(
                 color: _getZoneColor(metricIndex: 0, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
-                  header: rows[2],
+                  header: rows[_power1Index],
                   collapsed: Container(),
                   expanded: _simplerUi ? Container() : extras[0],
                   controller: _rowControllers[0],
@@ -1865,7 +2001,7 @@ class RecordingState extends State<RecordingScreen> {
                 color: _getPaceLightColor(_selfRank, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
-                  header: rows[3],
+                  header: rows[_speed1Index],
                   collapsed: Container(),
                   expanded: _simplerUi ? Container() : extras[1],
                   controller: _rowControllers[1],
@@ -1876,7 +2012,7 @@ class RecordingState extends State<RecordingScreen> {
                 color: _getZoneColor(metricIndex: 2, background: true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
-                  header: rows[4],
+                  header: rows[_cadence1Index],
                   collapsed: Container(),
                   expanded: _simplerUi ? Container() : extras[2],
                   controller: _rowControllers[2],
@@ -1887,7 +2023,7 @@ class RecordingState extends State<RecordingScreen> {
                 color: _getTargetHrColor(targetHrState, true),
                 child: ExpandablePanel(
                   theme: _expandableThemeData,
-                  header: rows[5],
+                  header: rows[_hr1Index],
                   collapsed: Container(),
                   expanded: _simplerUi ? Container() : extras[3],
                   controller: _rowControllers[3],
@@ -1896,7 +2032,7 @@ class RecordingState extends State<RecordingScreen> {
               const Divider(height: separatorHeight),
               ExpandablePanel(
                 theme: _expandableThemeData,
-                header: rows[6],
+                header: rows[_distance1Index],
                 collapsed: Container(),
                 expanded: _simplerUi ? Container() : extras[4],
                 controller: _rowControllers[4],
