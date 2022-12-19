@@ -63,6 +63,7 @@ import '../utils/display.dart';
 import '../utils/logging.dart';
 import '../utils/preferences.dart';
 import '../utils/sound.dart';
+import '../utils/statistics_accumulator.dart';
 import '../utils/target_heart_rate.dart';
 import '../utils/theme_manager.dart';
 import '../utils/time_zone.dart';
@@ -218,6 +219,7 @@ class RecordingState extends State<RecordingScreen> {
   final GlobalKey<CircularFabMenuState> _fabKey = GlobalKey();
   int _unlockKey = -2;
   int _logLevel = logLevelDefault;
+  StatisticsAccumulator? _accu;
 
   Future<void> _connectOnDemand() async {
     if (!await bluetoothCheck(true, _logLevel)) {
@@ -276,6 +278,19 @@ class RecordingState extends State<RecordingScreen> {
         }
       }
     }
+
+    _accu = StatisticsAccumulator(
+      si: _si,
+      sport: widget.sport,
+      calculateAvgPower: true,
+      calculateMaxPower: false,
+      calculateAvgSpeed: true,
+      calculateMaxSpeed: false,
+      calculateAvgCadence: true,
+      calculateMaxCadence: false,
+      calculateAvgHeartRate: true,
+      calculateMaxHeartRate: false,
+    );
 
     if (!continued) {
       _activity = Activity(
@@ -405,6 +420,8 @@ class RecordingState extends State<RecordingScreen> {
             _selfAvgSpeed = selfRankTuple.item2;
             _selfRankString = _getSelfRankString();
           }
+
+          _accu?.processRecord(record);
 
           _values = [
             record.calories?.toString() ?? emptyMeasurement,
