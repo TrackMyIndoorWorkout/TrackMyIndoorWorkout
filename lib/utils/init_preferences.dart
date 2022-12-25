@@ -46,6 +46,7 @@ import '../preferences/simpler_ui.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/stage_mode.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
@@ -143,6 +144,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     heartRateMonitorPriorityTag: heartRateMonitorPriorityDefault,
     wheelCircumferenceTag: wheelCircumferenceDefault,
     paddlingWithCyclingSensorsTag: paddlingWithCyclingSensorsDefault,
+    instantOnStageTag: instantOnStageDefault,
+    onStageStatisticsTypeTag: onStageStatisticsTypeDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

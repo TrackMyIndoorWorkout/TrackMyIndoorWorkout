@@ -59,6 +59,10 @@ class StatisticsAccumulator {
     this.calculateMaxHeartRate = false,
     this.calculateMinHeartRate = false,
   }) {
+    reset();
+  }
+
+  void reset() {
     powerSum = 0;
     powerCount = 0;
     maxPower = maxInit;
@@ -77,7 +81,7 @@ class StatisticsAccumulator {
     minCadence = minInit;
   }
 
-  processExportRecord(ExportRecord exportRecord) {
+  void processExportRecord(ExportRecord exportRecord) {
     if ((exportRecord.record.power ?? 0) > 0) {
       if (calculateAvgPower) {
         powerSum += exportRecord.record.power!;
@@ -139,7 +143,7 @@ class StatisticsAccumulator {
     }
   }
 
-  processRecord(Record record) {
+  void processRecord(Record record) {
     if (record.power != null) {
       if (calculateAvgPower && record.power! > 0) {
         powerSum += record.power!;
