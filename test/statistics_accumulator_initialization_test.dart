@@ -479,6 +479,48 @@ void main() {
     expect(accu.minCadence, minInit);
   });
 
+  test('StatisticsAccumulator reset resets all values', () async {
+    final accu = StatisticsAccumulator(
+      si: Random().nextBool(),
+      sport: ActivityType.ride,
+    )
+      ..powerSum = 42
+      ..powerCount = 42
+      ..maxPower = 42
+      ..minPower = 42
+      ..speedSum = 42.0
+      ..speedCount = 42
+      ..maxSpeed = 42.0
+      ..minSpeed = 42.0
+      ..heartRateSum = 42
+      ..heartRateCount = 42
+      ..maxHeartRate = 42
+      ..minHeartRate = 42
+      ..cadenceSum = 42
+      ..cadenceCount = 42
+      ..maxCadence = 42
+      ..minCadence = 42;
+
+    accu.reset();
+
+    expect(accu.powerSum, 0);
+    expect(accu.powerCount, 0);
+    expect(accu.maxPower, maxInit);
+    expect(accu.minPower, minInit);
+    expect(accu.speedSum, 0);
+    expect(accu.speedCount, 0);
+    expect(accu.maxSpeed, maxInit.toDouble());
+    expect(accu.minSpeed, minInit.toDouble());
+    expect(accu.heartRateSum, 0);
+    expect(accu.heartRateCount, 0);
+    expect(accu.maxHeartRate, maxInit);
+    expect(accu.minHeartRate, minInit);
+    expect(accu.cadenceSum, 0);
+    expect(accu.cadenceCount, 0);
+    expect(accu.maxCadence, maxInit);
+    expect(accu.minCadence, minInit);
+  });
+
   group('StatisticsAccumulator initializes everything when all requested', () {
     for (final sport in allSports) {
       final accu = StatisticsAccumulator(
