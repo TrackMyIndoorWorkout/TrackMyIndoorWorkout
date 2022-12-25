@@ -1774,42 +1774,28 @@ class RecordingState extends State<RecordingScreen> {
               Text(_statistics[entry.key], style: measurementStyle),
             ];
 
-      if (entry.key == _power0Index) {
-        final statString = (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating && _elapsed % 2 == 0)
-            ? "average"
-            : "maximum";
-        rows.add(Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Spacer(),
-                Text("current", style: _fullUnitStyle),
-                const Spacer(),
-                Text(statString, style: _fullUnitStyle),
-                const Spacer(),
-              ],
-            ),
-            const Divider(height: separatorHeight),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: rowChildren,
-            ),
-          ],
-        ));
-      } else {
-        rows.add(Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: rowChildren,
-        ));
-      }
+      rows.add(Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: rowChildren,
+      ));
     }
+
+    final statString = (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating && _elapsed % 2 == 0)
+        ? "average"
+        : "maximum";
+    final statHeaderRow = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Spacer(),
+        Text("current", style: _fullUnitStyle),
+        const Spacer(),
+        Text(statString, style: _fullUnitStyle),
+        const Spacer(),
+      ],
+    );
 
     var extras = [];
     if (!_simplerUi) {
@@ -1949,6 +1935,8 @@ class RecordingState extends State<RecordingScreen> {
                   const Divider(height: separatorHeight),
                   rows[_calories1Index],
                   const Divider(height: separatorHeight),
+                  statHeaderRow,
+                  const Divider(height: separatorHeight),
                   ColoredBox(
                     color: _getZoneColor(metricIndex: 0, background: true),
                     child: ExpandablePanel(
@@ -1974,6 +1962,8 @@ class RecordingState extends State<RecordingScreen> {
               ),
               ListView(
                 children: [
+                  statHeaderRow,
+                  const Divider(height: separatorHeight),
                   ColoredBox(
                     color: _getZoneColor(metricIndex: 2, background: true),
                     child: ExpandablePanel(
@@ -2012,6 +2002,8 @@ class RecordingState extends State<RecordingScreen> {
               rows[_time1Index],
               const Divider(height: separatorHeight),
               rows[_calories1Index],
+              const Divider(height: separatorHeight),
+              statHeaderRow,
               const Divider(height: separatorHeight),
               ColoredBox(
                 color: _getZoneColor(metricIndex: 0, background: true),
