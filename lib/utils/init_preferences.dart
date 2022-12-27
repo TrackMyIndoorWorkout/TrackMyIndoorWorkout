@@ -146,6 +146,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     paddlingWithCyclingSensorsTag: paddlingWithCyclingSensorsDefault,
     instantOnStageTag: instantOnStageDefault,
     onStageStatisticsTypeTag: onStageStatisticsTypeDefault,
+    onStageStatisticsAlternationDurationTag: onStageStatisticsAlternationDurationDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

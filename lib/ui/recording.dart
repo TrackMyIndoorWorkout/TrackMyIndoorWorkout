@@ -203,6 +203,7 @@ class RecordingState extends State<RecordingScreen> {
 
   bool _instantOnStage = instantOnStageDefault;
   String _onStageStatisticsType = onStageStatisticsTypeDefault;
+  int _onStageStatisticsAlternationDuration = onStageStatisticsAlternationDurationDefault;
 
   String _targetHrMode = targetHeartRateModeDefault;
   Tuple2<double, double> _targetHrBounds = const Tuple2(0, 0);
@@ -451,7 +452,9 @@ class RecordingState extends State<RecordingScreen> {
             _accu.processRecord(record);
 
             if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating && _elapsed % 2 == 0) {
+                _onStageStatisticsType == onStageStatisticsTypeAlternating &&
+                    _elapsed % (_onStageStatisticsAlternationDuration * 2) <
+                        _onStageStatisticsAlternationDuration) {
               _statistics[_power0Index] = _accu.avgPower.toInt().toString();
               _statistics[_speed0Index] = speedOrPaceString(
                 _accu.avgSpeed,
@@ -703,6 +706,9 @@ class RecordingState extends State<RecordingScreen> {
     _instantOnStage = prefService.get<bool>(instantOnStageTag) ?? instantOnStageDefault;
     _onStageStatisticsType =
         prefService.get<String>(onStageStatisticsTypeTag) ?? onStageStatisticsTypeDefault;
+    _onStageStatisticsAlternationDuration =
+        prefService.get<int>(onStageStatisticsAlternationDurationTag) ??
+            onStageStatisticsAlternationDurationDefault;
 
     _metricToDataFn = {
       "power": _powerChartData,
@@ -1775,7 +1781,9 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     final statString = (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-            _onStageStatisticsType == onStageStatisticsTypeAlternating && _elapsed % 2 == 0)
+            _onStageStatisticsType == onStageStatisticsTypeAlternating &&
+                _elapsed % (_onStageStatisticsAlternationDuration * 2) <
+                    _onStageStatisticsAlternationDuration)
         ? "average"
         : "maximum";
     final statHeaderRow = Row(

@@ -22,3 +22,13 @@ const onStageStatisticsTypeAlternating = "alternating";
 const onStageStatisticsTypeAlternatingTitle = "Alternating";
 const onStageStatisticsTypeAlternatingDescription =
     "Alternating between average and maximum once per second.";
+
+const onStageStatisticsAlternationDuration = "Scan Duration (s)";
+const onStageStatisticsAlternationDurationTag = "On-stage statistics alternation period duration";
+const onStageStatisticsAlternationDurationMin = 1;
+const onStageStatisticsAlternationDurationDefault = 3;
+const onStageStatisticsAlternationDurationMax = 10;
+const onStageStatisticsAlternationDurationDivisions =
+    onStageStatisticsAlternationDurationMax - onStageStatisticsAlternationDurationMin;
+const onStageStatisticsAlternationDurationDescription =
+    "Duration in seconds statistics type will stay before alternating.";
