@@ -462,15 +462,15 @@ class RecordingState extends State<RecordingScreen> {
               _statistics[_cadence0Index] = _accu.avgCadence.toInt().toString();
               _statistics[_hr0Index] = _accu.avgHeartRate.toInt().toString();
             } else {
-              _statistics[_power0Index] = _accu.maxPower.toInt().toString();
+              _statistics[_power0Index] = _accu.maxPowerDisplay.toString();
               _statistics[_speed0Index] = speedOrPaceString(
-                _accu.maxSpeed,
+                _accu.maxSpeedDisplay,
                 _si,
                 widget.descriptor.sport,
                 limitSlowSpeed: true,
               );
-              _statistics[_cadence0Index] = _accu.maxCadence.toInt().toString();
-              _statistics[_hr0Index] = _accu.maxHeartRate.toInt().toString();
+              _statistics[_cadence0Index] = _accu.maxCadenceDisplay.toString();
+              _statistics[_hr0Index] = _accu.maxHeartRateDisplay.toString();
             }
           }
 

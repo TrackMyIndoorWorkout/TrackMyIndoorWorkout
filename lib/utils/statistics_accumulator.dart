@@ -39,9 +39,17 @@ class StatisticsAccumulator {
   late int minCadence;
 
   double get avgPower => powerCount > 0 ? powerSum / powerCount : 0.0;
+  int get maxPowerDisplay => max(maxPower, 0);
+  int get minPowerDisplay => min(minPower, 0);
   double get avgSpeed => speedCount > 0 ? speedSum / speedCount : 0.0;
+  double get maxSpeedDisplay => max(maxSpeed, 0.0);
+  double get minSpeedDisplay => min(minSpeed, 0.0);
   int get avgCadence => cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0;
+  int get maxCadenceDisplay => max(maxCadence, 0);
+  int get minCadenceDisplay => min(minCadence, 0);
   int get avgHeartRate => heartRateCount > 0 ? heartRateSum ~/ heartRateCount : 0;
+  int get maxHeartRateDisplay => max(maxHeartRate, 0);
+  int get minHeartRateDisplay => min(minHeartRate, 0);
 
   StatisticsAccumulator({
     required this.si,
