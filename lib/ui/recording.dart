@@ -1683,34 +1683,27 @@ class RecordingState extends State<RecordingScreen> {
         ? _themeManager.getRedIcon(Icons.timer, _sizeDefault)
         : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
 
+    final timeHeaderRow = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Spacer(),
+        Text("moving", style: _fullUnitStyle),
+        const Spacer(),
+        Text("elapsed", style: _fullUnitStyle),
+        const Spacer(),
+      ],
+    );
     List<Widget> rows = [
-      Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Spacer(),
-              Text("moving", style: _fullUnitStyle),
-              const Spacer(),
-              Text("elapsed", style: _fullUnitStyle),
-              const Spacer(),
-            ],
-          ),
-          const Divider(height: separatorHeight),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Spacer(),
-              Text(movingTimeDisplay, style: timeStyle),
-              timeIcon,
-              const Spacer(),
-              Text(elapsedTimeDisplay, style: timeStyle),
-            ],
-          ),
+          const Spacer(),
+          Text(movingTimeDisplay, style: timeStyle),
+          timeIcon,
+          const Spacer(),
+          Text(elapsedTimeDisplay, style: timeStyle),
         ],
       ),
     ];
@@ -1931,12 +1924,12 @@ class RecordingState extends State<RecordingScreen> {
             children: [
               ListView(
                 children: [
+                  timeHeaderRow,
                   rows[_time1Index],
                   const Divider(height: separatorHeight),
                   rows[_calories1Index],
                   const Divider(height: separatorHeight),
                   statHeaderRow,
-                  const Divider(height: separatorHeight),
                   ColoredBox(
                     color: _getZoneColor(metricIndex: 0, background: true),
                     child: ExpandablePanel(
@@ -1963,7 +1956,6 @@ class RecordingState extends State<RecordingScreen> {
               ListView(
                 children: [
                   statHeaderRow,
-                  const Divider(height: separatorHeight),
                   ColoredBox(
                     color: _getZoneColor(metricIndex: 2, background: true),
                     child: ExpandablePanel(
@@ -1999,12 +1991,12 @@ class RecordingState extends State<RecordingScreen> {
           )
         : ListView(
             children: [
+              timeHeaderRow,
               rows[_time1Index],
               const Divider(height: separatorHeight),
               rows[_calories1Index],
               const Divider(height: separatorHeight),
               statHeaderRow,
-              const Divider(height: separatorHeight),
               ColoredBox(
                 color: _getZoneColor(metricIndex: 0, background: true),
                 child: ExpandablePanel(
