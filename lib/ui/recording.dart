@@ -1694,9 +1694,9 @@ class RecordingState extends State<RecordingScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const Spacer(),
-        Text("moving", style: _fullUnitStyle),
+        Text("moving", style: _unitStyle),
         const Spacer(),
-        Text("elapsed", style: _fullUnitStyle),
+        Text("elapsed", style: _unitStyle),
         const Spacer(),
       ],
     );
@@ -1791,9 +1791,9 @@ class RecordingState extends State<RecordingScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const Spacer(),
-        Text("current", style: _fullUnitStyle),
+        Text("current", style: _unitStyle),
         const Spacer(),
-        Text(statString, style: _fullUnitStyle),
+        Text(statString, style: _unitStyle),
         const Spacer(),
       ],
     );
