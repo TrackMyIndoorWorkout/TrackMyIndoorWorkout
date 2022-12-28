@@ -150,6 +150,8 @@ class RecordingState extends State<RecordingScreen> {
   double _mediaWidth = 0;
   double _sizeDefault = 10.0;
   double _sizeAdjust = 1.0;
+  double _halfWidthNonExpandable = 48.0;
+  double _halfWidthExpandable = 48.0;
   bool _landscape = false;
   TextStyle _measurementStyle = const TextStyle();
   TextStyle _fullMeasurementStyle = const TextStyle();
@@ -1639,6 +1641,9 @@ class RecordingState extends State<RecordingScreen> {
         fontFamily: fontFamily,
         fontSize: _sizeDefault * 0.75,
       );
+      _halfWidthNonExpandable = (_mediaSizeMin - max(_sizeDefault / 2, _sizeDefault)) / 2;
+      _halfWidthExpandable =
+          (_mediaSizeMin - max(_sizeDefault / 2, _sizeDefault * 0.65) - 48.0) / 2;
       _fullMeasurementStyle = TextStyle(
         fontFamily: fontFamily,
         fontSize: _sizeDefault,
@@ -1752,8 +1757,16 @@ class RecordingState extends State<RecordingScreen> {
               ),
             ]
           : [
-              const Spacer(),
-              Text(_values[entry.key], style: measurementStyle),
+              SizedBox(
+                width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(_values[entry.key], style: measurementStyle),
+                  ],
+                ),
+              ),
               Column(
                 children: [
                   _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
@@ -1769,8 +1782,16 @@ class RecordingState extends State<RecordingScreen> {
                   ),
                 ],
               ),
-              const Spacer(),
-              Text(_statistics[entry.key], style: measurementStyle),
+              SizedBox(
+                width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(_statistics[entry.key], style: measurementStyle),
+                  ],
+                ),
+              ),
             ];
 
       rows.add(Row(
