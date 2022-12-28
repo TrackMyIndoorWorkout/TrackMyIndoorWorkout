@@ -1044,7 +1044,7 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment?.stopWorkout();
 
     if (!_uxDebug) {
-      if (_leaderboardFeature) {
+      if (_leaderboardFeature && (last?.distance ?? 0.0) > displayEps) {
         await _database.workoutSummaryDao.insertWorkoutSummary(
             _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown"));
       }
