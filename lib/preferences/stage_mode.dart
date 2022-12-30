@@ -11,7 +11,10 @@ const onStageStatisticsType = "On-Stage Statistics Type";
 const onStageStatisticsTypeTag = "on_stage_statistics_type";
 const onStageStatisticsTypeDescription = "Select the on-stage statistics type "
     "for non cumulative measurement metrics.";
-const onStageStatisticsTypeDefault = onStageStatisticsTypeAverage;
+const onStageStatisticsTypeDefault = onStageStatisticsTypeNone;
+const onStageStatisticsTypeNone = "none";
+const onStageStatisticsTypeNoneTitle = "None";
+const onStageStatisticsTypeNoneDescription = "Don't display statistics";
 const onStageStatisticsTypeAverage = "average";
 const onStageStatisticsTypeAverageTitle = "Average";
 const onStageStatisticsTypeAverageDescription = "Display the average";
