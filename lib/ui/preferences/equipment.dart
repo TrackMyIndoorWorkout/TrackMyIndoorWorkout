@@ -6,6 +6,7 @@ import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/drag_force_tune.dart';
 import '../../preferences/drive_train_loss.dart';
 import '../../preferences/paddling_with_cycling_sensors.dart';
+import '../../preferences/water_wheel_circumference.dart';
 import '../../preferences/wheel_circumference.dart';
 import 'preferences_screen_mixin.dart';
 
@@ -21,12 +22,21 @@ class EquipmentPreferencesScreen extends StatefulWidget with PreferencesScreenMi
 
 class EquipmentPreferencesScreenState extends State<EquipmentPreferencesScreen> {
   int _wheelCircumferenceEdit = 0;
+  int _waterWheelCircumferenceEdit = 0;
 
   void onWheelCircumferenceSpinTap(int delta) {
     setState(() {
       final circumference = PrefService.of(context).get(wheelCircumferenceTag);
       PrefService.of(context).set(wheelCircumferenceTag, circumference + delta);
       _wheelCircumferenceEdit++;
+    });
+  }
+
+  void onWaterWheelCircumferenceSpinTap(int delta) {
+    setState(() {
+      final circumference = PrefService.of(context).get(waterWheelCircumferenceTag);
+      PrefService.of(context).set(waterWheelCircumferenceTag, circumference + delta);
+      _waterWheelCircumferenceEdit++;
     });
   }
 
@@ -109,6 +119,33 @@ class EquipmentPreferencesScreenState extends State<EquipmentPreferencesScreen> 
         title: Text(paddlingWithCyclingSensors),
         subtitle: Text(paddlingWithCyclingSensorsDescription),
         pref: paddlingWithCyclingSensorsTag,
+      ),
+      PrefSlider<int>(
+        key: Key("waterWheelCircumference$_waterWheelCircumferenceEdit"),
+        title: const Text(waterWheelCircumference),
+        subtitle: const Text(waterWheelCircumferenceDescription),
+        pref: waterWheelCircumferenceTag,
+        trailing: (num value) => Text("$value mm"),
+        min: waterWheelCircumferenceMin,
+        max: waterWheelCircumferenceMax,
+        divisions: waterWheelCircumferenceDivisions,
+        direction: Axis.vertical,
+      ),
+      PrefButton(
+        onTap: () => onWaterWheelCircumferenceSpinTap(1),
+        child: const Text("+1 mm"),
+      ),
+      PrefButton(
+        onTap: () => onWaterWheelCircumferenceSpinTap(-1),
+        child: const Text("-1 mm"),
+      ),
+      PrefButton(
+        onTap: () => onWaterWheelCircumferenceSpinTap(10),
+        child: const Text("+10 mm"),
+      ),
+      PrefButton(
+        onTap: () => onWaterWheelCircumferenceSpinTap(-10),
+        child: const Text("-10 mm"),
       ),
     ];
 

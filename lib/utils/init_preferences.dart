@@ -56,6 +56,7 @@ import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
+import '../preferences/water_wheel_circumference.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/wheel_circumference.dart';
 import '../preferences/workout_mode.dart';
@@ -143,6 +144,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     dragForceTuneTag: dragForceTuneDefault,
     heartRateMonitorPriorityTag: heartRateMonitorPriorityDefault,
     wheelCircumferenceTag: wheelCircumferenceDefault,
+    waterWheelCircumferenceTag: waterWheelCircumferenceDefault,
     paddlingWithCyclingSensorsTag: paddlingWithCyclingSensorsDefault,
     instantOnStageTag: instantOnStageDefault,
     onStageStatisticsTypeTag: onStageStatisticsTypeDefault,
