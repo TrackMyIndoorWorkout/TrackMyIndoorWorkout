@@ -38,32 +38,28 @@ class DonationScreen extends StatelessWidget {
         onPressed: () {
           Get.bottomSheet(
             backgroundColor: Colors.white,
-            SafeArea(
-              child: Column(
-                children: [
-                  SvgPicture.asset(
-                    "assets/$logoSvgPath.svg",
-                    color: vendorName == "CashApp" ? Colors.green : null,
-                    height: Get.textTheme.headline2!.fontSize!,
-                    semanticsLabel: "$vendorName Button",
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: QrImage(
-                        data: "$url$qrPostfix",
-                        version: QrVersions.auto,
-                        size: min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 2 / 3,
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                      ),
+            Column(
+              children: [
+                const Divider(height: 40),
+                SvgPicture.asset(
+                  "assets/$logoSvgPath.svg",
+                  color: vendorName == "CashApp" ? Colors.green : null,
+                  height: Get.textTheme.headline2!.fontSize!,
+                  semanticsLabel: "$vendorName Button",
+                ),
+                Expanded(
+                  child: Center(
+                    child: QrImage(
+                      data: "$url$qrPostfix",
+                      version: QrVersions.auto,
+                      size: min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 2 / 3,
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            isScrollControlled: true,
-            ignoreSafeArea: false,
-            enableDrag: false,
           );
         },
       ),
