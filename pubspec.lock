@@ -279,6 +279,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_ble_peripheral:
+    dependency: "direct main"
+    description:
+      name: flutter_ble_peripheral
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.1"
   flutter_blue_plus:
     dependency: "direct main"
     description:

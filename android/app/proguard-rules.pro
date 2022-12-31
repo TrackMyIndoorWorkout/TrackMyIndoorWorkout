@@ -28,6 +28,8 @@
 -keepclassmembernames class dev.fluttercommunity.plus.device_info.** { *; }
 -keep class com.mr.flutter.plugin.filepicker.** { *; }
 -keepclassmembernames class com.mr.flutter.plugin.filepicker.** { *; }
+-keep class dev.steenbakker.flutter_ble_peripheral.** { *; }
+-keepclassmembernames class dev.steenbakker.flutter_ble_peripheral.* { *; }
 -keep class com.boskokg.flutter_blue_plus.** { *; }
 -keepclassmembernames class com.boskokg.flutter_blue_plus.* { *; }
 -keep class com.flutter.logs.plogs.flutter_logs.** { *; }
