@@ -154,7 +154,7 @@ class _$ActivityDao extends ActivityDao {
   _$ActivityDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database, changeListener),
+  )   : _queryAdapter = QueryAdapter(database),
         _activityInsertionAdapter = InsertionAdapter(
             database,
             'activities',
@@ -189,8 +189,7 @@ class _$ActivityDao extends ActivityDao {
                   'suunto_workout_url': item.suuntoWorkoutUrl,
                   'training_peaks_workout_id': item.trainingPeaksWorkoutId,
                   'training_peaks_athlete_id': item.trainingPeaksAthleteId
-                },
-            changeListener),
+                }),
         _activityUpdateAdapter = UpdateAdapter(
             database,
             'activities',
@@ -226,8 +225,7 @@ class _$ActivityDao extends ActivityDao {
                   'suunto_workout_url': item.suuntoWorkoutUrl,
                   'training_peaks_workout_id': item.trainingPeaksWorkoutId,
                   'training_peaks_athlete_id': item.trainingPeaksAthleteId
-                },
-            changeListener),
+                }),
         _activityDeletionAdapter = DeletionAdapter(
             database,
             'activities',
@@ -263,8 +261,7 @@ class _$ActivityDao extends ActivityDao {
                   'suunto_workout_url': item.suuntoWorkoutUrl,
                   'training_peaks_workout_id': item.trainingPeaksWorkoutId,
                   'training_peaks_athlete_id': item.trainingPeaksAthleteId
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -315,8 +312,8 @@ class _$ActivityDao extends ActivityDao {
   }
 
   @override
-  Stream<Activity?> findActivityById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM `activities` WHERE `id` = ?1',
+  Future<Activity?> findActivityById(int id) async {
+    return _queryAdapter.query('SELECT * FROM `activities` WHERE `id` = ?1',
         mapper: (Map<String, Object?> row) => Activity(
             id: row['id'] as int?,
             deviceName: row['device_name'] as String,
@@ -348,9 +345,7 @@ class _$ActivityDao extends ActivityDao {
             hrmCalorieFactor: row['hrm_calorie_factor'] as double,
             hrBasedCalories: (row['hr_based_calories'] as int) != 0,
             timeZone: row['time_zone'] as String),
-        arguments: [id],
-        queryableName: 'activities',
-        isView: false);
+        arguments: [id]);
   }
 
   @override
@@ -488,7 +483,7 @@ class _$RecordDao extends RecordDao {
   _$RecordDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database, changeListener),
+  )   : _queryAdapter = QueryAdapter(database),
         _recordInsertionAdapter = InsertionAdapter(
             database,
             'records',
@@ -503,8 +498,7 @@ class _$RecordDao extends RecordDao {
                   'speed': item.speed,
                   'cadence': item.cadence,
                   'heart_rate': item.heartRate
-                },
-            changeListener),
+                }),
         _recordUpdateAdapter = UpdateAdapter(
             database,
             'records',
@@ -520,8 +514,7 @@ class _$RecordDao extends RecordDao {
                   'speed': item.speed,
                   'cadence': item.cadence,
                   'heart_rate': item.heartRate
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -550,8 +543,8 @@ class _$RecordDao extends RecordDao {
   }
 
   @override
-  Stream<Record?> findRecordById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM `records` WHERE `id` = ?1',
+  Future<Record?> findRecordById(int id) async {
+    return _queryAdapter.query('SELECT * FROM `records` WHERE `id` = ?1',
         mapper: (Map<String, Object?> row) => Record(
             id: row['id'] as int?,
             activityId: row['activity_id'] as int?,
@@ -563,9 +556,7 @@ class _$RecordDao extends RecordDao {
             speed: row['speed'] as double?,
             cadence: row['cadence'] as int?,
             heartRate: row['heart_rate'] as int?),
-        arguments: [id],
-        queryableName: 'records',
-        isView: false);
+        arguments: [id]);
   }
 
   @override
@@ -587,8 +578,8 @@ class _$RecordDao extends RecordDao {
   }
 
   @override
-  Stream<Record?> findLastRecordOfActivity(int activityId) {
-    return _queryAdapter.queryStream(
+  Future<Record?> findLastRecordOfActivity(int activityId) async {
+    return _queryAdapter.query(
         'SELECT * FROM `records` WHERE `activity_id` = ?1 ORDER BY `time_stamp` DESC LIMIT 1',
         mapper: (Map<String, Object?> row) => Record(
             id: row['id'] as int?,
@@ -601,9 +592,7 @@ class _$RecordDao extends RecordDao {
             speed: row['speed'] as double?,
             cadence: row['cadence'] as int?,
             heartRate: row['heart_rate'] as int?),
-        arguments: [activityId],
-        queryableName: 'records',
-        isView: false);
+        arguments: [activityId]);
   }
 
   @override
@@ -638,7 +627,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
   _$DeviceUsageDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database, changeListener),
+  )   : _queryAdapter = QueryAdapter(database),
         _deviceUsageInsertionAdapter = InsertionAdapter(
             database,
             'device_usage',
@@ -650,8 +639,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
                   'manufacturer': item.manufacturer,
                   'manufacturer_name': item.manufacturerName,
                   'time': item.time
-                },
-            changeListener),
+                }),
         _deviceUsageUpdateAdapter = UpdateAdapter(
             database,
             'device_usage',
@@ -664,8 +652,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
                   'manufacturer': item.manufacturer,
                   'manufacturer_name': item.manufacturerName,
                   'time': item.time
-                },
-            changeListener),
+                }),
         _deviceUsageDeletionAdapter = DeletionAdapter(
             database,
             'device_usage',
@@ -678,8 +665,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
                   'manufacturer': item.manufacturer,
                   'manufacturer_name': item.manufacturerName,
                   'time': item.time
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -707,8 +693,8 @@ class _$DeviceUsageDao extends DeviceUsageDao {
   }
 
   @override
-  Stream<DeviceUsage?> findDeviceUsageById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM `device_usage` WHERE `id` = ?1',
+  Future<DeviceUsage?> findDeviceUsageById(int id) async {
+    return _queryAdapter.query('SELECT * FROM `device_usage` WHERE `id` = ?1',
         mapper: (Map<String, Object?> row) => DeviceUsage(
             id: row['id'] as int?,
             sport: row['sport'] as String,
@@ -717,14 +703,12 @@ class _$DeviceUsageDao extends DeviceUsageDao {
             manufacturer: row['manufacturer'] as String,
             manufacturerName: row['manufacturer_name'] as String?,
             time: row['time'] as int),
-        arguments: [id],
-        queryableName: 'device_usage',
-        isView: false);
+        arguments: [id]);
   }
 
   @override
-  Stream<DeviceUsage?> findDeviceUsageByMac(String mac) {
-    return _queryAdapter.queryStream(
+  Future<DeviceUsage?> findDeviceUsageByMac(String mac) async {
+    return _queryAdapter.query(
         'SELECT * FROM `device_usage` WHERE `mac` = ?1 ORDER BY `time` DESC LIMIT 1',
         mapper: (Map<String, Object?> row) => DeviceUsage(
             id: row['id'] as int?,
@@ -734,9 +718,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
             manufacturer: row['manufacturer'] as String,
             manufacturerName: row['manufacturer_name'] as String?,
             time: row['time'] as int),
-        arguments: [mac],
-        queryableName: 'device_usage',
-        isView: false);
+        arguments: [mac]);
   }
 
   @override
@@ -778,7 +760,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
   _$CalorieTuneDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database, changeListener),
+  )   : _queryAdapter = QueryAdapter(database),
         _calorieTuneInsertionAdapter = InsertionAdapter(
             database,
             'calorie_tune',
@@ -788,8 +770,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
                   'calorie_factor': item.calorieFactor,
                   'hr_based': item.hrBased ? 1 : 0,
                   'time': item.time
-                },
-            changeListener),
+                }),
         _calorieTuneUpdateAdapter = UpdateAdapter(
             database,
             'calorie_tune',
@@ -800,8 +781,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
                   'calorie_factor': item.calorieFactor,
                   'hr_based': item.hrBased ? 1 : 0,
                   'time': item.time
-                },
-            changeListener),
+                }),
         _calorieTuneDeletionAdapter = DeletionAdapter(
             database,
             'calorie_tune',
@@ -812,8 +792,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
                   'calorie_factor': item.calorieFactor,
                   'hr_based': item.hrBased ? 1 : 0,
                   'time': item.time
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -839,47 +818,31 @@ class _$CalorieTuneDao extends CalorieTuneDao {
   }
 
   @override
-  Stream<CalorieTune?> findCalorieTuneById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM `calorie_tune` WHERE `id` = ?1',
+  Future<CalorieTune?> findCalorieTuneById(int id) async {
+    return _queryAdapter.query('SELECT * FROM `calorie_tune` WHERE `id` = ?1',
         mapper: (Map<String, Object?> row) => CalorieTune(
             id: row['id'] as int?,
             mac: row['mac'] as String,
             calorieFactor: row['calorie_factor'] as double,
             hrBased: (row['hr_based'] as int) != 0,
             time: row['time'] as int),
-        arguments: [id],
-        queryableName: 'calorie_tune',
-        isView: false);
+        arguments: [id]);
   }
 
   @override
-  Stream<CalorieTune?> findCalorieTuneByMac(String mac) {
-    return _queryAdapter.queryStream(
+  Future<CalorieTune?> findCalorieTuneByMac(String mac) async {
+    return _queryAdapter.query(
         'SELECT * FROM `calorie_tune` WHERE `mac` = ?1 AND `hr_based` = 0 ORDER BY `time` DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => CalorieTune(
-            id: row['id'] as int?,
-            mac: row['mac'] as String,
-            calorieFactor: row['calorie_factor'] as double,
-            hrBased: (row['hr_based'] as int) != 0,
-            time: row['time'] as int),
-        arguments: [mac],
-        queryableName: 'calorie_tune',
-        isView: false);
+        mapper: (Map<String, Object?> row) => CalorieTune(id: row['id'] as int?, mac: row['mac'] as String, calorieFactor: row['calorie_factor'] as double, hrBased: (row['hr_based'] as int) != 0, time: row['time'] as int),
+        arguments: [mac]);
   }
 
   @override
-  Stream<CalorieTune?> findHrCalorieTuneByMac(String mac) {
-    return _queryAdapter.queryStream(
+  Future<CalorieTune?> findHrCalorieTuneByMac(String mac) async {
+    return _queryAdapter.query(
         'SELECT * FROM `calorie_tune` WHERE `mac` = ?1 AND `hr_based` = 1 ORDER BY `time` DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => CalorieTune(
-            id: row['id'] as int?,
-            mac: row['mac'] as String,
-            calorieFactor: row['calorie_factor'] as double,
-            hrBased: (row['hr_based'] as int) != 0,
-            time: row['time'] as int),
-        arguments: [mac],
-        queryableName: 'calorie_tune',
-        isView: false);
+        mapper: (Map<String, Object?> row) => CalorieTune(id: row['id'] as int?, mac: row['mac'] as String, calorieFactor: row['calorie_factor'] as double, hrBased: (row['hr_based'] as int) != 0, time: row['time'] as int),
+        arguments: [mac]);
   }
 
   @override
@@ -919,7 +882,7 @@ class _$PowerTuneDao extends PowerTuneDao {
   _$PowerTuneDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database, changeListener),
+  )   : _queryAdapter = QueryAdapter(database),
         _powerTuneInsertionAdapter = InsertionAdapter(
             database,
             'power_tune',
@@ -928,8 +891,7 @@ class _$PowerTuneDao extends PowerTuneDao {
                   'mac': item.mac,
                   'power_factor': item.powerFactor,
                   'time': item.time
-                },
-            changeListener),
+                }),
         _powerTuneUpdateAdapter = UpdateAdapter(
             database,
             'power_tune',
@@ -939,8 +901,7 @@ class _$PowerTuneDao extends PowerTuneDao {
                   'mac': item.mac,
                   'power_factor': item.powerFactor,
                   'time': item.time
-                },
-            changeListener),
+                }),
         _powerTuneDeletionAdapter = DeletionAdapter(
             database,
             'power_tune',
@@ -950,8 +911,7 @@ class _$PowerTuneDao extends PowerTuneDao {
                   'mac': item.mac,
                   'power_factor': item.powerFactor,
                   'time': item.time
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -976,30 +936,26 @@ class _$PowerTuneDao extends PowerTuneDao {
   }
 
   @override
-  Stream<PowerTune?> findPowerTuneById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM `power_tune` WHERE `id` = ?1',
+  Future<PowerTune?> findPowerTuneById(int id) async {
+    return _queryAdapter.query('SELECT * FROM `power_tune` WHERE `id` = ?1',
         mapper: (Map<String, Object?> row) => PowerTune(
             id: row['id'] as int?,
             mac: row['mac'] as String,
             powerFactor: row['power_factor'] as double,
             time: row['time'] as int),
-        arguments: [id],
-        queryableName: 'power_tune',
-        isView: false);
+        arguments: [id]);
   }
 
   @override
-  Stream<PowerTune?> findPowerTuneByMac(String mac) {
-    return _queryAdapter.queryStream(
+  Future<PowerTune?> findPowerTuneByMac(String mac) async {
+    return _queryAdapter.query(
         'SELECT * FROM `power_tune` WHERE `mac` = ?1 ORDER BY `time` DESC LIMIT 1',
         mapper: (Map<String, Object?> row) => PowerTune(
             id: row['id'] as int?,
             mac: row['mac'] as String,
             powerFactor: row['power_factor'] as double,
             time: row['time'] as int),
-        arguments: [mac],
-        queryableName: 'power_tune',
-        isView: false);
+        arguments: [mac]);
   }
 
   @override
@@ -1037,7 +993,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
   _$WorkoutSummaryDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database, changeListener),
+  )   : _queryAdapter = QueryAdapter(database),
         _workoutSummaryInsertionAdapter = InsertionAdapter(
             database,
             'workout_summary',
@@ -1054,8 +1010,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
                   'calorie_factor': item.calorieFactor
-                },
-            changeListener),
+                }),
         _workoutSummaryUpdateAdapter = UpdateAdapter(
             database,
             'workout_summary',
@@ -1073,8 +1028,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
                   'calorie_factor': item.calorieFactor
-                },
-            changeListener),
+                }),
         _workoutSummaryDeletionAdapter = DeletionAdapter(
             database,
             'workout_summary',
@@ -1092,8 +1046,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
                   'calorie_factor': item.calorieFactor
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -1125,8 +1078,20 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
   }
 
   @override
-  Stream<WorkoutSummary?> findWorkoutSummaryById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM `workout_summary` WHERE `id` = ?1',
+  Future<List<String>> findDistinctWorkoutSummarySports() async {
+    return _queryAdapter.queryList('SELECT DISTINCT `sport` FROM `workout_summary`',
+        mapper: (Map<String, Object?> row) => row.values.first as String);
+  }
+
+  @override
+  Future<int?> getLeaderboardDataCount() async {
+    return _queryAdapter.query('SELECT COUNT(`id`) FROM `workout_summary`',
+        mapper: (Map<String, Object?> row) => row.values.first as int);
+  }
+
+  @override
+  Future<WorkoutSummary?> findWorkoutSummaryById(int id) async {
+    return _queryAdapter.query('SELECT * FROM `workout_summary` WHERE `id` = ?1',
         mapper: (Map<String, Object?> row) => WorkoutSummary(
             id: row['id'] as int?,
             deviceName: row['device_name'] as String,
@@ -1139,9 +1104,7 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
             calorieFactor: row['calorie_factor'] as double),
-        arguments: [id],
-        queryableName: 'workout_summary',
-        isView: false);
+        arguments: [id]);
   }
 
   @override

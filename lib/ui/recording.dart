@@ -2127,7 +2127,8 @@ class RecordingState extends State<RecordingScreen> {
             await _activityUpload(false);
           }),
           _themeManager.getBlueFab(Icons.list_alt, () async {
-            final hasLeaderboardData = await _database.hasLeaderboardData();
+            final hasLeaderboardData =
+                (await _database.workoutSummaryDao.getLeaderboardDataCount() ?? 0) > 0;
             Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
           }),
           _themeManager.getBlueFab(Icons.battery_unknown, () async {
