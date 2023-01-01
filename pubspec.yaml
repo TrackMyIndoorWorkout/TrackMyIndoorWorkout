@@ -18,14 +18,14 @@ dependencies:
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
   file_picker: ^5.2.2
-  floor: ^1.2.0
+  floor: ^1.4.1
   flutter_ble_peripheral: ^1.1.1
   flutter_blue_plus: ^1.3.1
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.1
   flutter_logs: ^2.1.10
   flutter_timezone: ^1.0.4
-  flutter_spinbox: ^0.11.0
+  flutter_spinbox: ^0.12.0
   flutter_svg: ^1.1.6
   get: ^4.6.1
   group_button: ^5.2.2
@@ -45,7 +45,7 @@ dependencies:
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
   sqflite: ^2.2.2
-  syncfusion_flutter_charts: ^20.3.61
+  syncfusion_flutter_charts: ^20.4.41
   tuple: ^2.0.1
   uni_links: ^0.5.1
   url_launcher: ^6.1.7
@@ -55,9 +55,9 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^4.7.0
+  analyzer: ^5.3.1
   build_runner: ^2.3.3
-  floor_generator: ^1.3.0
+  floor_generator: ^1.4.1
   flutter_driver:
     sdk: flutter
   flutter_lints: ^2.0.1

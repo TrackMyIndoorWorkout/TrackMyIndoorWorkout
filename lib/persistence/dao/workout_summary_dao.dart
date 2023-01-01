@@ -6,8 +6,14 @@ abstract class WorkoutSummaryDao {
   @Query('SELECT * FROM `$workoutSummariesTableName` ORDER BY `speed` DESC')
   Future<List<WorkoutSummary>> findAllWorkoutSummaries();
 
+  @Query('SELECT DISTINCT `sport` FROM `$workoutSummariesTableName`')
+  Future<List<String>> findDistinctWorkoutSummarySports();
+
+  @Query('SELECT COUNT(`id`) FROM `$workoutSummariesTableName`')
+  Future<int?> getLeaderboardDataCount();
+
   @Query('SELECT * FROM `$workoutSummariesTableName` WHERE `id` = :id')
-  Stream<WorkoutSummary?> findWorkoutSummaryById(int id);
+  Future<WorkoutSummary?> findWorkoutSummaryById(int id);
 
   @Query(
       'SELECT * FROM `$workoutSummariesTableName` WHERE `device_id` = :deviceId ORDER BY `speed` DESC')

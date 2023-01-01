@@ -7,7 +7,7 @@ abstract class RecordDao {
   Future<List<Record>> findAllRecords();
 
   @Query('SELECT * FROM `$recordsTableName` WHERE `id` = :id')
-  Stream<Record?> findRecordById(int id);
+  Future<Record?> findRecordById(int id);
 
   @Query(
       'SELECT * FROM `$recordsTableName` WHERE `activity_id` = :activityId ORDER BY `time_stamp`')
@@ -15,7 +15,7 @@ abstract class RecordDao {
 
   @Query(
       'SELECT * FROM `$recordsTableName` WHERE `activity_id` = :activityId ORDER BY `time_stamp` DESC LIMIT 1')
-  Stream<Record?> findLastRecordOfActivity(int activityId);
+  Future<Record?> findLastRecordOfActivity(int activityId);
 
   @insert
   Future<void> insertRecord(Record record);
