@@ -7,10 +7,10 @@ abstract class PowerTuneDao {
   Future<List<PowerTune>> findAllPowerTunes();
 
   @Query('SELECT * FROM `$powerTuneTableName` WHERE `id` = :id')
-  Stream<PowerTune?> findPowerTuneById(int id);
+  Future<PowerTune?> findPowerTuneById(int id);
 
   @Query('SELECT * FROM `$powerTuneTableName` WHERE `mac` = :mac ORDER BY `time` DESC LIMIT 1')
-  Stream<PowerTune?> findPowerTuneByMac(String mac);
+  Future<PowerTune?> findPowerTuneByMac(String mac);
 
   @Query('SELECT * FROM `$powerTuneTableName` ORDER BY `time` DESC LIMIT :limit OFFSET :offset')
   Future<List<PowerTune>> findPowerTunes(int limit, int offset);
