@@ -39,22 +39,31 @@ bool isIpAddress(String ipAddress) {
 const dummyAddressTuple = Tuple2<String, int>("", 0);
 
 Tuple2<String, int> parseIpAddress(String ipAddress) {
-  if (ipAddress.trim().isEmpty) return dummyAddressTuple;
+  if (ipAddress.trim().isEmpty) {
+    return dummyAddressTuple;
+  }
 
   final addressParts = ipAddress.trim().split(":");
-  if (addressParts[0].isEmpty) return dummyAddressTuple;
+  if (addressParts[0].isEmpty) {
+    return dummyAddressTuple;
+  }
 
   int portNumber = httpsPort;
   if (addressParts.length > 1 && addressParts[1].trim().isNotEmpty) {
     final portNumberString = addressParts[1].trim();
-    if (!isPortNumber(portNumberString)) return dummyAddressTuple;
+    if (!isPortNumber(portNumberString)) {
+      return dummyAddressTuple;
+    }
 
     final parsedPort = int.tryParse(portNumberString);
     if (parsedPort != null && parsedPort > 0) {
       portNumber = parsedPort;
     }
   }
-  if (!isIpAddress(addressParts[0])) return dummyAddressTuple;
+
+  if (!isIpAddress(addressParts[0])) {
+    return dummyAddressTuple;
+  }
 
   return Tuple2<String, int>(addressParts[0], portNumber);
 }
