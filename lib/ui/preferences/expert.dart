@@ -16,6 +16,7 @@ import '../../preferences/enforced_time_zone.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
+import '../../preferences/measurement_sink_address.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
 import 'preferences_screen_mixin.dart';
@@ -89,7 +90,13 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             return null;
           } else {
             if (str.split(",").length > addressTuples.length) {
-              return "There's some malformed address(es) in the configuration";
+              return "There's some malformed address(es) in the configuration: count doesn't match";
+            }
+
+            for (final addressTuple in addressTuples) {
+              if (isDummyAddress(addressTuple)) {
+                return "There's some malformed address(es) in the configuration";
+              }
             }
           }
 
@@ -235,6 +242,30 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           }
         },
         child: const Text("Clear All Logs"),
+      ),
+      PrefText(
+        label: measurementSinkAddress,
+        pref: measurementSinkAddressTag,
+        validator: (str) {
+          if (str == null) {
+            return null;
+          }
+
+          if (str.contains(",")) {
+            return "This settings takes only one address";
+          }
+
+          if (!str.contains(":")) {
+            return "Please specify a port number";
+          }
+
+          final addressTuple = parseIpAddress(str);
+          if (isDummyAddress(addressTuple)) {
+            return "The address seem to be malformed";
+          }
+
+          return null;
+        },
       ),
     ];
 

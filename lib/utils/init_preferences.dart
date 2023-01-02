@@ -36,6 +36,7 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
+import '../preferences/measurement_sink_address.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
 import '../preferences/multi_sport_device_support.dart';
@@ -90,6 +91,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     measurementDetailSizeTag: measurementDetailSizeDefault,
     appDebugModeTag: appDebugModeDefault,
     dataConnectionAddressesTag: dataConnectionAddressesDefault,
+    measurementSinkAddressTag: measurementSinkAddressDefault,
     extendTuningTag: extendTuningDefault,
     strokeRateSmoothingIntTag: strokeRateSmoothingDefault,
     dataStreamGapWatchdogIntTag: dataStreamGapWatchdogDefault,
