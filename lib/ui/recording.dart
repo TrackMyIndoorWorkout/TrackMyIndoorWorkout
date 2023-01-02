@@ -22,6 +22,7 @@ import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
+import '../persistence/models/record.dart';
 import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
 import '../preferences/app_debug_mode.dart';
@@ -38,6 +39,7 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
+import '../preferences/measurement_sink_address.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
 import '../preferences/palette_spec.dart';
@@ -218,6 +220,8 @@ class RecordingState extends State<RecordingScreen> {
   final GlobalKey<CircularFabMenuState> _fabKey = GlobalKey();
   int _unlockKey = -2;
   int _logLevel = logLevelDefault;
+  Tuple2<String, int> _sinkAddress = dummyAddressTuple;
+  Socket? _sinkSocket;
 
   Future<void> _connectOnDemand() async {
     if (!await bluetoothCheck(true, _logLevel)) {
@@ -254,6 +258,20 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _startMeasurement() async {
     if (!await bluetoothCheck(true, _logLevel)) {
       return;
+    }
+
+    if (!isDummyAddress(_sinkAddress) &&
+        (widget.sport == ActivityType.ride ||
+            widget.sport == ActivityType.kayaking ||
+            widget.sport == ActivityType.canoeing ||
+            widget.sport == ActivityType.rowing ||
+            widget.sport == ActivityType.swim)) {
+      _sinkSocket = await Socket.connect(_sinkAddress.item1, _sinkAddress.item2);
+      // Send descriptor packet
+      const version = 1;
+      final uuidLsb = widget.sport == ActivityType.ride ? 0xD2 : 0xD1;
+      final packetLength = RecordWithSport.binarySerializedLength(widget.sport);
+      _sinkSocket?.add([version, 0x18, 0x26, 0x2A, uuidLsb, packetLength]);
     }
 
     await _fitnessEquipment?.additionalSensorsOnDemand();
@@ -356,6 +374,8 @@ class RecordingState extends State<RecordingScreen> {
           _dataGapTimeoutHandler,
         );
       }
+
+      _sinkSocket?.add(record.binarySerialize());
 
       final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
       if (_measuring &&
@@ -528,6 +548,8 @@ class RecordingState extends State<RecordingScreen> {
     );
     final prefService = Get.find<BasePrefService>();
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    _sinkAddress = parseIpAddress(
+        prefService.get<String>(measurementSinkAddressTag) ?? measurementSinkAddressDefault);
     final sizeAdjustInt =
         prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
     if (sizeAdjustInt != 100) {
@@ -962,6 +984,9 @@ class RecordingState extends State<RecordingScreen> {
         }
       }
     }
+
+    _sinkSocket?.close();
+    _sinkSocket = null;
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _powerChartData() {
