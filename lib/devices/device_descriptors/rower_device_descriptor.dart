@@ -119,6 +119,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       cadence: strokeRate,
       heartRate: getHeartRate(data),
       pace: pace,
+      strokeCount: getStrokeCount(data),
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
@@ -159,6 +160,10 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
 
   int? getStrokeRate(List<int> data) {
     return strokeRateMetric?.getMeasurementValue(data)?.toInt();
+  }
+
+  double? getStrokeCount(List<int> data) {
+    return strokeCountMetric?.getMeasurementValue(data);
   }
 
   double? getPace(List<int> data) {

@@ -567,4 +567,116 @@ class RecordWithSport extends Record {
 
     return clone;
   }
+
+  List<int> binarySerialize() {
+    switch (sport) {
+      case ActivityType.ride:
+        // Flag:
+        // C1 Instantaneous speed
+        // C3 Instantaneous Cadence
+        // C5 Total Distance
+        // C7 Instantaneous Power
+        // C9 Total Energy, Energy Per Hour, Energy Per Minute
+        // C10 Heart rate
+        // C12 Elapsed Time
+        //
+        // 84 0101 0100
+        // 11 0000 1011
+        const flagMsb = 11;
+        const flagLsb = 84;
+        final speed100 = ((speed ?? 0.0) * 100).round();
+        final cadence2 = (cadence ?? 0) * 2;
+        final distance0 = (distance ?? 0.0).round();
+        final power0 = power ?? 0;
+        final calories0 = calories ?? 0;
+        final elapsed0 = elapsed ?? 0;
+        // Following FTMS Indoor Bike layout
+        return [
+          flagLsb,
+          flagMsb,
+          speed100 % 256,
+          speed100 ~/ 256,
+          cadence2 % 256,
+          cadence2 ~/ 256,
+          distance0 % 256,
+          (distance0 ~/ 256) % 256,
+          (distance0 ~/ 65536) % 256,
+          power0 % 256,
+          power0 ~/ 256,
+          calories0 % 256,
+          calories0 ~/ 256,
+          0,
+          0,
+          0,
+          heartRate ?? 0,
+          elapsed0 % 256,
+          elapsed0 ~/ 256,
+        ];
+
+      case ActivityType.kayaking:
+      case ActivityType.canoeing:
+      case ActivityType.rowing:
+      case ActivityType.swim:
+      case ActivityType.standUpPaddling:
+        // Flag:
+        // C1 Stroke Rate, Stroke Count
+        // C3 Total Distance
+        // C4 Instantaneous Pace
+        // C6 Instantaneous Power
+        // C9 Total Energy, Energy Per Hour, Energy Per Minute
+        // C10 Heart rate
+        // C12 Elapsed Time
+        //
+        // 44 0010 1100
+        // 11 0000 1011
+        const flagMsb = 11;
+        const flagLsb = 44;
+        final cadence2 = min((cadence ?? 0) * 2, maxByte);
+        final strokeCount0 = (strokeCount ?? 0).toInt();
+        final pace0 = (pace ?? 0.0).round();
+        final distance0 = (distance ?? 0.0).round();
+        final power0 = power ?? 0;
+        final calories0 = calories ?? 0;
+        final elapsed0 = elapsed ?? 0;
+        // Following FTMS Indoor Bike layout
+        return [
+          flagLsb,
+          flagMsb,
+          cadence2,
+          strokeCount0 % 256,
+          strokeCount0 ~/ 256,
+          distance0 % 256,
+          (distance0 ~/ 256) % 256,
+          (distance0 ~/ 65536) % 256,
+          pace0 % 256,
+          pace0 ~/ 256,
+          power0 % 256,
+          power0 ~/ 256,
+          calories0 % 256,
+          calories0 ~/ 256,
+          0,
+          0,
+          0,
+          heartRate ?? 0,
+          elapsed0 % 256,
+          elapsed0 ~/ 256,
+        ];
+
+      default:
+        return [];
+    }
+  }
+
+  static int binarySerializedLength(String sport) {
+    if (sport == ActivityType.ride) {
+      return 19;
+    } else if (sport == ActivityType.kayaking ||
+        sport == ActivityType.canoeing ||
+        sport == ActivityType.rowing ||
+        sport == ActivityType.swim) {
+      return 20;
+    }
+
+    return 0;
+  }
 }

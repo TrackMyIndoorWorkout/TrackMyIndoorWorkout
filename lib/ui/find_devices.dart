@@ -362,11 +362,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     final database = Get.find<AppDatabase>();
-    DeviceUsage? deviceUsage;
-    if (await database.hasDeviceUsage(device.id.id)) {
-      deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.id.id).first;
-    }
-
+    var deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.id.id);
     FitnessEquipment? fitnessEquipment;
 
     bool preConnectLogic = true;
@@ -1035,7 +1031,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           }),
           _themeManager.getBlueFab(Icons.list_alt, () async {
             final database = Get.find<AppDatabase>();
-            final hasLeaderboardData = await database.hasLeaderboardData();
+            final hasLeaderboardData =
+                (await database.workoutSummaryDao.getLeaderboardDataCount() ?? 0) > 0;
             Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
           }),
           StreamBuilder<bool>(

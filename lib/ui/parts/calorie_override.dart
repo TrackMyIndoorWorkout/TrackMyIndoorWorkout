@@ -76,16 +76,13 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
             _themeManager.getGreenFab(Icons.check, () async {
               final database = Get.find<AppDatabase>();
               final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
-              CalorieTune? calorieTune;
-              if (await database.hasCalorieTune(widget.deviceId, widget.hrBased)) {
-                calorieTune = await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
-              }
-
+              final calorieTune =
+                  await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
               if (calorieTune != null) {
                 calorieTune.calorieFactor = calorieFactor;
                 await database.calorieTuneDao.updateCalorieTune(calorieTune);
               } else {
-                calorieTune = CalorieTune(
+                final calorieTune = CalorieTune(
                   mac: widget.deviceId,
                   calorieFactor: calorieFactor,
                   hrBased: widget.hrBased,

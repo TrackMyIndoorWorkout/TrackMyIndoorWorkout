@@ -63,16 +63,13 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
             _themeManager.getGreenFab(Icons.check, () async {
               final database = Get.find<AppDatabase>();
               final calorieFactor = _calorieFactorPercent / 100.0;
-              CalorieTune? calorieTune;
-              if (await database.hasCalorieTune(widget.deviceId, widget.hrBased)) {
-                calorieTune = await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
-              }
-
+              final calorieTune =
+                  await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
               if (calorieTune != null) {
                 calorieTune.calorieFactor = calorieFactor;
                 await database.calorieTuneDao.updateCalorieTune(calorieTune);
               } else {
-                calorieTune = CalorieTune(
+                final calorieTune = CalorieTune(
                   mac: widget.deviceId,
                   calorieFactor: calorieFactor,
                   hrBased: widget.hrBased,

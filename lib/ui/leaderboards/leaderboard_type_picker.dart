@@ -48,7 +48,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
             margin: const EdgeInsets.all(5.0),
             child: ElevatedButton(
               onPressed: () async {
-                final sports = await _database.findDistinctWorkoutSummarySports();
+                final sports = await _database.workoutSummaryDao.findDistinctWorkoutSummarySports();
                 if (sports.isEmpty) {
                   Get.snackbar("Warning", "No sports found");
                 } else if (sports.length > 1) {
