@@ -79,6 +79,11 @@ List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
   return addresses;
 }
 
+bool isDummyAddress(Tuple2<String, int> addressTuple) {
+  return addressTuple.item1 == dummyAddressTuple.item1 &&
+      addressTuple.item2 == dummyAddressTuple.item2;
+}
+
 Future<bool> hasInternetConnection() async {
   final connectionChecker = InternetConnectionChecker();
   final prefService = Get.find<BasePrefService>();
