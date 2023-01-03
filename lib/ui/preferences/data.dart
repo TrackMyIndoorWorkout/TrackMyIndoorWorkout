@@ -11,6 +11,7 @@ import '../../preferences/extend_tuning.dart';
 import '../../preferences/sound_effects.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
 import '../../utils/sound.dart';
+import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
 class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
@@ -44,6 +45,11 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         divisions: strokeRateSmoothingDivisions,
         direction: Axis.vertical,
       ),
+      const PrefInteger(
+        pref: strokeRateSmoothingIntTag,
+        min: strokeRateSmoothingMin,
+        max: strokeRateSmoothingMax,
+      ),
       const PrefTitle(title: Text("Workarounds")),
       PrefSlider<int>(
         title: const Text(dataStreamGapWatchdog),
@@ -54,6 +60,11 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         max: dataStreamGapWatchdogMax,
         divisions: dataStreamGapWatchdogDivisions,
         direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: dataStreamGapWatchdogIntTag,
+        min: dataStreamGapWatchdogMin,
+        max: dataStreamGapWatchdogMax,
       ),
       PrefButton(
         title: const Text("Empty workout after connection loss workaround"),
@@ -123,6 +134,11 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         max: audioVolumeMax,
         divisions: audioVolumeDivisions,
         direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: audioVolumeIntTag,
+        min: audioVolumeMin,
+        max: audioVolumeMax,
       ),
       const PrefCheckbox(
         title: Text(cadenceGapWorkaround),
