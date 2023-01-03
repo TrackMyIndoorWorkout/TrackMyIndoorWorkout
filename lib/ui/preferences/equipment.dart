@@ -6,29 +6,16 @@ import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/drag_force_tune.dart';
 import '../../preferences/drive_train_loss.dart';
 import '../../preferences/paddling_with_cycling_sensors.dart';
+import '../../preferences/water_wheel_circumference.dart';
 import '../../preferences/wheel_circumference.dart';
+import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
-class EquipmentPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
+class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
   static String shortTitle = "Equipment";
   static String title = "$shortTitle Preferences";
 
   const EquipmentPreferencesScreen({Key? key}) : super(key: key);
-
-  @override
-  EquipmentPreferencesScreenState createState() => EquipmentPreferencesScreenState();
-}
-
-class EquipmentPreferencesScreenState extends State<EquipmentPreferencesScreen> {
-  int _wheelCircumferenceEdit = 0;
-
-  void onWheelCircumferenceSpinTap(int delta) {
-    setState(() {
-      final circumference = PrefService.of(context).get(wheelCircumferenceTag);
-      PrefService.of(context).set(wheelCircumferenceTag, circumference + delta);
-      _wheelCircumferenceEdit++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +30,12 @@ class EquipmentPreferencesScreenState extends State<EquipmentPreferencesScreen> 
         divisions: bikeWeightDivisions,
         direction: Axis.vertical,
       ),
+      const PrefInteger(
+        pref: bikeWeightTag,
+        min: bikeWeightMin,
+        max: bikeWeightMax,
+      ),
       PrefSlider<int>(
-        key: Key("wheelCircumference$_wheelCircumferenceEdit"),
         title: const Text(wheelCircumference),
         subtitle: const Text(wheelCircumferenceDescription),
         pref: wheelCircumferenceTag,
@@ -54,21 +45,10 @@ class EquipmentPreferencesScreenState extends State<EquipmentPreferencesScreen> 
         divisions: wheelCircumferenceDivisions,
         direction: Axis.vertical,
       ),
-      PrefButton(
-        onTap: () => onWheelCircumferenceSpinTap(1),
-        child: const Text("+1 mm"),
-      ),
-      PrefButton(
-        onTap: () => onWheelCircumferenceSpinTap(-1),
-        child: const Text("-1 mm"),
-      ),
-      PrefButton(
-        onTap: () => onWheelCircumferenceSpinTap(10),
-        child: const Text("+10 mm"),
-      ),
-      PrefButton(
-        onTap: () => onWheelCircumferenceSpinTap(-10),
-        child: const Text("-10 mm"),
+      const PrefInteger(
+        pref: wheelCircumferenceTag,
+        min: wheelCircumferenceMin,
+        max: wheelCircumferenceMax,
       ),
       PrefSlider<int>(
         title: const Text(driveTrainLoss),
@@ -80,6 +60,11 @@ class EquipmentPreferencesScreenState extends State<EquipmentPreferencesScreen> 
         divisions: driveTrainLossDivisions,
         direction: Axis.vertical,
       ),
+      const PrefInteger(
+        pref: driveTrainLossTag,
+        min: driveTrainLossMin,
+        max: driveTrainLossMax,
+      ),
       PrefSlider<int>(
         title: const Text(airTemperature),
         subtitle: const Text(airTemperatureDescription),
@@ -89,6 +74,11 @@ class EquipmentPreferencesScreenState extends State<EquipmentPreferencesScreen> 
         max: airTemperatureMax,
         divisions: airTemperatureDivisions,
         direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: airTemperatureTag,
+        min: airTemperatureMin,
+        max: airTemperatureMax,
       ),
       PrefSlider<int>(
         title: const Text(dragForceTune),
@@ -100,6 +90,11 @@ class EquipmentPreferencesScreenState extends State<EquipmentPreferencesScreen> 
         divisions: dragForceTuneDivisions,
         direction: Axis.vertical,
       ),
+      const PrefInteger(
+        pref: dragForceTuneTag,
+        min: dragForceTuneMin,
+        max: dragForceTuneMax,
+      ),
       const PrefCheckbox(
         title: Text(blockSignalStartStop),
         subtitle: Text(blockSignalStartStopDescription),
@@ -109,6 +104,21 @@ class EquipmentPreferencesScreenState extends State<EquipmentPreferencesScreen> 
         title: Text(paddlingWithCyclingSensors),
         subtitle: Text(paddlingWithCyclingSensorsDescription),
         pref: paddlingWithCyclingSensorsTag,
+      ),
+      PrefSlider<int>(
+        title: const Text(waterWheelCircumference),
+        subtitle: const Text(waterWheelCircumferenceDescription),
+        pref: waterWheelCircumferenceTag,
+        trailing: (num value) => Text("$value mm"),
+        min: waterWheelCircumferenceMin,
+        max: waterWheelCircumferenceMax,
+        divisions: waterWheelCircumferenceDivisions,
+        direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: waterWheelCircumferenceTag,
+        min: waterWheelCircumferenceMin,
+        max: waterWheelCircumferenceMax,
       ),
     ];
 
