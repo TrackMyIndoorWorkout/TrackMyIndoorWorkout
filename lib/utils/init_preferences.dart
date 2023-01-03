@@ -47,6 +47,7 @@ import '../preferences/simpler_ui.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/stage_mode.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
@@ -56,6 +57,7 @@ import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
+import '../preferences/water_wheel_circumference.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/wheel_circumference.dart';
 import '../preferences/workout_mode.dart';
@@ -144,7 +146,11 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     dragForceTuneTag: dragForceTuneDefault,
     heartRateMonitorPriorityTag: heartRateMonitorPriorityDefault,
     wheelCircumferenceTag: wheelCircumferenceDefault,
+    waterWheelCircumferenceTag: waterWheelCircumferenceDefault,
     paddlingWithCyclingSensorsTag: paddlingWithCyclingSensorsDefault,
+    instantOnStageTag: instantOnStageDefault,
+    onStageStatisticsTypeTag: onStageStatisticsTypeDefault,
+    onStageStatisticsAlternationDurationTag: onStageStatisticsAlternationDurationDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

@@ -6,6 +6,7 @@ import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/drag_force_tune.dart';
 import '../../preferences/drive_train_loss.dart';
 import '../../preferences/paddling_with_cycling_sensors.dart';
+import '../../preferences/water_wheel_circumference.dart';
 import '../../preferences/wheel_circumference.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
@@ -103,6 +104,21 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         title: Text(paddlingWithCyclingSensors),
         subtitle: Text(paddlingWithCyclingSensorsDescription),
         pref: paddlingWithCyclingSensorsTag,
+      ),
+      PrefSlider<int>(
+        title: const Text(waterWheelCircumference),
+        subtitle: const Text(waterWheelCircumferenceDescription),
+        pref: waterWheelCircumferenceTag,
+        trailing: (num value) => Text("$value mm"),
+        min: waterWheelCircumferenceMin,
+        max: waterWheelCircumferenceMax,
+        divisions: waterWheelCircumferenceDivisions,
+        direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: waterWheelCircumferenceTag,
+        min: waterWheelCircumferenceMin,
+        max: waterWheelCircumferenceMax,
       ),
     ];
 
