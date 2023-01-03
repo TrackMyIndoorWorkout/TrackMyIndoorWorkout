@@ -115,6 +115,11 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         divisions: waterWheelCircumferenceDivisions,
         direction: Axis.vertical,
       ),
+      const PrefInteger(
+        pref: waterWheelCircumferenceTag,
+        min: waterWheelCircumferenceMin,
+        max: waterWheelCircumferenceMax,
+      ),
     ];
 
     return Scaffold(
