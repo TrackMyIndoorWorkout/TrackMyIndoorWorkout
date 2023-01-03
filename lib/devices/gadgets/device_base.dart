@@ -62,7 +62,6 @@ abstract class DeviceBase {
   }
 
   void readConfiguration() {
-    final prefService = Get.find<BasePrefService>();
     uxDebug = prefService.get<bool>(appDebugModeTag) ?? appDebugModeDefault;
     logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
   }

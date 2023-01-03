@@ -6,28 +6,14 @@ import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/heart_rate_monitor_priority.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
+import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
-class HeartRatePreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
+class HeartRatePreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
   static String shortTitle = "Heart Rate";
   static String title = "$shortTitle Preferences";
 
   const HeartRatePreferencesScreen({Key? key}) : super(key: key);
-
-  @override
-  HeartRatePreferencesScreenState createState() => HeartRatePreferencesScreenState();
-}
-
-class HeartRatePreferencesScreenState extends State<HeartRatePreferencesScreen> {
-  int _hrUpperLimitEdit = 0;
-
-  void onHeartRateUpperLimitSpinTap(int delta) {
-    setState(() {
-      final hrUpperLimit = PrefService.of(context).get(heartRateUpperLimitIntTag);
-      PrefService.of(context).set(heartRateUpperLimitIntTag, hrUpperLimit + delta);
-      _hrUpperLimitEdit++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +59,6 @@ class HeartRatePreferencesScreenState extends State<HeartRatePreferencesScreen> 
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefSlider<int>(
-        key: Key("heartRateUpperLimit$_hrUpperLimitEdit"),
         title: const Text(heartRateUpperLimit),
         subtitle: const Text(heartRateUpperLimitDescription),
         pref: heartRateUpperLimitIntTag,
@@ -83,21 +68,10 @@ class HeartRatePreferencesScreenState extends State<HeartRatePreferencesScreen> 
         divisions: heartRateUpperLimitDivisions,
         direction: Axis.vertical,
       ),
-      PrefButton(
-        onTap: () => onHeartRateUpperLimitSpinTap(1),
-        child: const Text("+1 beat"),
-      ),
-      PrefButton(
-        onTap: () => onHeartRateUpperLimitSpinTap(-1),
-        child: const Text("-1 beat"),
-      ),
-      PrefButton(
-        onTap: () => onHeartRateUpperLimitSpinTap(10),
-        child: const Text("+10 beats"),
-      ),
-      PrefButton(
-        onTap: () => onHeartRateUpperLimitSpinTap(-10),
-        child: const Text("-10 beats"),
+      const PrefInteger(
+        pref: heartRateUpperLimitIntTag,
+        min: heartRateUpperLimitMin,
+        max: heartRateUpperLimitMax,
       ),
       PrefLabel(title: Text(heartRateLimitingMethod, style: Get.textTheme.headline5!, maxLines: 3)),
       const PrefRadio<String>(

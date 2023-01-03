@@ -15,6 +15,7 @@ import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
 import '../../preferences/unit_system.dart';
 import '../parts/pick_directory.dart';
+import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 import 'row_configuration_dialog.dart';
 
@@ -74,6 +75,11 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
         max: scanDurationMax,
         divisions: scanDurationDivisions,
         direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: scanDurationTag,
+        min: scanDurationMin,
+        max: scanDurationMax,
       ),
       const PrefCheckbox(
         title: Text(instantScan),
@@ -141,6 +147,11 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
         max: measurementFontSizeAdjustMax,
         divisions: measurementFontSizeAdjustDivisions,
         direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: measurementFontSizeAdjustTag,
+        min: measurementFontSizeAdjustMin,
+        max: measurementFontSizeAdjustMax,
       ),
       const PrefCheckbox(
         title: Text(twoColumnLayout),
