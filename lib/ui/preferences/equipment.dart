@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:string_validator/string_validator.dart';
 import '../../preferences/air_temperature.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/drag_force_tune.dart';
 import '../../preferences/drive_train_loss.dart';
+import '../../preferences/measurement_sink_address.dart';
 import '../../preferences/paddling_with_cycling_sensors.dart';
 import '../../preferences/water_wheel_circumference.dart';
 import '../../preferences/wheel_circumference.dart';
@@ -119,6 +122,42 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         pref: waterWheelCircumferenceTag,
         min: waterWheelCircumferenceMin,
         max: waterWheelCircumferenceMax,
+      ),
+      PrefText(
+        label: measurementSinkAddress,
+        pref: measurementSinkAddressTag,
+        validator: (str) {
+          if (str == null) {
+            return null;
+          }
+
+          if (str.contains(",")) {
+            return "This settings takes only one server name / IP address";
+          }
+
+          if (!isFQDN(str) && !isIP(str)) {
+            return "Doesn't look like a domain name or an IP address";
+          }
+
+          return null;
+        },
+      ),
+      PrefLabel(
+        title: Text(measurementSinkPort, style: Get.textTheme.headline5!, maxLines: 3),
+      ),
+      const PrefSlider<int>(
+        title: Text(measurementSinkPort),
+        subtitle: Text(measurementSinkPortDescription),
+        pref: measurementSinkPortTag,
+        min: portNumberMin,
+        max: portNumberMax,
+        divisions: portNumberDivisions,
+        direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: measurementSinkPortTag,
+        min: portNumberMin,
+        max: portNumberMax,
       ),
     ];
 

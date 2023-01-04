@@ -254,7 +254,8 @@ class RecordingState extends State<RecordingScreen> {
   int _unlockKey = -2;
   int _logLevel = logLevelDefault;
   StatisticsAccumulator _accu = StatisticsAccumulator(si: true, sport: ActivityType.ride);
-  Tuple2<String, int> _sinkAddress = dummyAddressTuple;
+  String _sinkAddress = measurementSinkAddressDefault;
+  int _sinkPortNumber = measurementSinkPortDefault;
   Socket? _sinkSocket;
 
   Future<void> _connectOnDemand() async {
@@ -294,13 +295,13 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
-    if (!isDummyAddress(_sinkAddress) &&
+    if (_sinkAddress.isNotEmpty &&
         (widget.sport == ActivityType.ride ||
             widget.sport == ActivityType.kayaking ||
             widget.sport == ActivityType.canoeing ||
             widget.sport == ActivityType.rowing ||
             widget.sport == ActivityType.swim)) {
-      _sinkSocket = await Socket.connect(_sinkAddress.item1, _sinkAddress.item2);
+      _sinkSocket = await Socket.connect(_sinkAddress, _sinkPortNumber);
       // Send descriptor packet
       const version = 1;
       final uuidLsb = widget.sport == ActivityType.ride ? 0xD2 : 0xD1;
@@ -629,8 +630,9 @@ class RecordingState extends State<RecordingScreen> {
     );
     final prefService = Get.find<BasePrefService>();
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-    _sinkAddress = parseIpAddress(
-        prefService.get<String>(measurementSinkAddressTag) ?? measurementSinkAddressDefault);
+    _sinkAddress =
+        prefService.get<String>(measurementSinkAddressTag) ?? measurementSinkAddressDefault;
+    _sinkPortNumber = prefService.get<int>(measurementSinkPortTag) ?? measurementSinkPortDefault;
     final sizeAdjustInt =
         prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
     if (sizeAdjustInt != 100) {
