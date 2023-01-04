@@ -1789,7 +1789,7 @@ class RecordingState extends State<RecordingScreen> {
 
       final rowChildren = (entry.key == _calories0Index ||
               entry.key == _distance0Index ||
-              _onStageStatisticsType != onStageStatisticsTypeNone)
+              _onStageStatisticsType == onStageStatisticsTypeNone)
           ? [
               _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
               const Spacer(),
