@@ -120,6 +120,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   bool supportsSpinDown = false;
   bool _blockSignalStartStop = blockSignalStartStopDefault;
   bool _enableAsserts = enableAssertsDefault;
+  double _powerMultiplier = 1.0;
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
@@ -138,6 +139,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         ) {
     readConfiguration();
     lastRecord = RecordWithSport(sport: sport);
+
+    // When power is computed from speed meant to be used with cycling
+    // the powerForVelocity would yield too low values. This comes to surface
+    // for example with CSC sensor based Old Danube (#384). Kinomap would not
+    // progress without power values reported.
+    _powerMultiplier = sport != ActivityType.ride ? 5.0 : 1.0;
   }
 
   String get sport => _activity?.sport ?? (descriptor?.sport ?? ActivityType.ride);
@@ -1061,12 +1068,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
         } else if ((stub.caloriesPerHour ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
-        } else if (!hasPowerReporting &&
-            sport == ActivityType.ride &&
-            (stub.speed ?? 0) > displayEps) {
+        } else if (!hasPowerReporting && (stub.speed ?? 0) > displayEps) {
           // When cycling supplement power from speed if missing
           // via https://www.gribble.org/cycling/power_v_speed.html
-          stub.power = powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms).toInt();
+          stub.power =
+              powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms * _powerMultiplier).toInt();
         }
 
         if (stub.power != null) {
