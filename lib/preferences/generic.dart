@@ -13,9 +13,3 @@ const preferencesVersionDefault = preferencesVersionTimeDisplayMode;
 const preferencesVersionNext = preferencesVersionDefault + 1;
 
 const intTagPostfix = "_int";
-
-extension DurationDisplay on Duration {
-  String toDisplay() {
-    return toString().split('.').first.padLeft(8, "0");
-  }
-}

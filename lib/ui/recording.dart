@@ -30,7 +30,6 @@ import '../preferences/calculate_gps.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/distance_resolution.dart';
-import '../preferences/generic.dart';
 import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_upload.dart';
