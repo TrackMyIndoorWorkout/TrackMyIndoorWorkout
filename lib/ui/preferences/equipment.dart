@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:string_validator/string_validator.dart';
@@ -126,6 +127,7 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
       PrefText(
         label: measurementSinkAddress,
         pref: measurementSinkAddressTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("a-zA-Z0-9.:"))],
         validator: (str) {
           if (str == null) {
             return null;

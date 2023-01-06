@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:get/get.dart';
@@ -79,6 +80,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       PrefText(
         label: dataConnectionAddresses,
         pref: dataConnectionAddressesTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("a-zA-Z0-9.:,"))],
         validator: (str) {
           if (str == null) {
             return null;
