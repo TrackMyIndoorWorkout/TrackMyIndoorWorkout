@@ -344,6 +344,18 @@ Future<BasePrefService> initPreferences() async {
     }
   }
 
+  // Remove white space from data connection string
+  if (prefVersion <= preferencesVersionNoWhitespaceInNetworkAddresses) {
+    final oldDataConnectionAddresses =
+        prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
+    if (oldDataConnectionAddresses.isNotEmpty) {
+      final newDataConnectionAddresses = oldDataConnectionAddresses.removeAllWhitespace;
+      if (oldDataConnectionAddresses.length != newDataConnectionAddresses.length) {
+        prefService.set<String>(dataConnectionAddressesTag, newDataConnectionAddresses);
+      }
+    }
+  }
+
   await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
 
   for (var sport in SportSpec.sportPrefixes) {
