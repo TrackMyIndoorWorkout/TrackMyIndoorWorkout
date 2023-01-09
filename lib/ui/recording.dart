@@ -146,6 +146,11 @@ class RecordingState extends State<RecordingScreen> {
   bool _onStage = false;
   int _pointCount = 0;
   ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
+  List<DisplayRecord> graphData = [];
+  ListQueue<DisplayRecord> _graphAvgData = ListQueue<DisplayRecord>();
+  List<DisplayRecord> graphAvgData = [];
+  ListQueue<DisplayRecord> _graphMaxData = ListQueue<DisplayRecord>();
+  List<DisplayRecord> graphMaxData = [];
   double _mediaSizeMin = 0;
   double _mediaHeight = 0;
   double _mediaWidth = 0;
@@ -160,6 +165,8 @@ class RecordingState extends State<RecordingScreen> {
   TextStyle _unitStyle = const TextStyle();
   TextStyle _fullUnitStyle = const TextStyle();
   Color _chartTextColor = Colors.black;
+  Color _chartAvgColor = Colors.orange;
+  Color _chartMaxColor = Colors.red;
   TextStyle _chartLabelStyle = const TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
@@ -193,7 +200,6 @@ class RecordingState extends State<RecordingScreen> {
   String _dataGapSoundEffect = dataStreamGapSoundEffectDefault;
   Timer? _dataGapBeeperTimer;
 
-  List<DisplayRecord> get graphData => _graphData.toList();
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig = [];
   List<String> _values = [];
@@ -443,8 +449,37 @@ class RecordingState extends State<RecordingScreen> {
         setState(() {
           if (!_simplerUi) {
             _graphData.add(record.display());
+            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              _graphAvgData.add(_accu.averageDisplayRecord(record.dt));
+            }
+
+            if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              _graphMaxData.add(_accu.maximumDisplayRecord(record.dt));
+            }
+
             if (_pointCount > 0 && _graphData.length > _pointCount) {
               _graphData.removeFirst();
+              if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+                  _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+                _graphAvgData.removeFirst();
+              }
+
+              if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+                  _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+                _graphMaxData.removeFirst();
+              }
+            }
+            graphData = _graphData.toList();
+            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              graphAvgData = _graphAvgData.toList();
+            }
+
+            if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              graphMaxData = _graphMaxData.toList();
             }
           }
 
@@ -685,7 +720,19 @@ class RecordingState extends State<RecordingScreen> {
         ? ListQueue<DisplayRecord>(0)
         : ListQueue.from(List<DisplayRecord>.generate(
             _pointCount,
-            (i) => DisplayRecord.from(
+            (i) => DisplayRecord.blank(
+                widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+    _graphAvgData = _simplerUi
+        ? ListQueue<DisplayRecord>(0)
+        : ListQueue.from(List<DisplayRecord>.generate(
+            _pointCount,
+            (i) => DisplayRecord.blank(
+                widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+    _graphMaxData = _simplerUi
+        ? ListQueue<DisplayRecord>(0)
+        : ListQueue.from(List<DisplayRecord>.generate(
+            _pointCount,
+            (i) => DisplayRecord.blank(
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
 
     if (widget.sport != ActivityType.ride) {
@@ -757,6 +804,8 @@ class RecordingState extends State<RecordingScreen> {
       fontSize: 11 * _sizeAdjust,
       color: _chartTextColor,
     );
+    _chartAvgColor = _themeManager.getOrangeColor();
+    _chartMaxColor = _themeManager.getRedColor();
     _expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
       iconColor: _themeManager.getProtagonistColor(),
@@ -1105,7 +1154,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _powerChartData() {
-    return <charts.LineSeries<DisplayRecord, DateTime>>[
+    List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
         xValueMapper: (DisplayRecord record, _) => record.dt,
@@ -1114,10 +1163,37 @@ class RecordingState extends State<RecordingScreen> {
         animationDuration: 0,
       ),
     ];
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphAvgData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.power,
+          color: _chartAvgColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphMaxData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.power,
+          color: _chartMaxColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    return series;
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _speedChartData() {
-    return <charts.LineSeries<DisplayRecord, DateTime>>[
+    List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
         xValueMapper: (DisplayRecord record, _) => record.dt,
@@ -1126,10 +1202,38 @@ class RecordingState extends State<RecordingScreen> {
         animationDuration: 0,
       ),
     ];
+
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphAvgData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
+          color: _chartAvgColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphMaxData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
+          color: _chartMaxColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    return series;
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _cadenceChartData() {
-    return <charts.LineSeries<DisplayRecord, DateTime>>[
+    List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
         xValueMapper: (DisplayRecord record, _) => record.dt,
@@ -1138,10 +1242,38 @@ class RecordingState extends State<RecordingScreen> {
         animationDuration: 0,
       ),
     ];
+
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphAvgData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.cadence,
+          color: _chartAvgColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphMaxData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.cadence,
+          color: _chartMaxColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    return series;
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _hRChartData() {
-    return <charts.LineSeries<DisplayRecord, DateTime>>[
+    List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
         xValueMapper: (DisplayRecord record, _) => record.dt,
@@ -1150,6 +1282,34 @@ class RecordingState extends State<RecordingScreen> {
         animationDuration: 0,
       ),
     ];
+
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphAvgData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.heartRate,
+          color: _chartAvgColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphMaxData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.heartRate,
+          color: _chartMaxColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    return series;
   }
 
   Future<bool> _onWillPop() async {
