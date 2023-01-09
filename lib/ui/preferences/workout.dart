@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/ui/preferences/pref_integer.dart';
 import '../../preferences/stage_mode.dart';
 import '../../preferences/time_display_mode.dart';
 import '../../preferences/workout_mode.dart';
@@ -83,6 +84,21 @@ class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMix
         subtitle: Text(onStageStatisticsTypeAlternatingDescription),
         value: onStageStatisticsTypeAlternating,
         pref: onStageStatisticsTypeTag,
+      ),
+      PrefSlider<int>(
+        title: const Text(onStageStatisticsAlternationDuration),
+        subtitle: const Text(onStageStatisticsAlternationDurationDescription),
+        pref: onStageStatisticsAlternationDurationTag,
+        trailing: (num value) => Text("$value s"),
+        min: onStageStatisticsAlternationDurationMin,
+        max: onStageStatisticsAlternationDurationMax,
+        divisions: onStageStatisticsAlternationDurationDivisions,
+        direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: onStageStatisticsAlternationDurationTag,
+        min: onStageStatisticsAlternationDurationMin,
+        max: onStageStatisticsAlternationDurationMax,
       ),
     ];
 

@@ -24,10 +24,10 @@ const onStageStatisticsTypeMaximumDescription = "Display the maximum";
 const onStageStatisticsTypeAlternating = "alternating";
 const onStageStatisticsTypeAlternatingTitle = "Alternating";
 const onStageStatisticsTypeAlternatingDescription =
-    "Alternating between average and maximum once per second.";
+    "Alternating between average and maximum by period set below.";
 
-const onStageStatisticsAlternationDuration = "Scan Duration (s)";
-const onStageStatisticsAlternationDurationTag = "On-stage statistics alternation period duration";
+const onStageStatisticsAlternationDuration = "Stat Alternation Period (s)";
+const onStageStatisticsAlternationDurationTag = "on_stage_statistics_alternation_period";
 const onStageStatisticsAlternationDurationMin = 1;
 const onStageStatisticsAlternationDurationDefault = 3;
 const onStageStatisticsAlternationDurationMax = 10;
