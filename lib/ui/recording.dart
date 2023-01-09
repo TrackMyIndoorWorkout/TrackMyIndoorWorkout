@@ -299,12 +299,17 @@ class RecordingState extends State<RecordingScreen> {
             widget.sport == ActivityType.canoeing ||
             widget.sport == ActivityType.rowing ||
             widget.sport == ActivityType.swim)) {
-      _sinkSocket = await Socket.connect(_sinkAddress.item1, _sinkAddress.item2);
-      // Send descriptor packet
-      const version = 1;
-      final uuidLsb = widget.sport == ActivityType.ride ? 0xD2 : 0xD1;
-      final packetLength = RecordWithSport.binarySerializedLength(widget.sport);
-      _sinkSocket?.add([version, 0x18, 0x26, 0x2A, uuidLsb, packetLength]);
+      try {
+        _sinkSocket = await Socket.connect(_sinkAddress.item1, _sinkAddress.item2);
+        // Send descriptor packet
+        const version = 1;
+        final uuidLsb = widget.sport == ActivityType.ride ? 0xD2 : 0xD1;
+        final packetLength = RecordWithSport.binarySerializedLength(widget.sport);
+        _sinkSocket?.add([version, 0x18, 0x26, 0x2A, uuidLsb, packetLength]);
+      } on SocketException {
+        Get.snackbar("Error", "Could not connect to Sink Server");
+        _sinkSocket = null;
+      }
     }
 
     await _fitnessEquipment?.additionalSensorsOnDemand();
@@ -1095,7 +1100,7 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    _sinkSocket?.close();
+    _sinkSocket?.destroy();
     _sinkSocket = null;
   }
 
