@@ -79,6 +79,18 @@ List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
   return addresses;
 }
 
+String addDefaultPortIfMissing(String address) {
+  if (address.isEmpty) {
+    return "";
+  }
+
+  if (address.contains(":")) {
+    return address;
+  }
+
+  return "$address:443";
+}
+
 bool isDummyAddress(Tuple2<String, int> addressTuple) {
   return addressTuple.item1 == dummyAddressTuple.item1 &&
       addressTuple.item2 == dummyAddressTuple.item2;

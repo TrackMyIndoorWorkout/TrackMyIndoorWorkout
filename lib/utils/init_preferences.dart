@@ -63,6 +63,7 @@ import '../preferences/wheel_circumference.dart';
 import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
+import '../utils/preferences.dart';
 import 'constants.dart';
 
 Future<void> migrateStringIntegerPreference(
@@ -349,9 +350,12 @@ Future<BasePrefService> initPreferences() async {
     final oldDataConnectionAddresses =
         prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
     if (oldDataConnectionAddresses.isNotEmpty) {
-      final newDataConnectionAddresses = oldDataConnectionAddresses.removeAllWhitespace;
-      if (oldDataConnectionAddresses.length != newDataConnectionAddresses.length) {
-        prefService.set<String>(dataConnectionAddressesTag, newDataConnectionAddresses);
+      final newAddresses = oldDataConnectionAddresses.removeAllWhitespace
+          .split(",")
+          .map((address) => addDefaultPortIfMissing(address))
+          .join(",");
+      if (oldDataConnectionAddresses.length != newAddresses.length) {
+        prefService.set<String>(dataConnectionAddressesTag, newAddresses);
       }
     }
   }
