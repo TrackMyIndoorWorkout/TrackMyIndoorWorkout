@@ -86,19 +86,19 @@ class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMix
         pref: onStageStatisticsTypeTag,
       ),
       PrefSlider<int>(
-        title: const Text(onStageStatisticsAlternationDuration),
-        subtitle: const Text(onStageStatisticsAlternationDurationDescription),
-        pref: onStageStatisticsAlternationDurationTag,
+        title: const Text(onStageStatisticsAlternationPeriod),
+        subtitle: const Text(onStageStatisticsAlternationPeriodDescription),
+        pref: onStageStatisticsAlternationPeriodTag,
         trailing: (num value) => Text("$value s"),
-        min: onStageStatisticsAlternationDurationMin,
-        max: onStageStatisticsAlternationDurationMax,
-        divisions: onStageStatisticsAlternationDurationDivisions,
+        min: onStageStatisticsAlternationPeriodMin,
+        max: onStageStatisticsAlternationPeriodMax,
+        divisions: onStageStatisticsAlternationPeriodDivisions,
         direction: Axis.vertical,
       ),
       const PrefInteger(
-        pref: onStageStatisticsAlternationDurationTag,
-        min: onStageStatisticsAlternationDurationMin,
-        max: onStageStatisticsAlternationDurationMax,
+        pref: onStageStatisticsAlternationPeriodTag,
+        min: onStageStatisticsAlternationPeriodMin,
+        max: onStageStatisticsAlternationPeriodMax,
       ),
     ];
 

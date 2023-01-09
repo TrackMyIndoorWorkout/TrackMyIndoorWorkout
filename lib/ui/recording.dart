@@ -206,7 +206,7 @@ class RecordingState extends State<RecordingScreen> {
 
   bool _instantOnStage = instantOnStageDefault;
   String _onStageStatisticsType = onStageStatisticsTypeDefault;
-  int _onStageStatisticsAlternationDuration = onStageStatisticsAlternationDurationDefault;
+  int _onStageStatisticsAlternationDuration = onStageStatisticsAlternationPeriodDefault;
 
   String _targetHrMode = targetHeartRateModeDefault;
   Tuple2<double, double> _targetHrBounds = const Tuple2(0, 0);
@@ -741,8 +741,8 @@ class RecordingState extends State<RecordingScreen> {
     _onStageStatisticsType =
         prefService.get<String>(onStageStatisticsTypeTag) ?? onStageStatisticsTypeDefault;
     _onStageStatisticsAlternationDuration =
-        prefService.get<int>(onStageStatisticsAlternationDurationTag) ??
-            onStageStatisticsAlternationDurationDefault;
+        prefService.get<int>(onStageStatisticsAlternationPeriodTag) ??
+            onStageStatisticsAlternationPeriodDefault;
 
     _metricToDataFn = {
       "power": _powerChartData,

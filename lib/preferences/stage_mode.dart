@@ -26,12 +26,12 @@ const onStageStatisticsTypeAlternatingTitle = "Alternating";
 const onStageStatisticsTypeAlternatingDescription =
     "Alternating between average and maximum by period set below.";
 
-const onStageStatisticsAlternationDuration = "Stat Alternation Period (s)";
-const onStageStatisticsAlternationDurationTag = "on_stage_statistics_alternation_period";
-const onStageStatisticsAlternationDurationMin = 1;
-const onStageStatisticsAlternationDurationDefault = 3;
-const onStageStatisticsAlternationDurationMax = 10;
-const onStageStatisticsAlternationDurationDivisions =
-    onStageStatisticsAlternationDurationMax - onStageStatisticsAlternationDurationMin;
-const onStageStatisticsAlternationDurationDescription =
+const onStageStatisticsAlternationPeriod = "Stat Alternation Period (s)";
+const onStageStatisticsAlternationPeriodTag = "on_stage_statistics_alternation_period";
+const onStageStatisticsAlternationPeriodMin = 1;
+const onStageStatisticsAlternationPeriodDefault = 3;
+const onStageStatisticsAlternationPeriodMax = 10;
+const onStageStatisticsAlternationPeriodDivisions =
+    onStageStatisticsAlternationPeriodMax - onStageStatisticsAlternationPeriodMin;
+const onStageStatisticsAlternationPeriodDescription =
     "Duration in seconds statistics type will stay before alternating.";
