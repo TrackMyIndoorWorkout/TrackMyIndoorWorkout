@@ -59,7 +59,7 @@ class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMix
         pref: instantOnStageTag,
       ),
       PrefLabel(
-        title: Text(onStageStatisticsTypeDescription, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(onStageStatisticsType, style: Get.textTheme.headline5!, maxLines: 3),
       ),
       const PrefRadio<String>(
         title: Text(onStageStatisticsTypeNoneTitle),
