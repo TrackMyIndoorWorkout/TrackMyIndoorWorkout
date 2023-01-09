@@ -103,14 +103,35 @@ class PowerSpeedMixin {
     driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
   }
 
-  double powerForVelocity(velocity) {
+  double sportFactor(String sport) {
+    // TODO: elaborate in the future with sport specific algorithms!
+    // When power is computed from speed meant to be used with cycling
+    // the powerForVelocity would yield too low values. This comes to surface
+    // for example with CSC sensor based Old Danube (#384). Kinomap would not
+    // progress without power values reported.
+    switch (sport) {
+      case ActivityType.run:
+      case ActivityType.rowing:
+        return 1.9;
+      case ActivityType.kayaking:
+      case ActivityType.canoeing:
+      case ActivityType.swim:
+        return 3.0;
+      case ActivityType.ride:
+      case ActivityType.elliptical:
+      default:
+        return 1.0;
+    }
+  }
+
+  double powerForVelocity(double velocity, String sport) {
     // https://www.gribble.org/cycling/power_v_speed.html
     // fDrag = 0.5 * frontalArea * dragCoefficient * airDensity * velocity * velocity;
     // totalForce = fRolling + fDrag;
     // wheelPower = totalForce * velocity;
     // driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
     // legPower = wheelPower / driveTrainFraction;
-    return (c + a * velocity * velocity) * velocity / driveTrainFraction;
+    return (c + a * velocity * velocity) * velocity / driveTrainFraction * sportFactor(sport);
   }
 
   double velocityForPowerCardano(int power) {

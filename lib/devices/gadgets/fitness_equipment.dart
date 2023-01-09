@@ -120,7 +120,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   bool supportsSpinDown = false;
   bool _blockSignalStartStop = blockSignalStartStopDefault;
   bool _enableAsserts = enableAssertsDefault;
-  double _powerMultiplier = 1.0;
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
@@ -139,12 +138,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         ) {
     readConfiguration();
     lastRecord = RecordWithSport(sport: sport);
-
-    // When power is computed from speed meant to be used with cycling
-    // the powerForVelocity would yield too low values. This comes to surface
-    // for example with CSC sensor based Old Danube (#384). Kinomap would not
-    // progress without power values reported.
-    _powerMultiplier = sport != ActivityType.ride ? 5.0 : 1.0;
   }
 
   String get sport => _activity?.sport ?? (descriptor?.sport ?? ActivityType.ride);
@@ -1071,8 +1064,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         } else if (!hasPowerReporting && (stub.speed ?? 0) > displayEps) {
           // When cycling supplement power from speed if missing
           // via https://www.gribble.org/cycling/power_v_speed.html
-          stub.power =
-              powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms * _powerMultiplier).toInt();
+          stub.power = powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms, sport).toInt();
         }
 
         if (stub.power != null) {
@@ -1105,7 +1097,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         stub.speed! > displayEps) {
       // When cycling supplement power from speed if missing
       // via https://www.gribble.org/cycling/power_v_speed.html
-      stub.power = (powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms) * _powerFactor).round();
+      stub.power =
+          (powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms, sport) * _powerFactor).round();
     }
 
     if (stub.pace != null && stub.pace! > 0.0 && slowPace != null && stub.pace! < slowPace! ||

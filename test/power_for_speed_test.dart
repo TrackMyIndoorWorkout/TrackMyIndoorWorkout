@@ -27,7 +27,8 @@ void main() {
         final speed2Power = PowerSpeedMixin();
         await speed2Power.initPower2SpeedConstants();
 
-        final power = speed2Power.powerForVelocity(testData.speed * DeviceDescriptor.kmh2ms);
+        final power = speed2Power.powerForVelocity(
+            testData.speed * DeviceDescriptor.kmh2ms, ActivityType.ride);
         expect(power, closeTo(testData.watts, testData.watts * workaroundEpsRatio));
       });
     }
