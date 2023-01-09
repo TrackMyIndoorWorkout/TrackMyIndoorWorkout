@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:string_validator/string_validator.dart';
 import '../../preferences/air_temperature.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
@@ -12,6 +10,7 @@ import '../../preferences/measurement_sink_address.dart';
 import '../../preferences/paddling_with_cycling_sensors.dart';
 import '../../preferences/water_wheel_circumference.dart';
 import '../../preferences/wheel_circumference.dart';
+import '../../utils/preferences.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
@@ -129,37 +128,16 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         pref: measurementSinkAddressTag,
         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z0-9:.]"))],
         validator: (str) {
-          if (str == null) {
+          if (str == null || str.isEmpty) {
             return null;
           }
 
-          if (str.contains(",")) {
-            return "This settings takes only one server name / IP address";
-          }
-
-          if (!isFQDN(str) && !isIP(str)) {
-            return "Doesn't look like a domain name or an IP address";
+          if (parseNetworkAddress(str, false) == dummyAddressTuple) {
+            return "Doesn't look like a domain name / IP address or doesn't have a port number";
           }
 
           return null;
         },
-      ),
-      PrefLabel(
-        title: Text(measurementSinkPort, style: Get.textTheme.headline5!, maxLines: 3),
-      ),
-      const PrefSlider<int>(
-        title: Text(measurementSinkPort),
-        subtitle: Text(measurementSinkPortDescription),
-        pref: measurementSinkPortTag,
-        min: portNumberMin,
-        max: portNumberMax,
-        divisions: portNumberDivisions,
-        direction: Axis.vertical,
-      ),
-      const PrefInteger(
-        pref: measurementSinkPortTag,
-        min: portNumberMin,
-        max: portNumberMax,
       ),
     ];
 

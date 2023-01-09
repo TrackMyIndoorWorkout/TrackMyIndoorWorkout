@@ -93,7 +93,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     appDebugModeTag: appDebugModeDefault,
     dataConnectionAddressesTag: dataConnectionAddressesDefault,
     measurementSinkAddressTag: measurementSinkAddressDefault,
-    measurementSinkPortTag: measurementSinkPortDefault,
     extendTuningTag: extendTuningDefault,
     strokeRateSmoothingIntTag: strokeRateSmoothingDefault,
     dataStreamGapWatchdogIntTag: dataStreamGapWatchdogDefault,

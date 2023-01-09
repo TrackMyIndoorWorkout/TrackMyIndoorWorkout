@@ -86,7 +86,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             return null;
           }
 
-          final addressTuples = parseIpAddresses(str);
+          final addressTuples = parseNetworkAddresses(str);
           if (addressTuples.isEmpty) {
             return null;
           } else {
