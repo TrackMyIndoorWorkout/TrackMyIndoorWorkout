@@ -152,6 +152,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     instantOnStageTag: instantOnStageDefault,
     onStageStatisticsTypeTag: onStageStatisticsTypeDefault,
     onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
+    averageChartColorTag: averageChartColorDefault,
+    maximumChartColorTag: maximumChartColorDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:track_my_indoor_exercise/ui/preferences/pref_integer.dart';
 import '../../preferences/stage_mode.dart';
 import '../../preferences/time_display_mode.dart';
 import '../../preferences/workout_mode.dart';
+import 'pref_color.dart';
+import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
 class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
@@ -99,6 +100,18 @@ class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMix
         pref: onStageStatisticsAlternationPeriodTag,
         min: onStageStatisticsAlternationPeriodMin,
         max: onStageStatisticsAlternationPeriodMax,
+      ),
+      PrefColor(
+        title: const Text(averageChartColor),
+        subtitle: const Text(averageChartColorDescription),
+        pref: averageChartColorTag,
+        defaultValue: averageChartColorDefault,
+      ),
+      PrefColor(
+        title: const Text(maximumChartColor),
+        subtitle: const Text(maximumChartColorDescription),
+        pref: maximumChartColorTag,
+        defaultValue: maximumChartColorDefault,
       ),
     ];
 
