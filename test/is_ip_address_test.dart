@@ -64,8 +64,7 @@ void main() {
     final rnd = Random();
     for (var index in List<int>.generate(repetition, (index) => index)) {
       final ipParts = getRandomInts(4, 320, rnd);
-      final expected =
-          ipParts.fold<bool>(true, (prev, part) => prev && part < maxUint8) && ipParts[0] > 0;
+      final expected = ipParts.fold<bool>(true, (prev, part) => prev && part < maxUint8);
       final addressString = ipParts.map((part) => part.toString()).join(".");
       test('$index.: $addressString -> $expected', () async {
         expect(isIP(addressString), expected);
