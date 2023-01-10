@@ -46,7 +46,7 @@ dependencies:
   soundpool: ^2.3.0
   sqflite: ^2.2.2
   string_validator: ^0.3.0
-  syncfusion_flutter_charts: ^20.4.42
+  syncfusion_flutter_charts: ^20.4.43
   tuple: ^2.0.1
   uni_links: ^0.5.1
   url_launcher: ^6.1.7
