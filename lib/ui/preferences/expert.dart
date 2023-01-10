@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:get/get.dart';
@@ -16,7 +17,6 @@ import '../../preferences/enforced_time_zone.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
-import '../../preferences/measurement_sink_address.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
 import 'preferences_screen_mixin.dart';
@@ -80,12 +80,13 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       PrefText(
         label: dataConnectionAddresses,
         pref: dataConnectionAddressesTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z0-9.:,]"))],
         validator: (str) {
           if (str == null) {
             return null;
           }
 
-          final addressTuples = parseIpAddresses(str);
+          final addressTuples = parseNetworkAddresses(str);
           if (addressTuples.isEmpty) {
             return null;
           } else {
@@ -242,30 +243,6 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           }
         },
         child: const Text("Clear All Logs"),
-      ),
-      PrefText(
-        label: measurementSinkAddress,
-        pref: measurementSinkAddressTag,
-        validator: (str) {
-          if (str == null) {
-            return null;
-          }
-
-          if (str.contains(",")) {
-            return "This settings takes only one address";
-          }
-
-          if (!str.contains(":")) {
-            return "Please specify a port number";
-          }
-
-          final addressTuple = parseIpAddress(str);
-          if (isDummyAddress(addressTuple)) {
-            return "The address seem to be malformed";
-          }
-
-          return null;
-        },
       ),
     ];
 

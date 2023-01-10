@@ -395,7 +395,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
         bool isPrimarySensor = descriptor.deviceCategory == DeviceCategory.primarySensor;
         if (descriptor.deviceCategory == DeviceCategory.secondarySensor) {
           final nameLowerCase = device.name.toLowerCase();
-          if (nameLowerCase.contains("speed") || nameLowerCase.contains("spd")) {
+          // Cadence sensor names contain CADENCE or CAD, or start with XOSS_VOR_C
+          // This is a heuristic until the #394 refactoring is done
+          if (nameLowerCase.contains("speed") ||
+              nameLowerCase.contains("spd") ||
+              nameLowerCase.contains("xoss_vor_s")) {
             descriptor.deviceCategory = DeviceCategory.primarySensor;
             isPrimarySensor = true;
           }

@@ -2,7 +2,6 @@ import 'package:floor/floor.dart';
 import '../../devices/device_factory.dart';
 import '../../devices/device_fourcc.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
-import '../../preferences/generic.dart';
 import '../../upload/constants.dart';
 import '../../upload/strava/constants.dart';
 import '../../upload/training_peaks/constants.dart';
