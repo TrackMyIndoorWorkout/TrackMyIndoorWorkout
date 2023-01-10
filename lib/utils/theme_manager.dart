@@ -215,13 +215,15 @@ class ThemeManager {
 
   Color getAverageChartColor() {
     final prefService = Get.find<BasePrefService>();
-    final averageChartColorValue = prefService.get<int>(averageChartColorTag) ?? averageChartColorDefault;
+    final averageChartColorValue =
+        prefService.get<int>(averageChartColorTag) ?? averageChartColorDefault;
     return Color(averageChartColorValue);
   }
 
   Color getMaximumChartColor() {
     final prefService = Get.find<BasePrefService>();
-    final maximumChartColorValue = prefService.get<int>(averageChartColorTag) ?? averageChartColorDefault;
+    final maximumChartColorValue =
+        prefService.get<int>(averageChartColorTag) ?? averageChartColorDefault;
     return Color(maximumChartColorValue);
   }
 }
