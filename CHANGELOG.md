@@ -1,3 +1,13 @@
+## 1.1.134
+* Display average / max / both metrics alongside the real time measurements
+* Display average / max / both statistics on the graphs
+* Separate wheel circumference settings for non cycling CSC based machines (Old Danube)
+* Ability to stream FTMS data to a special server (for augmenting an FTMS peripheral or processing)
+* Quick fix for Xoss Vortex speed sensor recognition
+* Numerous bug fixes and changes
+* Upgrading Flutter version
+* Upgrading numerous Flutter plugins
+
 ## 1.1.133
 * Adding a donation screen (PayPal, Buy Me A Coffee, Ko-fi me, Venmo, CashApp, Zelle)
 * Upgrading Flutter version

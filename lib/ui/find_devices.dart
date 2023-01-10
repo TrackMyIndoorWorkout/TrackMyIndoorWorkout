@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:track_my_indoor_exercise/ui/donation.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -52,6 +51,7 @@ import 'parts/sport_picker.dart';
 import 'preferences/preferences_hub.dart';
 import 'about.dart';
 import 'activities.dart';
+import 'donation.dart';
 import 'recording.dart';
 
 class FindDevicesScreen extends StatefulWidget {
@@ -361,11 +361,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     final database = Get.find<AppDatabase>();
-    DeviceUsage? deviceUsage;
-    if (await database.hasDeviceUsage(device.id.id)) {
-      deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.id.id).first;
-    }
-
+    var deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.id.id);
     FitnessEquipment? fitnessEquipment;
 
     bool preConnectLogic = true;
@@ -399,7 +395,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
         bool isPrimarySensor = descriptor.deviceCategory == DeviceCategory.primarySensor;
         if (descriptor.deviceCategory == DeviceCategory.secondarySensor) {
           final nameLowerCase = device.name.toLowerCase();
-          if (nameLowerCase.contains("speed") || nameLowerCase.contains("spd")) {
+          // Cadence sensor names contain CADENCE or CAD, or start with XOSS_VOR_C
+          // This is a heuristic until the #394 refactoring is done
+          if (nameLowerCase.contains("speed") ||
+              nameLowerCase.contains("spd") ||
+              nameLowerCase.contains("xoss_vor_s")) {
             descriptor.deviceCategory = DeviceCategory.primarySensor;
             isPrimarySensor = true;
           }
@@ -1034,7 +1034,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           }),
           _themeManager.getBlueFab(Icons.list_alt, () async {
             final database = Get.find<AppDatabase>();
-            final hasLeaderboardData = await database.hasLeaderboardData();
+            final hasLeaderboardData =
+                (await database.workoutSummaryDao.getLeaderboardDataCount() ?? 0) > 0;
             Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
           }),
           StreamBuilder<bool>(

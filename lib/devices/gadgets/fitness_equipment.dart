@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
-import 'package:pref/pref.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
@@ -469,7 +468,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<AppDatabase>()) {
       final database = Get.find<AppDatabase>();
-      final lastRecord = await database.recordDao.findLastRecordOfActivity(activity.id!).first;
+      final lastRecord = await database.recordDao.findLastRecordOfActivity(activity.id!);
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
@@ -1062,12 +1061,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           stub.power = (stub.caloriesPerMinute! * 50.0 / 3.0).round(); // 60 * 1000 / 3600
         } else if ((stub.caloriesPerHour ?? 0.0) > eps) {
           stub.power = (stub.caloriesPerHour! * 5.0 / 18.0).round(); // 1000 / 3600
-        } else if (!hasPowerReporting &&
-            sport == ActivityType.ride &&
-            (stub.speed ?? 0) > displayEps) {
+        } else if (!hasPowerReporting && (stub.speed ?? 0) > displayEps) {
           // When cycling supplement power from speed if missing
           // via https://www.gribble.org/cycling/power_v_speed.html
-          stub.power = powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms).toInt();
+          stub.power = powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms, sport).toInt();
         }
 
         if (stub.power != null) {
@@ -1100,7 +1097,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         stub.speed! > displayEps) {
       // When cycling supplement power from speed if missing
       // via https://www.gribble.org/cycling/power_v_speed.html
-      stub.power = (powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms) * _powerFactor).round();
+      stub.power =
+          (powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms, sport) * _powerFactor).round();
     }
 
     if (stub.pace != null && stub.pace! > 0.0 && slowPace != null && stub.pace! < slowPace! ||
@@ -1236,7 +1234,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       sensor.readConfiguration();
     }
 
-    final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
         prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
     _heartRateGapWorkaround =

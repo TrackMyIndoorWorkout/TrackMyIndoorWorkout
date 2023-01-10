@@ -3,6 +3,12 @@ import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import 'constants.dart';
 
+extension DurationDisplay on Duration {
+  String toDisplay() {
+    return toString().split('.').first.padLeft(8, "0");
+  }
+}
+
 double speedByUnitCore(double speed, bool si) {
   return si ? speed : speed * km2mi;
 }

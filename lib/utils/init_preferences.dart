@@ -36,6 +36,7 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
+import '../preferences/measurement_sink_address.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
 import '../preferences/multi_sport_device_support.dart';
@@ -46,6 +47,7 @@ import '../preferences/simpler_ui.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/stage_mode.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
@@ -55,11 +57,13 @@ import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
+import '../preferences/water_wheel_circumference.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/wheel_circumference.dart';
 import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
+import '../utils/preferences.dart';
 import 'constants.dart';
 
 Future<void> migrateStringIntegerPreference(
@@ -88,6 +92,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     measurementDetailSizeTag: measurementDetailSizeDefault,
     appDebugModeTag: appDebugModeDefault,
     dataConnectionAddressesTag: dataConnectionAddressesDefault,
+    measurementSinkAddressTag: measurementSinkAddressDefault,
     extendTuningTag: extendTuningDefault,
     strokeRateSmoothingIntTag: strokeRateSmoothingDefault,
     dataStreamGapWatchdogIntTag: dataStreamGapWatchdogDefault,
@@ -142,7 +147,13 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     dragForceTuneTag: dragForceTuneDefault,
     heartRateMonitorPriorityTag: heartRateMonitorPriorityDefault,
     wheelCircumferenceTag: wheelCircumferenceDefault,
+    waterWheelCircumferenceTag: waterWheelCircumferenceDefault,
     paddlingWithCyclingSensorsTag: paddlingWithCyclingSensorsDefault,
+    instantOnStageTag: instantOnStageDefault,
+    onStageStatisticsTypeTag: onStageStatisticsTypeDefault,
+    onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
+    averageChartColorTag: averageChartColorDefault,
+    maximumChartColorTag: maximumChartColorDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -332,6 +343,21 @@ Future<BasePrefService> initPreferences() async {
         prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
     if (!movingOrElapsedTime) {
       await prefService.set<String>(timeDisplayModeTag, timeDisplayModeElapsed);
+    }
+  }
+
+  // Remove white space from data connection string
+  if (prefVersion <= preferencesVersionNoWhitespaceInNetworkAddresses) {
+    final oldDataConnectionAddresses =
+        prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
+    if (oldDataConnectionAddresses.isNotEmpty) {
+      final newAddresses = oldDataConnectionAddresses.removeAllWhitespace
+          .split(",")
+          .map((address) => addDefaultPortIfMissing(address))
+          .join(",");
+      if (oldDataConnectionAddresses.length != newAddresses.length) {
+        prefService.set<String>(dataConnectionAddressesTag, newAddresses);
+      }
     }
   }
 

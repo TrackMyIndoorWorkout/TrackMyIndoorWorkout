@@ -2,6 +2,7 @@ import 'dart:math';
 
 import '../export/export_record.dart';
 import '../persistence/models/record.dart';
+import '../ui/models/display_record.dart';
 import 'constants.dart';
 
 class StatisticsAccumulator {
@@ -39,9 +40,17 @@ class StatisticsAccumulator {
   late int minCadence;
 
   double get avgPower => powerCount > 0 ? powerSum / powerCount : 0.0;
+  int get maxPowerDisplay => max(maxPower, 0);
+  int get minPowerDisplay => min(minPower, 0);
   double get avgSpeed => speedCount > 0 ? speedSum / speedCount : 0.0;
+  double get maxSpeedDisplay => max(maxSpeed, 0.0);
+  double get minSpeedDisplay => min(minSpeed, 0.0);
   int get avgCadence => cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0;
+  int get maxCadenceDisplay => max(maxCadence, 0);
+  int get minCadenceDisplay => min(minCadence, 0);
   int get avgHeartRate => heartRateCount > 0 ? heartRateSum ~/ heartRateCount : 0;
+  int get maxHeartRateDisplay => max(maxHeartRate, 0);
+  int get minHeartRateDisplay => min(minHeartRate, 0);
 
   StatisticsAccumulator({
     required this.si,
@@ -59,6 +68,10 @@ class StatisticsAccumulator {
     this.calculateMaxHeartRate = false,
     this.calculateMinHeartRate = false,
   }) {
+    reset();
+  }
+
+  void reset() {
     powerSum = 0;
     powerCount = 0;
     maxPower = maxInit;
@@ -77,7 +90,7 @@ class StatisticsAccumulator {
     minCadence = minInit;
   }
 
-  processExportRecord(ExportRecord exportRecord) {
+  void processExportRecord(ExportRecord exportRecord) {
     if ((exportRecord.record.power ?? 0) > 0) {
       if (calculateAvgPower) {
         powerSum += exportRecord.record.power!;
@@ -139,7 +152,7 @@ class StatisticsAccumulator {
     }
   }
 
-  processRecord(Record record) {
+  void processRecord(Record record) {
     if (record.power != null) {
       if (calculateAvgPower && record.power! > 0) {
         powerSum += record.power!;
@@ -199,5 +212,25 @@ class StatisticsAccumulator {
         minCadence = min(minCadence, record.cadence!);
       }
     }
+  }
+
+  DisplayRecord averageDisplayRecord(DateTime? timestamp) {
+    return DisplayRecord.forValues(
+        sport,
+        timestamp,
+        avgPower > eps ? avgPower.round() : null,
+        avgSpeed > 0 ? avgSpeed : null,
+        avgCadence > 0 ? avgCadence : null,
+        avgHeartRate > 0 ? avgHeartRate : null);
+  }
+
+  DisplayRecord maximumDisplayRecord(DateTime? timestamp) {
+    return DisplayRecord.forValues(
+        sport,
+        timestamp,
+        maxPower > 0 ? maxPower : null,
+        maxSpeed > 0 ? maxSpeed : null,
+        maxCadence > 0 ? maxCadence : null,
+        maxHeartRate > 0 ? maxHeartRate : null);
   }
 }

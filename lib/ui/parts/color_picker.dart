@@ -8,7 +8,8 @@ import '../../utils/theme_manager.dart';
 
 class ColorPickerBottomSheet extends StatefulWidget {
   final Color color;
-  const ColorPickerBottomSheet({Key? key, required this.color}) : super(key: key);
+  final ValueChanged<Color>? onChanged;
+  const ColorPickerBottomSheet({Key? key, required this.color, this.onChanged}) : super(key: key);
 
   @override
   ColorPickerBottomSheetState createState() => ColorPickerBottomSheetState();
@@ -46,6 +47,7 @@ class ColorPickerBottomSheetState extends State<ColorPickerBottomSheet> {
         child: CircleColorPicker(
           controller: _controller,
           onChanged: (color) {
+            widget.onChanged?.call(_color);
             setState(() {
               _color = color;
             });

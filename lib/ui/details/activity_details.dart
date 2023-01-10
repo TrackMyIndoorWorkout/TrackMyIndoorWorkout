@@ -46,6 +46,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   int _pointCount = 0;
   List<Record> _allRecords = [];
   List<DisplayRecord> _sampledRecords = [];
+  List<DisplayRecord> _averageRecords = [];
   final Map<String, TileConfiguration> _tileConfigurations = {};
   final List<String> _tiles = [];
   bool _initialized = false;
@@ -71,6 +72,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   Color _chartTextColor = Colors.black;
+  Color _chartAvgColor = Colors.orange;
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
   TextStyle _chartLabelStyle = const TextStyle(
     fontFamily: fontFamily,
@@ -95,6 +97,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           growable: false,
         );
       }
+
       final measurementCounter = MeasurementCounter(si: _si, sport: widget.activity.sport);
       for (var record in _allRecords) {
         measurementCounter.processRecord(record);
@@ -115,6 +118,12 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
       for (var record in _allRecords) {
         accu.processRecord(record);
       }
+
+      _averageRecords = List.generate(
+        _sampledRecords.length,
+        (i) => accu.averageDisplayRecord(_sampledRecords[i].dt),
+        growable: false,
+      );
 
       _paletteSpec = PaletteSpec.getInstance(prefService);
 
@@ -339,6 +348,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
       color: _chartTextColor,
     );
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    _chartAvgColor = _themeManager.getAverageChartColor();
 
     extraInit(prefService);
   }
@@ -356,6 +366,13 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
+        animationDuration: 0,
+      ),
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _averageRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.power,
+        color: _chartAvgColor,
         animationDuration: 0,
       ),
     ];
@@ -388,6 +405,13 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         color: _chartTextColor,
         animationDuration: 0,
       ),
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _averageRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
+        color: _chartAvgColor,
+        animationDuration: 0,
+      ),
     ];
   }
 
@@ -418,6 +442,13 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         color: _chartTextColor,
         animationDuration: 0,
       ),
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _averageRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.cadence,
+        color: _chartAvgColor,
+        animationDuration: 0,
+      ),
     ];
   }
 
@@ -446,6 +477,13 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         xValueMapper: (DisplayRecord record, _) => record.dt,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
+        animationDuration: 0,
+      ),
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: _averageRecords,
+        xValueMapper: (DisplayRecord record, _) => record.dt,
+        yValueMapper: (DisplayRecord record, _) => record.heartRate,
+        color: _chartAvgColor,
         animationDuration: 0,
       ),
     ];
