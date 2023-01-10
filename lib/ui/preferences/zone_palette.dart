@@ -55,7 +55,6 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
   @override
   Widget build(BuildContext context) {
     List<Widget> items = _palette.mapIndexed((index, color) {
-      debugPrint("$index $color");
       return Container(
         padding: const EdgeInsets.all(5.0),
         margin: const EdgeInsets.all(5.0),
@@ -63,7 +62,19 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
           style: ButtonStyle(backgroundColor: MaterialStateProperty.all(color)),
           onPressed: () async {
             final Color? newColor = await Get.bottomSheet(
-              ColorPickerBottomSheet(color: color),
+              SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: ColorPickerBottomSheet(color: color),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
 

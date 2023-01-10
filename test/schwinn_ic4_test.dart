@@ -15,11 +15,9 @@ void main() {
   test('Schwinn IC4 constructor tests', () async {
     final bike = DeviceFactory.getSchwinnIcBike();
 
-    expect(bike.canMeasureHeartRate, true);
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, schwinnICBikeFourCC);
     expect(bike.isMultiSport, false);
-    expect(bike.shouldSignalStartStop, false);
   });
 
   test('Schwinn IC4 interprets FTMS Indoor Bike Data flags properly', () async {
@@ -27,8 +25,8 @@ void main() {
     const lsb = 68;
     const msb = 2;
     const flag = maxUint8 * msb + lsb;
+    bike.initFlag();
     bike.stopWorkout();
-
     bike.processFlag(flag);
 
     expect(bike.speedMetric, isNotNull);
@@ -39,7 +37,7 @@ void main() {
     expect(bike.timeMetric, null);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
-    expect(bike.heartRateByteIndex, isNotNull);
+    expect(bike.heartRateByteIndex, 8);
   });
 
   group('Schwinn IC4 interprets FTMS Indoor Bike Data properly', () {
@@ -157,7 +155,7 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
         final bike = DeviceFactory.getSchwinnIcBike();
         bike.initFlag();

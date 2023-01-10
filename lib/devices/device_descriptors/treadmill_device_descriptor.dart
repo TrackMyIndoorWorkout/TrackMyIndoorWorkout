@@ -1,6 +1,12 @@
+import 'package:collection/collection.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../persistence/models/record.dart';
-import '../../utils/constants.dart';
-import '../gatt_constants.dart';
+import '../../utils/guid_ex.dart';
+import '../device_fourcc.dart';
+import '../gadgets/complex_sensor.dart';
+import '../gadgets/running_speed_and_cadence_sensor.dart';
+import '../gatt/ftms.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
@@ -13,27 +19,21 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     required fourCC,
     required vendorName,
     required modelName,
-    required namePrefixes,
-    manufacturerPrefix,
+    manufacturerNamePart,
     manufacturerFitId,
     model,
-    dataServiceId = fitnessMachineUuid,
-    dataCharacteristicId = treadmillUuid,
-    canMeasureHeartRate = false,
     heartRateByteIndex,
   }) : super(
-          defaultSport: ActivityType.run,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,
-          namePrefixes: namePrefixes,
-          manufacturerPrefix: manufacturerPrefix,
+          manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
-          dataServiceId: dataServiceId,
-          dataCharacteristicId: dataCharacteristicId,
-          canMeasureHeartRate: canMeasureHeartRate,
+          dataServiceId: fitnessMachineUuid,
+          dataCharacteristicId: treadmillUuid,
           heartRateByteIndex: heartRateByteIndex,
         );
 
@@ -42,20 +42,15 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
         fourCC: fourCC,
         vendorName: vendorName,
         modelName: modelName,
-        namePrefixes: namePrefixes,
-        manufacturerPrefix: manufacturerPrefix,
+        manufacturerNamePart: manufacturerNamePart,
         manufacturerFitId: manufacturerFitId,
         model: model,
-        dataServiceId: dataServiceId,
-        dataCharacteristicId: dataCharacteristicId,
-        canMeasureHeartRate: canMeasureHeartRate,
         heartRateByteIndex: heartRateByteIndex,
       );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
   void processFlag(int flag) {
-    super.processFlag(flag);
     // negated first bit!
     flag = processSpeedFlag(flag);
     flag = skipFlag(flag); // Average Speed
@@ -70,15 +65,18 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     flag = processElapsedTimeFlag(flag);
     flag = skipFlag(flag); // Remaining Time
     flag = processForceAndPowerFlag(flag);
+
+    // #320 The Reserved flag is set
+    hasFutureReservedBytes = flag > 0;
   }
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
     double? speed = getSpeed(data);
     double? pace = getPace(data); // km / minute
-    speed ??= (pace ?? 0.0) * 60.0; // km / h
     // Run pace is not really a pace (speed reciprocal) but it's km/min
     if (pace != null && pace > 0) {
+      speed ??= pace * 60.0; // km/min -> km / h
       pace = 1 / pace; // now minutes / km
     }
 
@@ -88,9 +86,9 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: speed,
-      heartRate: getHeartRate(data)?.toInt(),
+      heartRate: getHeartRate(data),
       pace: pace,
-      sport: defaultSport,
+      sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
     );
@@ -98,6 +96,20 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   void stopWorkout() {}
+
+  @override
+  List<ComplexSensor> getAdditionalSensors(
+      BluetoothDevice device, List<BluetoothService> services) {
+    final requiredService = services.firstWhereOrNull(
+        (service) => service.uuid.uuidString() == RunningSpeedAndCadenceSensor.serviceUuid);
+    if (requiredService == null) {
+      return [];
+    }
+
+    final additionalSensor = RunningSpeedAndCadenceSensor(device);
+    additionalSensor.services = services;
+    return [additionalSensor];
+  }
 
   int processPaceFlag(int flag) {
     if (flag % 2 == 1) {

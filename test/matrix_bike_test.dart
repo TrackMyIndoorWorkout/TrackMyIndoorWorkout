@@ -23,8 +23,7 @@ void main() {
   test('Matrix Bike constructor tests', () async {
     final bike = MatrixBikeDescriptor();
 
-    expect(bike.canMeasureHeartRate, false);
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, matrixBikeFourCC);
   });
 
@@ -36,8 +35,8 @@ void main() {
       test(flagBytes.description, () async {
         final bike = MatrixBikeDescriptor();
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
+        bike.initFlag();
         bike.stopWorkout();
-
         bike.processFlag(flag);
 
         expect(bike.speedMetric, isNotNull);
@@ -64,7 +63,7 @@ void main() {
           power: 0,
           speed: 0.0,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -80,7 +79,7 @@ void main() {
           power: 0,
           speed: 0.0,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -96,7 +95,7 @@ void main() {
           power: 162,
           speed: 32.03,
           cadence: 67,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -104,7 +103,7 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
         final bike = MatrixBikeDescriptor();
         bike.initFlag();

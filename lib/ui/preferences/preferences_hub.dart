@@ -1,16 +1,15 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
-import '../../preferences/enforced_time_zone.dart';
 import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import 'athlete.dart';
-import 'data_preferences.dart';
+import 'data.dart';
 import 'equipment.dart';
 import 'expert.dart';
+import 'heart_rate.dart';
 import 'integrations.dart';
 import 'leaderboard.dart';
 import 'target_heart_rate.dart';
@@ -86,6 +85,26 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
                 children: [
                   TextOneLine(
                     DataPreferencesScreen.shortTitle,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => const HeartRatePreferencesScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    HeartRatePreferencesScreen.shortTitle,
                     style: _textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
@@ -240,14 +259,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
             padding: const EdgeInsets.all(5.0),
             margin: const EdgeInsets.all(5.0),
             child: ElevatedButton(
-              onPressed: () async {
-                final timeZoneChoicesFixed = await FlutterNativeTimezone.getAvailableTimezones();
-                List<String> timeZoneChoices = [];
-                timeZoneChoices.addAll(timeZoneChoicesFixed);
-                timeZoneChoices.sort();
-                timeZoneChoices.insert(0, enforcedTimeZoneDefault);
-                Get.to(() => ExpertPreferencesScreen(timeZoneChoices: timeZoneChoices));
-              },
+              onPressed: () => Get.to(() => const ExpertPreferencesScreen()),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,

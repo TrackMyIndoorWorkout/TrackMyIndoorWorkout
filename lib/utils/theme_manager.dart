@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:overlay_tutorial/overlay_tutorial.dart';
 import '../ui/about.dart';
 import '../preferences/theme_selection.dart';
 import '../utils/constants.dart';
@@ -40,45 +39,6 @@ class ThemeManager {
     );
   }
 
-  OverlayTutorialHole _wrapInOverlayHole(
-    bool enabled,
-    String text,
-    int annotationYOffset,
-    Widget widget,
-  ) {
-    return OverlayTutorialHole(
-      enabled: enabled,
-      overlayTutorialEntry: OverlayTutorialRectEntry(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        radius: const Radius.circular(16.0),
-        overlayTutorialHints: <OverlayTutorialWidgetHint>[
-          OverlayTutorialWidgetHint(
-            builder: (context, oRect) {
-              final annotation = Text(
-                text,
-                style: Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
-              );
-              if ((oRect.rRect?.center.dx ?? 0.0) < Get.width / 2) {
-                return Positioned(
-                  top: (oRect.rRect?.top ?? 0.0) + 4.0 + annotationYOffset,
-                  left: (oRect.rRect?.right ?? 0.0) + 4.0,
-                  child: annotation,
-                );
-              } else {
-                return Positioned(
-                  top: (oRect.rRect?.top ?? 0.0) + 4.0 + annotationYOffset,
-                  right: Get.width - (oRect.rRect?.left ?? 4.0) + 4.0,
-                  child: annotation,
-                );
-              }
-            },
-          ),
-        ],
-      ),
-      child: widget,
-    );
-  }
-
   Color getHeaderColor() {
     return isDark() ? Colors.indigo : Colors.lightBlue;
   }
@@ -97,6 +57,10 @@ class ThemeManager {
 
   Color getGreenColor() {
     return isDark() ? Colors.lightGreenAccent : Colors.green;
+  }
+
+  Color getGreenColorInverse() {
+    return isDark() ? Colors.green : Colors.lightGreenAccent;
   }
 
   Color getYellowColor() {
@@ -135,21 +99,6 @@ class ThemeManager {
     return Icon(icon, color: getGreyColor(), size: size);
   }
 
-  OverlayTutorialHole getBlueIconWithHole(
-    IconData icon,
-    double size,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-  ) {
-    return _wrapInOverlayHole(
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      Icon(icon, color: getBlueColor(), size: size),
-    );
-  }
-
   Icon getActionIcon(IconData icon, double size) {
     return Icon(icon, color: getProtagonistColor(), size: size);
   }
@@ -162,50 +111,24 @@ class ThemeManager {
     Color foregroundColor,
     Color backgroundColor,
     Widget widget,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
     VoidCallback? onPressed,
     GlobalKey? key,
   ) {
-    key ??= GlobalKey();
-    final fab = FloatingActionButton(
-      key: key,
+    return FloatingActionButton(
+      key: key ?? GlobalKey(),
       heroTag: null,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
       onPressed: onPressed,
       child: widget,
     );
-
-    return wrapInHole
-        ? _wrapInOverlayHole(
-            overlayEnabled,
-            overlayText,
-            annotationYOffset,
-            fab,
-          )
-        : fab;
   }
 
-  Widget getIconFab(
-    Color color,
-    IconData icon,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-    VoidCallback? onPressed,
-  ) {
+  Widget getIconFab(Color color, IconData icon, VoidCallback? onPressed) {
     return _getFabCore(
       getAntagonistColor(),
       color,
       Icon(icon),
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
       onPressed,
       null,
     );
@@ -214,10 +137,6 @@ class ThemeManager {
   Widget getIconFabWKey(
     Color color,
     IconData icon,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
     VoidCallback? onPressed,
     GlobalKey? key,
   ) {
@@ -225,118 +144,39 @@ class ThemeManager {
       getAntagonistColor(),
       color,
       Icon(icon),
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
       onPressed,
       key,
     );
   }
 
-  Widget getBlueFab(
-    IconData icon,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-    VoidCallback? onPressed,
-  ) {
-    return getIconFab(
-      getBlueColor(),
-      icon,
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      onPressed,
-    );
+  Widget getBlueFab(IconData icon, VoidCallback? onPressed) {
+    return getIconFab(getBlueColor(), icon, onPressed);
   }
 
-  Widget getGreenFab(
-    IconData icon,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-    VoidCallback? onPressed,
-  ) {
-    return getIconFab(
-      getGreenColor(),
-      icon,
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      onPressed,
-    );
+  Widget getGreenFab(IconData icon, VoidCallback? onPressed) {
+    return getIconFab(getGreenColor(), icon, onPressed);
   }
 
-  Widget getBlueFabWKey(
-    IconData icon,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-    VoidCallback? onPressed,
-    GlobalKey? key,
-  ) {
-    return getIconFabWKey(
-      getBlueColor(),
-      icon,
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      onPressed,
-      key,
-    );
+  Widget getBlueFabWKey(IconData icon, VoidCallback? onPressed, GlobalKey? key) {
+    return getIconFabWKey(getBlueColor(), icon, onPressed, key);
   }
 
-  Widget getGreenFabWKey(
-    IconData icon,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-    VoidCallback? onPressed,
-    GlobalKey? key,
-  ) {
-    return getIconFabWKey(
-      getGreenColor(),
-      icon,
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      onPressed,
-      key,
-    );
+  Widget getGreenFabWKey(IconData icon, VoidCallback? onPressed, GlobalKey? key) {
+    return getIconFabWKey(getGreenColor(), icon, onPressed, key);
   }
 
-  Widget getGreenGenericFab(
-    Widget widget,
-    wrapInHole,
-    overlayEnabled,
-    overlayText,
-    annotationYOffset,
-    VoidCallback? onPressed,
-  ) {
+  Widget getGreenGenericFab(Widget widget, VoidCallback? onPressed) {
     return _getFabCore(
       getAntagonistColor(),
       getGreenColor(),
       widget,
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
       onPressed,
       null,
     );
   }
 
   Widget getGreyFab(IconData icon, VoidCallback? onPressed) {
-    return getIconFab(getGreyColor(), icon, false, false, "", 0, onPressed);
+    return getIconFab(getGreyColor(), icon, onPressed);
   }
 
   Widget getRankIcon(int rank) {
@@ -345,47 +185,24 @@ class ThemeManager {
       Colors.black,
       getYellowColor(),
       Text(rank.toString(), style: textStyle),
-      false,
-      false,
-      "",
-      0,
       () {},
       null,
     );
   }
 
-  Widget getHelpFab(
-    IconData icon,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-    VoidCallback? onPressed,
-  ) {
-    return _getFabCore(
-      Colors.white,
-      Colors.lightBlue,
-      Icon(icon),
-      true,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      onPressed,
-      null,
-    );
+  Widget getHelpFab(IconData icon, VoidCallback? onPressed) {
+    return _getFabCore(Colors.white, Colors.lightBlue, Icon(icon), onPressed, null);
   }
 
-  Widget getAboutFab(bool overlayEnabled) {
+  Widget getAboutFab() {
     return getHelpFab(
       Icons.help,
-      overlayEnabled,
-      "About & Help",
-      0,
       () => Get.to(() => const AboutScreen()),
     );
   }
 
-  Widget getTutorialFab(bool overlayEnabled, VoidCallback? onPressed) {
-    return getHelpFab(Icons.info_rounded, overlayEnabled, "Help Overlay", 0, onPressed);
+  Widget getTutorialFab(VoidCallback? onPressed) {
+    return getHelpFab(Icons.info_rounded, onPressed);
   }
 
   TextStyle boldStyle(TextStyle style, {double fontSizeFactor = 1.0}) {

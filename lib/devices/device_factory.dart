@@ -1,8 +1,20 @@
 import '../export/fit/fit_manufacturer.dart';
 import '../utils/constants.dart';
 import 'device_descriptors/cross_trainer_device_descriptor.dart';
+import 'device_descriptors/concept2_rower.dart';
+import 'device_descriptors/cycling_power_meter_descriptor.dart';
+import 'device_descriptors/cycling_speed_and_cadence_descriptor.dart';
+import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
+import 'device_descriptors/matrix_bike_descriptor.dart';
+import 'device_descriptors/matrix_treadmill_descriptor.dart';
+import 'device_descriptors/mr_captain_descriptor.dart';
+import 'device_descriptors/npe_runn_treadmill.dart';
+import 'device_descriptors/paddling_speed_and_cadence_descriptor.dart';
+import 'device_descriptors/precor_spinner_chrono_power.dart';
 import 'device_descriptors/rower_device_descriptor.dart';
+import 'device_descriptors/schwinn_ac_performance_plus.dart';
+import 'device_descriptors/schwinn_x70.dart';
 import 'device_descriptors/treadmill_device_descriptor.dart';
 import 'device_fourcc.dart';
 
@@ -12,8 +24,7 @@ class DeviceFactory {
       fourCC: schwinnICBikeFourCC,
       vendorName: "Nautilus, Inc",
       modelName: "Schwinn IC4/IC8",
-      namePrefixes: ["IC Bike"],
-      manufacturerPrefix: "Nautilus",
+      manufacturerNamePart: "Nautilus",
       manufacturerFitId: nautilusFitId,
       model: "IC BIKE",
       canMeasureCalories: false,
@@ -25,8 +36,7 @@ class DeviceFactory {
       fourCC: bowflexC7BikeFourCC,
       vendorName: "Nautilus Inc.",
       modelName: "Bowflex C7",
-      namePrefixes: ["C7-"],
-      manufacturerPrefix: "Nautilus",
+      manufacturerNamePart: "Nautilus",
       manufacturerFitId: nautilusFitId,
       model: "Bowflex C7",
       canMeasureCalories: false,
@@ -38,11 +48,9 @@ class DeviceFactory {
       fourCC: schwinnUprightBikeFourCC,
       vendorName: "Nautilus, Inc",
       modelName: "Schwinn 230/510",
-      namePrefixes: ["SCH130", "SCH230", "SCH510"],
-      manufacturerPrefix: "Nautilus",
+      manufacturerNamePart: "Nautilus",
       manufacturerFitId: nautilusFitId,
       model: "SCH BIKE",
-      shouldSignalStartStop: true,
     );
   }
 
@@ -51,8 +59,7 @@ class DeviceFactory {
       fourCC: stagesSB20FourCC,
       vendorName: "Stages Cycling",
       modelName: "SB20",
-      namePrefixes: ["Stages Bike"],
-      manufacturerPrefix: "Stages",
+      manufacturerNamePart: "Stages",
       manufacturerFitId: stagesCyclingFitId,
       model: "SB20",
     );
@@ -63,8 +70,7 @@ class DeviceFactory {
       fourCC: yesoulS3FourCC,
       vendorName: "Yesoul",
       modelName: "S3",
-      namePrefixes: ["Yesoul"],
-      manufacturerPrefix: "Yesoul",
+      manufacturerNamePart: "Yesoul",
       manufacturerFitId: stravaFitId,
       model: "S3",
     );
@@ -72,27 +78,13 @@ class DeviceFactory {
 
   static RowerDeviceDescriptor getKayaPro() {
     return RowerDeviceDescriptor(
-      defaultSport: ActivityType.kayaking,
+      sport: deviceSportDescriptors[kayakProGenesisPortFourCC]!.defaultSport,
       fourCC: kayakProGenesisPortFourCC,
       vendorName: "KayakPro",
       modelName: "KayakPro Compact",
-      namePrefixes: ["KayakPro", "KP"],
-      manufacturerPrefix: "North Pole Engineering",
+      manufacturerNamePart: "North Pole Engineering",
       manufacturerFitId: northPoleEngineeringFitId,
       model: "64",
-      canMeasureHeartRate: false,
-    );
-  }
-
-  static TreadmillDeviceDescriptor getNpeRunn() {
-    return TreadmillDeviceDescriptor(
-      fourCC: npeRunnFourCC,
-      vendorName: "North Pole Engineering Inc.",
-      modelName: "Generic Treadmill",
-      namePrefixes: ["RUNN"],
-      manufacturerPrefix: "North Pole Engineering",
-      manufacturerFitId: northPoleEngineeringFitId,
-      model: "77",
     );
   }
 
@@ -101,8 +93,7 @@ class DeviceFactory {
       fourCC: genericFTMSTreadmillFourCC,
       vendorName: "Unknown",
       modelName: "Generic Treadmill",
-      namePrefixes: ["FTMS Treadmill"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Treadmill",
     );
@@ -113,8 +104,7 @@ class DeviceFactory {
       fourCC: genericFTMSBikeFourCC,
       vendorName: "Unknown",
       modelName: "Generic Indoor Bike",
-      namePrefixes: ["FTMS Bike"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Indoor Bike",
     );
@@ -122,13 +112,12 @@ class DeviceFactory {
 
   static RowerDeviceDescriptor getGenericFTMSKayaker() {
     return RowerDeviceDescriptor(
-      defaultSport: ActivityType.kayaking,
-      isMultiSport: false,
+      sport: deviceSportDescriptors[genericFTMSKayakFourCC]!.defaultSport,
+      isMultiSport: deviceSportDescriptors[genericFTMSKayakFourCC]!.isMultiSport,
       fourCC: genericFTMSKayakFourCC,
       vendorName: "Unknown",
       modelName: "Generic Kayak Ergometer",
-      namePrefixes: ["FTMS Kayak"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Kayak Ergometer",
     );
@@ -136,13 +125,12 @@ class DeviceFactory {
 
   static RowerDeviceDescriptor getGenericFTMSCanoeer() {
     return RowerDeviceDescriptor(
-      defaultSport: ActivityType.canoeing,
+      sport: deviceSportDescriptors[genericFTMSCanoeFourCC]!.defaultSport,
       isMultiSport: false,
       fourCC: genericFTMSCanoeFourCC,
       vendorName: "Unknown",
       modelName: "Generic Canoe Ergometer",
-      namePrefixes: ["FTMS Canoe"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Canoe Ergometer",
     );
@@ -150,13 +138,12 @@ class DeviceFactory {
 
   static RowerDeviceDescriptor getGenericFTMSRower() {
     return RowerDeviceDescriptor(
-      defaultSport: ActivityType.rowing,
-      isMultiSport: false,
+      sport: deviceSportDescriptors[genericFTMSRowerFourCC]!.defaultSport,
+      isMultiSport: deviceSportDescriptors[genericFTMSRowerFourCC]!.isMultiSport,
       fourCC: genericFTMSRowerFourCC,
       vendorName: "Unknown",
       modelName: "Generic Rower Ergometer",
-      namePrefixes: ["FTMS Rower"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Rower Ergometer",
     );
@@ -164,13 +151,12 @@ class DeviceFactory {
 
   static RowerDeviceDescriptor getGenericFTMSSwimmer() {
     return RowerDeviceDescriptor(
-      defaultSport: ActivityType.swim,
-      isMultiSport: false,
+      sport: deviceSportDescriptors[genericFTMSSwimFourCC]!.defaultSport,
+      isMultiSport: deviceSportDescriptors[genericFTMSSwimFourCC]!.isMultiSport,
       fourCC: genericFTMSSwimFourCC,
       vendorName: "Unknown",
       modelName: "Generic Swim Ergometer",
-      namePrefixes: ["FTMS Swim"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Swim Ergometer",
     );
@@ -179,13 +165,12 @@ class DeviceFactory {
   // Delete this?
   static RowerDeviceDescriptor getGenericFTMSElliptical() {
     return RowerDeviceDescriptor(
-      defaultSport: ActivityType.elliptical,
-      isMultiSport: false,
+      sport: deviceSportDescriptors[genericFTMSEllipticalFourCC]!.defaultSport,
+      isMultiSport: deviceSportDescriptors[genericFTMSEllipticalFourCC]!.isMultiSport,
       fourCC: genericFTMSEllipticalFourCC,
       vendorName: "Unknown",
       modelName: "Generic Cross Elliptical",
-      namePrefixes: ["FTMS Elliptical"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Elliptical",
     );
@@ -196,10 +181,133 @@ class DeviceFactory {
       fourCC: genericFTMSCrossTrainerFourCC,
       vendorName: "Unknown",
       modelName: "Generic Cross Trainer",
-      namePrefixes: ["FTMS Cross Trainer"],
-      manufacturerPrefix: "Unknown",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Cross Trainer",
     );
+  }
+
+  static CyclingPowerMeterDescriptor getPowerMeterBasedBike() {
+    return CyclingPowerMeterDescriptor(
+      fourCC: powerMeterBasedBikeFourCC,
+      vendorName: "Unknown",
+      modelName: "Power Meter Based Bike",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Power Meter Based Bike",
+    );
+  }
+
+  static CyclingSpeedAndCadenceDescriptor getCSCBasedBike() {
+    return CyclingSpeedAndCadenceDescriptor(
+      fourCC: cscSensorBasedBikeFourCC,
+      vendorName: "Unknown",
+      modelName: "Speed and Cadence Sensor Bike",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Speed and Cadence Sensor Bike",
+    );
+  }
+
+  static PaddlingSpeedAndCadenceDescriptor getCSCBasedPaddler() {
+    return PaddlingSpeedAndCadenceDescriptor(
+      fourCC: cscSensorBasedPaddleFourCC,
+      vendorName: "Old Danube",
+      modelName: "Old Danube",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Old Danube",
+    );
+  }
+
+  static DeviceDescriptor getDescriptorForFourCC(String fourCC) {
+    switch (fourCC) {
+      case precorSpinnerChronoPowerFourCC:
+        return PrecorSpinnerChronoPower();
+      case schwinnICBikeFourCC:
+        return DeviceFactory.getSchwinnIcBike();
+      case bowflexC7BikeFourCC:
+        return DeviceFactory.getBowflexC7();
+      case schwinnUprightBikeFourCC:
+        return DeviceFactory.getSchwinnUprightBike();
+      case schwinnX70BikeFourCC:
+        return SchwinnX70();
+      case stagesSB20FourCC:
+        return DeviceFactory.getStagesSB20();
+      case yesoulS3FourCC:
+        return DeviceFactory.getYesoulS3();
+      case schwinnACPerfPlusFourCC:
+        return SchwinnACPerformancePlus();
+      case matrixBikeFourCC:
+        return MatrixBikeDescriptor();
+      case kayakProGenesisPortFourCC:
+        return DeviceFactory.getKayaPro();
+      case mrCaptainRowerFourCC:
+        return MrCaptainDescriptor();
+      case npeRunnFourCC:
+        return NpeRunnTreadmill();
+      case matrixTreadmillFourCC:
+        return MatrixTreadmillDescriptor();
+      case genericFTMSTreadmillFourCC:
+        return DeviceFactory.getGenericFTMSTreadmill();
+      case genericFTMSBikeFourCC:
+        return DeviceFactory.getGenericFTMSBike();
+      case genericFTMSKayakFourCC:
+        return DeviceFactory.getGenericFTMSKayaker();
+      case genericFTMSCanoeFourCC:
+        return DeviceFactory.getGenericFTMSCanoeer();
+      case genericFTMSRowerFourCC:
+        return DeviceFactory.getGenericFTMSRower();
+      case genericFTMSSwimFourCC:
+        return DeviceFactory.getGenericFTMSSwimmer();
+      // Delete this?
+      case genericFTMSEllipticalFourCC:
+        return DeviceFactory.getGenericFTMSElliptical();
+      case genericFTMSCrossTrainerFourCC:
+        return DeviceFactory.getGenericFTMSCrossTrainer();
+      case powerMeterBasedBikeFourCC:
+        return DeviceFactory.getPowerMeterBasedBike();
+      case cscSensorBasedBikeFourCC:
+        return DeviceFactory.getCSCBasedBike();
+      case cscSensorBasedPaddleFourCC:
+        return DeviceFactory.getCSCBasedPaddler();
+      case concept2RowerFourCC:
+        return Concept2Rower();
+    }
+
+    return DeviceFactory.getGenericFTMSBike();
+  }
+
+  static DeviceDescriptor genericDescriptorForSport(String sport) {
+    String fourCC = genericFTMSBikeFourCC;
+    switch (sport) {
+      case ActivityType.ride:
+        fourCC = genericFTMSBikeFourCC;
+        break;
+      case ActivityType.run:
+        fourCC = genericFTMSTreadmillFourCC;
+        break;
+      case ActivityType.kayaking:
+        fourCC = genericFTMSKayakFourCC;
+        break;
+      case ActivityType.canoeing:
+        fourCC = genericFTMSCanoeFourCC;
+        break;
+      case ActivityType.rowing:
+        fourCC = genericFTMSRowerFourCC;
+        break;
+      case ActivityType.swim:
+        fourCC = genericFTMSSwimFourCC;
+        break;
+      case ActivityType.elliptical:
+        fourCC = genericFTMSCrossTrainerFourCC;
+        break;
+    }
+
+    return DeviceFactory.getDescriptorForFourCC(fourCC);
+  }
+
+  static List<DeviceDescriptor> allDescriptors() {
+    return [for (var fourCC in allFourCC) DeviceFactory.getDescriptorForFourCC(fourCC)];
   }
 }

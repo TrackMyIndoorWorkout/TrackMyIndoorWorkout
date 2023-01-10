@@ -1,7 +1,7 @@
 import 'package:floor/floor.dart';
+import '../../devices/device_factory.dart';
+import '../../devices/device_fourcc.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
-import '../../devices/device_map.dart';
-import '../../preferences/generic.dart';
 import '../../upload/constants.dart';
 import '../../upload/google_fit/constants.dart';
 import '../../upload/strava/constants.dart';
@@ -205,7 +205,13 @@ class Activity {
   }
 
   DeviceDescriptor deviceDescriptor() {
-    return deviceMap[fourCC] ?? genericDescriptorForSport(sport);
+    return allFourCC.contains(fourCC)
+        ? DeviceFactory.getDescriptorForFourCC(fourCC)
+        : DeviceFactory.genericDescriptorForSport(sport);
+  }
+
+  String uniqueIntegrationString() {
+    return "$id $stravaId $suuntoUploadIdentifier $uaWorkoutId $trainingPeaksWorkoutId";
   }
 
   WorkoutSummary getWorkoutSummary(String manufacturer) {

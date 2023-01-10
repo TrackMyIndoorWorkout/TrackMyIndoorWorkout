@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_descriptors/schwinn_ac_performance_plus.dart';
+import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
-import '../devices/device_map.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/models/record.dart';
 import '../persistence/database.dart';
@@ -100,21 +100,24 @@ class CSVImporter with PowerSpeedMixin {
       return null;
     }
 
+    _migration = false;
     _linePointer = 0;
     final firstLine = _lines[0].split(",");
     if (firstLine.length > 1) {
       if (firstLine[0] != csvMagic) {
-        message = "Cannot recognize migration CSV magic";
-        return null;
-      }
+        if (firstLine[0].isNotEmpty) {
+          message = "Cannot recognize migration CSV magic";
+          return null;
+        }
+      } else {
+        if (!firstLine[1].isNumericOnly) {
+          message = "CSV version number is not an integer";
+          return null;
+        }
 
-      if (!firstLine[1].isNumericOnly) {
-        message = "CSV version number is not an integer";
-        return null;
+        _migration = true;
+        _version = int.parse(firstLine[1]);
       }
-
-      _migration = true;
-      _version = int.parse(firstLine[1]);
     }
 
     if (!_findLine(rideSummaryTag)) {
@@ -470,17 +473,27 @@ class CSVImporter with PowerSpeedMixin {
         _linePointer++;
       }
     } else {
-      DeviceDescriptor device = deviceMap[schwinnACPerfPlusFourCC]!;
+      DeviceDescriptor device = DeviceFactory.getDescriptorForFourCC(schwinnACPerfPlusFourCC);
       final factors = await database.getFactors(deviceId);
-      deviceName = device.namePrefixes[0];
       fourCC = device.fourCC;
-      sport = device.defaultSport;
+      deviceName = deviceNamePrefixes[fourCC]![0];
+      sport = device.sport;
       calorieFactor = factors.item2 *
           (device.canMeasureCalories ? 1.0 : DeviceDescriptor.powerCalorieFactorDefault);
       hrCalorieFactor = factors.item3;
       hrBasedCalories = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
           useHeartRateBasedCalorieCountingDefault;
       powerFactor = factors.item1;
+      if (start == null) {
+        // User choose the wrong type of import
+        Get.snackbar(
+          "Not CSV migration data",
+          "The current time will be assumed as workout time. "
+              "Select MPower import to specify time",
+        );
+        start = DateTime.now();
+      }
+
       startTime = start!.millisecondsSinceEpoch;
       endTime = start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch;
     }

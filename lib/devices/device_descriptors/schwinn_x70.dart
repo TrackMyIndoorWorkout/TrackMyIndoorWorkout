@@ -1,12 +1,23 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../export/fit/fit_manufacturer.dart';
+import '../../preferences/log_level.dart';
 import '../../persistence/models/record.dart';
 import '../../utils/constants.dart';
+import '../../utils/guid_ex.dart';
+import '../../utils/logging.dart';
 import '../../utils/power_speed_mixin.dart';
 import '../device_fourcc.dart';
 import '../gadgets/cadence_mixin.dart';
-import '../gatt_constants.dart';
+import '../gadgets/complex_sensor.dart';
+import '../gadgets/schwinn_x70_hr_sensor.dart';
+import '../gatt/ftms.dart';
+import '../gatt/schwinn_x70.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/six_byte_metric_descriptor.dart';
@@ -16,6 +27,9 @@ import 'device_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
 
 class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpeedMixin {
+  static const magicNumbers = [17, 32, 0];
+  static const magicFlag = 32 * 256 + 17;
+
   MetricDescriptor? resistanceMetric;
   // From https://github.com/ursoft/connectivity-samples/blob/main/BluetoothLeGatt/Application/src/main/java/com/example/android/bluetoothlegatt/BluetoothLeService.java
   static const List<double> resistancePowerFactor = [
@@ -25,8 +39,6 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     1.72, 1.88, 2.04, // 20-22
     2.20, 2.36, 2.52 // 23-25
   ];
-  // static const kooiboyCalorieFactor = 1.25;
-  // static const kooiboyCalorieDivider = 1.0 / kooiboyCalorieFactor;
   late double lastTime;
   late double lastCalories;
   late double lastPower;
@@ -35,24 +47,24 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
 
   SchwinnX70()
       : super(
-          defaultSport: ActivityType.ride,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[schwinnX70BikeFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[schwinnX70BikeFourCC]!.isMultiSport,
           fourCC: schwinnX70BikeFourCC,
           vendorName: "Schwinn",
           modelName: "SCHWINN 170/270",
-          namePrefixes: ["SCHWINN 170", "SCHWINN 270", "SCHWINN 570"],
-          manufacturerPrefix: "Nautilus", // "SCHWINN 170/270"
+          manufacturerNamePart: "Nautilus", // "SCHWINN 170/270"
           manufacturerFitId: nautilusFitId,
           model: "",
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
-          canMeasureHeartRate: false,
+          controlCharacteristicId: schwinnX70ControlUuid,
+          listenOnControl: false,
           timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1.0),
           caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 1.0),
           cadenceMetric: ThreeByteMetricDescriptor(lsb: 4, msb: 6, divider: 1.0),
         ) {
     resistanceMetric = ByteMetricDescriptor(lsb: 16);
-    initCadence(10, 64, maxUint24);
+    initCadence(5, 64, maxUint24);
     initPower2SpeedConstants();
     lastTime = -1.0;
     lastCalories = -1.0;
@@ -67,12 +79,17 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   bool isDataProcessable(List<int> data) {
     if (data.length != 17) return false;
 
-    const measurementPrefix = [17, 32, 0];
+    const measurementPrefix = magicNumbers;
     for (int i = 0; i < measurementPrefix.length; i++) {
       if (data[i] != measurementPrefix[i]) return false;
     }
 
     return true;
+  }
+
+  @override
+  bool isFlagValid(int flag) {
+    return flag == magicFlag;
   }
 
   @override
@@ -92,12 +109,12 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       lastCalories = calories!;
       lastPower = 0.0;
       lastRecord = null;
-      return RecordWithSport(sport: defaultSport);
+      return RecordWithSport(sport: sport);
     } else if (time == lastTime) {
-      return lastRecord ?? RecordWithSport(sport: defaultSport);
+      return lastRecord ?? RecordWithSport(sport: sport);
     }
 
-    addCadenceData(time! / 1024, getCadence(data)?.toInt());
+    addCadenceData(time! / 1024, getCadence(data));
     final resistance = max((resistanceMetric?.getMeasurementValue(data)?.toInt() ?? 1) - 1, 0);
     final deltaCalories = max(calories! - lastCalories, 0);
     lastCalories = calories;
@@ -129,9 +146,9 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       calories: calories ~/ 2097152,
       power: integerPower,
       speed: speed,
-      cadence: computeCadence(),
+      cadence: min(computeCadence(), maxByte),
       heartRate: null,
-      sport: defaultSport,
+      sport: sport,
     );
     if (testing) {
       record.elapsedMillis = time ~/ 1.024;
@@ -140,5 +157,71 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     lastRecord = record;
 
     return record;
+  }
+
+  @override
+  Future<void> executeControlOperation(
+      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
+      {int? controlInfo}) async {
+    if (!await FlutterBluePlus.instance.isOn) {
+      return;
+    }
+
+    if (controlPoint == null || blockSignalStartStop) {
+      return;
+    }
+
+    if (opCode == startOrResumeControl /* requestControl */ || opCode == stopOrPauseControl) {
+      return;
+    }
+
+    if (opCode == requestControl /* startOrResumeControl */) {
+      List<int> startHrStreamCommand = [
+        0x5 /* length */,
+        0x3 /* seq-с ceiling */,
+        0xd9 /* crc = sum to 0 */,
+        0x0,
+        0x1f /* command */
+      ];
+
+      try {
+        await controlPoint.write(startHrStreamCommand);
+      } on PlatformException catch (e, stack) {
+        Logging.log(
+          logLevel,
+          logLevelError,
+          "Sch x70",
+          "executeControlOperation",
+          "${e.message}",
+        );
+        debugPrint("$e");
+        debugPrintStack(stackTrace: stack, label: "trace:");
+      }
+    }
+  }
+
+  @override
+  List<ComplexSensor> getAdditionalSensors(
+      BluetoothDevice device, List<BluetoothService> services) {
+    final requiredService = services
+        .firstWhereOrNull((service) => service.uuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
+    if (requiredService == null) {
+      return [];
+    }
+
+    final requiredCharacteristic = requiredService.characteristics
+        .firstWhereOrNull((ch) => ch.uuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
+    if (requiredCharacteristic == null) {
+      return [];
+    }
+
+    final additionalSensor = SchwinnX70HrSensor(device);
+    additionalSensor.services = services;
+    return [additionalSensor];
+  }
+
+  @override
+  void trimQueues() {
+    trimQueue();
   }
 }

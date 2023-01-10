@@ -149,7 +149,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                               onPressed: () async {
                                 final workoutUrl = widget.activity.workoutUrl(e.value.name);
                                 if (await canLaunchUrlString(workoutUrl)) {
-                                  launchUrlString(workoutUrl);
+                                  launchUrlString(workoutUrl, mode: LaunchMode.externalApplication);
                                 } else {
                                   Get.snackbar("Attention", "Cannot open URL");
                                 }
@@ -166,6 +166,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
 
     return Scaffold(
       body: ListView(children: choiceRows),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.back()),
     );
   }
 }

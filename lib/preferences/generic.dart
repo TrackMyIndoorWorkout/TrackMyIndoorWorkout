@@ -9,13 +9,8 @@ const preferencesVersionIncreaseWatchdogDefault = 5;
 const preferencesVersionZoneRefinementDefault = 6;
 const preferencesVersionExclusiveSportOrDeviceLeaderboard = 7;
 const preferencesVersionTimeDisplayMode = 8;
-const preferencesVersionDefault = preferencesVersionTimeDisplayMode;
+const preferencesVersionNoWhitespaceInNetworkAddresses = 9;
+const preferencesVersionDefault = preferencesVersionNoWhitespaceInNetworkAddresses;
 const preferencesVersionNext = preferencesVersionDefault + 1;
 
 const intTagPostfix = "_int";
-
-extension DurationDisplay on Duration {
-  String toDisplay() {
-    return toString().split('.').first.padLeft(8, "0");
-  }
-}

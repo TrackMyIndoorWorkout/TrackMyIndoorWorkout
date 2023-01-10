@@ -20,11 +20,9 @@ void main() {
   test('Mr Captain Rower Device constructor tests', () async {
     final rower = MrCaptainDescriptor();
 
-    expect(rower.canMeasureHeartRate, true);
-    expect(rower.defaultSport, ActivityType.rowing);
+    expect(rower.sport, ActivityType.rowing);
     expect(rower.fourCC, mrCaptainRowerFourCC);
     expect(rower.isMultiSport, false);
-    expect(rower.shouldSignalStartStop, true);
   });
 
   test('Rower Device interprets Mr Captain flags properly', () async {
@@ -45,8 +43,8 @@ void main() {
     // C12 elapsed time uint16 (s) 1
     // total length (1 + 2 + 3 + 2 + 2 + 2) + (2 + 2 + 1 + 1 + 2) = 12 + 8 = 20
     const flag = maxUint8 * msb + lsb;
+    rower.initFlag();
     rower.stopWorkout();
-
     rower.processFlag(flag);
 
     expect(rower.strokeRateMetric, isNotNull);
@@ -74,6 +72,7 @@ void main() {
           power: 0,
           speed: null,
           cadence: 0,
+          strokeCount: 0.0,
           heartRate: 0,
           pace: 0.0,
           sport: ActivityType.rowing,
@@ -90,6 +89,7 @@ void main() {
           power: 5,
           speed: null,
           cadence: 1,
+          strokeCount: 1.0,
           heartRate: 0,
           pace: 6000.0,
           sport: ActivityType.rowing,
@@ -106,6 +106,7 @@ void main() {
           power: 350,
           speed: null,
           cadence: 24,
+          strokeCount: 2.0,
           heartRate: 0,
           pace: 209.0,
           sport: ActivityType.rowing,
@@ -122,6 +123,7 @@ void main() {
           power: 600,
           speed: null,
           cadence: 17,
+          strokeCount: 3.0,
           heartRate: 0,
           pace: 295.0,
           sport: ActivityType.rowing,
@@ -138,6 +140,7 @@ void main() {
           power: 375,
           speed: null,
           cadence: 22,
+          strokeCount: 4.0,
           heartRate: 0,
           pace: 227.0,
           sport: ActivityType.rowing,
@@ -154,6 +157,7 @@ void main() {
           power: 350,
           speed: null,
           cadence: 18,
+          strokeCount: 5.0,
           heartRate: 0,
           pace: 281.0,
           sport: ActivityType.rowing,
@@ -170,6 +174,7 @@ void main() {
           power: 366,
           speed: null,
           cadence: 66,
+          strokeCount: 0.0,
           heartRate: 0,
           pace: 0.0,
           sport: ActivityType.rowing,
@@ -178,7 +183,7 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
         final rower = MrCaptainDescriptor();
         rower.initFlag();

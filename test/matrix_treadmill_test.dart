@@ -23,8 +23,7 @@ void main() {
   test('Matrix Treadmill constructor tests', () async {
     final treadmill = MatrixTreadmillDescriptor();
 
-    expect(treadmill.canMeasureHeartRate, false);
-    expect(treadmill.defaultSport, ActivityType.run);
+    expect(treadmill.sport, ActivityType.run);
     expect(treadmill.fourCC, matrixTreadmillFourCC);
   });
 
@@ -36,8 +35,8 @@ void main() {
       test(flagBytes.description, () async {
         final treadmill = MatrixTreadmillDescriptor();
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
+        treadmill.initFlag();
         treadmill.stopWorkout();
-
         treadmill.processFlag(flag);
 
         expect(treadmill.speedMetric, isNotNull);
@@ -64,7 +63,7 @@ void main() {
           power: null,
           speed: 0.0,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,
@@ -80,7 +79,7 @@ void main() {
           power: null,
           speed: 0.81,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,
@@ -96,7 +95,7 @@ void main() {
           power: null,
           speed: 0.81,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,
@@ -112,7 +111,7 @@ void main() {
           power: null,
           speed: 9.66,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,
@@ -128,7 +127,7 @@ void main() {
           power: null,
           speed: 9.66,
           cadence: null,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,
@@ -136,7 +135,7 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
         final treadmill = MatrixTreadmillDescriptor();
         treadmill.initFlag();

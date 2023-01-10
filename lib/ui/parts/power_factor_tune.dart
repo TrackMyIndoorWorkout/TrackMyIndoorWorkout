@@ -48,27 +48,34 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0, () async {
-        final database = Get.find<AppDatabase>();
-        final powerFactor = _powerFactorPercent / 100.0;
-        PowerTune? powerTune;
-        if (await database.hasPowerTune(widget.deviceId)) {
-          powerTune = await database.powerTuneDao.findPowerTuneByMac(widget.deviceId).first;
-        }
-
-        if (powerTune != null) {
-          powerTune.powerFactor = powerFactor;
-          await database.powerTuneDao.updatePowerTune(powerTune);
-        } else {
-          final powerTune = PowerTune(
-            mac: widget.deviceId,
-            powerFactor: powerFactor,
-            time: DateTime.now().millisecondsSinceEpoch,
-          );
-          await database.powerTuneDao.insertPowerTune(powerTune);
-        }
-        Get.back(result: powerFactor);
-      }),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            const SizedBox(width: 10, height: 10),
+            _themeManager.getGreenFab(Icons.check, () async {
+              final database = Get.find<AppDatabase>();
+              final powerFactor = _powerFactorPercent / 100.0;
+              final powerTune = await database.powerTuneDao.findPowerTuneByMac(widget.deviceId);
+              if (powerTune != null) {
+                powerTune.powerFactor = powerFactor;
+                await database.powerTuneDao.updatePowerTune(powerTune);
+              } else {
+                final powerTune = PowerTune(
+                  mac: widget.deviceId,
+                  powerFactor: powerFactor,
+                  time: DateTime.now().millisecondsSinceEpoch,
+                );
+                await database.powerTuneDao.insertPowerTune(powerTune);
+              }
+              Get.back(result: powerFactor);
+            }),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -69,8 +69,21 @@ class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomS
             .toList(growable: false),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(
-          Icons.check, false, false, "", 0, () => Get.back(result: _formatChoices[_formatIndex])),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            const SizedBox(width: 10, height: 10),
+            _themeManager.getGreenFab(
+              Icons.check,
+              () => Get.back(result: _formatChoices[_formatIndex]),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -6,17 +6,19 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:spinner_input/spinner_input.dart';
 import 'package:tuple/tuple.dart';
+
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/bluetooth_device_ex.dart';
-import '../../devices/gatt_constants.dart';
+import '../../devices/gatt/ftms.dart';
+import '../../devices/gatt/generic.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
+import 'spinner_input.dart';
 
 class SpinDownBottomSheet extends StatefulWidget {
   const SpinDownBottomSheet({Key? key}) : super(key: key);
@@ -81,13 +83,13 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   bool get _canSubmitWeight =>
       _spinDownPossible && _calibrationState == CalibrationState.readyToWeighIn;
 
-  Tuple2<int, int> getWeightBytes(int weight) {
-    final weightTransport = (weight * (_si ? 1.0 : lbToKg) * 200).round();
+  static Tuple2<int, int> getWeightBytes(int weight, bool si) {
+    final weightTransport = (weight * (si ? 1.0 : lbToKg) * 200).round();
     return Tuple2<int, int>(weightTransport % maxUint8, weightTransport ~/ maxUint8);
   }
 
-  int getWeightFromBytes(int weightLsb, int weightMsb) {
-    return (weightLsb + weightMsb * maxUint8) / (_si ? 1.0 : lbToKg) ~/ 200;
+  static int getWeightFromBytes(int weightLsb, int weightMsb, bool si) {
+    return (weightLsb + weightMsb * maxUint8) * (si ? 1.0 : kgToLb) ~/ 200;
   }
 
   @override
@@ -99,7 +101,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         prefService.get<bool>(rememberAthleteBodyWeightTag) ?? rememberAthleteBodyWeightDefault;
     _preferencesWeight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     _weight = (_preferencesWeight * (_si ? 1.0 : kgToLb)).round();
-    final weightBytes = getWeightBytes(_weight);
+    final weightBytes = getWeightBytes(_weight, _si);
     _oldWeightLsb = weightBytes.item1;
     _oldWeightMsb = weightBytes.item2;
     _newWeightLsb = weightBytes.item1;
@@ -142,9 +144,8 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     }
 
     if (!(_fitnessEquipment?.discovered ?? false)) return false;
-
-    // #117 Attach the handler way ahead of the spin down start command write
-    await _fitnessEquipment?.connectToControlPoint(false);
+    // #117 ControlPoint is attached as part of the discover()
+    // (so way ahead of the spin down start command write)
 
     if (!(_fitnessEquipment?.supportsSpinDown ?? false)) return false;
 
@@ -183,7 +184,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
             _calibrationState = CalibrationState.weighInProblem;
             _oldWeightLsb = response[0];
             _oldWeightMsb = response[1];
-            _weight = getWeightFromBytes(_oldWeightLsb, _oldWeightMsb);
+            _weight = getWeightFromBytes(_oldWeightLsb, _oldWeightMsb, _si);
           });
         } else {
           if (response[0] == _newWeightLsb && response[1] == _newWeightMsb) {
@@ -274,7 +275,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       backColor = _isLight ? Colors.lightGreen.shade100 : Colors.green.shade900;
     }
 
-    return ElevatedButton.styleFrom(primary: backColor);
+    return ElevatedButton.styleFrom(backgroundColor: backColor);
   }
 
   String _weightInputButtonText() {
@@ -294,7 +295,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   ButtonStyle _weightInputButtonStyle() {
     return ElevatedButton.styleFrom(
-      primary: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
+      backgroundColor: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
           ? (_isLight ? Colors.lightGreen.shade100 : Colors.green.shade900)
           : (_isLight ? Colors.black12 : Colors.black87),
     );
@@ -318,7 +319,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     setState(() {
       _calibrationState = CalibrationState.weightSubmitting;
     });
-    final newWeightBytes = getWeightBytes(_weight);
+    final newWeightBytes = getWeightBytes(_weight, _si);
     _newWeightLsb = newWeightBytes.item1;
     _newWeightMsb = newWeightBytes.item2;
     try {
@@ -408,14 +409,12 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         .listen((status) {
       if (status.length == 2 && status[0] == spinDownStatus) {
         if (status[1] == spinDownStatusSuccess) {
-          _reset();
           setState(() {
             _step = stepDone;
             _calibrationState = CalibrationState.calibrationSuccess;
           });
         }
         if (status[1] == spinDownStatusError) {
-          _reset();
           setState(() {
             _step = stepDone;
             _calibrationState = CalibrationState.calibrationFail;
@@ -440,36 +439,15 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     });
   }
 
-  Future<void> _detachControlPoint() async {
-    await _fitnessEquipment?.controlPoint?.setNotifyValue(false);
-    _controlPointSubscription?.cancel();
-  }
-
   Future<void> _detachWeightData() async {
     await _weightData?.setNotifyValue(false);
     _weightDataSubscription?.cancel();
   }
 
-  Future<void> _detachFitnessMachineStatus() async {
-    _fitnessEquipment?.status?.setNotifyValue(false);
-    _fitnessEquipment?.statusSubscription?.cancel();
-  }
-
-  Future<void> _detachFitnessMachine() async {
-    _fitnessEquipment?.calibrating = false;
-    await _fitnessEquipment?.detach();
-  }
-
-  Future<void> _reset() async {
-    await _detachControlPoint();
-    await _detachWeightData();
-    await _detachFitnessMachineStatus();
-    await _detachFitnessMachine();
-  }
-
   @override
   void dispose() {
-    _reset();
+    _controlPointSubscription?.cancel();
+    _detachWeightData();
 
     super.dispose();
   }
@@ -493,16 +471,10 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                     minValue: 1,
                     maxValue: 800,
                     middleNumberStyle: _largerTextStyle,
-                    plusButton: SpinnerButtonStyle(
-                      height: _sizeDefault * 2,
-                      width: _sizeDefault * 2,
-                      child: Icon(Icons.add, size: _sizeDefault * 2 - 10),
-                    ),
-                    minusButton: SpinnerButtonStyle(
-                      height: _sizeDefault * 2,
-                      width: _sizeDefault * 2,
-                      child: Icon(Icons.remove, size: _sizeDefault * 2 - 10),
-                    ),
+                    plusButtonSize: Size(_sizeDefault * 2, _sizeDefault * 2),
+                    plusButtonChild: Icon(Icons.add, size: _sizeDefault * 2 - 10),
+                    minusButtonSize: Size(_sizeDefault * 2, _sizeDefault * 2),
+                    minusButtonChild: Icon(Icons.remove, size: _sizeDefault * 2 - 10),
                     onChange: (newValue) {
                       setState(() {
                         _weight = newValue.toInt();
@@ -595,8 +567,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton:
-          _themeManager.getBlueFab(Icons.clear, false, false, "Close", 0, () => Get.close(1)),
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.close(1)),
     );
   }
 }

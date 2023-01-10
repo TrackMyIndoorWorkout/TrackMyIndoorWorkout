@@ -9,6 +9,7 @@ import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
 import '../preferences/bike_weight.dart';
+import '../preferences/block_signal_start_stop.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
@@ -16,13 +17,17 @@ import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
+import '../preferences/drag_force_tune.dart';
 import '../preferences/drive_train_loss.dart';
+import '../preferences/enable_asserts.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/extend_tuning.dart';
 import '../preferences/generic.dart';
 import '../preferences/has_logged_messages.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
+import '../preferences/heart_rate_monitor_priority.dart';
+import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
@@ -31,16 +36,18 @@ import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
+import '../preferences/measurement_sink_address.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
 import '../preferences/multi_sport_device_support.dart';
+import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/scan_duration.dart';
-import '../preferences/should_signal_start_stop.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/stage_mode.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
@@ -50,10 +57,13 @@ import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
+import '../preferences/water_wheel_circumference.dart';
 import '../preferences/welcome_presented.dart';
+import '../preferences/wheel_circumference.dart';
 import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
+import '../utils/preferences.dart';
 import 'constants.dart';
 
 Future<void> migrateStringIntegerPreference(
@@ -82,6 +92,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     measurementDetailSizeTag: measurementDetailSizeDefault,
     appDebugModeTag: appDebugModeDefault,
     dataConnectionAddressesTag: dataConnectionAddressesDefault,
+    measurementSinkAddressTag: measurementSinkAddressDefault,
     extendTuningTag: extendTuningDefault,
     strokeRateSmoothingIntTag: strokeRateSmoothingDefault,
     dataStreamGapWatchdogIntTag: dataStreamGapWatchdogDefault,
@@ -126,10 +137,21 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     bikeWeightTag: bikeWeightDefault,
     driveTrainLossTag: driveTrainLossDefault,
     airTemperatureTag: airTemperatureDefault,
-    shouldSignalStartStopTag: shouldSignalStartStopDefault,
+    blockSignalStartStopTag: blockSignalStartStopDefault,
     timeDisplayModeTag: timeDisplayModeDefault,
     welcomePresentedTag: welcomePresentedDefault,
     hasLoggedMessagesTag: hasLoggedMessagesDefault,
+    instantExportTag: instantExportDefault,
+    instantExportLocationTag: instantExportLocationDefault,
+    enableAssertsTag: enableAssertsDefault,
+    dragForceTuneTag: dragForceTuneDefault,
+    heartRateMonitorPriorityTag: heartRateMonitorPriorityDefault,
+    wheelCircumferenceTag: wheelCircumferenceDefault,
+    waterWheelCircumferenceTag: waterWheelCircumferenceDefault,
+    paddlingWithCyclingSensorsTag: paddlingWithCyclingSensorsDefault,
+    instantOnStageTag: instantOnStageDefault,
+    onStageStatisticsTypeTag: onStageStatisticsTypeDefault,
+    onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -319,6 +341,21 @@ Future<BasePrefService> initPreferences() async {
         prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
     if (!movingOrElapsedTime) {
       await prefService.set<String>(timeDisplayModeTag, timeDisplayModeElapsed);
+    }
+  }
+
+  // Remove white space from data connection string
+  if (prefVersion <= preferencesVersionNoWhitespaceInNetworkAddresses) {
+    final oldDataConnectionAddresses =
+        prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
+    if (oldDataConnectionAddresses.isNotEmpty) {
+      final newAddresses = oldDataConnectionAddresses.removeAllWhitespace
+          .split(",")
+          .map((address) => addDefaultPortIfMissing(address))
+          .join(",");
+      if (oldDataConnectionAddresses.length != newAddresses.length) {
+        prefService.set<String>(dataConnectionAddressesTag, newAddresses);
+      }
     }
   }
 

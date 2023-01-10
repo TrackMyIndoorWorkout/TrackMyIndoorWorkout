@@ -79,7 +79,7 @@ class ImportFormState extends State<ImportForm> {
                       style: TextStyle(fontSize: 30),
                     ),
                     onPressed: () async {
-                      FilePickerResult? result = await FilePicker.platform.pickFiles();
+                      final result = await FilePicker.platform.pickFiles();
                       if (result != null && result.files.single.path != null) {
                         _textController.text = result.files.single.path!;
                         setState(() {
@@ -178,8 +178,8 @@ class ImportFormState extends State<ImportForm> {
                               Get.snackbar("Success", "Workout imported!");
                               if (_leaderboardFeature) {
                                 final deviceDescriptor = activity.deviceDescriptor();
-                                final workoutSummary =
-                                    activity.getWorkoutSummary(deviceDescriptor.manufacturerPrefix);
+                                final workoutSummary = activity
+                                    .getWorkoutSummary(deviceDescriptor.manufacturerNamePart);
                                 final database = Get.find<AppDatabase>();
                                 await database.workoutSummaryDao
                                     .insertWorkoutSummary(workoutSummary);

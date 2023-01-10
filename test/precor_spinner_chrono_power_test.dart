@@ -15,8 +15,7 @@ void main() {
   test('Precor Spinner Chrono Power constructor tests', () async {
     final bike = PrecorSpinnerChronoPower();
 
-    expect(bike.canMeasureHeartRate, true);
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, precorSpinnerChronoPowerFourCC);
   });
 
@@ -198,7 +197,7 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum", () async {
         final bike = PrecorSpinnerChronoPower();
         expect(bike.isDataProcessable(testPair.data), true);

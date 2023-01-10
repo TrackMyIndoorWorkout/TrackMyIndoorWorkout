@@ -8,6 +8,7 @@ import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_fourcc.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../utils/constants.dart';
 import '../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
 import 'dao/calorie_tune_dao.dart';
@@ -43,58 +44,22 @@ abstract class AppDatabase extends FloorDatabase {
   PowerTuneDao get powerTuneDao;
   WorkoutSummaryDao get workoutSummaryDao;
 
-  Future<int> rowCount(String tableName, String deviceId, {String extraPredicate = ""}) async {
-    var queryString = "SELECT COUNT(`id`) AS cnt FROM `$tableName` WHERE `mac` = ?";
-    if (extraPredicate.isNotEmpty) {
-      queryString += " AND $extraPredicate";
-    }
-
-    final result = await database.rawQuery(queryString, [deviceId]);
-
-    if (result.isEmpty) {
-      return 0;
-    }
-
-    return result[0]['cnt'] as int? ?? 0;
-  }
-
-  Future<bool> hasDeviceUsage(String deviceId) async {
-    return await rowCount(deviceUsageTableName, deviceId) > 0;
-  }
-
-  Future<bool> hasPowerTune(String deviceId) async {
-    return await rowCount(powerTuneTableName, deviceId) > 0;
-  }
-
   Future<double> powerFactor(String deviceId) async {
-    if (!await hasPowerTune(deviceId)) {
-      return 1.0;
-    }
-
-    final powerTune = await powerTuneDao.findPowerTuneByMac(deviceId).first;
-
+    final powerTune = await powerTuneDao.findPowerTuneByMac(deviceId);
     return powerTune?.powerFactor ?? 1.0;
   }
 
-  Future<bool> hasCalorieTune(String deviceId, bool hrBased) async {
-    final extraPredicate = "`hr_based` = ${hrBased ? 1 : 0}";
-    return await rowCount(calorieTuneTableName, deviceId, extraPredicate: extraPredicate) > 0;
-  }
-
   Future<CalorieTune?> findCalorieTuneByMac(String mac, bool hrBased) async {
-    if (!await hasCalorieTune(mac, hrBased)) {
-      return null;
-    }
-
     if (hrBased) {
-      return await calorieTuneDao.findHrCalorieTuneByMac(mac).first;
+      return await calorieTuneDao.findHrCalorieTuneByMac(mac);
     } else {
-      return await calorieTuneDao.findCalorieTuneByMac(mac).first;
+      return await calorieTuneDao.findCalorieTuneByMac(mac);
     }
   }
 
   Future<double> calorieFactorValue(String deviceId, bool hrBased) async {
-    return (await findCalorieTuneByMac(deviceId, hrBased))?.calorieFactor ?? 1.0;
+    final calorieTune = await findCalorieTuneByMac(deviceId, hrBased);
+    return calorieTune?.calorieFactor ?? 1.0;
   }
 
   Future<Tuple3<double, double, double>> getFactors(String deviceId) async {
@@ -103,28 +68,6 @@ abstract class AppDatabase extends FloorDatabase {
       await calorieFactorValue(deviceId, false),
       await calorieFactorValue(deviceId, true),
     );
-  }
-
-  Future<bool> hasLeaderboardData() async {
-    final result =
-        await database.rawQuery("SELECT COUNT(`id`) AS cnt FROM `$workoutSummariesTableName`");
-
-    if (result.isEmpty) {
-      return false;
-    }
-
-    return (result[0]['cnt'] as int? ?? 0) > 0;
-  }
-
-  Future<List<String>> findDistinctWorkoutSummarySports() async {
-    final result =
-        await database.rawQuery("SELECT DISTINCT `sport` FROM `$workoutSummariesTableName`");
-
-    if (result.isEmpty) {
-      return [];
-    }
-
-    return result.map((row) => row['sport'].toString()).toList(growable: false);
   }
 
   Future<List<Tuple3<String, String, String>>> findDistinctWorkoutSummaryDevices() async {
@@ -206,7 +149,7 @@ abstract class AppDatabase extends FloorDatabase {
   }
 
   Future<bool> finalizeActivity(Activity activity) async {
-    final lastRecord = await recordDao.findLastRecordOfActivity(activity.id!).first;
+    final lastRecord = await recordDao.findLastRecordOfActivity(activity.id!);
     if (lastRecord == null) {
       return false;
     }
@@ -237,6 +180,37 @@ abstract class AppDatabase extends FloorDatabase {
     }
 
     return updated > 0;
+  }
+
+  Future<bool> recalculateDistance(Activity activity, [force = false]) async {
+    final records = await recordDao.findAllActivityRecords(activity.id ?? 0);
+    if (records.length <= 1) {
+      return false;
+    }
+
+    var previousRecord = records.first;
+    for (final record in records.skip(1)) {
+      final dTMillis = record.timeStamp! - previousRecord.timeStamp!;
+      final dT = dTMillis / 1000.0;
+      if ((record.distance ?? 0.0) < eps || force) {
+        record.distance = (previousRecord.distance ?? 0.0);
+        if ((record.speed ?? 0.0) > 0 && dT > eps) {
+          // Speed already should have powerFactor effect
+          double dD = (record.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
+          record.distance = record.distance! + dD;
+          await recordDao.updateRecord(record);
+        }
+      }
+
+      previousRecord = record;
+    }
+
+    if ((previousRecord.distance ?? 0.0) > eps && (activity.distance < eps || force)) {
+      activity.distance = previousRecord.distance!;
+      await activityDao.updateActivity(activity);
+    }
+
+    return true;
   }
 }
 

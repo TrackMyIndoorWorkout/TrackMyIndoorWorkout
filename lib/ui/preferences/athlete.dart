@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
-import 'preferences_base.dart';
+import 'pref_integer.dart';
+import 'preferences_screen_mixin.dart';
 
-class AthletePreferencesScreen extends PreferencesScreenBase {
+class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
   static String shortTitle = "Athlete";
   static String title = "$shortTitle Preferences";
 
@@ -23,7 +25,13 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value kg"),
         min: athleteBodyWeightMin,
         max: athleteBodyWeightMax,
+        divisions: athleteBodyWeightDivisions,
         direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: athleteBodyWeightIntTag,
+        min: athleteBodyWeightMin,
+        max: athleteBodyWeightMax,
       ),
       const PrefCheckbox(
         title: Text(rememberAthleteBodyWeight),
@@ -42,11 +50,17 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value"),
         min: athleteAgeMin,
         max: athleteAgeMax,
+        divisions: athleteAgeDivisions,
         direction: Axis.vertical,
       ),
-      const PrefLabel(
-        title: Text(athleteGender),
-        subtitle: Text(athleteGenderDescription),
+      const PrefInteger(
+        pref: athleteAgeTag,
+        min: athleteAgeMin,
+        max: athleteAgeMax,
+      ),
+      PrefLabel(
+        title: Text(athleteGender, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(athleteGenderDescription),
       ),
       const PrefRadio<String>(
         title: Text(athleteGenderMaleDescription),
@@ -66,12 +80,18 @@ class AthletePreferencesScreen extends PreferencesScreenBase {
         trailing: (num value) => Text("$value"),
         min: athleteVO2MaxMin,
         max: athleteVO2MaxMax,
+        divisions: athleteVO2MaxDivisions,
         direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: athleteVO2MaxTag,
+        min: athleteVO2MaxMin,
+        max: athleteVO2MaxMax,
       ),
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(AthletePreferencesScreen.title)),
       body: PrefPage(children: athletePreferences),
     );
   }

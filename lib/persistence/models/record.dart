@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:floor/floor.dart';
 import 'package:flutter/foundation.dart';
+import '../../preferences/log_level.dart';
 import '../../ui/models/display_record.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
+import '../../utils/logging.dart';
 import 'activity.dart';
 
 const recordsTableName = 'records';
@@ -149,70 +151,253 @@ class Record {
     return (distance ?? 0.0) > eps || (elapsed ?? 0) > 0 || (calories ?? 0) > 0;
   }
 
-  void cumulativeDistanceEnforcement(Record lastRecord) {
-    if (distance != null && lastRecord.distance != null) {
-      if (!testing && kDebugMode) {
-        assert(distance! >= lastRecord.distance!);
-      }
+  void cumulativeDistanceEnforcement(
+      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    if (lastRecord.distance != null) {
+      if (distance != null) {
+        if (!testing && kDebugMode && enableAsserts) {
+          assert(distance! >= lastRecord.distance!);
+        }
 
-      if (distance! < lastRecord.distance!) {
+        if (distance! < lastRecord.distance!) {
+          if (logLevel >= logLevelError) {
+            Logging.log(
+              logLevel,
+              logLevelError,
+              "RECORD",
+              "cumulativeDistanceEnforcement",
+              "violation $distance < ${lastRecord.distance}",
+            );
+          }
+
+          distance = lastRecord.distance;
+        }
+      } else if (force) {
         distance = lastRecord.distance;
       }
     }
   }
 
-  void cumulativeElapsedTimeEnforcement(Record lastRecord) {
-    if (elapsed != null && lastRecord.elapsed != null) {
-      if (!testing && kDebugMode) {
-        assert(elapsed! >= lastRecord.elapsed!);
-      }
+  void cumulativeElapsedTimeEnforcement(
+      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    if (lastRecord.elapsed != null) {
+      if (elapsed != null) {
+        if (!testing && kDebugMode && enableAsserts) {
+          assert(elapsed! >= lastRecord.elapsed!);
+        }
 
-      if (elapsed! < lastRecord.elapsed!) {
+        if (elapsed! < lastRecord.elapsed!) {
+          if (logLevel >= logLevelError) {
+            Logging.log(
+              logLevel,
+              logLevelError,
+              "RECORD",
+              "cumulativeElapsedTimeEnforcement",
+              "violation $elapsed < ${lastRecord.elapsed}",
+            );
+          }
+
+          elapsed = lastRecord.elapsed;
+        }
+      } else if (force) {
         elapsed = lastRecord.elapsed;
       }
     }
   }
 
-  void cumulativeMovingTimeEnforcement(Record lastRecord) {
-    if (!testing && kDebugMode) {
+  void cumulativeMovingTimeEnforcement(Record lastRecord, int logLevel, bool enableAsserts) {
+    if (!testing && kDebugMode && enableAsserts) {
       assert(movingTime >= lastRecord.movingTime);
     }
 
     if (movingTime < lastRecord.movingTime) {
+      if (logLevel >= logLevelError) {
+        Logging.log(
+          logLevel,
+          logLevelError,
+          "RECORD",
+          "cumulativeMovingTimeEnforcement",
+          "violation $movingTime < ${lastRecord.movingTime}",
+        );
+      }
+
       movingTime = lastRecord.movingTime;
     }
   }
 
-  void cumulativeCaloriesEnforcement(Record lastRecord) {
-    if (calories != null && lastRecord.calories != null) {
-      if (!testing && kDebugMode) {
-        assert(calories! >= lastRecord.calories!);
-      }
+  void cumulativeCaloriesEnforcement(
+      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    if (lastRecord.calories != null) {
+      if (calories != null) {
+        if (!testing && kDebugMode && enableAsserts) {
+          assert(calories! >= lastRecord.calories!);
+        }
 
-      if (calories! < lastRecord.calories!) {
+        if (calories! < lastRecord.calories!) {
+          if (logLevel >= logLevelError) {
+            Logging.log(
+              logLevel,
+              logLevelError,
+              "RECORD",
+              "cumulativeCaloriesEnforcement",
+              "violation $calories < ${lastRecord.calories}",
+            );
+          }
+
+          calories = lastRecord.calories;
+        }
+      } else if (force) {
         calories = lastRecord.calories;
       }
     }
   }
 
+  void nonNegativeEnforcement(int logLevel, bool enableAsserts) {
+    if (distance != null) {
+      if (kDebugMode && enableAsserts) {
+        assert(distance! >= 0.0);
+      }
+
+      if (distance! < 0.0) {
+        if (logLevel >= logLevelError) {
+          Logging.log(
+            logLevel,
+            logLevelError,
+            "RECORD",
+            "nonNegativeEnforcement",
+            "negative distance $distance",
+          );
+        }
+
+        distance = 0.0;
+      }
+    }
+
+    if (elapsed != null) {
+      if (kDebugMode && enableAsserts) {
+        assert(elapsed! >= 0);
+      }
+
+      if (elapsed! < 0) {
+        if (logLevel >= logLevelError) {
+          Logging.log(
+            logLevel,
+            logLevelError,
+            "RECORD",
+            "nonNegativeEnforcement",
+            "negative elapsed $elapsed",
+          );
+        }
+
+        elapsed = 0;
+      }
+    }
+
+    if (kDebugMode && enableAsserts) {
+      assert(movingTime >= 0);
+    }
+
+    if (movingTime < 0) {
+      if (logLevel >= logLevelError) {
+        Logging.log(
+          logLevel,
+          logLevelError,
+          "RECORD",
+          "nonNegativeEnforcement",
+          "negative movingTime $movingTime",
+        );
+      }
+
+      movingTime = 0;
+    }
+
+    if (calories != null) {
+      if (kDebugMode && enableAsserts) {
+        assert(calories! >= 0);
+      }
+
+      if (calories! < 0) {
+        if (logLevel >= logLevelError) {
+          Logging.log(
+            logLevel,
+            logLevelError,
+            "RECORD",
+            "nonNegativeEnforcement",
+            "negative calories $calories",
+          );
+        }
+
+        calories = 0;
+      }
+    }
+  }
+
   void cumulativeMetricsEnforcements(
-    Record lastRecord, {
+    Record lastRecord,
+    int logLevel,
+    bool enableAsserts, {
     bool forDistance = false,
-    bool forTime = false,
     bool forCalories = false,
+    bool force = false,
   }) {
     // Ensure that cumulative fields cannot decrease over time
     if (forDistance) {
-      cumulativeDistanceEnforcement(lastRecord);
+      cumulativeDistanceEnforcement(lastRecord, logLevel, enableAsserts, force);
     }
 
-    if (forTime) {
-      cumulativeElapsedTimeEnforcement(lastRecord);
-      cumulativeMovingTimeEnforcement(lastRecord);
-    }
+    cumulativeElapsedTimeEnforcement(lastRecord, logLevel, enableAsserts, force);
+    cumulativeMovingTimeEnforcement(lastRecord, logLevel, enableAsserts);
 
     if (forCalories) {
-      cumulativeCaloriesEnforcement(lastRecord);
+      cumulativeCaloriesEnforcement(lastRecord, logLevel, enableAsserts, force);
+    }
+
+    nonNegativeEnforcement(logLevel, enableAsserts);
+  }
+
+  void adjustTime(int newElapsed, int newElapsedMillis) {
+    if (elapsedMillis != null && dt != null) {
+      final dMillis = newElapsedMillis - elapsedMillis!;
+      dt = dt!.add(Duration(milliseconds: dMillis));
+    }
+
+    elapsed = newElapsed;
+    elapsedMillis = newElapsedMillis;
+  }
+
+  void adjustByFactors(double powerFactor, double calorieFactor, bool extendTuning) {
+    if ((powerFactor - 1.0).abs() > eps) {
+      if (power != null) {
+        power = (power! * powerFactor).round();
+      }
+
+      if (extendTuning) {
+        if (speed != null) {
+          speed = speed! * powerFactor;
+        }
+
+        if (distance != null) {
+          distance = distance! * powerFactor;
+        }
+
+        if (pace != null) {
+          pace = pace! / powerFactor;
+        }
+      }
+    }
+
+    if ((calorieFactor - 1.0).abs() > eps) {
+      if (calories != null) {
+        calories = (calories! * calorieFactor).round();
+      }
+
+      if (caloriesPerHour != null) {
+        caloriesPerHour = caloriesPerHour! * calorieFactor;
+      }
+
+      if (caloriesPerMinute != null) {
+        caloriesPerMinute = caloriesPerMinute! * calorieFactor;
+      }
     }
   }
 
@@ -304,20 +489,14 @@ class RecordWithSport extends Record {
     );
   }
 
-  RecordWithSport merge(RecordWithSport record, bool mergeCadence, bool mergeHr) {
+  RecordWithSport merge(RecordWithSport record) {
     distance ??= record.distance;
     elapsed ??= record.elapsed;
     calories ??= record.calories;
     power ??= record.power;
     speed ??= record.speed;
-    if (mergeCadence) {
-      cadence ??= record.cadence;
-    }
-
-    if (mergeHr) {
-      heartRate ??= record.heartRate;
-    }
-
+    cadence ??= record.cadence;
+    heartRate ??= record.heartRate;
     return this;
   }
 
@@ -389,13 +568,115 @@ class RecordWithSport extends Record {
     return clone;
   }
 
-  void adjustTime(int newElapsed, int newElapsedMillis) {
-    if (elapsedMillis != null && dt != null) {
-      final dMillis = newElapsedMillis - elapsedMillis!;
-      dt = dt!.add(Duration(milliseconds: dMillis));
+  List<int> binarySerialize() {
+    switch (sport) {
+      case ActivityType.ride:
+        // Flag:
+        // C1 Instantaneous speed
+        // C3 Instantaneous Cadence
+        // C5 Total Distance
+        // C7 Instantaneous Power
+        // C9 Total Energy, Energy Per Hour, Energy Per Minute
+        // C10 Heart rate
+        // C12 Elapsed Time
+        //
+        // 84 0101 0100
+        // 11 0000 1011
+        const flagMsb = 11;
+        const flagLsb = 84;
+        final speed100 = ((speed ?? 0.0) * 100).round();
+        final cadence2 = (cadence ?? 0) * 2;
+        final distance0 = (distance ?? 0.0).round();
+        final power0 = power ?? 0;
+        final calories0 = calories ?? 0;
+        final elapsed0 = elapsed ?? 0;
+        // Following FTMS Indoor Bike layout
+        return [
+          flagLsb,
+          flagMsb,
+          speed100 % 256,
+          speed100 ~/ 256,
+          cadence2 % 256,
+          cadence2 ~/ 256,
+          distance0 % 256,
+          (distance0 ~/ 256) % 256,
+          (distance0 ~/ 65536) % 256,
+          power0 % 256,
+          power0 ~/ 256,
+          calories0 % 256,
+          calories0 ~/ 256,
+          0,
+          0,
+          0,
+          heartRate ?? 0,
+          elapsed0 % 256,
+          elapsed0 ~/ 256,
+        ];
+
+      case ActivityType.kayaking:
+      case ActivityType.canoeing:
+      case ActivityType.rowing:
+      case ActivityType.swim:
+      case ActivityType.standUpPaddling:
+        // Flag:
+        // C1 Stroke Rate, Stroke Count
+        // C3 Total Distance
+        // C4 Instantaneous Pace
+        // C6 Instantaneous Power
+        // C9 Total Energy, Energy Per Hour, Energy Per Minute
+        // C10 Heart rate
+        // C12 Elapsed Time
+        //
+        // 44 0010 1100
+        // 11 0000 1011
+        const flagMsb = 11;
+        const flagLsb = 44;
+        final cadence2 = min((cadence ?? 0) * 2, maxByte);
+        final strokeCount0 = (strokeCount ?? 0).toInt();
+        final pace0 = (pace ?? 0.0).round();
+        final distance0 = (distance ?? 0.0).round();
+        final power0 = power ?? 0;
+        final calories0 = calories ?? 0;
+        final elapsed0 = elapsed ?? 0;
+        // Following FTMS Indoor Bike layout
+        return [
+          flagLsb,
+          flagMsb,
+          cadence2,
+          strokeCount0 % 256,
+          strokeCount0 ~/ 256,
+          distance0 % 256,
+          (distance0 ~/ 256) % 256,
+          (distance0 ~/ 65536) % 256,
+          pace0 % 256,
+          pace0 ~/ 256,
+          power0 % 256,
+          power0 ~/ 256,
+          calories0 % 256,
+          calories0 ~/ 256,
+          0,
+          0,
+          0,
+          heartRate ?? 0,
+          elapsed0 % 256,
+          elapsed0 ~/ 256,
+        ];
+
+      default:
+        return [];
+    }
+  }
+
+  static int binarySerializedLength(String sport) {
+    if (sport == ActivityType.ride) {
+      return 19;
+    } else if (sport == ActivityType.kayaking ||
+        sport == ActivityType.canoeing ||
+        sport == ActivityType.rowing ||
+        sport == ActivityType.swim) {
+      return 20;
     }
 
-    elapsed = newElapsed;
-    elapsedMillis = newElapsedMillis;
+    return 0;
   }
 }

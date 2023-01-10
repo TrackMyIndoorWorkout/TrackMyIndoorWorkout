@@ -2,28 +2,50 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_logs/flutter_logs.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../../preferences/app_debug_mode.dart';
+import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enforced_time_zone.dart';
+import '../../preferences/enable_asserts.dart';
 import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
-import '../../preferences/should_signal_start_stop.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 
-class ExpertPreferencesScreen extends PreferencesScreenBase {
+class ExpertPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "Expert";
   static String title = "$shortTitle Preferences";
-  final List<String> timeZoneChoices;
 
-  const ExpertPreferencesScreen({Key? key, required this.timeZoneChoices}) : super(key: key);
+  const ExpertPreferencesScreen({Key? key}) : super(key: key);
+
+  @override
+  ExpertPreferencesScreenState createState() => ExpertPreferencesScreenState();
+}
+
+class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
+  final List<String> timeZoneChoices = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    FlutterTimezone.getAvailableTimezones().then((timeZoneChoicesFixed) {
+      setState(() {
+        timeZoneChoices.addAll(timeZoneChoicesFixed);
+        timeZoneChoices.sort();
+        timeZoneChoices.insert(0, enforcedTimeZoneDefault);
+      });
+    });
+  }
 
   Future<void> displayNotInitializedDialog() async {
     await Get.defaultDialog(
@@ -58,17 +80,24 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
       PrefText(
         label: dataConnectionAddresses,
         pref: dataConnectionAddressesTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z0-9.:,]"))],
         validator: (str) {
           if (str == null) {
             return null;
           }
 
-          final addressTuples = parseIpAddresses(str);
+          final addressTuples = parseNetworkAddresses(str);
           if (addressTuples.isEmpty) {
             return null;
           } else {
             if (str.split(",").length > addressTuples.length) {
-              return "There's some malformed address(es) in the configuration";
+              return "There's some malformed address(es) in the configuration: count doesn't match";
+            }
+
+            for (final addressTuple in addressTuples) {
+              if (isDummyAddress(addressTuple)) {
+                return "There's some malformed address(es) in the configuration";
+              }
             }
           }
 
@@ -105,9 +134,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         pref: deviceFilteringTag,
       ),
       const PrefCheckbox(
-        title: Text(shouldSignalStartStop),
-        subtitle: Text(shouldSignalStartStopDescription),
-        pref: shouldSignalStartStopTag,
+        title: Text(blockSignalStartStop),
+        subtitle: Text(blockSignalStartStopDescription),
+        pref: blockSignalStartStopTag,
       ),
       PrefDropdown<String>(
         title: const Text(enforcedTimeZone),
@@ -118,9 +147,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
             .toList(growable: false),
       ),
       const PrefLabel(title: Divider(height: 1)),
-      const PrefLabel(
-        title: Text(logLevel),
-        subtitle: Text(logLevelDescription),
+      PrefLabel(
+        title: Text(logLevelTitle, style: Get.textTheme.headline5!, maxLines: 3),
+        subtitle: const Text(logLevelDescription),
       ),
       PrefRadio<int>(
         title: const Text(logLevelNoneDescription),
@@ -195,7 +224,9 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         onTap: () async {
           if (PrefService.of(context).get<bool>(hasLoggedMessagesTag) ?? hasLoggedMessagesDefault) {
             FlutterLogs.clearLogs();
-            PrefService.of(context).set(hasLoggedMessagesTag, hasLoggedMessagesDefault);
+            setState(() {
+              PrefService.of(context).set(hasLoggedMessagesTag, hasLoggedMessagesDefault);
+            });
           }
 
           if (Logging.initialized) {
@@ -221,10 +252,15 @@ class ExpertPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(appDebugModeDescription),
         pref: appDebugModeTag,
       ));
+      expertPreferences.add(const PrefCheckbox(
+        title: Text(enableAsserts),
+        subtitle: Text(enableAssertsDescription),
+        pref: enableAssertsTag,
+      ));
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(ExpertPreferencesScreen.title)),
       body: PrefPage(children: expertPreferences),
     );
   }

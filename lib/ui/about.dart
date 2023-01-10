@@ -1,4 +1,4 @@
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/welcome_presented.dart';
 import '../utils/constants.dart';
+import 'donation.dart';
 
 class AboutScreen extends StatefulWidget {
   static String shortTitle = "About";
@@ -42,7 +43,7 @@ class AboutScreenState extends State<AboutScreen> {
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;
 
-    FlutterNativeTimezone.getLocalTimezone().then((String timeZone) {
+    FlutterTimezone.getLocalTimezone().then((String timeZone) {
       setState(() {
         _detectedTimeZone = timeZone;
       });
@@ -83,6 +84,15 @@ class AboutScreenState extends State<AboutScreen> {
           _buttonWithLink(buttonText: "Known Issues", linkUrl: AboutScreen.knownIssuesUrl),
           _buttonWithLink(buttonText: "Change Log", linkUrl: AboutScreen.changeLogUrl),
           _buttonWithLink(buttonText: "Attributions", linkUrl: AboutScreen.attributionsUrl),
+          Center(
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.coffee),
+              label: const Text("Donation"),
+              onPressed: () async {
+                Get.to(() => const DonationScreen());
+              },
+            ),
+          )
         ],
       ),
     );

@@ -91,10 +91,11 @@ class ScanResultTile extends StatelessWidget {
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
 
+    final deviceIcon = result.getIcon([]);
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: Icon(
-        result.getIcon([]),
+        deviceIcon,
         size: captionStyle.fontSize! * 2.5,
         color: themeManager.getProtagonistColor(),
       ),
@@ -102,13 +103,9 @@ class ScanResultTile extends StatelessWidget {
         result.advertisementData.connectable
             ? themeManager.getBlueColor()
             : themeManager.getGreyColor(),
-        result.isHeartRateMonitor ? Icons.favorite : Icons.play_arrow,
-        false,
-        false,
-        result.isHeartRateMonitor ? "Pair" : "Start Workout",
-        0,
+        deviceIcon == Icons.favorite ? Icons.favorite : Icons.play_arrow,
         result.advertisementData.connectable
-            ? (result.isHeartRateMonitor ? onHrmTap : onEquipmentTap)
+            ? (deviceIcon == Icons.favorite ? onHrmTap : onEquipmentTap)
             : null,
       ),
       children: [

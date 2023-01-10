@@ -1,3 +1,10 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
+import '../../preferences/log_level.dart';
+import '../../utils/logging.dart';
+import '../gatt/ftms.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
@@ -5,39 +12,36 @@ import 'device_descriptor.dart';
 
 abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   FitnessMachineDescriptor({
-    required defaultSport,
+    required sport,
     required isMultiSport,
     required fourCC,
     required vendorName,
     required modelName,
-    required namePrefixes,
-    manufacturerPrefix,
+    manufacturerNamePart,
     manufacturerFitId,
     model,
     dataServiceId,
     dataCharacteristicId,
     flagByteSize = 2,
-    canMeasureHeartRate = true,
     heartRateByteIndex,
     canMeasureCalories = true,
-    shouldSignalStartStop = false,
   }) : super(
-          defaultSport: defaultSport,
+          sport: sport,
           isMultiSport: isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,
-          namePrefixes: namePrefixes,
-          manufacturerPrefix: manufacturerPrefix,
+          manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
+          deviceCategory: DeviceCategory.smartDevice,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
+          controlCharacteristicId: fitnessMachineControlPointUuid,
+          statusCharacteristicId: fitnessMachineStatusUuid,
           flagByteSize: flagByteSize,
-          canMeasureHeartRate: canMeasureHeartRate,
           heartRateByteIndex: heartRateByteIndex,
           canMeasureCalories: canMeasureCalories,
-          shouldSignalStartStop: shouldSignalStartStop,
         );
 
   @override
@@ -47,7 +51,14 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     }
 
     final dataLength = data.length;
-    return byteCounter >= flagByteSize && dataLength == byteCounter;
+    return byteCounter >= flagByteSize &&
+        (!hasFutureReservedBytes && dataLength == byteCounter ||
+            hasFutureReservedBytes && dataLength >= byteCounter);
+  }
+
+  @override
+  bool isFlagValid(int flag) {
+    return flag >= 0;
   }
 
   int advanceFlag(int flag) {
@@ -162,5 +173,38 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     }
 
     return advanceFlag(flag);
+  }
+
+  @override
+  Future<void> executeControlOperation(
+      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
+      {int? controlInfo}) async {
+    if (!await FlutterBluePlus.instance.isOn) {
+      return;
+    }
+
+    if (controlPoint == null || blockSignalStartStop) {
+      return;
+    }
+
+    List<int> requestInfo = [opCode];
+    if (controlInfo != null) {
+      requestInfo.add(controlInfo);
+    }
+
+    try {
+      await controlPoint.write(requestInfo);
+      // Response could be picked up in the subscription listener
+    } on PlatformException catch (e, stack) {
+      Logging.log(
+        logLevel,
+        logLevelError,
+        "FTMS",
+        "executeControlOperation",
+        "${e.message}",
+      );
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
   }
 }

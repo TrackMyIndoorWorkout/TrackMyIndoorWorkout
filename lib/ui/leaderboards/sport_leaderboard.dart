@@ -11,8 +11,8 @@ import '../../preferences/speed_spec.dart';
 import '../../preferences/sport_spec.dart';
 import '../../persistence/models/workout_summary.dart';
 import '../../preferences/distance_resolution.dart';
-import '../../preferences/generic.dart';
 import '../../preferences/unit_system.dart';
+import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
 class SportLeaderboardScreen extends StatefulWidget {
@@ -24,7 +24,8 @@ class SportLeaderboardScreen extends StatefulWidget {
   SportLeaderboardScreenState createState() => SportLeaderboardScreenState();
 }
 
-class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
+class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
+    with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
@@ -37,8 +38,16 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   double? _slowSpeed;
 
   @override
+  void didChangeMetrics() {
+    setState(() {
+      _editCount++;
+    });
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
@@ -52,12 +61,18 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
+          iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',

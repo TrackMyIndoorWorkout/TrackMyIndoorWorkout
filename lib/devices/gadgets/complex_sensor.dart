@@ -2,15 +2,18 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 import '../../persistence/models/record.dart';
+import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import 'sensor_base.dart';
 
 typedef ComplexMetricProcessingFunction = Function(RecordWithSport record);
 
 abstract class ComplexSensor extends SensorBase {
-  RecordWithSport? record;
+  late RecordWithSport record;
 
-  ComplexSensor(serviceId, characteristicsId, device) : super(serviceId, characteristicsId, device);
+  ComplexSensor(serviceId, characteristicId, device) : super(serviceId, characteristicId, device) {
+    record = RecordWithSport(sport: ActivityType.workout);
+  }
 
   Stream<RecordWithSport> get _listenToData async* {
     if (!attached || characteristic == null) return;
@@ -20,16 +23,16 @@ abstract class ComplexSensor extends SensorBase {
       leading: false,
       trailing: true,
     )) {
+      logData(byteList, "ComplexSensor");
       if (!canMeasurementProcessed(byteList)) continue;
 
       record = processMeasurement(byteList);
-      yield record!;
+      yield record;
     }
   }
 
   void pumpData(ComplexMetricProcessingFunction? metricProcessingFunction) {
     subscription = _listenToData.listen((newValue) {
-      record = newValue;
       if (metricProcessingFunction != null) {
         metricProcessingFunction(newValue);
       }
@@ -37,4 +40,6 @@ abstract class ComplexSensor extends SensorBase {
   }
 
   RecordWithSport processMeasurement(List<int> data);
+
+  void trimQueues() {}
 }

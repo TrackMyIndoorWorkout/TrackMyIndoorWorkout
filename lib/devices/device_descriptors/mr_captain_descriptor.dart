@@ -1,5 +1,4 @@
 import '../../export/fit/fit_manufacturer.dart';
-import '../../utils/constants.dart';
 import '../device_fourcc.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import 'rower_device_descriptor.dart';
@@ -7,17 +6,14 @@ import 'rower_device_descriptor.dart';
 class MrCaptainDescriptor extends RowerDeviceDescriptor {
   MrCaptainDescriptor()
       : super(
-          defaultSport: ActivityType.rowing,
-          isMultiSport: false,
+          sport: deviceSportDescriptors[mrCaptainRowerFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[mrCaptainRowerFourCC]!.isMultiSport,
           fourCC: mrCaptainRowerFourCC,
           vendorName: "Mr Captain",
           modelName: "Rower",
-          namePrefixes: ["XG"],
-          manufacturerPrefix: "XG",
+          manufacturerNamePart: "XG",
           manufacturerFitId: stravaFitId,
           model: "000000",
-          canMeasureHeartRate: true,
-          shouldSignalStartStop: true,
         );
 
   @override
@@ -54,7 +50,6 @@ class MrCaptainDescriptor extends RowerDeviceDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
   void processFlag(int flag) {
-    initFlag();
     // Mr Captain violates the FTMS Rower protocol several places f-ed up
     // Flag bytes:
     // 66  0011 1100

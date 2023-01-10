@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
@@ -10,28 +11,34 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
-import 'package:overlay_tutorial/overlay_tutorial.dart';
+import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
+import '../export/export_target.dart';
+import '../export/fit/fit_export.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
+import '../persistence/models/record.dart';
 import '../persistence/models/workout_summary.dart';
 import '../persistence/database.dart';
 import '../preferences/app_debug_mode.dart';
+import '../preferences/calculate_gps.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/distance_resolution.dart';
-import '../preferences/generic.dart';
+import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_upload.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/log_level.dart';
 import '../preferences/measurement_font_size_adjust.dart';
+import '../preferences/measurement_sink_address.dart';
 import '../preferences/measurement_ui_state.dart';
 import '../preferences/metric_spec.dart';
 import '../preferences/palette_spec.dart';
@@ -40,6 +47,7 @@ import '../preferences/simpler_ui.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/sound_effects.dart';
+import '../preferences/stage_mode.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/time_display_mode.dart';
 import '../preferences/two_column_layout.dart';
@@ -54,8 +62,10 @@ import '../track/tracks.dart';
 import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import '../utils/logging.dart';
 import '../utils/preferences.dart';
 import '../utils/sound.dart';
+import '../utils/statistics_accumulator.dart';
 import '../utils/target_heart_rate.dart';
 import '../utils/theme_manager.dart';
 import '../utils/time_zone.dart';
@@ -65,6 +75,8 @@ import 'parts/boolean_question.dart';
 import 'parts/circular_menu.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
+import 'parts/legend_dialog.dart';
+import 'parts/pick_directory.dart';
 import 'parts/spin_down.dart';
 import 'parts/three_choices.dart';
 import 'parts/upload_portal_picker.dart';
@@ -103,6 +115,26 @@ class RecordingState extends State<RecordingScreen> {
   static const double _markerStyleSizeAdjust = 1.4;
   static const double _markerStyleSmallSizeAdjust = 0.9;
   static const int _unlockChoices = 6;
+  // Measurement display indexes
+  static const int _calories0Index = 0;
+  static const int _power0Index = _calories0Index + 1;
+  static const int _speed0Index = _power0Index + 1;
+  static const int _cadence0Index = _speed0Index + 1;
+  static const int _hr0Index = _cadence0Index + 1;
+  static const int _distance0Index = _hr0Index + 1;
+  static const int _time1Index = 0;
+  static const int _calories1Index = _calories0Index + 1;
+  static const int _power1Index = _power0Index + 1;
+  static const int _speed1Index = _speed0Index + 1;
+  static const int _cadence1Index = _cadence0Index + 1;
+  static const int _hr1Index = _hr0Index + 1;
+  static const int _distance1Index = _distance0Index + 1;
+  // static const int _caloriesNIndex = _calories0Index - 1;
+  static const int _powerNIndex = _power0Index - 1;
+  static const int _speedNIndex = _speed0Index - 1;
+  static const int _cadenceNIndex = _cadence0Index - 1;
+  static const int _hrNIndex = _hr0Index - 1;
+  static const int _distanceNIndex = _distance0Index - 1;
 
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
@@ -111,24 +143,36 @@ class RecordingState extends State<RecordingScreen> {
   PaletteSpec? _paletteSpec;
   double _trackLength = trackLength;
   bool _measuring = false;
+  bool _onStage = false;
   int _pointCount = 0;
   ListQueue<DisplayRecord> _graphData = ListQueue<DisplayRecord>();
+  List<DisplayRecord> graphData = [];
+  ListQueue<DisplayRecord> _graphAvgData = ListQueue<DisplayRecord>();
+  List<DisplayRecord> graphAvgData = [];
+  ListQueue<DisplayRecord> _graphMaxData = ListQueue<DisplayRecord>();
+  List<DisplayRecord> graphMaxData = [];
   double _mediaSizeMin = 0;
   double _mediaHeight = 0;
   double _mediaWidth = 0;
   double _sizeDefault = 10.0;
   double _sizeAdjust = 1.0;
+  double _halfWidthNonExpandable = 48.0;
+  double _halfWidthExpandable = 48.0;
   bool _landscape = false;
   TextStyle _measurementStyle = const TextStyle();
+  TextStyle _fullMeasurementStyle = const TextStyle();
+  TextStyle _timeStyle = const TextStyle();
   TextStyle _unitStyle = const TextStyle();
+  TextStyle _fullUnitStyle = const TextStyle();
   Color _chartTextColor = Colors.black;
+  Color _chartAvgColor = Colors.orange;
+  Color _chartMaxColor = Colors.red;
   TextStyle _chartLabelStyle = const TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
   );
   TextStyle _markerStyle = const TextStyle();
   TextStyle _markerStyleSmall = const TextStyle();
-  TextStyle _overlayStyle = const TextStyle();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(
     hasIcon: !simplerUiSlowDefault,
     iconColor: Colors.black,
@@ -145,6 +189,9 @@ class RecordingState extends State<RecordingScreen> {
   bool _simplerUi = simplerUiSlowDefault;
   bool _twoColumnLayout = twoColumnLayoutDefault;
   bool _instantUpload = instantUploadDefault;
+  bool _instantExport = instantExportDefault;
+  String _instantExportLocation = instantExportLocationDefault;
+  bool _calculateGps = calculateGpsDefault;
   bool _uxDebug = appDebugModeDefault;
   String _timeDisplayMode = timeDisplayModeDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
@@ -153,15 +200,19 @@ class RecordingState extends State<RecordingScreen> {
   String _dataGapSoundEffect = dataStreamGapSoundEffectDefault;
   Timer? _dataGapBeeperTimer;
 
-  List<DisplayRecord> get graphData => _graphData.toList();
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig = [];
   List<String> _values = [];
+  List<String> _statistics = [];
   List<int?> _zoneIndexes = [];
   double _distance = 0.0;
   int _elapsed = 0;
   int _movingTime = 0;
   int _markedTime = 0;
+
+  bool _instantOnStage = instantOnStageDefault;
+  String _onStageStatisticsType = onStageStatisticsTypeDefault;
+  int _onStageStatisticsAlternationDuration = onStageStatisticsAlternationPeriodDefault;
 
   String _targetHrMode = targetHeartRateModeDefault;
   Tuple2<double, double> _targetHrBounds = const Tuple2(0, 0);
@@ -199,7 +250,6 @@ class RecordingState extends State<RecordingScreen> {
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   bool _zoneIndexColoring = false;
-  bool _tutorialVisible = false;
   int _lapCount = 0;
   bool _isLocked = false;
   int _unlockButtonIndex = 0;
@@ -207,9 +257,13 @@ class RecordingState extends State<RecordingScreen> {
   final List<GlobalKey> _unlockKeys = [];
   final GlobalKey<CircularFabMenuState> _fabKey = GlobalKey();
   int _unlockKey = -2;
+  int _logLevel = logLevelDefault;
+  StatisticsAccumulator _accu = StatisticsAccumulator(si: true, sport: ActivityType.ride);
+  Tuple2<String, int> _sinkAddress = dummyAddressTuple;
+  Socket? _sinkSocket;
 
   Future<void> _connectOnDemand() async {
-    if (!await bluetoothCheck(true)) {
+    if (!await bluetoothCheck(true, _logLevel)) {
       return;
     }
 
@@ -241,8 +295,27 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _startMeasurement() async {
-    if (!await bluetoothCheck(true)) {
+    if (!await bluetoothCheck(true, _logLevel)) {
       return;
+    }
+
+    if (_sinkAddress != dummyAddressTuple &&
+        (widget.sport == ActivityType.ride ||
+            widget.sport == ActivityType.kayaking ||
+            widget.sport == ActivityType.canoeing ||
+            widget.sport == ActivityType.rowing ||
+            widget.sport == ActivityType.swim)) {
+      try {
+        _sinkSocket = await Socket.connect(_sinkAddress.item1, _sinkAddress.item2);
+        // Send descriptor packet
+        const version = 1;
+        final uuidLsb = widget.sport == ActivityType.ride ? 0xD2 : 0xD1;
+        final packetLength = RecordWithSport.binarySerializedLength(widget.sport);
+        _sinkSocket?.add([version, 0x18, 0x26, 0x2A, uuidLsb, packetLength]);
+      } on SocketException {
+        Get.snackbar("Error", "Could not connect to Sink Server");
+        _sinkSocket = null;
+      }
     }
 
     await _fitnessEquipment?.additionalSensorsOnDemand();
@@ -266,6 +339,10 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
+    if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+      _accu.reset();
+    }
+
     if (!continued) {
       _activity = Activity(
         fourCC: widget.descriptor.fourCC,
@@ -274,7 +351,7 @@ class RecordingState extends State<RecordingScreen> {
         hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
         start: now.millisecondsSinceEpoch,
         startDateTime: now,
-        sport: widget.descriptor.defaultSport,
+        sport: widget.descriptor.sport,
         powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
         calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
         hrCalorieFactor: _fitnessEquipment?.hrCalorieFactor ?? 1.0,
@@ -300,7 +377,7 @@ class RecordingState extends State<RecordingScreen> {
       if (_leaderboardFeature) {
         _leaderboard = _rankingForSportOrDevice
             ? await _database.workoutSummaryDao
-                .findAllWorkoutSummariesBySport(widget.descriptor.defaultSport)
+                .findAllWorkoutSummariesBySport(widget.descriptor.sport)
             : await _database.workoutSummaryDao
                 .findAllWorkoutSummariesByDevice(widget.device.id.id);
 
@@ -332,6 +409,16 @@ class RecordingState extends State<RecordingScreen> {
       _lapCount = 0;
       _measuring = true;
       _zoneIndexes = [null, null, null, null];
+      if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+        if (_instantOnStage) {
+          _onStage = true;
+        }
+
+        _statistics[_power0Index] = emptyMeasurement;
+        _statistics[_speed0Index] = emptyMeasurement;
+        _statistics[_cadence0Index] = emptyMeasurement;
+        _statistics[_hr0Index] = emptyMeasurement;
+      }
     });
     _fitnessEquipment?.measuring = true;
     _fitnessEquipment?.startWorkout();
@@ -346,6 +433,8 @@ class RecordingState extends State<RecordingScreen> {
         );
       }
 
+      _sinkSocket?.add(record.binarySerialize());
+
       final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
       if (_measuring &&
           (_fitnessEquipment?.measuring ?? false) &&
@@ -353,15 +442,44 @@ class RecordingState extends State<RecordingScreen> {
         if (!_uxDebug &&
             (workoutState == WorkoutState.moving ||
                 workoutState == WorkoutState.startedMoving ||
-                workoutState == WorkoutState.justStopped)) {
+                workoutState == WorkoutState.justPaused)) {
           await _database.recordDao.insertRecord(record);
         }
 
         setState(() {
           if (!_simplerUi) {
             _graphData.add(record.display());
+            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              _graphAvgData.add(_accu.averageDisplayRecord(record.dt));
+            }
+
+            if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              _graphMaxData.add(_accu.maximumDisplayRecord(record.dt));
+            }
+
             if (_pointCount > 0 && _graphData.length > _pointCount) {
               _graphData.removeFirst();
+              if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+                  _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+                _graphAvgData.removeFirst();
+              }
+
+              if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+                  _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+                _graphMaxData.removeFirst();
+              }
+            }
+            graphData = _graphData.toList();
+            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              graphAvgData = _graphAvgData.toList();
+            }
+
+            if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              graphMaxData = _graphMaxData.toList();
             }
           }
 
@@ -372,7 +490,7 @@ class RecordingState extends State<RecordingScreen> {
 
           _elapsed = record.elapsed ?? 0;
           if (_timeDisplayMode == timeDisplayModeHIITMoving) {
-            if (workoutState == WorkoutState.justStopped ||
+            if (workoutState == WorkoutState.justPaused ||
                 workoutState == WorkoutState.startedMoving) {
               _markedTime = _elapsed;
             }
@@ -395,17 +513,46 @@ class RecordingState extends State<RecordingScreen> {
             _selfRankString = _getSelfRankString();
           }
 
+          if (_onStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
+            _accu.processRecord(record);
+
+            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating &&
+                    _elapsed % (_onStageStatisticsAlternationDuration * 2) <
+                        _onStageStatisticsAlternationDuration) {
+              _statistics[_power0Index] = _accu.avgPower.toInt().toString();
+              _statistics[_speed0Index] = speedOrPaceString(
+                _accu.avgSpeed,
+                _si,
+                widget.descriptor.sport,
+                limitSlowSpeed: true,
+              );
+              _statistics[_cadence0Index] = _accu.avgCadence.toInt().toString();
+              _statistics[_hr0Index] = _accu.avgHeartRate.toInt().toString();
+            } else {
+              _statistics[_power0Index] = _accu.maxPowerDisplay.toString();
+              _statistics[_speed0Index] = speedOrPaceString(
+                _accu.maxSpeedDisplay,
+                _si,
+                widget.descriptor.sport,
+                limitSlowSpeed: true,
+              );
+              _statistics[_cadence0Index] = _accu.maxCadenceDisplay.toString();
+              _statistics[_hr0Index] = _accu.maxHeartRateDisplay.toString();
+            }
+          }
+
           _values = [
             record.calories?.toString() ?? emptyMeasurement,
             record.power?.toString() ?? emptyMeasurement,
-            record.speedOrPaceStringByUnit(_si, widget.descriptor.defaultSport),
+            record.speedOrPaceStringByUnit(_si, widget.descriptor.sport),
             record.cadence?.toString() ?? emptyMeasurement,
             record.heartRate?.toString() ?? emptyMeasurement,
             record.distanceStringByUnit(_si, _highRes),
           ];
-          amendZoneToValue(0, record.power ?? 0);
-          amendZoneToValue(2, record.cadence ?? 0);
-          amendZoneToValue(3, record.heartRate ?? 0);
+          amendZoneToValue(_powerNIndex, record.power ?? 0);
+          amendZoneToValue(_cadenceNIndex, record.cadence ?? 0);
+          amendZoneToValue(_hrNIndex, record.heartRate ?? 0);
         });
       }
     });
@@ -419,23 +566,23 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   void _onTogglePower() {
-    _onToggleDetails(0);
+    _onToggleDetails(_powerNIndex);
   }
 
   void _onToggleSpeed() {
-    _onToggleDetails(1);
+    _onToggleDetails(_speedNIndex);
   }
 
   void _onToggleRpm() {
-    _onToggleDetails(2);
+    _onToggleDetails(_cadenceNIndex);
   }
 
   void _onToggleHr() {
-    _onToggleDetails(3);
+    _onToggleDetails(_hrNIndex);
   }
 
   void _onToggleDistance() {
-    _onToggleDetails(4);
+    _onToggleDetails(_distanceNIndex);
   }
 
   void _rotateChartHeight(int index) {
@@ -467,7 +614,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<String> _initializeHeartRateMonitor() async {
-    if (!await bluetoothCheck(true)) {
+    if (!await bluetoothCheck(true, _logLevel)) {
       return "";
     }
 
@@ -488,8 +635,8 @@ class RecordingState extends State<RecordingScreen> {
                 (record.heartRate != null && record.heartRate! > 0)) {
               _heartRate = record.heartRate;
             }
-            _values[4] = record.heartRate?.toString() ?? emptyMeasurement;
-            amendZoneToValue(3, record.heartRate ?? 0);
+            _values[_hr0Index] = record.heartRate?.toString() ?? emptyMeasurement;
+            amendZoneToValue(_hrNIndex, record.heartRate ?? 0);
           });
         });
       });
@@ -515,7 +662,17 @@ class RecordingState extends State<RecordingScreen> {
       fontFamily: fontFamily,
       color: _themeManager.getBlueColor(),
     );
+    _fullUnitStyle = TextStyle(
+      fontFamily: fontFamily,
+      color: _themeManager.getBlueColor(),
+    );
     final prefService = Get.find<BasePrefService>();
+    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    final sinkAddressString =
+        prefService.get<String>(measurementSinkAddressTag) ?? measurementSinkAddressDefault;
+    if (sinkAddressString.isNotEmpty) {
+      _sinkAddress = parseNetworkAddress(sinkAddressString, false);
+    }
     final sizeAdjustInt =
         prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
     if (sizeAdjustInt != 100) {
@@ -525,7 +682,6 @@ class RecordingState extends State<RecordingScreen> {
         _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: _markerStyleSizeAdjust);
     _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!,
         fontSizeFactor: _markerStyleSmallSizeAdjust);
-    _overlayStyle = Get.textTheme.headline6!.copyWith(color: Colors.yellowAccent);
     prefService.set<String>(
       lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),
       widget.device.id.id,
@@ -554,13 +710,29 @@ class RecordingState extends State<RecordingScreen> {
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
     _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
     _instantUpload = prefService.get<bool>(instantUploadTag) ?? instantUploadDefault;
+    _instantExport = prefService.get<bool>(instantExportTag) ?? instantExportDefault;
+    _instantExportLocation =
+        prefService.get<String>(instantExportLocationTag) ?? instantExportLocationDefault;
+    _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     _pointCount = min(60, size.width ~/ 2);
     final now = DateTime.now();
     _graphData = _simplerUi
         ? ListQueue<DisplayRecord>(0)
         : ListQueue.from(List<DisplayRecord>.generate(
             _pointCount,
-            (i) => DisplayRecord.from(
+            (i) => DisplayRecord.blank(
+                widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+    _graphAvgData = _simplerUi
+        ? ListQueue<DisplayRecord>(0)
+        : ListQueue.from(List<DisplayRecord>.generate(
+            _pointCount,
+            (i) => DisplayRecord.blank(
+                widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+    _graphMaxData = _simplerUi
+        ? ListQueue<DisplayRecord>(0)
+        : ListQueue.from(List<DisplayRecord>.generate(
+            _pointCount,
+            (i) => DisplayRecord.blank(
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
 
     if (widget.sport != ActivityType.ride) {
@@ -576,7 +748,7 @@ class RecordingState extends State<RecordingScreen> {
 
     _paletteSpec = PaletteSpec.getInstance(prefService);
 
-    _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.descriptor.defaultSport);
+    _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.descriptor.sport);
     for (var prefSpec in _preferencesSpecs) {
       prefSpec.calculateBounds(
         0,
@@ -612,6 +784,13 @@ class RecordingState extends State<RecordingScreen> {
     _hrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
         useHeartRateBasedCalorieCountingDefault;
 
+    _instantOnStage = prefService.get<bool>(instantOnStageTag) ?? instantOnStageDefault;
+    _onStageStatisticsType =
+        prefService.get<String>(onStageStatisticsTypeTag) ?? onStageStatisticsTypeDefault;
+    _onStageStatisticsAlternationDuration =
+        prefService.get<int>(onStageStatisticsAlternationPeriodTag) ??
+            onStageStatisticsAlternationPeriodDefault;
+
     _metricToDataFn = {
       "power": _powerChartData,
       "speed": _speedChartData,
@@ -625,6 +804,8 @@ class RecordingState extends State<RecordingScreen> {
       fontSize: 11 * _sizeAdjust,
       color: _chartTextColor,
     );
+    _chartAvgColor = _themeManager.getOrangeColor();
+    _chartMaxColor = _themeManager.getRedColor();
     _expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
       iconColor: _themeManager.getProtagonistColor(),
@@ -637,27 +818,27 @@ class RecordingState extends State<RecordingScreen> {
         expandable: false,
       ),
       RowConfiguration(
-        title: _preferencesSpecs[0].title,
-        icon: _preferencesSpecs[0].icon,
-        unit: _preferencesSpecs[0].unit,
+        title: _preferencesSpecs[_powerNIndex].title,
+        icon: _preferencesSpecs[_powerNIndex].icon,
+        unit: _preferencesSpecs[_powerNIndex].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
-        title: _preferencesSpecs[1].title,
-        icon: _preferencesSpecs[1].icon,
-        unit: _preferencesSpecs[1].unit,
+        title: _preferencesSpecs[_speedNIndex].title,
+        icon: _preferencesSpecs[_speedNIndex].icon,
+        unit: _preferencesSpecs[_speedNIndex].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
-        title: _preferencesSpecs[2].title,
-        icon: _preferencesSpecs[2].icon,
-        unit: _preferencesSpecs[2].unit,
+        title: _preferencesSpecs[_cadenceNIndex].title,
+        icon: _preferencesSpecs[_cadenceNIndex].icon,
+        unit: _preferencesSpecs[_cadenceNIndex].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
-        title: _preferencesSpecs[3].title,
-        icon: _preferencesSpecs[3].icon,
-        unit: _preferencesSpecs[3].unit,
+        title: _preferencesSpecs[_hrNIndex].title,
+        icon: _preferencesSpecs[_hrNIndex].icon,
+        unit: _preferencesSpecs[_hrNIndex].unit,
         expandable: !_simplerUi,
       ),
       RowConfiguration(
@@ -676,19 +857,19 @@ class RecordingState extends State<RecordingScreen> {
       ExpandableController rowController = ExpandableController(initialExpanded: expanded);
       _rowControllers.add(rowController);
       switch (index) {
-        case 0:
+        case _powerNIndex:
           rowController.addListener(_onTogglePower);
           break;
-        case 1:
+        case _speedNIndex:
           rowController.addListener(_onToggleSpeed);
           break;
-        case 2:
+        case _cadenceNIndex:
           rowController.addListener(_onToggleRpm);
           break;
-        case 3:
+        case _hrNIndex:
           rowController.addListener(_onToggleHr);
           break;
-        case 4:
+        case _distanceNIndex:
         default:
           rowController.addListener(_onToggleDistance);
           break;
@@ -709,6 +890,26 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
       emptyMeasurement,
     ];
+    _statistics = [
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+      emptyMeasurement,
+    ];
+    _accu = StatisticsAccumulator(
+      si: _si,
+      sport: widget.sport,
+      calculateAvgPower: true,
+      calculateMaxPower: true,
+      calculateAvgSpeed: true,
+      calculateMaxSpeed: true,
+      calculateAvgCadence: true,
+      calculateMaxCadence: true,
+      calculateAvgHeartRate: true,
+      calculateMaxHeartRate: true,
+    );
     _zoneIndexes = [null, null, null, null];
 
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
@@ -832,7 +1033,7 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  _workoutUpload(bool onlyWhenAuthenticated) async {
+  _activityUpload(bool onlyWhenAuthenticated) async {
     if (_activity == null) return;
 
     if (!await hasInternetConnection()) {
@@ -841,9 +1042,46 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     Get.bottomSheet(
-      UploadPortalPickerBottomSheet(activity: _activity!),
+      SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: UploadPortalPickerBottomSheet(activity: _activity!),
+              ),
+            ),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
       enableDrag: false,
     );
+  }
+
+  _activityExport() async {
+    if (_activity?.id == null || !_instantExport) return;
+
+    if (_instantExportLocation.isEmpty) {
+      _instantExportLocation = await pickDirectory(context, _instantExportLocation);
+      if (_instantExportLocation.isEmpty) {
+        return;
+      }
+    }
+
+    final records = await _database.recordDao.findAllActivityRecords(_activity!.id!);
+    final exporter = FitExport();
+    final fileBytes = await exporter.getExport(
+      _activity!,
+      records,
+      false,
+      _calculateGps,
+      false,
+      ExportTarget.regular,
+    );
+    final persistenceValues = exporter.getPersistenceValues(_activity!, false);
+    String fileName = p.join(_instantExportLocation, persistenceValues['fileName']);
+    await File(fileName).writeAsBytes(fileBytes);
   }
 
   _stopMeasurement(bool quick) async {
@@ -862,15 +1100,21 @@ class RecordingState extends State<RecordingScreen> {
       _measuring = false;
     });
 
-    final isOn = await FlutterBluePlus.instance.isOn;
-    if (isOn) {
-      try {
+    try {
+      if (await FlutterBluePlus.instance.isOn) {
         _fitnessEquipment?.detach();
-      } on PlatformException catch (e, stack) {
-        debugPrint("Equipment got turned off?");
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
       }
+    } on PlatformException catch (e, stack) {
+      debugPrint("Equipment got turned off?");
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.log(
+        _logLevel,
+        logLevelError,
+        "RECORD",
+        "_stopMeasurement",
+        "${e.message}",
+      );
     }
 
     final last = _fitnessEquipment?.lastRecord;
@@ -883,7 +1127,7 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment?.stopWorkout();
 
     if (!_uxDebug) {
-      if (_leaderboardFeature) {
+      if (_leaderboardFeature && (last?.distance ?? 0.0) > displayEps) {
         await _database.workoutSummaryDao.insertWorkoutSummary(
             _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown"));
       }
@@ -894,14 +1138,23 @@ class RecordingState extends State<RecordingScreen> {
         return;
       }
 
-      if (_instantUpload && !quick) {
-        await _workoutUpload(true);
+      if (!quick && _activity != null) {
+        if (_instantUpload) {
+          await _activityUpload(true);
+        }
+
+        if (_instantExportLocation.isNotEmpty) {
+          await _activityExport();
+        }
       }
     }
+
+    _sinkSocket?.destroy();
+    _sinkSocket = null;
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _powerChartData() {
-    return <charts.LineSeries<DisplayRecord, DateTime>>[
+    List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
         xValueMapper: (DisplayRecord record, _) => record.dt,
@@ -910,10 +1163,37 @@ class RecordingState extends State<RecordingScreen> {
         animationDuration: 0,
       ),
     ];
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphAvgData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.power,
+          color: _chartAvgColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphMaxData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.power,
+          color: _chartMaxColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    return series;
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _speedChartData() {
-    return <charts.LineSeries<DisplayRecord, DateTime>>[
+    List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
         xValueMapper: (DisplayRecord record, _) => record.dt,
@@ -922,10 +1202,38 @@ class RecordingState extends State<RecordingScreen> {
         animationDuration: 0,
       ),
     ];
+
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphAvgData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
+          color: _chartAvgColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphMaxData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
+          color: _chartMaxColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    return series;
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _cadenceChartData() {
-    return <charts.LineSeries<DisplayRecord, DateTime>>[
+    List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
         xValueMapper: (DisplayRecord record, _) => record.dt,
@@ -934,10 +1242,38 @@ class RecordingState extends State<RecordingScreen> {
         animationDuration: 0,
       ),
     ];
+
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphAvgData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.cadence,
+          color: _chartAvgColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphMaxData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.cadence,
+          color: _chartMaxColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    return series;
   }
 
   List<charts.LineSeries<DisplayRecord, DateTime>> _hRChartData() {
-    return <charts.LineSeries<DisplayRecord, DateTime>>[
+    List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
         xValueMapper: (DisplayRecord record, _) => record.dt,
@@ -946,6 +1282,34 @@ class RecordingState extends State<RecordingScreen> {
         animationDuration: 0,
       ),
     ];
+
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphAvgData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.heartRate,
+          color: _chartAvgColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      series.add(
+        charts.LineSeries<DisplayRecord, DateTime>(
+          dataSource: graphMaxData,
+          xValueMapper: (DisplayRecord record, _) => record.dt,
+          yValueMapper: (DisplayRecord record, _) => record.heartRate,
+          color: _chartMaxColor,
+          animationDuration: 0,
+        ),
+      );
+    }
+
+    return series;
   }
 
   Future<bool> _onWillPop() async {
@@ -955,10 +1319,22 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     final verdict = await Get.bottomSheet(
-      const BooleanQuestionBottomSheet(
-        title: "About to navigate away",
-        content: "The workout in progress will be finished. Are you sure?",
+      SafeArea(
+        child: Column(
+          children: const [
+            Expanded(
+              child: Center(
+                child: BooleanQuestionBottomSheet(
+                  title: "About to navigate away",
+                  content: "The workout in progress will be finished. Are you sure?",
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
       isDismissible: false,
       enableDrag: false,
     );
@@ -978,13 +1354,13 @@ class RecordingState extends State<RecordingScreen> {
     if (background) {
       return _paletteSpec?.bgColorByBin(
               _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
-          PaletteSpec?.bgColorByBinDefault(
+          PaletteSpec.bgColorByBinDefault(
               _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
     }
 
     return _paletteSpec?.fgColorByBin(
             _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
-        PaletteSpec?.fgColorByBinDefault(
+        PaletteSpec.fgColorByBinDefault(
             _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
   }
 
@@ -1087,7 +1463,7 @@ class RecordingState extends State<RecordingScreen> {
 
   TextStyle _getTargetHrTextStyle(TargetHrState hrState) {
     if (hrState == TargetHrState.off) {
-      if (_zoneIndexes[3] == null) {
+      if (_zoneIndexes[_hrNIndex] == null) {
         return _measurementStyle;
       } else {
         return _measurementStyle.apply(color: _getZoneColor(metricIndex: 3, background: false));
@@ -1389,13 +1765,25 @@ class RecordingState extends State<RecordingScreen> {
     if (_measuring) {
       if (_circuitWorkout) {
         final selection = await Get.bottomSheet(
-          const ThreeChoicesBottomSheet(
-            title: "Circuit workout in progress",
-            verticalActions: true,
-            firstChoice: "Continue workout",
-            secondChoice: "Finish on THIS machine for good",
-            thirdChoice: "Finish an ALL machines (the whole circuit workout is over)",
+          SafeArea(
+            child: Column(
+              children: const [
+                Expanded(
+                  child: Center(
+                    child: ThreeChoicesBottomSheet(
+                      title: "Circuit workout in progress",
+                      verticalActions: true,
+                      firstChoice: "Continue workout",
+                      secondChoice: "Finish on THIS machine for good",
+                      thirdChoice: "Finish an ALL machines (the whole circuit workout is over)",
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
+          isScrollControlled: true,
+          ignoreSafeArea: false,
           isDismissible: false,
           enableDrag: false,
         );
@@ -1446,9 +1834,21 @@ class RecordingState extends State<RecordingScreen> {
       _sizeDefault = mediaSizeMin / 8 * _sizeAdjust;
       _measurementStyle = TextStyle(
         fontFamily: fontFamily,
+        fontSize: _sizeDefault * 0.75,
+      );
+      _halfWidthNonExpandable = (_mediaSizeMin - max(_sizeDefault / 2, _sizeDefault)) / 2;
+      _halfWidthExpandable =
+          (_mediaSizeMin - max(_sizeDefault / 2, _sizeDefault * 0.65) - 48.0) / 2;
+      _fullMeasurementStyle = TextStyle(
+        fontFamily: fontFamily,
         fontSize: _sizeDefault,
       );
-      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
+      _timeStyle = TextStyle(
+        fontFamily: fontFamily,
+        fontSize: _sizeDefault / 1.8,
+      );
+      _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 6);
+      _fullUnitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
     if (_measuring &&
@@ -1473,18 +1873,25 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final timeDisplay = Duration(
-            seconds: _timeDisplayMode == timeDisplayModeMoving ? _movingTime ~/ 1000 : _elapsed)
-        .toDisplay();
+    final movingTimeDisplay = _onStageStatisticsType != onStageStatisticsTypeNone
+        ? Duration(seconds: _movingTime ~/ 1000).toDisplay()
+        : "";
+    final elapsedTimeDisplay = _onStageStatisticsType != onStageStatisticsTypeNone
+        ? Duration(seconds: _elapsed).toDisplay()
+        : "";
+    final timeDisplay = _onStageStatisticsType == onStageStatisticsTypeNone
+        ? Duration(
+                seconds: _timeDisplayMode == timeDisplayModeMoving ? _movingTime ~/ 1000 : _elapsed)
+            .toDisplay()
+        : "";
 
     final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
-    var timeStyle = _measurementStyle;
+    var timeStyle =
+        _onStageStatisticsType != onStageStatisticsTypeNone ? _timeStyle : _fullMeasurementStyle;
     if (_timeDisplayMode == timeDisplayModeHIITMoving &&
         workoutState != WorkoutState.waitingForFirstMove) {
       final timeColorIndex =
-          (workoutState == WorkoutState.justStopped || workoutState == WorkoutState.stopped)
-              ? 0
-              : 4;
+          (workoutState == WorkoutState.justPaused || workoutState == WorkoutState.paused) ? 0 : 4;
       timeStyle = _measurementStyle.apply(color: _paletteSpec?.lightFgPalette[5]![timeColorIndex]);
     }
 
@@ -1493,15 +1900,36 @@ class RecordingState extends State<RecordingScreen> {
         ? _themeManager.getRedIcon(Icons.timer, _sizeDefault)
         : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
 
+    final timeHeaderRow = _onStageStatisticsType != onStageStatisticsTypeNone
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Spacer(),
+              Text("moving", style: _unitStyle),
+              const Spacer(),
+              Text("elapsed", style: _unitStyle),
+              const Spacer(),
+            ],
+          )
+        : Container();
     List<Widget> rows = [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          timeIcon,
-          Text(timeDisplay, style: timeStyle),
-          SizedBox(width: _sizeDefault / 4),
-        ],
+        children: _onStageStatisticsType != onStageStatisticsTypeNone
+            ? [
+                const Spacer(),
+                Text(movingTimeDisplay, style: timeStyle),
+                timeIcon,
+                const Spacer(),
+                Text(elapsedTimeDisplay, style: timeStyle),
+              ]
+            : [
+                timeIcon,
+                Text(timeDisplay, style: timeStyle),
+                SizedBox(width: _sizeDefault / 4),
+              ],
       ),
     ];
 
@@ -1511,45 +1939,102 @@ class RecordingState extends State<RecordingScreen> {
     for (var entry in _rowConfig.asMap().entries) {
       var measurementStyle = _measurementStyle;
 
-      if (entry.key == 2 && _leaderboardFeature) {
+      if (entry.key == _speed0Index && _leaderboardFeature) {
         measurementStyle = _getPaceLightTextStyle(_selfRank);
       }
 
-      if (entry.key == 4 && _targetHrMode != targetHeartRateModeNone || _zoneIndexes[3] != null) {
+      if (entry.key == _hr0Index && _targetHrMode != targetHeartRateModeNone ||
+          _zoneIndexes[3] != null) {
         measurementStyle = targetHrTextStyle;
       }
 
-      if ((entry.key == 1 || entry.key == 3) && _zoneIndexes[entry.key - 1] != null) {
+      if ((entry.key == _power0Index || entry.key == _cadence0Index) &&
+          _zoneIndexes[entry.key - 1] != null) {
         measurementStyle = _measurementStyle.apply(
             color: _getZoneColor(metricIndex: entry.key - 1, background: false));
       }
 
+      final rowChildren = (entry.key == _calories0Index ||
+              entry.key == _distance0Index ||
+              _onStageStatisticsType == onStageStatisticsTypeNone)
+          ? [
+              _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
+              const Spacer(),
+              Text(_values[entry.key], style: _fullMeasurementStyle),
+              SizedBox(
+                width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
+                child: Center(
+                  child: Text(
+                    entry.value.unit,
+                    maxLines: 2,
+                    style: _fullUnitStyle,
+                  ),
+                ),
+              ),
+            ]
+          : [
+              SizedBox(
+                width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(_values[entry.key], style: measurementStyle),
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
+                  SizedBox(
+                    width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
+                    child: Center(
+                      child: Text(
+                        entry.value.unit,
+                        maxLines: 2,
+                        style: _unitStyle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(_statistics[entry.key], style: measurementStyle),
+                  ],
+                ),
+              ),
+            ];
+
       rows.add(Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _themeManager.getBlueIconWithHole(
-            entry.value.icon,
-            _sizeDefault,
-            _tutorialVisible,
-            entry.value.title,
-            0,
-          ),
-          const Spacer(),
-          Text(_values[entry.key], style: measurementStyle),
-          SizedBox(
-            width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
-            child: Center(
-              child: Text(
-                entry.value.unit,
-                maxLines: 2,
-                style: _unitStyle,
-              ),
-            ),
-          ),
-        ],
+        children: rowChildren,
       ));
     }
+
+    final statString = (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+            _onStageStatisticsType == onStageStatisticsTypeNone ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating &&
+                _elapsed % (_onStageStatisticsAlternationDuration * 2) <
+                    _onStageStatisticsAlternationDuration)
+        ? "average"
+        : "maximum";
+    final statHeaderRow = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Spacer(),
+        Text("current", style: _unitStyle),
+        const Spacer(),
+        Text(statString, style: _unitStyle),
+        const Spacer(),
+      ],
+    );
 
     var extras = [];
     if (!_simplerUi) {
@@ -1611,7 +2096,7 @@ class RecordingState extends State<RecordingScreen> {
           final paceLightColor = _getPaceLightTextStyle(_selfRank);
           extraExtras.add(Text(_selfRankString.join(" "), style: paceLightColor));
 
-          if (widget.descriptor.defaultSport != ActivityType.ride) {
+          if (widget.descriptor.sport != ActivityType.ride) {
             extraExtras.add(Text("Speed ${_si ? 'km' : 'mi'}/h"));
           }
 
@@ -1676,6 +2161,85 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
+    List<Widget> columnOne =
+        _onStageStatisticsType != onStageStatisticsTypeNone ? [timeHeaderRow] : [];
+    List<Widget> columnTwo =
+        _onStageStatisticsType != onStageStatisticsTypeNone ? [statHeaderRow] : [];
+
+    columnOne.addAll([
+      rows[_time1Index],
+      const Divider(height: separatorHeight),
+      rows[_calories1Index],
+      const Divider(height: separatorHeight),
+    ]);
+
+    if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+      columnOne.add(statHeaderRow);
+    }
+
+    columnOne.addAll([
+      ColoredBox(
+        color: _getZoneColor(metricIndex: _powerNIndex, background: true),
+        child: ExpandablePanel(
+          theme: _expandableThemeData,
+          header: rows[_power1Index],
+          collapsed: Container(),
+          expanded: _simplerUi ? Container() : extras[_powerNIndex],
+          controller: _rowControllers[_powerNIndex],
+        ),
+      ),
+      const Divider(height: separatorHeight),
+      ColoredBox(
+        color: _getPaceLightColor(_selfRank, background: true),
+        child: ExpandablePanel(
+          theme: _expandableThemeData,
+          header: rows[_speed1Index],
+          collapsed: Container(),
+          expanded: _simplerUi ? Container() : extras[_speedNIndex],
+          controller: _rowControllers[_speedNIndex],
+        ),
+      ),
+    ]);
+
+    List<Widget> columnRest = [
+      ColoredBox(
+        color: _getZoneColor(metricIndex: _cadenceNIndex, background: true),
+        child: ExpandablePanel(
+          theme: _expandableThemeData,
+          header: rows[_cadence1Index],
+          collapsed: Container(),
+          expanded: _simplerUi ? Container() : extras[_cadenceNIndex],
+          controller: _rowControllers[_cadenceNIndex],
+        ),
+      ),
+      const Divider(height: separatorHeight),
+      ColoredBox(
+        color: _getTargetHrColor(targetHrState, true),
+        child: ExpandablePanel(
+          theme: _expandableThemeData,
+          header: rows[_hr1Index],
+          collapsed: Container(),
+          expanded: _simplerUi ? Container() : extras[_hrNIndex],
+          controller: _rowControllers[_hrNIndex],
+        ),
+      ),
+      const Divider(height: separatorHeight),
+      ExpandablePanel(
+        theme: _expandableThemeData,
+        header: rows[_distance1Index],
+        collapsed: Container(),
+        expanded: _simplerUi ? Container() : extras[_distanceNIndex],
+        controller: _rowControllers[_distanceNIndex],
+      ),
+    ];
+
+    if (_landscape && _twoColumnLayout) {
+      columnTwo.addAll(columnRest);
+    } else {
+      columnOne.add(const Divider(height: separatorHeight));
+      columnOne.addAll(columnRest);
+    }
+
     final body = _landscape && _twoColumnLayout
         ? GridView.count(
             crossAxisCount: 2,
@@ -1683,245 +2247,155 @@ class RecordingState extends State<RecordingScreen> {
             physics: const NeverScrollableScrollPhysics(),
             semanticChildCount: 2,
             children: [
-              ListView(
-                children: [
-                  rows[0],
-                  const Divider(height: separatorHeight),
-                  rows[1],
-                  const Divider(height: separatorHeight),
-                  ColoredBox(
-                    color: _getZoneColor(metricIndex: 0, background: true),
-                    child: ExpandablePanel(
-                      theme: _expandableThemeData,
-                      header: rows[2],
-                      collapsed: Container(),
-                      expanded: _simplerUi ? Container() : extras[0],
-                      controller: _rowControllers[0],
-                    ),
-                  ),
-                  const Divider(height: separatorHeight),
-                  ColoredBox(
-                    color: _getPaceLightColor(_selfRank, background: true),
-                    child: ExpandablePanel(
-                      theme: _expandableThemeData,
-                      header: rows[3],
-                      collapsed: Container(),
-                      expanded: _simplerUi ? Container() : extras[1],
-                      controller: _rowControllers[1],
-                    ),
-                  ),
-                ],
-              ),
-              ListView(
-                children: [
-                  ColoredBox(
-                    color: _getZoneColor(metricIndex: 2, background: true),
-                    child: ExpandablePanel(
-                      theme: _expandableThemeData,
-                      header: rows[4],
-                      collapsed: Container(),
-                      expanded: _simplerUi ? Container() : extras[2],
-                      controller: _rowControllers[2],
-                    ),
-                  ),
-                  const Divider(height: separatorHeight),
-                  ColoredBox(
-                    color: _getTargetHrColor(targetHrState, true),
-                    child: ExpandablePanel(
-                      theme: _expandableThemeData,
-                      header: rows[5],
-                      collapsed: Container(),
-                      expanded: _simplerUi ? Container() : extras[3],
-                      controller: _rowControllers[3],
-                    ),
-                  ),
-                  const Divider(height: separatorHeight),
-                  ExpandablePanel(
-                    theme: _expandableThemeData,
-                    header: rows[6],
-                    collapsed: Container(),
-                    expanded: _simplerUi ? Container() : extras[4],
-                    controller: _rowControllers[4],
-                  ),
-                ],
-              ),
+              ListView(children: columnOne),
+              ListView(children: columnTwo),
             ],
           )
-        : ListView(
-            children: [
-              rows[0],
-              const Divider(height: separatorHeight),
-              rows[1],
-              const Divider(height: separatorHeight),
-              ColoredBox(
-                color: _getZoneColor(metricIndex: 0, background: true),
-                child: ExpandablePanel(
-                  theme: _expandableThemeData,
-                  header: rows[2],
-                  collapsed: Container(),
-                  expanded: _simplerUi ? Container() : extras[0],
-                  controller: _rowControllers[0],
-                ),
-              ),
-              const Divider(height: separatorHeight),
-              ColoredBox(
-                color: _getPaceLightColor(_selfRank, background: true),
-                child: ExpandablePanel(
-                  theme: _expandableThemeData,
-                  header: rows[3],
-                  collapsed: Container(),
-                  expanded: _simplerUi ? Container() : extras[1],
-                  controller: _rowControllers[1],
-                ),
-              ),
-              const Divider(height: separatorHeight),
-              ColoredBox(
-                color: _getZoneColor(metricIndex: 2, background: true),
-                child: ExpandablePanel(
-                  theme: _expandableThemeData,
-                  header: rows[4],
-                  collapsed: Container(),
-                  expanded: _simplerUi ? Container() : extras[2],
-                  controller: _rowControllers[2],
-                ),
-              ),
-              const Divider(height: separatorHeight),
-              ColoredBox(
-                color: _getTargetHrColor(targetHrState, true),
-                child: ExpandablePanel(
-                  theme: _expandableThemeData,
-                  header: rows[5],
-                  collapsed: Container(),
-                  expanded: _simplerUi ? Container() : extras[3],
-                  controller: _rowControllers[3],
-                ),
-              ),
-              const Divider(height: separatorHeight),
-              ExpandablePanel(
-                theme: _expandableThemeData,
-                header: rows[6],
-                collapsed: Container(),
-                expanded: _simplerUi ? Container() : extras[4],
-                controller: _rowControllers[4],
-              ),
-            ],
-          );
+        : ListView(children: columnOne);
 
     final List<Widget> menuButtons = [];
     if (_isLocked) {
       for (var i = 0; i < _unlockChoices; ++i) {
         final button = i == _unlockButtonIndex
-            ? _themeManager.getGreenFabWKey(Icons.lock_open, true, true, "", 0, () {
+            ? _themeManager.getGreenFabWKey(Icons.lock_open, () {
                 setState(() {
                   _isLocked = false;
                 });
               }, _unlockKeys[i])
-            : _themeManager.getBlueFabWKey(Icons.adjust, true, true, "", 0, null, _unlockKeys[i]);
+            : _themeManager.getBlueFabWKey(Icons.adjust, null, _unlockKeys[i]);
         menuButtons.add(button);
       }
     } else {
       menuButtons.addAll([
-        _themeManager.getTutorialFab(
-          _tutorialVisible,
-          () async {
-            setState(() {
-              _tutorialVisible = !_tutorialVisible;
-            });
-          },
-        ),
+        _themeManager.getTutorialFab(() {
+          final legendList = [
+            const Tuple2<IconData, String>(Icons.whatshot, "Calories"),
+            const Tuple2<IconData, String>(Icons.add_road, "Distance"),
+            const Tuple2<IconData, String>(Icons.timer, "Elapsed / moving time"),
+            const Tuple2<IconData, String>(Icons.lock_open, "Lock Screen"),
+            const Tuple2<IconData, String>(Icons.cloud_upload, "Upload Workout"),
+            const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
+            const Tuple2<IconData, String>(Icons.battery_unknown, "Battery & Extras"),
+            const Tuple2<IconData, String>(Icons.build, "Calibration"),
+            const Tuple2<IconData, String>(Icons.favorite, "HRM Pairing"),
+            const Tuple2<IconData, String>(Icons.stop, "Stop Workout"),
+            const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
+          ];
+          if (!_instantOnStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
+            legendList.add(
+              const Tuple2<IconData, String>(Icons.sports_score, "On/Off Stage (Stats)"),
+            );
+          }
+          legendDialog(legendList);
+        }),
       ]);
 
       if (_measuring) {
-        menuButtons.add(_themeManager
-            .getGreenFab(Icons.lock_open, true, _tutorialVisible, "Lock Screen", 0, () {
+        menuButtons.add(_themeManager.getGreenFab(Icons.lock_open, () {
           _unlockButtonIndex = _rng.nextInt(_unlockChoices);
           _fabKey.currentState?.close();
           setState(() {
             _isLocked = true;
           });
         }));
+        if (!_instantOnStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
+          menuButtons.add(_themeManager.getBlueFab(Icons.sports_score, () async {
+            setState(() {
+              _onStage = !_onStage;
+              if (!_onStage) {
+                _statistics[_power0Index] = emptyMeasurement;
+                _statistics[_speed0Index] = emptyMeasurement;
+                _statistics[_cadence0Index] = emptyMeasurement;
+                _statistics[_hr0Index] = emptyMeasurement;
+              }
+
+              _accu.reset();
+            });
+          }));
+        }
       } else {
         menuButtons.addAll([
-          _themeManager.getBlueFab(Icons.cloud_upload, true, _tutorialVisible, "Upload Workout", 8,
-              () async {
-            await _workoutUpload(false);
+          _themeManager.getBlueFab(Icons.cloud_upload, () async {
+            await _activityUpload(false);
           }),
-          _themeManager.getBlueFab(
-            Icons.list_alt,
-            true,
-            _tutorialVisible,
-            "Workout List",
-            0,
-            () async {
-              final hasLeaderboardData = await _database.hasLeaderboardData();
-              Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
-            },
-          ),
-          _themeManager.getBlueFab(
-            Icons.battery_unknown,
-            true,
-            _tutorialVisible,
-            "Battery & Extras",
-            8,
-            () async {
+          _themeManager.getBlueFab(Icons.list_alt, () async {
+            final hasLeaderboardData =
+                (await _database.workoutSummaryDao.getLeaderboardDataCount() ?? 0) > 0;
+            Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+          }),
+          _themeManager.getBlueFab(Icons.battery_unknown, () async {
+            Get.bottomSheet(
+              SafeArea(
+                child: Column(
+                  children: const [
+                    Expanded(
+                      child: Center(
+                        child: BatteryStatusBottomSheet(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
+              enableDrag: false,
+            );
+          }),
+          _themeManager.getBlueFab(Icons.build, () async {
+            if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
+              Get.snackbar("Error", "Not compatible with the calibration method");
+            } else {
               Get.bottomSheet(
-                const BatteryStatusBottomSheet(),
+                SafeArea(
+                  child: Column(
+                    children: const [
+                      Expanded(
+                        child: Center(
+                          child: SpinDownBottomSheet(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                isScrollControlled: true,
+                ignoreSafeArea: false,
+                isDismissible: false,
                 enableDrag: false,
               );
-            },
-          ),
-          _themeManager.getBlueFab(
-            Icons.build,
-            true,
-            _tutorialVisible,
-            "Calibration",
-            0,
-            () async {
-              if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
-                Get.snackbar("Error", "Not compatible with the calibration method");
-              } else {
-                Get.bottomSheet(
-                  const SpinDownBottomSheet(),
-                  isDismissible: false,
-                  enableDrag: false,
-                );
-              }
-            },
-          ),
+            }
+          }),
         ]);
       }
 
       menuButtons.addAll([
-        _themeManager.getBlueFab(
-          Icons.favorite,
-          true,
-          _tutorialVisible,
-          "HRM Pairing",
-          -10,
-          () async {
-            await Get.bottomSheet(
-              const HeartRateMonitorPairingBottomSheet(),
-              isDismissible: false,
-              enableDrag: false,
-            );
-            String hrmId = await _initializeHeartRateMonitor();
-            if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
-              _activity!.hrmId = hrmId;
-              _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true);
-              await _database.activityDao.updateActivity(_activity!);
-            }
-          },
-        ),
-        _themeManager.getBlueFab(
-          _measuring ? Icons.stop : Icons.play_arrow,
-          true,
-          _tutorialVisible,
-          "Start / Stop Workout",
-          -20,
-          () async {
-            await startStopAction();
-          },
-        ),
+        _themeManager.getBlueFab(Icons.favorite, () async {
+          await Get.bottomSheet(
+            SafeArea(
+              child: Column(
+                children: const [
+                  Expanded(
+                    child: Center(
+                      child: HeartRateMonitorPairingBottomSheet(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            isScrollControlled: true,
+            ignoreSafeArea: false,
+            isDismissible: false,
+            enableDrag: false,
+          );
+          String hrmId = await _initializeHeartRateMonitor();
+          if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
+            _activity!.hrmId = hrmId;
+            _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true);
+            await _database.activityDao.updateActivity(_activity!);
+          }
+        }),
+        _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, () async {
+          await startStopAction();
+        }),
       ]);
     }
 
@@ -1972,64 +2446,35 @@ class RecordingState extends State<RecordingScreen> {
             return;
           }
         },
-        onTap: _tutorialVisible
-            ? () {
-                setState(() {
-                  _tutorialVisible = false;
-                });
-              }
-            : null,
-        child: OverlayTutorialScope(
-          enabled: _tutorialVisible || _isLocked,
-          overlayColor: _isLocked ? Colors.transparent : Colors.green.withOpacity(.8),
-          child: AbsorbPointer(
-            absorbing: _tutorialVisible || _isLocked,
-            ignoringSemantics: true,
-            child: Scaffold(
-              appBar: AppBar(
-                title: TextOneLine(
-                  widget.device.name,
-                  overflow: TextOverflow.ellipsis,
+        child: AbsorbPointer(
+          absorbing: _isLocked,
+          ignoringSemantics: true,
+          child: Scaffold(
+            appBar: AppBar(
+              title: TextOneLine(
+                widget.device.name,
+                overflow: TextOverflow.ellipsis,
+              ),
+              actions: [
+                IconButton(
+                  icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+                  onPressed: () async {
+                    await startStopAction();
+                  },
                 ),
-                actions: [
-                  OverlayTutorialHole(
-                    enabled: _tutorialVisible,
-                    overlayTutorialEntry: OverlayTutorialRectEntry(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      radius: const Radius.circular(16.0),
-                      overlayTutorialHints: <OverlayTutorialWidgetHint>[
-                        OverlayTutorialWidgetHint(
-                          builder: (context, oRect) {
-                            return Positioned(
-                              top: (oRect.rRect?.top ?? 0.0) + 8.0,
-                              right: Get.width - (oRect.rRect?.left ?? 4.0) + 4.0,
-                              child: Text("Help Overlay", style: _overlayStyle),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-                      onPressed: () async {
-                        await startStopAction();
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              body: body,
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-              floatingActionButton: CircularFabMenu(
-                key: _fabKey,
-                fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
-                    color: _themeManager.getAntagonistColor()),
-                fabOpenColor: _themeManager.getBlueColor(),
-                fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-                fabCloseColor: _themeManager.getBlueColor(),
-                ringColor: _themeManager.getBlueColorInverse(),
-                children: menuButtons,
-              ),
+              ],
+            ),
+            body: body,
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: CircularFabMenu(
+              key: _fabKey,
+              fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
+                  color: _themeManager.getAntagonistColor()),
+              fabOpenColor: _themeManager.getBlueColor(),
+              fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
+              fabCloseColor: _themeManager.getBlueColor(),
+              ringColor: _themeManager.getBlueColorInverse(),
+              children: menuButtons,
             ),
           ),
         ),

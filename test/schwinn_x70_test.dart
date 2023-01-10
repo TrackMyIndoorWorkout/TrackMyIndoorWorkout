@@ -20,8 +20,7 @@ void main() {
   test('Schwinn X70 constructor tests', () async {
     final bike = SchwinnX70();
 
-    expect(bike.canMeasureHeartRate, false);
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, schwinnX70BikeFourCC);
   });
 
@@ -98,7 +97,7 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum", () async {
         final bike = SchwinnX70();
         expect(bike.isDataProcessable(testPair.data), true);
@@ -229,7 +228,7 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum", () async {
         final bike = SchwinnX70();
         expect(bike.isDataProcessable(testPair.data), true);

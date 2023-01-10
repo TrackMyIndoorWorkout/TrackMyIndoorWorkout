@@ -19,6 +19,8 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
+      - name: Upgrade Flutetr internal packgages
+        run: flutter update-packages --force-upgrade
       - name: Install Flutter dependencies
         run: flutter pub get
       - name: Mock Secret File

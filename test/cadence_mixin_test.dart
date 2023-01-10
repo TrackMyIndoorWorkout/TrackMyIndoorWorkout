@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/cadence_mixin.dart';
 import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/utils/delays.dart';
 
 import 'utils.dart';
 
@@ -27,7 +28,7 @@ void main() {
     for (var lenMinusTwo in getRandomInts(smallRepetition, 20, rnd)) {
       final len = lenMinusTwo + 2;
       final deltaTimes = getRandomDoubles(len, 1.5, rnd);
-      final deltaRevolutions = getRandomInts(len, 100, rnd);
+      final deltaRevolutions = getRandomDoubles(len, 100.0, rnd);
       test("len $len, ", () async {
         final cadenceMixin = CadenceMixin();
         for (final i in List<int>.generate(len, (i) => i, growable: false)) {
@@ -46,7 +47,7 @@ void main() {
     for (var lenMinusOne in getRandomInts(smallRepetition, 10, rnd)) {
       final len = lenMinusOne + 1;
       final deltaTimes = getRandomDoubles(len, 1.5, rnd);
-      final deltaRevolutions = getRandomInts(len, 2, rnd);
+      final deltaRevolutions = getRandomDoubles(len, 2.0, rnd);
       final timeSum = deltaTimes.sum;
       final revolutionSum = deltaRevolutions.sum;
       test(
@@ -54,7 +55,7 @@ void main() {
           () async {
         final cadenceMixin = CadenceMixin();
         var cumulativeTime = 0.0;
-        var cumulativeRevolution = 0;
+        var cumulativeRevolution = 0.0;
         for (final i in List<int>.generate(len, (i) => i, growable: false)) {
           cumulativeTime += deltaTimes[i];
           cumulativeRevolution += deltaRevolutions[i];
@@ -62,13 +63,69 @@ void main() {
         }
 
         expect(cadenceMixin.cadenceData.length, len);
-        final cadence = cadenceMixin.computeCadence();
+        final cadence = cadenceMixin.computeCadence().toInt();
         if (len == 1) {
           expect(cadence, 0);
         } else {
           expect(cadence,
               (revolutionSum - deltaRevolutions.first) * 60 ~/ (timeSum - deltaTimes.first));
         }
+      });
+    }
+  });
+
+  group('Cadence Mixin trimQueue empties queue when entries are old by time ticks', () {
+    final rnd = Random();
+    for (var numRevolutions in getRandomInts(
+        smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
+      numRevolutions += 1;
+      test('# revolutions $numRevolutions', () async {
+        final cadenceMixin = CadenceMixin();
+        final deltaRevolutions = getRandomDoubles(numRevolutions, 5.0, rnd);
+        var timeTick = 0.0;
+        var revolutions = 0.0;
+        for (final deltaRevolution in deltaRevolutions) {
+          cadenceMixin.addCadenceData(timeTick, revolutions);
+          revolutions += deltaRevolution;
+          timeTick += (rnd.nextDouble() * 0.001 + 0.001);
+        }
+
+        expect(cadenceMixin.cadenceData.length, numRevolutions);
+        cadenceMixin.addCadenceData(
+            timeTick + CadenceMixin.defaultRevolutionSlidingWindow * 2, revolutions * 100.0);
+
+        expect(cadenceMixin.cadenceData.length, 1);
+      });
+    }
+  });
+
+  group('Cadence Mixin trimQueue empties queue when entries are old by time stamps', () {
+    final rnd = Random();
+    for (var numRevolutions in getRandomInts(
+        smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
+      numRevolutions += 1;
+      test('# revolutions $numRevolutions', () async {
+        final cadenceMixin = CadenceMixin();
+        final deltaRevolutions = getRandomDoubles(numRevolutions, 5.0, rnd);
+        var timeTick = 0.0;
+        var revolutions = 0.0;
+        for (final deltaRevolution in deltaRevolutions) {
+          cadenceMixin.addCadenceData(timeTick, revolutions);
+          revolutions += deltaRevolution;
+          timeTick += (rnd.nextDouble() * 0.001 + 0.001);
+        }
+
+        expect(cadenceMixin.cadenceData.length, numRevolutions);
+        for (final cadenceData in cadenceMixin.cadenceData) {
+          final timeStampAdjust = Duration(
+              milliseconds:
+                  CadenceMixin.defaultRevolutionSlidingWindow * 2000 + sensorDataThreshold);
+          cadenceData.timeStamp = DateTime.now().subtract(timeStampAdjust);
+        }
+        cadenceMixin.addCadenceData(
+            timeTick + CadenceMixin.defaultRevolutionSlidingWindow * 2, revolutions * 100.0);
+
+        expect(cadenceMixin.cadenceData.length, 1);
       });
     }
   });

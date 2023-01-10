@@ -39,8 +39,8 @@ class InMemoryActivityDao extends ActivityDao {
   }
 
   @override
-  Stream<Activity?> findActivityById(int id) async* {
-    yield activities.firstWhereOrNull((element) => element.id == id);
+  Future<Activity?> findActivityById(int id) async {
+    return activities.firstWhereOrNull((element) => element.id == id);
   }
 
   @override
@@ -119,8 +119,8 @@ class InMemoryRecordDao extends RecordDao {
   }
 
   @override
-  Stream<Record?> findLastRecordOfActivity(int activityId) async* {
-    yield records
+  Future<Record?> findLastRecordOfActivity(int activityId) async {
+    return records
         .where((element) => element.activityId == activityId)
         .sortedByCompare<int?>(
             (element) => element.timeStamp, (int? e1, int? e2) => (e1 ?? 0) - (e2 ?? 0))
@@ -128,8 +128,8 @@ class InMemoryRecordDao extends RecordDao {
   }
 
   @override
-  Stream<Record?> findRecordById(int id) async* {
-    yield records.firstWhereOrNull((element) => element.id == id);
+  Future<Record?> findRecordById(int id) async {
+    return records.firstWhereOrNull((element) => element.id == id);
   }
 
   @override

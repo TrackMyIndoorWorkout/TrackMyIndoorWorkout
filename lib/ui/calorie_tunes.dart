@@ -16,7 +16,7 @@ class CalorieTunesScreen extends StatefulWidget {
   CalorieTunesScreenState createState() => CalorieTunesScreenState();
 }
 
-class CalorieTunesScreenState extends State<CalorieTunesScreen> {
+class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBindingObserver {
   final AppDatabase _database = Get.find<AppDatabase>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
@@ -25,22 +25,48 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
+  void didChangeMetrics() {
+    setState(() {
+      _editCount++;
+    });
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _textStyle = Get.textTheme.headline4!;
     _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   Widget _actionButtonRow(CalorieTune calorieTune, double size) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: _themeManager.getActionIcon(Icons.edit, size),
+          iconSize: size,
           onPressed: () async {
             final result = await Get.bottomSheet(
-              CalorieFactorTuneBottomSheet(calorieTune: calorieTune),
+              SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: CalorieFactorTuneBottomSheet(calorieTune: calorieTune),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
             if (result != null) {
@@ -53,6 +79,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
         const Spacer(),
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
+          iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',

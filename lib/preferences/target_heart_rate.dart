@@ -4,9 +4,9 @@ import 'sound_effects.dart';
 const targetHeartRateMode = "Target Heart Rate Mode:";
 const targetHeartRateModeTag = "target_heart_rate_mode";
 const targetHeartRateModeDescription =
-    "You can configure target heart rate BPM range or zone range. "
+    "(You can configure target heart rate BPM range or zone range. "
     "The app will alert visually (and optionally audio as well) when you are outside of the range. "
-    "The lower and upper zone can be the same if you want to target just one zone.";
+    "The lower and upper zone can be the same if you want to target just one zone.)";
 const targetHeartRateModeNone = "none";
 const targetHeartRateModeNoneDescription = "Target heart rate alert is turned off";
 const targetHeartRateModeBpm = "bpm";
@@ -65,5 +65,5 @@ const targetHeartRateAudioPeriodDescription = "0 or 1: no periodicity. Larger th
 const targetHeartRateSoundEffect = "Target Heart Rate Out of Range Sound Effect:";
 const targetHeartRateSoundEffectTag = "target_heart_rate_sound_effect";
 const targetHeartRateSoundEffectDescription =
-    "Select the type of sound effect played when the HR gets out of range:";
+    "(Select the type of sound effect played when the HR gets out of range)";
 const targetHeartRateSoundEffectDefault = soundEffectTwoTone;
