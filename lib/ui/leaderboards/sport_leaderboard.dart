@@ -11,8 +11,8 @@ import '../../preferences/speed_spec.dart';
 import '../../preferences/sport_spec.dart';
 import '../../persistence/floor/models/workout_summary.dart';
 import '../../preferences/distance_resolution.dart';
-import '../../preferences/generic.dart';
 import '../../preferences/unit_system.dart';
+import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
 class SportLeaderboardScreen extends StatefulWidget {

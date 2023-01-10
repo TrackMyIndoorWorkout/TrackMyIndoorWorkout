@@ -63,6 +63,7 @@ import '../preferences/wheel_circumference.dart';
 import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
+import '../utils/preferences.dart';
 import 'constants.dart';
 
 Future<void> migrateStringIntegerPreference(
@@ -150,7 +151,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     paddlingWithCyclingSensorsTag: paddlingWithCyclingSensorsDefault,
     instantOnStageTag: instantOnStageDefault,
     onStageStatisticsTypeTag: onStageStatisticsTypeDefault,
-    onStageStatisticsAlternationDurationTag: onStageStatisticsAlternationDurationDefault,
+    onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -340,6 +341,21 @@ Future<BasePrefService> initPreferences() async {
         prefService.get<bool>(movingOrElapsedTimeTag) ?? movingOrElapsedTimeDefault;
     if (!movingOrElapsedTime) {
       await prefService.set<String>(timeDisplayModeTag, timeDisplayModeElapsed);
+    }
+  }
+
+  // Remove white space from data connection string
+  if (prefVersion <= preferencesVersionNoWhitespaceInNetworkAddresses) {
+    final oldDataConnectionAddresses =
+        prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
+    if (oldDataConnectionAddresses.isNotEmpty) {
+      final newAddresses = oldDataConnectionAddresses.removeAllWhitespace
+          .split(",")
+          .map((address) => addDefaultPortIfMissing(address))
+          .join(",");
+      if (oldDataConnectionAddresses.length != newAddresses.length) {
+        prefService.set<String>(dataConnectionAddressesTag, newAddresses);
+      }
     }
   }
 

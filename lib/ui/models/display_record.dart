@@ -18,10 +18,21 @@ class DisplayRecord {
     dt = source?.dt;
   }
 
-  factory DisplayRecord.from(String sport, DateTime dateTime) {
+  factory DisplayRecord.blank(String sport, DateTime dateTime) {
     return DisplayRecord(null)
       ..sport = sport
       ..dt = dateTime;
+  }
+
+  factory DisplayRecord.forValues(
+      String sport, DateTime? dateTime, int? power, double? speed, int? cadence, int? heartRate) {
+    return DisplayRecord(null)
+      ..sport = sport
+      ..dt = dateTime
+      ..power = power
+      ..speed = speed
+      ..cadence = cadence
+      ..heartRate = heartRate;
   }
 
   double speedByUnit(bool si) {

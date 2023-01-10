@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/air_temperature.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/drag_force_tune.dart';
 import '../../preferences/drive_train_loss.dart';
+import '../../preferences/measurement_sink_address.dart';
 import '../../preferences/paddling_with_cycling_sensors.dart';
 import '../../preferences/water_wheel_circumference.dart';
 import '../../preferences/wheel_circumference.dart';
+import '../../utils/preferences.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
@@ -119,6 +122,22 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         pref: waterWheelCircumferenceTag,
         min: waterWheelCircumferenceMin,
         max: waterWheelCircumferenceMax,
+      ),
+      PrefText(
+        label: measurementSinkAddress,
+        pref: measurementSinkAddressTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z0-9:.]"))],
+        validator: (str) {
+          if (str == null || str.isEmpty) {
+            return null;
+          }
+
+          if (parseNetworkAddress(str, false) == dummyAddressTuple) {
+            return "Doesn't look like a domain name / IP address or doesn't have a port number";
+          }
+
+          return null;
+        },
       ),
     ];
 

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import '../export/export_record.dart';
+import '../ui/models/display_record.dart';
 import '../persistence/floor/models/record.dart';
 import 'constants.dart';
 
@@ -211,5 +212,25 @@ class StatisticsAccumulator {
         minCadence = min(minCadence, record.cadence!);
       }
     }
+  }
+
+  DisplayRecord averageDisplayRecord(DateTime? timestamp) {
+    return DisplayRecord.forValues(
+        sport,
+        timestamp,
+        avgPower > eps ? avgPower.round() : null,
+        avgSpeed > 0 ? avgSpeed : null,
+        avgCadence > 0 ? avgCadence : null,
+        avgHeartRate > 0 ? avgHeartRate : null);
+  }
+
+  DisplayRecord maximumDisplayRecord(DateTime? timestamp) {
+    return DisplayRecord.forValues(
+        sport,
+        timestamp,
+        maxPower > 0 ? maxPower : null,
+        maxSpeed > 0 ? maxSpeed : null,
+        maxCadence > 0 ? maxCadence : null,
+        maxHeartRate > 0 ? maxHeartRate : null);
   }
 }
