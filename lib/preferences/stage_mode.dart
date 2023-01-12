@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 const instantOnStage = "Instantly On-Stage";
 const instantOnStageTag = "instant_on_stage";
 const instantOnStageDefault = true;
@@ -35,3 +37,13 @@ const onStageStatisticsAlternationPeriodDivisions =
     onStageStatisticsAlternationPeriodMax - onStageStatisticsAlternationPeriodMin;
 const onStageStatisticsAlternationPeriodDescription =
     "Duration in seconds statistics type will stay before alternating.";
+
+const averageChartColor = "Avg. Stat. Color";
+const averageChartColorTag = "average_stat_color";
+final averageChartColorDefault = Colors.deepOrangeAccent.value;
+const averageChartColorDescription = "Color of the average line on the charts.";
+
+const maximumChartColor = "Max. Stat. Color";
+const maximumChartColorTag = "maximum_stat_color";
+final maximumChartColorDefault = Colors.red.value;
+const maximumChartColorDescription = "Color of the maximum line on the charts.";

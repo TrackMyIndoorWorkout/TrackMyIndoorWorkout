@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:track_my_indoor_exercise/ui/donation.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -52,6 +51,7 @@ import 'parts/sport_picker.dart';
 import 'preferences/preferences_hub.dart';
 import 'about.dart';
 import 'activities.dart';
+import 'donation.dart';
 import 'recording.dart';
 
 class FindDevicesScreen extends StatefulWidget {

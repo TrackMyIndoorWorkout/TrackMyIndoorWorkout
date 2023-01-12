@@ -804,8 +804,8 @@ class RecordingState extends State<RecordingScreen> {
       fontSize: 11 * _sizeAdjust,
       color: _chartTextColor,
     );
-    _chartAvgColor = _themeManager.getOrangeColor();
-    _chartMaxColor = _themeManager.getRedColor();
+    _chartAvgColor = _themeManager.getAverageChartColor();
+    _chartMaxColor = _themeManager.getMaximumChartColor();
     _expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
       iconColor: _themeManager.getProtagonistColor(),
