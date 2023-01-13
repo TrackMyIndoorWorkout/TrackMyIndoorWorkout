@@ -19,7 +19,7 @@ dependencies:
   expandable: ^5.0.1
   file_picker: ^5.2.5
   floor: ^1.4.1
-  flutter_blue_plus: ^1.3.1
+  flutter_blue_plus: ^1.4.0
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.1
   flutter_logs: ^2.1.10
@@ -44,7 +44,7 @@ dependencies:
   rxdart: ^0.27.7
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
-  sqflite: ^2.2.2
+  sqflite: ^2.2.3
   string_validator: ^0.3.0
   syncfusion_flutter_charts: ^20.4.43
   tuple: ^2.0.1
