@@ -11,37 +11,18 @@ laundry drying racks.
 
 For more details please see [the application's website](https://trackmyindoorworkout.github.io).
 
-## Code Style
+## Contribution Rules
 
-The project currently uses flutter format with 100 character line length.
-To achieve that supply an extra parameter to *flutter format* at the project root:
-`flutter format --line-length 100 .`. Besides that we also run `flutter analyze`.
-
-## Continuous Integration
-
-The CI script executes the above `flutter format --line-length 100 .` and
-`flutter analize .` commands and then runs the unit tests. If any of them fails the CI is
-deemed broken. The best to avoid that is to execute those in a client-side
+* If you are on a stable branch you ned to execute `flutter update-packages --force-upgrade` to upgrade Flutter's internal pinned package versions to avoid version conflicts (but in that case you need to undo those repository changes before Flutter SDK upgrades). The other way is to be on the beta channel. For details look at https://github.com/flutter/flutter/issues/114199#issuecomment-1294263848 and https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/399
+* For building the project locally you need to augment a dummy `secret.dart` file, see the CI build script: https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/blob/99ae7f2f54fecdcc3af3916a835863bd59a90020/.github/workflows/flutter_test.yml#L26
+* Execute `flutter format --line-length 100 .` at the project root. The project currently uses flutter format with 100 character line length.
+* Also run `flutter analyze` at the project root which picks up settings. You can consider adding the format and the analyze execution in a client-side
 [pre-push hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks).
-
-## Branching Strategy
-
-For common contributors: please base your pull request against the `develop` branch.
-The project currently uses Git Flow branching conventions. See this
-[cheat sheet](https://danielkummer.github.io/git-flow-cheatsheet/) first and maybe also
-https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow.
-Features will be developed in their own branches (after `git flow feature start my_feature_x`)
-and will merge into `develop` with a `git flow feature finish my_feature_x`
-when deemed finished. Production releases (`git flow release start my_next_big_release`)
-merge the `develop` branch into `master`. The only downside of that is it does not interoperate
-with the pull request infrastructure, so in the future we may switch to using
-[Git Town](https://github.com/git-town/git-town) operating
-on [somewhat similar branch hierarchy](https://github.com/git-town/git-town/blob/main/documentation/development/branch_hierarchy.md)
-mainly with `git town hack my_feature_x` and `git ship town my_feature_x`.
+* For larger features let me know in advance, so I can open up a feature branch you can create a PR against. Internally I foolow Git Flow branching conventions ([cheat sheet](https://danielkummer.github.io/git-flow-cheatsheet/) and [another info page](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)). I'm performing releaes that way as well. I'm also using [Git Town](https://github.com/git-town/git-town) but currently only for [git town sync](https://github.com/git-town/git-town/blob/main/documentation/development/branch_hierarchy.md) and I don't employ `git hack` - `git ship` workflow. I'm avoiding squashing commits because I want to preserve detailed commit history to help forensic debugging.
 
 ## Code regeneration
 
-Run this command: `flutter packages pub run build_runner build --delete-conflicting-outputs`
+When  Run this command: `flutter packages pub run build_runner build --delete-conflicting-outputs`
 
 ## License
 
