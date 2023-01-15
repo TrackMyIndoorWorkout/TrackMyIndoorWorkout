@@ -22,7 +22,9 @@ For more details please see [the application's website](https://trackmyindoorwor
 
 ## Code regeneration
 
-When  Run this command: `flutter packages pub run build_runner build --delete-conflicting-outputs`
+When you make persistence changes or something related to testing Mocks you may need code generation:
+1. `flutter packages pub run build_runner build --delete-conflicting-outputs`
+2. Re-run `flutter format --line-length 100 .` after that.
 
 ## License
 
