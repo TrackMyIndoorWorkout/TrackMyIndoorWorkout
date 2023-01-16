@@ -13,18 +13,18 @@ For more details please see [the application's website](https://trackmyindoorwor
 
 ## Contribution Rules
 
-* If you are on a stable branch you ned to execute `flutter update-packages --force-upgrade` to upgrade Flutter's internal pinned package versions to avoid version conflicts (but in that case you need to undo those repository changes before Flutter SDK upgrades). The other way is to be on the beta channel. For details look at https://github.com/flutter/flutter/issues/114199#issuecomment-1294263848 and https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/399
-* For building the project locally you need to augment a dummy `secret.dart` file, see the CI build script: https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/blob/99ae7f2f54fecdcc3af3916a835863bd59a90020/.github/workflows/flutter_test.yml#L26
+* If you are on the Flutter stable channel you need to execute `flutter update-packages --force-upgrade` to upgrade Flutter's internal pinned package versions to avoid version conflicts (but in that case you need to undo those repository changes before Flutter SDK upgrades). The other way is to be on the beta channel. For details look at https://github.com/flutter/flutter/issues/114199#issuecomment-1294263848 and https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/399
+* For a successful local build you need to augment a dummy `secret.dart` file, see the the CI build script for a hint: https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/blob/99ae7f2f54fecdcc3af3916a835863bd59a90020/.github/workflows/flutter_test.yml#L26
 * Execute `flutter format --line-length 100 .` at the project root. The project currently uses flutter format with 100 character line length.
-* Also run `flutter analyze` at the project root which picks up settings. You can consider adding the format and the analyze execution in a client-side
+* Also run `flutter analyze` at the project root. That picks up the analyzer settings from the yaml. You can consider adding the format and the analyze execution in a client-side
 [pre-push hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks).
-* For larger features let me know in advance, so I can open up a feature branch you can create a PR against. Internally I foolow Git Flow branching conventions ([cheat sheet](https://danielkummer.github.io/git-flow-cheatsheet/) and [another info page](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)). I'm performing releaes that way as well. I'm also using [Git Town](https://github.com/git-town/git-town) but currently only for [git town sync](https://github.com/git-town/git-town/blob/main/documentation/development/branch_hierarchy.md) and I don't employ `git hack` - `git ship` workflow. I'm avoiding squashing commits because I want to preserve detailed commit history to help forensic debugging.
+* For larger features let me know your plans in advance, so I can open up a feature branch so you can create a PR against that. Internally I follow Git Flow branching conventions ([cheat sheet](https://danielkummer.github.io/git-flow-cheatsheet/) and [another info page](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)). I'm performing releases that way as well. I'm also using [Git Town](https://github.com/git-town/git-town) but currently only for [git sync](https://github.com/git-town/git-town/blob/main/documentation/development/branch_hierarchy.md) and I don't employ `git hack` - `git ship` workflow. I'm avoiding squashing commits because I want to preserve detailed commit history to help forensic debugging.
 
 ## Code regeneration
 
-When you make persistence changes or something related to testing Mocks you may need code generation:
+With certain data persistence or testing Mock changes you may need code regeneration:
 1. `flutter packages pub run build_runner build --delete-conflicting-outputs`
-2. Re-run `flutter format --line-length 100 .` after that.
+2. Don't forget to re-run `flutter format --line-length 100 .` after that.
 
 ## License
 
