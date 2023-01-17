@@ -47,6 +47,25 @@ class ImportFormState extends State<ImportForm> {
     });
   }
 
+  Future<DateTime?> showPickerCombo(BuildContext context, DateTime? currentValue) async {
+    return await showDatePicker(
+      context: context,
+      firstDate: DateTime(1920),
+      initialDate: currentValue ?? DateTime.now(),
+      lastDate: DateTime(2030),
+    ).then((DateTime? date) async {
+      if (date != null) {
+        final time = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+        );
+        return DateTimeField.combine(date, time);
+      } else {
+        return currentValue;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,21 +134,22 @@ class ImportFormState extends State<ImportForm> {
                     hintText: 'Pick date & time',
                   ),
                   onShowPicker: (context, currentValue) async {
-                    final date = await showDatePicker(
+                    return await showDatePicker(
                       context: context,
                       firstDate: DateTime(1920),
                       initialDate: currentValue ?? DateTime.now(),
                       lastDate: DateTime(2030),
-                    );
-                    if (date != null) {
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-                      );
-                      return DateTimeField.combine(date, time);
-                    } else {
-                      return currentValue;
-                    }
+                    ).then((DateTime? date) async {
+                      if (date != null) {
+                        final time = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                        );
+                        return DateTimeField.combine(date, time);
+                      } else {
+                        return currentValue;
+                      }
+                    });
                   },
                   validator: (value) {
                     if (value == null && !widget.migration) {
