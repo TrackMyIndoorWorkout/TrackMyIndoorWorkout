@@ -59,7 +59,7 @@ class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMix
         max: athleteAgeMax,
       ),
       PrefLabel(
-        title: Text(athleteGender, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(athleteGender, style: Get.textTheme.headlineSmall!, maxLines: 3),
         subtitle: const Text(athleteGenderDescription),
       ),
       const PrefRadio<String>(

@@ -88,7 +88,7 @@ class ScanResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final captionStyle = Get.textTheme.headline6!;
+    final captionStyle = Get.textTheme.titleLarge!;
     final detailStyle = captionStyle.apply(fontSizeFactor: 1 / fontSizeFactor);
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();

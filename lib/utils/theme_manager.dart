@@ -181,7 +181,7 @@ class ThemeManager {
   }
 
   Widget getRankIcon(int rank) {
-    final textStyle = Get.textTheme.headline4!.apply(fontFamily: fontFamily, color: Colors.black);
+    final textStyle = Get.textTheme.headlineMedium!.apply(fontFamily: fontFamily, color: Colors.black);
     return _getFabCore(
       Colors.black,
       getYellowColor(),

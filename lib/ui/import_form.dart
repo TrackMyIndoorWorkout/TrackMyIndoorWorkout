@@ -36,7 +36,7 @@ class ImportFormState extends State<ImportForm> {
   @override
   void initState() {
     super.initState();
-    _sizeDefault = Get.textTheme.headline2!.fontSize!;
+    _sizeDefault = Get.textTheme.displayMedium!.fontSize!;
     final prefService = Get.find<BasePrefService>();
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
   }

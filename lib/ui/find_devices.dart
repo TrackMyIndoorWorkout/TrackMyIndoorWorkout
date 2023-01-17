@@ -249,7 +249,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _isScanning = false;
     _openDatabase().then((value) => _instantScan ? _startScan(true) : {});
 
-    _captionStyle = Get.textTheme.headline6!;
+    _captionStyle = Get.textTheme.titleLarge!;
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;

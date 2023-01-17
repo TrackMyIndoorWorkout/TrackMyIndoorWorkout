@@ -28,7 +28,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
   @override
   void initState() {
     super.initState();
-    _largerTextStyle = Get.textTheme.headline4!;
+    _largerTextStyle = Get.textTheme.headlineMedium!;
     for (final portalName in portalNames) {
       integrationStates[portalName] = UploadService.isIntegrationEnabled(portalName);
     }
@@ -84,7 +84,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
         pref: trainingPeaksUploadPublicTag,
       ),
       PrefLabel(
-        title: Text("Available Integrations:", style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text("Available Integrations:", style: Get.textTheme.headlineSmall!, maxLines: 3),
       ),
     ];
 

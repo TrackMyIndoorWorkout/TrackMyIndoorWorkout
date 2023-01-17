@@ -18,7 +18,7 @@ class DonationScreen extends StatelessWidget {
           child: SvgPicture.asset(
             "assets/$logoSvgPath.svg",
             color: vendorName == "CashApp" ? Colors.green : null,
-            height: Get.textTheme.headline2!.fontSize!,
+            height: Get.textTheme.displayMedium!.fontSize!,
             semanticsLabel: "$vendorName Button",
           ),
         ),
@@ -33,7 +33,7 @@ class DonationScreen extends StatelessWidget {
         },
       ),
       subtitle: ElevatedButton.icon(
-        icon: Icon(Icons.qr_code_scanner, size: Get.textTheme.headline1!.fontSize!),
+        icon: Icon(Icons.qr_code_scanner, size: Get.textTheme.displayLarge!.fontSize!),
         label: const Text("Display QR"),
         onPressed: () {
           Get.bottomSheet(
@@ -44,7 +44,7 @@ class DonationScreen extends StatelessWidget {
                 SvgPicture.asset(
                   "assets/$logoSvgPath.svg",
                   color: vendorName == "CashApp" ? Colors.green : null,
-                  height: Get.textTheme.headline2!.fontSize!,
+                  height: Get.textTheme.displayMedium!.fontSize!,
                   semanticsLabel: "$vendorName Button",
                 ),
                 Expanded(
