@@ -69,6 +69,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _paddlingWithCyclingSensors = paddlingWithCyclingSensorsDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
+  final Map<String, String> _deviceSport = {};
   bool _goingToRecording = false;
   bool _autoConnectLatch = false;
   int _logLevel = logLevelDefault;
@@ -156,6 +157,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
   }
 
+  Future<void> _readDeviceSports() async {
+    _deviceSport.clear();
+    final database = Get.find<AppDatabase>();
+    for (final deviceUsage in await database.deviceUsageDao.findAllDeviceUsages()) {
+      _deviceSport[deviceUsage.mac] = deviceUsage.sport;
+    }
+  }
+
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
       if (_logLevel >= logLevelInfo) {
@@ -196,6 +205,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     _readPreferencesValues();
+    await _readDeviceSports();
     _scannedDevices.clear();
     _isScanning = true;
     _autoConnectLatch = true;
@@ -222,13 +232,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     final advertisementCache = Get.find<AdvertisementCache>();
-    advertisementCache.addEntry(scanResult);
+    String deviceId = scanResult.device.id.id;
+    String deviceSport = _deviceSport[deviceId] ?? "";
+    advertisementCache.addEntry(scanResult, deviceSport);
 
-    if (_scannedDevices.where((d) => d.id.id == scanResult.device.id.id).isNotEmpty) {
-      return;
+    if (_scannedDevices.where((d) => d.id.id == scanResult.device.id.id).isEmpty) {
+      _scannedDevices.add(scanResult.device);
     }
-
-    _scannedDevices.add(scanResult.device);
   }
 
   @override
@@ -330,6 +340,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
     }
 
+    final database = Get.find<AppDatabase>();
+    var deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.id.id);
     final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
@@ -357,13 +369,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
         } else if (advertisementDigest.machineType == MachineType.indoorBike) {
           descriptor = DeviceFactory.getDescriptorForFourCC(matrixBikeFourCC);
         }
+      } else if (deviceUsage != null) {
+        descriptor = DeviceFactory.genericDescriptorForSport(deviceUsage.sport);
       }
     }
 
-    final database = Get.find<AppDatabase>();
-    var deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.id.id);
     FitnessEquipment? fitnessEquipment;
-
     bool preConnectLogic = true;
     bool navigate = true;
     if (manual) {
@@ -435,83 +446,79 @@ class FindDevicesState extends State<FindDevicesScreen> {
       // Step 3. Try to infer from DeviceUsage, FTMS advertisement service data or characteristics
       bool pickedAlready = false;
       if (descriptor == null) {
-        if (deviceUsage != null) {
-          descriptor = DeviceFactory.genericDescriptorForSport(deviceUsage.sport);
-        } else {
-          String? inferredSport;
-          if (advertisementDigest.machineType.isFtms) {
-            // Determine FTMS sport by Service Data bits
-            inferredSport = advertisementDigest.machineType.sport;
-          } else if (advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
-            // Determine FTMS sport by analyzing 0x1826 service's characteristics
-            setState(() {
-              _goingToRecording = true;
-            });
+        String? inferredSport;
+        if (advertisementDigest.machineType.isSpecificFtms) {
+          // Determine FTMS sport by Service Data bits
+          inferredSport = advertisementDigest.machineType.sport;
+        } else if (advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
+          // Determine FTMS sport by analyzing 0x1826 service's characteristics
+          setState(() {
+            _goingToRecording = true;
+          });
 
-            fitnessEquipment = FitnessEquipment(device: device);
-            final success = await fitnessEquipment.connectOnDemand(identify: true);
-            if (success) {
-              final inferredSports = fitnessEquipment.inferSportsFromCharacteristicIds();
-              if (inferredSports.isNotEmpty) {
-                if (inferredSports.length == 1) {
-                  inferredSport = inferredSports.first;
-                } else {
-                  inferredSport = await Get.bottomSheet(
-                    SafeArea(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Center(
-                              child: SportPickerBottomSheet(
-                                sportChoices: inferredSports,
-                                initialSport: inferredSports.first,
-                              ),
+          fitnessEquipment = FitnessEquipment(device: device);
+          final success = await fitnessEquipment.connectOnDemand(identify: true);
+          if (success) {
+            final inferredSports = fitnessEquipment.inferSportsFromCharacteristicIds();
+            if (inferredSports.isNotEmpty) {
+              if (inferredSports.length == 1) {
+                inferredSport = inferredSports.first;
+              } else {
+                inferredSport = await Get.bottomSheet(
+                  SafeArea(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: SportPickerBottomSheet(
+                              sportChoices: inferredSports,
+                              initialSport: inferredSports.first,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    isScrollControlled: true,
-                    ignoreSafeArea: false,
-                    isDismissible: false,
-                    enableDrag: false,
-                  );
-                  pickedAlready = inferredSport != null;
-                  await fitnessEquipment.setCharacteristicById(sportToUuid[inferredSport]!);
-                }
+                  ),
+                  isScrollControlled: true,
+                  ignoreSafeArea: false,
+                  isDismissible: false,
+                  enableDrag: false,
+                );
+                pickedAlready = inferredSport != null;
+                await fitnessEquipment.setCharacteristicById(sportToUuid[inferredSport]!);
               }
             }
           }
+        }
 
-          if (inferredSport == null) {
-            Get.snackbar("Error", "Could not infer sport of the device");
-            if (_logLevel > logLevelNone) {
-              Logging.log(
-                _logLevel,
-                logLevelError,
-                "FIND_DEVICES",
-                "goToRecording",
-                "Could not infer sport of the device",
-              );
-            }
+        if (inferredSport == null) {
+          Get.snackbar("Error", "Could not infer sport of the device");
+          if (_logLevel > logLevelNone) {
+            Logging.log(
+              _logLevel,
+              logLevelError,
+              "FIND_DEVICES",
+              "goToRecording",
+              "Could not infer sport of the device",
+            );
+          }
 
-            setState(() {
-              _goingToRecording = false;
-            });
+          setState(() {
+            _goingToRecording = false;
+          });
 
-            return false;
-          } else {
-            descriptor = DeviceFactory.genericDescriptorForSport(inferredSport);
-            if (!descriptor.isMultiSport) {
-              deviceUsage = DeviceUsage(
-                sport: inferredSport,
-                mac: device.id.id,
-                name: device.name,
-                manufacturer: advertisementDigest.manufacturer,
-                time: DateTime.now().millisecondsSinceEpoch,
-              );
-              await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
-            }
+          return false;
+        } else {
+          descriptor = DeviceFactory.genericDescriptorForSport(inferredSport);
+          if (!descriptor.isMultiSport) {
+            deviceUsage = DeviceUsage(
+              sport: inferredSport,
+              mac: device.id.id,
+              name: device.name,
+              manufacturer: advertisementDigest.manufacturer,
+              time: DateTime.now().millisecondsSinceEpoch,
+            );
+            await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
           }
         }
       }
@@ -879,6 +886,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
                         return ScanResultTile(
                           result: r,
+                          deviceSport: _deviceSport[r.device.id.id] ?? "",
                           onEquipmentTap: () async {
                             if (!await bluetoothCheck(false, _logLevel)) {
                               return;

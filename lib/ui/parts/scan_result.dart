@@ -13,11 +13,13 @@ class ScanResultTile extends StatelessWidget {
   const ScanResultTile({
     Key? key,
     required this.result,
+    required this.deviceSport,
     required this.onEquipmentTap,
     required this.onHrmTap,
   }) : super(key: key);
 
   final ScanResult result;
+  final String deviceSport;
   final VoidCallback onEquipmentTap;
   final VoidCallback onHrmTap;
 
@@ -91,7 +93,7 @@ class ScanResultTile extends StatelessWidget {
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
 
-    final deviceIcon = result.getIcon([]);
+    final deviceIcon = result.getIcon([], deviceSport);
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: Icon(
