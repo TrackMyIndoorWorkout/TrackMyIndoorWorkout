@@ -31,7 +31,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   @override
   void initState() {
     super.initState();
-    _largerTextStyle = Get.textTheme.headlineMedium!.apply(color: _themeManager.getProtagonistColor());
+    _largerTextStyle =
+        Get.textTheme.headlineMedium!.apply(color: _themeManager.getProtagonistColor());
     final prefService = Get.find<BasePrefService>();
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     for (final portalName in portalNames) {
