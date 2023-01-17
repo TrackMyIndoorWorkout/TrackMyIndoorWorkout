@@ -491,7 +491,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     final success = await discover(identify: identify);
     if (success) {
-      descriptor!.setDevice(device!, services);
+      descriptor?.setDevice(device!, services);
     }
 
     return success;
