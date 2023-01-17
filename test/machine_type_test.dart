@@ -61,7 +61,7 @@ void main() {
     }
   });
 
-  group('machineType isFtms classifies as expected', () {
+  group('machineType isSpecificFtms classifies as expected', () {
     for (final testPair in [
       const MachineFtmsTestPair(machineType: MachineType.notFitnessMachine, expected: false),
       const MachineFtmsTestPair(machineType: MachineType.indoorBike, expected: true),
@@ -74,7 +74,7 @@ void main() {
       const MachineFtmsTestPair(machineType: MachineType.multiFtms, expected: false),
     ]) {
       test("${testPair.machineType} -> ${testPair.expected}", () async {
-        expect(testPair.machineType.isFtms, testPair.expected);
+        expect(testPair.machineType.isSpecificFtms, testPair.expected);
       });
     }
   });

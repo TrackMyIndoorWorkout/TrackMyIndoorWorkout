@@ -73,7 +73,7 @@ extension MachineTypeEx on MachineType {
     }
   }
 
-  bool get isFtms {
+  bool get isSpecificFtms {
     return [
       MachineType.indoorBike,
       MachineType.treadmill,
