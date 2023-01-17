@@ -201,14 +201,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.4"
-  datetime_picker_formfield:
+  datetime_picker_formfield_new:
     dependency: "direct main"
     description:
-      name: datetime_picker_formfield
-      sha256: "6d0412c98cc5da18a5dca1f81f82a834fbacdb5d249fd6d9bed42d912339720e"
+      name: datetime_picker_formfield_new
+      sha256: "3ae16c2739a61d54c86f2f3fa5e62eab98ff538a1340e9ba01f2e89673518ce3"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.0"
   device_info_plus:
     dependency: "direct main"
     description:
