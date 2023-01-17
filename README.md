@@ -19,7 +19,7 @@ For more details please see [the application's website](https://trackmyindoorwor
 * For a successful local build you need to augment a dummy `secret.dart` file,
   see the the CI build script for a hint:
   https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/blob/develop/.github/workflows/flutter_test.yml#L24
-* Execute `flutter format --line-length 100 .` at the project root.
+* Execute `dart format --line-length 100 .` at the project root.
   The project currently uses flutter format with 100 character line length.
 * Also run `flutter analyze` at the project root. That picks up the analyzer settings from the yaml.
   You can consider adding the format and the analyze execution in a client-side
@@ -39,7 +39,7 @@ For more details please see [the application's website](https://trackmyindoorwor
 
 With certain data persistence or testing Mock changes you may need code regeneration:
 1. `flutter packages pub run build_runner build --delete-conflicting-outputs`
-2. Don't forget to re-run `flutter format --line-length 100 .` after that.
+2. Don't forget to re-run `dart format --line-length 100 .` after that.
 
 ## License
 
