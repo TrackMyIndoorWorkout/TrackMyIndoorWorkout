@@ -491,10 +491,10 @@ packages:
     dependency: "direct main"
     description:
       name: intl
-      sha256: "910f85bce16fb5c6f614e117efa303e85a1731bb0081edf3604a2ae6e9a3cc91"
+      sha256: a3715e3bc90294e971cb7dc063fbf3cd9ee0ebf8604ffeafabd9e6f16abbdbe6
       url: "https://pub.dev"
     source: hosted
-    version: "0.17.0"
+    version: "0.18.0"
   io:
     dependency: transitive
     description:
@@ -1104,18 +1104,18 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: "03baabf048f076fd202d871eb802ed938e148e06177ed8484c604901321e3d2c"
+      sha256: fb76374625e5cfa485ed1d2b080f2b5a6722d95b36d8355a4a9bd0567567d769
       url: "https://pub.dev"
     source: hosted
-    version: "20.4.43"
+    version: "20.4.44"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "4731bddb3013d9d47fd07c5cb51e790e18a6f1be5f347111ec6c0b8bdec46b76"
+      sha256: "66529f3f102c6501a75811e8d931a1908ad9865ea4d3416c40ac05cf62fdcd44"
       url: "https://pub.dev"
     source: hosted
-    version: "20.4.43"
+    version: "20.4.44"
   synchronized:
     dependency: transitive
     description:

@@ -31,7 +31,7 @@ dependencies:
   http: ^0.13.5
   http_parser: ^4.0.2
   internet_connection_checker: ^1.0.0+1
-  intl: ^0.17.0
+  intl: ^0.18.0
   listview_utils: ^1.0.0-nullsafety
   loading_overlay: ^0.3.0
   number_selector: ^1.0.5
@@ -46,7 +46,7 @@ dependencies:
   soundpool: ^2.3.0
   sqflite: ^2.2.3
   string_validator: ^0.3.0
-  syncfusion_flutter_charts: ^20.4.43
+  syncfusion_flutter_charts: ^20.4.44
   tuple: ^2.0.1
   uni_links: ^0.5.1
   url_launcher: ^6.1.7
