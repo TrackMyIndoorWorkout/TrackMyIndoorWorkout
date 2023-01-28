@@ -26,7 +26,7 @@ class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomS
       _formatChoices.add("JSON");
     }
     _formatIndex = max(0, _formatChoices.indexOf("FIT"));
-    _largerTextStyle = Get.textTheme.headline4!;
+    _largerTextStyle = Get.textTheme.headlineMedium!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
 

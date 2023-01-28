@@ -23,7 +23,7 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
     super.initState();
 
     final themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline3!.apply(color: themeManager.getProtagonistColor());
+    _textStyle = Get.textTheme.displaySmall!.apply(color: themeManager.getProtagonistColor());
     final prefService = Get.find<BasePrefService>();
     final expandedStateStr =
         prefService.get<String>(measurementPanelsExpandedTag) ?? measurementPanelsExpandedDefault;

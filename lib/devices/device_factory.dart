@@ -220,6 +220,17 @@ class DeviceFactory {
     );
   }
 
+  static IndoorBikeDeviceDescriptor getMerachMr667() {
+    return IndoorBikeDeviceDescriptor(
+      fourCC: merachMr667FourCC,
+      vendorName: "Merach",
+      modelName: "MR667",
+      manufacturerNamePart: "HUAWEI Technologies", // HUAWEI Technologies Co., Ltd.
+      manufacturerFitId: stravaFitId,
+      model: "MR667",
+    );
+  }
+
   static DeviceDescriptor getDescriptorForFourCC(String fourCC) {
     switch (fourCC) {
       case precorSpinnerChronoPowerFourCC:
@@ -273,6 +284,8 @@ class DeviceFactory {
         return DeviceFactory.getCSCBasedPaddler();
       case concept2RowerFourCC:
         return Concept2Rower();
+      case merachMr667FourCC:
+        return getMerachMr667();
     }
 
     return DeviceFactory.getGenericFTMSBike();

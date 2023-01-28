@@ -69,7 +69,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    final captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
+    final captionStyle = Get.textTheme.bodySmall!.apply(fontSizeFactor: fontSizeFactor);
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
 

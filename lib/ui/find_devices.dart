@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
+import '../devices/gadgets/complex_sensor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt/csc.dart';
@@ -249,7 +250,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _isScanning = false;
     _openDatabase().then((value) => _instantScan ? _startScan(true) : {});
 
-    _captionStyle = Get.textTheme.headline6!;
+    _captionStyle = Get.textTheme.titleLarge!;
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
@@ -378,6 +379,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     bool preConnectLogic = true;
     bool navigate = true;
     if (manual) {
+      ComplexSensor? identifySensor;
       if (_fitnessEquipment != null &&
           _fitnessEquipment!.device != null &&
           _fitnessEquipment!.device!.name == device.name &&
@@ -393,7 +395,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             DeviceCategory.secondarySensor) {
           // The user clicked twice on a secondary sensor, ignore
           // But secondary sensor shouldn't have a FitnessEquipment anyway
-          Get.snackbar("Warning", "Cannot measure with a secondary sensor only!");
+          Get.snackbar("Warning", "Cannot measure with a pedal cadence sensor only!");
           setState(() {
             _goingToRecording = false;
           });
@@ -405,14 +407,40 @@ class FindDevicesState extends State<FindDevicesScreen> {
               descriptor.deviceCategory == DeviceCategory.primarySensor)) {
         bool isPrimarySensor = descriptor.deviceCategory == DeviceCategory.primarySensor;
         if (descriptor.deviceCategory == DeviceCategory.secondarySensor) {
-          final nameLowerCase = device.name.toLowerCase();
-          // Cadence sensor names contain CADENCE or CAD, or start with XOSS_VOR_C
-          // This is a heuristic until the #394 refactoring is done
-          if (nameLowerCase.contains("speed") ||
-              nameLowerCase.contains("spd") ||
-              nameLowerCase.contains("xoss_vor_s")) {
+          // Speed sensor names contain SPEED (Wahoo) or contain SPD (Garmin)
+          // or starts with XOSS_VOR_S (Xoss Vortex)
+          // Cadence sensor names contain CADENCE (Wahoo) or contain CAD (Garmin)
+          // or starts with XOSS_VOR_C (Xoss Vortex)
+          if (device.name.contains("SPEED") ||
+              device.name.contains("SPD") ||
+              device.name.contains("XOSS_VOR_S")) {
             descriptor.deviceCategory = DeviceCategory.primarySensor;
             isPrimarySensor = true;
+          } else if (!device.name.contains("CADENCE") &&
+              !device.name.contains("CAD") &&
+              !device.name.contains("XOSS_VOR_C")) {
+            var success = false;
+            if (_fitnessEquipment != null &&
+                _fitnessEquipment!.device != null &&
+                _fitnessEquipment!.device!.name == device.name) {
+              success = await _fitnessEquipment?.connectOnDemand(identify: true) ?? false;
+            } else {
+              identifySensor = descriptor.getSensor(device);
+              success = await identifySensor?.connectAndDiscover(retry: true) ?? false;
+            }
+
+            if (success) {
+              final deviceCategory = identifySensor != null
+                  ? await identifySensor.cscSensorType()
+                  : await _fitnessEquipment?.cscSensorType() ?? DeviceCategory.smartDevice;
+              if (deviceCategory == DeviceCategory.primarySensor) {
+                isPrimarySensor = true;
+                descriptor.deviceCategory = DeviceCategory.primarySensor;
+                if (identifySensor == null) {
+                  _fitnessEquipment?.descriptor?.deviceCategory = DeviceCategory.primarySensor;
+                }
+              }
+            }
           }
         }
 
@@ -422,8 +450,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
         if (isPrimarySensor && !currentPrimarySensor) {
           navigate = false;
         } else if (!isPrimarySensor && !currentPrimarySensor) {
-          Get.snackbar("Warning",
-              "Please select a primary (preferably a wheel speed and cadence) sensor first!");
+          Get.snackbar(
+              "Warning",
+              "Please select a primary (wheel speed or power) sensor first. "
+                  "Pedal cadence sensor should be added later.");
           setState(() {
             _goingToRecording = false;
           });
@@ -433,11 +463,20 @@ class FindDevicesState extends State<FindDevicesScreen> {
           // currentPrimarySensor, instantiate this primary and secondary sensor,
           // connect and discover and add it as a companion sensor to the primary
           // and then navigate
-          await _fitnessEquipment!.addCompanionSensor(descriptor, device);
-          fitnessEquipment = _fitnessEquipment;
-          device = _fitnessEquipment!.device!;
-          descriptor = _fitnessEquipment!.descriptor;
-          preConnectLogic = false;
+          if (_fitnessEquipment != null) {
+            if (identifySensor != null) {
+              await _fitnessEquipment?.addIdentifiedCompanionSensor(descriptor, identifySensor);
+            } else {
+              await _fitnessEquipment?.addCompanionSensor(descriptor, device);
+            }
+
+            fitnessEquipment = _fitnessEquipment;
+            device = _fitnessEquipment!.device!;
+            descriptor = _fitnessEquipment?.descriptor;
+            preConnectLogic = false;
+          } else {
+            fitnessEquipment = FitnessEquipment(device: device);
+          }
         }
       }
     }

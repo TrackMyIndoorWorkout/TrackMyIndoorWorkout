@@ -31,7 +31,7 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
     super.initState();
 
     _sportIndex = max(0, widget.sportChoices.indexOf(widget.initialSport));
-    _largerTextStyle = Get.textTheme.headline4!;
+    _largerTextStyle = Get.textTheme.headlineMedium!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
 
