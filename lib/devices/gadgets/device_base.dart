@@ -6,6 +6,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
+import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../devices/gatt_maps.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../preferences/log_level.dart';
@@ -88,6 +89,12 @@ abstract class DeviceBase {
       connected = true;
     }
     return connected;
+  }
+
+  Future<bool> connectAndDiscover({retry = false}) async {
+    await connect();
+
+    return await discover(retry: retry);
   }
 
   Future<bool> discoverCore() async {
@@ -360,6 +367,51 @@ abstract class DeviceBase {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
       return -1;
+    }
+  }
+
+  Future<DeviceCategory> _cscSensorTypeCore() async {
+    final powerService = BluetoothDeviceEx.filterService(services, cyclingPowerServiceUuid);
+    if (powerService != null) {
+      return DeviceCategory.primarySensor;
+    }
+
+    final cscService = BluetoothDeviceEx.filterService(services, cyclingCadenceServiceUuid);
+    if (cscService == null) {
+      return DeviceCategory.smartDevice;
+    }
+
+    final cscFeatures = BluetoothDeviceEx.filterCharacteristic(
+        cscService.characteristics, cyclingCadenceFeaturesUuid);
+    if (cscFeatures == null) {
+      return DeviceCategory.smartDevice;
+    }
+
+    final cscFeaturesData = await cscFeatures.read();
+    return cscFeaturesData[0] % 2 == 1
+        ? DeviceCategory.primarySensor
+        : DeviceCategory.secondarySensor;
+  }
+
+  Future<DeviceCategory> cscSensorType() async {
+    if (!connected) {
+      await connect();
+    }
+
+    if (!connected) return DeviceCategory.smartDevice;
+
+    if (!discovered) {
+      await discover();
+    }
+
+    if (!discovered) return DeviceCategory.smartDevice;
+
+    try {
+      return await _cscSensorTypeCore();
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      return DeviceCategory.smartDevice;
     }
   }
 }
