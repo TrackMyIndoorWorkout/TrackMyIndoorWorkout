@@ -92,7 +92,7 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         child: const Text("Fix empty workouts"),
       ),
       PrefLabel(
-        title: Text(dataStreamGapSoundEffect, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(dataStreamGapSoundEffect, style: Get.textTheme.headlineSmall!, maxLines: 3),
         subtitle: const Text(dataStreamGapSoundEffectDescription),
       ),
       const PrefRadio<String>(

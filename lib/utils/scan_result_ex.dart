@@ -37,22 +37,22 @@ extension ScanResultEx on ScanResult {
       return true;
     }
 
+    if (advertisementData.serviceUuids.isNotEmpty) {
+      final serviceUuids = advertisementData.uuids;
+      if (serviceUuids.contains(fitnessMachineUuid) ||
+          serviceUuids.contains(precorServiceUuid) ||
+          serviceUuids.contains(schwinnX70ServiceUuid) ||
+          serviceUuids.contains(cyclingPowerServiceUuid) ||
+          serviceUuids.contains(cyclingCadenceServiceUuid) ||
+          serviceUuids.contains(c2RowingPrimaryServiceUuid) ||
+          serviceUuids.contains(heartRateServiceUuid)) {
+        return true;
+      }
+    }
+
     for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
       for (var prefix in mapEntry.value) {
         if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
-          return true;
-        }
-      }
-
-      if (advertisementData.serviceUuids.isNotEmpty) {
-        final serviceUuids = advertisementData.uuids;
-        if (serviceUuids.contains(fitnessMachineUuid) ||
-            serviceUuids.contains(precorServiceUuid) ||
-            serviceUuids.contains(schwinnX70ServiceUuid) ||
-            serviceUuids.contains(cyclingPowerServiceUuid) ||
-            serviceUuids.contains(cyclingCadenceServiceUuid) ||
-            serviceUuids.contains(c2RowingPrimaryServiceUuid) ||
-            serviceUuids.contains(heartRateServiceUuid)) {
           return true;
         }
       }
@@ -83,14 +83,18 @@ extension ScanResultEx on ScanResult {
     return nameStrings.join(', ');
   }
 
-  int getFtmsServiceDataMachineByte() {
+  int getFtmsServiceDataMachineByte(String deviceSport) {
     for (MapEntry<String, List<int>> entry in advertisementData.serviceData.entries) {
       if (entry.key.uuidString() == fitnessMachineUuid) {
         final serviceData = entry.value;
-        if (serviceData.length > 2 && serviceData[0] >= 1) {
+        if (serviceData.length > 2 && serviceData[0] >= 1 && serviceData[1] > 0) {
           return serviceData[1];
         }
       }
+    }
+
+    if (deviceSport.isNotEmpty) {
+      return MachineTypeEx.getMachineByteFlag(deviceSport);
     }
 
     return 0;
@@ -107,7 +111,7 @@ extension ScanResultEx on ScanResult {
     return machineTypes;
   }
 
-  MachineType getMachineType(List<MachineType> ftmsServiceDataMachineTypes) {
+  MachineType getMachineType(List<MachineType> ftmsServiceDataMachineTypes, String deviceSport) {
     if (serviceUuids.contains(precorServiceUuid) ||
         serviceUuids.contains(schwinnX70ServiceUuid) ||
         serviceUuids.contains(cyclingPowerServiceUuid)) {
@@ -139,7 +143,8 @@ extension ScanResultEx on ScanResult {
     }
 
     if (ftmsServiceDataMachineTypes.isEmpty) {
-      ftmsServiceDataMachineTypes = getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte());
+      ftmsServiceDataMachineTypes =
+          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
     }
 
     if (ftmsServiceDataMachineTypes.isEmpty) {
@@ -153,7 +158,7 @@ extension ScanResultEx on ScanResult {
     return MachineType.multiFtms;
   }
 
-  IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes) {
+  IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes, String deviceSport) {
     for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
       if (multiSportFourCCs.contains(mapEntry.key)) {
         continue;
@@ -166,6 +171,6 @@ extension ScanResultEx on ScanResult {
       }
     }
 
-    return getMachineType(ftmsServiceDataMachineTypes).icon;
+    return getMachineType(ftmsServiceDataMachineTypes, deviceSport).icon;
   }
 }

@@ -455,6 +455,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     await _companionSensor?.attach();
   }
 
+  Future<void> addIdentifiedCompanionSensor(
+      DeviceDescriptor identifiedDescriptor, ComplexSensor identifiedSensor) async {
+    // TODO: what if we are overwriting another one?
+    _companionDescriptor = identifiedDescriptor;
+    _companionSensor = identifiedSensor;
+    await _companionSensor?.attach();
+  }
+
   void trimQueues() {
     descriptor?.trimQueues();
     _companionSensor?.trimQueues();
@@ -491,7 +499,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     final success = await discover(identify: identify);
     if (success) {
-      descriptor!.setDevice(device!, services);
+      descriptor?.setDevice(device!, services);
     }
 
     return success;

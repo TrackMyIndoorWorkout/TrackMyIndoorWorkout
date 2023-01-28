@@ -30,7 +30,7 @@ class ThreeChoicesBottomSheetState extends State<ThreeChoicesBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _largerTextStyle = Get.textTheme.headline4!.apply(
+    _largerTextStyle = Get.textTheme.headlineMedium!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );

@@ -107,12 +107,12 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _newWeightLsb = weightBytes.item1;
     _newWeightMsb = weightBytes.item2;
     _isLight = !_themeManager.isDark();
-    _smallerTextStyle = Get.textTheme.headline5!.apply(
+    _smallerTextStyle = Get.textTheme.headlineSmall!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
     _sizeDefault = _smallerTextStyle.fontSize!;
-    _largerTextStyle = Get.textTheme.headline2!.apply(
+    _largerTextStyle = Get.textTheme.displayMedium!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );

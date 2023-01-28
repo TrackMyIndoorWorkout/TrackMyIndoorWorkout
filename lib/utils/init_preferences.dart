@@ -387,9 +387,6 @@ Future<BasePrefService> initPreferences() async {
 
 Future<void> initPrefServiceForTest() async {
   var prefDefaults = await getPrefDefaults();
-  final prefService = await PrefServiceShared.init(
-    prefix: preferencesPrefix,
-    defaults: prefDefaults,
-  );
+  final prefService = PrefServiceCache(defaults: prefDefaults);
   Get.put<BasePrefService>(prefService);
 }

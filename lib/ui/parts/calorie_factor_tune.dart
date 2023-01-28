@@ -30,7 +30,7 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
   void initState() {
     super.initState();
     _calorieFactorPercent = widget.oldCalorieFactor * 100.0;
-    _largerTextStyle = Get.textTheme.headline4!.apply(
+    _largerTextStyle = Get.textTheme.headlineMedium!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );

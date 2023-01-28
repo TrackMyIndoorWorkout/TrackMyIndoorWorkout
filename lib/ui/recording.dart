@@ -679,8 +679,8 @@ class RecordingState extends State<RecordingScreen> {
       _sizeAdjust = sizeAdjustInt / 100.0;
     }
     _markerStyle =
-        _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: _markerStyleSizeAdjust);
-    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!,
+        _themeManager.boldStyle(Get.textTheme.bodyLarge!, fontSizeFactor: _markerStyleSizeAdjust);
+    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyLarge!,
         fontSizeFactor: _markerStyleSmallSizeAdjust);
     prefService.set<String>(
       lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),

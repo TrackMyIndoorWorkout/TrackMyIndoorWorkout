@@ -38,7 +38,7 @@ class HeartRatePreferencesScreen extends StatelessWidget with PreferencesScreenM
       PrefLabel(
         title: Text(
           heartRateGapWorkaroundSelection,
-          style: Get.textTheme.headline5!,
+          style: Get.textTheme.headlineSmall!,
           maxLines: 3,
         ),
       ),
@@ -73,7 +73,8 @@ class HeartRatePreferencesScreen extends StatelessWidget with PreferencesScreenM
         min: heartRateUpperLimitMin,
         max: heartRateUpperLimitMax,
       ),
-      PrefLabel(title: Text(heartRateLimitingMethod, style: Get.textTheme.headline5!, maxLines: 3)),
+      PrefLabel(
+          title: Text(heartRateLimitingMethod, style: Get.textTheme.headlineSmall!, maxLines: 3)),
       const PrefRadio<String>(
         title: Text(heartRateLimitingWriteZeroDescription),
         value: heartRateLimitingWriteZero,
