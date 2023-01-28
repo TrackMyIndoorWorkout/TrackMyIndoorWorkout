@@ -1,3 +1,11 @@
+## 1.1.135
+* Determine CSC sensor type (cadence / speed / both) by pre-connecting and polling the feature endpoint
+* Better support for FTMS machines which don't report their type in the Advertisement service data
+* Explicit support for Merach MR-667
+* Switch to Flutter beta channel from stable (so we can have enhancements sooner)
+* Upgrading Flutter version
+* Upgrading numerous Flutter plugins
+
 ## 1.1.134
 * Display average / max / both metrics alongside the real time measurements
 * Display average / max / both statistics on the graphs
