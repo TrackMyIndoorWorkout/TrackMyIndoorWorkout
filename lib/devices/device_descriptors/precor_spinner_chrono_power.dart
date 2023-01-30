@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
@@ -70,6 +69,5 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
       "executeControlOperation",
       "Not implemented!",
     );
-    debugPrint("PSCP executeControlOperation Not implemented!");
   }
 }
