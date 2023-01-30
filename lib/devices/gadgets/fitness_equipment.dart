@@ -476,7 +476,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<AppDatabase>()) {
       final database = Get.find<AppDatabase>();
-      final lastRecord = await database.recordDao.findLastRecordOfActivity(activity.id!);
+      final lastRecord = activity.id != null
+          ? await database.recordDao.findLastRecordOfActivity(activity.id!)
+          : null;
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
