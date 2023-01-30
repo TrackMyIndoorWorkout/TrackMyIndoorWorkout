@@ -5,6 +5,7 @@ import 'devices/company_registry.dart';
 import 'track_my_indoor_exercise_app.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'utils/init_preferences.dart';
+import 'utils/logging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,7 @@ void main() async {
 
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
     Get.put<PackageInfo>(packageInfo, permanent: true);
+    Logging.logVersion(packageInfo);
   });
 
   runApp(TrackMyIndoorExerciseApp(prefService: prefService));
