@@ -17,7 +17,9 @@ class DonationScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
           child: SvgPicture.asset(
             "assets/$logoSvgPath.svg",
-            color: vendorName == "CashApp" ? Colors.green : null,
+            colorFilter: vendorName == "CashApp"
+                ? const ColorFilter.mode(Colors.green, BlendMode.dstOver)
+                : null,
             height: Get.textTheme.displayMedium!.fontSize!,
             semanticsLabel: "$vendorName Button",
           ),
@@ -43,7 +45,9 @@ class DonationScreen extends StatelessWidget {
                 const Divider(height: 40),
                 SvgPicture.asset(
                   "assets/$logoSvgPath.svg",
-                  color: vendorName == "CashApp" ? Colors.green : null,
+                  colorFilter: vendorName == "CashApp"
+                      ? const ColorFilter.mode(Colors.green, BlendMode.dstOver)
+                      : null,
                   height: Get.textTheme.displayMedium!.fontSize!,
                   semanticsLabel: "$vendorName Button",
                 ),
