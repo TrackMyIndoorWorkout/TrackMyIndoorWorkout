@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/gatt/hrm.dart';
 import '../../utils/advertisement_data_ex.dart';
@@ -10,10 +11,6 @@ import '../../utils/theme_manager.dart';
 extension HeartRateMonitorScanResult on ScanResult {
   bool isWorthy() {
     if (!advertisementData.connectable) {
-      return false;
-    }
-
-    if (device.name.isEmpty) {
       return false;
     }
 
@@ -53,7 +50,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            result.device.name,
+            result.device.nonEmptyName,
             style: themeManager.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
             overflow: TextOverflow.ellipsis,
           ),
@@ -69,7 +66,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    final captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
+    final captionStyle = Get.textTheme.bodySmall!.apply(fontSizeFactor: fontSizeFactor);
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
 

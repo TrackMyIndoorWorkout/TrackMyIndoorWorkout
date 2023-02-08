@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
+import '../../devices/bluetooth_device_ex.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/scan_duration.dart';
 import '../../utils/bluetooth.dart';
@@ -78,6 +80,8 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
         "${e.message}",
       );
     }
+
+    Logging.logVersion(Get.find<PackageInfo>());
   }
 
   @override
@@ -85,7 +89,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     super.initState();
     final prefService = Get.find<BasePrefService>();
     _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
-    _captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
+    _captionStyle = Get.textTheme.bodySmall!.apply(fontSizeFactor: fontSizeFactor);
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
     _isScanning = false;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
@@ -108,7 +112,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                 _heartRateMonitor != null
                     ? ListTile(
                         title: TextOneLine(
-                          _heartRateMonitor?.device?.name ?? emptyMeasurement,
+                          _heartRateMonitor?.device?.nonEmptyName ?? emptyMeasurement,
                           overflow: TextOverflow.ellipsis,
                           style: _themeManager.boldStyle(
                             _captionStyle,

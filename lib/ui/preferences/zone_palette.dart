@@ -41,12 +41,12 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
     _prefService = Get.find<BasePrefService>();
     _paletteSpec = Get.find<PaletteSpec>();
     _palette = _paletteSpec.getPalette(widget.lightOrDark, widget.fgOrBg, widget.size);
-    _sizeDefault = Get.textTheme.headline5!.fontSize! * 2;
-    _lightTextStyle = Get.textTheme.headline4!.apply(
+    _sizeDefault = Get.textTheme.headlineSmall!.fontSize! * 2;
+    _lightTextStyle = Get.textTheme.headlineMedium!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
-    _darkTextStyle = Get.textTheme.headline4!.apply(
+    _darkTextStyle = Get.textTheme.headlineMedium!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getAntagonistColor(),
     );

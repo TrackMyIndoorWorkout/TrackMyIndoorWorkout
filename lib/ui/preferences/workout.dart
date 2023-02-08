@@ -18,7 +18,7 @@ class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMix
   Widget build(BuildContext context) {
     List<Widget> workoutPreferences = [
       PrefLabel(
-        title: Text(workoutMode, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(workoutMode, style: Get.textTheme.headlineSmall!, maxLines: 3),
       ),
       const PrefRadio<String>(
         title: Text(workoutModeIndividualTitle),
@@ -33,7 +33,7 @@ class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMix
         pref: workoutModeTag,
       ),
       PrefLabel(
-        title: Text(timeDisplayMode, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(timeDisplayMode, style: Get.textTheme.headlineSmall!, maxLines: 3),
       ),
       const PrefRadio<String>(
         title: Text(timeDisplayModeElapsedTitle),
@@ -60,7 +60,7 @@ class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMix
         pref: instantOnStageTag,
       ),
       PrefLabel(
-        title: Text(onStageStatisticsType, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(onStageStatisticsType, style: Get.textTheme.headlineSmall!, maxLines: 3),
       ),
       const PrefRadio<String>(
         title: Text(onStageStatisticsTypeNoneTitle),

@@ -2,6 +2,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 import '../persistence/floor/database.dart';
+import '../utils/constants.dart';
 import '../utils/guid_ex.dart';
 
 extension BluetoothDeviceEx on BluetoothDevice {
@@ -18,4 +19,6 @@ extension BluetoothDeviceEx on BluetoothDevice {
     database ??= Get.find<AppDatabase>();
     return await database.getFactors(id.id);
   }
+
+  String get nonEmptyName => name.isNotEmpty ? name : unnamedDevice;
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import '../preferences/has_logged_messages.dart';
 import '../preferences/log_level.dart';
@@ -90,5 +91,15 @@ class Logging {
 
     Get.find<BasePrefService>().set<bool>(hasLoggedMessagesTag, true);
     FlutterLogs.logError(tag, subTag, "$logMessage; $e; $stack");
+  }
+
+  static void logVersion(PackageInfo packageInfo) {
+    Logging.log(
+      Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault,
+      logLevelError,
+      "logVersion",
+      "version",
+      "${packageInfo.version} build ${packageInfo.buildNumber}",
+    );
   }
 }

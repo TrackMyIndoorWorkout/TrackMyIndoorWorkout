@@ -37,7 +37,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _textStyle = Get.textTheme.headline5!
+    _textStyle = Get.textTheme.headlineSmall!
         .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());

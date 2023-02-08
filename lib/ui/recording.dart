@@ -18,6 +18,7 @@ import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
 import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
+import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
@@ -346,7 +347,7 @@ class RecordingState extends State<RecordingScreen> {
     if (!continued) {
       _activity = Activity(
         fourCC: widget.descriptor.fourCC,
-        deviceName: widget.device.name,
+        deviceName: widget.device.nonEmptyName,
         deviceId: widget.device.id.id,
         hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
         start: now.millisecondsSinceEpoch,
@@ -679,8 +680,8 @@ class RecordingState extends State<RecordingScreen> {
       _sizeAdjust = sizeAdjustInt / 100.0;
     }
     _markerStyle =
-        _themeManager.boldStyle(Get.textTheme.bodyText1!, fontSizeFactor: _markerStyleSizeAdjust);
-    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyText1!,
+        _themeManager.boldStyle(Get.textTheme.bodyLarge!, fontSizeFactor: _markerStyleSizeAdjust);
+    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyLarge!,
         fontSizeFactor: _markerStyleSmallSizeAdjust);
     prefService.set<String>(
       lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),
@@ -2452,7 +2453,7 @@ class RecordingState extends State<RecordingScreen> {
           child: Scaffold(
             appBar: AppBar(
               title: TextOneLine(
-                widget.device.name,
+                widget.device.nonEmptyName,
                 overflow: TextOverflow.ellipsis,
               ),
               actions: [

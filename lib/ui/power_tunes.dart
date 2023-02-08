@@ -35,7 +35,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _textStyle = Get.textTheme.headline4!;
+    _textStyle = Get.textTheme.headlineMedium!;
     _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }

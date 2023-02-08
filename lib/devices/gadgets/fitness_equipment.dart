@@ -455,6 +455,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     await _companionSensor?.attach();
   }
 
+  Future<void> addIdentifiedCompanionSensor(
+      DeviceDescriptor identifiedDescriptor, ComplexSensor identifiedSensor) async {
+    // TODO: what if we are overwriting another one?
+    _companionDescriptor = identifiedDescriptor;
+    _companionSensor = identifiedSensor;
+    await _companionSensor?.attach();
+  }
+
   void trimQueues() {
     descriptor?.trimQueues();
     _companionSensor?.trimQueues();
@@ -468,7 +476,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<AppDatabase>()) {
       final database = Get.find<AppDatabase>();
-      final lastRecord = await database.recordDao.findLastRecordOfActivity(activity.id!);
+      final lastRecord = activity.id != null
+          ? await database.recordDao.findLastRecordOfActivity(activity.id!)
+          : null;
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
@@ -491,7 +501,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     final success = await discover(identify: identify);
     if (success) {
-      descriptor!.setDevice(device!, services);
+      descriptor?.setDevice(device!, services);
     }
 
     return success;

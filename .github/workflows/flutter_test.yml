@@ -18,9 +18,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
         with:
-          channel: 'stable'
-      - name: Upgrade Flutetr internal packgages
-        run: flutter update-packages --force-upgrade
+          channel: 'beta'
       - name: Install Flutter dependencies
         run: flutter pub get
       - name: Mock Secret File
@@ -38,7 +36,7 @@ jobs:
           echo 'const googleFitClientId = "a";' >> lib/secret.dart
           echo 'const googleFitSecret = "a";' >> lib/secret.dart
       - name: Format files
-        run: flutter format --line-length 100 --set-exit-if-changed .
+        run: dart format --line-length 100 --set-exit-if-changed .
       - name: Analyze files
         run: flutter analyze .
       - name: Run the tests

@@ -31,7 +31,8 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   @override
   void initState() {
     super.initState();
-    _largerTextStyle = Get.textTheme.headline4!.apply(color: _themeManager.getProtagonistColor());
+    _largerTextStyle =
+        Get.textTheme.headlineMedium!.apply(color: _themeManager.getProtagonistColor());
     final prefService = Get.find<BasePrefService>();
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     for (final portalName in portalNames) {
@@ -130,7 +131,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                             ),
                             SvgPicture.asset(
                               e.value.assetName,
-                              color: e.value.color,
+                              colorFilter: ColorFilter.mode(e.value.color, BlendMode.srcIn),
                               height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
                               semanticsLabel: '${e.value.name} Logo',
                             ),
