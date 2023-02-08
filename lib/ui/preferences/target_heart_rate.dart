@@ -24,7 +24,7 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
   Widget build(BuildContext context) {
     List<Widget> targetHrPreferences = [
       PrefLabel(
-        title: Text(targetHeartRateMode, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(targetHeartRateMode, style: Get.textTheme.headlineSmall!, maxLines: 3),
         subtitle: const Text(targetHeartRateModeDescription),
       ),
       const PrefRadio<String>(
@@ -212,7 +212,7 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         max: targetHeartRateAudioPeriodMax,
       ),
       PrefLabel(
-        title: Text(targetHeartRateSoundEffect, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(targetHeartRateSoundEffect, style: Get.textTheme.headlineSmall!, maxLines: 3),
         subtitle: const Text(targetHeartRateSoundEffectDescription),
       ),
       PrefRadio<String>(

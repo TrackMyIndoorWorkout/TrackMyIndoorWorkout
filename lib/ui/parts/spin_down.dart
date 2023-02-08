@@ -107,12 +107,12 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _newWeightLsb = weightBytes.item1;
     _newWeightMsb = weightBytes.item2;
     _isLight = !_themeManager.isDark();
-    _smallerTextStyle = Get.textTheme.headline5!.apply(
+    _smallerTextStyle = Get.textTheme.headlineSmall!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
     _sizeDefault = _smallerTextStyle.fontSize!;
-    _largerTextStyle = Get.textTheme.headline2!.apply(
+    _largerTextStyle = Get.textTheme.displayMedium!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
@@ -558,7 +558,8 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                 textAlign: TextAlign.center,
                 softWrap: true,
                 text: TextSpan(
-                  text: "${_fitnessEquipment?.device?.name} doesn't seem to support calibration",
+                  text:
+                      "${_fitnessEquipment?.device?.nonEmptyName ?? emptyMeasurement} doesn't seem to support calibration",
                   style: _smallerTextStyle,
                 ),
               ),

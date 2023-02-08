@@ -6,18 +6,19 @@ import 'advertisement_digest.dart';
 class AdvertisementCache {
   final Map<String, AdvertisementDigest> _advertisementMap = {};
 
-  void addEntry(ScanResult scanResult) {
+  void addEntry(ScanResult scanResult, String deviceSport) {
     final id = scanResult.device.id.id;
-    final machineByteFlag = scanResult.getFtmsServiceDataMachineByte();
+    final serviceUuids = scanResult.serviceUuids;
+    final machineByteFlag = scanResult.getFtmsServiceDataMachineByte(deviceSport);
     final machineTypes = scanResult.getFtmsServiceDataMachineTypes(machineByteFlag);
     _advertisementMap[id] = AdvertisementDigest(
       id: id,
-      serviceUuids: scanResult.serviceUuids,
+      serviceUuids: serviceUuids,
       companyIds: scanResult.advertisementData.manufacturerData.keys.toList(growable: false),
       manufacturer: scanResult.manufacturerName(),
       txPower: scanResult.advertisementData.txPowerLevel ?? -120,
       machineTypesByte: machineByteFlag,
-      machineType: scanResult.getMachineType(machineTypes),
+      machineType: scanResult.getMachineType(machineTypes, deviceSport),
       machineTypes: machineTypes,
     );
   }

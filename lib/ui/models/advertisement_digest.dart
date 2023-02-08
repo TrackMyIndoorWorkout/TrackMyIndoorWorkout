@@ -23,7 +23,7 @@ class AdvertisementDigest {
   });
 
   // #239 SOLE E25 elliptical: Treadmill, Indoor Bike, Cross Trainer
-  bool isMultiFtms() => machineTypes.where((element) => element.isFtms).length > 1;
+  bool isMultiFtms() => machineTypes.where((element) => element.isSpecificFtms).length > 1;
 
   bool needsMatrixSpecialTreatment() {
     return companyIds.contains(CompanyRegistry.johnsonHealthTechKey);

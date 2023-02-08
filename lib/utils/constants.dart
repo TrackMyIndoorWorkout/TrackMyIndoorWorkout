@@ -18,6 +18,7 @@ const m2yard = 1.09361;
 const thousandYardsInMeters = 1000.0 / m2yard;
 const notAvailable = "N/A";
 const emptyMeasurement = "--";
+const unnamedDevice = "Unnamed";
 const httpsPort = 443;
 const maxUint8 = 256;
 const maxByte = 255;

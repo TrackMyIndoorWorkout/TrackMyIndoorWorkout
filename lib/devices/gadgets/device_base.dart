@@ -6,6 +6,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
+import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../devices/gatt_maps.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../preferences/log_level.dart';
@@ -13,12 +14,14 @@ import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
+import '../gatt/battery.dart';
 import '../gatt/csc.dart';
 import '../gatt/concept2.dart';
 import '../gatt/ftms.dart';
 import '../gatt/precor.dart';
 import '../gatt/power_meter.dart';
 import '../gatt/schwinn_x70.dart';
+import '../bluetooth_device_ex.dart';
 
 abstract class DeviceBase {
   final String serviceId;
@@ -86,6 +89,12 @@ abstract class DeviceBase {
       connected = true;
     }
     return connected;
+  }
+
+  Future<bool> connectAndDiscover({retry = false}) async {
+    await connect();
+
+    return await discover(retry: retry);
   }
 
   Future<bool> discoverCore() async {
@@ -238,16 +247,16 @@ abstract class DeviceBase {
         characteristicId == stepClimberUuid ||
         characteristicId == stairClimberUuid) {
       sports.add(ActivityType.run);
+    } else if (characteristicId == c2RowingGeneralStatusUuid) {
+      sports.add(ActivityType.rowing);
+    } else if (characteristicId == rowerDeviceUuid) {
+      sports.addAll(waterSports);
     } else if (characteristicId == precorMeasurementUuid ||
         characteristicId == schwinnX70MeasurementUuid ||
         characteristicId == indoorBikeUuid ||
         characteristicId == cyclingCadenceMeasurementUuid ||
         characteristicId == cyclingPowerMeasurementUuid) {
       sports.add(ActivityType.ride);
-    } else if (characteristicId == c2RowingGeneralStatusUuid) {
-      sports.add(ActivityType.rowing);
-    } else if (characteristicId == rowerDeviceUuid) {
-      sports.addAll(waterSports);
     } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
     }
@@ -320,6 +329,89 @@ abstract class DeviceBase {
         "_listenToData",
         data.toString(),
       );
+    }
+  }
+
+  Future<int> _readBatteryLevelCore() async {
+    final batteryService = BluetoothDeviceEx.filterService(services, batteryServiceUuid);
+    if (batteryService == null) {
+      return -1;
+    }
+
+    final batteryLevel =
+        BluetoothDeviceEx.filterCharacteristic(batteryService.characteristics, batteryLevelUuid);
+    if (batteryLevel == null) {
+      return -1;
+    }
+
+    final batteryLevelData = await batteryLevel.read();
+    return batteryLevelData[0];
+  }
+
+  Future<int> readBatteryLevel() async {
+    if (!connected) {
+      await connect();
+    }
+
+    if (!connected) return -1;
+
+    if (!discovered) {
+      await discover();
+    }
+
+    if (!discovered) return -1;
+
+    try {
+      return await _readBatteryLevelCore();
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      return -1;
+    }
+  }
+
+  Future<DeviceCategory> _cscSensorTypeCore() async {
+    final powerService = BluetoothDeviceEx.filterService(services, cyclingPowerServiceUuid);
+    if (powerService != null) {
+      return DeviceCategory.primarySensor;
+    }
+
+    final cscService = BluetoothDeviceEx.filterService(services, cyclingCadenceServiceUuid);
+    if (cscService == null) {
+      return DeviceCategory.smartDevice;
+    }
+
+    final cscFeatures = BluetoothDeviceEx.filterCharacteristic(
+        cscService.characteristics, cyclingCadenceFeaturesUuid);
+    if (cscFeatures == null) {
+      return DeviceCategory.smartDevice;
+    }
+
+    final cscFeaturesData = await cscFeatures.read();
+    return cscFeaturesData[0] % 2 == 1
+        ? DeviceCategory.primarySensor
+        : DeviceCategory.secondarySensor;
+  }
+
+  Future<DeviceCategory> cscSensorType() async {
+    if (!connected) {
+      await connect();
+    }
+
+    if (!connected) return DeviceCategory.smartDevice;
+
+    if (!discovered) {
+      await discover();
+    }
+
+    if (!discovered) return DeviceCategory.smartDevice;
+
+    try {
+      return await _cscSensorTypeCore();
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      return DeviceCategory.smartDevice;
     }
   }
 }

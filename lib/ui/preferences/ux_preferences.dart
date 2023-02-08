@@ -36,7 +36,7 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
   Widget build(BuildContext context) {
     List<Widget> uxPreferences = [
       PrefLabel(
-        title: Text(themeSelection, style: Get.textTheme.headline5!, maxLines: 3),
+        title: Text(themeSelection, style: Get.textTheme.headlineSmall!, maxLines: 3),
         subtitle: const Text(themeSelectionDescription),
       ),
       const PrefRadio<String>(
@@ -107,7 +107,7 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
         pref: instantExportTag,
       ),
       // PrefLabel(
-      //   title: Text(instantExportLocation, style: Get.textTheme.headline5!, maxLines: 3),
+      //   title: Text(instantExportLocation, style: Get.textTheme.headlineSmall!, maxLines: 3),
       //   subtitle: const Text(instantExportLocationDescription),
       // ),
       PrefText(

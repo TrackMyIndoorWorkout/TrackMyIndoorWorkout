@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 
 Future<void> legendDialog(List<Tuple2<IconData, String>> legendItems) async {
-  final fontSize = Get.textTheme.headline2!.fontSize!;
+  final fontSize = Get.textTheme.displayMedium!.fontSize!;
   await Get.defaultDialog(
     title: 'Legend:',
     content: SizedBox(

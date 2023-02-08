@@ -9,8 +9,8 @@ import device_info_plus
 import flutter_ble_peripheral
 import flutter_timezone
 import package_info_plus
-import path_provider_macos
-import shared_preferences_macos
+import path_provider_foundation
+import shared_preferences_foundation
 import soundpool_macos
 import sqflite
 import url_launcher_macos

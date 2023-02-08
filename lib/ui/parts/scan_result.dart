@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/company_registry.dart';
 import '../../utils/constants.dart';
 import '../../utils/scan_result_ex.dart';
@@ -13,11 +14,13 @@ class ScanResultTile extends StatelessWidget {
   const ScanResultTile({
     Key? key,
     required this.result,
+    required this.deviceSport,
     required this.onEquipmentTap,
     required this.onHrmTap,
   }) : super(key: key);
 
   final ScanResult result;
+  final String deviceSport;
   final VoidCallback onEquipmentTap;
   final VoidCallback onHrmTap;
 
@@ -28,7 +31,7 @@ class ScanResultTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          result.device.name.isNotEmpty ? result.device.name : deviceIdString,
+          result.device.nonEmptyName,
           style: themeManger.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
           overflow: TextOverflow.ellipsis,
         ),
@@ -86,12 +89,12 @@ class ScanResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final captionStyle = Get.textTheme.headline6!;
+    final captionStyle = Get.textTheme.titleLarge!;
     final detailStyle = captionStyle.apply(fontSizeFactor: 1 / fontSizeFactor);
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
 
-    final deviceIcon = result.getIcon([]);
+    final deviceIcon = result.getIcon([], deviceSport);
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: Icon(

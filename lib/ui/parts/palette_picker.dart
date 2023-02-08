@@ -34,15 +34,15 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _largerTextStyle = Get.textTheme.headline4!.apply(
+    _largerTextStyle = Get.textTheme.headlineMedium!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
-    _textStyle = Get.textTheme.headline5!.apply(
+    _textStyle = Get.textTheme.headlineSmall!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
-    _groupStyle = Get.textTheme.headline5!.apply(
+    _groupStyle = Get.textTheme.headlineSmall!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getAntagonistColor(),
     );

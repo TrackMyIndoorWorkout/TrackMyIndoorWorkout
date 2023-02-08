@@ -25,7 +25,7 @@ class ImportFormatPickerBottomSheetState extends State<ImportFormatPickerBottomS
   void initState() {
     super.initState();
     _formatIndex = max(0, _formatChoices.indexOf("MPower Echelon"));
-    _largerTextStyle = Get.textTheme.headline4!;
+    _largerTextStyle = Get.textTheme.headlineMedium!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
 
