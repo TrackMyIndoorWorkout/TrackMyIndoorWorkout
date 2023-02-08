@@ -25,10 +25,6 @@ extension ScanResultEx on ScanResult {
       return false;
     }
 
-    if (device.name.isEmpty) {
-      return false;
-    }
-
     if (device.id.id.isEmpty) {
       return false;
     }
@@ -112,6 +108,21 @@ extension ScanResultEx on ScanResult {
   }
 
   MachineType getMachineType(List<MachineType> ftmsServiceDataMachineTypes, String deviceSport) {
+    if (serviceUuids.contains(fitnessMachineUuid)) {
+      if (ftmsServiceDataMachineTypes.isEmpty) {
+        ftmsServiceDataMachineTypes =
+            getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+      }
+
+      if (ftmsServiceDataMachineTypes.length == 1) {
+        return ftmsServiceDataMachineTypes.first;
+      }
+
+      if (ftmsServiceDataMachineTypes.isNotEmpty) {
+        return MachineType.multiFtms;
+      }
+    }
+
     if (serviceUuids.contains(precorServiceUuid) ||
         serviceUuids.contains(schwinnX70ServiceUuid) ||
         serviceUuids.contains(cyclingPowerServiceUuid)) {
@@ -138,24 +149,7 @@ extension ScanResultEx on ScanResult {
       return MachineType.heartRateMonitor;
     }
 
-    if (!serviceUuids.contains(fitnessMachineUuid)) {
-      return MachineType.notFitnessMachine;
-    }
-
-    if (ftmsServiceDataMachineTypes.isEmpty) {
-      ftmsServiceDataMachineTypes =
-          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
-    }
-
-    if (ftmsServiceDataMachineTypes.isEmpty) {
-      return MachineType.notFitnessMachine;
-    }
-
-    if (ftmsServiceDataMachineTypes.length == 1) {
-      return ftmsServiceDataMachineTypes.first;
-    }
-
-    return MachineType.multiFtms;
+    return MachineType.notFitnessMachine;
   }
 
   IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes, String deviceSport) {

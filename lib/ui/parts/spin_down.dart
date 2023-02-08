@@ -558,7 +558,8 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                 textAlign: TextAlign.center,
                 softWrap: true,
                 text: TextSpan(
-                  text: "${_fitnessEquipment?.device?.name} doesn't seem to support calibration",
+                  text:
+                      "${_fitnessEquipment?.device?.nonEmptyName ?? emptyMeasurement} doesn't seem to support calibration",
                   style: _smallerTextStyle,
                 ),
               ),
