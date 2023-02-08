@@ -6,6 +6,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide LogLevel;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:tuple/tuple.dart';
@@ -318,6 +319,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     BluetoothDeviceState initialState,
     bool manual,
   ) async {
+    Logging.logVersion(Get.find<PackageInfo>());
+
     if (!_advertisementCache.hasEntry(device.id.id)) {
       return false;
     }

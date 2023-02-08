@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
@@ -78,6 +79,8 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
         "${e.message}",
       );
     }
+
+    Logging.logVersion(Get.find<PackageInfo>());
   }
 
   @override
