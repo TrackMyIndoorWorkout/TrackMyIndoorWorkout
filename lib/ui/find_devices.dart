@@ -11,6 +11,7 @@ import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
@@ -385,7 +386,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       ComplexSensor? identifySensor;
       if (_fitnessEquipment != null &&
           _fitnessEquipment!.device != null &&
-          _fitnessEquipment!.device!.name == device.name &&
+          _fitnessEquipment!.device!.id.id == device.id.id &&
           _fitnessEquipment!.descriptor != null &&
           (_fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor ||
               _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.secondarySensor)) {
@@ -425,7 +426,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             var success = false;
             if (_fitnessEquipment != null &&
                 _fitnessEquipment!.device != null &&
-                _fitnessEquipment!.device!.name == device.name) {
+                _fitnessEquipment!.device!.id.id == device.id.id) {
               success = await _fitnessEquipment?.connectOnDemand(identify: true) ?? false;
             } else {
               identifySensor = descriptor.getSensor(device);
@@ -556,7 +557,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             deviceUsage = DeviceUsage(
               sport: inferredSport,
               mac: device.id.id,
-              name: device.name,
+              name: device.nonEmptyName,
               manufacturer: advertisementDigest.manufacturer,
               time: DateTime.now().millisecondsSinceEpoch,
             );
@@ -609,7 +610,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             deviceUsage = DeviceUsage(
               sport: sportPick,
               mac: device.id.id,
-              name: device.name,
+              name: device.nonEmptyName,
               manufacturer: advertisementDigest.manufacturer,
               time: DateTime.now().millisecondsSinceEpoch,
             );
@@ -800,7 +801,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 _heartRateMonitor != null
                     ? ListTile(
                         title: TextOneLine(
-                          _heartRateMonitor?.device?.name ?? emptyMeasurement,
+                          _heartRateMonitor?.device?.nonEmptyName ?? emptyMeasurement,
                           overflow: TextOverflow.ellipsis,
                           style: _themeManager.boldStyle(_captionStyle,
                               fontSizeFactor: fontSizeFactor),
@@ -847,7 +848,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 _fitnessEquipment != null
                     ? ListTile(
                         title: TextOneLine(
-                          _fitnessEquipment?.device?.name ?? emptyMeasurement,
+                          _fitnessEquipment?.device?.nonEmptyName ?? emptyMeasurement,
                           overflow: TextOverflow.ellipsis,
                           style: _themeManager.boldStyle(
                             _captionStyle,

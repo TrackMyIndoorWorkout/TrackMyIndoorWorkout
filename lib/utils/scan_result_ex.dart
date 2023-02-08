@@ -25,10 +25,6 @@ extension ScanResultEx on ScanResult {
       return false;
     }
 
-    if (device.name.isEmpty) {
-      return false;
-    }
-
     if (device.id.id.isEmpty) {
       return false;
     }
