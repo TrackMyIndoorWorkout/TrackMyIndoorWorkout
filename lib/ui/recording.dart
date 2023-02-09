@@ -300,7 +300,8 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
-    if (_sinkAddress != dummyAddressTuple &&
+    if (!_uxDebug &&
+        _sinkAddress != dummyAddressTuple &&
         (widget.sport == ActivityType.ride ||
             widget.sport == ActivityType.kayaking ||
             widget.sport == ActivityType.canoeing ||
