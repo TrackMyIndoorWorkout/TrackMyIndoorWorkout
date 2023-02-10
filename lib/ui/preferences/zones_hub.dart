@@ -8,6 +8,7 @@ import '../../preferences/sport_spec.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import '../parts/palette_picker.dart';
+import 'coloring_by_zone.dart';
 import 'measurement_zones.dart';
 import 'zone_index_display.dart';
 import 'zone_palette.dart';
@@ -103,6 +104,26 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
             children: [
               TextOneLine(
                 ZonePalettePreferencesScreen.shortTitle,
+                style: _textStyle,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Icon(Icons.chevron_right, size: _sizeDefault),
+            ],
+          ),
+        ),
+      ),
+      Container(
+        padding: const EdgeInsets.all(5.0),
+        margin: const EdgeInsets.all(5.0),
+        child: ElevatedButton(
+          onPressed: () => Get.to(() => const ColoringByZonePreferencesScreen()),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextOneLine(
+                ColoringByZonePreferencesScreen.shortTitle,
                 style: _textStyle,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,

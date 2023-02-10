@@ -10,7 +10,8 @@ const preferencesVersionZoneRefinementDefault = 6;
 const preferencesVersionExclusiveSportOrDeviceLeaderboard = 7;
 const preferencesVersionTimeDisplayMode = 8;
 const preferencesVersionNoWhitespaceInNetworkAddresses = 9;
-const preferencesVersionDefault = preferencesVersionNoWhitespaceInNetworkAddresses;
+const preferencesVersionPerMetricColoringByZone = 10;
+const preferencesVersionDefault = preferencesVersionPerMetricColoringByZone;
 const preferencesVersionNext = preferencesVersionDefault + 1;
 
 const intTagPostfix = "_int";
