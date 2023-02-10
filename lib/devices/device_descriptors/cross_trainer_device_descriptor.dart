@@ -21,7 +21,6 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
           manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
-          dataServiceId: fitnessMachineUuid,
           dataCharacteristicId: crossTrainerUuid,
           flagByteSize: 3,
           heartRateByteIndex: heartRateByteIndex,

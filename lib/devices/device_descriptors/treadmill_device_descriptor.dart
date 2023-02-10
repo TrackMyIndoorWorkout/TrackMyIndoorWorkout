@@ -32,7 +32,6 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
           manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
-          dataServiceId: fitnessMachineUuid,
           dataCharacteristicId: treadmillUuid,
           heartRateByteIndex: heartRateByteIndex,
         );
