@@ -238,9 +238,9 @@ class DeviceFactory {
       fourCC: virtufitUltimatePro2FourCC,
       vendorName: "Virtufit",
       modelName: "Ultimate Pro 2",
-      manufacturerNamePart: "Wahoo Fitness",
+      manufacturerNamePart: "XEBEX", // And not Wahoo Fitness, LLC
       manufacturerFitId: wahooFitnessFitId,
-      model: "Generic Rower Ergometer",
+      model: "Ultimate Pro 2",
     );
   }
 
