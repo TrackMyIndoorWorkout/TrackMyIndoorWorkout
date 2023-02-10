@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../utils/scan_result_ex.dart';
@@ -11,12 +12,14 @@ class AdvertisementCache {
     final serviceUuids = scanResult.serviceUuids;
     final machineByteFlag = scanResult.getFtmsServiceDataMachineByte(deviceSport);
     final machineTypes = scanResult.getFtmsServiceDataMachineTypes(machineByteFlag);
+    debugPrint("${scanResult.device.name} appearance: ${scanResult.advertisementData.appearance}");
     _advertisementMap[id] = AdvertisementDigest(
       id: id,
       serviceUuids: serviceUuids,
       companyIds: scanResult.advertisementData.manufacturerData.keys.toList(growable: false),
       manufacturer: scanResult.manufacturerName(),
       txPower: scanResult.advertisementData.txPowerLevel ?? -120,
+      appearance: scanResult.advertisementData.appearance ?? 0,
       machineTypesByte: machineByteFlag,
       machineType: scanResult.getMachineType(machineTypes, deviceSport),
       machineTypes: machineTypes,

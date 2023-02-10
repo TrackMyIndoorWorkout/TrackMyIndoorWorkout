@@ -7,6 +7,7 @@ class AdvertisementDigest {
   final List<int> companyIds;
   final String manufacturer;
   final int txPower;
+  final int appearance;
   final int machineTypesByte;
   final MachineType machineType;
   final List<MachineType> machineTypes;
@@ -17,6 +18,7 @@ class AdvertisementDigest {
     required this.companyIds,
     required this.manufacturer,
     required this.txPower,
+    required this.appearance,
     required this.machineTypesByte,
     required this.machineType,
     required this.machineTypes,
