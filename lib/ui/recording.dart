@@ -1429,6 +1429,7 @@ class RecordingState extends State<RecordingScreen> {
     if (selfRank <= 1) {
       return background ? _lightGreen : _darkGreen;
     }
+
     return background ? _lightBlue : _darkBlue;
   }
 
@@ -1949,7 +1950,8 @@ class RecordingState extends State<RecordingScreen> {
     for (var entry in _rowConfig.asMap().entries) {
       var measurementStyle = getMeasurementStyle(entry.key);
 
-      if (entry.key == _speed0Index && (_leaderboardFeature || _zoneIndexes[_speedNIndex] != null)) {
+      if (entry.key == _speed0Index &&
+          (_leaderboardFeature || _zoneIndexes[_speedNIndex] != null)) {
         speedTextStyle =
             measurementStyle.apply(color: _getSpeedColor(_selfRank, background: false));
         measurementStyle = speedTextStyle;
