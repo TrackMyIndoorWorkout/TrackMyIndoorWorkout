@@ -247,16 +247,16 @@ abstract class DeviceBase {
         characteristicId == stepClimberUuid ||
         characteristicId == stairClimberUuid) {
       sports.add(ActivityType.run);
+    } else if (characteristicId == c2RowingGeneralStatusUuid) {
+      sports.add(ActivityType.rowing);
+    } else if (characteristicId == rowerDeviceUuid) {
+      sports.addAll(waterSports);
     } else if (characteristicId == precorMeasurementUuid ||
         characteristicId == schwinnX70MeasurementUuid ||
         characteristicId == indoorBikeUuid ||
         characteristicId == cyclingCadenceMeasurementUuid ||
         characteristicId == cyclingPowerMeasurementUuid) {
       sports.add(ActivityType.ride);
-    } else if (characteristicId == c2RowingGeneralStatusUuid) {
-      sports.add(ActivityType.rowing);
-    } else if (characteristicId == rowerDeviceUuid) {
-      sports.addAll(waterSports);
     } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
     }

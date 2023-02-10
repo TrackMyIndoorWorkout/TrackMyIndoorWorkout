@@ -27,6 +27,7 @@ const cscSensorBasedBikeFourCC = "CSCB";
 const cscSensorBasedPaddleFourCC = "CSCP";
 const concept2RowerFourCC = "Cpt2";
 const merachMr667FourCC = "M667";
+const virtufitUltimatePro2FourCC = "VFUP";
 
 List<String> allFourCC = [
   mPowerImportDeviceId,
@@ -56,6 +57,7 @@ List<String> allFourCC = [
   cscSensorBasedPaddleFourCC,
   concept2RowerFourCC,
   merachMr667FourCC,
+  virtufitUltimatePro2FourCC,
 ];
 
 List<String> multiSportFourCCs = [
@@ -93,7 +95,8 @@ Map<String, List<String>> deviceNamePrefixes = {
   cscSensorBasedBikeFourCC: ["N/A"],
   cscSensorBasedPaddleFourCC: ["N/A"],
   concept2RowerFourCC: ["PM5"],
-  merachMr667FourCC: ["Merach-MR667"]
+  merachMr667FourCC: ["Merach-MR667"],
+  virtufitUltimatePro2FourCC: ["VIRTUFIT-UP2"],
 };
 
 class SportDescriptor {
@@ -138,4 +141,6 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
       SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: false),
   concept2RowerFourCC: SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),
   merachMr667FourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
+  virtufitUltimatePro2FourCC:
+      SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),
 };

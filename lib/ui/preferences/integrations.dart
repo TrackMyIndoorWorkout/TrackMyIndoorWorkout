@@ -106,7 +106,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
                     ),
                     SvgPicture.asset(
                       e.value.assetName,
-                      color: e.value.color,
+                      colorFilter: ColorFilter.mode(e.value.color, BlendMode.srcIn),
                       height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
                       semanticsLabel: '${e.value.name} Logo',
                     ),

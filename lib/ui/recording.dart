@@ -18,6 +18,7 @@ import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
 import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
+import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
@@ -54,7 +55,6 @@ import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/workout_mode.dart';
-import '../preferences/zone_index_display_coloring.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
 import '../track/track_painter.dart';
@@ -249,7 +249,6 @@ class RecordingState extends State<RecordingScreen> {
   int _chartTouchInteractionIndex = -1;
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
-  bool _zoneIndexColoring = false;
   int _lapCount = 0;
   bool _isLocked = false;
   int _unlockButtonIndex = 0;
@@ -284,11 +283,15 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  void amendZoneToValue(int valueIndex, int value) {
-    if (_preferencesSpecs[valueIndex].indexDisplay) {
+  void optionallyChangeMeasurementByZone(int valueIndex, num value, bool amendZone) {
+    if (amendZone && _preferencesSpecs[valueIndex].indexDisplay ||
+        _preferencesSpecs[valueIndex].coloringByZone) {
       int zoneIndex = _preferencesSpecs[valueIndex].binIndex(value);
-      _values[valueIndex + 1] += " Z${zoneIndex + 1}";
-      if (_zoneIndexColoring) {
+      if (amendZone && _preferencesSpecs[valueIndex].indexDisplay) {
+        _values[valueIndex + 1] += " Z${zoneIndex + 1}";
+      }
+
+      if (_preferencesSpecs[valueIndex].coloringByZone) {
         _zoneIndexes[valueIndex] = zoneIndex;
       }
     }
@@ -299,7 +302,8 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
-    if (_sinkAddress != dummyAddressTuple &&
+    if (!_uxDebug &&
+        _sinkAddress != dummyAddressTuple &&
         (widget.sport == ActivityType.ride ||
             widget.sport == ActivityType.kayaking ||
             widget.sport == ActivityType.canoeing ||
@@ -346,7 +350,7 @@ class RecordingState extends State<RecordingScreen> {
     if (!continued) {
       _activity = Activity(
         fourCC: widget.descriptor.fourCC,
-        deviceName: widget.device.name,
+        deviceName: widget.device.nonEmptyName,
         deviceId: widget.device.id.id,
         hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
         start: now.millisecondsSinceEpoch,
@@ -550,9 +554,10 @@ class RecordingState extends State<RecordingScreen> {
             record.heartRate?.toString() ?? emptyMeasurement,
             record.distanceStringByUnit(_si, _highRes),
           ];
-          amendZoneToValue(_powerNIndex, record.power ?? 0);
-          amendZoneToValue(_cadenceNIndex, record.cadence ?? 0);
-          amendZoneToValue(_hrNIndex, record.heartRate ?? 0);
+          optionallyChangeMeasurementByZone(_speedNIndex, record.speed ?? 0.0, false);
+          optionallyChangeMeasurementByZone(_powerNIndex, record.power ?? 0, true);
+          optionallyChangeMeasurementByZone(_cadenceNIndex, record.cadence ?? 0, true);
+          optionallyChangeMeasurementByZone(_hrNIndex, record.heartRate ?? 0, true);
         });
       }
     });
@@ -635,8 +640,9 @@ class RecordingState extends State<RecordingScreen> {
                 (record.heartRate != null && record.heartRate! > 0)) {
               _heartRate = record.heartRate;
             }
+
             _values[_hr0Index] = record.heartRate?.toString() ?? emptyMeasurement;
-            amendZoneToValue(_hrNIndex, record.heartRate ?? 0);
+            optionallyChangeMeasurementByZone(_hrNIndex, record.heartRate ?? 0, true);
           });
         });
       });
@@ -941,9 +947,6 @@ class RecordingState extends State<RecordingScreen> {
     _lightRed = isLight ? Colors.redAccent.shade100 : Colors.red.shade900;
     _lightGreen = isLight ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
     _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
-
-    _zoneIndexColoring =
-        prefService.get<bool>(zoneIndexDisplayColoringTag) ?? zoneIndexDisplayColoringDefault;
 
     _initializeHeartRateMonitor();
     _connectOnDemand();
@@ -1414,23 +1417,20 @@ class RecordingState extends State<RecordingScreen> {
     return ["#${_getRankString(_selfRank, _leaderboard)}", "(Self)"];
   }
 
-  Color _getPaceLightColor(int selfRank, {required bool background}) {
+  Color _getSpeedColor(int selfRank, {required bool background}) {
     if (!_leaderboardFeature || selfRank == 0) {
-      return background ? Colors.transparent : _themeManager.getBlueColor();
+      if (_zoneIndexes[_speedNIndex] != null) {
+        return _getZoneColor(metricIndex: _speedNIndex, background: background);
+      } else {
+        return background ? Colors.transparent : _themeManager.getBlueColor();
+      }
     }
 
     if (selfRank <= 1) {
       return background ? _lightGreen : _darkGreen;
     }
+
     return background ? _lightBlue : _darkBlue;
-  }
-
-  TextStyle _getPaceLightTextStyle(int selfRank) {
-    if (!_leaderboardFeature) {
-      return _measurementStyle;
-    }
-
-    return _measurementStyle.apply(color: _getPaceLightColor(selfRank, background: false));
   }
 
   TargetHrState _getTargetHrState() {
@@ -1449,7 +1449,7 @@ class RecordingState extends State<RecordingScreen> {
 
   Color _getTargetHrColor(TargetHrState hrState, bool background) {
     if (hrState == TargetHrState.off) {
-      return _getZoneColor(metricIndex: 3, background: background);
+      return _getZoneColor(metricIndex: _hrNIndex, background: background);
     }
 
     if (hrState == TargetHrState.under) {
@@ -1462,15 +1462,17 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   TextStyle _getTargetHrTextStyle(TargetHrState hrState) {
+    final measurementStyle = getMeasurementStyle(_hr0Index);
     if (hrState == TargetHrState.off) {
       if (_zoneIndexes[_hrNIndex] == null) {
-        return _measurementStyle;
+        return measurementStyle.apply();
       } else {
-        return _measurementStyle.apply(color: _getZoneColor(metricIndex: 3, background: false));
+        return measurementStyle.apply(
+            color: _getZoneColor(metricIndex: _hrNIndex, background: false));
       }
     }
 
-    return _measurementStyle.apply(color: _getTargetHrColor(hrState, false));
+    return measurementStyle.apply(color: _getTargetHrColor(hrState, false));
   }
 
   String _getTargetHrText(TargetHrState hrState) {
@@ -1816,6 +1818,14 @@ class RecordingState extends State<RecordingScreen> {
     return false;
   }
 
+  TextStyle getMeasurementStyle(int entryKey) {
+    return (entryKey == _calories0Index ||
+            entryKey == _distance0Index ||
+            _onStageStatisticsType == onStageStatisticsTypeNone)
+        ? _fullMeasurementStyle.apply()
+        : _measurementStyle.apply();
+  }
+
   @override
   Widget build(BuildContext context) {
     const separatorHeight = 1.0;
@@ -1935,22 +1945,26 @@ class RecordingState extends State<RecordingScreen> {
 
     final targetHrState = _getTargetHrState();
     final targetHrTextStyle = _getTargetHrTextStyle(targetHrState);
+    TextStyle? speedTextStyle;
 
     for (var entry in _rowConfig.asMap().entries) {
-      var measurementStyle = _measurementStyle;
+      var measurementStyle = getMeasurementStyle(entry.key);
 
-      if (entry.key == _speed0Index && _leaderboardFeature) {
-        measurementStyle = _getPaceLightTextStyle(_selfRank);
+      if (entry.key == _speed0Index &&
+          (_leaderboardFeature || _zoneIndexes[_speedNIndex] != null)) {
+        speedTextStyle =
+            measurementStyle.apply(color: _getSpeedColor(_selfRank, background: false));
+        measurementStyle = speedTextStyle;
       }
 
-      if (entry.key == _hr0Index && _targetHrMode != targetHeartRateModeNone ||
-          _zoneIndexes[3] != null) {
+      if (entry.key == _hr0Index &&
+          (_targetHrMode != targetHeartRateModeNone || _zoneIndexes[_hrNIndex] != null)) {
         measurementStyle = targetHrTextStyle;
       }
 
       if ((entry.key == _power0Index || entry.key == _cadence0Index) &&
           _zoneIndexes[entry.key - 1] != null) {
-        measurementStyle = _measurementStyle.apply(
+        measurementStyle = measurementStyle.apply(
             color: _getZoneColor(metricIndex: entry.key - 1, background: false));
       }
 
@@ -1960,7 +1974,7 @@ class RecordingState extends State<RecordingScreen> {
           ? [
               _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
               const Spacer(),
-              Text(_values[entry.key], style: _fullMeasurementStyle),
+              Text(_values[entry.key], style: measurementStyle),
               SizedBox(
                 width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
                 child: Center(
@@ -2093,8 +2107,7 @@ class RecordingState extends State<RecordingScreen> {
             _leaderboardFeature &&
             _rankRibbonVisualization) {
           List<Widget> extraExtras = [];
-          final paceLightColor = _getPaceLightTextStyle(_selfRank);
-          extraExtras.add(Text(_selfRankString.join(" "), style: paceLightColor));
+          extraExtras.add(Text(_selfRankString.join(" "), style: speedTextStyle));
 
           if (widget.descriptor.sport != ActivityType.ride) {
             extraExtras.add(Text("Speed ${_si ? 'km' : 'mi'}/h"));
@@ -2125,18 +2138,14 @@ class RecordingState extends State<RecordingScreen> {
           if (_rankInfoOnTrack || _showPacer) {
             markers.add(
               Center(
-                child: _infoForLeaderboard(
-                  _leaderboard,
-                  _selfRank,
-                  _selfRankString,
-                ),
+                child: _infoForLeaderboard(_leaderboard, _selfRank, _selfRankString),
               ),
             );
           }
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = _getPaceLightColor(_selfRank, background: true).value;
+          selfMarkerColor = _getSpeedColor(_selfRank, background: true).value;
         } else if (_displayLapCounter) {
           markers.add(Center(
             child: Text("Lap $_lapCount", style: _measurementStyle),
@@ -2190,7 +2199,7 @@ class RecordingState extends State<RecordingScreen> {
       ),
       const Divider(height: separatorHeight),
       ColoredBox(
-        color: _getPaceLightColor(_selfRank, background: true),
+        color: _getSpeedColor(_selfRank, background: true),
         child: ExpandablePanel(
           theme: _expandableThemeData,
           header: rows[_speed1Index],
@@ -2452,7 +2461,7 @@ class RecordingState extends State<RecordingScreen> {
           child: Scaffold(
             appBar: AppBar(
               title: TextOneLine(
-                widget.device.name,
+                widget.device.nonEmptyName,
                 overflow: TextOverflow.ellipsis,
               ),
               actions: [
