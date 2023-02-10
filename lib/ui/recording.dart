@@ -1451,7 +1451,7 @@ class RecordingState extends State<RecordingScreen> {
 
   Color _getTargetHrColor(TargetHrState hrState, bool background) {
     if (hrState == TargetHrState.off) {
-      return _getZoneColor(metricIndex: 3, background: background);
+      return _getZoneColor(metricIndex: _hrNIndex, background: background);
     }
 
     if (hrState == TargetHrState.under) {
@@ -1468,7 +1468,8 @@ class RecordingState extends State<RecordingScreen> {
       if (_zoneIndexes[_hrNIndex] == null) {
         return _measurementStyle;
       } else {
-        return _measurementStyle.apply(color: _getZoneColor(metricIndex: 3, background: false));
+        return measurementStyle.apply(
+            color: _getZoneColor(metricIndex: _hrNIndex, background: false));
       }
     }
 
