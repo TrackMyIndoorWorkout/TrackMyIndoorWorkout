@@ -1945,8 +1945,8 @@ class RecordingState extends State<RecordingScreen> {
         measurementStyle = _getPaceLightTextStyle(_selfRank);
       }
 
-      if (entry.key == _hr0Index && _targetHrMode != targetHeartRateModeNone ||
-          _zoneIndexes[3] != null) {
+      if (entry.key == _hr0Index &&
+          (_targetHrMode != targetHeartRateModeNone || _zoneIndexes[_hrNIndex] != null)) {
         measurementStyle = targetHrTextStyle;
       }
 
