@@ -18,7 +18,7 @@ import '../gatt/battery.dart';
 import '../gatt/csc.dart';
 import '../gatt/concept2.dart';
 import '../gatt/ftms.dart';
-import '../gatt/precor.dart';
+import '../gatt/wahoo_fitness_equipment.dart';
 import '../gatt/power_meter.dart';
 import '../gatt/schwinn_x70.dart';
 import '../bluetooth_device_ex.dart';
@@ -251,11 +251,12 @@ abstract class DeviceBase {
       sports.add(ActivityType.rowing);
     } else if (characteristicId == rowerDeviceUuid) {
       sports.addAll(waterSports);
-    } else if (characteristicId == precorMeasurementUuid ||
+    } else if (characteristicId == wahooFitnessEquipmentMeasurementUuid ||
         characteristicId == schwinnX70MeasurementUuid ||
         characteristicId == indoorBikeUuid ||
         characteristicId == cyclingCadenceMeasurementUuid ||
         characteristicId == cyclingPowerMeasurementUuid) {
+      // TODO #406
       sports.add(ActivityType.ride);
     } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);

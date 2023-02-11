@@ -3,7 +3,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../export/fit/fit_manufacturer.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/logging.dart';
-import '../gatt/precor.dart';
+import '../gatt/wahoo_fitness_equipment.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import '../device_fourcc.dart';
@@ -23,8 +23,8 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
           manufacturerNamePart: "Precor",
           manufacturerFitId: precorFitId,
           model: "1",
-          dataServiceId: precorServiceUuid,
-          dataCharacteristicId: precorMeasurementUuid,
+          dataServiceId: wahooFitnessEquipmentServiceUuid,
+          dataCharacteristicId: wahooFitnessEquipmentMeasurementUuid,
           listenOnControl: false,
           flagByteSize: 3,
           heartRateByteIndex: 5,

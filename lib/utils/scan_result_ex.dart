@@ -10,7 +10,7 @@ import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
 import '../devices/gatt/hrm.dart';
 import '../devices/gatt/power_meter.dart';
-import '../devices/gatt/precor.dart';
+import '../devices/gatt/wahoo_fitness_equipment.dart';
 import '../devices/gatt/schwinn_x70.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import 'advertisement_data_ex.dart';
@@ -36,7 +36,7 @@ extension ScanResultEx on ScanResult {
     if (advertisementData.serviceUuids.isNotEmpty) {
       final serviceUuids = advertisementData.uuids;
       if (serviceUuids.contains(fitnessMachineUuid) ||
-          serviceUuids.contains(precorServiceUuid) ||
+          serviceUuids.contains(wahooFitnessEquipmentServiceUuid) ||
           serviceUuids.contains(schwinnX70ServiceUuid) ||
           serviceUuids.contains(cyclingPowerServiceUuid) ||
           serviceUuids.contains(cyclingCadenceServiceUuid) ||
@@ -123,7 +123,7 @@ extension ScanResultEx on ScanResult {
       }
     }
 
-    if (serviceUuids.contains(precorServiceUuid) ||
+    if (serviceUuids.contains(wahooFitnessEquipmentServiceUuid) ||
         serviceUuids.contains(schwinnX70ServiceUuid) ||
         serviceUuids.contains(cyclingPowerServiceUuid)) {
       return MachineType.indoorBike;

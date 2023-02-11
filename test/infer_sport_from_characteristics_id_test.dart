@@ -6,7 +6,7 @@ import 'package:track_my_indoor_exercise/devices/gatt/csc.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/concept2.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/hrm.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/ftms.dart';
-import 'package:track_my_indoor_exercise/devices/gatt/precor.dart';
+import 'package:track_my_indoor_exercise/devices/gatt/wahoo_fitness_equipment.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/power_meter.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/schwinn_x70.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -25,7 +25,8 @@ void main() {
   group('DeviceBase infers sport as expected from characteristics ID', () {
     for (final testPair in [
       const TestPair(characteristicId: treadmillUuid, sports: [ActivityType.run]),
-      const TestPair(characteristicId: precorMeasurementUuid, sports: [ActivityType.ride]),
+      const TestPair(
+          characteristicId: wahooFitnessEquipmentMeasurementUuid, sports: [ActivityType.ride]),
       const TestPair(characteristicId: schwinnX70MeasurementUuid, sports: [ActivityType.ride]),
       const TestPair(characteristicId: cyclingCadenceMeasurementUuid, sports: [ActivityType.ride]),
       const TestPair(characteristicId: cyclingPowerMeasurementUuid, sports: [ActivityType.ride]),

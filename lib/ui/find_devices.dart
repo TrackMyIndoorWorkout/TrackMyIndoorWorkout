@@ -22,7 +22,7 @@ import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
 import '../devices/gatt/power_meter.dart';
-import '../devices/gatt/precor.dart';
+import '../devices/gatt/wahoo_fitness_equipment.dart';
 import '../devices/gatt/schwinn_x70.dart';
 import '../devices/gatt_maps.dart';
 import '../preferences/auto_connect.dart';
@@ -353,7 +353,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     // Or other dedicated workarounds
     if (descriptor == null) {
       if (!advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
-        if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
+        if (advertisementDigest.serviceUuids.contains(wahooFitnessEquipmentServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(precorSpinnerChronoPowerFourCC);
         } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(schwinnX70BikeFourCC);
