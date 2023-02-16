@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_lap.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
-import 'package:track_my_indoor_exercise/persistence/floor/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'utils.dart';
 
 void main() {

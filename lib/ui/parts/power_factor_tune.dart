@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import '../../persistence/floor/database.dart';
-import '../../persistence/floor/models/power_tune.dart';
+import 'package:isar/isar.dart';
+import '../../persistence/isar/power_tune.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
@@ -57,19 +57,25 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
             _themeManager.getBlueFab(Icons.clear, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(Icons.check, () async {
-              final database = Get.find<AppDatabase>();
+              final isar = Get.find<Isar>();
               final powerFactor = _powerFactorPercent / 100.0;
-              final powerTune = await database.powerTuneDao.findPowerTuneByMac(widget.deviceId);
+              final powerTune = await isar.powerTunes.where()
+                  .isMacEqualTo(widget.deviceId)
+                  .filter().findFirst();
               if (powerTune != null) {
-                powerTune.powerFactor = powerFactor;
-                await database.powerTuneDao.updatePowerTune(powerTune);
+                await isar.writeTxn(() async {
+                  powerTune.powerFactor = powerFactor;
+                  await isar.powerTunes.put(powerTune);
+                });
               } else {
-                final powerTune = PowerTune(
-                  mac: widget.deviceId,
-                  powerFactor: powerFactor,
-                  time: DateTime.now().millisecondsSinceEpoch,
-                );
-                await database.powerTuneDao.insertPowerTune(powerTune);
+                await isar.writeTxn(() async {
+                  final powerTune = PowerTune(
+                    mac: widget.deviceId,
+                    powerFactor: powerFactor,
+                    time: DateTime.now().millisecondsSinceEpoch,
+                  );
+                  await isar.powerTunes.put(powerTune);
+                });
               }
               Get.back(result: powerFactor);
             }),

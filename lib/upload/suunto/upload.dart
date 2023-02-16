@@ -4,8 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../export/activity_export.dart';
-import '../../persistence/floor/models/activity.dart';
-import '../../persistence/floor/database.dart';
+import '../../persistence/isar/activity.dart';
 import '../../secret.dart';
 import 'constants.dart';
 import 'suunto_token.dart';
@@ -50,7 +49,7 @@ abstract class Upload {
     });
 
     if (activity.suuntoBlobUrl.isNotEmpty && activity.suuntoUploadIdentifier.isNotEmpty) {
-      return await checkStatus(headers, activity, Get.find<AppDatabase>());
+      return await checkStatus(headers, activity);
     }
 
     Map<String, dynamic> persistenceValues = exporter.getPersistenceValues(activity, false);
@@ -100,7 +99,6 @@ abstract class Upload {
       }
     }
 
-    final database = Get.find<AppDatabase>();
     activity.suuntoUploadInitiated(uploadId, blobUrl);
     await database.activityDao.updateActivity(activity);
 
@@ -120,7 +118,7 @@ abstract class Upload {
     } else {
       debugPrint('$uploadBlobResponse');
 
-      return await checkStatus(headers, activity, database);
+      return await checkStatus(headers, activity);
     }
 
     return uploadBlobResponse.statusCode;
@@ -129,7 +127,6 @@ abstract class Upload {
   Future<int> checkStatus(
     Map<String, String> headers,
     Activity activity,
-    AppDatabase database,
   ) async {
     if (activity.suuntoWorkoutUrl.isNotEmpty) {
       return 200;

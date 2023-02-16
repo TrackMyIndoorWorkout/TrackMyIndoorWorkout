@@ -8,8 +8,8 @@ import 'package:track_my_indoor_exercise/persistence/floor/dao/power_tune_dao.da
 import 'package:track_my_indoor_exercise/persistence/floor/dao/record_dao.dart';
 import 'package:track_my_indoor_exercise/persistence/floor/dao/workout_summary_dao.dart';
 import 'package:track_my_indoor_exercise/persistence/floor/database.dart';
-import 'package:track_my_indoor_exercise/persistence/floor/models/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/floor/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 
 class InMemoryActivityDao extends ActivityDao {
   int idCounter = Random().nextInt(1000);

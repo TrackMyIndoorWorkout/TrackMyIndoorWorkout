@@ -1,5 +1,5 @@
-import '../persistence/floor/models/activity.dart';
-import '../persistence/floor/models/record.dart';
+import '../persistence/isar/activity.dart';
+import '../persistence/isar/record.dart';
 
 class ExportRecord {
   Record record;

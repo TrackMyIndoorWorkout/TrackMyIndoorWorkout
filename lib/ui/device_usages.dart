@@ -3,9 +3,9 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:listview_utils/listview_utils.dart';
-import '../persistence/floor/models/device_usage.dart';
-import '../persistence/floor/database.dart';
+import '../persistence/isar/device_usage.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/theme_manager.dart';
@@ -19,7 +19,7 @@ class DeviceUsagesScreen extends StatefulWidget {
 }
 
 class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final _isar = Get.find<Isar>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
@@ -76,11 +76,12 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
               enableDrag: false,
             );
             if (sportPick != null) {
-              deviceUsage.sport = sportPick;
-              deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
-              await _database.deviceUsageDao.updateDeviceUsage(deviceUsage);
-              setState(() {
-                _editCount++;
+              await _isar.writeTxn(() async {
+                deviceUsage.sport = sportPick;
+                deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
+                await _isar.deviceUsages.put(deviceUsage).then((value) => setState(() {
+                  _editCount++;
+                }));
               });
             }
           },
@@ -96,11 +97,12 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
               confirm: TextButton(
                 child: const Text("Yes"),
                 onPressed: () async {
-                  await _database.deviceUsageDao.deleteDeviceUsage(deviceUsage);
-                  setState(() {
-                    _editCount++;
-                  });
-                  Get.close(1);
+                  await _isar.writeTxn(() async {
+                    await _isar.deviceUsages.delete(deviceUsage.id);
+                    setState(() {
+                      _editCount++;
+                    });
+                  }).then((value) => Get.close(1));
                 },
               ),
               cancel: TextButton(
@@ -125,8 +127,15 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.deviceUsageDao.findDeviceUsages(limit, offset);
+            final data = await _isar.deviceUsages.buildQuery(sortBy: [
+              const SortProperty(
+                property: 'mac',
+                sort: Sort.desc,
+              )
+            ],
+              offset: page * limit,
+              limit: limit,
+            ).findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

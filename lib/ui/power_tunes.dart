@@ -3,9 +3,9 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:listview_utils/listview_utils.dart';
-import '../persistence/floor/models/power_tune.dart';
-import '../persistence/floor/database.dart';
+import '../persistence/isar/power_tune.dart';
 import '../utils/theme_manager.dart';
 import 'parts/power_factor_tune.dart';
 
@@ -17,7 +17,7 @@ class PowerTunesScreen extends StatefulWidget {
 }
 
 class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final _isar = Get.find<Isar>();
   int _editCount = 0;
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
@@ -90,9 +90,10 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
               confirm: TextButton(
                 child: const Text("Yes"),
                 onPressed: () async {
-                  await _database.powerTuneDao.deletePowerTune(powerTune);
-                  setState(() {
-                    _editCount++;
+                  await _isar.writeTxn(() async {
+                    await _isar.powerTunes.delete(powerTune.id).then((value) => setState(() {
+                      _editCount++;
+                    }));
                   });
                   Get.close(1);
                 },
@@ -119,8 +120,15 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.powerTuneDao.findPowerTunes(limit, offset);
+            final data = await _isar.powerTunes.buildQuery(sortBy: [
+              const SortProperty(
+                property: 'mac',
+                sort: Sort.desc,
+              )
+            ],
+              offset: page * limit,
+              limit: limit,
+            ).findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

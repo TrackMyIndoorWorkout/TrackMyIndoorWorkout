@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
-import '../../persistence/floor/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';

@@ -1,5 +1,5 @@
 import '../../devices/device_fourcc.dart';
-import '../../persistence/floor/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../gatt/ftms.dart';
 import 'fitness_machine_descriptor.dart';
 

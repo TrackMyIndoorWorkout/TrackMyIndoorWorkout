@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../persistence/floor/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/wheel_circumference.dart';
 import '../../utils/constants.dart';
 import '../gatt/csc.dart';

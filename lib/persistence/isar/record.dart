@@ -1,7 +1,8 @@
 import 'dart:math';
 
-import 'package:floor/floor.dart';
+import 'package:isar/isar.dart';
 import 'package:flutter/foundation.dart';
+
 import '../../../preferences/log_level.dart';
 import '../../../ui/models/display_record.dart';
 import '../../../utils/constants.dart';
@@ -9,23 +10,13 @@ import '../../../utils/display.dart';
 import '../../../utils/logging.dart';
 import 'activity.dart';
 
-const recordsTableName = 'records';
+part 'record.g.dart';
 
-@Entity(tableName: recordsTableName, foreignKeys: [
-  ForeignKey(
-    childColumns: ['activity_id'],
-    parentColumns: ['id'],
-    entity: Activity,
-  )
-], indices: [
-  Index(value: ['time_stamp'])
-])
+@Collection(inheritance: false)
 class Record {
-  @PrimaryKey(autoGenerate: true)
-  int? id;
-  @ColumnInfo(name: 'activity_id')
+  Id id;
   int? activityId;
-  @ColumnInfo(name: 'time_stamp')
+  @Index()
   int? timeStamp; // ms since epoch
   double? distance; // m
   int? elapsed; // s
@@ -33,8 +24,10 @@ class Record {
   int? power; // W
   double? speed; // km/h
   int? cadence;
-  @ColumnInfo(name: 'heart_rate')
   int? heartRate;
+
+  @Backlink(to: 'activity')
+  final activity = IsarLink<Activity>();
 
   @ignore
   DateTime? dt;
@@ -54,7 +47,7 @@ class Record {
   int movingTime = 0; // ms
 
   Record({
-    this.id,
+    this.id = Isar.autoIncrement,
     this.activityId,
     this.timeStamp,
     this.distance,
@@ -132,6 +125,10 @@ class Record {
 
   String distanceStringByUnit(bool si, bool highRes) {
     return distanceString(distance ?? 0.0, si, highRes);
+  }
+
+  DisplayRecord display() {
+    return DisplayRecord(this);
   }
 
   bool isNotMoving() {

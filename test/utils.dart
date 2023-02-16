@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
-import 'package:track_my_indoor_exercise/persistence/floor/models/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 const smallRepetition = 10;

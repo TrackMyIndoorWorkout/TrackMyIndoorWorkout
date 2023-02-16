@@ -2,7 +2,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/heart_rate_monitor.dart';
-import 'package:track_my_indoor_exercise/persistence/floor/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'heart_rate_monitor_sensor_test.mocks.dart';

@@ -7,14 +7,14 @@ import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/floor/database.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/metric_spec.dart';
-import '../../persistence/floor/models/activity.dart';
-import '../../persistence/floor/models/record.dart';
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/palette_spec.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
@@ -80,8 +80,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   );
 
   Future<void> extraInit(BasePrefService prefService) async {
-    final database = Get.find<AppDatabase>();
-    _allRecords = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
+    final isar = Get.find<Isar>();
+    _allRecords = await isar.records.findAllActivityRecords(widget.activity.id);
 
     setState(() {
       _pointCount = widget.size.width.toInt() - 20;

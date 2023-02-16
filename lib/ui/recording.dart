@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
@@ -22,10 +23,9 @@ import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
-import '../persistence/floor/models/activity.dart';
-import '../persistence/floor/models/record.dart';
-import '../persistence/floor/models/workout_summary.dart';
-import '../persistence/floor/database.dart';
+import '../persistence/isar/activity.dart';
+import '../persistence/isar/record.dart';
+import '../persistence/isar/workout_summary.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
@@ -183,7 +183,7 @@ class RecordingState extends State<RecordingScreen> {
   List<MetricSpec> _preferencesSpecs = [];
 
   Activity? _activity;
-  AppDatabase _database = Get.find<AppDatabase>();
+  Isar _isar = Get.find<Isar>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _simplerUi = simplerUiSlowDefault;
@@ -327,7 +327,7 @@ class RecordingState extends State<RecordingScreen> {
     var continued = false;
     if (!_uxDebug) {
       final unfinished =
-          await _database.activityDao.findUnfinishedDeviceActivities(widget.device.id.id);
+          await _isar.activityDao.findUnfinishedDeviceActivities(widget.device.id.id);
       if (unfinished.isNotEmpty) {
         final yesterday = now.subtract(const Duration(days: 1));
         if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
@@ -337,7 +337,7 @@ class RecordingState extends State<RecordingScreen> {
 
         for (final activity in unfinished) {
           if (!continued || _activity == null || _activity!.id != activity.id) {
-            await _database.finalizeActivity(activity);
+            await _isar.finalizeActivity(activity);
           }
         }
       }
@@ -950,7 +950,7 @@ class RecordingState extends State<RecordingScreen> {
 
     _initializeHeartRateMonitor();
     _connectOnDemand();
-    _database = Get.find<AppDatabase>();
+    _isar = Get.find<Isar>();
     _isLocked = false;
     _unlockButtonIndex = 0;
     if (_unlockKeys.isEmpty) {
@@ -1072,7 +1072,7 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final records = await _database.recordDao.findAllActivityRecords(_activity!.id!);
+    final records = await _isar.recordDao.findAllActivityRecords(_activity!.id);
     final exporter = FitExport();
     final fileBytes = await exporter.getExport(
       _activity!,
@@ -1131,11 +1131,11 @@ class RecordingState extends State<RecordingScreen> {
 
     if (!_uxDebug) {
       if (_leaderboardFeature && (last?.distance ?? 0.0) > displayEps) {
-        await _database.workoutSummaryDao.insertWorkoutSummary(
+        await _isar.workoutSummaryDao.insertWorkoutSummary(
             _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown"));
       }
 
-      final retVal = await _database.activityDao.updateActivity(_activity!);
+      final retVal = await _isar.activityDao.updateActivity(_activity!);
       if (retVal <= 0 && !quick) {
         Get.snackbar("Warning", "Could not save activity");
         return;
@@ -1792,9 +1792,9 @@ class RecordingState extends State<RecordingScreen> {
         if (selection > 0) {
           await _stopMeasurement(false);
           if (selection > 1) {
-            final unfinished = await _database.activityDao.findUnfinishedActivities();
+            final unfinished = await _isar.activityDao.findUnfinishedActivities();
             for (final activity in unfinished) {
-              await _database.finalizeActivity(activity);
+              await _isar.finalizeActivity(activity);
             }
           }
         }
@@ -2398,8 +2398,8 @@ class RecordingState extends State<RecordingScreen> {
           String hrmId = await _initializeHeartRateMonitor();
           if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
             _activity!.hrmId = hrmId;
-            _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true);
-            await _database.activityDao.updateActivity(_activity!);
+            _activity!.hrmCalorieFactor = await _isar.calorieFactorValue(hrmId, true);
+            await _isar.activityDao.updateActivity(_activity!);
           }
         }),
         _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, () async {

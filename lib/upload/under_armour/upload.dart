@@ -4,8 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../export/activity_export.dart';
-import '../../persistence/floor/models/activity.dart';
-import '../../persistence/floor/database.dart';
+import '../../persistence/isar/activity.dart';
 
 import 'constants.dart';
 import 'under_armour_token.dart';
@@ -67,7 +66,6 @@ abstract class Upload {
           final workoutId = int.tryParse(idString) ?? 0;
           if (workoutId > 0) {
             debugPrint('workoutId: $workoutId');
-            final database = Get.find<AppDatabase>();
             activity.markUnderArmourUploaded(workoutId);
             await database.activityDao.updateActivity(activity);
           }

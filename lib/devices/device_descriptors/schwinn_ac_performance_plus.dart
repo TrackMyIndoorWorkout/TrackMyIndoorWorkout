@@ -5,7 +5,7 @@ import 'package:pref/pref.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
 import '../../preferences/log_level.dart';
-import '../../persistence/floor/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/logging.dart';
 import '../device_fourcc.dart';
 import 'device_descriptor.dart';

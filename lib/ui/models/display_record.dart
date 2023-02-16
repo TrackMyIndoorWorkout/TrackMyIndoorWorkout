@@ -1,4 +1,4 @@
-import '../../persistence/floor/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/display.dart';
 
 class DisplayRecord {

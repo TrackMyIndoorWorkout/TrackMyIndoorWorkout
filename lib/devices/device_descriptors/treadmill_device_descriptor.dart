@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-import '../../persistence/floor/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/guid_ex.dart';
 import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';

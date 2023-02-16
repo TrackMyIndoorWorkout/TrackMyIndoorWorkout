@@ -12,15 +12,14 @@ import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
-import '../../persistence/floor/database.dart';
 import '../../preferences/extend_tuning.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/heart_rate_monitor_priority.dart';
 import '../../preferences/log_level.dart';
-import '../../persistence/floor/models/activity.dart';
-import '../../persistence/floor/models/record.dart';
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
@@ -477,7 +476,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (Get.isRegistered<AppDatabase>()) {
       final database = Get.find<AppDatabase>();
       final lastRecord = activity.id != null
-          ? await database.recordDao.findLastRecordOfActivity(activity.id!)
+          ? await database.recordDao.findLastRecordOfActivity(activity.id)
           : null;
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
@@ -1209,11 +1208,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   Future<void> refreshFactors() async {
-    if (!Get.isRegistered<AppDatabase>()) {
-      return;
-    }
-
-    final database = Get.find<AppDatabase>();
     final factors = await database.getFactors(device?.id.id ?? "");
     _powerFactor = factors.item1;
     _calorieFactor = factors.item2;

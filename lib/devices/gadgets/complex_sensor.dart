@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import '../../persistence/floor/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import 'sensor_base.dart';

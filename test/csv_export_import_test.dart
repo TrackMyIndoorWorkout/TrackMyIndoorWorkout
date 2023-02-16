@@ -12,9 +12,8 @@ import 'package:track_my_indoor_exercise/export/csv/csv_export.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/import/csv_importer.dart';
-import 'package:track_my_indoor_exercise/persistence/floor/database.dart';
-import 'package:track_my_indoor_exercise/persistence/floor/models/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/floor/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'database_utils.dart';
@@ -71,7 +70,6 @@ void main() {
           trainingPeaksUploaded: rnd.nextBool(),
           stravaId: rnd.nextInt(1000000),
           uaWorkoutId: rnd.nextInt(1000000),
-          suuntoUploadId: rnd.nextInt(1000000),
           suuntoUploadIdentifier: "suuntoUploadIdentifier test string",
           suuntoWorkoutUrl: "suuntoWorkoutUrl test string",
           trainingPeaksAthleteId: rnd.nextInt(1000000),
@@ -196,7 +194,6 @@ void main() {
         expect(importedActivity.trainingPeaksUploaded, activity.trainingPeaksUploaded);
         expect(importedActivity.stravaId, activity.stravaId);
         expect(importedActivity.uaWorkoutId, activity.uaWorkoutId);
-        expect(importedActivity.suuntoUploadId, 0); // Not used any more
         expect(importedActivity.suuntoUploadIdentifier, activity.suuntoUploadIdentifier);
         expect(importedActivity.suuntoWorkoutUrl, activity.suuntoWorkoutUrl);
         expect(importedActivity.trainingPeaksAthleteId, activity.trainingPeaksAthleteId);
@@ -204,7 +201,7 @@ void main() {
         expect(importedActivity.movingTime, activity.movingTime);
 
         final importedRecords =
-            await database.recordDao.findAllActivityRecords(importedActivity.id!);
+            await database.recordDao.findAllActivityRecords(importedActivity.id);
         expect(importedRecords.length, records.length);
         for (final pairs in IterableZip<Record>([importedRecords, records.map((e) => e.record)])) {
           expect(pairs[0].activityId, importedActivity.id);
@@ -267,7 +264,6 @@ void main() {
           trainingPeaksUploaded: rnd.nextBool(),
           stravaId: rnd.nextInt(1000000),
           uaWorkoutId: rnd.nextInt(1000000),
-          suuntoUploadId: rnd.nextInt(1000000),
           suuntoUploadIdentifier: "suuntoUploadIdentifier test string",
           suuntoWorkoutUrl: "suuntoWorkoutUrl test string",
           trainingPeaksAthleteId: rnd.nextInt(1000000),
@@ -355,7 +351,6 @@ void main() {
         expect(importedActivity.trainingPeaksUploaded, activity.trainingPeaksUploaded);
         expect(importedActivity.stravaId, activity.stravaId);
         expect(importedActivity.uaWorkoutId, activity.uaWorkoutId);
-        expect(importedActivity.suuntoUploadId, 0); // Not used any more
         expect(importedActivity.suuntoUploadIdentifier, activity.suuntoUploadIdentifier);
         expect(importedActivity.suuntoWorkoutUrl, activity.suuntoWorkoutUrl);
         expect(importedActivity.trainingPeaksAthleteId, activity.trainingPeaksAthleteId);

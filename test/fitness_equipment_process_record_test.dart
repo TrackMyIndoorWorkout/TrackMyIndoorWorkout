@@ -7,8 +7,8 @@ import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descr
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
-import 'package:track_my_indoor_exercise/persistence/floor/models/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/floor/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/hr_based_calories.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';

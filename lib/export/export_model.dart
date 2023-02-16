@@ -1,6 +1,6 @@
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../export/export_target.dart';
-import '../persistence/floor/models/activity.dart';
+import '../persistence/isar/activity.dart';
 import '../utils/constants.dart';
 import '../utils/statistics_accumulator.dart';
 import 'export_record.dart';

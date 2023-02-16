@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
-import '../persistence/floor/models/activity.dart';
-import '../persistence/floor/models/record.dart';
-import '../persistence/floor/database.dart';
+import '../persistence/isar/activity.dart';
+import '../persistence/isar/record.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
 import '../preferences/athlete_gender.dart';
@@ -168,7 +168,7 @@ class CSVImporter with PowerSpeedMixin {
     }
 
     final prefService = Get.find<BasePrefService>();
-    final database = Get.find<AppDatabase>();
+    final isar = Get.find<Isar>();
 
     var deviceName = "";
     var deviceId = mPowerImportDeviceId;
@@ -474,7 +474,7 @@ class CSVImporter with PowerSpeedMixin {
       }
     } else {
       DeviceDescriptor device = DeviceFactory.getDescriptorForFourCC(schwinnACPerfPlusFourCC);
-      final factors = await database.getFactors(deviceId);
+      final factors = await isar.getFactors(deviceId);
       fourCC = device.fourCC;
       deviceName = deviceNamePrefixes[fourCC]![0];
       sport = device.sport;
@@ -559,7 +559,7 @@ class CSVImporter with PowerSpeedMixin {
     );
 
     final extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
-    final id = await database.activityDao.insertActivity(activity);
+    final id = await isar.activityDao.insertActivity(activity);
     activity.id = id;
 
     final numRow = _lines.length - _linePointer;
@@ -584,7 +584,7 @@ class CSVImporter with PowerSpeedMixin {
           heartRate: int.tryParse(values[2]),
           sport: activity.sport,
         );
-        await database.recordDao.insertRecord(record);
+        await isar.recordDao.insertRecord(record);
 
         _linePointer++;
         recordCounter++;
@@ -705,7 +705,7 @@ class CSVImporter with PowerSpeedMixin {
                 SchwinnACPerformancePlus.extraCalorieFactor;
           }
           energy += dEnergy;
-          await database.recordDao.insertRecord(record);
+          await isar.recordDao.insertRecord(record);
 
           timeStamp += milliSecondsPerRecordInt;
           elapsed += milliSecondsPerRecord;
@@ -733,7 +733,7 @@ class CSVImporter with PowerSpeedMixin {
       activity.calories = energy.round();
     }
 
-    await database.activityDao.updateActivity(activity);
+    await isar.activityDao.updateActivity(activity);
 
     return activity;
   }

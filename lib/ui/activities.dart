@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
@@ -16,8 +17,7 @@ import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
 import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
-import '../persistence/floor/models/activity.dart';
-import '../persistence/floor/database.dart';
+import '../persistence/isar/activity.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/leaderboard_and_rank.dart';
@@ -53,7 +53,7 @@ class ActivitiesScreen extends StatefulWidget {
 }
 
 class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final Isar _isar = Get.find<Isar>();
   int _editCount = 0;
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
@@ -171,7 +171,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             return;
           }
 
-          final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
+          final records = await _isar.recordDao.findAllActivityRecords(activity.id ?? 0);
           ActivityExport exporter = getExporter(formatPick);
           final fileBytes = await exporter.getExport(
             activity,
@@ -275,7 +275,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             );
             if (sportPick != null) {
               activity.sport = sportPick;
-              await _database.activityDao.updateActivity(activity);
+              await _isar.activityDao.updateActivity(activity);
               setState(() {
                 _editCount++;
               });
@@ -297,8 +297,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             confirm: TextButton(
               child: const Text("Yes"),
               onPressed: () async {
-                await _database.recordDao.deleteAllActivityRecords(activity.id ?? 0);
-                await _database.activityDao.deleteActivity(activity);
+                await _isar.recordDao.deleteAllActivityRecords(activity.id ?? 0);
+                await _isar.activityDao.deleteActivity(activity);
                 setState(() {
                   _editCount++;
                 });
@@ -452,7 +452,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final offset = page * limit;
-            final data = await _database.activityDao.findActivities(limit, offset);
+            final data = await _isar.activityDao.findActivities(limit, offset);
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

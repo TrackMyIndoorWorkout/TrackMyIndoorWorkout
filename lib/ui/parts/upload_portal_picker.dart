@@ -4,8 +4,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import '../../persistence/floor/database.dart';
-import '../../persistence/floor/models/activity.dart';
+import '../../persistence/isar/activity.dart';
 import '../../preferences/calculate_gps.dart';
 import '../../upload/constants.dart';
 import '../../upload/strava/strava_status_code.dart';
@@ -55,10 +54,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
       return false;
     }
 
-    final AppDatabase database = Get.find<AppDatabase>();
-    final records = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
-
-    final statusCode = await uploadService.upload(widget.activity, records, _calculateGps);
+    final statusCode = await uploadService.upload(widget.activity, widget.activity.records, _calculateGps);
     final finalResult =
         statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300;
     final resultMessage = finalResult

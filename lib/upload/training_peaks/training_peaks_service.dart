@@ -1,7 +1,7 @@
 import '../../export/export_target.dart';
 import '../../export/fit/fit_export.dart';
-import '../../persistence/floor/models/activity.dart';
-import '../../persistence/floor/models/record.dart';
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/record.dart';
 import '../../secret.dart';
 import '../upload_service.dart';
 import 'training_peaks.dart';

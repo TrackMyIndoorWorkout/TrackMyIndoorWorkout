@@ -5,10 +5,10 @@ import 'package:get/get.dart';
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield_new.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pref/pref.dart';
 import '../import/csv_importer.dart';
-import '../persistence/floor/database.dart';
 import '../preferences/leaderboard_and_rank.dart';
 
 typedef SetProgress = void Function(double progress);
@@ -181,9 +181,10 @@ class ImportFormState extends State<ImportForm> {
                                 final deviceDescriptor = activity.deviceDescriptor();
                                 final workoutSummary = activity
                                     .getWorkoutSummary(deviceDescriptor.manufacturerNamePart);
-                                final database = Get.find<AppDatabase>();
-                                await database.workoutSummaryDao
-                                    .insertWorkoutSummary(workoutSummary);
+                                final isar = Get.find<Isar>();
+                                await isar.writeTxn(() async {
+                                  await isar.workoutSummarys.put(workoutSummary);
+                                });
                               }
                             } else {
                               Get.snackbar(

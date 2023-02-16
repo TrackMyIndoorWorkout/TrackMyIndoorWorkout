@@ -6,8 +6,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../../export/activity_export.dart';
-import '../../persistence/floor/models/activity.dart';
-import '../../persistence/floor/database.dart';
+import '../../persistence/isar/activity.dart';
 
 import 'constants.dart';
 import 'strava_status_code.dart';
@@ -84,7 +83,6 @@ abstract class Upload {
       final decodedResponse = ResponseUploadActivity.fromJson(bodyMap);
 
       if (decodedResponse.id > 0) {
-        final database = Get.find<AppDatabase>();
         activity.markUploaded(decodedResponse.id);
         await database.activityDao.updateActivity(activity);
         debugPrint('id ${decodedResponse.id}');

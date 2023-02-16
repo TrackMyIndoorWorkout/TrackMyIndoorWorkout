@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import '../../persistence/floor/database.dart';
-import '../../persistence/floor/models/activity.dart';
-import '../../persistence/floor/models/calorie_tune.dart';
+import 'package:isar/isar.dart';
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/calorie_tune.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
@@ -74,13 +74,13 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
             _themeManager.getBlueFab(Icons.clear, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(Icons.check, () async {
-              final database = Get.find<AppDatabase>();
+              final isar = Get.find<Isar>();
               final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
               final calorieTune =
-                  await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
+                  await isar.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
               if (calorieTune != null) {
                 calorieTune.calorieFactor = calorieFactor;
-                await database.calorieTuneDao.updateCalorieTune(calorieTune);
+                await isar.calorieTuneDao.updateCalorieTune(calorieTune);
               } else {
                 final calorieTune = CalorieTune(
                   mac: widget.deviceId,
@@ -88,7 +88,7 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
                   hrBased: widget.hrBased,
                   time: DateTime.now().millisecondsSinceEpoch,
                 );
-                await database.calorieTuneDao.insertCalorieTune(calorieTune);
+                await isar.calorieTuneDao.insertCalorieTune(calorieTune);
               }
               Get.back(result: calorieFactor);
             }),

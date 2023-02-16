@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import '../../persistence/floor/database.dart';
-import '../../persistence/floor/models/calorie_tune.dart';
+import 'package:isar/isar.dart';
+import '../../persistence/isar/calorie_tune.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
@@ -61,21 +61,27 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
             _themeManager.getBlueFab(Icons.clear, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(Icons.check, () async {
-              final database = Get.find<AppDatabase>();
+              final isar = Get.find<Isar>();
               final calorieFactor = _calorieFactorPercent / 100.0;
-              final calorieTune =
-                  await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
+              final calorieTune = await isar.calorieTunes.where()
+                  .isMacEqualTo(widget.deviceId)
+                  .isHrBasedEqualTo(widget.hrBased)
+                  .filter().findFirst();
               if (calorieTune != null) {
-                calorieTune.calorieFactor = calorieFactor;
-                await database.calorieTuneDao.updateCalorieTune(calorieTune);
+                await isar.writeTxn(() async {
+                  calorieTune.calorieFactor = calorieFactor;
+                  await isar.calorieTunes.put(calorieTune);
+                });
               } else {
-                final calorieTune = CalorieTune(
-                  mac: widget.deviceId,
-                  calorieFactor: calorieFactor,
-                  hrBased: widget.hrBased,
-                  time: DateTime.now().millisecondsSinceEpoch,
-                );
-                await database.calorieTuneDao.insertCalorieTune(calorieTune);
+                await isar.writeTxn(() async {
+                  final calorieTune = CalorieTune(
+                    mac: widget.deviceId,
+                    calorieFactor: calorieFactor,
+                    hrBased: widget.hrBased,
+                    time: DateTime.now().millisecondsSinceEpoch,
+                  );
+                  await isar.calorieTunes.put(calorieTune);
+                });
               }
               Get.back(result: calorieFactor);
             }),

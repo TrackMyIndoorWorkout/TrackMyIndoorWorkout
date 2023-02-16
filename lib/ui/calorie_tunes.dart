@@ -3,9 +3,9 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:listview_utils/listview_utils.dart';
-import '../persistence/floor/models/calorie_tune.dart';
-import '../persistence/floor/database.dart';
+import '../persistence/isar/calorie_tune.dart';
 import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
 
@@ -17,7 +17,7 @@ class CalorieTunesScreen extends StatefulWidget {
 }
 
 class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final _isar = Get.find<Isar>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _textStyle = const TextStyle();
@@ -87,9 +87,10 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
               confirm: TextButton(
                 child: const Text("Yes"),
                 onPressed: () async {
-                  await _database.calorieTuneDao.deleteCalorieTune(calorieTune);
-                  setState(() {
-                    _editCount++;
+                  await _isar.writeTxn(() async {
+                    await _isar.calorieTunes.delete(calorieTune.id).then((value) => setState(() {
+                      _editCount++;
+                    }));
                   });
                   Get.close(1);
                 },
@@ -116,8 +117,15 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.calorieTuneDao.findCalorieTunes(limit, offset);
+            final data = await _isar.calorieTunes.buildQuery(sortBy: [
+              const SortProperty(
+                property: 'mac',
+                sort: Sort.desc,
+              )
+            ],
+              offset: page * limit,
+              limit: limit,
+            ).findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

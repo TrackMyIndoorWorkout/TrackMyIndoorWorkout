@@ -7,8 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import '../../export/activity_export.dart';
-import '../../persistence/floor/models/activity.dart';
-import '../../persistence/floor/database.dart';
+import '../../persistence/isar/activity.dart';
 import '../../preferences/training_peaks_upload_public.dart';
 import '../../utils/constants.dart';
 
@@ -115,7 +114,6 @@ abstract class Upload {
 
           debugPrint('id $workoutId athlete $athleteId');
           if (workoutId > 0 || athleteId > 0) {
-            final database = Get.find<AppDatabase>();
             activity.markTrainingPeaksUploaded(athleteId, workoutId);
             await database.activityDao.updateActivity(activity);
           }
