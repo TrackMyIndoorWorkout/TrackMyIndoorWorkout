@@ -116,7 +116,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     rankTrackVisualizationTag: rankTrackVisualizationDefault,
     rankInfoOnTrackTag: rankInfoOnTrackDefault,
     themeSelectionTag: themeSelectionDefault,
-    zoneIndexDisplayColoringTag: zoneIndexDisplayColoringDefault,
     athleteBodyWeightIntTag: athleteBodyWeightDefault,
     rememberAthleteBodyWeightTag: rememberAthleteBodyWeightDefault,
     useHrMonitorReportedCaloriesTag: useHrMonitorReportedCaloriesDefault,
@@ -175,9 +174,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
   }
 
   for (var prefSpec in MetricSpec.preferencesSpecs) {
-    prefDefaults.addAll({
-      "${prefSpec.metric}_${MetricSpec.zoneIndexDisplayTagPostfix}": prefSpec.indexDisplayDefault
-    });
+    prefDefaults.addAll({prefSpec.zoneIndexTag: prefSpec.indexDisplayDefault});
+    prefDefaults.addAll({prefSpec.coloringByZoneTag: prefSpec.coloringByZoneDefault});
   }
 
   for (final lightOrDark in [false, true]) {
@@ -358,6 +356,22 @@ Future<BasePrefService> initPreferences() async {
       if (oldDataConnectionAddresses.length != newAddresses.length) {
         prefService.set<String>(dataConnectionAddressesTag, newAddresses);
       }
+    }
+  }
+
+  // Convert the single zone coloring setting to per metric
+  if (prefVersion <= preferencesVersionPerMetricColoringByZone) {
+    final deprecatedZoneIndexColoring =
+        prefService.get<bool>(zoneIndexDisplayColoringTag) ?? zoneIndexDisplayColoringDefault;
+    for (var prefSpec in MetricSpec.preferencesSpecs) {
+      bool perMetricDefault = deprecatedZoneIndexColoring;
+      if (prefSpec.metric != "speed") {
+        bool zoneIndexDisplay =
+            prefService.get<bool>(prefSpec.zoneIndexTag) ?? prefSpec.indexDisplayDefault;
+        perMetricDefault = perMetricDefault && zoneIndexDisplay;
+      }
+
+      prefService.set<bool>(prefSpec.coloringByZoneTag, perMetricDefault);
     }
   }
 

@@ -53,8 +53,10 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       test("for $sport", () async {
-        final speedLow = sport == ActivityType.run ? 8.0 : 30.0;
-        final speedHigh = sport == ActivityType.run ? 20.0 : 40.0;
+        final speedLow =
+            sport == ActivityType.run ? 4.0 : (sport == ActivityType.ride ? 30.0 : 2.0);
+        final speedHigh =
+            sport == ActivityType.run ? 16.0 : (sport == ActivityType.ride ? 50.0 : 12.0);
         final random = RecordWithSport.getRandom(sport, rnd);
         expect(random.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
         expect(random.distance, null);

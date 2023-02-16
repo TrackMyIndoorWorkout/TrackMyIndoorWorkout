@@ -231,6 +231,19 @@ class DeviceFactory {
     );
   }
 
+  static RowerDeviceDescriptor getVirtufitUltimatePro2() {
+    return RowerDeviceDescriptor(
+      sport: deviceSportDescriptors[virtufitUltimatePro2FourCC]!.defaultSport,
+      isMultiSport: deviceSportDescriptors[virtufitUltimatePro2FourCC]!.isMultiSport,
+      fourCC: virtufitUltimatePro2FourCC,
+      vendorName: "Virtufit",
+      modelName: "Ultimate Pro 2",
+      manufacturerNamePart: "XEBEX", // And not Wahoo Fitness, LLC
+      manufacturerFitId: wahooFitnessFitId,
+      model: "Ultimate Pro 2",
+    );
+  }
+
   static DeviceDescriptor getDescriptorForFourCC(String fourCC) {
     switch (fourCC) {
       case precorSpinnerChronoPowerFourCC:
@@ -286,6 +299,8 @@ class DeviceFactory {
         return Concept2Rower();
       case merachMr667FourCC:
         return getMerachMr667();
+      case virtufitUltimatePro2FourCC:
+        return getVirtufitUltimatePro2();
     }
 
     return DeviceFactory.getGenericFTMSBike();

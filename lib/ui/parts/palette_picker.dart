@@ -185,6 +185,8 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            const SizedBox(width: 30, height: 10),
             _themeManager.getBlueFab(
                 Icons.refresh,
                 () => {
@@ -215,7 +217,7 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
                         ),
                       )
                     }),
-            const SizedBox(width: 10, height: 10),
+            const SizedBox(width: 30, height: 10),
             _themeManager.getGreenFab(Icons.arrow_forward,
                 () => Get.back(result: Tuple3<bool, bool, int>(_lightOrDark, _fgOrBg, _size))),
           ],
