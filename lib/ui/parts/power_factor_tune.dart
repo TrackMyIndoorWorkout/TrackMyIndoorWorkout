@@ -57,24 +57,29 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
             _themeManager.getBlueFab(Icons.clear, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(Icons.check, () async {
-              final isar = Get.find<Isar>();
+              final database = Get.find<Isar>();
               final powerFactor = _powerFactorPercent / 100.0;
-              final powerTune = await isar.powerTunes.where()
+              final powerTune = await database.powerTunes.buildQuery(sortBy: [
+                const SortProperty(
+                  property: 'time',
+                  sort: Sort.desc,
+                )
+              ]).where().filter()
                   .isMacEqualTo(widget.deviceId)
-                  .filter().findFirst();
+                  .findFirst();
               if (powerTune != null) {
-                await isar.writeTxn(() async {
+                database.writeTxnSync(() {
                   powerTune.powerFactor = powerFactor;
-                  await isar.powerTunes.put(powerTune);
+                  database.powerTunes.putSync(powerTune);
                 });
               } else {
-                await isar.writeTxn(() async {
+                database.writeTxnSync(() {
                   final powerTune = PowerTune(
                     mac: widget.deviceId,
                     powerFactor: powerFactor,
                     time: DateTime.now().millisecondsSinceEpoch,
                   );
-                  await isar.powerTunes.put(powerTune);
+                  database.powerTunes.putSync(powerTune);
                 });
               }
               Get.back(result: powerFactor);

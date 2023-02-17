@@ -168,7 +168,7 @@ class CSVImporter with PowerSpeedMixin {
     }
 
     final prefService = Get.find<BasePrefService>();
-    final isar = Get.find<Isar>();
+    final database = Get.find<Isar>();
 
     var deviceName = "";
     var deviceId = mPowerImportDeviceId;
@@ -474,7 +474,7 @@ class CSVImporter with PowerSpeedMixin {
       }
     } else {
       DeviceDescriptor device = DeviceFactory.getDescriptorForFourCC(schwinnACPerfPlusFourCC);
-      final factors = await isar.getFactors(deviceId);
+      final factors = await database.getFactors(deviceId);  // TODO
       fourCC = device.fourCC;
       deviceName = deviceNamePrefixes[fourCC]![0];
       sport = device.sport;
@@ -559,8 +559,9 @@ class CSVImporter with PowerSpeedMixin {
     );
 
     final extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
-    final id = await isar.activityDao.insertActivity(activity);
-    activity.id = id;
+    database.writeTxnSync(() {
+      database.activitys.putSync(activity);
+    });
 
     final numRow = _lines.length - _linePointer;
     _linePointer++;
@@ -584,7 +585,10 @@ class CSVImporter with PowerSpeedMixin {
           heartRate: int.tryParse(values[2]),
           sport: activity.sport,
         );
-        await isar.recordDao.insertRecord(record);
+        database.writeTxnSync(() {
+          database.records.putSync(record);
+          activity.records.add(record);
+        });
 
         _linePointer++;
         recordCounter++;
@@ -705,7 +709,10 @@ class CSVImporter with PowerSpeedMixin {
                 SchwinnACPerformancePlus.extraCalorieFactor;
           }
           energy += dEnergy;
-          await isar.recordDao.insertRecord(record);
+          database.writeTxnSync(() {
+            database.records.putSync(record);
+            activity.records.add(record);
+          });
 
           timeStamp += milliSecondsPerRecordInt;
           elapsed += milliSecondsPerRecord;
@@ -733,7 +740,10 @@ class CSVImporter with PowerSpeedMixin {
       activity.calories = energy.round();
     }
 
-    await isar.activityDao.updateActivity(activity);
+    database.writeTxnSync(() async {
+      await activity.records.save(); // TODO: sync?
+      database.activitys.putSync(activity);
+    });
 
     return activity;
   }

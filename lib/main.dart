@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'devices/company_registry.dart';
 import 'track_my_indoor_exercise_app.dart';
@@ -9,6 +10,16 @@ import 'utils/logging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final isar = await Isar.open([
+    ActivitySchema,
+    CalorieTuneSchema,
+    DeviceUsageSchema,
+    PowerTuneSchema,
+    RecordSchema,
+    WorkoutSummarySchema,
+  ]);
+  Get.put<Isar>(isar, permanent: true);
 
   final prefService = await initPreferences();
 

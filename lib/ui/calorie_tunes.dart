@@ -17,7 +17,7 @@ class CalorieTunesScreen extends StatefulWidget {
 }
 
 class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBindingObserver {
-  final _isar = Get.find<Isar>();
+  final _database = Get.find<Isar>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _textStyle = const TextStyle();
@@ -86,9 +86,9 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
               middleText: 'Are you sure to delete this Tune?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _isar.writeTxn(() async {
-                    await _isar.calorieTunes.delete(calorieTune.id).then((value) => setState(() {
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.calorieTunes.deleteSync(calorieTune.id).then((value) => setState(() {
                       _editCount++;
                     }));
                   });
@@ -117,7 +117,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _isar.calorieTunes.buildQuery(sortBy: [
+            final data = await _database.calorieTunes.buildQuery(sortBy: [
               const SortProperty(
                 property: 'mac',
                 sort: Sort.desc,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:isar/isar.dart';
 import '../../export/activity_export.dart';
 import '../../persistence/isar/activity.dart';
 
@@ -66,8 +67,11 @@ abstract class Upload {
           final workoutId = int.tryParse(idString) ?? 0;
           if (workoutId > 0) {
             debugPrint('workoutId: $workoutId');
-            activity.markUnderArmourUploaded(workoutId);
-            await database.activityDao.updateActivity(activity);
+            final database = Get.find<Isar>();
+            database.writeTxnSync(() async {
+              activity.markUnderArmourUploaded(workoutId);
+              database.activitys.putSync(activity);
+            });
           }
         }
       }

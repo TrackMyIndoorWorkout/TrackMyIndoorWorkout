@@ -18,6 +18,7 @@ import '../export/fit/fit_export.dart';
 import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/isar/activity.dart';
+import '../persistence/isar/db_utils.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/leaderboard_and_rank.dart';
@@ -44,16 +45,14 @@ import 'power_tunes.dart';
 import 'details/activity_details.dart';
 
 class ActivitiesScreen extends StatefulWidget {
-  final bool hasLeaderboardData;
-
-  const ActivitiesScreen({key, required this.hasLeaderboardData}) : super(key: key);
+  const ActivitiesScreen({key}) : super(key: key);
 
   @override
   ActivitiesScreenState createState() => ActivitiesScreenState();
 }
 
 class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingObserver {
-  final Isar _isar = Get.find<Isar>();
+  final Isar _database = Get.find<Isar>();
   int _editCount = 0;
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
@@ -171,7 +170,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             return;
           }
 
-          final records = await _isar.recordDao.findAllActivityRecords(activity.id ?? 0);
+          final records = activity.records;
           ActivityExport exporter = getExporter(formatPick);
           final fileBytes = await exporter.getExport(
             activity,
@@ -274,8 +273,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               enableDrag: false,
             );
             if (sportPick != null) {
-              activity.sport = sportPick;
-              await _isar.activityDao.updateActivity(activity);
+              _database.writeTxnSync(() {
+                activity.sport = sportPick;
+                _database.activitys.putSync(activity);
+              });
+
               setState(() {
                 _editCount++;
               });
@@ -297,10 +299,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             confirm: TextButton(
               child: const Text("Yes"),
               onPressed: () async {
-                await _isar.recordDao.deleteAllActivityRecords(activity.id ?? 0);
-                await _isar.activityDao.deleteActivity(activity);
-                setState(() {
-                  _editCount++;
+                activity.records.removeAll();
+                await activity.records.save();  // TODO: sync?
+                _database.writeTxnSync(() {
+                  _database.activitys.deleteSync(activity.id);
+                  setState(() {
+                    _editCount++;
+                  });
                 });
                 Get.close(1);
               },
@@ -389,7 +394,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       }),
     ];
 
-    if (_leaderboardFeature && widget.hasLeaderboardData) {
+    if (_leaderboardFeature && DbUtils.hasLeaderboardData()) {
       floatingActionButtons.add(
         _themeManager.getBlueFab(Icons.leaderboard, () async {
           Get.bottomSheet(
@@ -451,8 +456,15 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _isar.activityDao.findActivities(limit, offset);
+            final data = await _database.activitys.buildQuery(sortBy: [
+              const SortProperty(
+                property: 'start',
+                sort: Sort.desc,
+              )
+            ],
+              offset: page * limit,
+              limit: limit,
+            ).findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

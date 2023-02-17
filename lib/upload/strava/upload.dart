@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:isar/isar.dart';
 import '../../export/activity_export.dart';
 import '../../persistence/isar/activity.dart';
 
@@ -83,8 +84,12 @@ abstract class Upload {
       final decodedResponse = ResponseUploadActivity.fromJson(bodyMap);
 
       if (decodedResponse.id > 0) {
-        activity.markUploaded(decodedResponse.id);
-        await database.activityDao.updateActivity(activity);
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          activity.markUploaded(decodedResponse.id);
+          database.activitys.putSync(activity);
+        });
+
         debugPrint('id ${decodedResponse.id}');
 
         final reqCheckUpgrade = '$uploadsEndpoint/${decodedResponse.id}';

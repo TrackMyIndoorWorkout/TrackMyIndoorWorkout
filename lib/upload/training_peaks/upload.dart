@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
 import '../../export/activity_export.dart';
 import '../../persistence/isar/activity.dart';
@@ -114,8 +115,11 @@ abstract class Upload {
 
           debugPrint('id $workoutId athlete $athleteId');
           if (workoutId > 0 || athleteId > 0) {
-            activity.markTrainingPeaksUploaded(athleteId, workoutId);
-            await database.activityDao.updateActivity(activity);
+            final database = Get.find<Isar>();
+            database.writeTxnSync(() {
+              activity.markTrainingPeaksUploaded(athleteId, workoutId);
+              database.activitys.putSync(activity);
+            });
           }
         }
       }

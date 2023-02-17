@@ -74,21 +74,32 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
             _themeManager.getBlueFab(Icons.clear, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(Icons.check, () async {
-              final isar = Get.find<Isar>();
+              final database = Get.find<Isar>();
               final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
-              final calorieTune =
-                  await isar.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
+              final calorieTune = await database.calorieTunes.buildQuery(sortBy: [
+                const SortProperty(
+                  property: 'time',
+                  sort: Sort.desc,
+                )
+              ]).where().filter()
+                  .isMacEqualTo(widget.deviceId)
+                  .isHrBasedEqualTo(widget.hrBased)
+                  .findFirst();
               if (calorieTune != null) {
-                calorieTune.calorieFactor = calorieFactor;
-                await isar.calorieTuneDao.updateCalorieTune(calorieTune);
+                database.writeTxnSync(() {
+                  calorieTune.calorieFactor = calorieFactor;
+                  database.calorieTunes.putSync(calorieTune);
+                });
               } else {
-                final calorieTune = CalorieTune(
-                  mac: widget.deviceId,
-                  calorieFactor: calorieFactor,
-                  hrBased: widget.hrBased,
-                  time: DateTime.now().millisecondsSinceEpoch,
-                );
-                await isar.calorieTuneDao.insertCalorieTune(calorieTune);
+                database.writeTxnSync(() {
+                  final calorieTune = CalorieTune(
+                    mac: widget.deviceId,
+                    calorieFactor: calorieFactor,
+                    hrBased: widget.hrBased,
+                    time: DateTime.now().millisecondsSinceEpoch,
+                  );
+                  database.calorieTunes.putSync(calorieTune);
+                });
               }
               Get.back(result: calorieFactor);
             }),

@@ -24,6 +24,7 @@ import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../persistence/isar/activity.dart';
+import '../persistence/isar/db_utils.dart';
 import '../persistence/isar/record.dart';
 import '../persistence/isar/workout_summary.dart';
 import '../preferences/app_debug_mode.dart';
@@ -183,7 +184,7 @@ class RecordingState extends State<RecordingScreen> {
   List<MetricSpec> _preferencesSpecs = [];
 
   Activity? _activity;
-  Isar _isar = Get.find<Isar>();
+  final Isar _database = Get.find<Isar>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _simplerUi = simplerUiSlowDefault;
@@ -327,7 +328,7 @@ class RecordingState extends State<RecordingScreen> {
     var continued = false;
     if (!_uxDebug) {
       final unfinished =
-          await _isar.activityDao.findUnfinishedDeviceActivities(widget.device.id.id);
+          await DbUtils.unfinishedDeviceActivities(widget.device.id.id);
       if (unfinished.isNotEmpty) {
         final yesterday = now.subtract(const Duration(days: 1));
         if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
@@ -337,7 +338,7 @@ class RecordingState extends State<RecordingScreen> {
 
         for (final activity in unfinished) {
           if (!continued || _activity == null || _activity!.id != activity.id) {
-            await _isar.finalizeActivity(activity);
+            await _database.finalizeActivity(activity);  // TODO
           }
         }
       }
@@ -367,8 +368,9 @@ class RecordingState extends State<RecordingScreen> {
 
     if (!_uxDebug) {
       if (!continued) {
-        final id = await _database.activityDao.insertActivity(_activity!);
-        _activity!.id = id;
+        _database.writeTxnSync(() {
+          _database.activitys.putSync(_activity);
+        });
       }
     }
 
@@ -380,10 +382,20 @@ class RecordingState extends State<RecordingScreen> {
       _averageSpeedSum = 0.0;
       if (_leaderboardFeature) {
         _leaderboard = _rankingForSportOrDevice
-            ? await _database.workoutSummaryDao
-                .findAllWorkoutSummariesBySport(widget.descriptor.sport)
-            : await _database.workoutSummaryDao
-                .findAllWorkoutSummariesByDevice(widget.device.id.id);
+            ? await _database.workoutSummarys.buildQuery(sortBy: [
+          const SortProperty(
+            property: 'speed',
+            sort: Sort.desc,
+          )
+        ]).where().filter()
+                .sportEqualTo(widget.descriptor.sport).findAll()
+            : await _database.workoutSummarys.buildQuery(sortBy: [
+          const SortProperty(
+            property: 'speed',
+            sort: Sort.desc,
+          )
+        ]).where().filter()
+                .deviceIdEqualTo(widget.device.id.id).findAll();
 
         if (_showPacer && _pacerWorkout != null) {
           int insertionPoint = 0;
@@ -447,7 +459,11 @@ class RecordingState extends State<RecordingScreen> {
             (workoutState == WorkoutState.moving ||
                 workoutState == WorkoutState.startedMoving ||
                 workoutState == WorkoutState.justPaused)) {
-          await _database.recordDao.insertRecord(record);
+          _database.writeTxnSync(() async {
+            _database.records.putSync(record);
+            _activity.records.add(record);
+            await _activity.records.save();  // TODO: sync?
+          });
         }
 
         setState(() {
@@ -950,7 +966,6 @@ class RecordingState extends State<RecordingScreen> {
 
     _initializeHeartRateMonitor();
     _connectOnDemand();
-    _isar = Get.find<Isar>();
     _isLocked = false;
     _unlockButtonIndex = 0;
     if (_unlockKeys.isEmpty) {
@@ -1072,11 +1087,10 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final records = await _isar.recordDao.findAllActivityRecords(_activity!.id);
     final exporter = FitExport();
     final fileBytes = await exporter.getExport(
       _activity!,
-      records,
+      _activity.records.findAll(),
       false,
       _calculateGps,
       false,
@@ -1131,15 +1145,15 @@ class RecordingState extends State<RecordingScreen> {
 
     if (!_uxDebug) {
       if (_leaderboardFeature && (last?.distance ?? 0.0) > displayEps) {
-        await _isar.workoutSummaryDao.insertWorkoutSummary(
-            _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown"));
+        final workoutSummary = _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown");
+        _database.writeTxnSync(() {
+          _database.workoutSummarys.putSync(workoutSummary);
+        });
       }
 
-      final retVal = await _isar.activityDao.updateActivity(_activity!);
-      if (retVal <= 0 && !quick) {
-        Get.snackbar("Warning", "Could not save activity");
-        return;
-      }
+      _database.writeTxnSync(() {
+        _database.activitys.putSync(_activity);
+      });
 
       if (!quick && _activity != null) {
         if (_instantUpload) {
@@ -1792,9 +1806,9 @@ class RecordingState extends State<RecordingScreen> {
         if (selection > 0) {
           await _stopMeasurement(false);
           if (selection > 1) {
-            final unfinished = await _isar.activityDao.findUnfinishedActivities();
+            final unfinished = await DbUtils.unfinishedActivities();
             for (final activity in unfinished) {
-              await _isar.finalizeActivity(activity);
+              await _database.finalizeActivity(activity); // TODO
             }
           }
         }
@@ -2327,10 +2341,8 @@ class RecordingState extends State<RecordingScreen> {
           _themeManager.getBlueFab(Icons.cloud_upload, () async {
             await _activityUpload(false);
           }),
-          _themeManager.getBlueFab(Icons.list_alt, () async {
-            final hasLeaderboardData =
-                (await _database.workoutSummaryDao.getLeaderboardDataCount() ?? 0) > 0;
-            Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+          _themeManager.getBlueFab(Icons.list_alt, () {
+            Get.to(() => const ActivitiesScreen());
           }),
           _themeManager.getBlueFab(Icons.battery_unknown, () async {
             Get.bottomSheet(
@@ -2397,9 +2409,11 @@ class RecordingState extends State<RecordingScreen> {
           );
           String hrmId = await _initializeHeartRateMonitor();
           if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
-            _activity!.hrmId = hrmId;
-            _activity!.hrmCalorieFactor = await _isar.calorieFactorValue(hrmId, true);
-            await _isar.activityDao.updateActivity(_activity!);
+            _database.writeTxnSync(() async {
+              _activity!.hrmId = hrmId;
+              _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true); // TODO
+              _database.activitys.putSync(_activity);
+            });
           }
         }),
         _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, () async {

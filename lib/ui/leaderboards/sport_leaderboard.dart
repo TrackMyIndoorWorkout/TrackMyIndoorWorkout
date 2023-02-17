@@ -3,6 +3,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
 import '../../utils/constants.dart';
@@ -25,7 +26,7 @@ class SportLeaderboardScreen extends StatefulWidget {
 
 class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
     with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final Isar _database = Get.find<Isar>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   int _editCount = 0;
@@ -78,10 +79,12 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
               middleText: 'Are you sure to delete this entry?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _database.workoutSummaryDao.deleteWorkoutSummary(workoutSummary);
-                  setState(() {
-                    _editCount++;
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.workoutSummarys.deleteSync(workoutSummary.id);
+                    setState(() {
+                      _editCount++;
+                    });
                   });
                   Get.close(1);
                 },
@@ -108,9 +111,15 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.workoutSummaryDao
-                .findWorkoutSummaryBySport(widget.sport, limit, offset);
+            final data = await _database.workoutSummarys.buildQuery(sortBy: [
+              const SortProperty(
+                property: 'mac',
+                sort: Sort.desc,
+              )
+            ],
+              offset: page * limit,
+              limit: limit,
+            ).where().filter().sportEqualsTo(widget.sport).findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

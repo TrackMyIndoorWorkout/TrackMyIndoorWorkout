@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
@@ -19,6 +20,7 @@ import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/heart_rate_monitor_priority.dart';
 import '../../preferences/log_level.dart';
 import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/db_utils.dart';
 import '../../persistence/isar/record.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
@@ -473,11 +475,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   Future<void> setActivity(Activity activity) async {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
-    if (Get.isRegistered<AppDatabase>()) {
-      final database = Get.find<AppDatabase>();
-      final lastRecord = activity.id != null
-          ? await database.recordDao.findLastRecordOfActivity(activity.id)
-          : null;
+    if (Get.isRegistered<Isar>()) {
+      final lastRecord = activity.records.findAll().last();
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
@@ -853,9 +852,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         if (_activity != null) {
           _activity!.startDateTime = now;
           _activity!.start = now.millisecondsSinceEpoch;
-          if (Get.isRegistered<AppDatabase>()) {
-            final database = Get.find<AppDatabase>();
-            database.activityDao.updateActivity(_activity!);
+          if (Get.isRegistered<Isar>()) {
+            final database = Get.find<Isar>();
+            database.writeTxnSync(() async {
+              database.activitys.putSync(_activity);
+            });
           }
         }
       }
@@ -1208,12 +1209,16 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   Future<void> refreshFactors() async {
-    final factors = await database.getFactors(device?.id.id ?? "");
+    if (!Get.isRegistered<Isar>()) {
+      return;
+    }
+
+    final factors = await DbUtils.getFactors(device?.id.id ?? "");
     _powerFactor = factors.item1;
     _calorieFactor = factors.item2;
     _hrCalorieFactor = factors.item3;
     _hrmCalorieFactor =
-        await database.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
+        await DbUtils.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
 
     initPower2SpeedConstants();
 

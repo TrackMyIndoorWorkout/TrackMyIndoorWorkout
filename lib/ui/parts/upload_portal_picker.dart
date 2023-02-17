@@ -54,7 +54,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
       return false;
     }
 
-    final statusCode = await uploadService.upload(widget.activity, widget.activity.records, _calculateGps);
+    final statusCode = await uploadService.upload(widget.activity, widget.activity.records.findAll(), _calculateGps);
     final finalResult =
         statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300;
     final resultMessage = finalResult

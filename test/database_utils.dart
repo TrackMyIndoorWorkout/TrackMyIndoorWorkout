@@ -21,11 +21,7 @@ class InMemoryActivityDao extends ActivityDao {
 
   @override
   Future<int> deleteActivity(Activity activity) async {
-    if (activity.id == null) {
-      return 0;
-    }
-
-    final act = _getActivityById(activity.id!);
+    final act = _getActivityById(activity.id);
     if (act == null) {
       return 0;
     }
@@ -63,8 +59,7 @@ class InMemoryActivityDao extends ActivityDao {
 
   @override
   Future<int> insertActivity(Activity activity) async {
-    activity.id ??= idCounter++;
-    final act = _getActivityById(activity.id!);
+    final act = _getActivityById(activity.id);
     if (act != null) {
       // Falls back to update
       final index = activities.indexOf(act);
@@ -73,16 +68,12 @@ class InMemoryActivityDao extends ActivityDao {
       activities.add(activity);
     }
 
-    return activity.id!;
+    return activity.id;
   }
 
   @override
   Future<int> updateActivity(Activity activity) async {
-    if (activity.id == null) {
-      return 0;
-    }
-
-    final act = _getActivityById(activity.id!);
+    final act = _getActivityById(activity.id);
     if (act == null) {
       return 0;
     }
@@ -135,7 +126,7 @@ class InMemoryRecordDao extends RecordDao {
   @override
   Future<void> insertRecord(Record record) async {
     record.id ??= idCounter++;
-    final rec = _getRecordById(record.id!);
+    final rec = _getRecordById(record.id);
     if (rec != null) {
       // Falls back to update
       final index = records.indexOf(rec);
@@ -147,11 +138,7 @@ class InMemoryRecordDao extends RecordDao {
 
   @override
   Future<void> updateRecord(Record record) async {
-    if (record.id == null) {
-      return;
-    }
-
-    final rec = _getRecordById(record.id!);
+    final rec = _getRecordById(record.id);
     if (rec == null) {
       return;
     }

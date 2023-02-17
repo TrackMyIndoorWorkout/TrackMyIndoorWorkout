@@ -4,11 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
-import 'package:tuple/tuple.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
+import '../../devices/device_factory.dart';
 import '../../devices/device_fourcc.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
-import '../../utils/constants.dart';
 import '../../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
 import 'dao/calorie_tune_dao.dart';
@@ -44,47 +43,10 @@ abstract class AppDatabase extends FloorDatabase {
   PowerTuneDao get powerTuneDao;
   WorkoutSummaryDao get workoutSummaryDao;
 
-  Future<double> powerFactor(String deviceId) async {
-    final powerTune = await powerTuneDao.findPowerTuneByMac(deviceId);
-    return powerTune?.powerFactor ?? 1.0;
-  }
-
-  Future<CalorieTune?> findCalorieTuneByMac(String mac, bool hrBased) async {
-    if (hrBased) {
-      return await calorieTuneDao.findHrCalorieTuneByMac(mac);
-    } else {
-      return await calorieTuneDao.findCalorieTuneByMac(mac);
-    }
-  }
-
-  Future<double> calorieFactorValue(String deviceId, bool hrBased) async {
-    final calorieTune = await findCalorieTuneByMac(deviceId, hrBased);
-    return calorieTune?.calorieFactor ?? 1.0;
-  }
-
-  Future<Tuple3<double, double, double>> getFactors(String deviceId) async {
-    return Tuple3(
-      await powerFactor(deviceId),
-      await calorieFactorValue(deviceId, false),
-      await calorieFactorValue(deviceId, true),
-    );
-  }
-
-  Future<List<Tuple3<String, String, String>>> findDistinctWorkoutSummaryDevices() async {
-    final result = await database.rawQuery(
-        "SELECT DISTINCT `device_id`, `device_name`, `sport` FROM `$workoutSummariesTableName`");
-
-    if (result.isEmpty) {
-      return [];
-    }
-
-    return result
-        .map((row) => Tuple3<String, String, String>(
-              row['device_id'] as String,
-              row['device_name'] as String,
-              row['sport'] as String,
-            ))
-        .toList(growable: false);
+  DeviceDescriptor deviceDescriptorForActivity(Activity activity) {
+    return allFourCC.contains(activity.fourCC)
+        ? DeviceFactory.getDescriptorForFourCC(activity.fourCC)
+        : DeviceFactory.genericDescriptorForSport(activity.sport);
   }
 
   /// Correct those activity calorieFactors where the device doesn't supply
@@ -95,7 +57,7 @@ abstract class AppDatabase extends FloorDatabase {
     try {
       Map<String, bool> noCalorieDevices = {};
       for (var activity in await activityDao.findAllActivities()) {
-        final deviceDescriptor = activity.deviceDescriptor();
+        final deviceDescriptor = deviceDescriptorForActivity(activity);
         if (!deviceDescriptor.canMeasureCalories) {
           noCalorieDevices.assign(activity.deviceId, true);
           if (activity.calorieFactor > 1.0) {
@@ -146,71 +108,6 @@ abstract class AppDatabase extends FloorDatabase {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
-  }
-
-  Future<bool> finalizeActivity(Activity activity) async {
-    final lastRecord = await recordDao.findLastRecordOfActivity(activity.id!);
-    if (lastRecord == null) {
-      return false;
-    }
-
-    int updated = 0;
-    if (lastRecord.calories != null && lastRecord.calories! > 0 && activity.calories == 0) {
-      activity.calories = lastRecord.calories!;
-      updated++;
-    }
-
-    if (lastRecord.distance != null && lastRecord.distance! > 0 && activity.distance == 0) {
-      activity.distance = lastRecord.distance!;
-      updated++;
-    }
-
-    if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
-      activity.elapsed = lastRecord.elapsed!;
-      updated++;
-    }
-
-    if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
-      activity.end = lastRecord.timeStamp!;
-      updated++;
-    }
-
-    if (updated > 0) {
-      await activityDao.updateActivity(activity);
-    }
-
-    return updated > 0;
-  }
-
-  Future<bool> recalculateDistance(Activity activity, [force = false]) async {
-    final records = await recordDao.findAllActivityRecords(activity.id ?? 0);
-    if (records.length <= 1) {
-      return false;
-    }
-
-    var previousRecord = records.first;
-    for (final record in records.skip(1)) {
-      final dTMillis = record.timeStamp! - previousRecord.timeStamp!;
-      final dT = dTMillis / 1000.0;
-      if ((record.distance ?? 0.0) < eps || force) {
-        record.distance = (previousRecord.distance ?? 0.0);
-        if ((record.speed ?? 0.0) > 0 && dT > eps) {
-          // Speed already should have powerFactor effect
-          double dD = (record.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
-          record.distance = record.distance! + dD;
-          await recordDao.updateRecord(record);
-        }
-      }
-
-      previousRecord = record;
-    }
-
-    if ((previousRecord.distance ?? 0.0) > eps && (activity.distance < eps || force)) {
-      activity.distance = previousRecord.distance!;
-      await activityDao.updateActivity(activity);
-    }
-
-    return true;
   }
 }
 

@@ -181,9 +181,9 @@ class ImportFormState extends State<ImportForm> {
                                 final deviceDescriptor = activity.deviceDescriptor();
                                 final workoutSummary = activity
                                     .getWorkoutSummary(deviceDescriptor.manufacturerNamePart);
-                                final isar = Get.find<Isar>();
-                                await isar.writeTxn(() async {
-                                  await isar.workoutSummarys.put(workoutSummary);
+                                final database = Get.find<Isar>();
+                                database.writeTxnSync(() {
+                                  database.workoutSummarys.putSync(workoutSummary);
                                 });
                               }
                             } else {

@@ -7,9 +7,9 @@ import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/db_utils.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/metric_spec.dart';
@@ -80,8 +80,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   );
 
   Future<void> extraInit(BasePrefService prefService) async {
-    final isar = Get.find<Isar>();
-    _allRecords = await isar.records.findAllActivityRecords(widget.activity.id);
+    _allRecords = widget.activity.records.findAll();
 
     setState(() {
       _pointCount = widget.size.width.toInt() - 20;
@@ -657,8 +656,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         IconButton(
           icon: const Icon(Icons.build),
           onPressed: () async {
-            final database = Get.find<AppDatabase>();
-            await database.recalculateDistance(widget.activity, true);
+            await DbUtils.recalculateDistance(widget.activity, true);
           },
         ),
       );

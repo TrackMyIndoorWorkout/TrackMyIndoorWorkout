@@ -61,26 +61,31 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
             _themeManager.getBlueFab(Icons.clear, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(Icons.check, () async {
-              final isar = Get.find<Isar>();
+              final database = Get.find<Isar>();
               final calorieFactor = _calorieFactorPercent / 100.0;
-              final calorieTune = await isar.calorieTunes.where()
+              final calorieTune = await database.calorieTunes.buildQuery(sortBy: [
+                const SortProperty(
+                  property: 'time',
+                  sort: Sort.desc,
+                )
+              ]).where().filter()
                   .isMacEqualTo(widget.deviceId)
                   .isHrBasedEqualTo(widget.hrBased)
-                  .filter().findFirst();
+                  .findFirst();
               if (calorieTune != null) {
-                await isar.writeTxn(() async {
+                database.writeTxnSync(() {
                   calorieTune.calorieFactor = calorieFactor;
-                  await isar.calorieTunes.put(calorieTune);
+                  database.calorieTunes.putSync(calorieTune);
                 });
               } else {
-                await isar.writeTxn(() async {
+                database.writeTxnSync(() {
                   final calorieTune = CalorieTune(
                     mac: widget.deviceId,
                     calorieFactor: calorieFactor,
                     hrBased: widget.hrBased,
                     time: DateTime.now().millisecondsSinceEpoch,
                   );
-                  await isar.calorieTunes.put(calorieTune);
+                  database.calorieTunes.putSync(calorieTune);
                 });
               }
               Get.back(result: calorieFactor);

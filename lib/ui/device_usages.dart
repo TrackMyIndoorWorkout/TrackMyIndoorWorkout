@@ -19,7 +19,7 @@ class DeviceUsagesScreen extends StatefulWidget {
 }
 
 class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBindingObserver {
-  final _isar = Get.find<Isar>();
+  final Isar _database = Get.find<Isar>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
@@ -76,12 +76,13 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
               enableDrag: false,
             );
             if (sportPick != null) {
-              await _isar.writeTxn(() async {
+              _database.writeTxnSync(() {
                 deviceUsage.sport = sportPick;
                 deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
-                await _isar.deviceUsages.put(deviceUsage).then((value) => setState(() {
+                _database.deviceUsages.putSync(deviceUsage);
+                setState(() {
                   _editCount++;
-                }));
+                });
               });
             }
           },
@@ -96,13 +97,14 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
               middleText: 'Are you sure to delete this Usage?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _isar.writeTxn(() async {
-                    await _isar.deviceUsages.delete(deviceUsage.id);
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.deviceUsages.deleteSync(deviceUsage.id);
                     setState(() {
                       _editCount++;
                     });
-                  }).then((value) => Get.close(1));
+                  });
+                  Get.close(1);
                 },
               ),
               cancel: TextButton(

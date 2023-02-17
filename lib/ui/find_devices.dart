@@ -6,6 +6,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide LogLevel;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -109,37 +110,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
     super.dispose();
   }
 
-  Future<void> _openDatabase() async {
-    // TODO
-    final database = await $FloorAppDatabase.databaseBuilder('app_database.db').addMigrations([
-      migration1to2,
-      migration2to3,
-      migration3to4,
-      migration4to5,
-      migration5to6,
-      migration6to7,
-      migration7to8,
-      migration8to9,
-      migration9to10,
-      migration10to11,
-      migration11to12,
-      migration12to13,
-      migration13to14,
-      migration14to15,
-      migration15to16,
-      migration16to17,
-    ]).build();
-    if (AppDatabase.additional15to16Migration) {
-      await database.correctCalorieFactors();
-    }
-
-    if (AppDatabase.additional16to17Migration) {
-      await database.initializeExistingActivityMovingTimes();
-    }
-
-    Get.put<AppDatabase>(database, permanent: true);
-  }
-
   void _readPreferencesValues() {
     final prefService = Get.find<BasePrefService>();
     _instantScan = prefService.get<bool>(instantScanTag) ?? instantScanDefault;
@@ -162,8 +132,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   Future<void> _readDeviceSports() async {
     _deviceSport.clear();
-    final database = Get.find<AppDatabase>();
-    for (final deviceUsage in await database.deviceUsageDao.findAllDeviceUsages()) {
+    final database = Get.find<Isar>();
+    for (final deviceUsage in await database.deviceUsages.findAll()) {
       _deviceSport[deviceUsage.mac] = deviceUsage.sport;
     }
   }
@@ -250,8 +220,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
     super.initState();
     _readPreferencesValues();
     _isScanning = false;
-    _openDatabase().then((value) => _instantScan ? _startScan(true) : {});
-
     _captionStyle = Get.textTheme.titleLarge!;
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
 
@@ -309,9 +277,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
           if (agreed) {
             prefService.set(welcomePresentedTag, true);
+            if (_instantScan) {
+              _startScan(true);
+            }
           }
         });
+      } else if (_instantScan) {
+        _startScan(true);
       }
+    } else if (_instantScan) {
+      _startScan(true);
     }
   }
 
@@ -345,8 +320,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
     }
 
-    final database = Get.find<AppDatabase>();
-    var deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.id.id);
+    final database = Get.find<Isar>();
+    var deviceUsage = await database.deviceUsages.buildQuery(sortBy: [
+      const SortProperty(
+        property: 'time',
+        sort: Sort.desc,
+      )
+    ]).where().filter()
+        .isMacEqualTo(device.id.id)
+        .findFirst();
     final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
@@ -561,7 +543,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
               manufacturer: advertisementDigest.manufacturer,
               time: DateTime.now().millisecondsSinceEpoch,
             );
-            await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
+            database.writeTxnSync(() {
+              database.deviceUsages.putSync(deviceUsage);
+            });
           }
         }
       }
@@ -603,9 +587,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
           descriptor.sport = sportPick;
           if (deviceUsage != null) {
-            deviceUsage.sport = sportPick;
-            deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
-            await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
+            database.writeTxnSync(() {
+              deviceUsage.sport = sportPick;
+              deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
+              database.deviceUsages.putSync(deviceUsage);
+            });
           } else {
             deviceUsage = DeviceUsage(
               sport: sportPick,
@@ -614,11 +600,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
               manufacturer: advertisementDigest.manufacturer,
               time: DateTime.now().millisecondsSinceEpoch,
             );
-            await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
+            database.writeTxnSync(() {
+              database.deviceUsages.putSync(deviceUsage);
+            });
           }
         } else {
           descriptor.sport = deviceUsage.sport;
-          await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
+          database.writeTxnSync(() {
+            database.deviceUsages.putSync(deviceUsage);
+          });
         }
       }
 
@@ -676,8 +666,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (success && navigate) {
       if (deviceUsage != null) {
         deviceUsage.manufacturerName = fitnessEquipment.manufacturerName;
-        deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
-        await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
+        database.writeTxnSync(() {
+          deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
+          database.deviceUsages.putSync(deviceUsage);
+        });
       }
 
       Get.to(() => RecordingScreen(
@@ -1083,11 +1075,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           _themeManager.getBlueFab(Icons.coffee, () async {
             Get.to(() => const DonationScreen());
           }),
-          _themeManager.getBlueFab(Icons.list_alt, () async {
-            final database = Get.find<AppDatabase>();
-            final hasLeaderboardData =
-                (await database.workoutSummaryDao.getLeaderboardDataCount() ?? 0) > 0;
-            Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+          _themeManager.getBlueFab(Icons.list_alt, () {
+            Get.to(() => const ActivitiesScreen());
           }),
           StreamBuilder<bool>(
             stream: FlutterBluePlus.instance.isScanning,

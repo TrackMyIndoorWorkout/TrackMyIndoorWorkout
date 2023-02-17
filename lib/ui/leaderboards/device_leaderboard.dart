@@ -3,6 +3,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
@@ -26,7 +27,7 @@ class DeviceLeaderboardScreen extends StatefulWidget {
 
 class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
     with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final _database = Get.find<Isar>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   int _editCount = 0;
@@ -79,10 +80,12 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
               middleText: 'Are you sure to delete this entry?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _database.workoutSummaryDao.deleteWorkoutSummary(workoutSummary);
-                  setState(() {
-                    _editCount++;
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.workoutSummarys.deleteSync(workoutSummary.id);
+                    setState(() {
+                      _editCount++;
+                    });
                   });
                   Get.close(1);
                 },
@@ -109,9 +112,15 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.workoutSummaryDao
-                .findWorkoutSummaryByDevice(widget.device.item1, limit, offset);
+            final data = await _database.workoutSummarys.buildQuery(sortBy: [
+              const SortProperty(
+                property: 'mac',
+                sort: Sort.desc,
+              )
+            ],
+              offset: page * limit,
+              limit: limit,
+            ).where().filter().deviceIdEqualsTo(widget.device.item1).findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

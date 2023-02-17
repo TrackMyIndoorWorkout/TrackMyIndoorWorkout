@@ -17,7 +17,7 @@ class PowerTunesScreen extends StatefulWidget {
 }
 
 class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingObserver {
-  final _isar = Get.find<Isar>();
+  final _database = Get.find<Isar>();
   int _editCount = 0;
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
@@ -90,10 +90,11 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
               confirm: TextButton(
                 child: const Text("Yes"),
                 onPressed: () async {
-                  await _isar.writeTxn(() async {
-                    await _isar.powerTunes.delete(powerTune.id).then((value) => setState(() {
+                  _database.writeTxnSync(() {
+                    _database.powerTunes.deleteSync(powerTune.id);
+                    setState(() {
                       _editCount++;
-                    }));
+                    });
                   });
                   Get.close(1);
                 },

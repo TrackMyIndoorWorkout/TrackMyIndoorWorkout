@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:isar/isar.dart';
 import '../../export/activity_export.dart';
 import '../../persistence/isar/activity.dart';
 import '../../secret.dart';
@@ -99,8 +100,11 @@ abstract class Upload {
       }
     }
 
-    activity.suuntoUploadInitiated(uploadId, blobUrl);
-    await database.activityDao.updateActivity(activity);
+    final database = Get.find<Isar>();
+    database.writeTxnSync(() {
+      activity.suuntoUploadInitiated(uploadId, blobUrl);
+      database.activitys.putSync(activity);
+    });
 
     final putUri = Uri.parse(blobUrl);
 
@@ -150,8 +154,11 @@ abstract class Upload {
         final urlEndIndex = statusBody.indexOf('"', urlBeginningIndex);
         if (urlEndIndex > 0) {
           final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
-          activity.markSuuntoUploaded(webUrl);
-          await database.activityDao.updateActivity(activity);
+          final database = Get.find<Isar>();
+          database.writeTxnSync(() {
+            activity.markSuuntoUploaded(webUrl);
+            database.activitys.putSync(activity);
+          });
         }
       }
     }
