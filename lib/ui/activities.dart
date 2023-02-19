@@ -321,9 +321,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       ),
     ]);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: actionsRow,
+    return FitHorizontally(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: actionsRow,
+      ),
     );
   }
 
@@ -509,62 +511,68 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                     Get.to(() => ActivityDetailsScreen(activity: item, size: Get.mediaQuery.size)),
                 title: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(getSportIcon(activity.sport), _sizeDefault),
-                        Expanded(
-                          child: TextOneLine(
-                            activity.deviceName,
-                            style: _textStyle,
-                            textAlign: TextAlign.right,
-                            overflow: TextOverflow.ellipsis,
+                    FitHorizontally(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _themeManager.getBlueIcon(getSportIcon(activity.sport), _sizeDefault),
+                          Expanded(
+                            child: TextOneLine(
+                              activity.deviceName,
+                              style: _textStyle,
+                              textAlign: TextAlign.right,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-                        const Spacer(),
-                        FitHorizontally(
-                          child: Text(
+                    FitHorizontally(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+                          const Spacer(),
+                          Text(
                             _timeDisplayMode == timeDisplayModeElapsed
                                 ? activity.elapsedString
                                 : activity.movingTimeString,
                             style: _measurementStyle,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-                        const Spacer(),
-                        Text(activity.distanceString(_si, _highRes), style: _measurementStyle),
-                        SizedBox(
-                          width: _sizeDefault,
-                          child: Text(distanceUnit(_si, _highRes), style: _unitStyle),
-                        ),
-                      ],
+                    FitHorizontally(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
+                          const Spacer(),
+                          Text(activity.distanceString(_si, _highRes), style: _measurementStyle),
+                          SizedBox(
+                            width: _sizeDefault,
+                            child: Text(distanceUnit(_si, _highRes), style: _unitStyle),
+                          ),
+                        ],
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-                        const Spacer(),
-                        Text('${activity.calories}', style: _measurementStyle),
-                        SizedBox(
-                          width: _sizeDefault,
-                          child: Text('cal', style: _unitStyle),
-                        ),
-                      ],
+                    FitHorizontally(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
+                          const Spacer(),
+                          Text('${activity.calories}', style: _measurementStyle),
+                          SizedBox(
+                            width: _sizeDefault,
+                            child: Text('cal', style: _unitStyle),
+                          ),
+                        ],
+                      ),
                     ),
                     _actionButtonRow(activity, _sizeDefault2),
                   ],

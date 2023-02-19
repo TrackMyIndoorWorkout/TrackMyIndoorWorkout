@@ -89,49 +89,53 @@ class ActivityDetailGraphs extends StatelessWidget {
                 ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                themeManager.getBlueIcon(preferencesSpec.icon, sizeDefault),
-                Text("MAX", style: unitStyle),
-                const Spacer(),
-                FitHorizontally(
-                  child: Text(
+            FitHorizontally(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  themeManager.getBlueIcon(preferencesSpec.icon, sizeDefault),
+                  Text("MAX", style: unitStyle),
+                  const Spacer(),
+                  TextOneLine(
                     tileConfiguration.maxString,
                     style: measurementStyle,
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const Spacer(),
-                Text(
-                  preferencesSpec.multiLineUnit,
-                  textAlign: TextAlign.left,
-                  maxLines: 2,
-                  style: unitStyle,
-                ),
-              ],
+                  const Spacer(),
+                  Text(
+                    preferencesSpec.multiLineUnit,
+                    textAlign: TextAlign.left,
+                    maxLines: 2,
+                    style: unitStyle,
+                  ),
+                ],
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                themeManager.getBlueIcon(preferencesSpec.icon, sizeDefault),
-                Text("AVG", style: unitStyle),
-                const Spacer(),
-                FitHorizontally(
-                  child: Text(
+            FitHorizontally(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  themeManager.getBlueIcon(preferencesSpec.icon, sizeDefault),
+                  Text("AVG", style: unitStyle),
+                  const Spacer(),
+                  TextOneLine(
                     tileConfiguration.avgString,
                     style: measurementStyle,
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const Spacer(),
-                Text(
-                  preferencesSpec.multiLineUnit,
-                  textAlign: TextAlign.left,
-                  maxLines: 2,
-                  style: unitStyle,
-                ),
-              ],
+                  const Spacer(),
+                  Text(
+                    preferencesSpec.multiLineUnit,
+                    textAlign: TextAlign.left,
+                    maxLines: 2,
+                    style: unitStyle,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
