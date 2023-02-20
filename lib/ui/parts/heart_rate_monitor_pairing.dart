@@ -68,7 +68,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     try {
       FlutterBluePlus.instance
           .startScan(timeout: Duration(seconds: _scanDuration))
-          .whenComplete(() => {_isScanning = false});
+          .whenComplete(() => _isScanning = false);
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
