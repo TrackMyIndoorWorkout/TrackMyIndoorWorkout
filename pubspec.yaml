@@ -46,7 +46,7 @@ dependencies:
   soundpool: ^2.3.0
   sqflite: ^2.2.3
   string_validator: ^0.3.0
-  syncfusion_flutter_charts: ^20.4.49
+  syncfusion_flutter_charts: ^20.4.50
   tuple: ^2.0.1
   uni_links: ^0.5.1
   url_launcher: ^6.1.9
@@ -56,7 +56,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^5.4.0
+  analyzer: ^5.5.0
   build_runner: ^2.3.3
   floor_generator: ^1.4.1
   flutter_driver:
