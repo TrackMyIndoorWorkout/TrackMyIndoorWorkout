@@ -9,7 +9,7 @@ import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
 class ScanResultTile extends StatelessWidget {
-  static RegExp colonRegex = RegExp(r'\:');
+  static RegExp colonRegex = RegExp(r':');
 
   const ScanResultTile({
     Key? key,

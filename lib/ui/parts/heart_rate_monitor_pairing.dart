@@ -26,7 +26,7 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
 }
 
 class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
-  static RegExp colonRegex = RegExp(r'\:');
+  static RegExp colonRegex = RegExp(r':');
 
   int _scanDuration = 4;
   TextStyle _captionStyle = const TextStyle();
