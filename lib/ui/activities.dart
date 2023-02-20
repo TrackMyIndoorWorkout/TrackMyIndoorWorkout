@@ -151,9 +151,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         iconSize: size,
         onPressed: () async {
           final formatPick = await Get.bottomSheet(
-            SafeArea(
+            const SafeArea(
               child: Column(
-                children: const [
+                children: [
                   Expanded(
                     child: Center(
                       child: ExportFormatPickerBottomSheet(),
@@ -355,9 +355,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       _themeManager.getAboutFab(),
       _themeManager.getBlueFab(Icons.file_upload, () async {
         final formatPick = await Get.bottomSheet(
-          SafeArea(
+          const SafeArea(
             child: Column(
-              children: const [
+              children: [
                 Expanded(
                   child: Center(
                     child: ImportFormatPickerBottomSheet(),
@@ -395,9 +395,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       floatingActionButtons.add(
         _themeManager.getBlueFab(Icons.leaderboard, () async {
           Get.bottomSheet(
-            SafeArea(
+            const SafeArea(
               child: Column(
-                children: const [
+                children: [
                   Expanded(
                     child: Center(
                       child: LeaderBoardTypeBottomSheet(),

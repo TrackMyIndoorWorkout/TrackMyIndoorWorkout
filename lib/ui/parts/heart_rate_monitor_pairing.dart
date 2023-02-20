@@ -174,9 +174,9 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                             final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
                             if (existingId != notAvailable && existingId != r.device.id.id) {
                               final verdict = await Get.bottomSheet(
-                                SafeArea(
+                                const SafeArea(
                                   child: Column(
-                                    children: const [
+                                    children: [
                                       Expanded(
                                         child: Center(
                                           child: BooleanQuestionBottomSheet(
