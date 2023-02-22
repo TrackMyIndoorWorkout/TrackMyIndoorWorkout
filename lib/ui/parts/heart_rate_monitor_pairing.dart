@@ -26,7 +26,7 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
 }
 
 class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
-  static RegExp colonRegex = RegExp(r'\:');
+  static RegExp colonRegex = RegExp(r':');
 
   int _scanDuration = 4;
   TextStyle _captionStyle = const TextStyle();
@@ -68,7 +68,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     try {
       FlutterBluePlus.instance
           .startScan(timeout: Duration(seconds: _scanDuration))
-          .whenComplete(() => {_isScanning = false});
+          .whenComplete(() => _isScanning = false);
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
@@ -174,9 +174,9 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                             final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
                             if (existingId != notAvailable && existingId != r.device.id.id) {
                               final verdict = await Get.bottomSheet(
-                                SafeArea(
+                                const SafeArea(
                                   child: Column(
-                                    children: const [
+                                    children: [
                                       Expanded(
                                         child: Center(
                                           child: BooleanQuestionBottomSheet(
