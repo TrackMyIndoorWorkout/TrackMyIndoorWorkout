@@ -1,3 +1,10 @@
+## 1.1.137
+* Fixing false 65534 reported calories when 0 calorie workout is uploaded to Strava
+  (some portals don't interpret FIT InvalidValue in that case, so we'll zero it)
+* Fixing UX alignment of workout detail when watt output reaches 1K Watts
+* Upgrading Flutter version
+* Upgrading numerous Flutter plugins
+
 ## 1.1.136
 * Supporting Virtufit Ultimate Pro 2i rower (XEBEX console)
 * Confirmed Magene cycling speed and cadence sensor support
