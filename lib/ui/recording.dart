@@ -1336,9 +1336,9 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     final verdict = await Get.bottomSheet(
-      SafeArea(
+      const SafeArea(
         child: Column(
-          children: const [
+          children: [
             Expanded(
               child: Center(
                 child: BooleanQuestionBottomSheet(
@@ -1781,9 +1781,9 @@ class RecordingState extends State<RecordingScreen> {
     if (_measuring) {
       if (_circuitWorkout) {
         final selection = await Get.bottomSheet(
-          SafeArea(
+          const SafeArea(
             child: Column(
-              children: const [
+              children: [
                 Expanded(
                   child: Center(
                     child: ThreeChoicesBottomSheet(
@@ -2346,9 +2346,9 @@ class RecordingState extends State<RecordingScreen> {
           }),
           _themeManager.getBlueFab(Icons.battery_unknown, () async {
             Get.bottomSheet(
-              SafeArea(
+              const SafeArea(
                 child: Column(
-                  children: const [
+                  children: [
                     Expanded(
                       child: Center(
                         child: BatteryStatusBottomSheet(),
@@ -2367,9 +2367,9 @@ class RecordingState extends State<RecordingScreen> {
               Get.snackbar("Error", "Not compatible with the calibration method");
             } else {
               Get.bottomSheet(
-                SafeArea(
+                const SafeArea(
                   child: Column(
-                    children: const [
+                    children: [
                       Expanded(
                         child: Center(
                           child: SpinDownBottomSheet(),
@@ -2391,9 +2391,9 @@ class RecordingState extends State<RecordingScreen> {
       menuButtons.addAll([
         _themeManager.getBlueFab(Icons.favorite, () async {
           await Get.bottomSheet(
-            SafeArea(
+            const SafeArea(
               child: Column(
-                children: const [
+                children: [
                   Expanded(
                     child: Center(
                       child: HeartRateMonitorPairingBottomSheet(),
