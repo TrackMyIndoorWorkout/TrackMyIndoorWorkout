@@ -478,7 +478,7 @@ class RecordWithSport extends Record {
     final spd = sport == ActivityType.run
         ? 4.0 + random.nextDouble() * 12.0
         : (sport == ActivityType.ride
-            ? 30.0 + random.nextDouble() * 10.0
+            ? 30.0 + random.nextDouble() * 20.0
             : 2.0 + random.nextDouble() * 10.0);
     return RecordWithSport(
       timeStamp: DateTime.now().millisecondsSinceEpoch,

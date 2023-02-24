@@ -31,7 +31,7 @@ extension HeartRateMonitorScanResult on ScanResult {
 }
 
 class HeartRateMonitorScanResultTile extends StatelessWidget {
-  static RegExp colonRegex = RegExp(r'\:');
+  static RegExp colonRegex = RegExp(r':');
 
   const HeartRateMonitorScanResultTile({
     Key? key,

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../../utils/constants.dart';
 import '../../export_model.dart';
 import '../enums/fit_event.dart';
@@ -73,21 +75,15 @@ class FitLap extends FitDefinitionMessage {
     data.addLong(model.activity.elapsed * 1000);
     data.addLong(model.activity.movingTime);
     data.addLong((model.activity.distance * 100).ceil());
-    data.addShort(model.activity.calories > 0 ? model.activity.calories : 0);
+    data.addShort(max(model.activity.calories, 0));
     data.addShort(model.averageSpeed > eps ? (model.averageSpeed * 1000).round() : 0);
-    data.addShort(model.maximumSpeed > eps
-        ? (model.maximumSpeed * 1000).round()
-        : FitBaseTypes.uint16Type.invalidValue);
-    data.addByte(model.averageHeartRate > 0 ? model.averageHeartRate : 0);
-    data.addByte(
-        model.maximumHeartRate > 0 ? model.maximumHeartRate : FitBaseTypes.uint8Type.invalidValue);
-    data.addByte(model.averageCadence > 0 ? model.averageCadence : 0);
-    data.addByte(
-        model.maximumCadence > 0 ? model.maximumCadence : FitBaseTypes.uint8Type.invalidValue);
+    data.addShort(model.maximumSpeed > eps ? (model.maximumSpeed * 1000).round() : 0);
+    data.addByte(max(model.averageHeartRate, 0));
+    data.addByte(max(model.maximumHeartRate, 0));
+    data.addByte(max(model.averageCadence, 0));
+    data.addByte(max(model.maximumCadence, 0));
     data.addShort(model.averagePower > eps ? model.averagePower.round() : 0);
-    data.addShort(model.maximumPower > eps
-        ? model.maximumPower.round()
-        : FitBaseTypes.uint16Type.invalidValue);
+    data.addShort(model.maximumPower > eps ? model.maximumPower.round() : 0);
     data.addByte(FitLapTrigger.sessionEnd);
     final fitSport = toFitSport(model.activity.sport);
     data.addByte(fitSport.item1);
