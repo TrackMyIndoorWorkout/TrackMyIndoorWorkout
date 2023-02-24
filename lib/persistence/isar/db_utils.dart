@@ -103,4 +103,41 @@ class DbUtils {
       await calorieFactorValue(deviceId, true),
     );
   }
+
+  static Future<bool> finalizeActivity(Activity activity) async {
+    final database = Get.find<Isar>();
+    final lastRecord = await recordDao.findLastRecordOfActivity(activity.id);
+    if (lastRecord == null) {
+      return false;
+    }
+
+    int updated = 0;
+    if (lastRecord.calories != null && lastRecord.calories! > 0 && activity.calories == 0) {
+      activity.calories = lastRecord.calories!;
+      updated++;
+    }
+
+    if (lastRecord.distance != null && lastRecord.distance! > 0 && activity.distance == 0) {
+      activity.distance = lastRecord.distance!;
+      updated++;
+    }
+
+    if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
+      activity.elapsed = lastRecord.elapsed!;
+      updated++;
+    }
+
+    if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
+      activity.end = lastRecord.timeStamp!;
+      updated++;
+    }
+
+    if (updated > 0) {
+      database.writeTxnSync(() {
+        database.activitys.putSync(activity);
+      });
+    }
+
+    return updated > 0;
+  }
 }

@@ -742,7 +742,7 @@ class CSVImporter with PowerSpeedMixin {
     }
 
     database.writeTxnSync(() async {
-      await activity.records.save(); // TODO: sync?
+      activity.records.saveSync();
       database.activitys.putSync(activity);
     });
 

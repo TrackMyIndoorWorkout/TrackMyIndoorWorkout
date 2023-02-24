@@ -337,7 +337,7 @@ class RecordingState extends State<RecordingScreen> {
 
         for (final activity in unfinished) {
           if (!continued || _activity == null || _activity!.id != activity.id) {
-            await _database.finalizeActivity(activity); // TODO
+            await DbUtils.finalizeActivity(activity);
           }
         }
       }
@@ -468,8 +468,8 @@ class RecordingState extends State<RecordingScreen> {
                 workoutState == WorkoutState.justPaused)) {
           _database.writeTxnSync(() async {
             _database.records.putSync(record);
-            _activity.records.add(record);
-            await _activity.records.save(); // TODO: sync?
+            _activity!.records.add(record);
+            _activity!.records.saveSync();
           });
         }
 
@@ -1816,7 +1816,7 @@ class RecordingState extends State<RecordingScreen> {
           if (selection > 1) {
             final unfinished = await DbUtils.unfinishedActivities();
             for (final activity in unfinished) {
-              await _database.finalizeActivity(activity); // TODO
+              await DbUtils.finalizeActivity(activity);
             }
           }
         }

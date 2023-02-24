@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/audio_volume.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
@@ -74,11 +73,10 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
             "is still there under the hood. Use the button bellow to fix those "
             "activities."),
         onTap: () async {
-          final database = Get.find<Isar>();
           final unfinished = await DbUtils.unfinishedActivities();
           var counter = 0;
           for (final activity in unfinished) {
-            final finalized = await database.finalizeActivity(activity); // TODO
+            final finalized = await DbUtils.finalizeActivity(activity);
             if (finalized) {
               counter++;
             }

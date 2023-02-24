@@ -300,7 +300,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               child: const Text("Yes"),
               onPressed: () async {
                 activity.records.removeAll();
-                await activity.records.save(); // TODO: sync?
+                activity.records.saveSync();
                 _database.writeTxnSync(() {
                   _database.activitys.deleteSync(activity.id);
                   setState(() {
