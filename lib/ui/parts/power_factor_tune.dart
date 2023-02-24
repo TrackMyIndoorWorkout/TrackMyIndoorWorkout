@@ -59,12 +59,15 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
             _themeManager.getGreenFab(Icons.check, () async {
               final database = Get.find<Isar>();
               final powerFactor = _powerFactorPercent / 100.0;
-              final powerTune = await database.powerTunes.buildQuery(sortBy: [
-                const SortProperty(
-                  property: 'time',
-                  sort: Sort.desc,
-                )
-              ]).where().filter()
+              final powerTune = await database.powerTunes
+                  .buildQuery(sortBy: [
+                    const SortProperty(
+                      property: 'time',
+                      sort: Sort.desc,
+                    )
+                  ])
+                  .where()
+                  .filter()
                   .isMacEqualTo(widget.deviceId)
                   .findFirst();
               if (powerTune != null) {

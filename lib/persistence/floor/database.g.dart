@@ -155,78 +155,7 @@ class _$ActivityDao extends ActivityDao {
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
-        _activityInsertionAdapter = InsertionAdapter(
-            database,
-            'activities',
-            (Activity item) => <String, Object?>{
-                  'id': item.id,
-                  'device_name': item.deviceName,
-                  'device_id': item.deviceId,
-                  'hrm_id': item.hrmId,
-                  'start': item.start,
-                  'end': item.end,
-                  'distance': item.distance,
-                  'elapsed': item.elapsed,
-                  'moving_time': item.movingTime,
-                  'calories': item.calories,
-                  'uploaded': item.uploaded ? 1 : 0,
-                  'strava_id': item.stravaId,
-                  'four_cc': item.fourCC,
-                  'sport': item.sport,
-                  'power_factor': item.powerFactor,
-                  'calorie_factor': item.calorieFactor,
-                  'hr_calorie_factor': item.hrCalorieFactor,
-                  'hrm_calorie_factor': item.hrmCalorieFactor,
-                  'hr_based_calories': item.hrBasedCalories ? 1 : 0,
-                  'time_zone': item.timeZone,
-                  'suunto_uploaded': item.suuntoUploaded ? 1 : 0,
-                  'suunto_blob_url': item.suuntoBlobUrl,
-                  'under_armour_uploaded': item.underArmourUploaded ? 1 : 0,
-                  'training_peaks_uploaded': item.trainingPeaksUploaded ? 1 : 0,
-                  'ua_workout_id': item.uaWorkoutId,
-                  'suunto_upload_id': item.suuntoUploadId,
-                  'suunto_upload_identifier': item.suuntoUploadIdentifier,
-                  'suunto_workout_url': item.suuntoWorkoutUrl,
-                  'training_peaks_workout_id': item.trainingPeaksWorkoutId,
-                  'training_peaks_athlete_id': item.trainingPeaksAthleteId
-                }),
         _activityUpdateAdapter = UpdateAdapter(
-            database,
-            'activities',
-            ['id'],
-            (Activity item) => <String, Object?>{
-                  'id': item.id,
-                  'device_name': item.deviceName,
-                  'device_id': item.deviceId,
-                  'hrm_id': item.hrmId,
-                  'start': item.start,
-                  'end': item.end,
-                  'distance': item.distance,
-                  'elapsed': item.elapsed,
-                  'moving_time': item.movingTime,
-                  'calories': item.calories,
-                  'uploaded': item.uploaded ? 1 : 0,
-                  'strava_id': item.stravaId,
-                  'four_cc': item.fourCC,
-                  'sport': item.sport,
-                  'power_factor': item.powerFactor,
-                  'calorie_factor': item.calorieFactor,
-                  'hr_calorie_factor': item.hrCalorieFactor,
-                  'hrm_calorie_factor': item.hrmCalorieFactor,
-                  'hr_based_calories': item.hrBasedCalories ? 1 : 0,
-                  'time_zone': item.timeZone,
-                  'suunto_uploaded': item.suuntoUploaded ? 1 : 0,
-                  'suunto_blob_url': item.suuntoBlobUrl,
-                  'under_armour_uploaded': item.underArmourUploaded ? 1 : 0,
-                  'training_peaks_uploaded': item.trainingPeaksUploaded ? 1 : 0,
-                  'ua_workout_id': item.uaWorkoutId,
-                  'suunto_upload_id': item.suuntoUploadId,
-                  'suunto_upload_identifier': item.suuntoUploadIdentifier,
-                  'suunto_workout_url': item.suuntoWorkoutUrl,
-                  'training_peaks_workout_id': item.trainingPeaksWorkoutId,
-                  'training_peaks_athlete_id': item.trainingPeaksAthleteId
-                }),
-        _activityDeletionAdapter = DeletionAdapter(
             database,
             'activities',
             ['id'],
@@ -269,11 +198,7 @@ class _$ActivityDao extends ActivityDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<Activity> _activityInsertionAdapter;
-
   final UpdateAdapter<Activity> _activityUpdateAdapter;
-
-  final DeletionAdapter<Activity> _activityDeletionAdapter;
 
   @override
   Future<List<Activity>> findAllActivities() async {
@@ -312,170 +237,8 @@ class _$ActivityDao extends ActivityDao {
   }
 
   @override
-  Future<Activity?> findActivityById(int id) async {
-    return _queryAdapter.query('SELECT * FROM `activities` WHERE `id` = ?1',
-        mapper: (Map<String, Object?> row) => Activity(
-            id: row['id'] as int?,
-            deviceName: row['device_name'] as String,
-            deviceId: row['device_id'] as String,
-            hrmId: row['hrm_id'] as String,
-            start: row['start'] as int,
-            end: row['end'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            movingTime: row['moving_time'] as int,
-            calories: row['calories'] as int,
-            uploaded: (row['uploaded'] as int) != 0,
-            suuntoUploaded: (row['suunto_uploaded'] as int) != 0,
-            suuntoBlobUrl: row['suunto_blob_url'] as String,
-            underArmourUploaded: (row['under_armour_uploaded'] as int) != 0,
-            trainingPeaksUploaded: (row['training_peaks_uploaded'] as int) != 0,
-            stravaId: row['strava_id'] as int,
-            uaWorkoutId: row['ua_workout_id'] as int,
-            suuntoUploadId: row['suunto_upload_id'] as int,
-            suuntoUploadIdentifier: row['suunto_upload_identifier'] as String,
-            suuntoWorkoutUrl: row['suunto_workout_url'] as String,
-            trainingPeaksAthleteId: row['training_peaks_athlete_id'] as int,
-            trainingPeaksWorkoutId: row['training_peaks_workout_id'] as int,
-            fourCC: row['four_cc'] as String,
-            sport: row['sport'] as String,
-            powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double,
-            hrCalorieFactor: row['hr_calorie_factor'] as double,
-            hrmCalorieFactor: row['hrm_calorie_factor'] as double,
-            hrBasedCalories: (row['hr_based_calories'] as int) != 0,
-            timeZone: row['time_zone'] as String),
-        arguments: [id]);
-  }
-
-  @override
-  Future<List<Activity>> findActivities(
-    int limit,
-    int offset,
-  ) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM `activities` ORDER BY `start` DESC LIMIT ?1 OFFSET ?2',
-        mapper: (Map<String, Object?> row) => Activity(
-            id: row['id'] as int?,
-            deviceName: row['device_name'] as String,
-            deviceId: row['device_id'] as String,
-            hrmId: row['hrm_id'] as String,
-            start: row['start'] as int,
-            end: row['end'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            movingTime: row['moving_time'] as int,
-            calories: row['calories'] as int,
-            uploaded: (row['uploaded'] as int) != 0,
-            suuntoUploaded: (row['suunto_uploaded'] as int) != 0,
-            suuntoBlobUrl: row['suunto_blob_url'] as String,
-            underArmourUploaded: (row['under_armour_uploaded'] as int) != 0,
-            trainingPeaksUploaded: (row['training_peaks_uploaded'] as int) != 0,
-            stravaId: row['strava_id'] as int,
-            uaWorkoutId: row['ua_workout_id'] as int,
-            suuntoUploadId: row['suunto_upload_id'] as int,
-            suuntoUploadIdentifier: row['suunto_upload_identifier'] as String,
-            suuntoWorkoutUrl: row['suunto_workout_url'] as String,
-            trainingPeaksAthleteId: row['training_peaks_athlete_id'] as int,
-            trainingPeaksWorkoutId: row['training_peaks_workout_id'] as int,
-            fourCC: row['four_cc'] as String,
-            sport: row['sport'] as String,
-            powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double,
-            hrCalorieFactor: row['hr_calorie_factor'] as double,
-            hrmCalorieFactor: row['hrm_calorie_factor'] as double,
-            hrBasedCalories: (row['hr_based_calories'] as int) != 0,
-            timeZone: row['time_zone'] as String),
-        arguments: [limit, offset]);
-  }
-
-  @override
-  Future<List<Activity>> findUnfinishedDeviceActivities(String deviceId) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM `activities` WHERE `device_id` = ?1 and `end` = 0 ORDER BY `start` DESC',
-        mapper: (Map<String, Object?> row) => Activity(
-            id: row['id'] as int?,
-            deviceName: row['device_name'] as String,
-            deviceId: row['device_id'] as String,
-            hrmId: row['hrm_id'] as String,
-            start: row['start'] as int,
-            end: row['end'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            movingTime: row['moving_time'] as int,
-            calories: row['calories'] as int,
-            uploaded: (row['uploaded'] as int) != 0,
-            suuntoUploaded: (row['suunto_uploaded'] as int) != 0,
-            suuntoBlobUrl: row['suunto_blob_url'] as String,
-            underArmourUploaded: (row['under_armour_uploaded'] as int) != 0,
-            trainingPeaksUploaded: (row['training_peaks_uploaded'] as int) != 0,
-            stravaId: row['strava_id'] as int,
-            uaWorkoutId: row['ua_workout_id'] as int,
-            suuntoUploadId: row['suunto_upload_id'] as int,
-            suuntoUploadIdentifier: row['suunto_upload_identifier'] as String,
-            suuntoWorkoutUrl: row['suunto_workout_url'] as String,
-            trainingPeaksAthleteId: row['training_peaks_athlete_id'] as int,
-            trainingPeaksWorkoutId: row['training_peaks_workout_id'] as int,
-            fourCC: row['four_cc'] as String,
-            sport: row['sport'] as String,
-            powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double,
-            hrCalorieFactor: row['hr_calorie_factor'] as double,
-            hrmCalorieFactor: row['hrm_calorie_factor'] as double,
-            hrBasedCalories: (row['hr_based_calories'] as int) != 0,
-            timeZone: row['time_zone'] as String),
-        arguments: [deviceId]);
-  }
-
-  @override
-  Future<List<Activity>> findUnfinishedActivities() async {
-    return _queryAdapter.queryList('SELECT * FROM `activities` WHERE `end` = 0',
-        mapper: (Map<String, Object?> row) => Activity(
-            id: row['id'] as int?,
-            deviceName: row['device_name'] as String,
-            deviceId: row['device_id'] as String,
-            hrmId: row['hrm_id'] as String,
-            start: row['start'] as int,
-            end: row['end'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            movingTime: row['moving_time'] as int,
-            calories: row['calories'] as int,
-            uploaded: (row['uploaded'] as int) != 0,
-            suuntoUploaded: (row['suunto_uploaded'] as int) != 0,
-            suuntoBlobUrl: row['suunto_blob_url'] as String,
-            underArmourUploaded: (row['under_armour_uploaded'] as int) != 0,
-            trainingPeaksUploaded: (row['training_peaks_uploaded'] as int) != 0,
-            stravaId: row['strava_id'] as int,
-            uaWorkoutId: row['ua_workout_id'] as int,
-            suuntoUploadId: row['suunto_upload_id'] as int,
-            suuntoUploadIdentifier: row['suunto_upload_identifier'] as String,
-            suuntoWorkoutUrl: row['suunto_workout_url'] as String,
-            trainingPeaksAthleteId: row['training_peaks_athlete_id'] as int,
-            trainingPeaksWorkoutId: row['training_peaks_workout_id'] as int,
-            fourCC: row['four_cc'] as String,
-            sport: row['sport'] as String,
-            powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double,
-            hrCalorieFactor: row['hr_calorie_factor'] as double,
-            hrmCalorieFactor: row['hrm_calorie_factor'] as double,
-            hrBasedCalories: (row['hr_based_calories'] as int) != 0,
-            timeZone: row['time_zone'] as String));
-  }
-
-  @override
-  Future<int> insertActivity(Activity activity) {
-    return _activityInsertionAdapter.insertAndReturnId(activity, OnConflictStrategy.abort);
-  }
-
-  @override
   Future<int> updateActivity(Activity activity) {
     return _activityUpdateAdapter.updateAndReturnChangedRows(activity, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<int> deleteActivity(Activity activity) {
-    return _activityDeletionAdapter.deleteAndReturnChangedRows(activity);
   }
 }
 
@@ -483,48 +246,13 @@ class _$RecordDao extends RecordDao {
   _$RecordDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
-        _recordInsertionAdapter = InsertionAdapter(
-            database,
-            'records',
-            (Record item) => <String, Object?>{
-                  'id': item.id,
-                  'activity_id': item.activityId,
-                  'time_stamp': item.timeStamp,
-                  'distance': item.distance,
-                  'elapsed': item.elapsed,
-                  'calories': item.calories,
-                  'power': item.power,
-                  'speed': item.speed,
-                  'cadence': item.cadence,
-                  'heart_rate': item.heartRate
-                }),
-        _recordUpdateAdapter = UpdateAdapter(
-            database,
-            'records',
-            ['id'],
-            (Record item) => <String, Object?>{
-                  'id': item.id,
-                  'activity_id': item.activityId,
-                  'time_stamp': item.timeStamp,
-                  'distance': item.distance,
-                  'elapsed': item.elapsed,
-                  'calories': item.calories,
-                  'power': item.power,
-                  'speed': item.speed,
-                  'cadence': item.cadence,
-                  'heart_rate': item.heartRate
-                });
+  ) : _queryAdapter = QueryAdapter(database);
 
   final sqflite.DatabaseExecutor database;
 
   final StreamController<String> changeListener;
 
   final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<Record> _recordInsertionAdapter;
-
-  final UpdateAdapter<Record> _recordUpdateAdapter;
 
   @override
   Future<List<Record>> findAllRecords() async {
@@ -541,143 +269,19 @@ class _$RecordDao extends RecordDao {
             cadence: row['cadence'] as int?,
             heartRate: row['heart_rate'] as int?));
   }
-
-  @override
-  Future<Record?> findRecordById(int id) async {
-    return _queryAdapter.query('SELECT * FROM `records` WHERE `id` = ?1',
-        mapper: (Map<String, Object?> row) => Record(
-            id: row['id'] as int?,
-            activityId: row['activity_id'] as int?,
-            timeStamp: row['time_stamp'] as int?,
-            distance: row['distance'] as double?,
-            elapsed: row['elapsed'] as int?,
-            calories: row['calories'] as int?,
-            power: row['power'] as int?,
-            speed: row['speed'] as double?,
-            cadence: row['cadence'] as int?,
-            heartRate: row['heart_rate'] as int?),
-        arguments: [id]);
-  }
-
-  @override
-  Future<List<Record>> findAllActivityRecords(int activityId) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM `records` WHERE `activity_id` = ?1 ORDER BY `time_stamp`',
-        mapper: (Map<String, Object?> row) => Record(
-            id: row['id'] as int?,
-            activityId: row['activity_id'] as int?,
-            timeStamp: row['time_stamp'] as int?,
-            distance: row['distance'] as double?,
-            elapsed: row['elapsed'] as int?,
-            calories: row['calories'] as int?,
-            power: row['power'] as int?,
-            speed: row['speed'] as double?,
-            cadence: row['cadence'] as int?,
-            heartRate: row['heart_rate'] as int?),
-        arguments: [activityId]);
-  }
-
-  @override
-  Future<Record?> findLastRecordOfActivity(int activityId) async {
-    return _queryAdapter.query(
-        'SELECT * FROM `records` WHERE `activity_id` = ?1 ORDER BY `time_stamp` DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => Record(
-            id: row['id'] as int?,
-            activityId: row['activity_id'] as int?,
-            timeStamp: row['time_stamp'] as int?,
-            distance: row['distance'] as double?,
-            elapsed: row['elapsed'] as int?,
-            calories: row['calories'] as int?,
-            power: row['power'] as int?,
-            speed: row['speed'] as double?,
-            cadence: row['cadence'] as int?,
-            heartRate: row['heart_rate'] as int?),
-        arguments: [activityId]);
-  }
-
-  @override
-  Future<List<Record>> deleteAllActivityRecords(int activityId) async {
-    return _queryAdapter.queryList('DELETE FROM `records` WHERE `activity_id` = ?1',
-        mapper: (Map<String, Object?> row) => Record(
-            id: row['id'] as int?,
-            activityId: row['activity_id'] as int?,
-            timeStamp: row['time_stamp'] as int?,
-            distance: row['distance'] as double?,
-            elapsed: row['elapsed'] as int?,
-            calories: row['calories'] as int?,
-            power: row['power'] as int?,
-            speed: row['speed'] as double?,
-            cadence: row['cadence'] as int?,
-            heartRate: row['heart_rate'] as int?),
-        arguments: [activityId]);
-  }
-
-  @override
-  Future<void> insertRecord(Record record) async {
-    await _recordInsertionAdapter.insert(record, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> updateRecord(Record record) async {
-    await _recordUpdateAdapter.update(record, OnConflictStrategy.abort);
-  }
 }
 
 class _$DeviceUsageDao extends DeviceUsageDao {
   _$DeviceUsageDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
-        _deviceUsageInsertionAdapter = InsertionAdapter(
-            database,
-            'device_usage',
-            (DeviceUsage item) => <String, Object?>{
-                  'id': item.id,
-                  'sport': item.sport,
-                  'mac': item.mac,
-                  'name': item.name,
-                  'manufacturer': item.manufacturer,
-                  'manufacturer_name': item.manufacturerName,
-                  'time': item.time
-                }),
-        _deviceUsageUpdateAdapter = UpdateAdapter(
-            database,
-            'device_usage',
-            ['id'],
-            (DeviceUsage item) => <String, Object?>{
-                  'id': item.id,
-                  'sport': item.sport,
-                  'mac': item.mac,
-                  'name': item.name,
-                  'manufacturer': item.manufacturer,
-                  'manufacturer_name': item.manufacturerName,
-                  'time': item.time
-                }),
-        _deviceUsageDeletionAdapter = DeletionAdapter(
-            database,
-            'device_usage',
-            ['id'],
-            (DeviceUsage item) => <String, Object?>{
-                  'id': item.id,
-                  'sport': item.sport,
-                  'mac': item.mac,
-                  'name': item.name,
-                  'manufacturer': item.manufacturer,
-                  'manufacturer_name': item.manufacturerName,
-                  'time': item.time
-                });
+  ) : _queryAdapter = QueryAdapter(database);
 
   final sqflite.DatabaseExecutor database;
 
   final StreamController<String> changeListener;
 
   final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<DeviceUsage> _deviceUsageInsertionAdapter;
-
-  final UpdateAdapter<DeviceUsage> _deviceUsageUpdateAdapter;
-
-  final DeletionAdapter<DeviceUsage> _deviceUsageDeletionAdapter;
 
   @override
   Future<List<DeviceUsage>> findAllDeviceUsages() async {
@@ -691,69 +295,6 @@ class _$DeviceUsageDao extends DeviceUsageDao {
             manufacturerName: row['manufacturer_name'] as String?,
             time: row['time'] as int));
   }
-
-  @override
-  Future<DeviceUsage?> findDeviceUsageById(int id) async {
-    return _queryAdapter.query('SELECT * FROM `device_usage` WHERE `id` = ?1',
-        mapper: (Map<String, Object?> row) => DeviceUsage(
-            id: row['id'] as int?,
-            sport: row['sport'] as String,
-            mac: row['mac'] as String,
-            name: row['name'] as String,
-            manufacturer: row['manufacturer'] as String,
-            manufacturerName: row['manufacturer_name'] as String?,
-            time: row['time'] as int),
-        arguments: [id]);
-  }
-
-  @override
-  Future<DeviceUsage?> findDeviceUsageByMac(String mac) async {
-    return _queryAdapter.query(
-        'SELECT * FROM `device_usage` WHERE `mac` = ?1 ORDER BY `time` DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => DeviceUsage(
-            id: row['id'] as int?,
-            sport: row['sport'] as String,
-            mac: row['mac'] as String,
-            name: row['name'] as String,
-            manufacturer: row['manufacturer'] as String,
-            manufacturerName: row['manufacturer_name'] as String?,
-            time: row['time'] as int),
-        arguments: [mac]);
-  }
-
-  @override
-  Future<List<DeviceUsage>> findDeviceUsages(
-    int limit,
-    int offset,
-  ) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM `device_usage` ORDER BY `time` DESC LIMIT ?1 OFFSET ?2',
-        mapper: (Map<String, Object?> row) => DeviceUsage(
-            id: row['id'] as int?,
-            sport: row['sport'] as String,
-            mac: row['mac'] as String,
-            name: row['name'] as String,
-            manufacturer: row['manufacturer'] as String,
-            manufacturerName: row['manufacturer_name'] as String?,
-            time: row['time'] as int),
-        arguments: [limit, offset]);
-  }
-
-  @override
-  Future<int> insertDeviceUsage(DeviceUsage deviceUsage) {
-    return _deviceUsageInsertionAdapter.insertAndReturnId(deviceUsage, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<int> updateDeviceUsage(DeviceUsage deviceUsage) {
-    return _deviceUsageUpdateAdapter.updateAndReturnChangedRows(
-        deviceUsage, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<int> deleteDeviceUsage(DeviceUsage deviceUsage) {
-    return _deviceUsageDeletionAdapter.deleteAndReturnChangedRows(deviceUsage);
-  }
 }
 
 class _$CalorieTuneDao extends CalorieTuneDao {
@@ -761,28 +302,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
-        _calorieTuneInsertionAdapter = InsertionAdapter(
-            database,
-            'calorie_tune',
-            (CalorieTune item) => <String, Object?>{
-                  'id': item.id,
-                  'mac': item.mac,
-                  'calorie_factor': item.calorieFactor,
-                  'hr_based': item.hrBased ? 1 : 0,
-                  'time': item.time
-                }),
         _calorieTuneUpdateAdapter = UpdateAdapter(
-            database,
-            'calorie_tune',
-            ['id'],
-            (CalorieTune item) => <String, Object?>{
-                  'id': item.id,
-                  'mac': item.mac,
-                  'calorie_factor': item.calorieFactor,
-                  'hr_based': item.hrBased ? 1 : 0,
-                  'time': item.time
-                }),
-        _calorieTuneDeletionAdapter = DeletionAdapter(
             database,
             'calorie_tune',
             ['id'],
@@ -800,11 +320,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<CalorieTune> _calorieTuneInsertionAdapter;
-
   final UpdateAdapter<CalorieTune> _calorieTuneUpdateAdapter;
-
-  final DeletionAdapter<CalorieTune> _calorieTuneDeletionAdapter;
 
   @override
   Future<List<CalorieTune>> findAllCalorieTunes() async {
@@ -818,63 +334,9 @@ class _$CalorieTuneDao extends CalorieTuneDao {
   }
 
   @override
-  Future<CalorieTune?> findCalorieTuneById(int id) async {
-    return _queryAdapter.query('SELECT * FROM `calorie_tune` WHERE `id` = ?1',
-        mapper: (Map<String, Object?> row) => CalorieTune(
-            id: row['id'] as int?,
-            mac: row['mac'] as String,
-            calorieFactor: row['calorie_factor'] as double,
-            hrBased: (row['hr_based'] as int) != 0,
-            time: row['time'] as int),
-        arguments: [id]);
-  }
-
-  @override
-  Future<CalorieTune?> findCalorieTuneByMac(String mac) async {
-    return _queryAdapter.query(
-        'SELECT * FROM `calorie_tune` WHERE `mac` = ?1 AND `hr_based` = 0 ORDER BY `time` DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => CalorieTune(id: row['id'] as int?, mac: row['mac'] as String, calorieFactor: row['calorie_factor'] as double, hrBased: (row['hr_based'] as int) != 0, time: row['time'] as int),
-        arguments: [mac]);
-  }
-
-  @override
-  Future<CalorieTune?> findHrCalorieTuneByMac(String mac) async {
-    return _queryAdapter.query(
-        'SELECT * FROM `calorie_tune` WHERE `mac` = ?1 AND `hr_based` = 1 ORDER BY `time` DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => CalorieTune(id: row['id'] as int?, mac: row['mac'] as String, calorieFactor: row['calorie_factor'] as double, hrBased: (row['hr_based'] as int) != 0, time: row['time'] as int),
-        arguments: [mac]);
-  }
-
-  @override
-  Future<List<CalorieTune>> findCalorieTunes(
-    int limit,
-    int offset,
-  ) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM `calorie_tune` ORDER BY `time` DESC LIMIT ?1 OFFSET ?2',
-        mapper: (Map<String, Object?> row) => CalorieTune(
-            id: row['id'] as int?,
-            mac: row['mac'] as String,
-            calorieFactor: row['calorie_factor'] as double,
-            hrBased: (row['hr_based'] as int) != 0,
-            time: row['time'] as int),
-        arguments: [limit, offset]);
-  }
-
-  @override
-  Future<int> insertCalorieTune(CalorieTune calorieTune) {
-    return _calorieTuneInsertionAdapter.insertAndReturnId(calorieTune, OnConflictStrategy.abort);
-  }
-
-  @override
   Future<int> updateCalorieTune(CalorieTune calorieTune) {
     return _calorieTuneUpdateAdapter.updateAndReturnChangedRows(
         calorieTune, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<int> deleteCalorieTune(CalorieTune calorieTune) {
-    return _calorieTuneDeletionAdapter.deleteAndReturnChangedRows(calorieTune);
   }
 }
 
@@ -882,48 +344,13 @@ class _$PowerTuneDao extends PowerTuneDao {
   _$PowerTuneDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
-        _powerTuneInsertionAdapter = InsertionAdapter(
-            database,
-            'power_tune',
-            (PowerTune item) => <String, Object?>{
-                  'id': item.id,
-                  'mac': item.mac,
-                  'power_factor': item.powerFactor,
-                  'time': item.time
-                }),
-        _powerTuneUpdateAdapter = UpdateAdapter(
-            database,
-            'power_tune',
-            ['id'],
-            (PowerTune item) => <String, Object?>{
-                  'id': item.id,
-                  'mac': item.mac,
-                  'power_factor': item.powerFactor,
-                  'time': item.time
-                }),
-        _powerTuneDeletionAdapter = DeletionAdapter(
-            database,
-            'power_tune',
-            ['id'],
-            (PowerTune item) => <String, Object?>{
-                  'id': item.id,
-                  'mac': item.mac,
-                  'power_factor': item.powerFactor,
-                  'time': item.time
-                });
+  ) : _queryAdapter = QueryAdapter(database);
 
   final sqflite.DatabaseExecutor database;
 
   final StreamController<String> changeListener;
 
   final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<PowerTune> _powerTuneInsertionAdapter;
-
-  final UpdateAdapter<PowerTune> _powerTuneUpdateAdapter;
-
-  final DeletionAdapter<PowerTune> _powerTuneDeletionAdapter;
 
   @override
   Future<List<PowerTune>> findAllPowerTunes() async {
@@ -934,59 +361,6 @@ class _$PowerTuneDao extends PowerTuneDao {
             powerFactor: row['power_factor'] as double,
             time: row['time'] as int));
   }
-
-  @override
-  Future<PowerTune?> findPowerTuneById(int id) async {
-    return _queryAdapter.query('SELECT * FROM `power_tune` WHERE `id` = ?1',
-        mapper: (Map<String, Object?> row) => PowerTune(
-            id: row['id'] as int?,
-            mac: row['mac'] as String,
-            powerFactor: row['power_factor'] as double,
-            time: row['time'] as int),
-        arguments: [id]);
-  }
-
-  @override
-  Future<PowerTune?> findPowerTuneByMac(String mac) async {
-    return _queryAdapter.query(
-        'SELECT * FROM `power_tune` WHERE `mac` = ?1 ORDER BY `time` DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => PowerTune(
-            id: row['id'] as int?,
-            mac: row['mac'] as String,
-            powerFactor: row['power_factor'] as double,
-            time: row['time'] as int),
-        arguments: [mac]);
-  }
-
-  @override
-  Future<List<PowerTune>> findPowerTunes(
-    int limit,
-    int offset,
-  ) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM `power_tune` ORDER BY `time` DESC LIMIT ?1 OFFSET ?2',
-        mapper: (Map<String, Object?> row) => PowerTune(
-            id: row['id'] as int?,
-            mac: row['mac'] as String,
-            powerFactor: row['power_factor'] as double,
-            time: row['time'] as int),
-        arguments: [limit, offset]);
-  }
-
-  @override
-  Future<int> insertPowerTune(PowerTune powerTune) {
-    return _powerTuneInsertionAdapter.insertAndReturnId(powerTune, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<int> updatePowerTune(PowerTune powerTune) {
-    return _powerTuneUpdateAdapter.updateAndReturnChangedRows(powerTune, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<int> deletePowerTune(PowerTune powerTune) {
-    return _powerTuneDeletionAdapter.deleteAndReturnChangedRows(powerTune);
-  }
 }
 
 class _$WorkoutSummaryDao extends WorkoutSummaryDao {
@@ -994,23 +368,6 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
-        _workoutSummaryInsertionAdapter = InsertionAdapter(
-            database,
-            'workout_summary',
-            (WorkoutSummary item) => <String, Object?>{
-                  'id': item.id,
-                  'device_name': item.deviceName,
-                  'device_id': item.deviceId,
-                  'manufacturer': item.manufacturer,
-                  'start': item.start,
-                  'distance': item.distance,
-                  'elapsed': item.elapsed,
-                  'moving_time': item.movingTime,
-                  'speed': item.speed,
-                  'sport': item.sport,
-                  'power_factor': item.powerFactor,
-                  'calorie_factor': item.calorieFactor
-                }),
         _workoutSummaryUpdateAdapter = UpdateAdapter(
             database,
             'workout_summary',
@@ -1028,24 +385,6 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
                   'sport': item.sport,
                   'power_factor': item.powerFactor,
                   'calorie_factor': item.calorieFactor
-                }),
-        _workoutSummaryDeletionAdapter = DeletionAdapter(
-            database,
-            'workout_summary',
-            ['id'],
-            (WorkoutSummary item) => <String, Object?>{
-                  'id': item.id,
-                  'device_name': item.deviceName,
-                  'device_id': item.deviceId,
-                  'manufacturer': item.manufacturer,
-                  'start': item.start,
-                  'distance': item.distance,
-                  'elapsed': item.elapsed,
-                  'moving_time': item.movingTime,
-                  'speed': item.speed,
-                  'sport': item.sport,
-                  'power_factor': item.powerFactor,
-                  'calorie_factor': item.calorieFactor
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -1054,15 +393,11 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<WorkoutSummary> _workoutSummaryInsertionAdapter;
-
   final UpdateAdapter<WorkoutSummary> _workoutSummaryUpdateAdapter;
-
-  final DeletionAdapter<WorkoutSummary> _workoutSummaryDeletionAdapter;
 
   @override
   Future<List<WorkoutSummary>> findAllWorkoutSummaries() async {
-    return _queryAdapter.queryList('SELECT * FROM `workout_summary` ORDER BY `speed` DESC',
+    return _queryAdapter.queryList('SELECT * FROM `workout_summary`',
         mapper: (Map<String, Object?> row) => WorkoutSummary(
             id: row['id'] as int?,
             deviceName: row['device_name'] as String,
@@ -1078,111 +413,8 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
   }
 
   @override
-  Future<List<String>> findDistinctWorkoutSummarySports() async {
-    return _queryAdapter.queryList('SELECT DISTINCT `sport` FROM `workout_summary`',
-        mapper: (Map<String, Object?> row) => row.values.first as String);
-  }
-
-  @override
-  Future<int?> getLeaderboardDataCount() async {
-    return _queryAdapter.query('SELECT COUNT(`id`) FROM `workout_summary`',
-        mapper: (Map<String, Object?> row) => row.values.first as int);
-  }
-
-  @override
-  Future<WorkoutSummary?> findWorkoutSummaryById(int id) async {
-    return _queryAdapter.query('SELECT * FROM `workout_summary` WHERE `id` = ?1',
-        mapper: (Map<String, Object?> row) => WorkoutSummary(
-            id: row['id'] as int?,
-            deviceName: row['device_name'] as String,
-            deviceId: row['device_id'] as String,
-            manufacturer: row['manufacturer'] as String,
-            start: row['start'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            movingTime: row['moving_time'] as int,
-            sport: row['sport'] as String,
-            powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double),
-        arguments: [id]);
-  }
-
-  @override
-  Future<List<WorkoutSummary>> findAllWorkoutSummariesByDevice(String deviceId) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM `workout_summary` WHERE `device_id` = ?1 ORDER BY `speed` DESC',
-        mapper: (Map<String, Object?> row) => WorkoutSummary(
-            id: row['id'] as int?,
-            deviceName: row['device_name'] as String,
-            deviceId: row['device_id'] as String,
-            manufacturer: row['manufacturer'] as String,
-            start: row['start'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            movingTime: row['moving_time'] as int,
-            sport: row['sport'] as String,
-            powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double),
-        arguments: [deviceId]);
-  }
-
-  @override
-  Future<List<WorkoutSummary>> findWorkoutSummaryByDevice(
-    String deviceId,
-    int limit,
-    int offset,
-  ) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM `workout_summary` WHERE `device_id` = ?1 ORDER BY `speed` DESC LIMIT ?2 OFFSET ?3',
-        mapper: (Map<String, Object?> row) => WorkoutSummary(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, manufacturer: row['manufacturer'] as String, start: row['start'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, movingTime: row['moving_time'] as int, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double),
-        arguments: [deviceId, limit, offset]);
-  }
-
-  @override
-  Future<List<WorkoutSummary>> findAllWorkoutSummariesBySport(String sport) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM `workout_summary` WHERE `sport` = ?1 ORDER BY `speed` DESC',
-        mapper: (Map<String, Object?> row) => WorkoutSummary(
-            id: row['id'] as int?,
-            deviceName: row['device_name'] as String,
-            deviceId: row['device_id'] as String,
-            manufacturer: row['manufacturer'] as String,
-            start: row['start'] as int,
-            distance: row['distance'] as double,
-            elapsed: row['elapsed'] as int,
-            movingTime: row['moving_time'] as int,
-            sport: row['sport'] as String,
-            powerFactor: row['power_factor'] as double,
-            calorieFactor: row['calorie_factor'] as double),
-        arguments: [sport]);
-  }
-
-  @override
-  Future<List<WorkoutSummary>> findWorkoutSummaryBySport(
-    String sport,
-    int limit,
-    int offset,
-  ) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM `workout_summary` WHERE `sport` = ?1 ORDER BY `speed` DESC LIMIT ?2 OFFSET ?3',
-        mapper: (Map<String, Object?> row) => WorkoutSummary(id: row['id'] as int?, deviceName: row['device_name'] as String, deviceId: row['device_id'] as String, manufacturer: row['manufacturer'] as String, start: row['start'] as int, distance: row['distance'] as double, elapsed: row['elapsed'] as int, movingTime: row['moving_time'] as int, sport: row['sport'] as String, powerFactor: row['power_factor'] as double, calorieFactor: row['calorie_factor'] as double),
-        arguments: [sport, limit, offset]);
-  }
-
-  @override
-  Future<int> insertWorkoutSummary(WorkoutSummary workoutSummary) {
-    return _workoutSummaryInsertionAdapter.insertAndReturnId(
-        workoutSummary, OnConflictStrategy.abort);
-  }
-
-  @override
   Future<int> updateWorkoutSummary(WorkoutSummary workoutSummary) {
     return _workoutSummaryUpdateAdapter.updateAndReturnChangedRows(
         workoutSummary, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<int> deleteWorkoutSummary(WorkoutSummary workoutSummary) {
-    return _workoutSummaryDeletionAdapter.deleteAndReturnChangedRows(workoutSummary);
   }
 }

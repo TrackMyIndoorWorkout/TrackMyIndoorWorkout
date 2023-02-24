@@ -3,8 +3,10 @@ import 'package:isar/isar.dart';
 import 'package:tuple/tuple.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../utils/constants.dart';
-import 'calorie_tune.dart';
 import 'activity.dart';
+import 'calorie_tune.dart';
+import 'power_tune.dart';
+import 'workout_summary.dart';
 
 class DbUtils {
   static bool hasLeaderboardData() {
@@ -54,27 +56,39 @@ class DbUtils {
 
   static Future<List<Activity>> unfinishedActivities() async {
     final database = Get.find<Isar>();
-    return database.activitys.where().filter().endEqualTo(0);
+    return database.activitys.where().filter().endEqualTo(0).findAll();
   }
 
   static Future<double> powerFactor(String deviceId) async {
     final database = Get.find<Isar>();
-    final powerTune = await database.powerTunes.buildQuery(sortBy: [
-      const SortProperty(
-        property: 'time',
-        sort: Sort.desc,
-      )
-    ]).where().filter().macEqualTo(deviceId).findFirst();
+    final powerTune = await database.powerTunes
+        .buildQuery(sortBy: [
+          const SortProperty(
+            property: 'time',
+            sort: Sort.desc,
+          )
+        ])
+        .where()
+        .filter()
+        .macEqualTo(deviceId)
+        .findFirst();
     return powerTune?.powerFactor ?? 1.0;
   }
 
   static Future<CalorieTune?> findCalorieTuneByMac(String mac, bool hrBased) async {
-    return await database.calorieTunes.buildQuery(sortBy: [
-      const SortProperty(
-        property: 'time',
-        sort: Sort.desc,
-      )
-    ]).where().filter().macEqualTo(mac).hrBasedEqualTo(hrBased).findFirst();
+    final database = Get.find<Isar>();
+    return await database.calorieTunes
+        .buildQuery(sortBy: [
+          const SortProperty(
+            property: 'time',
+            sort: Sort.desc,
+          )
+        ])
+        .where()
+        .filter()
+        .macEqualTo(mac)
+        .hrBasedEqualTo(hrBased)
+        .findFirst();
   }
 
   static Future<double> calorieFactorValue(String deviceId, bool hrBased) async {
@@ -89,5 +103,4 @@ class DbUtils {
       await calorieFactorValue(deviceId, true),
     );
   }
-
 }

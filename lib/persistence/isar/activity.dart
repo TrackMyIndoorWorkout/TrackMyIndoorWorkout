@@ -10,7 +10,7 @@ import '../../../utils/display.dart' as display;
 import 'record.dart';
 import 'workout_summary.dart';
 
-part 'record.g.dart';
+part 'activity.g.dart';
 
 const activitiesTableName = 'activities';
 
@@ -47,7 +47,7 @@ class Activity {
   int trainingPeaksWorkoutId;
   int trainingPeaksAthleteId;
 
-  final record = IsarLinks<Record>();
+  final records = IsarLinks<Record>();
 
   @ignore
   DateTime? startDateTime;

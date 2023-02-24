@@ -476,6 +476,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<Isar>()) {
+      await activity.records.load();
       final lastRecord = activity.records.findAll().last();
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
@@ -855,7 +856,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           if (Get.isRegistered<Isar>()) {
             final database = Get.find<Isar>();
             database.writeTxnSync(() async {
-              database.activitys.putSync(_activity);
+              database.activitys.putSync(_activity!);
             });
           }
         }

@@ -111,15 +111,21 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.workoutSummarys.buildQuery(sortBy: [
-              const SortProperty(
-                property: 'mac',
-                sort: Sort.desc,
-              )
-            ],
-              offset: page * limit,
-              limit: limit,
-            ).where().filter().sportEqualsTo(widget.sport).findAll();
+            final data = await _database.workoutSummarys
+                .buildQuery(
+                  sortBy: [
+                    const SortProperty(
+                      property: 'mac',
+                      sort: Sort.desc,
+                    )
+                  ],
+                  offset: page * limit,
+                  limit: limit,
+                )
+                .where()
+                .filter()
+                .sportEqualsTo(widget.sport)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

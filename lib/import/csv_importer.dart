@@ -8,6 +8,7 @@ import '../devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
 import '../persistence/isar/activity.dart';
+import '../persistence/isar/db_utils.dart';
 import '../persistence/isar/record.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
@@ -474,7 +475,7 @@ class CSVImporter with PowerSpeedMixin {
       }
     } else {
       DeviceDescriptor device = DeviceFactory.getDescriptorForFourCC(schwinnACPerfPlusFourCC);
-      final factors = await database.getFactors(deviceId);  // TODO
+      final factors = await DbUtils.getFactors(deviceId);
       fourCC = device.fourCC;
       deviceName = deviceNamePrefixes[fourCC]![0];
       sport = device.sport;

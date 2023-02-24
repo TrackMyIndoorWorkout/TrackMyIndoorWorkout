@@ -26,7 +26,7 @@ class Record {
   int? cadence;
   int? heartRate;
 
-  @Backlink(to: 'activity')
+  @Backlink(to: 'records')
   final activity = IsarLink<Activity>();
 
   @ignore

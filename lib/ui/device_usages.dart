@@ -129,12 +129,13 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _isar.deviceUsages.buildQuery(sortBy: [
-              const SortProperty(
-                property: 'mac',
-                sort: Sort.desc,
-              )
-            ],
+            final data = await _database.deviceUsages.buildQuery(
+              sortBy: [
+                const SortProperty(
+                  property: 'mac',
+                  sort: Sort.desc,
+                )
+              ],
               offset: page * limit,
               limit: limit,
             ).findAll();

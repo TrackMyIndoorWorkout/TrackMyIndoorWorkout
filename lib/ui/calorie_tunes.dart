@@ -88,9 +88,10 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
                 child: const Text("Yes"),
                 onPressed: () {
                   _database.writeTxnSync(() {
-                    _database.calorieTunes.deleteSync(calorieTune.id).then((value) => setState(() {
+                    _database.calorieTunes.deleteSync(calorieTune.id);
+                    setState(() {
                       _editCount++;
-                    }));
+                    });
                   });
                   Get.close(1);
                 },
@@ -117,12 +118,13 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.calorieTunes.buildQuery(sortBy: [
-              const SortProperty(
-                property: 'mac',
-                sort: Sort.desc,
-              )
-            ],
+            final data = await _database.calorieTunes.buildQuery(
+              sortBy: [
+                const SortProperty(
+                  property: 'mac',
+                  sort: Sort.desc,
+                )
+              ],
               offset: page * limit,
               limit: limit,
             ).findAll();

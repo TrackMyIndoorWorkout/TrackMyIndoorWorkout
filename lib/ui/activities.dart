@@ -300,7 +300,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               child: const Text("Yes"),
               onPressed: () async {
                 activity.records.removeAll();
-                await activity.records.save();  // TODO: sync?
+                await activity.records.save(); // TODO: sync?
                 _database.writeTxnSync(() {
                   _database.activitys.deleteSync(activity.id);
                   setState(() {
@@ -458,12 +458,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.activitys.buildQuery(sortBy: [
-              const SortProperty(
-                property: 'start',
-                sort: Sort.desc,
-              )
-            ],
+            final data = await _database.activitys.buildQuery(
+              sortBy: [
+                const SortProperty(
+                  property: 'start',
+                  sort: Sort.desc,
+                )
+              ],
               offset: page * limit,
               limit: limit,
             ).findAll();

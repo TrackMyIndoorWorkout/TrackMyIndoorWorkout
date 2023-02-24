@@ -2,8 +2,10 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
+import 'package:tuple/tuple.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
+import '../../persistence/isar/workout_summary.dart';
 import 'device_leaderboard.dart';
 import 'leaderboard_device_hub.dart';
 import 'leaderboard_sport_hub.dart';
@@ -48,9 +50,9 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
             margin: const EdgeInsets.all(5.0),
             child: ElevatedButton(
               onPressed: () async {
-                final sports = await _database.workoutSummarys.filter()
-                    .distinctBySport()
-                    .findAll().map((w) => w.sport).toList();
+                final distinctBySportWorkoutSummaries =
+                    await _database.workoutSummarys.where().distinctBySport().findAll();
+                final sports = distinctBySportWorkoutSummaries.map((w) => w.sport).toList();
                 if (sports.isEmpty) {
                   Get.snackbar("Warning", "No sports found");
                 } else if (sports.length > 1) {
@@ -79,9 +81,11 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
             margin: const EdgeInsets.all(5.0),
             child: ElevatedButton(
               onPressed: () async {
-                final devices = await _database.workoutSummarys.filter()
-                    .distinctByDeviceId()
-                    .findAll().map((w) => w.sport).toList();
+                final distinctByDeviceWorkoutSummaries =
+                    await _database.workoutSummarys.where().distinctByDeviceId().findAll();
+                final devices = distinctByDeviceWorkoutSummaries
+                    .map((w) => Tuple3(w.deviceName, w.deviceId, w.sport))
+                    .toList();
                 if (devices.isEmpty) {
                   Get.snackbar("Warning", "No devices found");
                 } else if (devices.length > 1) {

@@ -135,6 +135,15 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
   @override
+  _i3.Future<void> clearGattCache() => (super.noSuchMethod(
+        Invocation.method(
+          #clearGattCache,
+          [],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+  @override
   _i3.Future<dynamic> disconnect() => (super.noSuchMethod(
         Invocation.method(
           #disconnect,

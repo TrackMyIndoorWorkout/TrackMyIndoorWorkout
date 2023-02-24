@@ -9,6 +9,7 @@ import 'package:isar/isar.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pref/pref.dart';
 import '../import/csv_importer.dart';
+import '../persistence/isar/workout_summary.dart';
 import '../preferences/leaderboard_and_rank.dart';
 
 typedef SetProgress = void Function(double progress);

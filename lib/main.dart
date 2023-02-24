@@ -2,9 +2,15 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'devices/company_registry.dart';
 import 'track_my_indoor_exercise_app.dart';
+import 'devices/company_registry.dart';
+import 'persistence/isar/activity.dart';
+import 'persistence/isar/calorie_tune.dart';
+import 'persistence/isar/device_usage.dart';
+import 'persistence/isar/power_tune.dart';
 import 'ui/models/advertisement_cache.dart';
+import 'persistence/isar/record.dart';
+import 'persistence/isar/workout_summary.dart';
 import 'utils/init_preferences.dart';
 import 'utils/logging.dart';
 

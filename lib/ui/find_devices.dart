@@ -321,12 +321,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     final database = Get.find<Isar>();
-    var deviceUsage = await database.deviceUsages.buildQuery(sortBy: [
-      const SortProperty(
-        property: 'time',
-        sort: Sort.desc,
-      )
-    ]).where().filter()
+    var deviceUsage = await database.deviceUsages
+        .buildQuery(sortBy: [
+          const SortProperty(
+            property: 'time',
+            sort: Sort.desc,
+          )
+        ])
+        .where()
+        .filter()
         .isMacEqualTo(device.id.id)
         .findFirst();
     final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;

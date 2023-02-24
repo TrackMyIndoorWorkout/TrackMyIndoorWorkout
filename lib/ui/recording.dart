@@ -327,8 +327,7 @@ class RecordingState extends State<RecordingScreen> {
     final now = DateTime.now();
     var continued = false;
     if (!_uxDebug) {
-      final unfinished =
-          await DbUtils.unfinishedDeviceActivities(widget.device.id.id);
+      final unfinished = await DbUtils.unfinishedDeviceActivities(widget.device.id.id);
       if (unfinished.isNotEmpty) {
         final yesterday = now.subtract(const Duration(days: 1));
         if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
@@ -338,7 +337,7 @@ class RecordingState extends State<RecordingScreen> {
 
         for (final activity in unfinished) {
           if (!continued || _activity == null || _activity!.id != activity.id) {
-            await _database.finalizeActivity(activity);  // TODO
+            await _database.finalizeActivity(activity); // TODO
           }
         }
       }
@@ -369,7 +368,7 @@ class RecordingState extends State<RecordingScreen> {
     if (!_uxDebug) {
       if (!continued) {
         _database.writeTxnSync(() {
-          _database.activitys.putSync(_activity);
+          _database.activitys.putSync(_activity!);
         });
       }
     }
@@ -382,20 +381,28 @@ class RecordingState extends State<RecordingScreen> {
       _averageSpeedSum = 0.0;
       if (_leaderboardFeature) {
         _leaderboard = _rankingForSportOrDevice
-            ? await _database.workoutSummarys.buildQuery(sortBy: [
-          const SortProperty(
-            property: 'speed',
-            sort: Sort.desc,
-          )
-        ]).where().filter()
-                .sportEqualTo(widget.descriptor.sport).findAll()
-            : await _database.workoutSummarys.buildQuery(sortBy: [
-          const SortProperty(
-            property: 'speed',
-            sort: Sort.desc,
-          )
-        ]).where().filter()
-                .deviceIdEqualTo(widget.device.id.id).findAll();
+            ? await _database.workoutSummarys
+                .buildQuery(sortBy: [
+                  const SortProperty(
+                    property: 'speed',
+                    sort: Sort.desc,
+                  )
+                ])
+                .where()
+                .filter()
+                .sportEqualTo(widget.descriptor.sport)
+                .findAll()
+            : await _database.workoutSummarys
+                .buildQuery(sortBy: [
+                  const SortProperty(
+                    property: 'speed',
+                    sort: Sort.desc,
+                  )
+                ])
+                .where()
+                .filter()
+                .deviceIdEqualTo(widget.device.id.id)
+                .findAll();
 
         if (_showPacer && _pacerWorkout != null) {
           int insertionPoint = 0;
@@ -462,7 +469,7 @@ class RecordingState extends State<RecordingScreen> {
           _database.writeTxnSync(() async {
             _database.records.putSync(record);
             _activity.records.add(record);
-            await _activity.records.save();  // TODO: sync?
+            await _activity.records.save(); // TODO: sync?
           });
         }
 
@@ -1145,14 +1152,15 @@ class RecordingState extends State<RecordingScreen> {
 
     if (!_uxDebug) {
       if (_leaderboardFeature && (last?.distance ?? 0.0) > displayEps) {
-        final workoutSummary = _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown");
+        final workoutSummary =
+            _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown");
         _database.writeTxnSync(() {
           _database.workoutSummarys.putSync(workoutSummary);
         });
       }
 
       _database.writeTxnSync(() {
-        _database.activitys.putSync(_activity);
+        _database.activitys.putSync(_activity!);
       });
 
       if (!quick && _activity != null) {
@@ -2411,8 +2419,8 @@ class RecordingState extends State<RecordingScreen> {
           if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
             _database.writeTxnSync(() async {
               _activity!.hrmId = hrmId;
-              _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true); // TODO
-              _database.activitys.putSync(_activity);
+              _activity!.hrmCalorieFactor = await DbUtils.calorieFactorValue(hrmId, true);
+              _database.activitys.putSync(_activity!);
             });
           }
         }),

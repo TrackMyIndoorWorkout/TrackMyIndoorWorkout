@@ -63,12 +63,15 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
             _themeManager.getGreenFab(Icons.check, () async {
               final database = Get.find<Isar>();
               final calorieFactor = _calorieFactorPercent / 100.0;
-              final calorieTune = await database.calorieTunes.buildQuery(sortBy: [
-                const SortProperty(
-                  property: 'time',
-                  sort: Sort.desc,
-                )
-              ]).where().filter()
+              final calorieTune = await database.calorieTunes
+                  .buildQuery(sortBy: [
+                    const SortProperty(
+                      property: 'time',
+                      sort: Sort.desc,
+                    )
+                  ])
+                  .where()
+                  .filter()
                   .isMacEqualTo(widget.deviceId)
                   .isHrBasedEqualTo(widget.hrBased)
                   .findFirst();

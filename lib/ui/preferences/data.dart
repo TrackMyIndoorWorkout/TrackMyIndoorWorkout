@@ -10,6 +10,7 @@ import '../../preferences/data_stream_gap_watchdog_time.dart';
 import '../../preferences/extend_tuning.dart';
 import '../../preferences/sound_effects.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
+import '../../persistence/isar/db_utils.dart';
 import '../../utils/sound.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
@@ -74,10 +75,10 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
             "activities."),
         onTap: () async {
           final database = Get.find<Isar>();
-          final unfinished = await database.activitys.findUnfinishedActivities();
+          final unfinished = await DbUtils.unfinishedActivities();
           var counter = 0;
           for (final activity in unfinished) {
-            final finalized = await database.finalizeActivity(activity);
+            final finalized = await database.finalizeActivity(activity); // TODO
             if (finalized) {
               counter++;
             }
