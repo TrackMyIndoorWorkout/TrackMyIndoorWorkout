@@ -1,6 +1,5 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-import '../../track/tracks.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gatt/ftms.dart';
 import 'data_handler.dart';
@@ -75,7 +74,6 @@ abstract class DeviceDescriptor extends DataHandler {
         );
 
   String get fullName => '$vendorName $modelName';
-  double get lengthFactor => getTrack(sport).lengthFactor;
   bool get isFitnessMachine => dataServiceId == fitnessMachineUuid;
 
   void stopWorkout();

@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/track/calculator.dart';
-import 'package:track_my_indoor_exercise/track/constants.dart';
-import 'package:track_my_indoor_exercise/track/tracks.dart';
+import 'package:track_my_indoor_exercise/track/track_descriptor.dart';
+import 'package:track_my_indoor_exercise/track/track_kind.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
@@ -13,12 +13,13 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
         verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
 
       test("${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor",
@@ -36,14 +37,15 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
         verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final laps = rnd.nextInt(100);
-      final distance = laps * trackLength * lengthFactor;
+      final distance = laps * track.length;
       final calculator = TrackCalculator(track: track);
 
       test(
@@ -62,17 +64,17 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
         verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final distance = laps * trackLength * lengthFactor + positionRatio * track.laneLength;
-      final trackLen = trackLength * track.lengthFactor;
-      final d = distance % trackLen;
+      final distance = laps * track.length + positionRatio * track.laneLength;
+      final d = distance % track.length;
       final calculator = TrackCalculator(track: track);
 
       test(
@@ -92,18 +94,17 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
         verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final distance =
-          laps * trackLength * lengthFactor + track.laneLength + positionRatio * track.halfCircle;
-      final trackLen = trackLength * lengthFactor;
-      final d = distance % trackLen;
+      final distance = laps * track.length + track.laneLength + positionRatio * track.halfCircle;
+      final d = distance % track.length;
       final rad = (d - track.laneLength) / track.halfCircle * pi;
       final calculator = TrackCalculator(track: track);
 
@@ -129,18 +130,18 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
         verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final distance = (laps + 0.5) * trackLength * lengthFactor + positionRatio * track.laneLength;
-      final trackLen = trackLength * lengthFactor;
-      final d = distance % trackLen;
-      final displacement = d - trackLen / 2;
+      final distance = (laps + 0.5) * track.length + positionRatio * track.laneLength;
+      final d = distance % track.length;
+      final displacement = d - track.length / 2;
       final calculator = TrackCalculator(track: track);
 
       test(
@@ -162,20 +163,19 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
         verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final distance = (laps + 0.5) * trackLength * lengthFactor +
-          track.laneLength +
-          positionRatio * track.halfCircle;
-      final trackLen = trackLength * lengthFactor;
-      final d = distance % trackLen;
-      final rad = (d - trackLen / 2 - track.laneLength) / track.halfCircle * pi;
+      final distance =
+          (laps + 0.5) * track.length + track.laneLength + positionRatio * track.halfCircle;
+      final d = distance % track.length;
+      final rad = (d - track.length / 2 - track.laneLength) / track.halfCircle * pi;
       final calculator = TrackCalculator(track: track);
 
       test(
@@ -200,17 +200,17 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
         verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
 
       final laps = rnd.nextInt(100);
-      final trackLen = trackLength * lengthFactor;
-      final distance = laps * trackLen + track.laneLength;
+      final distance = laps * track.length + track.laneLength;
       final d =
           track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
       test("${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
@@ -229,17 +229,17 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
         verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
 
       final laps = rnd.nextInt(100);
-      final trackLen = trackLength * lengthFactor;
-      final distance = (laps + 0.5) * trackLen + track.laneLength;
+      final distance = (laps + 0.5) * track.length + track.laneLength;
       final d =
           track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
       test("${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
@@ -258,12 +258,13 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
         verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
 
       test("${track.radiusBoost} $lengthFactor", () async {
@@ -291,16 +292,17 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         center: Offset(rnd.nextDouble() * 360 - 180, rnd.nextDouble() * 180 - 90),
         radiusBoost: 0.65 + rnd.nextDouble(),
         horizontalMeter: 0.00001 + rnd.nextDouble() / 10000,
         verticalMeter: 0.00001 + rnd.nextDouble() / 10000,
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final d =
           track.horizontalMeter * track.horizontalMeter + track.verticalMeter * track.verticalMeter;
       test("${track.radiusBoost} $lengthFactor $d", () async {
-        for (var distance in List<int>.generate((trackLength * 2).round(), (index) => index)) {
+        for (var distance in List<int>.generate((track.length * 2).round(), (index) => index)) {
           final calculator = TrackCalculator(track: track);
 
           final markerA = calculator.gpsCoordinates(distance.toDouble());
