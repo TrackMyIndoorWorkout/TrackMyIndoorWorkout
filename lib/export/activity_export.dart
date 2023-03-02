@@ -12,7 +12,7 @@ import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
 import '../track/calculator.dart';
-import '../track/tracks.dart';
+import '../track/track_manager.dart';
 import '../utils/constants.dart';
 import 'export_model.dart';
 import 'export_record.dart';
@@ -92,7 +92,7 @@ abstract class ActivityExport {
   ) async {
     activity.hydrate();
     final descriptor = activity.deviceDescriptor();
-    final track = getTrack(activity.sport);
+    final track = await TrackManager().getTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     final exportRecords = records.map((r) {
       final record = recordToExport(r, activity, calculator, calculateGps, rawData);

@@ -1,7 +1,11 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:timezone/timezone.dart' as tz;
+
+import 'devices/company_registry.dart';
 import 'track_my_indoor_exercise_app.dart';
 import 'devices/company_registry.dart';
 import 'persistence/isar/activity.dart';
@@ -39,6 +43,10 @@ void main() async {
     Get.put<PackageInfo>(packageInfo, permanent: true);
     Logging.logVersion(packageInfo);
   });
+
+  rootBundle
+      .load('assets/timezones_all.tzf')
+      .then((byteData) => {tz.initializeDatabase(byteData.buffer.asUint8List())});
 
   runApp(TrackMyIndoorExerciseApp(prefService: prefService));
 }
