@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'constants.dart';
-import 'tracks.dart';
+import 'track_descriptor.dart';
 
 class TrackCalculator {
   TrackDescriptor track;
@@ -71,7 +71,7 @@ class TrackCalculator {
     final r = trackRadius!;
     final offset = trackOffset!;
 
-    final trackLen = trackLength * track.lengthFactor;
+    final trackLen = track.length;
     final d = (distance) % trackLen;
     if (d <= track.laneLength) {
       // bottom straight
@@ -105,7 +105,7 @@ class TrackCalculator {
   }
 
   Offset gpsCoordinates(double distance) {
-    final trackLen = trackLength * track.lengthFactor;
+    final trackLen = track.length;
     final d = distance % trackLen;
 
     var c = const Offset(0, 0); // Relative to GPS track center, not GPS scaled
@@ -138,9 +138,24 @@ class TrackCalculator {
       );
     }
 
+    // lon, lat order!
     return Offset(
       track.center.dx + c.dx * track.horizontalMeter,
       track.center.dy + c.dy * track.verticalMeter,
     );
+  }
+
+  // https://stackoverflow.com/a/56499934/292502
+  static double distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
+    final dLat = (lat2 - lat1) * degreesToRadians;
+    final dLon = (lon2 - lon1) * degreesToRadians;
+
+    final latSin = sin(dLat / 2.0);
+    final lonSin = sin(dLon / 2.0);
+
+    var a = latSin * latSin +
+        lonSin * lonSin * cos(lat1 * degreesToRadians) * cos(lat2 * degreesToRadians);
+    var c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return earthRadiusKm * c;
   }
 }
