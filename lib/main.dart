@@ -26,9 +26,9 @@ void main() async {
     Logging.logVersion(packageInfo);
   });
 
-  rootBundle.load('assets/timezones_all.tzf').then((byteData) => {
-    tz.initializeDatabase(byteData.buffer.asUint8List())
-  });
+  rootBundle
+      .load('assets/timezones_all.tzf')
+      .then((byteData) => {tz.initializeDatabase(byteData.buffer.asUint8List())});
 
   runApp(TrackMyIndoorExerciseApp(prefService: prefService));
 }
