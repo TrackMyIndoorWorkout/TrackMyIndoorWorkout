@@ -45,7 +45,7 @@ void main() async {
   });
 
   rootBundle
-      .load('assets/timezones_all.tzf')
+      .load('assets/timezones_10y.tzf')
       .then((byteData) => {tz.initializeDatabase(byteData.buffer.asUint8List())});
 
   runApp(TrackMyIndoorExerciseApp(prefService: prefService));

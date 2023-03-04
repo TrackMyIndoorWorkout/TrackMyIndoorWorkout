@@ -1,22 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import '../../preferences/enforced_time_zone.dart';
 import '../../preferences/stage_mode.dart';
 import '../../preferences/time_display_mode.dart';
 import '../../preferences/workout_mode.dart';
+import '../../utils/time_zone.dart';
 import 'pref_color.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
-class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
+class WorkoutPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "Workout";
   static String title = "$shortTitle Preferences";
 
   const WorkoutPreferencesScreen({Key? key}) : super(key: key);
 
   @override
+  WorkoutPreferencesScreenState createState() => WorkoutPreferencesScreenState();
+}
+
+class WorkoutPreferencesScreenState extends State<WorkoutPreferencesScreen> {
+  final List<String> timeZoneChoices = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    getSortedTimezones().then((timeZoneChoicesFixed) {
+      setState(() {
+        timeZoneChoices.addAll(timeZoneChoicesFixed);
+        timeZoneChoices.insert(0, enforcedTimeZoneDefault);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     List<Widget> workoutPreferences = [
+      PrefDropdown<String>(
+        title: const Text(enforcedTimeZone),
+        subtitle: const Text(enforcedTimeZoneDescription),
+        pref: enforcedTimeZoneTag,
+        items: timeZoneChoices
+            .map((timeZone) => DropdownMenuItem(value: timeZone, child: Text(timeZone)))
+            .toList(growable: false),
+      ),
       PrefLabel(
         title: Text(workoutMode, style: Get.textTheme.headlineSmall!, maxLines: 3),
       ),
@@ -116,7 +145,7 @@ class WorkoutPreferencesScreen extends StatelessWidget with PreferencesScreenMix
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(WorkoutPreferencesScreen.title)),
       body: PrefPage(children: workoutPreferences),
     );
   }

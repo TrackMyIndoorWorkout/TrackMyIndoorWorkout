@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_logs/flutter_logs.dart';
-import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
@@ -13,7 +12,6 @@ import '../../preferences/app_debug_mode.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
-import '../../preferences/enforced_time_zone.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
@@ -32,21 +30,6 @@ class ExpertPreferencesScreen extends StatefulWidget with PreferencesScreenMixin
 }
 
 class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
-  final List<String> timeZoneChoices = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    FlutterTimezone.getAvailableTimezones().then((timeZoneChoicesFixed) {
-      setState(() {
-        timeZoneChoices.addAll(timeZoneChoicesFixed);
-        timeZoneChoices.sort();
-        timeZoneChoices.insert(0, enforcedTimeZoneDefault);
-      });
-    });
-  }
-
   Future<void> displayNotInitializedDialog() async {
     await Get.defaultDialog(
       title: "Logging is not initialized",
@@ -80,7 +63,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       PrefText(
         label: dataConnectionAddresses,
         pref: dataConnectionAddressesTag,
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z0-9.:,]"))],
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z\d.:,]"))],
         validator: (str) {
           if (str == null) {
             return null;
@@ -137,14 +120,6 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         title: Text(blockSignalStartStop),
         subtitle: Text(blockSignalStartStopDescription),
         pref: blockSignalStartStopTag,
-      ),
-      PrefDropdown<String>(
-        title: const Text(enforcedTimeZone),
-        subtitle: const Text(enforcedTimeZoneDescription),
-        pref: enforcedTimeZoneTag,
-        items: timeZoneChoices
-            .map((timeZone) => DropdownMenuItem(value: timeZone, child: Text(timeZone)))
-            .toList(growable: false),
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefLabel(
