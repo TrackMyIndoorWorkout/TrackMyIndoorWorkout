@@ -79,7 +79,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       PrefText(
         label: dataConnectionAddresses,
         pref: dataConnectionAddressesTag,
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z0-9.:,]"))],
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z\d.:,]"))],
         validator: (str) {
           if (str == null) {
             return null;
