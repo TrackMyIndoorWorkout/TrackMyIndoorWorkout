@@ -12,13 +12,11 @@ import '../../preferences/app_debug_mode.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
-import '../../preferences/enforced_time_zone.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
-import '../../utils/time_zone.dart';
 import 'preferences_screen_mixin.dart';
 
 class ExpertPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
@@ -32,20 +30,6 @@ class ExpertPreferencesScreen extends StatefulWidget with PreferencesScreenMixin
 }
 
 class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
-  final List<String> timeZoneChoices = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    getSortedTimezones().then((timeZoneChoicesFixed) {
-      setState(() {
-        timeZoneChoices.addAll(timeZoneChoicesFixed);
-        timeZoneChoices.insert(0, enforcedTimeZoneDefault);
-      });
-    });
-  }
-
   Future<void> displayNotInitializedDialog() async {
     await Get.defaultDialog(
       title: "Logging is not initialized",
@@ -136,14 +120,6 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         title: Text(blockSignalStartStop),
         subtitle: Text(blockSignalStartStopDescription),
         pref: blockSignalStartStopTag,
-      ),
-      PrefDropdown<String>(
-        title: const Text(enforcedTimeZone),
-        subtitle: const Text(enforcedTimeZoneDescription),
-        pref: enforcedTimeZoneTag,
-        items: timeZoneChoices
-            .map((timeZone) => DropdownMenuItem(value: timeZone, child: Text(timeZone)))
-            .toList(growable: false),
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefLabel(
