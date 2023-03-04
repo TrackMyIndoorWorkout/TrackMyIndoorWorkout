@@ -1,9 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/painting.dart';
-import 'package:timezone/standalone.dart' as tz;
 import 'package:tuple/tuple.dart';
 
-import '../preferences/enforced_time_zone.dart';
 import '../utils/constants.dart';
 import '../utils/time_zone.dart';
 import 'track_descriptor.dart';
@@ -589,52 +587,50 @@ class TrackManager {
     },
   };
 
-  int timeZoneOffset(String timeZoneName) {
-    DateTime? now;
-    if (timeZoneName == enforcedTimeZoneDefault) {
-      now = DateTime.now();
-    } else {
-      var location = tz.getLocation(timeZoneName);
-      now = tz.TZDateTime.now(location);
-    }
-
-    return now.timeZoneOffset.inMinutes;
-  }
-
   Future<TrackDescriptor> getTrack(String sport) async {
     final timeZoneName = await getTimeZone();
-    final timeOffset = timeZoneOffset(timeZoneName) + 5; // 5 is to break a tie
-    final timeZoneEntries = trackMaps.keys
-        .map<Tuple2<int, String>>((tzName) => Tuple2<int, String>(timeZoneOffset(tzName), tzName))
-        .sortedByCompare((tp) => tp.item1, (int t1, int t2) => t1.compareTo(t2))
-        .toList(growable: false);
-    Tuple2<int, String> previousEntry = const Tuple2<int, String>(maxUint24, "");
-    Tuple2<int, String> currentEntry = const Tuple2<int, String>(maxUint24, "");
-    for (final timeZoneEntry in timeZoneEntries) {
-      currentEntry = timeZoneEntry;
-      if (timeZoneEntry.item1 > timeOffset) {
-        break;
+    String trackTimeZone = "";
+    if (trackMaps.containsKey(timeZoneName)) {
+      trackTimeZone = timeZoneName;
+    } else {
+      final timeOffset = timeZoneOffset(timeZoneName) + 5; // 5 is to break a tie
+      final timeZoneEntries = trackMaps.keys
+          .map<Tuple2<int, String>>((tzName) => Tuple2<int, String>(timeZoneOffset(tzName), tzName))
+          .sortedByCompare((tp) => tp.item1, (int t1, int t2) => t1.compareTo(t2))
+          .toList(growable: false);
+      Tuple2<int, String> previousEntry = const Tuple2<int, String>(maxUint24, "");
+      Tuple2<int, String> currentEntry = const Tuple2<int, String>(maxUint24, "");
+      for (final timeZoneEntry in timeZoneEntries) {
+        currentEntry = timeZoneEntry;
+        if (timeZoneEntry.item1 > timeOffset) {
+          break;
+        }
+
+        previousEntry = timeZoneEntry;
       }
 
-      previousEntry = timeZoneEntry;
-    }
+      Tuple2<int, String> closestEntry = const Tuple2<int, String>(maxUint24, "");
+      if (previousEntry.item1 != maxUint24 && currentEntry.item1 != maxUint24) {
+        if ((previousEntry.item1 - timeOffset).abs() < (currentEntry.item1 - timeOffset).abs()) {
+          closestEntry = previousEntry;
+        } else {
+          closestEntry = currentEntry;
+        }
+      }
 
-    Tuple2<int, String> closestEntry = const Tuple2<int, String>(maxUint24, "");
-    if (previousEntry.item1 != maxUint24 && currentEntry.item1 != maxUint24) {
-      if ((previousEntry.item1 - timeOffset).abs() < (currentEntry.item1 - timeOffset).abs()) {
-        closestEntry = previousEntry;
+      if (closestEntry.item1 == maxUint24) {
+        // Default to GMT
+        closestEntry = timeZoneEntries.firstWhere((entry) => entry.item2 == "Europe/London");
       } else {
-        closestEntry = currentEntry;
+        // TODO: when there will be multiple track in the same time zone
+        // decide the closest one with Haversine or Vincenty distance
       }
+
+      trackTimeZone = closestEntry.item2;
     }
 
-    if (closestEntry.item1 == maxUint24) {
-      // Default to GMT
-      closestEntry = timeZoneEntries.firstWhere((entry) => entry.item2 == "Europe/London");
-    }
-
-    Map<TrackKind, TrackDescriptor> timeZoneTracks = trackMaps[closestEntry.item2]!;
-    TrackDescriptor track = trackMaps["Europe/London"]![TrackKind.forLand]!;
+    Map<TrackKind, TrackDescriptor> timeZoneTracks = trackMaps[trackTimeZone]!;
+    TrackDescriptor? track;
     for (final trackKind in getTrackKindForSport(sport)) {
       if (timeZoneTracks.containsKey(trackKind)) {
         track = timeZoneTracks[trackKind]!;
@@ -642,6 +638,6 @@ class TrackManager {
       }
     }
 
-    return track;
+    return track ?? trackMaps["Europe/London"]![TrackKind.forLand]!;
   }
 }
