@@ -189,7 +189,7 @@ class TrackManager {
       ),
     },
     // Brasilia Standard Time, UTC-3
-    "America/Buenos_Aires": {
+    "America/Sao_Paulo": {
       TrackKind.forLand: TrackDescriptor(
         name: "RioDeJaneiroAirport",
         kind: TrackKind.forLand,
@@ -441,7 +441,7 @@ class TrackManager {
       ),
     },
     // Vietnam, Thailand Time, UTC+7
-    "Asia/Saigon": {
+    "Asia/Ho_Chi_Minh": {
       TrackKind.forLand: TrackDescriptor(
         name: "TanSonNhatAirportSideTarmac",
         kind: TrackKind.forLand,
