@@ -46,7 +46,7 @@ class C2AdditionalStatus2 extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       calories: getCalories(data)?.toInt(),
       sport: ActivityType.rowing,
     );

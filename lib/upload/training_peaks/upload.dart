@@ -74,8 +74,8 @@ abstract class Upload {
         '"Data": "$fileContentString",'
         '"Title": "${persistenceValues["name"]}",'
         '"Comment": "${persistenceValues["description"]}",'
-        '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.startDateTime!)}",'
-        '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.startDateTime!)}",'
+        '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.start)}",'
+        '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.start)}",'
         '"SetWorkoutPublic": $workoutPublic,'
         '"Type": "${trainingPeaksSport(activity.sport)}"}';
     const uploadUrl = tpProductionApiUrlBase + uploadPath;

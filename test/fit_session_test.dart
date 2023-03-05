@@ -34,16 +34,15 @@ void main() {
         test('for ${exportTarget.item2}', () async {
           final rng = Random();
           final session = FitSession(0, exportTarget.item1, withGps);
-          final now = DateTime.now();
           final exportRecord = withGps
               ? ExportRecord(
                   latitude: rng.nextDouble(),
                   longitude: rng.nextDouble(),
                   record: Record(
-                    timeStamp: now.millisecondsSinceEpoch,
+                    timeStamp: DateTime.now(),
                   ),
                 )
-              : ExportRecord(record: Record(timeStamp: now.millisecondsSinceEpoch));
+              : ExportRecord(record: Record(timeStamp: DateTime.now()));
 
           final exportModel = ExportModelForTests(records: [exportRecord])
             ..averageSpeed = 0.0

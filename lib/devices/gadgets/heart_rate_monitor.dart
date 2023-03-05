@@ -73,7 +73,7 @@ class HeartRateMonitor extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       heartRate: getHeartRate(data),
       calories: getCalories(data),
       sport: ActivityType.workout,

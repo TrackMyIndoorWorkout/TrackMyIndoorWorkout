@@ -57,8 +57,8 @@ void main() {
           deviceName: descriptor.modelName,
           deviceId: mPowerImportDeviceId,
           hrmId: "CAFEBABE",
-          start: oneSecondAgo.millisecondsSinceEpoch,
-          end: oneSecondAgo.millisecondsSinceEpoch + recordCount * 1000,
+          start: oneSecondAgo,
+          end: oneSecondAgo.add(Duration(seconds: recordCount)),
           distance: distance,
           elapsed: recordCount,
           movingTime: movingCount * 1000,
@@ -74,7 +74,6 @@ void main() {
           suuntoWorkoutUrl: "suuntoWorkoutUrl test string",
           trainingPeaksAthleteId: rnd.nextInt(1000000),
           trainingPeaksWorkoutId: rnd.nextInt(1000000),
-          startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.sport,
           powerFactor: rnd.nextDouble(),
@@ -92,7 +91,7 @@ void main() {
             record: Record(
               id: recordIdOffset + index,
               activityId: activity.id,
-              timeStamp: activity.start + index * 1000,
+              timeStamp: activity.start.add(Duration(seconds: index)),
               distance: 0.0,
               elapsed: index,
               calories: 0,
@@ -111,7 +110,7 @@ void main() {
             record: Record(
               id: recordIdOffset + index + countChunk,
               activityId: activity.id,
-              timeStamp: activity.start + (index + countChunk) * 1000,
+              timeStamp: activity.start.add(Duration(seconds: index + countChunk)),
               distance: distancePerTick * (index + countChunk),
               elapsed: index + countChunk,
               calories: (caloriesPerTick * (index + countChunk)).round(),
@@ -130,7 +129,7 @@ void main() {
             record: Record(
               id: recordIdOffset + index + countChunk + movingCount,
               activityId: activity.id,
-              timeStamp: activity.start + (index + countChunk + movingCount) * 1000,
+              timeStamp: activity.start.add(Duration(seconds: index + countChunk + movingCount)),
               distance: movingRecords.last.record.distance,
               elapsed: index + countChunk + movingCount,
               calories: movingRecords.last.record.calories,
@@ -173,8 +172,8 @@ void main() {
         expect(importedActivity.deviceName, activity.deviceName);
         expect(importedActivity.hrmId, activity.hrmId);
         expect(importedActivity.start, activity.start);
-        expect(importedActivity.startDateTime?.millisecondsSinceEpoch,
-            closeTo(activity.startDateTime?.millisecondsSinceEpoch ?? 0, 1000));
+        expect(importedActivity.start.millisecondsSinceEpoch,
+            closeTo(activity.start.millisecondsSinceEpoch, 1000));
         expect(importedActivity.fourCC, activity.fourCC);
         expect(importedActivity.sport, activity.sport);
         expect(importedActivity.powerFactor, activity.powerFactor);
@@ -251,8 +250,8 @@ void main() {
           deviceName: descriptor.modelName,
           deviceId: mPowerImportDeviceId,
           hrmId: "CAFEBABE",
-          start: oneSecondAgo.millisecondsSinceEpoch,
-          end: oneSecondAgo.millisecondsSinceEpoch + recordCount * 1000,
+          start: oneSecondAgo,
+          end: oneSecondAgo.add(Duration(seconds: recordCount)),
           distance: distance,
           elapsed: recordCount,
           movingTime: recordCount * 1000,
@@ -268,7 +267,6 @@ void main() {
           suuntoWorkoutUrl: "suuntoWorkoutUrl test string",
           trainingPeaksAthleteId: rnd.nextInt(1000000),
           trainingPeaksWorkoutId: rnd.nextInt(1000000),
-          startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.sport,
           powerFactor: rnd.nextDouble(),
@@ -330,8 +328,8 @@ void main() {
         expect(importedActivity.deviceName, activity.deviceName);
         expect(importedActivity.hrmId, activity.hrmId);
         expect(importedActivity.start, activity.start);
-        expect(importedActivity.startDateTime?.millisecondsSinceEpoch,
-            closeTo(activity.startDateTime?.millisecondsSinceEpoch ?? 0, 1000));
+        expect(importedActivity.start.millisecondsSinceEpoch,
+            closeTo(activity.start.millisecondsSinceEpoch, 1000));
         expect(importedActivity.fourCC, activity.fourCC);
         expect(importedActivity.sport, activity.sport);
         expect(importedActivity.powerFactor, activity.powerFactor);
@@ -358,7 +356,7 @@ void main() {
         expect(importedActivity.movingTime, activity.movingTime);
 
         final importedRecords =
-            await database.recordDao.findAllActivityRecords(importedActivity.id!);
+            await database.recordDao.findAllActivityRecords(importedActivity.id);
         expect(importedRecords.length, records.length);
         for (final pairs in IterableZip<Record>([importedRecords, records.map((e) => e.record)])) {
           expect(pairs[0].activityId, importedActivity.id);

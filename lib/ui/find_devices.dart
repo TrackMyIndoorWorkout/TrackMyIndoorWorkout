@@ -322,15 +322,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     final database = Get.find<Isar>();
     var deviceUsage = await database.deviceUsages
-        .buildQuery(sortBy: [
-          const SortProperty(
-            property: 'time',
-            sort: Sort.desc,
-          )
-        ])
-        .where()
+        .where(sort: Sort.desc)
         .filter()
-        .isMacEqualTo(device.id.id)
+        .macEqualTo(device.id.id)
         .findFirst();
     final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;
 
@@ -544,7 +538,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               mac: device.id.id,
               name: device.nonEmptyName,
               manufacturer: advertisementDigest.manufacturer,
-              time: DateTime.now().millisecondsSinceEpoch,
+              time: DateTime.now(),
             );
             database.writeTxnSync(() {
               database.deviceUsages.putSync(deviceUsage);
@@ -592,7 +586,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           if (deviceUsage != null) {
             database.writeTxnSync(() {
               deviceUsage.sport = sportPick;
-              deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
+              deviceUsage.time = DateTime.now();
               database.deviceUsages.putSync(deviceUsage);
             });
           } else {
@@ -601,7 +595,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               mac: device.id.id,
               name: device.nonEmptyName,
               manufacturer: advertisementDigest.manufacturer,
-              time: DateTime.now().millisecondsSinceEpoch,
+              time: DateTime.now(),
             );
             database.writeTxnSync(() {
               database.deviceUsages.putSync(deviceUsage);
@@ -670,7 +664,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (deviceUsage != null) {
         deviceUsage.manufacturerName = fitnessEquipment.manufacturerName;
         database.writeTxnSync(() {
-          deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
+          deviceUsage.time = DateTime.now();
           database.deviceUsages.putSync(deviceUsage);
         });
       }

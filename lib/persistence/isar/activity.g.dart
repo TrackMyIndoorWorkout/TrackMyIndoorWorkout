@@ -55,7 +55,7 @@ const ActivitySchema = CollectionSchema(
     r'end': PropertySchema(
       id: 7,
       name: r'end',
-      type: IsarType.long,
+      type: IsarType.dateTime,
     ),
     r'fourCC': PropertySchema(
       id: 8,
@@ -105,7 +105,7 @@ const ActivitySchema = CollectionSchema(
     r'start': PropertySchema(
       id: 17,
       name: r'start',
-      type: IsarType.long,
+      type: IsarType.dateTime,
     ),
     r'stravaId': PropertySchema(
       id: 18,
@@ -236,7 +236,7 @@ void _activitySerialize(
   writer.writeDouble(offsets[4], object.distance);
   writer.writeLong(offsets[5], object.elapsed);
   writer.writeString(offsets[6], object.elapsedString);
-  writer.writeLong(offsets[7], object.end);
+  writer.writeDateTime(offsets[7], object.end);
   writer.writeString(offsets[8], object.fourCC);
   writer.writeBool(offsets[9], object.hrBasedCalories);
   writer.writeDouble(offsets[10], object.hrCalorieFactor);
@@ -246,7 +246,7 @@ void _activitySerialize(
   writer.writeString(offsets[14], object.movingTimeString);
   writer.writeDouble(offsets[15], object.powerFactor);
   writer.writeString(offsets[16], object.sport);
-  writer.writeLong(offsets[17], object.start);
+  writer.writeDateTime(offsets[17], object.start);
   writer.writeLong(offsets[18], object.stravaId);
   writer.writeString(offsets[19], object.suuntoBlobUrl);
   writer.writeString(offsets[20], object.suuntoUploadIdentifier);
@@ -274,7 +274,7 @@ Activity _activityDeserialize(
     deviceName: reader.readString(offsets[3]),
     distance: reader.readDoubleOrNull(offsets[4]) ?? 0.0,
     elapsed: reader.readLongOrNull(offsets[5]) ?? 0,
-    end: reader.readLongOrNull(offsets[7]) ?? 0,
+    end: reader.readDateTimeOrNull(offsets[7]),
     fourCC: reader.readString(offsets[8]),
     hrBasedCalories: reader.readBool(offsets[9]),
     hrCalorieFactor: reader.readDouble(offsets[10]),
@@ -284,7 +284,7 @@ Activity _activityDeserialize(
     movingTime: reader.readLongOrNull(offsets[13]) ?? 0,
     powerFactor: reader.readDouble(offsets[15]),
     sport: reader.readString(offsets[16]),
-    start: reader.readLong(offsets[17]),
+    start: reader.readDateTime(offsets[17]),
     stravaId: reader.readLongOrNull(offsets[18]) ?? 0,
     suuntoBlobUrl: reader.readStringOrNull(offsets[19]) ?? "",
     suuntoUploadIdentifier: reader.readStringOrNull(offsets[20]) ?? "",
@@ -323,7 +323,7 @@ P _activityDeserializeProp<P>(
     case 6:
       return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 8:
       return (reader.readString(offset)) as P;
     case 9:
@@ -343,7 +343,7 @@ P _activityDeserializeProp<P>(
     case 16:
       return (reader.readString(offset)) as P;
     case 17:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 18:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     case 19:
@@ -466,7 +466,7 @@ extension ActivityQueryWhere on QueryBuilder<Activity, Activity, QWhereClause> {
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterWhereClause> startEqualTo(int start) {
+  QueryBuilder<Activity, Activity, QAfterWhereClause> startEqualTo(DateTime start) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
         indexName: r'start',
@@ -475,7 +475,7 @@ extension ActivityQueryWhere on QueryBuilder<Activity, Activity, QWhereClause> {
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterWhereClause> startNotEqualTo(int start) {
+  QueryBuilder<Activity, Activity, QAfterWhereClause> startNotEqualTo(DateTime start) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -510,7 +510,7 @@ extension ActivityQueryWhere on QueryBuilder<Activity, Activity, QWhereClause> {
   }
 
   QueryBuilder<Activity, Activity, QAfterWhereClause> startGreaterThan(
-    int start, {
+    DateTime start, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -524,7 +524,7 @@ extension ActivityQueryWhere on QueryBuilder<Activity, Activity, QWhereClause> {
   }
 
   QueryBuilder<Activity, Activity, QAfterWhereClause> startLessThan(
-    int start, {
+    DateTime start, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -538,8 +538,8 @@ extension ActivityQueryWhere on QueryBuilder<Activity, Activity, QWhereClause> {
   }
 
   QueryBuilder<Activity, Activity, QAfterWhereClause> startBetween(
-    int lowerStart,
-    int upperStart, {
+    DateTime lowerStart,
+    DateTime upperStart, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -1168,7 +1168,23 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> endEqualTo(int value) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> endIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'end',
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> endIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'end',
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> endEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'end',
@@ -1178,7 +1194,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> endGreaterThan(
-    int value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1191,7 +1207,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> endLessThan(
-    int value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1204,8 +1220,8 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> endBetween(
-    int lower,
-    int upper, {
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -2031,7 +2047,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> startEqualTo(int value) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> startEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'start',
@@ -2041,7 +2057,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> startGreaterThan(
-    int value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -2054,7 +2070,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> startLessThan(
-    int value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -2067,8 +2083,8 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> startBetween(
-    int lower,
-    int upper, {
+    DateTime lower,
+    DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -3869,7 +3885,7 @@ extension ActivityQueryProperty on QueryBuilder<Activity, Activity, QQueryProper
     });
   }
 
-  QueryBuilder<Activity, int, QQueryOperations> endProperty() {
+  QueryBuilder<Activity, DateTime?, QQueryOperations> endProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'end');
     });
@@ -3929,7 +3945,7 @@ extension ActivityQueryProperty on QueryBuilder<Activity, Activity, QQueryProper
     });
   }
 
-  QueryBuilder<Activity, int, QQueryOperations> startProperty() {
+  QueryBuilder<Activity, DateTime, QQueryOperations> startProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'start');
     });

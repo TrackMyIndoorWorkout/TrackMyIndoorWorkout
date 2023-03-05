@@ -458,16 +458,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.activitys.buildQuery(
-              sortBy: [
-                const SortProperty(
-                  property: 'start',
-                  sort: Sort.desc,
-                )
-              ],
-              offset: page * limit,
-              limit: limit,
-            ).findAll();
+            final data = await _database.activitys
+                .where()
+                .sortByStartDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -485,9 +481,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         empty: const Center(child: Text('No activities found')),
         itemBuilder: (context, _, item) {
           final activity = item as Activity;
-          final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
-          final dateString = DateFormat.yMd().format(startStamp);
-          final timeString = DateFormat.Hms().format(startStamp);
+          final dateString = DateFormat.yMd().format(activity.start);
+          final timeString = DateFormat.Hms().format(activity.start);
           return Card(
             elevation: 6,
             child: ExpandablePanel(

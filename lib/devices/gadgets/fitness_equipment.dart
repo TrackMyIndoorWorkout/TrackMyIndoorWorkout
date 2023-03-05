@@ -833,8 +833,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (workoutState == WorkoutState.waitingForFirstMove) {
       if (isNotMoving) {
-        if (_activity != null && _activity!.startDateTime != null) {
-          int elapsedMillis = now.difference(_activity!.startDateTime!).inMilliseconds;
+        if (_activity != null) {
+          int elapsedMillis = now.difference(_activity!.start).inMilliseconds;
           stub.adjustTime(elapsedMillis ~/ 1000, elapsedMillis);
           lastRecord.adjustTime(elapsedMillis ~/ 1000, elapsedMillis);
           return pausedRecord(stub);
@@ -851,8 +851,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
         // Null activity should only happen in UX simulation mode
         if (_activity != null) {
-          _activity!.startDateTime = now;
-          _activity!.start = now.millisecondsSinceEpoch;
+          _activity!.start = now;
           if (Get.isRegistered<Isar>()) {
             final database = Get.find<Isar>();
             database.writeTxnSync(() async {
@@ -916,7 +915,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       );
     }
 
-    int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
+    int elapsedMillis = now.difference(_activity?.start ?? now).inMilliseconds;
     double elapsed = elapsedMillis / 1000.0;
     // When the equipment supplied multiple data read per second but the Fitness Machine
     // standard only supplies second resolution elapsed time the delta time becomes zero

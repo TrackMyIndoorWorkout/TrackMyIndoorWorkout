@@ -45,11 +45,6 @@ const DeviceUsageSchema = CollectionSchema(
     r'time': PropertySchema(
       id: 5,
       name: r'time',
-      type: IsarType.long,
-    ),
-    r'timeStamp': PropertySchema(
-      id: 6,
-      name: r'timeStamp',
       type: IsarType.dateTime,
     )
   },
@@ -124,8 +119,7 @@ void _deviceUsageSerialize(
   writer.writeString(offsets[2], object.manufacturerName);
   writer.writeString(offsets[3], object.name);
   writer.writeString(offsets[4], object.sport);
-  writer.writeLong(offsets[5], object.time);
-  writer.writeDateTime(offsets[6], object.timeStamp);
+  writer.writeDateTime(offsets[5], object.time);
 }
 
 DeviceUsage _deviceUsageDeserialize(
@@ -141,7 +135,7 @@ DeviceUsage _deviceUsageDeserialize(
     manufacturerName: reader.readStringOrNull(offsets[2]),
     name: reader.readString(offsets[3]),
     sport: reader.readString(offsets[4]),
-    time: reader.readLong(offsets[5]),
+    time: reader.readDateTime(offsets[5]),
   );
   return object;
 }
@@ -164,8 +158,6 @@ P _deviceUsageDeserializeProp<P>(
     case 4:
       return (reader.readString(offset)) as P;
     case 5:
-      return (reader.readLong(offset)) as P;
-    case 6:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1056,7 +1048,7 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> timeEqualTo(int value) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> timeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'time',
@@ -1066,7 +1058,7 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> timeGreaterThan(
-    int value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1079,7 +1071,7 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> timeLessThan(
-    int value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1092,58 +1084,6 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> timeBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'time',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> timeStampEqualTo(DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'timeStamp',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> timeStampGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'timeStamp',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> timeStampLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'timeStamp',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> timeStampBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -1151,7 +1091,7 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'timeStamp',
+        property: r'time',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1235,18 +1175,6 @@ extension DeviceUsageQuerySortBy on QueryBuilder<DeviceUsage, DeviceUsage, QSort
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterSortBy> sortByTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'time', Sort.desc);
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterSortBy> sortByTimeStamp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.asc);
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterSortBy> sortByTimeStampDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.desc);
     });
   }
 }
@@ -1335,18 +1263,6 @@ extension DeviceUsageQuerySortThenBy on QueryBuilder<DeviceUsage, DeviceUsage, Q
       return query.addSortBy(r'time', Sort.desc);
     });
   }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterSortBy> thenByTimeStamp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.asc);
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterSortBy> thenByTimeStampDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.desc);
-    });
-  }
 }
 
 extension DeviceUsageQueryWhereDistinct on QueryBuilder<DeviceUsage, DeviceUsage, QDistinct> {
@@ -1385,12 +1301,6 @@ extension DeviceUsageQueryWhereDistinct on QueryBuilder<DeviceUsage, DeviceUsage
   QueryBuilder<DeviceUsage, DeviceUsage, QDistinct> distinctByTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'time');
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QDistinct> distinctByTimeStamp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'timeStamp');
     });
   }
 }
@@ -1432,15 +1342,9 @@ extension DeviceUsageQueryProperty on QueryBuilder<DeviceUsage, DeviceUsage, QQu
     });
   }
 
-  QueryBuilder<DeviceUsage, int, QQueryOperations> timeProperty() {
+  QueryBuilder<DeviceUsage, DateTime, QQueryOperations> timeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'time');
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DateTime, QQueryOperations> timeStampProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'timeStamp');
     });
   }
 }

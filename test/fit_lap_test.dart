@@ -23,12 +23,11 @@ void main() {
       test('FitLap data has the expected length', () async {
         final rng = Random();
         final lap = FitLap(0, withGps);
-        final now = DateTime.now();
         final exportRecord = ExportRecord(
           latitude: rng.nextDouble(),
           longitude: rng.nextDouble(),
           record: Record(
-            timeStamp: now.millisecondsSinceEpoch,
+            timeStamp: DateTime.now(),
           ),
         );
 

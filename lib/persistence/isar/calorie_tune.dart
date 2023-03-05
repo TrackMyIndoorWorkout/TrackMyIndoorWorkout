@@ -9,7 +9,7 @@ class CalorieTune {
   final String mac;
   double calorieFactor;
   bool hrBased;
-  int time; // ms since epoch
+  DateTime time;
 
   CalorieTune({
     this.id = Isar.autoIncrement,
@@ -18,6 +18,4 @@ class CalorieTune {
     required this.hrBased,
     required this.time,
   });
-
-  DateTime get timeStamp => DateTime.fromMillisecondsSinceEpoch(time);
 }

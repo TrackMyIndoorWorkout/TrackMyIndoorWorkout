@@ -11,7 +11,7 @@ import 'workout_summary.dart';
 class DbUtils {
   static bool hasLeaderboardData() {
     final database = Get.find<Isar>();
-    return database.workoutSummarys.count() > 0;
+    return database.workoutSummarys.countSync() > 0;
   }
 
   static Future<bool> recalculateDistance(Activity activity, [force = false]) async {
@@ -61,30 +61,15 @@ class DbUtils {
 
   static Future<double> powerFactor(String deviceId) async {
     final database = Get.find<Isar>();
-    final powerTune = await database.powerTunes
-        .buildQuery(sortBy: [
-          const SortProperty(
-            property: 'time',
-            sort: Sort.desc,
-          )
-        ])
-        .where()
-        .filter()
-        .macEqualTo(deviceId)
-        .findFirst();
+    final powerTune =
+        await database.powerTunes.where(sort: Sort.desc).filter().macEqualTo(deviceId).findFirst();
     return powerTune?.powerFactor ?? 1.0;
   }
 
   static Future<CalorieTune?> findCalorieTuneByMac(String mac, bool hrBased) async {
     final database = Get.find<Isar>();
     return await database.calorieTunes
-        .buildQuery(sortBy: [
-          const SortProperty(
-            property: 'time',
-            sort: Sort.desc,
-          )
-        ])
-        .where()
+        .where(sort: Sort.desc)
         .filter()
         .macEqualTo(mac)
         .hrBasedEqualTo(hrBased)

@@ -57,7 +57,7 @@ class C2AdditionalStatus1 extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       speed: getSpeed(data),
       pace: getPace(data),
       cadence: data[strokeRateByteIndex],

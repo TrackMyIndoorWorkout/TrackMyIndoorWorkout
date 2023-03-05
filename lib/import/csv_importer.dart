@@ -75,6 +75,7 @@ class CSVImporter with PowerSpeedMixin {
   static const timeResolutionFactor = 2;
 
   DateTime? start;
+  DateTime? end;
   String message = "";
 
   List<String> _lines = [];
@@ -174,8 +175,6 @@ class CSVImporter with PowerSpeedMixin {
     var deviceName = "";
     var deviceId = mPowerImportDeviceId;
     var hrmId = "";
-    var startTime = 0;
-    var endTime = 0;
     var calories = 0;
     var uploaded = false;
     var stravaId = 0;
@@ -226,7 +225,7 @@ class CSVImporter with PowerSpeedMixin {
         return null;
       }
 
-      startTime = int.tryParse(startTimeLine[1]) ?? 0;
+      final startTime = int.tryParse(startTimeLine[1]) ?? 0;
       if (startTime == 0) {
         message = "Couldn't parse $startTimeTag";
         return null;
@@ -242,7 +241,7 @@ class CSVImporter with PowerSpeedMixin {
         return null;
       }
 
-      endTime = int.tryParse(endTimeLine[1]) ?? 0;
+      final endTime = int.tryParse(endTimeLine[1]) ?? 0;
       if (endTime == 0) {
         message = "Couldn't parse $endTimeTag";
         return null;
@@ -495,8 +494,7 @@ class CSVImporter with PowerSpeedMixin {
         start = DateTime.now();
       }
 
-      startTime = start!.millisecondsSinceEpoch;
-      endTime = start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch;
+      end = start!.add(Duration(seconds: totalElapsed));
     }
 
     if (movingTime == 0 && totalElapsed > 0) {
@@ -531,13 +529,12 @@ class CSVImporter with PowerSpeedMixin {
       deviceName: deviceName,
       deviceId: deviceId,
       hrmId: hrmId,
-      start: startTime,
-      end: endTime,
+      start: start ?? DateTime.now(),
+      end: end,
       distance: totalDistance,
       elapsed: totalElapsed,
       movingTime: movingTime,
       calories: calories,
-      startDateTime: start,
       uploaded: uploaded,
       stravaId: stravaId,
       fourCC: fourCC,
@@ -574,9 +571,15 @@ class CSVImporter with PowerSpeedMixin {
 
       while (_linePointer < _lines.length) {
         final values = _lines[_linePointer].split(",");
+        DateTime? timeStamp;
+        final timeStampInt = int.tryParse(values[4]);
+        if (timeStampInt != null) {
+          timeStamp = DateTime.fromMillisecondsSinceEpoch(timeStampInt);
+        }
+
         final record = Record(
           activityId: activity.id,
-          timeStamp: int.tryParse(values[4]),
+          timeStamp: timeStamp,
           distance: double.tryParse(values[3]),
           elapsed: int.tryParse(values[5]),
           calories: int.tryParse(values[7]),

@@ -60,7 +60,7 @@ const RecordSchema = CollectionSchema(
     r'timeStamp': PropertySchema(
       id: 8,
       name: r'timeStamp',
-      type: IsarType.long,
+      type: IsarType.dateTime,
     )
   },
   estimateSize: _recordEstimateSize,
@@ -122,7 +122,7 @@ void _recordSerialize(
   writer.writeLong(offsets[5], object.heartRate);
   writer.writeLong(offsets[6], object.power);
   writer.writeDouble(offsets[7], object.speed);
-  writer.writeLong(offsets[8], object.timeStamp);
+  writer.writeDateTime(offsets[8], object.timeStamp);
 }
 
 Record _recordDeserialize(
@@ -141,7 +141,7 @@ Record _recordDeserialize(
     id: id,
     power: reader.readLongOrNull(offsets[6]),
     speed: reader.readDoubleOrNull(offsets[7]),
-    timeStamp: reader.readLongOrNull(offsets[8]),
+    timeStamp: reader.readDateTimeOrNull(offsets[8]),
   );
   return object;
 }
@@ -170,7 +170,7 @@ P _recordDeserializeProp<P>(
     case 7:
       return (reader.readDoubleOrNull(offset)) as P;
     case 8:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -289,7 +289,7 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     });
   }
 
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampEqualTo(int? timeStamp) {
+  QueryBuilder<Record, Record, QAfterWhereClause> timeStampEqualTo(DateTime? timeStamp) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
         indexName: r'timeStamp',
@@ -298,7 +298,7 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     });
   }
 
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampNotEqualTo(int? timeStamp) {
+  QueryBuilder<Record, Record, QAfterWhereClause> timeStampNotEqualTo(DateTime? timeStamp) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -333,7 +333,7 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
   }
 
   QueryBuilder<Record, Record, QAfterWhereClause> timeStampGreaterThan(
-    int? timeStamp, {
+    DateTime? timeStamp, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -347,7 +347,7 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
   }
 
   QueryBuilder<Record, Record, QAfterWhereClause> timeStampLessThan(
-    int? timeStamp, {
+    DateTime? timeStamp, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -361,8 +361,8 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
   }
 
   QueryBuilder<Record, Record, QAfterWhereClause> timeStampBetween(
-    int? lowerTimeStamp,
-    int? upperTimeStamp, {
+    DateTime? lowerTimeStamp,
+    DateTime? upperTimeStamp, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -1011,7 +1011,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> timeStampEqualTo(int? value) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> timeStampEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'timeStamp',
@@ -1021,7 +1021,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> timeStampGreaterThan(
-    int? value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1034,7 +1034,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> timeStampLessThan(
-    int? value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1047,8 +1047,8 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> timeStampBetween(
-    int? lower,
-    int? upper, {
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -1423,7 +1423,7 @@ extension RecordQueryProperty on QueryBuilder<Record, Record, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Record, int?, QQueryOperations> timeStampProperty() {
+  QueryBuilder<Record, DateTime?, QQueryOperations> timeStampProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'timeStamp');
     });

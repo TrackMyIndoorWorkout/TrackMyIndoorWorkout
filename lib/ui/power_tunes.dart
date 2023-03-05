@@ -121,16 +121,11 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.powerTunes.buildQuery(
-              sortBy: [
-                const SortProperty(
-                  property: 'mac',
-                  sort: Sort.desc,
-                )
-              ],
-              offset: page * limit,
-              limit: limit,
-            ).findAll();
+            final data = await _database.powerTunes
+                .where(sort: Sort.desc)
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -150,9 +145,8 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
         ),
         itemBuilder: (context, _, item) {
           final powerTune = item as PowerTune;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(powerTune.time);
-          final dateString = DateFormat.yMd().format(timeStamp);
-          final timeString = DateFormat.Hms().format(timeStamp);
+          final dateString = DateFormat.yMd().format(powerTune.time);
+          final timeString = DateFormat.Hms().format(powerTune.time);
           final powerPercent = (powerTune.powerFactor * 100).round();
           return Card(
             elevation: 6,

@@ -16,7 +16,7 @@ class WorkoutSummary {
   final String deviceName;
   final String deviceId;
   final String manufacturer;
-  final int start; // ms since epoch
+  final DateTime start;
   final double distance; // m
   final int elapsed; // s
   int movingTime; // ms
@@ -24,9 +24,6 @@ class WorkoutSummary {
   final String sport;
   final double powerFactor; // Unused
   final double calorieFactor; // Unused
-
-  @ignore
-  late DateTime startDateTime;
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
   String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();
@@ -45,7 +42,6 @@ class WorkoutSummary {
     this.powerFactor = 1.0,
     this.calorieFactor = 1.0,
   }) {
-    startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
     speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.ms2kmh : 0.0;
   }
 
@@ -82,7 +78,7 @@ class WorkoutSummary {
       deviceName: pacerIdentifier,
       deviceId: pacerIdentifier,
       manufacturer: pacerIdentifier,
-      start: DateTime.now().millisecondsSinceEpoch,
+      start: DateTime.now(),
       distance: 0.0,
       elapsed: 0,
       movingTime: 0,

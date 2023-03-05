@@ -78,7 +78,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
             if (sportPick != null) {
               _database.writeTxnSync(() {
                 deviceUsage.sport = sportPick;
-                deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
+                deviceUsage.time = DateTime.now();
                 _database.deviceUsages.putSync(deviceUsage);
                 setState(() {
                   _editCount++;
@@ -129,16 +129,11 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.deviceUsages.buildQuery(
-              sortBy: [
-                const SortProperty(
-                  property: 'mac',
-                  sort: Sort.desc,
-                )
-              ],
-              offset: page * limit,
-              limit: limit,
-            ).findAll();
+            final data = await _database.deviceUsages
+                .where(sort: Sort.desc)
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -158,9 +153,8 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         ),
         itemBuilder: (context, _, item) {
           final deviceUsage = item as DeviceUsage;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(deviceUsage.time);
-          final dateString = DateFormat.yMd().format(timeStamp);
-          final timeString = DateFormat.Hms().format(timeStamp);
+          final dateString = DateFormat.yMd().format(deviceUsage.time);
+          final timeString = DateFormat.Hms().format(deviceUsage.time);
           return Card(
             elevation: 6,
             child: ExpandablePanel(

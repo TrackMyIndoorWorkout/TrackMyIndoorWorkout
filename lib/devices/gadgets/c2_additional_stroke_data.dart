@@ -43,7 +43,7 @@ class C2AdditionalStrokeData extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       power: getPower(data)?.toInt(),
       sport: ActivityType.rowing,
     );

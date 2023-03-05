@@ -30,11 +30,6 @@ const PowerTuneSchema = CollectionSchema(
     r'time': PropertySchema(
       id: 2,
       name: r'time',
-      type: IsarType.long,
-    ),
-    r'timeStamp': PropertySchema(
-      id: 3,
-      name: r'timeStamp',
       type: IsarType.dateTime,
     )
   },
@@ -84,8 +79,7 @@ void _powerTuneSerialize(
 ) {
   writer.writeString(offsets[0], object.mac);
   writer.writeDouble(offsets[1], object.powerFactor);
-  writer.writeLong(offsets[2], object.time);
-  writer.writeDateTime(offsets[3], object.timeStamp);
+  writer.writeDateTime(offsets[2], object.time);
 }
 
 PowerTune _powerTuneDeserialize(
@@ -98,7 +92,7 @@ PowerTune _powerTuneDeserialize(
     id: id,
     mac: reader.readString(offsets[0]),
     powerFactor: reader.readDouble(offsets[1]),
-    time: reader.readLong(offsets[2]),
+    time: reader.readDateTime(offsets[2]),
   );
   return object;
 }
@@ -115,8 +109,6 @@ P _powerTuneDeserializeProp<P>(
     case 1:
       return (reader.readDouble(offset)) as P;
     case 2:
-      return (reader.readLong(offset)) as P;
-    case 3:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -495,7 +487,7 @@ extension PowerTuneQueryFilter on QueryBuilder<PowerTune, PowerTune, QFilterCond
     });
   }
 
-  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeEqualTo(int value) {
+  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'time',
@@ -505,7 +497,7 @@ extension PowerTuneQueryFilter on QueryBuilder<PowerTune, PowerTune, QFilterCond
   }
 
   QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeGreaterThan(
-    int value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -518,7 +510,7 @@ extension PowerTuneQueryFilter on QueryBuilder<PowerTune, PowerTune, QFilterCond
   }
 
   QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeLessThan(
-    int value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -531,58 +523,6 @@ extension PowerTuneQueryFilter on QueryBuilder<PowerTune, PowerTune, QFilterCond
   }
 
   QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'time',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeStampEqualTo(DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'timeStamp',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeStampGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'timeStamp',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeStampLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'timeStamp',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeStampBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -590,7 +530,7 @@ extension PowerTuneQueryFilter on QueryBuilder<PowerTune, PowerTune, QFilterCond
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'timeStamp',
+        property: r'time',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -638,18 +578,6 @@ extension PowerTuneQuerySortBy on QueryBuilder<PowerTune, PowerTune, QSortBy> {
   QueryBuilder<PowerTune, PowerTune, QAfterSortBy> sortByTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'time', Sort.desc);
-    });
-  }
-
-  QueryBuilder<PowerTune, PowerTune, QAfterSortBy> sortByTimeStamp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.asc);
-    });
-  }
-
-  QueryBuilder<PowerTune, PowerTune, QAfterSortBy> sortByTimeStampDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.desc);
     });
   }
 }
@@ -702,18 +630,6 @@ extension PowerTuneQuerySortThenBy on QueryBuilder<PowerTune, PowerTune, QSortTh
       return query.addSortBy(r'time', Sort.desc);
     });
   }
-
-  QueryBuilder<PowerTune, PowerTune, QAfterSortBy> thenByTimeStamp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.asc);
-    });
-  }
-
-  QueryBuilder<PowerTune, PowerTune, QAfterSortBy> thenByTimeStampDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.desc);
-    });
-  }
 }
 
 extension PowerTuneQueryWhereDistinct on QueryBuilder<PowerTune, PowerTune, QDistinct> {
@@ -732,12 +648,6 @@ extension PowerTuneQueryWhereDistinct on QueryBuilder<PowerTune, PowerTune, QDis
   QueryBuilder<PowerTune, PowerTune, QDistinct> distinctByTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'time');
-    });
-  }
-
-  QueryBuilder<PowerTune, PowerTune, QDistinct> distinctByTimeStamp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'timeStamp');
     });
   }
 }
@@ -761,15 +671,9 @@ extension PowerTuneQueryProperty on QueryBuilder<PowerTune, PowerTune, QQueryPro
     });
   }
 
-  QueryBuilder<PowerTune, int, QQueryOperations> timeProperty() {
+  QueryBuilder<PowerTune, DateTime, QQueryOperations> timeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'time');
-    });
-  }
-
-  QueryBuilder<PowerTune, DateTime, QQueryOperations> timeStampProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'timeStamp');
     });
   }
 }

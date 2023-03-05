@@ -4,7 +4,6 @@ import 'package:isar/isar.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../preferences/log_level.dart';
-import '../../../ui/models/display_record.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/display.dart';
 import '../../../utils/logging.dart';
@@ -17,7 +16,7 @@ class Record {
   Id id;
   int? activityId;
   @Index()
-  int? timeStamp; // ms since epoch
+  DateTime? timeStamp;
   double? distance; // m
   int? elapsed; // s
   int? calories; // kCal
@@ -29,8 +28,6 @@ class Record {
   @Backlink(to: 'records')
   final activity = IsarLink<Activity>();
 
-  @ignore
-  DateTime? dt;
   @ignore
   int? elapsedMillis;
   @ignore
@@ -64,18 +61,6 @@ class Record {
     this.caloriesPerHour,
     this.caloriesPerMinute,
   }) {
-    if (dt == null) {
-      if (timeStamp != null && timeStamp! > 0) {
-        _dtFromTimeStamp();
-      } else {
-        dt = DateTime.now();
-      }
-    }
-
-    if ((timeStamp == null || timeStamp == 0) && dt != null) {
-      timeStamp = dt!.millisecondsSinceEpoch;
-    }
-
     paceToSpeed();
   }
 
@@ -103,18 +88,6 @@ class Record {
     }
   }
 
-  void _dtFromTimeStamp() {
-    if (timeStamp == null) return;
-
-    dt = DateTime.fromMillisecondsSinceEpoch(timeStamp!);
-  }
-
-  Record hydrate(String sport) {
-    _dtFromTimeStamp();
-    this.sport = sport;
-    return this;
-  }
-
   double speedByUnit(bool si) {
     return speedByUnitCore(speed ?? 0.0, si);
   }
@@ -125,10 +98,6 @@ class Record {
 
   String distanceStringByUnit(bool si, bool highRes) {
     return distanceString(distance ?? 0.0, si, highRes);
-  }
-
-  DisplayRecord display() {
-    return DisplayRecord(this);
   }
 
   bool isNotMoving() {
@@ -349,9 +318,9 @@ class Record {
   }
 
   void adjustTime(int newElapsed, int newElapsedMillis) {
-    if (elapsedMillis != null && dt != null) {
+    if (elapsedMillis != null && timeStamp != null) {
       final dMillis = newElapsedMillis - elapsedMillis!;
-      dt = dt!.add(Duration(milliseconds: dMillis));
+      timeStamp = timeStamp!.add(Duration(milliseconds: dMillis));
     }
 
     elapsed = newElapsed;
@@ -474,7 +443,7 @@ class RecordWithSport extends Record {
             ? 30.0 + random.nextDouble() * 20.0
             : 2.0 + random.nextDouble() * 10.0);
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       calories: random.nextInt(1500),
       power: 50 + random.nextInt(500),
       speed: spd,
@@ -517,10 +486,6 @@ class RecordWithSport extends Record {
 
   factory RecordWithSport.offsetBack(Record record, Record continuationRecord) {
     final clone = RecordWithSport.clone(record);
-
-    if (clone.timeStamp != null && continuationRecord.timeStamp != null) {
-      clone.timeStamp = clone.timeStamp! - continuationRecord.timeStamp!;
-    }
 
     if (clone.distance != null && continuationRecord.distance != null) {
       clone.distance = clone.distance! - continuationRecord.distance!;

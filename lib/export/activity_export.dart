@@ -90,7 +90,6 @@ abstract class ActivityExport {
     bool compress,
     int exportTarget,
   ) async {
-    activity.hydrate();
     final descriptor = activity.deviceDescriptor();
     final track = await TrackManager().getTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
@@ -169,14 +168,13 @@ abstract class ActivityExport {
   }
 
   Map<String, dynamic> getPersistenceValues(Activity activity, bool compressed) {
-    final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
-    final dateString = DateFormat.yMd().format(startStamp);
-    final timeString = DateFormat.Hms().format(startStamp);
+    final dateString = DateFormat.yMd().format(activity.start);
+    final timeString = DateFormat.Hms().format(activity.start);
     final fileName = 'Activity_${dateString}_$timeString.${fileExtension(compressed)}'
         .replaceAll('/', '-')
         .replaceAll(':', '-');
     return {
-      'startStamp': startStamp,
+      'startStamp': activity.start,
       'name': '${activity.sport} at $dateString $timeString',
       'description': '${activity.sport} by ${activity.deviceName}',
       'fileName': fileName,

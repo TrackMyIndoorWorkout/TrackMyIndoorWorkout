@@ -158,7 +158,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       distance: distance,
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),

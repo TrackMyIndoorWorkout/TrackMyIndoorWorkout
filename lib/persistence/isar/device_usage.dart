@@ -12,7 +12,7 @@ class DeviceUsage {
   final String name;
   final String manufacturer;
   String? manufacturerName;
-  int time; // ms since epoch
+  DateTime time;
 
   DeviceUsage({
     this.id = Isar.autoIncrement,
@@ -23,6 +23,4 @@ class DeviceUsage {
     this.manufacturerName,
     required this.time,
   });
-
-  DateTime get timeStamp => DateTime.fromMillisecondsSinceEpoch(time);
 }

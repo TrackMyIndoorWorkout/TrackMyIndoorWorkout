@@ -32,7 +32,7 @@ class SchwinnX70HrSensor extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       heartRate: data[heartRateByteIndex],
       sport: ActivityType.ride,
     );

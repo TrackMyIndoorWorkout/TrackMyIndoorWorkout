@@ -13,6 +13,6 @@ class ExportRecord {
   });
 
   double elapsed(Activity activity) {
-    return ((record.timeStamp ?? 0) - activity.start) / 1000;
+    return (record.timeStamp ?? DateTime.now()).difference(activity.start).inMilliseconds / 1000;
   }
 }

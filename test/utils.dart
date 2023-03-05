@@ -42,7 +42,7 @@ class ExportModelForTests extends ExportModel {
                 deviceName: "Test Dummy",
                 deviceId: "CAFEBAEBE",
                 hrmId: "",
-                start: 0,
+                start: DateTime.now(),
                 fourCC: schwinnACPerfPlusFourCC,
                 sport: ActivityType.ride,
                 powerFactor: 1.0,

@@ -8,7 +8,7 @@ class PowerTune {
   @Index()
   final String mac;
   double powerFactor;
-  int time; // ms since epoch
+  DateTime time;
 
   PowerTune({
     this.id = Isar.autoIncrement,
@@ -16,6 +16,4 @@ class PowerTune {
     required this.powerFactor,
     required this.time,
   });
-
-  DateTime get timeStamp => DateTime.fromMillisecondsSinceEpoch(time);
 }

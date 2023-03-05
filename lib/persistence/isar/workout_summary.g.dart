@@ -85,7 +85,7 @@ const WorkoutSummarySchema = CollectionSchema(
     r'start': PropertySchema(
       id: 13,
       name: r'start',
-      type: IsarType.long,
+      type: IsarType.dateTime,
     )
   },
   estimateSize: _workoutSummaryEstimateSize,
@@ -93,7 +93,21 @@ const WorkoutSummarySchema = CollectionSchema(
   deserialize: _workoutSummaryDeserialize,
   deserializeProp: _workoutSummaryDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'deviceId': IndexSchema(
+      id: 4442814072367132509,
+      name: r'deviceId',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'deviceId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _workoutSummaryGetId,
@@ -136,7 +150,7 @@ void _workoutSummarySerialize(
   writer.writeDouble(offsets[10], object.powerFactor);
   writer.writeDouble(offsets[11], object.speed);
   writer.writeString(offsets[12], object.sport);
-  writer.writeLong(offsets[13], object.start);
+  writer.writeDateTime(offsets[13], object.start);
 }
 
 WorkoutSummary _workoutSummaryDeserialize(
@@ -156,7 +170,7 @@ WorkoutSummary _workoutSummaryDeserialize(
     movingTime: reader.readLong(offsets[8]),
     powerFactor: reader.readDoubleOrNull(offsets[10]) ?? 1.0,
     sport: reader.readString(offsets[12]),
-    start: reader.readLong(offsets[13]),
+    start: reader.readDateTime(offsets[13]),
   );
   object.speed = reader.readDouble(offsets[11]);
   return object;
@@ -196,7 +210,7 @@ P _workoutSummaryDeserializeProp<P>(
     case 12:
       return (reader.readString(offset)) as P;
     case 13:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -285,6 +299,50 @@ extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummar
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> deviceIdEqualTo(String deviceId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'deviceId',
+        value: [deviceId],
+      ));
+    });
+  }
+
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> deviceIdNotEqualTo(
+      String deviceId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'deviceId',
+              lower: [],
+              upper: [deviceId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'deviceId',
+              lower: [deviceId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'deviceId',
+              lower: [deviceId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'deviceId',
+              lower: [],
+              upper: [deviceId],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }
@@ -1481,7 +1539,7 @@ extension WorkoutSummaryQueryFilter
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> startEqualTo(int value) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> startEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'start',
@@ -1491,7 +1549,7 @@ extension WorkoutSummaryQueryFilter
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> startGreaterThan(
-    int value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1504,7 +1562,7 @@ extension WorkoutSummaryQueryFilter
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> startLessThan(
-    int value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1517,8 +1575,8 @@ extension WorkoutSummaryQueryFilter
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> startBetween(
-    int lower,
-    int upper, {
+    DateTime lower,
+    DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -2072,7 +2130,7 @@ extension WorkoutSummaryQueryProperty
     });
   }
 
-  QueryBuilder<WorkoutSummary, int, QQueryOperations> startProperty() {
+  QueryBuilder<WorkoutSummary, DateTime, QQueryOperations> startProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'start');
     });

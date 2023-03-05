@@ -60,15 +60,8 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
               final database = Get.find<Isar>();
               final powerFactor = _powerFactorPercent / 100.0;
               final powerTune = await database.powerTunes
-                  .buildQuery(sortBy: [
-                    const SortProperty(
-                      property: 'time',
-                      sort: Sort.desc,
-                    )
-                  ])
-                  .where()
-                  .filter()
-                  .isMacEqualTo(widget.deviceId)
+                  .where(sort: Sort.desc)
+                  .macEqualTo(widget.deviceId)
                   .findFirst();
               if (powerTune != null) {
                 database.writeTxnSync(() {
@@ -80,7 +73,7 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
                   final powerTune = PowerTune(
                     mac: widget.deviceId,
                     powerFactor: powerFactor,
-                    time: DateTime.now().millisecondsSinceEpoch,
+                    time: DateTime.now(),
                   );
                   database.powerTunes.putSync(powerTune);
                 });

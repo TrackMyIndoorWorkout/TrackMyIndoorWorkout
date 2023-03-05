@@ -118,16 +118,11 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.calorieTunes.buildQuery(
-              sortBy: [
-                const SortProperty(
-                  property: 'mac',
-                  sort: Sort.desc,
-                )
-              ],
-              offset: page * limit,
-              limit: limit,
-            ).findAll();
+            final data = await _database.calorieTunes
+                .where(sort: Sort.desc)
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -147,9 +142,8 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         ),
         itemBuilder: (context, _, item) {
           final calorieTune = item as CalorieTune;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(calorieTune.time);
-          final dateString = DateFormat.yMd().format(timeStamp);
-          final timeString = DateFormat.Hms().format(timeStamp);
+          final dateString = DateFormat.yMd().format(calorieTune.time);
+          final timeString = DateFormat.Hms().format(calorieTune.time);
           final hrBasedString = calorieTune.hrBased ? "HR based" : "Non HR based";
           final caloriePercent = (calorieTune.calorieFactor * 100).round();
           return Card(

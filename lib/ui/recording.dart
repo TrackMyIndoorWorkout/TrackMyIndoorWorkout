@@ -330,7 +330,7 @@ class RecordingState extends State<RecordingScreen> {
       final unfinished = await DbUtils.unfinishedDeviceActivities(widget.device.id.id);
       if (unfinished.isNotEmpty) {
         final yesterday = now.subtract(const Duration(days: 1));
-        if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
+        if (unfinished.first.start.isAfter(yesterday)) {
           _activity = unfinished.first;
           continued = true;
         }
@@ -353,8 +353,7 @@ class RecordingState extends State<RecordingScreen> {
         deviceName: widget.device.nonEmptyName,
         deviceId: widget.device.id.id,
         hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
-        start: now.millisecondsSinceEpoch,
-        startDateTime: now,
+        start: now,
         sport: widget.descriptor.sport,
         powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
         calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
@@ -382,26 +381,14 @@ class RecordingState extends State<RecordingScreen> {
       if (_leaderboardFeature) {
         _leaderboard = _rankingForSportOrDevice
             ? await _database.workoutSummarys
-                .buildQuery(sortBy: [
-                  const SortProperty(
-                    property: 'speed',
-                    sort: Sort.desc,
-                  )
-                ])
-                .where()
                 .filter()
                 .sportEqualTo(widget.descriptor.sport)
+                .sortBySpeedDesc()
                 .findAll()
             : await _database.workoutSummarys
-                .buildQuery(sortBy: [
-                  const SortProperty(
-                    property: 'speed',
-                    sort: Sort.desc,
-                  )
-                ])
-                .where()
                 .filter()
                 .deviceIdEqualTo(widget.device.id.id)
+                .sortBySpeedDesc()
                 .findAll();
 
         if (_showPacer && _pacerWorkout != null) {
@@ -475,15 +462,15 @@ class RecordingState extends State<RecordingScreen> {
 
         setState(() {
           if (!_simplerUi) {
-            _graphData.add(record.display());
+            _graphData.add(DisplayRecord.fromRecord(record));
             if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
                 _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-              _graphAvgData.add(_accu.averageDisplayRecord(record.dt));
+              _graphAvgData.add(_accu.averageDisplayRecord(record.timeStamp));
             }
 
             if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
                 _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-              _graphMaxData.add(_accu.maximumDisplayRecord(record.dt));
+              _graphMaxData.add(_accu.maximumDisplayRecord(record.timeStamp));
             }
 
             if (_pointCount > 0 && _graphData.length > _pointCount) {
@@ -1093,7 +1080,7 @@ class RecordingState extends State<RecordingScreen> {
     final exporter = FitExport();
     final fileBytes = await exporter.getExport(
       _activity!,
-      _activity.records.findAll(),
+      _activity!.records.findAll(),
       false,
       _calculateGps,
       false,
@@ -1178,7 +1165,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
         animationDuration: 0,
@@ -1189,7 +1176,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.power,
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1202,7 +1189,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.power,
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1217,7 +1204,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
         color: _chartTextColor,
         animationDuration: 0,
@@ -1229,7 +1216,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1242,7 +1229,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1257,7 +1244,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartTextColor,
         animationDuration: 0,
@@ -1269,7 +1256,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.cadence,
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1282,7 +1269,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.cadence,
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1297,7 +1284,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
         animationDuration: 0,
@@ -1309,7 +1296,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.heartRate,
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1322,7 +1309,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.heartRate,
           color: _chartMaxColor,
           animationDuration: 0,

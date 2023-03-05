@@ -38,13 +38,12 @@ void main() {
           heartRateLimitingMethodDefault,
           withGps,
         );
-        final now = DateTime.now();
         final exportRecord = withGps
             ? ExportRecord(
                 latitude: rng.nextDouble(),
                 longitude: rng.nextDouble(),
                 record: Record(
-                  timeStamp: now.millisecondsSinceEpoch,
+                  timeStamp: DateTime.now(),
                   power: 0,
                   speed: 0.0,
                   cadence: 0,
@@ -53,7 +52,7 @@ void main() {
               )
             : ExportRecord(
                 record: Record(
-                  timeStamp: now.millisecondsSinceEpoch,
+                  timeStamp: DateTime.now(),
                   power: 0,
                   speed: 0.0,
                   cadence: 0,

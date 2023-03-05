@@ -106,7 +106,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       distance: distance,
       speed: speed,
       cadence: crankCadence?.toInt(),

@@ -113,19 +113,11 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final data = await _database.workoutSummarys
-                .buildQuery(
-                  sortBy: [
-                    const SortProperty(
-                      property: 'mac',
-                      sort: Sort.desc,
-                    )
-                  ],
-                  offset: page * limit,
-                  limit: limit,
-                )
-                .where()
                 .filter()
-                .deviceIdEqualsTo(widget.device.item1)
+                .deviceIdEqualTo(widget.device.item1)
+                .sortBySpeedDesc()
+                .offset(page * limit)
+                .limit(limit)
                 .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
@@ -146,9 +138,8 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
         ),
         itemBuilder: (context, index, item) {
           final workoutSummary = item as WorkoutSummary;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(workoutSummary.start);
-          final dateString = DateFormat.yMd().format(timeStamp);
-          final timeString = DateFormat.Hms().format(timeStamp);
+          final dateString = DateFormat.yMd().format(workoutSummary.start);
+          final timeString = DateFormat.Hms().format(workoutSummary.start);
           final speedString = workoutSummary.speedString(_si, _slowSpeed);
           final distanceString = workoutSummary.distanceStringWithUnit(_si, _highRes);
           final timeDisplay = Duration(seconds: workoutSummary.elapsed).toDisplay();

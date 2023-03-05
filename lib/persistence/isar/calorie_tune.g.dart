@@ -35,11 +35,6 @@ const CalorieTuneSchema = CollectionSchema(
     r'time': PropertySchema(
       id: 3,
       name: r'time',
-      type: IsarType.long,
-    ),
-    r'timeStamp': PropertySchema(
-      id: 4,
-      name: r'timeStamp',
       type: IsarType.dateTime,
     )
   },
@@ -90,8 +85,7 @@ void _calorieTuneSerialize(
   writer.writeDouble(offsets[0], object.calorieFactor);
   writer.writeBool(offsets[1], object.hrBased);
   writer.writeString(offsets[2], object.mac);
-  writer.writeLong(offsets[3], object.time);
-  writer.writeDateTime(offsets[4], object.timeStamp);
+  writer.writeDateTime(offsets[3], object.time);
 }
 
 CalorieTune _calorieTuneDeserialize(
@@ -105,7 +99,7 @@ CalorieTune _calorieTuneDeserialize(
     hrBased: reader.readBool(offsets[1]),
     id: id,
     mac: reader.readString(offsets[2]),
-    time: reader.readLong(offsets[3]),
+    time: reader.readDateTime(offsets[3]),
   );
   return object;
 }
@@ -124,8 +118,6 @@ P _calorieTuneDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readLong(offset)) as P;
-    case 4:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -514,7 +506,7 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeEqualTo(int value) {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'time',
@@ -524,7 +516,7 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }
 
   QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeGreaterThan(
-    int value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -537,7 +529,7 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }
 
   QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeLessThan(
-    int value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -550,58 +542,6 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }
 
   QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'time',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeStampEqualTo(DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'timeStamp',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeStampGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'timeStamp',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeStampLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'timeStamp',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeStampBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -609,7 +549,7 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'timeStamp',
+        property: r'time',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -669,18 +609,6 @@ extension CalorieTuneQuerySortBy on QueryBuilder<CalorieTune, CalorieTune, QSort
   QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy> sortByTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'time', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy> sortByTimeStamp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy> sortByTimeStampDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.desc);
     });
   }
 }
@@ -745,18 +673,6 @@ extension CalorieTuneQuerySortThenBy on QueryBuilder<CalorieTune, CalorieTune, Q
       return query.addSortBy(r'time', Sort.desc);
     });
   }
-
-  QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy> thenByTimeStamp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy> thenByTimeStampDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'timeStamp', Sort.desc);
-    });
-  }
 }
 
 extension CalorieTuneQueryWhereDistinct on QueryBuilder<CalorieTune, CalorieTune, QDistinct> {
@@ -781,12 +697,6 @@ extension CalorieTuneQueryWhereDistinct on QueryBuilder<CalorieTune, CalorieTune
   QueryBuilder<CalorieTune, CalorieTune, QDistinct> distinctByTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'time');
-    });
-  }
-
-  QueryBuilder<CalorieTune, CalorieTune, QDistinct> distinctByTimeStamp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'timeStamp');
     });
   }
 }
@@ -816,15 +726,9 @@ extension CalorieTuneQueryProperty on QueryBuilder<CalorieTune, CalorieTune, QQu
     });
   }
 
-  QueryBuilder<CalorieTune, int, QQueryOperations> timeProperty() {
+  QueryBuilder<CalorieTune, DateTime, QQueryOperations> timeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'time');
-    });
-  }
-
-  QueryBuilder<CalorieTune, DateTime, QQueryOperations> timeStampProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'timeStamp');
     });
   }
 }

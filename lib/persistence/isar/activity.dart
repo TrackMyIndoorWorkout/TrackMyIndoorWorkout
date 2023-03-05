@@ -21,8 +21,8 @@ class Activity {
   final String deviceId;
   String hrmId;
   @Index()
-  int start; // ms since epoch
-  int end; // ms since epoch
+  DateTime start;
+  DateTime? end;
   double distance; // m
   int elapsed; // s
   int movingTime; // ms
@@ -49,9 +49,6 @@ class Activity {
 
   final records = IsarLinks<Record>();
 
-  @ignore
-  DateTime? startDateTime;
-
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
   String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();
 
@@ -61,7 +58,7 @@ class Activity {
     required this.deviceId,
     required this.hrmId,
     required this.start,
-    this.end = 0,
+    this.end,
     this.distance = 0.0,
     this.elapsed = 0,
     this.movingTime = 0,
@@ -77,7 +74,6 @@ class Activity {
     this.suuntoWorkoutUrl = "",
     this.trainingPeaksAthleteId = 0,
     this.trainingPeaksWorkoutId = 0,
-    this.startDateTime,
     required this.fourCC,
     required this.sport,
     required this.powerFactor,
@@ -89,7 +85,7 @@ class Activity {
   });
 
   void finish(double? distance, int? elapsed, int? calories, int movingTime) {
-    end = DateTime.now().millisecondsSinceEpoch;
+    end = DateTime.now();
     this.distance = distance ?? 0.0;
     this.elapsed = elapsed ?? 0;
     this.calories = calories ?? 0;
@@ -170,11 +166,6 @@ class Activity {
 
   String distanceByUnit(bool si, bool highRes) {
     return display.distanceByUnit(distance, si, highRes);
-  }
-
-  Activity hydrate() {
-    startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
-    return this;
   }
 
   DeviceDescriptor deviceDescriptor() {

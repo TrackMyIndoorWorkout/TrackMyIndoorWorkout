@@ -71,7 +71,7 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       distance: getDistance(data),
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
