@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:mockito/annotations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
@@ -13,14 +14,30 @@ import 'package:track_my_indoor_exercise/export/export_model.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/import/csv_importer.dart';
 import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/calorie_tune.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/db_utils.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/device_usage.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/power_tune.dart';
 import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/workout_summary.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
-import 'database_utils.dart';
 import 'utils.dart';
 
 @GenerateNiceMocks([MockSpec<PackageInfo>()])
 void main() {
+  setUpAll(() async {
+    final isar = await Isar.open([
+      ActivitySchema,
+      CalorieTuneSchema,
+      DeviceUsageSchema,
+      PowerTuneSchema,
+      RecordSchema,
+      WorkoutSummarySchema,
+    ]);
+    Get.put<Isar>(isar, permanent: true);
+  });
+
   group('Migration CSV imports identically', () {
     final rnd = Random();
     getRandomInts(smallRepetition, 300, rnd).forEach((recordCount) {
@@ -36,16 +53,6 @@ void main() {
           version: "1.0.199",
         );
         Get.put<PackageInfo>(packageInfo);
-        final hasDB = Get.isRegistered<AppDatabase>();
-        final database = hasDB ? Get.find<AppDatabase>() : InMemoryDatabase();
-        if (hasDB) {
-          final inMemoryDB = database as InMemoryDatabase;
-          inMemoryDB.activityDaoImpl.activities = [];
-          inMemoryDB.recordDaoImpl.records = [];
-        } else {
-          Get.put<AppDatabase>(database);
-        }
-
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = DeviceFactory.getSchwinnIcBike();
         final calories = rnd.nextInt(1000);
@@ -199,8 +206,7 @@ void main() {
         expect(importedActivity.trainingPeaksWorkoutId, activity.trainingPeaksWorkoutId);
         expect(importedActivity.movingTime, activity.movingTime);
 
-        final importedRecords =
-            await database.recordDao.findAllActivityRecords(importedActivity.id);
+        final importedRecords = await DbUtils().getRecords(importedActivity.id);
         expect(importedRecords.length, records.length);
         for (final pairs in IterableZip<Record>([importedRecords, records.map((e) => e.record)])) {
           expect(pairs[0].activityId, importedActivity.id);
@@ -231,16 +237,6 @@ void main() {
           version: "1.0.199",
         );
         Get.put<PackageInfo>(packageInfo);
-        final hasDB = Get.isRegistered<AppDatabase>();
-        final database = hasDB ? Get.find<AppDatabase>() : InMemoryDatabase();
-        if (hasDB) {
-          final inMemoryDB = database as InMemoryDatabase;
-          inMemoryDB.activityDaoImpl.activities = [];
-          inMemoryDB.recordDaoImpl.records = [];
-        } else {
-          Get.put<AppDatabase>(database);
-        }
-
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = DeviceFactory.getSchwinnIcBike();
         final calories = rnd.nextInt(1000);
@@ -355,8 +351,7 @@ void main() {
         expect(importedActivity.trainingPeaksWorkoutId, activity.trainingPeaksWorkoutId);
         expect(importedActivity.movingTime, activity.movingTime);
 
-        final importedRecords =
-            await database.recordDao.findAllActivityRecords(importedActivity.id);
+        final importedRecords = await DbUtils().getRecords(importedActivity.id);
         expect(importedRecords.length, records.length);
         for (final pairs in IterableZip<Record>([importedRecords, records.map((e) => e.record)])) {
           expect(pairs[0].activityId, importedActivity.id);

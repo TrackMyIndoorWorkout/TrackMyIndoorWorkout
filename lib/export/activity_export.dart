@@ -7,6 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../persistence/isar/activity.dart';
+import '../persistence/isar/db_utils.dart';
 import '../persistence/isar/record.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
@@ -84,7 +85,6 @@ abstract class ActivityExport {
 
   Future<List<int>> getExport(
     Activity activity,
-    List<Record> records,
     bool rawData,
     bool calculateGps,
     bool compress,
@@ -93,6 +93,7 @@ abstract class ActivityExport {
     final descriptor = activity.deviceDescriptor();
     final track = await TrackManager().getTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
+    final records = await DbUtils().getRecords(activity.id);
     final exportRecords = records.map((r) {
       final record = recordToExport(r, activity, calculator, calculateGps, rawData);
 

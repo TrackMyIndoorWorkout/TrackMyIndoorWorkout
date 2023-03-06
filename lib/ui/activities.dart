@@ -19,6 +19,7 @@ import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/isar/activity.dart';
 import '../persistence/isar/db_utils.dart';
+import '../persistence/isar/record.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/leaderboard_and_rank.dart';
@@ -170,11 +171,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             return;
           }
 
-          final records = activity.records;
           ActivityExport exporter = getExporter(formatPick);
           final fileBytes = await exporter.getExport(
             activity,
-            records,
             formatPick == "CSV",
             _calculateGps,
             false,
@@ -299,9 +298,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             confirm: TextButton(
               child: const Text("Yes"),
               onPressed: () async {
-                activity.records.removeAll();
-                activity.records.saveSync();
                 _database.writeTxnSync(() {
+                  _database.records.filter().activityIdEqualTo(activity.id).deleteAllSync();
                   _database.activitys.deleteSync(activity.id);
                   setState(() {
                     _editCount++;
@@ -396,7 +394,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       }),
     ];
 
-    if (_leaderboardFeature && DbUtils.hasLeaderboardData()) {
+    if (_leaderboardFeature && DbUtils().hasLeaderboardData()) {
       floatingActionButtons.add(
         _themeManager.getBlueFab(Icons.leaderboard, () async {
           Get.bottomSheet(

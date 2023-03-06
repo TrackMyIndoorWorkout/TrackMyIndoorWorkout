@@ -81,8 +81,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   );
 
   Future<void> extraInit(BasePrefService prefService) async {
-    _allRecords = widget.activity.records.findAll();
-
+    _allRecords = await DbUtils().getRecords(widget.activity.id);
     setState(() {
       _pointCount = widget.size.width.toInt() - 20;
       if (_allRecords.length < _pointCount) {
@@ -663,7 +662,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
             final tm = TrackManager();
             final track = await tm.getTrack(widget.activity.sport);
             debugPrint(track.name);
-            // await DbUtils.recalculateDistance(widget.activity, true);
+            // await DbUtils().recalculateDistance(widget.activity, true);
           },
         ),
       );

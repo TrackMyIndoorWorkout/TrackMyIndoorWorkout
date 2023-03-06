@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
 import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/record.dart';
 import 'strava/constants.dart';
 import 'strava/strava_service.dart';
 import 'suunto/constants.dart';
@@ -20,7 +19,7 @@ abstract class UploadService {
 
   Future<int> logout();
 
-  Future<int> upload(Activity activity, List<Record> records, bool calculateGps);
+  Future<int> upload(Activity activity, bool calculateGps);
 
   static UploadService getInstance(String portalType) {
     switch (portalType) {

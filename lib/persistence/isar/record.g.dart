@@ -83,15 +83,7 @@ const RecordSchema = CollectionSchema(
       ],
     )
   },
-  links: {
-    r'activity': LinkSchema(
-      id: 8278920821187945410,
-      name: r'activity',
-      target: r'Activity',
-      single: true,
-      linkName: r'records',
-    )
-  },
+  links: {},
   embeddedSchemas: {},
   getId: _recordGetId,
   getLinks: _recordGetLinks,
@@ -132,7 +124,7 @@ Record _recordDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Record(
-    activityId: reader.readLongOrNull(offsets[0]),
+    activityId: reader.readLongOrNull(offsets[0]) ?? Isar.minId,
     cadence: reader.readLongOrNull(offsets[1]),
     calories: reader.readLongOrNull(offsets[2]),
     distance: reader.readDoubleOrNull(offsets[3]),
@@ -154,7 +146,7 @@ P _recordDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? Isar.minId) as P;
     case 1:
       return (reader.readLongOrNull(offset)) as P;
     case 2:
@@ -181,12 +173,11 @@ Id _recordGetId(Record object) {
 }
 
 List<IsarLinkBase<dynamic>> _recordGetLinks(Record object) {
-  return [object.activity];
+  return [];
 }
 
 void _recordAttach(IsarCollection<dynamic> col, Id id, Record object) {
   object.id = id;
-  object.activity.attach(col, col.isar.collection<Activity>(), r'activity', id);
 }
 
 extension RecordQueryWhereSort on QueryBuilder<Record, Record, QWhere> {
@@ -379,23 +370,7 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
 }
 
 extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
-  QueryBuilder<Record, Record, QAfterFilterCondition> activityIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'activityId',
-      ));
-    });
-  }
-
-  QueryBuilder<Record, Record, QAfterFilterCondition> activityIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'activityId',
-      ));
-    });
-  }
-
-  QueryBuilder<Record, Record, QAfterFilterCondition> activityIdEqualTo(int? value) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> activityIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'activityId',
@@ -405,7 +380,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> activityIdGreaterThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -418,7 +393,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> activityIdLessThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -431,8 +406,8 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> activityIdBetween(
-    int? lower,
-    int? upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -1066,19 +1041,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
 
 extension RecordQueryObject on QueryBuilder<Record, Record, QFilterCondition> {}
 
-extension RecordQueryLinks on QueryBuilder<Record, Record, QFilterCondition> {
-  QueryBuilder<Record, Record, QAfterFilterCondition> activity(FilterQuery<Activity> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'activity');
-    });
-  }
-
-  QueryBuilder<Record, Record, QAfterFilterCondition> activityIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'activity', 0, true, 0, true);
-    });
-  }
-}
+extension RecordQueryLinks on QueryBuilder<Record, Record, QFilterCondition> {}
 
 extension RecordQuerySortBy on QueryBuilder<Record, Record, QSortBy> {
   QueryBuilder<Record, Record, QAfterSortBy> sortByActivityId() {
@@ -1375,7 +1338,7 @@ extension RecordQueryProperty on QueryBuilder<Record, Record, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Record, int?, QQueryOperations> activityIdProperty() {
+  QueryBuilder<Record, int, QQueryOperations> activityIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'activityId');
     });

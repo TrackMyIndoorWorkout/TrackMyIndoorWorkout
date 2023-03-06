@@ -7,14 +7,13 @@ import '../../../preferences/log_level.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/display.dart';
 import '../../../utils/logging.dart';
-import 'activity.dart';
 
 part 'record.g.dart';
 
 @Collection(inheritance: false)
 class Record {
   Id id;
-  int? activityId;
+  int activityId;
   @Index()
   DateTime? timeStamp;
   double? distance; // m
@@ -24,9 +23,6 @@ class Record {
   double? speed; // km/h
   int? cadence;
   int? heartRate;
-
-  @Backlink(to: 'records')
-  final activity = IsarLink<Activity>();
 
   @ignore
   int? elapsedMillis;
@@ -45,7 +41,7 @@ class Record {
 
   Record({
     this.id = Isar.autoIncrement,
-    this.activityId,
+    this.activityId = Isar.minId,
     this.timeStamp,
     this.distance,
     this.elapsed,

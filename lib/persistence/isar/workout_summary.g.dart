@@ -93,21 +93,7 @@ const WorkoutSummarySchema = CollectionSchema(
   deserialize: _workoutSummaryDeserialize,
   deserializeProp: _workoutSummaryDeserializeProp,
   idName: r'id',
-  indexes: {
-    r'deviceId': IndexSchema(
-      id: 4442814072367132509,
-      name: r'deviceId',
-      unique: false,
-      replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'deviceId',
-          type: IndexType.hash,
-          caseSensitive: true,
-        )
-      ],
-    )
-  },
+  indexes: {},
   links: {},
   embeddedSchemas: {},
   getId: _workoutSummaryGetId,
@@ -299,50 +285,6 @@ extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummar
         upper: upperId,
         includeUpper: includeUpper,
       ));
-    });
-  }
-
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> deviceIdEqualTo(String deviceId) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'deviceId',
-        value: [deviceId],
-      ));
-    });
-  }
-
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> deviceIdNotEqualTo(
-      String deviceId) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'deviceId',
-              lower: [],
-              upper: [deviceId],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'deviceId',
-              lower: [deviceId],
-              includeLower: false,
-              upper: [],
-            ));
-      } else {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'deviceId',
-              lower: [deviceId],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'deviceId',
-              lower: [],
-              upper: [deviceId],
-              includeUpper: false,
-            ));
-      }
     });
   }
 }

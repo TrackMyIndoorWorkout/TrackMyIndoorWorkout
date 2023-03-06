@@ -327,7 +327,8 @@ class RecordingState extends State<RecordingScreen> {
     final now = DateTime.now();
     var continued = false;
     if (!_uxDebug) {
-      final unfinished = await DbUtils.unfinishedDeviceActivities(widget.device.id.id);
+      final dbUtils = DbUtils();
+      final unfinished = await dbUtils.unfinishedDeviceActivities(widget.device.id.id);
       if (unfinished.isNotEmpty) {
         final yesterday = now.subtract(const Duration(days: 1));
         if (unfinished.first.start.isAfter(yesterday)) {
@@ -337,7 +338,7 @@ class RecordingState extends State<RecordingScreen> {
 
         for (final activity in unfinished) {
           if (!continued || _activity == null || _activity!.id != activity.id) {
-            await DbUtils.finalizeActivity(activity);
+            await dbUtils.finalizeActivity(activity);
           }
         }
       }
@@ -453,10 +454,8 @@ class RecordingState extends State<RecordingScreen> {
             (workoutState == WorkoutState.moving ||
                 workoutState == WorkoutState.startedMoving ||
                 workoutState == WorkoutState.justPaused)) {
-          _database.writeTxnSync(() async {
+          _database.writeTxnSync(() {
             _database.records.putSync(record);
-            _activity!.records.add(record);
-            _activity!.records.saveSync();
           });
         }
 
@@ -1080,7 +1079,6 @@ class RecordingState extends State<RecordingScreen> {
     final exporter = FitExport();
     final fileBytes = await exporter.getExport(
       _activity!,
-      _activity!.records.findAll(),
       false,
       _calculateGps,
       false,
@@ -1797,9 +1795,10 @@ class RecordingState extends State<RecordingScreen> {
         if (selection > 0) {
           await _stopMeasurement(false);
           if (selection > 1) {
-            final unfinished = await DbUtils.unfinishedActivities();
+            final dbUtils = DbUtils();
+            final unfinished = await dbUtils.unfinishedActivities();
             for (final activity in unfinished) {
-              await DbUtils.finalizeActivity(activity);
+              await dbUtils.finalizeActivity(activity);
             }
           }
         }
@@ -2402,7 +2401,7 @@ class RecordingState extends State<RecordingScreen> {
           if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
             _database.writeTxnSync(() async {
               _activity!.hrmId = hrmId;
-              _activity!.hrmCalorieFactor = await DbUtils.calorieFactorValue(hrmId, true);
+              _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
               _database.activitys.putSync(_activity!);
             });
           }

@@ -188,14 +188,7 @@ const ActivitySchema = CollectionSchema(
       ],
     )
   },
-  links: {
-    r'records': LinkSchema(
-      id: -7427779137849034819,
-      name: r'records',
-      target: r'Record',
-      single: false,
-    )
-  },
+  links: {},
   embeddedSchemas: {},
   getId: _activityGetId,
   getLinks: _activityGetLinks,
@@ -378,12 +371,11 @@ Id _activityGetId(Activity object) {
 }
 
 List<IsarLinkBase<dynamic>> _activityGetLinks(Activity object) {
-  return [object.records];
+  return [];
 }
 
 void _activityAttach(IsarCollection<dynamic> col, Id id, Activity object) {
   object.id = id;
-  object.records.attach(col, col.isar.collection<Record>(), r'records', id);
 }
 
 extension ActivityQueryWhereSort on QueryBuilder<Activity, Activity, QWhere> {
@@ -2860,60 +2852,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
 
 extension ActivityQueryObject on QueryBuilder<Activity, Activity, QFilterCondition> {}
 
-extension ActivityQueryLinks on QueryBuilder<Activity, Activity, QFilterCondition> {
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> records(FilterQuery<Record> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'records');
-    });
-  }
-
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> recordsLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'records', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> recordsIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'records', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> recordsIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'records', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> recordsLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'records', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> recordsLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'records', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> recordsLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'records', lower, includeLower, upper, includeUpper);
-    });
-  }
-}
+extension ActivityQueryLinks on QueryBuilder<Activity, Activity, QFilterCondition> {}
 
 extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
   QueryBuilder<Activity, Activity, QAfterSortBy> sortByCalorieFactor() {

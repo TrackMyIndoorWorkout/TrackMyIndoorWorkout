@@ -7,7 +7,6 @@ import '../../../upload/strava/constants.dart';
 import '../../../upload/training_peaks/constants.dart';
 import '../../../upload/under_armour/constants.dart';
 import '../../../utils/display.dart' as display;
-import 'record.dart';
 import 'workout_summary.dart';
 
 part 'activity.g.dart';
@@ -46,8 +45,6 @@ class Activity {
   bool trainingPeaksUploaded;
   int trainingPeaksWorkoutId;
   int trainingPeaksAthleteId;
-
-  final records = IsarLinks<Record>();
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
   String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();

@@ -476,8 +476,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<Isar>()) {
-      await activity.records.load();
-      final lastRecord = activity.records.findAll().last();
+      final lastRecord = await DbUtils().getLastRecord(activity.id);
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
@@ -490,6 +489,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
     }
+
     workoutState = WorkoutState.waitingForFirstMove;
     dataHandlers = {};
     readConfiguration();
@@ -854,7 +854,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           _activity!.start = now;
           if (Get.isRegistered<Isar>()) {
             final database = Get.find<Isar>();
-            database.writeTxnSync(() async {
+            database.writeTxnSync(() {
               database.activitys.putSync(_activity!);
             });
           }
@@ -1151,7 +1151,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     stub.calories = calories.floor();
-    stub.activityId = _activity?.id ?? 0;
+    stub.activityId = _activity?.id ?? Isar.minId;
     stub.sport = descriptor?.sport ?? ActivityType.ride;
 
     if (logLevel >= logLevelInfo) {
@@ -1213,12 +1213,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return;
     }
 
-    final factors = await DbUtils.getFactors(device?.id.id ?? "");
+    final dbUtils = DbUtils();
+    final factors = await dbUtils.getFactors(device?.id.id ?? "");
     _powerFactor = factors.item1;
     _calorieFactor = factors.item2;
     _hrCalorieFactor = factors.item3;
     _hrmCalorieFactor =
-        await DbUtils.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
+        await dbUtils.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
 
     initPower2SpeedConstants();
 

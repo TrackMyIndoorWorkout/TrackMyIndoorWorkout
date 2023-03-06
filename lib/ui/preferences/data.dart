@@ -73,10 +73,11 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
             "is still there under the hood. Use the button bellow to fix those "
             "activities."),
         onTap: () async {
-          final unfinished = await DbUtils.unfinishedActivities();
+          final dbUtils = DbUtils();
+          final unfinished = await dbUtils.unfinishedActivities();
           var counter = 0;
           for (final activity in unfinished) {
-            final finalized = await DbUtils.finalizeActivity(activity);
+            final finalized = await dbUtils.finalizeActivity(activity);
             if (finalized) {
               counter++;
             }

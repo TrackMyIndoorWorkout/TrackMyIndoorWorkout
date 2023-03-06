@@ -7,7 +7,6 @@ import 'package:timezone/timezone.dart' as tz;
 
 import 'devices/company_registry.dart';
 import 'track_my_indoor_exercise_app.dart';
-import 'devices/company_registry.dart';
 import 'persistence/isar/activity.dart';
 import 'persistence/isar/calorie_tune.dart';
 import 'persistence/isar/device_usage.dart';

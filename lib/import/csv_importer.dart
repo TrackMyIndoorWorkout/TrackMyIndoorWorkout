@@ -474,7 +474,7 @@ class CSVImporter with PowerSpeedMixin {
       }
     } else {
       DeviceDescriptor device = DeviceFactory.getDescriptorForFourCC(schwinnACPerfPlusFourCC);
-      final factors = await DbUtils.getFactors(deviceId);
+      final factors = await DbUtils().getFactors(deviceId);
       fourCC = device.fourCC;
       deviceName = deviceNamePrefixes[fourCC]![0];
       sport = device.sport;
@@ -591,7 +591,6 @@ class CSVImporter with PowerSpeedMixin {
         );
         database.writeTxnSync(() {
           database.records.putSync(record);
-          activity.records.add(record);
         });
 
         _linePointer++;
@@ -715,7 +714,6 @@ class CSVImporter with PowerSpeedMixin {
           energy += dEnergy;
           database.writeTxnSync(() {
             database.records.putSync(record);
-            activity.records.add(record);
           });
 
           timeStamp += milliSecondsPerRecordInt;
@@ -744,8 +742,7 @@ class CSVImporter with PowerSpeedMixin {
       activity.calories = energy.round();
     }
 
-    database.writeTxnSync(() async {
-      activity.records.saveSync();
+    database.writeTxnSync(() {
       database.activitys.putSync(activity);
     });
 
