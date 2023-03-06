@@ -1,3 +1,5 @@
+import 'package:track_my_indoor_exercise/devices/device_descriptors/kaya_first_descriptor.dart';
+
 import '../export/fit/fit_manufacturer.dart';
 import '../utils/constants.dart';
 import 'device_descriptors/cross_trainer_device_descriptor.dart';
@@ -301,6 +303,8 @@ class DeviceFactory {
         return getMerachMr667();
       case virtufitUltimatePro2FourCC:
         return getVirtufitUltimatePro2();
+      case kayakFirstFourCC:
+        return KayakFirstDescriptor();
     }
 
     return DeviceFactory.getGenericFTMSBike();
