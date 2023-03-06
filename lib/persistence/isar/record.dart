@@ -399,8 +399,8 @@ class RecordWithSport extends Record {
     caloriesPerMinute,
   })  : assert(sport != null),
         super(
-          id: id,
-          activityId: activityId,
+          id: id ?? Isar.autoIncrement,
+          activityId: activityId ?? Isar.minId,
           timeStamp: timeStamp,
           distance: distance,
           elapsed: elapsed,
