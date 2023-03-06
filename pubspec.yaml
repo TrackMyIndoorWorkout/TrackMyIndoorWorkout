@@ -23,7 +23,6 @@ dependencies:
   flutter_blue_plus: ^1.4.0
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.1
-  flutter_logs: ^2.1.10
   flutter_timezone: ^1.0.4
   flutter_spinbox: ^0.13.0
   flutter_svg: ^2.0.2

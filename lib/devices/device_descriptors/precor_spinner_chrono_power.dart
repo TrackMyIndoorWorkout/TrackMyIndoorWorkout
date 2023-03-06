@@ -62,7 +62,7 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelError,
       "PSCP",

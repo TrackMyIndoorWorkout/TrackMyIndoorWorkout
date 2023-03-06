@@ -119,7 +119,7 @@ class Record {
 
         if (distance! < lastRecord.distance!) {
           if (logLevel >= logLevelError) {
-            Logging.log(
+            Logging().log(
               logLevel,
               logLevelError,
               "RECORD",
@@ -146,7 +146,7 @@ class Record {
 
         if (elapsed! < lastRecord.elapsed!) {
           if (logLevel >= logLevelError) {
-            Logging.log(
+            Logging().log(
               logLevel,
               logLevelError,
               "RECORD",
@@ -170,7 +170,7 @@ class Record {
 
     if (movingTime < lastRecord.movingTime) {
       if (logLevel >= logLevelError) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelError,
           "RECORD",
@@ -193,7 +193,7 @@ class Record {
 
         if (calories! < lastRecord.calories!) {
           if (logLevel >= logLevelError) {
-            Logging.log(
+            Logging().log(
               logLevel,
               logLevelError,
               "RECORD",
@@ -218,7 +218,7 @@ class Record {
 
       if (distance! < 0.0) {
         if (logLevel >= logLevelError) {
-          Logging.log(
+          Logging().log(
             logLevel,
             logLevelError,
             "RECORD",
@@ -238,7 +238,7 @@ class Record {
 
       if (elapsed! < 0) {
         if (logLevel >= logLevelError) {
-          Logging.log(
+          Logging().log(
             logLevel,
             logLevelError,
             "RECORD",
@@ -257,7 +257,7 @@ class Record {
 
     if (movingTime < 0) {
       if (logLevel >= logLevelError) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelError,
           "RECORD",
@@ -276,7 +276,7 @@ class Record {
 
       if (calories! < 0) {
         if (logLevel >= logLevelError) {
-          Logging.log(
+          Logging().log(
             logLevel,
             logLevelError,
             "RECORD",

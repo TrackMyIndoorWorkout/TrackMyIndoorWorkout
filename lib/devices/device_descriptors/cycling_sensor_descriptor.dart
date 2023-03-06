@@ -109,7 +109,7 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelError,
       tag,

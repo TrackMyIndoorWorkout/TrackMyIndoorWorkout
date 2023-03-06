@@ -57,7 +57,7 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
   } on PlatformException catch (e, stack) {
     debugPrint("$e");
     debugPrintStack(stackTrace: stack, label: "trace:");
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelError,
       "bluetoothCheck",

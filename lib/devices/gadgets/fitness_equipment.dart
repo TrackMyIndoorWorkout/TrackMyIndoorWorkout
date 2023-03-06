@@ -179,7 +179,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (values.isEmpty) {
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
@@ -197,7 +197,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
               (prev, element) => prev.merge(element),
             );
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -213,7 +213,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   void _throttlingTimerCallback() {
     _throttleTimer = null;
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -282,7 +282,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   ///   in processRecord
   Stream<RecordWithSport> get _listenToData async* {
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -294,7 +294,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     await for (final byteList in characteristic!.value) {
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
@@ -306,7 +306,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
       final key = keySelector(byteList);
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
@@ -318,7 +318,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       if (key >= 0 && descriptor!.isFlagValid(key)) {
         if (!dataHandlers.containsKey(key)) {
           if (logLevel >= logLevelInfo) {
-            Logging.log(
+            Logging().log(
               logLevel,
               logLevelInfo,
               "FITNESS_EQUIPMENT",
@@ -338,7 +338,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
       bool timerActive = _throttleTimer?.isActive ?? false;
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
@@ -481,7 +481,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
@@ -607,7 +607,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           descriptor?.fourCC == kayakProGenesisPortFourCC;
 
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
@@ -666,7 +666,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   bool _checkManufacturerName() {
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -704,7 +704,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return manufacturerName;
     } on PlatformException catch (e, stack) {
       if (logLevel > logLevelNone) {
-        Logging.logException(
+        Logging().logException(
           logLevel,
           "FITNESS_EQUIPMENT",
           "discover",
@@ -780,7 +780,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   RecordWithSport processRecord(RecordWithSport stub, [bool idle = false]) {
     final now = DateTime.now();
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -791,7 +791,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (_companionSensor != null && _companionSensor!.attached) {
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
@@ -806,7 +806,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     for (final sensor in _additionalSensors) {
       if (sensor.attached) {
         if (logLevel >= logLevelInfo) {
-          Logging.log(
+          Logging().log(
             logLevel,
             logLevelInfo,
             "FITNESS_EQUIPMENT",
@@ -823,7 +823,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     // (intelligent start and elapsed time tracking)
     bool isNotMoving = stub.isNotMoving();
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -887,7 +887,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (descriptor != null) {
       stub.adjustByFactors(_powerFactor, _calorieFactor, _extendTuning);
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
@@ -898,7 +898,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -1000,7 +1000,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
 
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
@@ -1139,7 +1139,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
 
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
@@ -1156,7 +1156,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     stub.sport = descriptor?.sport ?? ActivityType.ride;
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -1176,7 +1176,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -1186,7 +1186,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -1225,7 +1225,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     initPower2SpeedConstants();
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
@@ -1271,7 +1271,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _enableAsserts = prefService.get<bool>(enableAssertsTag) ?? enableAssertsDefault;
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",

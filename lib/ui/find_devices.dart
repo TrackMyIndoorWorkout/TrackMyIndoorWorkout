@@ -96,7 +96,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
       } on PlatformException catch (e, stack) {
         debugPrint("$e");
         debugPrintStack(stackTrace: stack, label: "trace:");
-        Logging.log(
+        Logging().log(
           _logLevel,
           logLevelError,
           "FIND_DEVICES",
@@ -141,7 +141,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
       if (_logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           _logLevel,
           logLevelInfo,
           "FIND_DEVICES",
@@ -155,7 +155,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     if (!await bluetoothCheck(silent, _logLevel)) {
       if (_logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           _logLevel,
           logLevelInfo,
           "FIND_DEVICES",
@@ -168,7 +168,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     if (_logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         _logLevel,
         logLevelInfo,
         "FIND_DEVICES",
@@ -189,7 +189,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
+      Logging().log(
         _logLevel,
         logLevelError,
         "FIND_DEVICES",
@@ -295,7 +295,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     BluetoothDeviceState initialState,
     bool manual,
   ) async {
-    Logging.logVersion(Get.find<PackageInfo>());
+    Logging().logVersion(Get.find<PackageInfo>());
 
     if (!_advertisementCache.hasEntry(device.id.id)) {
       return false;
@@ -516,7 +516,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         if (inferredSport == null) {
           Get.snackbar("Error", "Could not infer sport of the device");
           if (_logLevel > logLevelNone) {
-            Logging.log(
+            Logging().log(
               _logLevel,
               logLevelError,
               "FIND_DEVICES",
@@ -719,7 +719,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
                   Get.snackbar("Request", "Please scan again");
                   if (_logLevel > logLevelNone) {
-                    Logging.log(
+                    Logging().log(
                       _logLevel,
                       logLevelWarning,
                       "FIND_DEVICES",
@@ -811,7 +811,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                   Get.snackbar("Info", "HRM Already connected");
 
                                   if (_logLevel > logLevelNone) {
-                                    Logging.log(
+                                    Logging().log(
                                       _logLevel,
                                       logLevelWarning,
                                       "FIND_DEVICES",
@@ -898,7 +898,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       children: snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
                         addScannedDevice(r);
                         if (_logLevel >= logLevelInfo) {
-                          Logging.log(
+                          Logging().log(
                             _logLevel,
                             logLevelInfo,
                             "FIND_DEVICES",
