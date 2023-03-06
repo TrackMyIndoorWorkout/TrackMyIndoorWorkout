@@ -40,7 +40,7 @@ void main() async {
 
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
     Get.put<PackageInfo>(packageInfo, permanent: true);
-    Logging.logVersion(packageInfo);
+    Logging().logVersion(packageInfo);
   });
 
   rootBundle

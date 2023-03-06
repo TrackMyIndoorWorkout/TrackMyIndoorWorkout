@@ -1113,7 +1113,7 @@ class RecordingState extends State<RecordingScreen> {
       debugPrint("Equipment got turned off?");
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
+      Logging().log(
         _logLevel,
         logLevelError,
         "RECORD",

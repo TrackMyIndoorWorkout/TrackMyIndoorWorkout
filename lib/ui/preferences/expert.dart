@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_logs/flutter_logs.dart';
 import 'package:get/get.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import '../../preferences/app_debug_mode.dart';
@@ -13,7 +9,6 @@ import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enable_asserts.dart';
-import '../../preferences/has_logged_messages.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
@@ -30,25 +25,9 @@ class ExpertPreferencesScreen extends StatefulWidget with PreferencesScreenMixin
 }
 
 class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
-  Future<void> displayNotInitializedDialog() async {
-    await Get.defaultDialog(
-      title: "Logging is not initialized",
-      middleText: "You can turn on logging by selecting a level bellow "
-          "'No logging'. Logging slows down the app and consumes space, so "
-          "logging is not advised unless requested by the developer. "
-          "Make sure to turn off logging when the session is over "
-          "for the same reason.",
-      confirm: TextButton(
-        child: const Text("Dismiss"),
-        onPressed: () => Get.close(1),
-      ),
-    );
-  }
-
   Future<void> displayNoLogsDialog() async {
     await Get.defaultDialog(
       title: "Nothing to Export",
-      middleText: "(or file not found)",
       confirm: TextButton(
         child: const Text("Dismiss"),
         onPressed: () => Get.close(1),
@@ -126,96 +105,59 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         title: Text(logLevelTitle, style: Get.textTheme.headlineSmall!, maxLines: 3),
         subtitle: const Text(logLevelDescription),
       ),
-      PrefRadio<int>(
-        title: const Text(logLevelNoneDescription),
+      const PrefRadio<int>(
+        title: Text(logLevelNoneDescription),
         value: logLevelNone,
         pref: logLevelTag,
-        onSelect: () async => await Logging.init(logLevelNone),
       ),
-      PrefRadio<int>(
-        title: const Text(logLevelErrorDescription),
+      const PrefRadio<int>(
+        title: Text(logLevelErrorDescription),
         value: logLevelError,
         pref: logLevelTag,
-        onSelect: () async => await Logging.init(logLevelError),
       ),
-      PrefRadio<int>(
-        title: const Text(logLevelWarningDescription),
+      const PrefRadio<int>(
+        title: Text(logLevelWarningDescription),
         value: logLevelWarning,
         pref: logLevelTag,
-        onSelect: () async => await Logging.init(logLevelWarning),
       ),
-      PrefRadio<int>(
-        title: const Text(logLevelInfoDescription),
+      const PrefRadio<int>(
+        title: Text(logLevelInfoDescription),
         value: logLevelInfo,
         pref: logLevelTag,
-        onSelect: () async => await Logging.init(logLevelInfo),
       ),
       PrefButton(
         onTap: () async {
-          if (Logging.initialized) {
-            // TODO https://github.com/umair13adil/flutter_logs/issues/39
-            if (!(PrefService.of(context).get<bool>(hasLoggedMessagesTag) ??
-                hasLoggedMessagesDefault)) {
-              await displayNoLogsDialog();
-              return;
-            }
-
-            FlutterLogs.exportLogs(exportType: ExportType.ALL);
-            final String zipName = await Logging.completer.future;
-            Directory externalDirectory;
-            if (Platform.isIOS) {
-              externalDirectory = await getApplicationDocumentsDirectory();
-            } else {
-              final nullableDirectory = await getExternalStorageDirectory();
-              if (nullableDirectory == null) {
-                Get.snackbar("Export", "Could not locate an external target directory");
-                return;
-              }
-
-              externalDirectory = nullableDirectory;
-            }
-
-            File file = File("${externalDirectory.path}/$zipName");
-            final title = "Debug Logs ${DateTime.now().toUtc().toIso8601String()}";
-            final fileName = zipName.split("/").last;
-            if (file.existsSync()) {
-              ShareFilesAndScreenshotWidgets().shareFile(
-                title,
-                fileName,
-                await file.readAsBytes(),
-                "application/zip",
-                text: title,
-              );
-            } else {
-              await displayNoLogsDialog();
-            }
-          } else {
-            await displayNotInitializedDialog();
+          if (!Logging().hasLogs()) {
+            await displayNoLogsDialog();
+            return;
           }
+
+          final fileBytes = await Logging().exportLogs();
+          final isoDateTime = DateTime.now().toUtc().toIso8601String();
+          final title = "Debug Logs $isoDateTime";
+          final fileName = "DebugLogs${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.csv.gz";
+          ShareFilesAndScreenshotWidgets().shareFile(
+            title,
+            fileName,
+            Uint8List.fromList(fileBytes),
+            'application/x-gzip',
+            text: title,
+          );
         },
         child: const Text("Export Logs..."),
       ),
       PrefButton(
         onTap: () async {
-          if (PrefService.of(context).get<bool>(hasLoggedMessagesTag) ?? hasLoggedMessagesDefault) {
-            FlutterLogs.clearLogs();
-            setState(() {
-              PrefService.of(context).set(hasLoggedMessagesTag, hasLoggedMessagesDefault);
-            });
-          }
+          Logging().clearLogs();
 
-          if (Logging.initialized) {
-            Get.defaultDialog(
-              title: "Logs cleared",
-              middleText: "",
-              confirm: TextButton(
-                child: const Text("Dismiss"),
-                onPressed: () => Get.close(1),
-              ),
-            );
-          } else {
-            await displayNotInitializedDialog();
-          }
+          Get.defaultDialog(
+            title: "Logs cleared",
+            middleText: "",
+            confirm: TextButton(
+              child: const Text("Dismiss"),
+              onPressed: () => Get.close(1),
+            ),
+          );
         },
         child: const Text("Clear All Logs"),
       ),

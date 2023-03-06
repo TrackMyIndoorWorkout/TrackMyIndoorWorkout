@@ -23,7 +23,6 @@ import '../preferences/enable_asserts.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/extend_tuning.dart';
 import '../preferences/generic.dart';
-import '../preferences/has_logged_messages.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
 import '../preferences/heart_rate_monitor_priority.dart';
@@ -62,7 +61,6 @@ import '../preferences/welcome_presented.dart';
 import '../preferences/wheel_circumference.dart';
 import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
-import '../utils/logging.dart';
 import '../utils/preferences.dart';
 import '../utils/time_zone.dart';
 import 'constants.dart';
@@ -140,7 +138,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     blockSignalStartStopTag: blockSignalStartStopDefault,
     timeDisplayModeTag: timeDisplayModeDefault,
     welcomePresentedTag: welcomePresentedDefault,
-    hasLoggedMessagesTag: hasLoggedMessagesDefault,
     instantExportTag: instantExportDefault,
     instantExportLocationTag: instantExportLocationDefault,
     enableAssertsTag: enableAssertsDefault,
@@ -405,11 +402,6 @@ Future<BasePrefService> initPreferences() async {
         SpeedSpec.pacerSpeedDefaults[sport].toString();
     SpeedSpec.pacerSpeeds[sport] =
         double.tryParse(pacerSpeedString) ?? SpeedSpec.pacerSpeedDefaults[sport];
-  }
-
-  final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-  if (logLevel != logLevelNone) {
-    await Logging.init(logLevel);
   }
 
   return prefService;

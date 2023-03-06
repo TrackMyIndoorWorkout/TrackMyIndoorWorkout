@@ -163,7 +163,7 @@ abstract class DeviceBase {
       )
           .listen((controlResponse) async {
         if (logLevel >= logLevelInfo) {
-          Logging.log(
+          Logging().log(
             logLevel,
             logLevelInfo,
             "FITNESS_EQUIPMENT",
@@ -189,7 +189,7 @@ abstract class DeviceBase {
               break;
           }
           if (logLevel >= logLevelInfo) {
-            Logging.log(
+            Logging().log(
               logLevel,
               logLevelInfo,
               "FITNESS_EQUIPMENT",
@@ -322,7 +322,7 @@ abstract class DeviceBase {
 
   void logData(List<int> data, String tag) {
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         tag,

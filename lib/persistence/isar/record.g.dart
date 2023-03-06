@@ -68,21 +68,7 @@ const RecordSchema = CollectionSchema(
   deserialize: _recordDeserialize,
   deserializeProp: _recordDeserializeProp,
   idName: r'id',
-  indexes: {
-    r'timeStamp': IndexSchema(
-      id: 1365751510135348298,
-      name: r'timeStamp',
-      unique: false,
-      replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'timeStamp',
-          type: IndexType.value,
-          caseSensitive: false,
-        )
-      ],
-    )
-  },
+  indexes: {},
   links: {},
   embeddedSchemas: {},
   getId: _recordGetId,
@@ -186,14 +172,6 @@ extension RecordQueryWhereSort on QueryBuilder<Record, Record, QWhere> {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
-
-  QueryBuilder<Record, Record, QAfterWhere> anyTimeStamp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        const IndexWhereClause.any(indexName: r'timeStamp'),
-      );
-    });
-  }
 }
 
 extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
@@ -255,114 +233,6 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
         lower: lowerId,
         includeLower: includeLower,
         upper: upperId,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'timeStamp',
-        value: [null],
-      ));
-    });
-  }
-
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'timeStamp',
-        lower: [null],
-        includeLower: false,
-        upper: [],
-      ));
-    });
-  }
-
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampEqualTo(DateTime? timeStamp) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'timeStamp',
-        value: [timeStamp],
-      ));
-    });
-  }
-
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampNotEqualTo(DateTime? timeStamp) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'timeStamp',
-              lower: [],
-              upper: [timeStamp],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'timeStamp',
-              lower: [timeStamp],
-              includeLower: false,
-              upper: [],
-            ));
-      } else {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'timeStamp',
-              lower: [timeStamp],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'timeStamp',
-              lower: [],
-              upper: [timeStamp],
-              includeUpper: false,
-            ));
-      }
-    });
-  }
-
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampGreaterThan(
-    DateTime? timeStamp, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'timeStamp',
-        lower: [timeStamp],
-        includeLower: include,
-        upper: [],
-      ));
-    });
-  }
-
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampLessThan(
-    DateTime? timeStamp, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'timeStamp',
-        lower: [],
-        upper: [timeStamp],
-        includeUpper: include,
-      ));
-    });
-  }
-
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampBetween(
-    DateTime? lowerTimeStamp,
-    DateTime? upperTimeStamp, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'timeStamp',
-        lower: [lowerTimeStamp],
-        includeLower: includeLower,
-        upper: [upperTimeStamp],
         includeUpper: includeUpper,
       ));
     });

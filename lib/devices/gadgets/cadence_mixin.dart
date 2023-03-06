@@ -108,7 +108,7 @@ class CadenceMixin {
 
     final revDiff = _getRevDiff(lastData.revolutions, firstData.revolutions);
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "CadenceMixin",

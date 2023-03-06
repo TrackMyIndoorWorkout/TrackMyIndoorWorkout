@@ -36,11 +36,6 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin flutter_blue_plus, com.boskokg.flutter_blue_plus.FlutterBluePlusPlugin", e);
     }
     try {
-      flutterEngine.getPlugins().add(new com.flutter.logs.plogs.flutter_logs.FlutterLogsPlugin());
-    } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin flutter_logs, com.flutter.logs.plogs.flutter_logs.FlutterLogsPlugin", e);
-    }
-    try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin());
     } catch(Exception e) {
       Log.e(TAG, "Error registering plugin flutter_plugin_android_lifecycle, io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin", e);

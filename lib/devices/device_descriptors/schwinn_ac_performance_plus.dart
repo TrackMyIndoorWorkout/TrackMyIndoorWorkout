@@ -44,7 +44,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   void processFlag(int flag) {
     final prefService = Get.find<BasePrefService>();
     final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelError,
       "Schwinn AC Perf+",
@@ -58,7 +58,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   RecordWithSport? stubRecord(List<int> data) {
     final prefService = Get.find<BasePrefService>();
     final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelError,
       "Schwinn AC Perf+",
@@ -73,7 +73,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   void stopWorkout() {
     final prefService = Get.find<BasePrefService>();
     final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelError,
       "Schwinn AC Perf+",
@@ -87,7 +87,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelError,
       "Schwinn AC Perf+",

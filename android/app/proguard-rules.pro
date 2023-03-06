@@ -30,8 +30,6 @@
 -keepclassmembernames class com.mr.flutter.plugin.filepicker.** { *; }
 -keep class com.boskokg.flutter_blue_plus.** { *; }
 -keepclassmembernames class com.boskokg.flutter_blue_plus.* { *; }
--keep class com.flutter.logs.plogs.flutter_logs.** { *; }
--keepclassmembernames class com.flutter.logs.plogs.flutter_logs.* { *; }
 -keep class net.wolverinebeach.flutter_timezone.** { *; }
 -keepclassmembernames class net.wolverinebeach.flutter_timezone.* { *; }
 -keep class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }

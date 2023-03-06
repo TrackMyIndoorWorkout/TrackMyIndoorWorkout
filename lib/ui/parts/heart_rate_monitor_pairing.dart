@@ -45,7 +45,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
+      Logging().log(
         _logLevel,
         logLevelError,
         "FIND_DEVICES",
@@ -72,7 +72,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
+      Logging().log(
         _logLevel,
         logLevelError,
         "HRM_PAIRING",
@@ -81,7 +81,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
       );
     }
 
-    Logging.logVersion(Get.find<PackageInfo>());
+    Logging().logVersion(Get.find<PackageInfo>());
   }
 
   @override
