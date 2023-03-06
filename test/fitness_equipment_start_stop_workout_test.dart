@@ -88,7 +88,7 @@ void main() {
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.lastRecord = RecordWithSport(
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsedMillis: 0,
           calories: 0,
           sport: descriptor.sport,

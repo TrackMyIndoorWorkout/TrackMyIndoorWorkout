@@ -206,6 +206,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       );
     }
 
+    merged.timeStamp = DateTime.now();
     return merged;
   }
 

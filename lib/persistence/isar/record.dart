@@ -14,8 +14,7 @@ part 'record.g.dart';
 class Record {
   Id id;
   int activityId;
-  @Index()
-  DateTime? timeStamp;
+  late DateTime? timeStamp;
   double? distance; // m
   int? elapsed; // s
   int? calories; // kCal
@@ -57,6 +56,7 @@ class Record {
     this.caloriesPerHour,
     this.caloriesPerMinute,
   }) {
+    timeStamp ??= DateTime.now();
     paceToSpeed();
   }
 
@@ -419,7 +419,6 @@ class RecordWithSport extends Record {
 
   static RecordWithSport getZero(String sport) {
     return RecordWithSport(
-      timeStamp: 0,
       distance: 0.0,
       elapsed: 0,
       calories: 0,

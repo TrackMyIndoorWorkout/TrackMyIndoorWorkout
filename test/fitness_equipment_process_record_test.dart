@@ -344,7 +344,7 @@ void main() {
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsedMillis: 0,
           calories: 0,
           sport: descriptor.sport,
@@ -395,7 +395,7 @@ void main() {
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsedMillis: 0,
           calories: 0,
           sport: descriptor.sport,
@@ -452,7 +452,7 @@ void main() {
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsedMillis: 0,
           calories: 0,
           sport: descriptor.sport,
@@ -505,7 +505,7 @@ void main() {
         equipment.setActivity(activity);
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.lastRecord = RecordWithSport(
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsedMillis: 0,
           calories: 0,
           sport: descriptor.sport,
@@ -554,7 +554,7 @@ void main() {
         equipment.setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, true);
         equipment.initPower2SpeedConstants();
         equipment.lastRecord = RecordWithSport(
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsedMillis: 0,
           distance: 10.0,
           sport: descriptor.sport,
@@ -603,7 +603,7 @@ void main() {
         final adjustedRecord = RecordWithSport(sport: descriptor.sport, distance: distance);
         adjustedRecord.adjustByFactors(powerFactor, calorieFactor, true);
         equipment.lastRecord = RecordWithSport(
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsedMillis: 0,
           distance: min(adjustedRecord.distance!, 10.0),
           speed: 10.0,
@@ -662,7 +662,7 @@ void main() {
         );
         final adjustedRecord = RecordWithSport(
           sport: descriptor.sport,
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsed: 0,
           elapsedMillis: 0,
           distance: distance,
@@ -728,7 +728,7 @@ void main() {
 
         final adjustedRecord = RecordWithSport(
           sport: descriptor.sport,
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsed: 0,
           elapsedMillis: 0,
           distance: distance,
@@ -795,7 +795,7 @@ void main() {
 
         final record = equipment.processRecord(RecordWithSport(
           sport: descriptor.sport,
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsed: elapsed,
           elapsedMillis: elapsedMillis,
           distance: distance,
@@ -854,7 +854,7 @@ void main() {
         // Prime the startingValues logic
         equipment.processRecord(RecordWithSport(
           sport: descriptor.sport,
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsed: elapsed,
           elapsedMillis: elapsedMillis,
           distance: distance,
@@ -924,7 +924,7 @@ void main() {
         equipment.setStartingValues(0.0, startingCalories.toDouble());
         final adjustedRecord = RecordWithSport(
           sport: descriptor.sport,
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsed: 0,
           calories: 0,
         );
@@ -983,7 +983,7 @@ void main() {
         // We are already doubled the starting distance at this imaginary point of workout
         final adjustedRecord = RecordWithSport(
           sport: descriptor.sport,
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsed: 0,
           distance: 0.0,
         );
