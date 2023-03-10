@@ -1,3 +1,9 @@
+## 1.1.138
+* Adding track for biking, cycling, water sport activities for almost all time zones
+* Making GPS tracks more precise (Haversine and Vincenty measurement formulas - thanks ChatGPT)
+* Narrowing down the list of selectable time zones to be able to match the closest track
+* Upgrading numerous Flutter plugins
+
 ## 1.1.137
 * Fixing false 65534 reported calories when 0 calorie workout is uploaded to Strava
   (some portals don't interpret FIT InvalidValue in that case, so we'll zero it)
