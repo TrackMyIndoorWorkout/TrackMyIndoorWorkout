@@ -2,7 +2,7 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.137+137
+version: 1.1.138+138
 
 environment:
   sdk: ">=2.21.1"
@@ -12,7 +12,7 @@ dependencies:
   assorted_layout_widgets: ^7.0.0
   bluetooth_enable_fork: ^0.1.6
   collection: ^1.16.0
-  datetime_picker_formfield_new: ^2.0.0
+  datetime_picker_formfield_new: ^2.1.0
   device_info_plus: ^8.1.0
   easy_folder_picker: ^1.3.0
   edit_distance: ^0.5.0-nullsafety.0
@@ -24,8 +24,8 @@ dependencies:
   flutter_layout_grid: ^2.0.1
   flutter_logs: ^2.1.10
   flutter_timezone: ^1.0.4
-  flutter_spinbox: ^0.12.0
-  flutter_svg: ^2.0.0+1
+  flutter_spinbox: ^0.13.0
+  flutter_svg: ^2.0.3
   get: ^4.6.1
   group_button: ^5.2.2
   http: ^0.13.5
@@ -37,26 +37,27 @@ dependencies:
   number_selector: ^1.0.5
   package_info_plus: ^3.0.3
   path: ^1.8.2
-  path_provider: ^2.0.10
+  path_provider: ^2.0.13
   pref: ^2.7.1
   progress_indicators: ^1.0.0
   qr_flutter: ^4.0.0
   rxdart: ^0.27.7
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
-  sqflite: ^2.2.3
-  string_validator: ^0.3.0
-  syncfusion_flutter_charts: ^20.4.50
+  sqflite: ^2.2.5
+  string_validator: ^1.0.0
+  syncfusion_flutter_charts: ^20.4.53
+  timezone: ^0.9.1
   tuple: ^2.0.1
   uni_links: ^0.5.1
-  url_launcher: ^6.1.9
+  url_launcher: ^6.1.10
   vector_math: ^2.1.4
   wakelock: ^0.6.2
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^5.5.0
+  analyzer: ^5.7.1
   build_runner: ^2.4.0
   floor_generator: ^1.4.1
   flutter_driver:

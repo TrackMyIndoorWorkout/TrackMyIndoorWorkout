@@ -57,8 +57,8 @@ import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/workout_mode.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
+import '../track/track_descriptor.dart';
 import '../track/track_painter.dart';
-import '../track/tracks.dart';
 import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -141,7 +141,7 @@ class RecordingState extends State<RecordingScreen> {
   HeartRateMonitor? _heartRateMonitor;
   TrackCalculator? _trackCalculator;
   PaletteSpec? _paletteSpec;
-  double _trackLength = trackLength;
+  double _trackLength = 0; // Just default
   bool _measuring = false;
   bool _onStage = false;
   int _pointCount = 0;
@@ -703,13 +703,9 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
-    _trackCalculator = TrackCalculator(
-      track: TrackDescriptor(
-        radiusBoost: trackPaintingRadiusBoost,
-        lengthFactor: widget.descriptor.lengthFactor,
-      ),
-    );
-    _trackLength = trackLength * widget.descriptor.lengthFactor;
+    final displayTrack = TrackDescriptor.forDisplay(widget.sport);
+    _trackCalculator = TrackCalculator(track: displayTrack);
+    _trackLength = displayTrack.length;
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;

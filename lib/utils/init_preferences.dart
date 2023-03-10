@@ -64,6 +64,7 @@ import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
 import '../utils/preferences.dart';
+import '../utils/time_zone.dart';
 import 'constants.dart';
 
 Future<void> migrateStringIntegerPreference(
@@ -373,6 +374,21 @@ Future<BasePrefService> initPreferences() async {
 
       prefService.set<bool>(prefSpec.coloringByZoneTag, perMetricDefault);
     }
+  }
+
+  if (prefVersion <= preferencesVersionDefaultingOldTimeZone) {
+    final enforcedTimeZone =
+        prefService.get<String>(enforcedTimeZoneTag) ?? enforcedTimeZoneDefault;
+
+    if (enforcedTimeZone != enforcedTimeZoneDefault) {
+      final closestTimeZone = getClosestTimeZone(enforcedTimeZone);
+      if (closestTimeZone != enforcedTimeZone) {
+        prefService.set<String>(enforcedTimeZoneTag, closestTimeZone);
+      }
+    }
+
+    // Activities have stored timeZone, but we would need to convert those
+    // only if TrackManager.getTrack would get the timeZone besides the sport
   }
 
   await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
