@@ -17,6 +17,7 @@ import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../preferences/palette_spec.dart';
 import '../../preferences/unit_system.dart';
+import '../../track/track_manager.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import '../../utils/statistics_accumulator.dart';
@@ -524,35 +525,37 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
-    final header = [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _themeManager.getBlueIcon(getSportIcon(widget.activity.sport), _sizeDefault),
-          Expanded(
-            child: TextOneLine(
-              widget.activity.deviceName,
-              style: _textStyle,
-              textAlign: TextAlign.right,
-              overflow: TextOverflow.ellipsis,
+    final List<Widget> header = [
+      FitHorizontally(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueIcon(getSportIcon(widget.activity.sport), _sizeDefault),
+            Expanded(
+              child: TextOneLine(
+                widget.activity.deviceName,
+                style: _textStyle,
+                textAlign: TextAlign.right,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-          const Spacer(),
-          FitHorizontally(
-            child: Text(
+      FitHorizontally(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+            const Spacer(),
+            Text(
               widget.activity.movingTimeString,
               style: _measurementStyle,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ];
     if (widget.activity.movingTime ~/ 1000 < widget.activity.elapsed) {
@@ -568,19 +571,21 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
             ),
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-            const Spacer(),
-            FitHorizontally(
-              child: Text(
-                widget.activity.elapsedString,
-                style: _measurementStyle,
+        FitHorizontally(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
+              const Spacer(),
+              FitHorizontally(
+                child: Text(
+                  widget.activity.elapsedString,
+                  style: _measurementStyle,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -597,47 +602,49 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     }
 
     header.addAll([
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-          const Spacer(),
-          FitHorizontally(
-            child: Text(
+      FitHorizontally(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
+            const Spacer(),
+            Text(
               widget.activity.distanceString(_si, _highRes),
               style: _measurementStyle,
             ),
-          ),
-          SizedBox(
-            width: _sizeDefault,
-            child: Text(
-              distanceUnit(_si, _highRes),
-              style: _unitStyle,
+            SizedBox(
+              width: _sizeDefault,
+              child: Text(
+                distanceUnit(_si, _highRes),
+                style: _unitStyle,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-          const Spacer(),
-          FitHorizontally(
-            child: Text(
-              '${widget.activity.calories}',
-              style: _measurementStyle,
+      FitHorizontally(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
+            const Spacer(),
+            FitHorizontally(
+              child: Text(
+                '${widget.activity.calories}',
+                style: _measurementStyle,
+              ),
             ),
-          ),
-          SizedBox(
-            width: _sizeDefault,
-            child: Text(
-              'cal',
-              style: _unitStyle,
+            SizedBox(
+              width: _sizeDefault,
+              child: Text(
+                'cal',
+                style: _unitStyle,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ]);
 
@@ -657,8 +664,11 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         IconButton(
           icon: const Icon(Icons.build),
           onPressed: () async {
-            final database = Get.find<AppDatabase>();
-            await database.recalculateDistance(widget.activity, true);
+            final tm = TrackManager();
+            final track = await tm.getTrack(widget.activity.sport);
+            debugPrint(track.name);
+            // final database = Get.find<AppDatabase>();
+            // await database.recalculateDistance(widget.activity, true);
           },
         ),
       );

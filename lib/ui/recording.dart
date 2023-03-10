@@ -57,8 +57,8 @@ import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/workout_mode.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
+import '../track/track_descriptor.dart';
 import '../track/track_painter.dart';
-import '../track/tracks.dart';
 import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -141,7 +141,7 @@ class RecordingState extends State<RecordingScreen> {
   HeartRateMonitor? _heartRateMonitor;
   TrackCalculator? _trackCalculator;
   PaletteSpec? _paletteSpec;
-  double _trackLength = trackLength;
+  double _trackLength = 0; // Just default
   bool _measuring = false;
   bool _onStage = false;
   int _pointCount = 0;
@@ -703,13 +703,9 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
-    _trackCalculator = TrackCalculator(
-      track: TrackDescriptor(
-        radiusBoost: trackPaintingRadiusBoost,
-        lengthFactor: widget.descriptor.lengthFactor,
-      ),
-    );
-    _trackLength = trackLength * widget.descriptor.lengthFactor;
+    final displayTrack = TrackDescriptor.forDisplay(widget.sport);
+    _trackCalculator = TrackCalculator(track: displayTrack);
+    _trackLength = displayTrack.length;
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
@@ -1322,9 +1318,9 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     final verdict = await Get.bottomSheet(
-      SafeArea(
+      const SafeArea(
         child: Column(
-          children: const [
+          children: [
             Expanded(
               child: Center(
                 child: BooleanQuestionBottomSheet(
@@ -1767,9 +1763,9 @@ class RecordingState extends State<RecordingScreen> {
     if (_measuring) {
       if (_circuitWorkout) {
         final selection = await Get.bottomSheet(
-          SafeArea(
+          const SafeArea(
             child: Column(
-              children: const [
+              children: [
                 Expanded(
                   child: Center(
                     child: ThreeChoicesBottomSheet(
@@ -2334,9 +2330,9 @@ class RecordingState extends State<RecordingScreen> {
           }),
           _themeManager.getBlueFab(Icons.battery_unknown, () async {
             Get.bottomSheet(
-              SafeArea(
+              const SafeArea(
                 child: Column(
-                  children: const [
+                  children: [
                     Expanded(
                       child: Center(
                         child: BatteryStatusBottomSheet(),
@@ -2355,9 +2351,9 @@ class RecordingState extends State<RecordingScreen> {
               Get.snackbar("Error", "Not compatible with the calibration method");
             } else {
               Get.bottomSheet(
-                SafeArea(
+                const SafeArea(
                   child: Column(
-                    children: const [
+                    children: [
                       Expanded(
                         child: Center(
                           child: SpinDownBottomSheet(),
@@ -2379,9 +2375,9 @@ class RecordingState extends State<RecordingScreen> {
       menuButtons.addAll([
         _themeManager.getBlueFab(Icons.favorite, () async {
           await Get.bottomSheet(
-            SafeArea(
+            const SafeArea(
               child: Column(
-                children: const [
+                children: [
                   Expanded(
                     child: Center(
                       child: HeartRateMonitorPairingBottomSheet(),

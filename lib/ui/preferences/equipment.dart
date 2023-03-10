@@ -126,7 +126,7 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
       PrefText(
         label: measurementSinkAddress,
         pref: measurementSinkAddressTag,
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z0-9:.]"))],
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z\d:.]"))],
         validator: (str) {
           if (str == null || str.isEmpty) {
             return null;
