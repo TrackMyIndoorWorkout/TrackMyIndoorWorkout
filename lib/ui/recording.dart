@@ -20,6 +20,7 @@ import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
 import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_fourcc.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../persistence/models/activity.dart';
@@ -75,6 +76,7 @@ import 'parts/boolean_question.dart';
 import 'parts/circular_menu.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
+import 'parts/kayak_first.dart';
 import 'parts/legend_dialog.dart';
 import 'parts/pick_directory.dart';
 import 'parts/spin_down.dart';
@@ -2347,16 +2349,19 @@ class RecordingState extends State<RecordingScreen> {
             );
           }),
           _themeManager.getBlueFab(Icons.build, () async {
-            if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
+            if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false) &&
+                _fitnessEquipment?.descriptor?.fourCC != kayakFirstFourCC) {
               Get.snackbar("Error", "Not compatible with the calibration method");
             } else {
               Get.bottomSheet(
-                const SafeArea(
+                SafeArea(
                   child: Column(
                     children: [
                       Expanded(
                         child: Center(
-                          child: SpinDownBottomSheet(),
+                          child: _fitnessEquipment?.descriptor?.fourCC == kayakFirstFourCC
+                              ? const KayakFirstBottomSheet()
+                              : const SpinDownBottomSheet(),
                         ),
                       ),
                     ],
