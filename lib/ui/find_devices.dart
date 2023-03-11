@@ -21,6 +21,7 @@ import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
+import '../devices/gatt/kayak_first.dart';
 import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';
 import '../devices/gatt/schwinn_x70.dart';
@@ -359,6 +360,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           descriptor = DeviceFactory.getDescriptorForFourCC(schwinnX70BikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(concept2RowerFourCC);
+        } else if (advertisementDigest.serviceUuids.contains(kayakFirstServiceUuid)) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(kayakFirstFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedBikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {

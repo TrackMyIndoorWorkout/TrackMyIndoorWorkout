@@ -147,5 +147,5 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   virtufitUltimatePro2FourCC:
       SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),
   kayakFirstFourCC:
-      SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: false),
+      SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: true),
 };

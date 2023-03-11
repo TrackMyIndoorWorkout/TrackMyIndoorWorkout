@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ import '../gatt/battery.dart';
 import '../gatt/csc.dart';
 import '../gatt/concept2.dart';
 import '../gatt/ftms.dart';
+import '../gatt/kayak_first.dart';
 import '../gatt/precor.dart';
 import '../gatt/power_meter.dart';
 import '../gatt/schwinn_x70.dart';
@@ -259,6 +261,11 @@ abstract class DeviceBase {
       sports.add(ActivityType.ride);
     } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
+    } else if (characteristicId == kayakFirstMeasurementUuid) {
+      sports.addAll([
+        ActivityType.kayaking,
+        ActivityType.canoeing
+      ]);
     }
 
     return sports;
@@ -412,6 +419,31 @@ abstract class DeviceBase {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
       return DeviceCategory.smartDevice;
+    }
+  }
+
+  Future<String> sendKayakFirstCommand(String command) async {
+    if (!connected) {
+      await connect();
+    }
+
+    if (!connected) return notAvailable;
+
+    if (!discovered) {
+      await discover();
+    }
+
+    if (!discovered || characteristic == null) return notAvailable;
+
+    try {
+      final commandCrLf = command.contains("\n") ? command : "$command\r\n";
+      await characteristic?.write(utf8.encode(commandCrLf));
+      final response = await characteristic?.read() ?? [];
+      return utf8.decode(response);
+    } on PlatformException catch (e, stack) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      return notAvailable;
     }
   }
 }

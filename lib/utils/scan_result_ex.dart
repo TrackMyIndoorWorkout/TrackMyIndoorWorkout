@@ -9,6 +9,7 @@ import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
 import '../devices/gatt/hrm.dart';
+import '../devices/gatt/kayak_first.dart';
 import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';
 import '../devices/gatt/schwinn_x70.dart';
@@ -41,6 +42,7 @@ extension ScanResultEx on ScanResult {
           serviceUuids.contains(cyclingPowerServiceUuid) ||
           serviceUuids.contains(cyclingCadenceServiceUuid) ||
           serviceUuids.contains(c2RowingPrimaryServiceUuid) ||
+          serviceUuids.contains(kayakFirstServiceUuid) ||
           serviceUuids.contains(heartRateServiceUuid)) {
         return true;
       }
@@ -142,6 +144,10 @@ extension ScanResultEx on ScanResult {
     }
 
     if (serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
+      return MachineType.rower;
+    }
+
+    if (serviceUuids.contains(kayakFirstServiceUuid)) {
       return MachineType.rower;
     }
 

@@ -3,7 +3,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../export/fit/fit_manufacturer.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/logging.dart';
-import '../gatt/precor.dart';
+import '../gatt/kayak_first.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import '../device_fourcc.dart';
@@ -19,12 +19,12 @@ class KayakFirstDescriptor extends FixedLayoutDeviceDescriptor {
           isMultiSport: deviceSportDescriptors[kayakFirstFourCC]!.isMultiSport,
           fourCC: kayakFirstFourCC,
           vendorName: "Kayak First",
-          modelName: "Spinner Chrono Power",
-          manufacturerNamePart: "Precor",
-          manufacturerFitId: precorFitId,
+          modelName: "Kayak First Ergometer",
+          manufacturerNamePart: "Unknown",
+          manufacturerFitId: stravaFitId,
           model: "1",
-          dataServiceId: precorServiceUuid,
-          dataCharacteristicId: precorMeasurementUuid,
+          dataServiceId: kayakFirstServiceUuid,
+          dataCharacteristicId: kayakFirstMeasurementUuid,
           listenOnControl: false,
           flagByteSize: 3,
           heartRateByteIndex: 5,
