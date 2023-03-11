@@ -262,10 +262,7 @@ abstract class DeviceBase {
     } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
     } else if (characteristicId == kayakFirstMeasurementUuid) {
-      sports.addAll([
-        ActivityType.kayaking,
-        ActivityType.canoeing
-      ]);
+      sports.addAll([ActivityType.kayaking, ActivityType.canoeing]);
     }
 
     return sports;

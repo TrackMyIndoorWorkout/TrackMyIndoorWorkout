@@ -146,6 +146,5 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   merachMr667FourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   virtufitUltimatePro2FourCC:
       SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),
-  kayakFirstFourCC:
-      SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: true),
+  kayakFirstFourCC: SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: true),
 };
