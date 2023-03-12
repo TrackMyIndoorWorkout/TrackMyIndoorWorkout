@@ -261,7 +261,7 @@ abstract class DeviceBase {
       sports.add(ActivityType.ride);
     } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
-    } else if (characteristicId == kayakFirstMeasurementUuid) {
+    } else if (characteristicId == kayakFirstAllAroundUuid) {
       sports.addAll([ActivityType.kayaking, ActivityType.canoeing]);
     }
 
@@ -432,11 +432,18 @@ abstract class DeviceBase {
 
     if (!discovered || characteristic == null) return notAvailable;
 
+    await connectToControlPoint(false);
+
     try {
       final commandCrLf = command.contains("\n") ? command : "$command\r\n";
-      await characteristic?.write(utf8.encode(commandCrLf));
-      final response = await characteristic?.read() ?? [];
-      return utf8.decode(response);
+      await controlPoint?.write(utf8.encode(commandCrLf));
+      final response1 = await characteristic?.read() ?? [];
+      final response1Str = utf8.decode(response1);
+      final response2 = await status?.read() ?? [];
+      final response2Str = utf8.decode(response2);
+      final response3 = await controlPoint?.read() ?? [];
+      final response3Str = utf8.decode(response3);
+      return "$response1Str | $response2Str | $response3Str";
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
