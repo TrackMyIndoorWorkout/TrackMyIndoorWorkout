@@ -54,8 +54,8 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _readBatteryLevels();
     _fitnessEquipment?.listenToKayakFirst((measurement) => setState(() {
-      _commandResponse = "Response: $measurement";
-    }));
+          _commandResponse = "Response: $measurement";
+        }));
   }
 
   @override
