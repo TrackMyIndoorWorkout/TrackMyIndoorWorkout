@@ -137,10 +137,10 @@ const ActivitySchema = CollectionSchema(
       name: r'timeZone',
       type: IsarType.string,
     ),
-    r'trainingPeaksAthleteId': PropertySchema(
+    r'trainingPeaksFileTrackingUuid': PropertySchema(
       id: 24,
-      name: r'trainingPeaksAthleteId',
-      type: IsarType.long,
+      name: r'trainingPeaksFileTrackingUuid',
+      type: IsarType.string,
     ),
     r'trainingPeaksUploaded': PropertySchema(
       id: 25,
@@ -213,6 +213,7 @@ int _activityEstimateSize(
   bytesCount += 3 + object.suuntoUploadIdentifier.length * 3;
   bytesCount += 3 + object.suuntoWorkoutUrl.length * 3;
   bytesCount += 3 + object.timeZone.length * 3;
+  bytesCount += 3 + object.trainingPeaksFileTrackingUuid.length * 3;
   return bytesCount;
 }
 
@@ -246,7 +247,7 @@ void _activitySerialize(
   writer.writeBool(offsets[21], object.suuntoUploaded);
   writer.writeString(offsets[22], object.suuntoWorkoutUrl);
   writer.writeString(offsets[23], object.timeZone);
-  writer.writeLong(offsets[24], object.trainingPeaksAthleteId);
+  writer.writeString(offsets[24], object.trainingPeaksFileTrackingUuid);
   writer.writeBool(offsets[25], object.trainingPeaksUploaded);
   writer.writeLong(offsets[26], object.trainingPeaksWorkoutId);
   writer.writeLong(offsets[27], object.uaWorkoutId);
@@ -284,7 +285,7 @@ Activity _activityDeserialize(
     suuntoUploaded: reader.readBoolOrNull(offsets[21]) ?? false,
     suuntoWorkoutUrl: reader.readStringOrNull(offsets[22]) ?? "",
     timeZone: reader.readString(offsets[23]),
-    trainingPeaksAthleteId: reader.readLongOrNull(offsets[24]) ?? 0,
+    trainingPeaksFileTrackingUuid: reader.readStringOrNull(offsets[24]) ?? "",
     trainingPeaksUploaded: reader.readBoolOrNull(offsets[25]) ?? false,
     trainingPeaksWorkoutId: reader.readLongOrNull(offsets[26]) ?? 0,
     uaWorkoutId: reader.readLongOrNull(offsets[27]) ?? 0,
@@ -350,7 +351,7 @@ P _activityDeserializeProp<P>(
     case 23:
       return (reader.readString(offset)) as P;
     case 24:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readStringOrNull(offset) ?? "") as P;
     case 25:
       return (reader.readBoolOrNull(offset) ?? false) as P;
     case 26:
@@ -2666,54 +2667,133 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksAthleteIdEqualTo(int value) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'trainingPeaksAthleteId',
+        property: r'trainingPeaksFileTrackingUuid',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksAthleteIdGreaterThan(
-    int value, {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidGreaterThan(
+    String value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'trainingPeaksAthleteId',
+        property: r'trainingPeaksFileTrackingUuid',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksAthleteIdLessThan(
-    int value, {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidLessThan(
+    String value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'trainingPeaksAthleteId',
+        property: r'trainingPeaksFileTrackingUuid',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksAthleteIdBetween(
-    int lower,
-    int upper, {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidBetween(
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'trainingPeaksAthleteId',
+        property: r'trainingPeaksFileTrackingUuid',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'trainingPeaksFileTrackingUuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'trainingPeaksFileTrackingUuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'trainingPeaksFileTrackingUuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'trainingPeaksFileTrackingUuid',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'trainingPeaksFileTrackingUuid',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition>
+      trainingPeaksFileTrackingUuidIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'trainingPeaksFileTrackingUuid',
+        value: '',
       ));
     });
   }
@@ -3143,15 +3223,15 @@ extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy> sortByTrainingPeaksAthleteId() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByTrainingPeaksFileTrackingUuid() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'trainingPeaksAthleteId', Sort.asc);
+      return query.addSortBy(r'trainingPeaksFileTrackingUuid', Sort.asc);
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy> sortByTrainingPeaksAthleteIdDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByTrainingPeaksFileTrackingUuidDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'trainingPeaksAthleteId', Sort.desc);
+      return query.addSortBy(r'trainingPeaksFileTrackingUuid', Sort.desc);
     });
   }
 
@@ -3517,15 +3597,15 @@ extension ActivityQuerySortThenBy on QueryBuilder<Activity, Activity, QSortThenB
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy> thenByTrainingPeaksAthleteId() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByTrainingPeaksFileTrackingUuid() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'trainingPeaksAthleteId', Sort.asc);
+      return query.addSortBy(r'trainingPeaksFileTrackingUuid', Sort.asc);
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy> thenByTrainingPeaksAthleteIdDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByTrainingPeaksFileTrackingUuidDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'trainingPeaksAthleteId', Sort.desc);
+      return query.addSortBy(r'trainingPeaksFileTrackingUuid', Sort.desc);
     });
   }
 
@@ -3738,9 +3818,10 @@ extension ActivityQueryWhereDistinct on QueryBuilder<Activity, Activity, QDistin
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct> distinctByTrainingPeaksAthleteId() {
+  QueryBuilder<Activity, Activity, QDistinct> distinctByTrainingPeaksFileTrackingUuid(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'trainingPeaksAthleteId');
+      return query.addDistinctBy(r'trainingPeaksFileTrackingUuid', caseSensitive: caseSensitive);
     });
   }
 
@@ -3926,9 +4007,9 @@ extension ActivityQueryProperty on QueryBuilder<Activity, Activity, QQueryProper
     });
   }
 
-  QueryBuilder<Activity, int, QQueryOperations> trainingPeaksAthleteIdProperty() {
+  QueryBuilder<Activity, String, QQueryOperations> trainingPeaksFileTrackingUuidProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'trainingPeaksAthleteId');
+      return query.addPropertyName(r'trainingPeaksFileTrackingUuid');
     });
   }
 

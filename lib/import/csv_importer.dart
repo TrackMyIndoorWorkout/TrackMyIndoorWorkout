@@ -194,7 +194,6 @@ class CSVImporter with PowerSpeedMixin {
     var uaWorkoutId = 0;
     var trainingPeaksUploaded = false;
     var trainingPeaksFileTrackingUuid = "";
-    var trainingPeaksAthleteId = 0;
     var trainingPeaksWorkoutId = 0;
     var movingTime = 0;
 
@@ -447,8 +446,6 @@ class CSVImporter with PowerSpeedMixin {
             message = "Couldn't parse $trainingPeaksAthleteIdTag";
             return null;
           }
-
-          trainingPeaksAthleteId = int.tryParse(tpAthleteIdLine[1]) ?? 0;
         } else {
           final tpFileTrackingUuidLine = _lines[_linePointer].split(",");
           if (tpFileTrackingUuidLine[0].trim() != trainingPeaksFileTrackingUuidTag) {
@@ -564,7 +561,6 @@ class CSVImporter with PowerSpeedMixin {
       uaWorkoutId: uaWorkoutId,
       trainingPeaksUploaded: trainingPeaksUploaded,
       trainingPeaksFileTrackingUuid: trainingPeaksFileTrackingUuid,
-      trainingPeaksAthleteId: trainingPeaksAthleteId,
       trainingPeaksWorkoutId: trainingPeaksWorkoutId,
     );
 
