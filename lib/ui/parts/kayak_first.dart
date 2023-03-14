@@ -42,13 +42,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
     });
   }
 
-  Future<void> _sendCommand(String command) async {
-    final response = await _fitnessEquipment?.sendKayakFirstCommand(command);
-    setState(() {
-      _commandResponse = "Response: $response";
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -60,6 +53,9 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _readBatteryLevels();
+    _fitnessEquipment?.listenToKayakFirst((measurement) => setState(() {
+      _commandResponse = "Response: $measurement";
+    }));
   }
 
   @override
@@ -90,7 +86,7 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
                     suffixIcon: ElevatedButton(
                       child: _themeManager.getBlueIcon(Icons.keyboard_command_key, _sizeDefault),
                       onPressed: () async {
-                        await _sendCommand(_textController.text);
+                        await _fitnessEquipment?.sendKayakFirstCommand(_textController.text);
                       },
                     ),
                   ),

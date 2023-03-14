@@ -25,6 +25,8 @@ import '../gatt/power_meter.dart';
 import '../gatt/schwinn_x70.dart';
 import '../bluetooth_device_ex.dart';
 
+typedef StringMetricProcessingFunction = Function(String measurement);
+
 abstract class DeviceBase {
   final String serviceId;
   String characteristicId;
@@ -419,35 +421,44 @@ abstract class DeviceBase {
     }
   }
 
-  Future<String> sendKayakFirstCommand(String command) async {
+  Stream<String> get _listenToStringData async* {
+    if (!attached || characteristic == null) return;
+
+    await for (var byteList in characteristic!.value) {
+      yield utf8.decode(byteList);
+    }
+  }
+
+  Future<void> listenToKayakFirst(StringMetricProcessingFunction? metricProcessingFunction) async {
+    subscription = _listenToStringData.listen((newValue) {
+      if (metricProcessingFunction != null) {
+        metricProcessingFunction(newValue);
+      }
+    });
+  }
+
+  Future<int> sendKayakFirstCommand(String command) async {
     if (!connected) {
       await connect();
     }
 
-    if (!connected) return notAvailable;
+    if (!connected) return -1;
 
     if (!discovered) {
       await discover();
     }
 
-    if (!discovered || characteristic == null) return notAvailable;
-
-    await connectToControlPoint(false);
+    if (!discovered || characteristic == null) return -1;
 
     try {
       final commandCrLf = command.contains("\n") ? command : "$command\r\n";
-      await controlPoint?.write(utf8.encode(commandCrLf));
-      final response1 = await characteristic?.read() ?? [];
-      final response1Str = utf8.decode(response1);
-      final response2 = await status?.read() ?? [];
-      final response2Str = utf8.decode(response2);
-      final response3 = await controlPoint?.read() ?? [];
-      final response3Str = utf8.decode(response3);
-      return "$response1Str | $response2Str | $response3Str";
+      await characteristic?.write(utf8.encode(commandCrLf));
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
-      return notAvailable;
+      return -1;
     }
+
+    return 0;
   }
 }
