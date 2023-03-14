@@ -73,7 +73,7 @@ class Activity {
   @ColumnInfo(name: 'training_peaks_athlete_id')
   int trainingPeaksAthleteId;
   @ColumnInfo(name: 'training_peaks_file_tracking_uuid')
-  String trainingPeaksFileTrackingUUID;
+  String trainingPeaksFileTrackingUuid;
 
   @ignore
   DateTime? startDateTime;
@@ -104,7 +104,7 @@ class Activity {
     this.suuntoWorkoutUrl = "",
     this.trainingPeaksAthleteId = 0,
     this.trainingPeaksWorkoutId = 0,
-    this.trainingPeaksFileTrackingUUID = "",
+    this.trainingPeaksFileTrackingUuid = "",
     this.startDateTime,
     required this.fourCC,
     required this.sport,
@@ -144,8 +144,8 @@ class Activity {
     suuntoUploaded = true;
   }
 
-  void markTrainingPeaksUploading(String fileTrackingUUID) {
-    trainingPeaksFileTrackingUUID = fileTrackingUUID;
+  void markTrainingPeaksUploading(String fileTrackingUuid) {
+    trainingPeaksFileTrackingUuid = fileTrackingUuid;
     trainingPeaksUploaded = false;
   }
 

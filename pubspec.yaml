@@ -17,7 +17,7 @@ dependencies:
   easy_folder_picker: ^1.3.0
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^5.2.5
+  file_picker: ^5.2.6
   floor: ^1.4.1
   flutter_blue_plus: ^1.4.0
   flutter_circle_color_picker: ^0.3.0
@@ -44,7 +44,7 @@ dependencies:
   rxdart: ^0.27.7
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
-  sqflite: ^2.2.5
+  sqflite: ^2.2.6
   string_validator: ^1.0.0
   syncfusion_flutter_charts: ^20.4.53
   timezone: ^0.9.1
@@ -58,7 +58,7 @@ dependencies:
 
 dev_dependencies:
   analyzer: ^5.7.1
-  build_runner: ^2.4.0
+  build_runner: ^2.4.1
   floor_generator: ^1.4.1
   flutter_driver:
     sdk: flutter
