@@ -104,9 +104,11 @@ abstract class Upload {
       final fileTrackingUUID = statusUrl.split("/").last;
       debugPrint('trackingUUID $fileTrackingUUID');
       if (fileTrackingUUID.isNotEmpty) {
-        final database = Get.find<AppDatabase>();
-        activity.markTrainingPeaksUploading(fileTrackingUUID);
-        await database.activityDao.updateActivity(activity);
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          activity.markTrainingPeaksUploading(fileTrackingUUID);
+          database.activitys.putSync(activity);
+        });
 
         await Future<void>.delayed(const Duration(milliseconds: 500));
 
@@ -166,8 +168,10 @@ abstract class Upload {
                         .whereNotNull()
                         .toList(growable: false);
                     if (workoutIds.isNotEmpty) {
-                      activity.markTrainingPeaksUploaded(workoutIds.first);
-                      await database.activityDao.updateActivity(activity);
+                      database.writeTxnSync(() {
+                        activity.markTrainingPeaksUploaded(workoutIds.first);
+                        database.activitys.putSync(activity);
+                      });
                     }
                   }
                 }
