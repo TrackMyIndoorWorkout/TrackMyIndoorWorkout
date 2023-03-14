@@ -44,7 +44,7 @@ class Activity {
   int uaWorkoutId;
   bool trainingPeaksUploaded;
   int trainingPeaksWorkoutId;
-  int trainingPeaksAthleteId;
+  String trainingPeaksFileTrackingUuid;
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
   String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();
@@ -69,8 +69,8 @@ class Activity {
     this.uaWorkoutId = 0,
     this.suuntoUploadIdentifier = "",
     this.suuntoWorkoutUrl = "",
-    this.trainingPeaksAthleteId = 0,
     this.trainingPeaksWorkoutId = 0,
+    this.trainingPeaksFileTrackingUuid = "",
     required this.fourCC,
     required this.sport,
     required this.powerFactor,
@@ -109,8 +109,12 @@ class Activity {
     suuntoUploaded = true;
   }
 
-  void markTrainingPeaksUploaded(int athleteId, int workoutId) {
-    trainingPeaksAthleteId = athleteId;
+  void markTrainingPeaksUploading(String fileTrackingUuid) {
+    trainingPeaksFileTrackingUuid = fileTrackingUuid;
+    trainingPeaksUploaded = false;
+  }
+
+  void markTrainingPeaksUploaded(int workoutId) {
     trainingPeaksWorkoutId = workoutId;
     trainingPeaksUploaded = true;
   }

@@ -244,3 +244,8 @@ final migration16to17 = Migration(16, 17, (database) async {
 
   AppDatabase.additional16to17Migration = true;
 });
+
+final migration17to18 = Migration(17, 18, (database) async {
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `training_peaks_file_tracking_uuid` TEXT NOT NULL DEFAULT ''");
+});
