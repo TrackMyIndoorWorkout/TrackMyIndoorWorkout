@@ -46,7 +46,8 @@ class CsvExport extends ActivityExport {
     _sb.writeln("$underArmourUploadedTag,${exportModel.activity.underArmourUploaded},");
     _sb.writeln("$uaWorkoutIdTag,${exportModel.activity.uaWorkoutId},");
     _sb.writeln("$trainingPeaksUploadedTag,${exportModel.activity.trainingPeaksUploaded},");
-    _sb.writeln("$trainingPeaksAthleteIdTag,${exportModel.activity.trainingPeaksAthleteId},");
+    _sb.writeln(
+        "$trainingPeaksFileTrackingUuidTag,${exportModel.activity.trainingPeaksFileTrackingUuid},");
     _sb.writeln("$trainingPeaksWorkoutIdTag,${exportModel.activity.trainingPeaksWorkoutId},");
     _sb.writeln("$movingTimeTag,${exportModel.activity.movingTime},");
     _sb.writeln("");

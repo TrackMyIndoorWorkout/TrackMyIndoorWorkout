@@ -101,18 +101,18 @@ abstract class Upload {
       }
 
       final statusUrl = uploadResponse.headers["location"]!;
-      final fileTrackingUUID = statusUrl.split("/").last;
-      debugPrint('trackingUUID $fileTrackingUUID');
-      if (fileTrackingUUID.isNotEmpty) {
+      final fileTrackingUuid = statusUrl.split("/").last;
+      debugPrint('trackingUUID $fileTrackingUuid');
+      if (fileTrackingUuid.isNotEmpty) {
         final database = Get.find<Isar>();
         database.writeTxnSync(() {
-          activity.markTrainingPeaksUploading(fileTrackingUUID);
+          activity.markTrainingPeaksUploading(fileTrackingUuid);
           database.activitys.putSync(activity);
         });
 
         await Future<void>.delayed(const Duration(milliseconds: 500));
 
-        final uploadStatusUrl = tpProductionApiUrlBase + uploadStatusPath + fileTrackingUUID;
+        final uploadStatusUrl = tpProductionApiUrlBase + uploadStatusPath + fileTrackingUuid;
         final uri = Uri.parse(uploadStatusUrl);
         bool processingFinished = false;
         while (!processingFinished) {
