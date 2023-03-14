@@ -1,5 +1,5 @@
 const String csvMagic = "TMIW";
-const int csvVersion = 3;
+const int csvVersion = 4;
 const String rideSummaryTag = "RIDE SUMMARY";
 const String totalTimeTag = "Total Time";
 const String totalDistanceTag = "Total Distance";
@@ -26,6 +26,7 @@ const String suuntoUploadIdTag = "SUUNTO Upload Id";
 const String underArmourUploadedTag = "Under Armour Uploaded";
 const String uaWorkoutIdTag = "Under Armour Workout Id";
 const String trainingPeaksUploadedTag = "Training Peaks Uploaded";
+const String trainingPeaksFileTrackingUuidTag = "training_peaks_file_tracking_uuid";
 const String trainingPeaksAthleteIdTag = "training_peaks_athlete_id";
 const String trainingPeaksWorkoutIdTag = "training_peaks_workout_id";
 const String minutesUnitTag = "Minutes";
