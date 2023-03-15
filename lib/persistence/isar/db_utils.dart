@@ -6,6 +6,7 @@ import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../utils/constants.dart';
 import 'activity.dart';
 import 'calorie_tune.dart';
+import 'floor_migration.dart';
 import 'power_tune.dart';
 import 'record.dart';
 import 'workout_summary.dart';
@@ -141,5 +142,27 @@ class DbUtils {
     }
 
     return updated > 0;
+  }
+
+  bool isMigrated(String entityName, int floorId) {
+    return database.floorMigrations
+            .filter()
+            .entityNameEqualTo(entityName)
+            .and()
+            .floorIdEqualTo(floorId)
+            .countSync() >
+        0;
+  }
+
+  int? getIsarId(String entityName, int floorId) {
+    final isarIds = database.floorMigrations
+        .filter()
+        .entityNameEqualTo(entityName)
+        .and()
+        .floorIdEqualTo(floorId)
+        .isarIdProperty()
+        .findAllSync();
+
+    return isarIds.isNotEmpty ? isarIds.first : null;
   }
 }

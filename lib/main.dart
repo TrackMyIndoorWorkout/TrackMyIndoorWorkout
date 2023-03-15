@@ -10,6 +10,7 @@ import 'track_my_indoor_exercise_app.dart';
 import 'persistence/isar/activity.dart';
 import 'persistence/isar/calorie_tune.dart';
 import 'persistence/isar/device_usage.dart';
+import 'persistence/isar/floor_migration.dart';
 import 'persistence/isar/power_tune.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'persistence/isar/record.dart';
@@ -24,6 +25,7 @@ void main() async {
     ActivitySchema,
     CalorieTuneSchema,
     DeviceUsageSchema,
+    FloorMigrationSchema,
     PowerTuneSchema,
     RecordSchema,
     WorkoutSummarySchema,
