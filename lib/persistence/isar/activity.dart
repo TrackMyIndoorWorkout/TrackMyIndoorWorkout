@@ -11,8 +11,6 @@ import 'workout_summary.dart';
 
 part 'activity.g.dart';
 
-const activitiesTableName = 'activities';
-
 @Collection(inheritance: false)
 class Activity {
   Id id;
