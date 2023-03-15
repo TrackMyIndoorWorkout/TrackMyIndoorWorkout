@@ -184,7 +184,7 @@ class RecordingState extends State<RecordingScreen> {
   List<MetricSpec> _preferencesSpecs = [];
 
   Activity? _activity;
-  final Isar _database = Get.find<Isar>();
+  final _database = Get.find<Isar>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _simplerUi = simplerUiSlowDefault;

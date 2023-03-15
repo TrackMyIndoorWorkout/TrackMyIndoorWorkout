@@ -53,7 +53,7 @@ class ActivitiesScreen extends StatefulWidget {
 }
 
 class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingObserver {
-  final Isar _database = Get.find<Isar>();
+  final _database = Get.find<Isar>();
   int _editCount = 0;
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;

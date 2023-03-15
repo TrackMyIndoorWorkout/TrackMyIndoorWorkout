@@ -26,7 +26,7 @@ class SportLeaderboardScreen extends StatefulWidget {
 
 class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
     with WidgetsBindingObserver {
-  final Isar _database = Get.find<Isar>();
+  final _database = Get.find<Isar>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   int _editCount = 0;

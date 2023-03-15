@@ -23,7 +23,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
   TextStyle _inverseTextStyle = const TextStyle();
-  final Isar _database = Get.find<Isar>();
+  final _database = Get.find<Isar>();
 
   @override
   void initState() {

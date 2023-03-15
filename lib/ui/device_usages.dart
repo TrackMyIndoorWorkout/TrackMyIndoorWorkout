@@ -19,7 +19,7 @@ class DeviceUsagesScreen extends StatefulWidget {
 }
 
 class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBindingObserver {
-  final Isar _database = Get.find<Isar>();
+  final _database = Get.find<Isar>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
