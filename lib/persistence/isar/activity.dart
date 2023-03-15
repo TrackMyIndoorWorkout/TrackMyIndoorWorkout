@@ -17,7 +17,6 @@ class Activity {
   final String deviceName;
   final String deviceId;
   String hrmId;
-  @Index()
   DateTime start;
   DateTime? end;
   double distance; // m
