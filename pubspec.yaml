@@ -25,7 +25,7 @@ dependencies:
   flutter_logs: ^2.1.10
   flutter_timezone: ^1.0.4
   flutter_spinbox: ^0.13.0
-  flutter_svg: ^2.0.3
+  flutter_svg: ^2.0.4
   get: ^4.6.1
   group_button: ^5.2.2
   http: ^0.13.5
@@ -46,7 +46,7 @@ dependencies:
   soundpool: ^2.3.0
   sqflite: ^2.2.6
   string_validator: ^1.0.0
-  syncfusion_flutter_charts: ^20.4.53
+  syncfusion_flutter_charts: ^20.4.54
   timezone: ^0.9.1
   tuple: ^2.0.1
   uni_links: ^0.5.1
