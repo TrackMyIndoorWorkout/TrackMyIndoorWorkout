@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -87,37 +88,91 @@ abstract class Upload {
 
     debugPrint('Response: ${uploadResponse.statusCode} ${uploadResponse.reasonPhrase}');
 
-    final uploadBody = uploadResponse.body;
     if (uploadResponse.statusCode < 200 || uploadResponse.statusCode >= 300) {
-      // response.statusCode != 201
+      // response.statusCode != 202 // the new async endpoint should return 202 and a fileTrackingId
       debugPrint('Error while uploading the activity');
     } else {
-      const workoutIdTag = '"Id":';
-      int idBeginningIndex = uploadBody.indexOf(workoutIdTag);
-      if (idBeginningIndex > 0) {
-        int beginningIndex = idBeginningIndex + workoutIdTag.length;
-        int idEndIndex = uploadBody.indexOf(',', beginningIndex);
-        if (idEndIndex > 0) {
-          final workoutIdString = uploadBody.substring(beginningIndex, idEndIndex);
-          final workoutId = int.tryParse(workoutIdString) ?? 0;
+      // Upload is processed by the server
+      // now wait for the upload to be finished
+      //----------------------------------------
+      if (!uploadResponse.headers.containsKey("location")) {
+        // Why didn't we get a status check URL?
+        return uploadResponse.statusCode;
+      }
 
-          const athleteIdTag = '"AthleteId":';
-          int athleteId = 0;
-          int matchBeginningIndex = uploadBody.indexOf(athleteIdTag);
-          if (matchBeginningIndex > 0) {
-            final beginningIndex = matchBeginningIndex + athleteIdTag.length;
-            final idEndIndex = uploadBody.indexOf(',', matchBeginningIndex);
-            if (idEndIndex > 0) {
-              final athleteIdString = uploadBody.substring(beginningIndex, idEndIndex);
-              athleteId = int.tryParse(athleteIdString) ?? 0;
-            }
+      final statusUrl = uploadResponse.headers["location"]!;
+      final fileTrackingUuid = statusUrl.split("/").last;
+      debugPrint('trackingUUID $fileTrackingUuid');
+      if (fileTrackingUuid.isNotEmpty) {
+        final database = Get.find<AppDatabase>();
+        activity.markTrainingPeaksUploading(fileTrackingUuid);
+        await database.activityDao.updateActivity(activity);
+
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+
+        final uploadStatusUrl = tpProductionApiUrlBase + uploadStatusPath + fileTrackingUuid;
+        final uri = Uri.parse(uploadStatusUrl);
+        bool processingFinished = false;
+        while (!processingFinished) {
+          final resp = await http.get(uri, headers: headers);
+          debugPrint('Check Status ${resp.statusCode}');
+
+          // Everything is fine the file has been loaded
+          if (resp.statusCode >= 200 && resp.statusCode < 300) {
+            // resp.statusCode == 200
+            debugPrint('Check Body: ${resp.body}');
           }
 
-          debugPrint('id $workoutId athlete $athleteId');
-          if (workoutId > 0 || athleteId > 0) {
-            final database = Get.find<AppDatabase>();
-            activity.markTrainingPeaksUploaded(athleteId, workoutId);
-            await database.activityDao.updateActivity(activity);
+          // 404 the temp id does not exist anymore
+          // Activity has been probably already loaded
+          if (resp.statusCode == 404) {
+            debugPrint('---> 404 activity already loaded  ${resp.reasonPhrase}');
+            processingFinished = true;
+          } else {
+            final processingBody = resp.body;
+            const completedTag = '"Completed":';
+            int completedBeginningIndex = processingBody.indexOf(completedTag);
+            if (completedBeginningIndex > 0) {
+              int beginningIndex = completedBeginningIndex + completedTag.length;
+              int completedEndIndex = processingBody.indexOf(',', beginningIndex);
+              if (completedEndIndex > 0) {
+                final completedString = processingBody.substring(beginningIndex, completedEndIndex);
+                final completed = completedString.toLowerCase() == "true";
+                debugPrint('---> Completed  $completed');
+                processingFinished = completed;
+                const statusTag = '"Status":';
+                int statusBeginningIndex = processingBody.indexOf(statusTag);
+                if (statusBeginningIndex > 0) {
+                  beginningIndex = statusBeginningIndex + statusTag.length;
+                  final statusEndIndex = processingBody.indexOf(',', statusBeginningIndex);
+                  if (statusEndIndex > 0) {
+                    final statusString = processingBody.substring(beginningIndex, statusEndIndex);
+                    debugPrint('---> Status  $statusString');
+                  }
+                }
+
+                const workoutIdsTag = '"WorkoutIds":[';
+                int workoutBeginningIndex = processingBody.indexOf(workoutIdsTag);
+                if (workoutBeginningIndex > 0) {
+                  beginningIndex = workoutBeginningIndex + workoutIdsTag.length;
+                  int workoutIdsEndIndex = processingBody.indexOf(']', beginningIndex);
+                  if (workoutIdsEndIndex > 0) {
+                    final workoutIdsString =
+                        processingBody.substring(beginningIndex, workoutIdsEndIndex);
+                    debugPrint('---> Workout IDs  $workoutIdsString');
+                    final workoutIds = workoutIdsString
+                        .split(",")
+                        .map((workoutIdString) => int.tryParse(workoutIdString))
+                        .whereNotNull()
+                        .toList(growable: false);
+                    if (workoutIds.isNotEmpty) {
+                      activity.markTrainingPeaksUploaded(workoutIds.first);
+                      await database.activityDao.updateActivity(activity);
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

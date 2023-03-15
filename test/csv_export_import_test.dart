@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:mock_data/mock_data.dart';
 import 'package:mockito/annotations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
@@ -57,7 +58,7 @@ void main() {
           id: rnd.nextInt(100000),
           deviceName: descriptor.modelName,
           deviceId: mPowerImportDeviceId,
-          hrmId: "CAFEBABE",
+          hrmId: mockName(),
           start: oneSecondAgo.millisecondsSinceEpoch,
           end: oneSecondAgo.millisecondsSinceEpoch + recordCount * 1000,
           distance: distance,
@@ -66,14 +67,15 @@ void main() {
           calories: calories,
           uploaded: rnd.nextBool(),
           suuntoUploaded: rnd.nextBool(),
-          suuntoBlobUrl: "suuntoBlobUrl test string",
+          suuntoBlobUrl: mockUrl("https", true),
           underArmourUploaded: rnd.nextBool(),
           trainingPeaksUploaded: rnd.nextBool(),
           stravaId: rnd.nextInt(1000000),
           uaWorkoutId: rnd.nextInt(1000000),
           suuntoUploadId: rnd.nextInt(1000000),
-          suuntoUploadIdentifier: "suuntoUploadIdentifier test string",
-          suuntoWorkoutUrl: "suuntoWorkoutUrl test string",
+          suuntoUploadIdentifier: mockUUID(),
+          suuntoWorkoutUrl: mockUrl("https", true),
+          trainingPeaksFileTrackingUuid: mockUUID(),
           trainingPeaksAthleteId: rnd.nextInt(1000000),
           trainingPeaksWorkoutId: rnd.nextInt(1000000),
           startDateTime: oneSecondAgo,
@@ -84,7 +86,7 @@ void main() {
           hrCalorieFactor: rnd.nextDouble(),
           hrmCalorieFactor: rnd.nextDouble(),
           hrBasedCalories: rnd.nextBool(),
-          timeZone: "America/Los_Angeles",
+          timeZone: "${mockName()}/${mockName()}",
         );
 
         final recordIdOffset = rnd.nextInt(1000);
@@ -199,7 +201,9 @@ void main() {
         expect(importedActivity.suuntoUploadId, 0); // Not used any more
         expect(importedActivity.suuntoUploadIdentifier, activity.suuntoUploadIdentifier);
         expect(importedActivity.suuntoWorkoutUrl, activity.suuntoWorkoutUrl);
-        expect(importedActivity.trainingPeaksAthleteId, activity.trainingPeaksAthleteId);
+        expect(importedActivity.trainingPeaksAthleteId, 0); // Not used any more
+        expect(
+            importedActivity.trainingPeaksFileTrackingUuid, activity.trainingPeaksFileTrackingUuid);
         expect(importedActivity.trainingPeaksWorkoutId, activity.trainingPeaksWorkoutId);
         expect(importedActivity.movingTime, activity.movingTime);
 
@@ -253,7 +257,7 @@ void main() {
           id: rnd.nextInt(100000),
           deviceName: descriptor.modelName,
           deviceId: mPowerImportDeviceId,
-          hrmId: "CAFEBABE",
+          hrmId: mockName(),
           start: oneSecondAgo.millisecondsSinceEpoch,
           end: oneSecondAgo.millisecondsSinceEpoch + recordCount * 1000,
           distance: distance,
@@ -262,14 +266,15 @@ void main() {
           calories: calories,
           uploaded: rnd.nextBool(),
           suuntoUploaded: rnd.nextBool(),
-          suuntoBlobUrl: "suuntoBlobUrl test string",
+          suuntoBlobUrl: mockUrl("https", true),
           underArmourUploaded: rnd.nextBool(),
           trainingPeaksUploaded: rnd.nextBool(),
           stravaId: rnd.nextInt(1000000),
           uaWorkoutId: rnd.nextInt(1000000),
           suuntoUploadId: rnd.nextInt(1000000),
-          suuntoUploadIdentifier: "suuntoUploadIdentifier test string",
-          suuntoWorkoutUrl: "suuntoWorkoutUrl test string",
+          suuntoUploadIdentifier: mockUUID(),
+          suuntoWorkoutUrl: mockUrl("https", true),
+          trainingPeaksFileTrackingUuid: mockUUID(),
           trainingPeaksAthleteId: rnd.nextInt(1000000),
           trainingPeaksWorkoutId: rnd.nextInt(1000000),
           startDateTime: oneSecondAgo,
@@ -280,7 +285,7 @@ void main() {
           hrCalorieFactor: rnd.nextDouble(),
           hrmCalorieFactor: rnd.nextDouble(),
           hrBasedCalories: rnd.nextBool(),
-          timeZone: "America/Los_Angeles",
+          timeZone: "${mockName()}/${mockName()}",
         );
 
         final recordIdOffset = rnd.nextInt(1000);
@@ -358,7 +363,9 @@ void main() {
         expect(importedActivity.suuntoUploadId, 0); // Not used any more
         expect(importedActivity.suuntoUploadIdentifier, activity.suuntoUploadIdentifier);
         expect(importedActivity.suuntoWorkoutUrl, activity.suuntoWorkoutUrl);
-        expect(importedActivity.trainingPeaksAthleteId, activity.trainingPeaksAthleteId);
+        expect(importedActivity.trainingPeaksAthleteId, 0); // Not used any more
+        expect(
+            importedActivity.trainingPeaksFileTrackingUuid, activity.trainingPeaksFileTrackingUuid);
         expect(importedActivity.trainingPeaksWorkoutId, activity.trainingPeaksWorkoutId);
         expect(importedActivity.movingTime, activity.movingTime);
 
