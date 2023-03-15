@@ -5,4 +5,7 @@ import '../models/device_usage.dart';
 abstract class DeviceUsageDao {
   @Query('SELECT * FROM `$deviceUsageTableName` ORDER BY `time` DESC')
   Future<List<DeviceUsage>> findAllDeviceUsages();
+
+  @Query('SELECT COUNT(`id`) FROM `$deviceUsageTableName`')
+  Future<int?> getDeviceUsageCount();
 }
