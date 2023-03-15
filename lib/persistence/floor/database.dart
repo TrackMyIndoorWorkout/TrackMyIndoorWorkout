@@ -24,7 +24,7 @@ import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 17, entities: [
+@Database(version: 18, entities: [
   Activity,
   Record,
   DeviceUsage,
