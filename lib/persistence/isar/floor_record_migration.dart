@@ -1,18 +1,18 @@
 import 'package:isar/isar.dart';
 
-part 'floor_migration.g.dart';
+part 'floor_record_migration.g.dart';
 
 @Collection(inheritance: false)
-class FloorMigration {
+class FloorRecordMigration {
   Id id;
   @Index()
-  final String entityName;
+  final int activityId;
   final int floorId;
   final int isarId;
 
-  FloorMigration({
+  FloorRecordMigration({
     this.id = Isar.autoIncrement,
-    required this.entityName,
+    required this.activityId,
     required this.floorId,
     required this.isarId,
   });

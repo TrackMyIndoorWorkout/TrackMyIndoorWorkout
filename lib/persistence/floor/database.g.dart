@@ -257,8 +257,8 @@ class _$RecordDao extends RecordDao {
   final QueryAdapter _queryAdapter;
 
   @override
-  Future<List<Record>> findAllRecords() async {
-    return _queryAdapter.queryList('SELECT * FROM `records` ORDER BY `time_stamp`',
+  Future<List<Record>> findActivityRecords(int activityId) async {
+    return _queryAdapter.queryList('SELECT * FROM `records` WHERE `activity_id` = ?1 ORDER BY `id`',
         mapper: (Map<String, Object?> row) => Record(
             id: row['id'] as int?,
             activityId: row['activity_id'] as int?,
@@ -269,19 +269,29 @@ class _$RecordDao extends RecordDao {
             power: row['power'] as int?,
             speed: row['speed'] as double?,
             cadence: row['cadence'] as int?,
-            heartRate: row['heart_rate'] as int?));
+            heartRate: row['heart_rate'] as int?),
+        arguments: [activityId]);
   }
 
   @override
-  Future<int?> getRecordCount() async {
-    return _queryAdapter.query('SELECT COUNT(`id`) FROM `records`',
-        mapper: (Map<String, Object?> row) => row.values.first as int);
-  }
-
-  @override
-  Future<int?> getActivityRecordCount(int activityId) async {
-    return _queryAdapter.query('SELECT COUNT(`id`) FROM `records` WHERE `activity_id` = ?1',
-        mapper: (Map<String, Object?> row) => row.values.first as int, arguments: [activityId]);
+  Future<List<Record>> findPartialActivityRecords(
+    int activityId,
+    int recordId,
+  ) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM `records` WHERE `activity_id` = ?1 AND `id` > ?2 ORDER BY `id`',
+        mapper: (Map<String, Object?> row) => Record(
+            id: row['id'] as int?,
+            activityId: row['activity_id'] as int?,
+            timeStamp: row['time_stamp'] as int?,
+            distance: row['distance'] as double?,
+            elapsed: row['elapsed'] as int?,
+            calories: row['calories'] as int?,
+            power: row['power'] as int?,
+            speed: row['speed'] as double?,
+            cadence: row['cadence'] as int?,
+            heartRate: row['heart_rate'] as int?),
+        arguments: [activityId, recordId]);
   }
 }
 
@@ -308,12 +318,6 @@ class _$DeviceUsageDao extends DeviceUsageDao {
             manufacturer: row['manufacturer'] as String,
             manufacturerName: row['manufacturer_name'] as String?,
             time: row['time'] as int));
-  }
-
-  @override
-  Future<int?> getDeviceUsageCount() async {
-    return _queryAdapter.query('SELECT COUNT(`id`) FROM `device_usage`',
-        mapper: (Map<String, Object?> row) => row.values.first as int);
   }
 }
 
@@ -354,12 +358,6 @@ class _$CalorieTuneDao extends CalorieTuneDao {
   }
 
   @override
-  Future<int?> getCalorieTuneCount() async {
-    return _queryAdapter.query('SELECT COUNT(`id`) FROM `calorie_tune`',
-        mapper: (Map<String, Object?> row) => row.values.first as int);
-  }
-
-  @override
   Future<int> updateCalorieTune(CalorieTune calorieTune) {
     return _calorieTuneUpdateAdapter.updateAndReturnChangedRows(
         calorieTune, OnConflictStrategy.abort);
@@ -386,12 +384,6 @@ class _$PowerTuneDao extends PowerTuneDao {
             mac: row['mac'] as String,
             powerFactor: row['power_factor'] as double,
             time: row['time'] as int));
-  }
-
-  @override
-  Future<int?> getPowerTuneCount() async {
-    return _queryAdapter.query('SELECT COUNT(`id`) FROM `power_tune`',
-        mapper: (Map<String, Object?> row) => row.values.first as int);
   }
 }
 
@@ -442,12 +434,6 @@ class _$WorkoutSummaryDao extends WorkoutSummaryDao {
             sport: row['sport'] as String,
             powerFactor: row['power_factor'] as double,
             calorieFactor: row['calorie_factor'] as double));
-  }
-
-  @override
-  Future<int?> getWorkoutSummaryCount() async {
-    return _queryAdapter.query('SELECT COUNT(`id`) FROM `workout_summary`',
-        mapper: (Map<String, Object?> row) => row.values.first as int);
   }
 
   @override

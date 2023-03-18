@@ -61,6 +61,7 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
               final powerFactor = _powerFactorPercent / 100.0;
               final powerTune = await database.powerTunes
                   .where(sort: Sort.desc)
+                  .filter()
                   .macEqualTo(widget.deviceId)
                   .findFirst();
               if (powerTune != null) {
@@ -78,6 +79,7 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
                   database.powerTunes.putSync(powerTune);
                 });
               }
+
               Get.back(result: powerFactor);
             }),
           ],

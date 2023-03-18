@@ -3,12 +3,10 @@ import '../models/record.dart';
 
 @dao
 abstract class RecordDao {
-  @Query('SELECT * FROM `$recordsTableName` ORDER BY `time_stamp`')
-  Future<List<Record>> findAllRecords();
+  @Query('SELECT * FROM `$recordsTableName` WHERE `activity_id` = :activityId ORDER BY `id`')
+  Future<List<Record>> findActivityRecords(int activityId);
 
-  @Query('SELECT COUNT(`id`) FROM `$recordsTableName`')
-  Future<int?> getRecordCount();
-
-  @Query('SELECT COUNT(`id`) FROM `$recordsTableName` WHERE `activity_id` = :activityId')
-  Future<int?> getActivityRecordCount(int activityId);
+  @Query(
+      'SELECT * FROM `$recordsTableName` WHERE `activity_id` = :activityId AND `id` > :recordId ORDER BY `id`')
+  Future<List<Record>> findPartialActivityRecords(int activityId, int recordId);
 }

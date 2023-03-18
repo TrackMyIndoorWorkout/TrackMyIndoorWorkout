@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'floor_migration.dart';
+part of 'floor_record_migration.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,18 +9,18 @@ part of 'floor_migration.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
 
-extension GetFloorMigrationCollection on Isar {
-  IsarCollection<FloorMigration> get floorMigrations => this.collection();
+extension GetFloorRecordMigrationCollection on Isar {
+  IsarCollection<FloorRecordMigration> get floorRecordMigrations => this.collection();
 }
 
-const FloorMigrationSchema = CollectionSchema(
-  name: r'FloorMigration',
-  id: -4687933030746928507,
+const FloorRecordMigrationSchema = CollectionSchema(
+  name: r'FloorRecordMigration',
+  id: 6360508109021040471,
   properties: {
-    r'entityName': PropertySchema(
+    r'activityId': PropertySchema(
       id: 0,
-      name: r'entityName',
-      type: IsarType.string,
+      name: r'activityId',
+      type: IsarType.long,
     ),
     r'floorId': PropertySchema(
       id: 1,
@@ -33,63 +33,62 @@ const FloorMigrationSchema = CollectionSchema(
       type: IsarType.long,
     )
   },
-  estimateSize: _floorMigrationEstimateSize,
-  serialize: _floorMigrationSerialize,
-  deserialize: _floorMigrationDeserialize,
-  deserializeProp: _floorMigrationDeserializeProp,
+  estimateSize: _floorRecordMigrationEstimateSize,
+  serialize: _floorRecordMigrationSerialize,
+  deserialize: _floorRecordMigrationDeserialize,
+  deserializeProp: _floorRecordMigrationDeserializeProp,
   idName: r'id',
   indexes: {
-    r'entityName': IndexSchema(
-      id: -1749110902930819992,
-      name: r'entityName',
+    r'activityId': IndexSchema(
+      id: 8968520805042838249,
+      name: r'activityId',
       unique: false,
       replace: false,
       properties: [
         IndexPropertySchema(
-          name: r'entityName',
-          type: IndexType.hash,
-          caseSensitive: true,
+          name: r'activityId',
+          type: IndexType.value,
+          caseSensitive: false,
         )
       ],
     )
   },
   links: {},
   embeddedSchemas: {},
-  getId: _floorMigrationGetId,
-  getLinks: _floorMigrationGetLinks,
-  attach: _floorMigrationAttach,
+  getId: _floorRecordMigrationGetId,
+  getLinks: _floorRecordMigrationGetLinks,
+  attach: _floorRecordMigrationAttach,
   version: '3.0.5',
 );
 
-int _floorMigrationEstimateSize(
-  FloorMigration object,
+int _floorRecordMigrationEstimateSize(
+  FloorRecordMigration object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.entityName.length * 3;
   return bytesCount;
 }
 
-void _floorMigrationSerialize(
-  FloorMigration object,
+void _floorRecordMigrationSerialize(
+  FloorRecordMigration object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.entityName);
+  writer.writeLong(offsets[0], object.activityId);
   writer.writeLong(offsets[1], object.floorId);
   writer.writeLong(offsets[2], object.isarId);
 }
 
-FloorMigration _floorMigrationDeserialize(
+FloorRecordMigration _floorRecordMigrationDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = FloorMigration(
-    entityName: reader.readString(offsets[0]),
+  final object = FloorRecordMigration(
+    activityId: reader.readLong(offsets[0]),
     floorId: reader.readLong(offsets[1]),
     id: id,
     isarId: reader.readLong(offsets[2]),
@@ -97,7 +96,7 @@ FloorMigration _floorMigrationDeserialize(
   return object;
 }
 
-P _floorMigrationDeserializeProp<P>(
+P _floorRecordMigrationDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -105,7 +104,7 @@ P _floorMigrationDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
@@ -115,28 +114,38 @@ P _floorMigrationDeserializeProp<P>(
   }
 }
 
-Id _floorMigrationGetId(FloorMigration object) {
+Id _floorRecordMigrationGetId(FloorRecordMigration object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _floorMigrationGetLinks(FloorMigration object) {
+List<IsarLinkBase<dynamic>> _floorRecordMigrationGetLinks(FloorRecordMigration object) {
   return [];
 }
 
-void _floorMigrationAttach(IsarCollection<dynamic> col, Id id, FloorMigration object) {
+void _floorRecordMigrationAttach(IsarCollection<dynamic> col, Id id, FloorRecordMigration object) {
   object.id = id;
 }
 
-extension FloorMigrationQueryWhereSort on QueryBuilder<FloorMigration, FloorMigration, QWhere> {
-  QueryBuilder<FloorMigration, FloorMigration, QAfterWhere> anyId() {
+extension FloorRecordMigrationQueryWhereSort
+    on QueryBuilder<FloorRecordMigration, FloorRecordMigration, QWhere> {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
+
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhere> anyActivityId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'activityId'),
+      );
+    });
+  }
 }
 
-extension FloorMigrationQueryWhere on QueryBuilder<FloorMigration, FloorMigration, QWhereClause> {
-  QueryBuilder<FloorMigration, FloorMigration, QAfterWhereClause> idEqualTo(Id id) {
+extension FloorRecordMigrationQueryWhere
+    on QueryBuilder<FloorRecordMigration, FloorRecordMigration, QWhereClause> {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -145,7 +154,7 @@ extension FloorMigrationQueryWhere on QueryBuilder<FloorMigration, FloorMigratio
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -167,7 +176,7 @@ extension FloorMigrationQueryWhere on QueryBuilder<FloorMigration, FloorMigratio
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -176,7 +185,7 @@ extension FloorMigrationQueryWhere on QueryBuilder<FloorMigration, FloorMigratio
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -185,7 +194,7 @@ extension FloorMigrationQueryWhere on QueryBuilder<FloorMigration, FloorMigratio
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterWhereClause> idBetween(
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhereClause> idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -201,185 +210,156 @@ extension FloorMigrationQueryWhere on QueryBuilder<FloorMigration, FloorMigratio
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterWhereClause> entityNameEqualTo(
-      String entityName) {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhereClause> activityIdEqualTo(
+      int activityId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'entityName',
-        value: [entityName],
+        indexName: r'activityId',
+        value: [activityId],
       ));
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterWhereClause> entityNameNotEqualTo(
-      String entityName) {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhereClause> activityIdNotEqualTo(
+      int activityId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'entityName',
+              indexName: r'activityId',
               lower: [],
-              upper: [entityName],
+              upper: [activityId],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'entityName',
-              lower: [entityName],
+              indexName: r'activityId',
+              lower: [activityId],
               includeLower: false,
               upper: [],
             ));
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'entityName',
-              lower: [entityName],
+              indexName: r'activityId',
+              lower: [activityId],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'entityName',
+              indexName: r'activityId',
               lower: [],
-              upper: [entityName],
+              upper: [activityId],
               includeUpper: false,
             ));
       }
     });
   }
-}
 
-extension FloorMigrationQueryFilter
-    on QueryBuilder<FloorMigration, FloorMigration, QFilterCondition> {
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> entityNameEqualTo(
-    String value, {
-    bool caseSensitive = true,
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhereClause> activityIdGreaterThan(
+    int activityId, {
+    bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'entityName',
-        value: value,
-        caseSensitive: caseSensitive,
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'activityId',
+        lower: [activityId],
+        includeLower: include,
+        upper: [],
       ));
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> entityNameGreaterThan(
-    String value, {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhereClause> activityIdLessThan(
+    int activityId, {
     bool include = false,
-    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'activityId',
+        lower: [],
+        upper: [activityId],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterWhereClause> activityIdBetween(
+    int lowerActivityId,
+    int upperActivityId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'activityId',
+        lower: [lowerActivityId],
+        includeLower: includeLower,
+        upper: [upperActivityId],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+}
+
+extension FloorRecordMigrationQueryFilter
+    on QueryBuilder<FloorRecordMigration, FloorRecordMigration, QFilterCondition> {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> activityIdEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'activityId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition>
+      activityIdGreaterThan(
+    int value, {
+    bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'entityName',
+        property: r'activityId',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> entityNameLessThan(
-    String value, {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition>
+      activityIdLessThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'entityName',
+        property: r'activityId',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> entityNameBetween(
-    String lower,
-    String upper, {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> activityIdBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'entityName',
+        property: r'activityId',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> entityNameStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'entityName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> entityNameEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'entityName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> entityNameContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'entityName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> entityNameMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'entityName',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> entityNameIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'entityName',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> entityNameIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'entityName',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> floorIdEqualTo(int value) {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> floorIdEqualTo(
+      int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'floorId',
@@ -388,7 +368,8 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> floorIdGreaterThan(
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition>
+      floorIdGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -401,7 +382,7 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> floorIdLessThan(
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> floorIdLessThan(
     int value, {
     bool include = false,
   }) {
@@ -414,7 +395,7 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> floorIdBetween(
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> floorIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -431,7 +412,8 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> idEqualTo(Id value) {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> idEqualTo(
+      Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -440,7 +422,7 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> idGreaterThan(
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> idGreaterThan(
     Id value, {
     bool include = false,
   }) {
@@ -453,7 +435,7 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> idLessThan(
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> idLessThan(
     Id value, {
     bool include = false,
   }) {
@@ -466,7 +448,7 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> idBetween(
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -483,7 +465,8 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> isarIdEqualTo(int value) {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> isarIdEqualTo(
+      int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'isarId',
@@ -492,7 +475,7 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> isarIdGreaterThan(
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> isarIdGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -505,7 +488,7 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> isarIdLessThan(
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> isarIdLessThan(
     int value, {
     bool include = false,
   }) {
@@ -518,7 +501,7 @@ extension FloorMigrationQueryFilter
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterFilterCondition> isarIdBetween(
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterFilterCondition> isarIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -536,144 +519,144 @@ extension FloorMigrationQueryFilter
   }
 }
 
-extension FloorMigrationQueryObject
-    on QueryBuilder<FloorMigration, FloorMigration, QFilterCondition> {}
+extension FloorRecordMigrationQueryObject
+    on QueryBuilder<FloorRecordMigration, FloorRecordMigration, QFilterCondition> {}
 
-extension FloorMigrationQueryLinks
-    on QueryBuilder<FloorMigration, FloorMigration, QFilterCondition> {}
+extension FloorRecordMigrationQueryLinks
+    on QueryBuilder<FloorRecordMigration, FloorRecordMigration, QFilterCondition> {}
 
-extension FloorMigrationQuerySortBy on QueryBuilder<FloorMigration, FloorMigration, QSortBy> {
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> sortByEntityName() {
+extension FloorRecordMigrationQuerySortBy
+    on QueryBuilder<FloorRecordMigration, FloorRecordMigration, QSortBy> {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> sortByActivityId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'entityName', Sort.asc);
+      return query.addSortBy(r'activityId', Sort.asc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> sortByEntityNameDesc() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> sortByActivityIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'entityName', Sort.desc);
+      return query.addSortBy(r'activityId', Sort.desc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> sortByFloorId() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> sortByFloorId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'floorId', Sort.asc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> sortByFloorIdDesc() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> sortByFloorIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'floorId', Sort.desc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> sortByIsarId() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> sortByIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.asc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> sortByIsarIdDesc() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> sortByIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.desc);
     });
   }
 }
 
-extension FloorMigrationQuerySortThenBy
-    on QueryBuilder<FloorMigration, FloorMigration, QSortThenBy> {
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> thenByEntityName() {
+extension FloorRecordMigrationQuerySortThenBy
+    on QueryBuilder<FloorRecordMigration, FloorRecordMigration, QSortThenBy> {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> thenByActivityId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'entityName', Sort.asc);
+      return query.addSortBy(r'activityId', Sort.asc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> thenByEntityNameDesc() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> thenByActivityIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'entityName', Sort.desc);
+      return query.addSortBy(r'activityId', Sort.desc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> thenByFloorId() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> thenByFloorId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'floorId', Sort.asc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> thenByFloorIdDesc() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> thenByFloorIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'floorId', Sort.desc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> thenById() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> thenByIsarId() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> thenByIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.asc);
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QAfterSortBy> thenByIsarIdDesc() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QAfterSortBy> thenByIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.desc);
     });
   }
 }
 
-extension FloorMigrationQueryWhereDistinct
-    on QueryBuilder<FloorMigration, FloorMigration, QDistinct> {
-  QueryBuilder<FloorMigration, FloorMigration, QDistinct> distinctByEntityName(
-      {bool caseSensitive = true}) {
+extension FloorRecordMigrationQueryWhereDistinct
+    on QueryBuilder<FloorRecordMigration, FloorRecordMigration, QDistinct> {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QDistinct> distinctByActivityId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'entityName', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'activityId');
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QDistinct> distinctByFloorId() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QDistinct> distinctByFloorId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'floorId');
     });
   }
 
-  QueryBuilder<FloorMigration, FloorMigration, QDistinct> distinctByIsarId() {
+  QueryBuilder<FloorRecordMigration, FloorRecordMigration, QDistinct> distinctByIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isarId');
     });
   }
 }
 
-extension FloorMigrationQueryProperty
-    on QueryBuilder<FloorMigration, FloorMigration, QQueryProperty> {
-  QueryBuilder<FloorMigration, int, QQueryOperations> idProperty() {
+extension FloorRecordMigrationQueryProperty
+    on QueryBuilder<FloorRecordMigration, FloorRecordMigration, QQueryProperty> {
+  QueryBuilder<FloorRecordMigration, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<FloorMigration, String, QQueryOperations> entityNameProperty() {
+  QueryBuilder<FloorRecordMigration, int, QQueryOperations> activityIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'entityName');
+      return query.addPropertyName(r'activityId');
     });
   }
 
-  QueryBuilder<FloorMigration, int, QQueryOperations> floorIdProperty() {
+  QueryBuilder<FloorRecordMigration, int, QQueryOperations> floorIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'floorId');
     });
   }
 
-  QueryBuilder<FloorMigration, int, QQueryOperations> isarIdProperty() {
+  QueryBuilder<FloorRecordMigration, int, QQueryOperations> isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isarId');
     });

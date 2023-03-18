@@ -86,6 +86,7 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
                   database.calorieTunes.putSync(calorieTune);
                 });
               }
+
               Get.back(result: calorieFactor);
             }),
           ],

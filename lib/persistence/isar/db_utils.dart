@@ -7,6 +7,7 @@ import '../../utils/constants.dart';
 import 'activity.dart';
 import 'calorie_tune.dart';
 import 'floor_migration.dart';
+import 'floor_record_migration.dart';
 import 'power_tune.dart';
 import 'record.dart';
 import 'workout_summary.dart';
@@ -144,25 +145,34 @@ class DbUtils {
     return updated > 0;
   }
 
-  bool isMigrated(String entityName, int floorId) {
-    return database.floorMigrations
-            .filter()
-            .entityNameEqualTo(entityName)
-            .and()
-            .floorIdEqualTo(floorId)
-            .countSync() >
-        0;
-  }
+  Future<int?> getIsarId(String entityName, int floorId) async {
+    if (floorId == Isar.autoIncrement) {
+      return null;
+    }
 
-  int? getIsarId(String entityName, int floorId) {
-    final isarIds = database.floorMigrations
+    final isarIds = await database.floorMigrations
         .filter()
         .entityNameEqualTo(entityName)
         .and()
         .floorIdEqualTo(floorId)
         .isarIdProperty()
-        .findAllSync();
+        .findAll();
 
     return isarIds.isNotEmpty ? isarIds.first : null;
+  }
+
+  Future<int?> latestFloorRecordId(int activityId) async {
+    if (activityId == Isar.autoIncrement) {
+      return null;
+    }
+
+    final floorIds = await database.floorRecordMigrations
+        .where(sort: Sort.desc)
+        .filter()
+        .activityIdEqualTo(activityId)
+        .floorIdProperty()
+        .findAll();
+
+    return floorIds.isNotEmpty ? floorIds.first : null;
   }
 }
