@@ -22,7 +22,7 @@ class HeartRateMonitor extends ComplexSensor {
       // Heart rate value format (first bit)
       if (flag % 2 == 0) {
         heartRateMetric = ByteMetricDescriptor(lsb: expectedLength);
-        expectedLength += 1; // 8 bit HR
+        expectedLength++; // 8 bit HR
       } else {
         heartRateMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
         expectedLength += 2; // 16 bit HR
