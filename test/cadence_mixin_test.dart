@@ -78,7 +78,7 @@ void main() {
     final rnd = Random();
     for (var numRevolutions in getRandomInts(
         smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
-      numRevolutions += 1;
+      numRevolutions++;
       test('# revolutions $numRevolutions', () async {
         final cadenceMixin = CadenceMixin();
         final deltaRevolutions = getRandomDoubles(numRevolutions, 5.0, rnd);
@@ -103,7 +103,7 @@ void main() {
     final rnd = Random();
     for (var numRevolutions in getRandomInts(
         smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
-      numRevolutions += 1;
+      numRevolutions++;
       test('# revolutions $numRevolutions', () async {
         final cadenceMixin = CadenceMixin();
         final deltaRevolutions = getRandomDoubles(numRevolutions, 5.0, rnd);

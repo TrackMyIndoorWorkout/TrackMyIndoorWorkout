@@ -30,7 +30,7 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
           lsb: expectedLength, msb: expectedLength + 1, divider: 256.0 / DeviceDescriptor.ms2kmh);
       expectedLength += 2;
       cadenceMetric = ByteMetricDescriptor(lsb: expectedLength);
-      expectedLength += 1;
+      expectedLength++;
 
       // Has Instantaneous stride length? (first bit)
       if (flag % 2 == 1) {

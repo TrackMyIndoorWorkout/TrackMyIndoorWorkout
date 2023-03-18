@@ -46,7 +46,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
       // Has Pedal Power Balance?
       if (flag % 2 == 1) {
         // Skip it
-        expectedLength += 1; // uint8
+        expectedLength++; // uint8
       }
       flag ~/= 4; // We also skip the  Pedal Power Balance Reference flag bit
 

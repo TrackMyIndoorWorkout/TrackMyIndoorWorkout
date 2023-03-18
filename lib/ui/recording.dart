@@ -938,11 +938,11 @@ class RecordingState extends State<RecordingScreen> {
 
     _rankInfoColumnCount = 2;
     if (_displayLapCounter) {
-      _rankInfoColumnCount += 1;
+      _rankInfoColumnCount++;
     }
 
     if (_avgSpeedOnTrack) {
-      _rankInfoColumnCount += 1;
+      _rankInfoColumnCount++;
     }
 
     final isLight = !_themeManager.isDark();
@@ -1400,7 +1400,7 @@ class RecordingState extends State<RecordingScreen> {
         return Tuple2<int, double>(rank, averageSpeed);
       }
 
-      rank += 1;
+      rank++;
     }
 
     return Tuple2<int, double>(rank, averageSpeed);

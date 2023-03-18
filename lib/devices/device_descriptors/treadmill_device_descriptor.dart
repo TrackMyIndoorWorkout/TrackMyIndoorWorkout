@@ -115,7 +115,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     if (flag % 2 == 1) {
       // UInt8, km/min with 0.1 resolution
       paceMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 10.0);
-      byteCounter += 1;
+      byteCounter++;
     }
 
     return advanceFlag(flag);
