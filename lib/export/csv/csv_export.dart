@@ -71,7 +71,7 @@ class CsvExport extends ActivityExport {
       _sb.write("${record.record.cadence ?? ""},");
       _sb.write("${record.record.heartRate ?? ""},");
       _sb.write("${record.record.distance?.toStringAsFixed(2) ?? ""},");
-      _sb.write("${record.record.timeStamp ?? ""},");
+      _sb.write("${record.record.timeStamp?.millisecondsSinceEpoch.toString() ?? ""},");
       _sb.write("${record.record.elapsed ?? ""},");
       _sb.write("${record.record.speed?.toStringAsFixed(2) ?? ""},");
       _sb.writeln("${record.record.calories ?? ""},");

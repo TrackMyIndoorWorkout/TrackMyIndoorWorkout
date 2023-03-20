@@ -204,8 +204,8 @@ void main() {
         expect(importedRecords.length, records.length);
         for (final pairs in IterableZip<Record>([importedRecords, records.map((e) => e.record)])) {
           expect(pairs[0].activityId, importedActivity.id);
-          // expect(pairs[0].timeStamp?.millisecondsSinceEpoch ?? 0,
-          //     closeTo(pairs[1].timeStamp?.millisecondsSinceEpoch ?? 0, 1000));
+          expect(pairs[0].timeStamp!.millisecondsSinceEpoch,
+              pairs[1].timeStamp!.millisecondsSinceEpoch);
           expect(pairs[0].distance, closeTo(pairs[1].distance!, 1e-2));
           expect(pairs[0].elapsed, pairs[1].elapsed);
           expect(pairs[0].calories, pairs[1].calories);
@@ -357,8 +357,8 @@ void main() {
         expect(importedRecords.length, records.length);
         for (final pairs in IterableZip<Record>([importedRecords, records.map((e) => e.record)])) {
           expect(pairs[0].activityId, importedActivity.id);
-          expect(pairs[0].timeStamp?.millisecondsSinceEpoch ?? 0,
-              closeTo(pairs[1].timeStamp?.millisecondsSinceEpoch ?? 0, 1000));
+          expect(pairs[0].timeStamp!.millisecondsSinceEpoch,
+              pairs[1].timeStamp!.millisecondsSinceEpoch);
           expect(pairs[0].distance, pairs[1].distance);
           expect(pairs[0].elapsed, pairs[1].elapsed);
           expect(pairs[0].calories, pairs[1].calories);
