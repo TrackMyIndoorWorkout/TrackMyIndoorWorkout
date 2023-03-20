@@ -172,8 +172,8 @@ void main() {
         expect(importedActivity!.deviceId, activity.deviceId);
         expect(importedActivity.deviceName, activity.deviceName);
         expect(importedActivity.hrmId, activity.hrmId);
-        expect(importedActivity.start.millisecondsSinceEpoch,
-            closeTo(activity.start.millisecondsSinceEpoch, 1000));
+        expect(
+            importedActivity.start.millisecondsSinceEpoch, activity.start.millisecondsSinceEpoch);
         expect(importedActivity.fourCC, activity.fourCC);
         expect(importedActivity.sport, activity.sport);
         expect(importedActivity.powerFactor, activity.powerFactor);
@@ -325,8 +325,8 @@ void main() {
         expect(importedActivity!.deviceId, activity.deviceId);
         expect(importedActivity.deviceName, activity.deviceName);
         expect(importedActivity.hrmId, activity.hrmId);
-        expect(importedActivity.start.millisecondsSinceEpoch,
-            closeTo(activity.start.millisecondsSinceEpoch, 1000));
+        expect(
+            importedActivity.start.millisecondsSinceEpoch, activity.start.millisecondsSinceEpoch);
         expect(importedActivity.fourCC, activity.fourCC);
         expect(importedActivity.sport, activity.sport);
         expect(importedActivity.powerFactor, activity.powerFactor);
