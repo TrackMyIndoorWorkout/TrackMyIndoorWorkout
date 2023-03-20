@@ -182,8 +182,7 @@ void main() {
         expect(importedActivity.hrmCalorieFactor, activity.hrmCalorieFactor);
         expect(importedActivity.hrBasedCalories, activity.hrBasedCalories);
         expect(importedActivity.timeZone, activity.timeZone);
-        // expect(importedActivity.end?.millisecondsSinceEpoch ?? 0,
-        //     closeTo(activity.end?.millisecondsSinceEpoch ?? 0, 1000));
+        expect(importedActivity.end!.millisecondsSinceEpoch, activity.end!.millisecondsSinceEpoch);
         expect(importedActivity.distance, activity.distance);
         expect(importedActivity.elapsed, activity.elapsed);
         expect(importedActivity.calories, activity.calories);
@@ -336,8 +335,7 @@ void main() {
         expect(importedActivity.hrmCalorieFactor, activity.hrmCalorieFactor);
         expect(importedActivity.hrBasedCalories, activity.hrBasedCalories);
         expect(importedActivity.timeZone, activity.timeZone);
-        // expect(importedActivity.end?.millisecondsSinceEpoch ?? 0,
-        //     closeTo(activity.end?.millisecondsSinceEpoch ?? 0, 1000));
+        expect(importedActivity.end!.millisecondsSinceEpoch, activity.end!.millisecondsSinceEpoch);
         expect(importedActivity.distance, activity.distance);
         expect(importedActivity.elapsed, activity.elapsed);
         expect(importedActivity.calories, activity.calories);

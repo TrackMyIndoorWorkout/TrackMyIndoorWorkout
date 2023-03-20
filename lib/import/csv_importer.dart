@@ -247,6 +247,8 @@ class CSVImporter with PowerSpeedMixin {
         return null;
       }
 
+      end = DateTime.fromMillisecondsSinceEpoch(endTime);
+
       _linePointer++;
 
       final calorieLine = _lines[_linePointer].split(",");
