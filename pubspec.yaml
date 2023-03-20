@@ -10,7 +10,7 @@ environment:
   flutter: ">=3.8.0-10.1.pre"
 
 dependencies:
-  assorted_layout_widgets: ^7.0.0
+  assorted_layout_widgets: ^8.0.0
   bluetooth_enable_fork: ^0.1.6
   collection: ^1.16.0
   datetime_picker_formfield_new: ^2.1.0
@@ -59,7 +59,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^5.7.1
+  analyzer: ^5.8.0
   build_runner: ^2.4.1
   floor_generator: ^1.4.1
   flutter_driver:
