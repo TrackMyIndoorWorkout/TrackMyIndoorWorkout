@@ -26,7 +26,8 @@ class CsvExport extends ActivityExport {
     _sb.writeln("$deviceIdTag,${exportModel.activity.deviceId},");
 
     _sb.writeln("$startTimeTag,${exportModel.activity.start.millisecondsSinceEpoch},");
-    _sb.writeln("$endTimeTag,${exportModel.activity.end?.millisecondsSinceEpoch ?? 0},");
+    _sb.writeln(
+        "$endTimeTag,${exportModel.activity.end?.millisecondsSinceEpoch.toString() ?? ""},");
     _sb.writeln("$caloriesTag,${exportModel.activity.calories},");
     _sb.writeln("$uploadedTag,${exportModel.activity.uploaded},");
     _sb.writeln("$stravaIdTag,${exportModel.activity.stravaId},");
