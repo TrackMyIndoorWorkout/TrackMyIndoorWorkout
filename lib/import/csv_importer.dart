@@ -629,7 +629,8 @@ class CSVImporter with PowerSpeedMixin {
       double elapsed = 0;
       WorkoutRow? nextRow;
       int lastHeartRate = 0;
-      int timeStamp = start!.millisecondsSinceEpoch;
+      DateTime timeStamp = start!;
+      Duration recordDuration = Duration(milliseconds: milliSecondsPerRecordInt);
       String heartRateGapWorkaroundSetting =
           prefService.get<String>(heartRateGapWorkaroundTag) ?? heartRateGapWorkaroundDefault;
       bool heartRateGapWorkaround =
@@ -726,7 +727,7 @@ class CSVImporter with PowerSpeedMixin {
             database.records.putSync(record);
           });
 
-          timeStamp += milliSecondsPerRecordInt;
+          timeStamp = timeStamp.add(recordDuration);
           elapsed += milliSecondsPerRecord;
           power += dPower;
           cadence += dCadence;
