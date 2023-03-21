@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/painting.dart';
 import 'package:tuple/tuple.dart';
 
-import '../utils/constants.dart';
 import '../utils/time_zone.dart';
 import 'track_descriptor.dart';
 import 'track_kind.dart';
@@ -594,39 +593,15 @@ class TrackManager {
       trackTimeZone = timeZoneName;
     } else {
       final timeOffset = timeZoneOffset(timeZoneName) + 5; // 5 is to break a tie
-      final timeZoneEntries = trackMaps.keys
-          .map<Tuple2<int, String>>((tzName) => Tuple2<int, String>(timeZoneOffset(tzName), tzName))
+      final timeZoneDiffSortedEntries = trackMaps.keys
+          .map<Tuple2<int, String>>(
+              (tzName) => Tuple2<int, String>((timeZoneOffset(tzName) - timeOffset).abs(), tzName))
           .sortedByCompare((tp) => tp.item1, (int t1, int t2) => t1.compareTo(t2))
           .toList(growable: false);
-      Tuple2<int, String> previousEntry = const Tuple2<int, String>(maxUint24, "");
-      Tuple2<int, String> currentEntry = const Tuple2<int, String>(maxUint24, "");
-      for (final timeZoneEntry in timeZoneEntries) {
-        currentEntry = timeZoneEntry;
-        if (timeZoneEntry.item1 > timeOffset) {
-          break;
-        }
 
-        previousEntry = timeZoneEntry;
-      }
-
-      Tuple2<int, String> closestEntry = const Tuple2<int, String>(maxUint24, "");
-      if (previousEntry.item1 != maxUint24 && currentEntry.item1 != maxUint24) {
-        if ((previousEntry.item1 - timeOffset).abs() < (currentEntry.item1 - timeOffset).abs()) {
-          closestEntry = previousEntry;
-        } else {
-          closestEntry = currentEntry;
-        }
-      }
-
-      if (closestEntry.item1 == maxUint24) {
-        // Default to GMT
-        closestEntry = timeZoneEntries.firstWhere((entry) => entry.item2 == "Europe/London");
-      } else {
-        // TODO: when there will be multiple track in the same time zone
-        // decide the closest one with Haversine or Vincenty distance
-      }
-
-      trackTimeZone = closestEntry.item2;
+      // TODO: when there will be multiple track in the same time zone
+      // decide the closest one with Haversine or Vincenty distance
+      trackTimeZone = timeZoneDiffSortedEntries.first.item2;
     }
 
     Map<TrackKind, TrackDescriptor> timeZoneTracks = trackMaps[trackTimeZone]!;
