@@ -162,7 +162,7 @@ class TrackManager {
         radiusBoost: 1.2,
         horizontalMeter: 0.000009197603291524593,
         verticalMeter: 0.000009041645785188901,
-        altitude: 6.0,
+        altitude: 0.0,
       ),
     },
     // Atlantic Standard Time, UTC-4
@@ -399,13 +399,13 @@ class TrackManager {
     // Indian Time, UTC+5.5
     "Asia/Kolkata": {
       TrackKind.forLand: TrackDescriptor(
-        name: "ShabbarVallabhbhaaiPatelAirportAhmedabadGujarat",
+        name: "SarbarVallabhbhaiPatelAirportAhmedabadGujarat",
         kind: TrackKind.forLand,
         center: const Offset(72.626126, 23.073872),
         radiusBoost: 1.1,
         horizontalMeter: 0.000009814941800312108,
         verticalMeter: 0.000009034395565263796,
-        altitude: 54.0,
+        altitude: 72.0,
       ),
       TrackKind.forWater: TrackDescriptor(
         name: "KankariaLakeAhmedabad",
@@ -414,7 +414,7 @@ class TrackManager {
         radiusBoost: 1.2,
         horizontalMeter: 0.000009810098106641359,
         verticalMeter: 0.000009034447056544187,
-        altitude: 47.0,
+        altitude: 67.0,
       ),
     },
     // Kazakhstan Time, UTC+6
@@ -450,13 +450,13 @@ class TrackManager {
         altitude: 10.0,
       ),
       TrackKind.forWater: TrackDescriptor(
-        name: "TuyetTinhCocHoaAn",
+        name: "HoDaLake",
         kind: TrackKind.forWater,
-        center: const Offset(106.795240, 10.927931),
+        center: const Offset(106.794638, 10.882972),
         radiusBoost: 1.2,
-        horizontalMeter: 0.000009207394376944713,
+        horizontalMeter: 0.000009206029433853195,
         verticalMeter: 0.000009041518993791423,
-        altitude: -53.0,
+        altitude: 10.0,
       ),
     },
     // Western Australia, UTC+8
