@@ -26,6 +26,7 @@ abstract class DeviceDescriptor extends DataHandler {
   final int manufacturerFitId;
   final String model;
   DeviceCategory deviceCategory;
+  final bool isPolling;
   String dataServiceId;
   String dataCharacteristicId;
   String controlCharacteristicId;
@@ -46,6 +47,7 @@ abstract class DeviceDescriptor extends DataHandler {
     required this.manufacturerFitId,
     required this.model, // Maybe eradicate?
     required this.deviceCategory,
+    this.isPolling = false,
     this.dataServiceId = "",
     this.dataCharacteristicId = "",
     this.controlCharacteristicId = "",
@@ -94,4 +96,6 @@ abstract class DeviceDescriptor extends DataHandler {
   void setDevice(BluetoothDevice device, List<BluetoothService> services) {}
 
   void trimQueues() {}
+
+  Future<void> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {}
 }
