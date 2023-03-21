@@ -421,24 +421,34 @@ abstract class DeviceBase {
     }
   }
 
-  Stream<String> get _listenToStringData async* {
-    if (!attached || characteristic == null) return;
-
-    await for (var byteList in characteristic!.value) {
-      yield utf8.decode(byteList);
-    }
-  }
-
   Future<void> listenToKayakFirst(StringMetricProcessingFunction? metricProcessingFunction) async {
-    subscription = _listenToStringData.listen((newValue) {
+    if (characteristic == null || uxDebug) return;
+
+    if (!connected) {
+      await connect();
+    }
+
+    if (!connected) return;
+
+    if (!discovered) {
+      await discover();
+    }
+
+    if (!discovered || characteristic == null) return;
+
+    if (!attached) {
+      await attach();
+    }
+
+    controlPointSubscription = characteristic?.value.listen((byteList) {
       if (metricProcessingFunction != null) {
-        metricProcessingFunction(newValue);
+        metricProcessingFunction(utf8.decode(byteList));
       }
     });
   }
 
   Future<int> sendKayakFirstCommand(String command) async {
-    if (!connected) {
+    if (!connected || uxDebug) {
       await connect();
     }
 
@@ -460,5 +470,12 @@ abstract class DeviceBase {
     }
 
     return 0;
+  }
+
+  Future<void> unListenKayakFirst() async {
+    if (characteristic == null || uxDebug || !connected || !discovered || !attached) return;
+
+    controlPointSubscription?.cancel();
+    controlPointSubscription = null;
   }
 }

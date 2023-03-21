@@ -59,6 +59,12 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
   }
 
   @override
+  void dispose() {
+    _fitnessEquipment?.unListenKayakFirst();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
