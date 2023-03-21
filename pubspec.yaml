@@ -32,6 +32,7 @@ dependencies:
   http_parser: ^4.0.2
   internet_connection_checker: ^1.0.0+1
   intl: ^0.18.0
+  is_first_run: ^1.0.0
   isar: *isar_version
   isar_flutter_libs: *isar_version
   listview_utils: ^1.0.0-nullsafety

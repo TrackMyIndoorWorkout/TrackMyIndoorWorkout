@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:is_first_run/is_first_run.dart';
 import 'package:pref/pref.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
@@ -15,6 +16,7 @@ import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
+import '../preferences/database_migration_needed.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/drag_force_tune.dart';
@@ -151,6 +153,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
+    databaseMigrationNeededTag: databaseMigrationNeeded,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -386,6 +389,12 @@ Future<BasePrefService> initPreferences() async {
 
     // Activities have stored timeZone, but we would need to convert those
     // only if TrackManager.getTrack would get the timeZone besides the sport
+  }
+
+  if (prefVersion > preferencesVersionIsarMigration) {
+    if (await IsFirstRun.isFirstRun()) {
+      prefService.set<bool>(databaseMigrationNeededTag, false);
+    }
   }
 
   await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
