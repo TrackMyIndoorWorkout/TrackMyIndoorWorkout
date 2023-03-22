@@ -1333,7 +1333,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
-    if ((!_blockSignalStartStop || (descriptor?.isPolling ?? false)) && descriptor != null) {
+    if (!_blockSignalStartStop && descriptor != null) {
       await descriptor!.executeControlOperation(
         getControlPoint(),
         _blockSignalStartStop,
@@ -1348,7 +1348,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   void stopWorkout() {
-    if ((!_blockSignalStartStop || (descriptor?.isPolling ?? false)) && descriptor != null) {
+    if (!_blockSignalStartStop && descriptor != null) {
       descriptor!.executeControlOperation(
         getControlPoint(),
         _blockSignalStartStop,
