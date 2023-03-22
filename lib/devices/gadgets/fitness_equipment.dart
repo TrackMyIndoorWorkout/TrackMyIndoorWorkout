@@ -67,6 +67,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   DeviceDescriptor? descriptor;
   Map<int, DataHandler> dataHandlers = {};
+  List<int> packetFragment = [];
   String? manufacturerName;
   double _residueCalories = 0.0;
   int _lastPositiveCadence = 0; // #101
@@ -312,14 +313,27 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
       if (!measuring && !calibrating) continue;
 
-      final key = keySelector(byteList);
+      List<int> byteListPrep = [];
+      if (descriptor?.fragmentedPackets ?? false) {
+        packetFragment.addAll(byteList);
+        if (descriptor?.isClosingPacket(byteList) ?? true) {
+          byteListPrep.addAll(packetFragment);
+          packetFragment.clear();
+        } else {
+          continue;
+        }
+      } else {
+        byteListPrep.addAll(byteList);
+      }
+
+      final key = keySelector(byteListPrep);
       if (logLevel >= logLevelInfo) {
         Logging.log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
           "listenToData",
-          "key $key byteList $byteList",
+          "key $key byteListPrep $byteListPrep",
         );
       }
 
@@ -340,9 +354,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         }
 
         final dataHandler = dataHandlers[key]!;
-        processable = dataHandler.isDataProcessable(byteList);
+        processable = dataHandler.isDataProcessable(byteListPrep);
         if (processable) {
-          _listDeduplicationMap[key] = DataEntry(byteList);
+          _listDeduplicationMap[key] = DataEntry(byteListPrep);
         }
       }
 

@@ -27,6 +27,7 @@ abstract class DeviceDescriptor extends DataHandler {
   final String model;
   DeviceCategory deviceCategory;
   final bool isPolling;
+  final bool fragmentedPackets;
   String dataServiceId;
   String dataCharacteristicId;
   String controlCharacteristicId;
@@ -48,6 +49,7 @@ abstract class DeviceDescriptor extends DataHandler {
     required this.model, // Maybe eradicate?
     required this.deviceCategory,
     this.isPolling = false,
+    this.fragmentedPackets = false,
     this.dataServiceId = "",
     this.dataCharacteristicId = "",
     this.controlCharacteristicId = "",

@@ -35,6 +35,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
           model: "Model",
           deviceCategory: DeviceCategory.smartDevice,
           isPolling: true,
+          fragmentedPackets: true,
           dataServiceId: kayakFirstServiceUuid,
           dataCharacteristicId: kayakFirstAllAroundUuid,
           controlCharacteristicId: "",
@@ -85,14 +86,19 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
     if (data[0] != dataStreamFlag) return false;
 
-    // final sepCount = separatorCount(data);
     final isClosed = data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D;
-    return isClosed; // sepCount == 23;
+    final sepCount = separatorCount(data);
+    return isClosed && sepCount == 23;
+  }
+
+  @override
+  bool isClosingPacket(List<int> data) {
+    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D;
   }
 
   @override
   bool isFlagValid(int flag) {
-    return flag == dataStreamFlag;
+    return true; // flag == dataStreamFlag;
   }
 
   @override
@@ -145,7 +151,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         command = stopCommand;
         break;
       default:
-        command = "";
+        break;
     }
 
     if (command.isEmpty) {
@@ -154,7 +160,15 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
     if (opCode == startOrResumeControl) {
       await _executeControlOperationCore(controlPoint, reset1Command, logLevel);
+      await Future<void>.delayed(const Duration(milliseconds: 1));
+      final reset1Return = await controlPoint.read();
+      debugPrint("Reset1 return: ${utf8.decode(reset1Return)}");
+      await Future<void>.delayed(const Duration(milliseconds: 1));
       await _executeControlOperationCore(controlPoint, reset2Command, logLevel);
+      await Future<void>.delayed(const Duration(milliseconds: 1));
+      final reset2Return = await controlPoint.read();
+      debugPrint("Reset2 return: ${utf8.decode(reset2Return)}");
+      await Future<void>.delayed(const Duration(milliseconds: 1));
     }
 
     await _executeControlOperationCore(controlPoint, command, logLevel);
