@@ -1,5 +1,5 @@
 ## 1.1.140
-* Hotfix app hanging of the time zone migration when custom time zone is selected 
+* Hotfix app hanging of the time zone migration when custom time zone is selected
 
 ## 1.1.139
 * Adjusting some track elevations, naming, and one water track location
