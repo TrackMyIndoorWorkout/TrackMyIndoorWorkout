@@ -1,3 +1,7 @@
+## 1.1.141
+* Contains the build 140 production hotfix
+* Upgrading a few Flutter plugins
+
 ## 1.1.140
 * Hotfix app hanging of the time zone migration when custom time zone is selected
 
