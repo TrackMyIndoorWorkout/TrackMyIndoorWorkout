@@ -25,7 +25,7 @@ import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 17, entities: [
+@Database(version: 18, entities: [
   Activity,
   Record,
   DeviceUsage,
@@ -346,4 +346,9 @@ final migration16to17 = Migration(16, 17, (database) async {
       "ALTER TABLE `$workoutSummariesTableName` ADD COLUMN `moving_time` INTEGER NOT NULL DEFAULT 0");
 
   AppDatabase.additional16to17Migration = true;
+});
+
+final migration17to18 = Migration(17, 18, (database) async {
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `training_peaks_file_tracking_uuid` TEXT NOT NULL DEFAULT ''");
 });

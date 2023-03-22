@@ -2,14 +2,14 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.138+138
+version: 1.1.140+140
 
 environment:
-  sdk: ">=2.21.1"
-  flutter: ">=3.8.0-10.1.pre"
+  sdk: ">=2.22.2"
+  flutter: ">=3.9.0-1.0.pre.2"
 
 dependencies:
-  assorted_layout_widgets: ^7.0.0
+  assorted_layout_widgets: ^8.0.0
   bluetooth_enable_fork: ^0.1.6
   collection: ^1.16.0
   datetime_picker_formfield_new: ^2.1.0
@@ -17,7 +17,7 @@ dependencies:
   easy_folder_picker: ^1.3.0
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
-  file_picker: ^5.2.5
+  file_picker: ^5.2.6
   floor: ^1.4.1
   flutter_blue_plus: ^1.4.0
   flutter_circle_color_picker: ^0.3.0
@@ -25,7 +25,7 @@ dependencies:
   flutter_logs: ^2.1.10
   flutter_timezone: ^1.0.4
   flutter_spinbox: ^0.13.0
-  flutter_svg: ^2.0.3
+  flutter_svg: ^2.0.4
   get: ^4.6.1
   group_button: ^5.2.2
   http: ^0.13.5
@@ -44,9 +44,9 @@ dependencies:
   rxdart: ^0.27.7
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.3.0
-  sqflite: ^2.2.5
+  sqflite: ^2.2.6
   string_validator: ^1.0.0
-  syncfusion_flutter_charts: ^20.4.53
+  syncfusion_flutter_charts: ^20.4.54
   timezone: ^0.9.1
   tuple: ^2.0.1
   uni_links: ^0.5.1
@@ -57,8 +57,8 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^5.7.1
-  build_runner: ^2.4.0
+  analyzer: ^5.8.0
+  build_runner: ^2.4.1
   floor_generator: ^1.4.1
   flutter_driver:
     sdk: flutter
