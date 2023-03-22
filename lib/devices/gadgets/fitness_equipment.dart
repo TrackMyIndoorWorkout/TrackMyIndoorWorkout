@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -31,6 +32,7 @@ import '../../utils/power_speed_mixin.dart';
 import '../bluetooth_device_ex.dart';
 import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
+import '../device_descriptors/kaya_first_descriptor.dart';
 import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gatt/ftms.dart';
@@ -153,6 +155,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   int keySelector(List<int> l) {
     if (l.isEmpty) {
       return badKey;
+    }
+
+    if (descriptor?.isPolling ?? false) {
+      return l[0] + (descriptor! as KayakFirstDescriptor).separatorCount(l) * 256;
     }
 
     if (l.length == 1 || descriptor?.flagByteSize == 1) {
@@ -293,6 +299,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (!attached || characteristic == null || descriptor == null) return;
 
     await for (final byteList in characteristic!.value) {
+      debugPrint("KayakFirst: ${utf8.decode(byteList)}");
       if (logLevel >= logLevelInfo) {
         Logging.log(
           logLevel,

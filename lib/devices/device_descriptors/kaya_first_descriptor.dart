@@ -73,18 +73,21 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   @override
   KayakFirstDescriptor clone() => KayakFirstDescriptor();
 
+  int separatorCount(List<int> data) {
+    return data
+        .map((element) => element == separator ? 1 : 0)
+        .reduce((value, element) => value + element);
+  }
+
   @override
   bool isDataProcessable(List<int> data) {
     if (data.isEmpty) return false;
 
     if (data[0] != dataStreamFlag) return false;
 
-    final separatorCount = data
-        .map((element) => element == separator ? 1 : 0)
-        .reduce((value, element) => value + element);
-    debugPrint("KayakFirst: ${utf8.decode(data)}");
-    // TODO: flag value should be number of separators
-    return separatorCount == 23;
+    // final sepCount = separatorCount(data);
+    final isClosed = data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D;
+    return isClosed; // sepCount == 23;
   }
 
   @override
