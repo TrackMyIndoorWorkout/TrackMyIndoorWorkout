@@ -1,5 +1,3 @@
-import 'package:track_my_indoor_exercise/devices/device_descriptors/kaya_first_descriptor.dart';
-
 import '../export/fit/fit_manufacturer.dart';
 import '../utils/constants.dart';
 import 'device_descriptors/cross_trainer_device_descriptor.dart';
@@ -8,6 +6,7 @@ import 'device_descriptors/cycling_power_meter_descriptor.dart';
 import 'device_descriptors/cycling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
+import 'device_descriptors/kaya_first_descriptor.dart';
 import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/mr_captain_descriptor.dart';
