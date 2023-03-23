@@ -6,6 +6,7 @@ import 'package:track_my_indoor_exercise/devices/gatt/csc.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/concept2.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/hrm.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/ftms.dart';
+import 'package:track_my_indoor_exercise/devices/gatt/kayak_first.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/precor.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/power_meter.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/schwinn_x70.dart';
@@ -33,7 +34,8 @@ void main() {
       const TestPair(characteristicId: rowerDeviceUuid, sports: waterSports),
       const TestPair(characteristicId: c2RowingGeneralStatusUuid, sports: [ActivityType.rowing]),
       const TestPair(characteristicId: crossTrainerUuid, sports: [ActivityType.elliptical]),
-      const TestPair(characteristicId: heartRateMeasurementUuid, sports: [])
+      const TestPair(characteristicId: heartRateMeasurementUuid, sports: []),
+      const TestPair(characteristicId: kayakFirstAllAroundUuid, sports: [ActivityType.kayaking, ActivityType.canoeing]),
     ]) {
       test("${testPair.characteristicId} -> ${testPair.sports}", () async {
         await initPrefServiceForTest();
