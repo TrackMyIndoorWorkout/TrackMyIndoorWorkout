@@ -714,7 +714,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               if (snapshot.data == null || snapshot.data!) {
                 return JumpingDotsProgressIndicator(
                   fontSize: 30.0,
-                  color: Colors.white,
+                  color: _themeManager.getProtagonistColor(),
                 );
               } else {
                 _isScanning = false;

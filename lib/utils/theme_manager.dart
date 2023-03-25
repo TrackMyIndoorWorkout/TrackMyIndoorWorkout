@@ -120,6 +120,7 @@ class ThemeManager {
       heroTag: null,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
+      shape: const CircleBorder(),
       onPressed: onPressed,
       child: widget,
     );

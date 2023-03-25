@@ -18,6 +18,7 @@ dependencies:
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
   file_picker: ^5.2.6
+  flex_color_scheme: ^6.1.2
   floor: ^1.4.1
   flutter_blue_plus: ^1.4.0
   flutter_circle_color_picker: ^0.3.0

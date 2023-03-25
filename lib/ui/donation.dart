@@ -39,7 +39,7 @@ class DonationScreen extends StatelessWidget {
             backgroundColor: Colors.white,
             Column(
               children: [
-                const Divider(height: 40),
+                const SizedBox(width: 40, height: 40),
                 SvgPicture.asset(
                   "assets/$logoSvgPath.svg",
                   height: Get.textTheme.displayMedium!.fontSize!,
