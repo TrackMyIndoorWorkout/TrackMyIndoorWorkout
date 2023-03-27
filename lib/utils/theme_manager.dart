@@ -167,16 +167,6 @@ class ThemeManager {
     return getIconFabWKey(getGreenColor(), icon, onPressed, key);
   }
 
-  Widget getGreenGenericFab(Widget widget, VoidCallback? onPressed) {
-    return _getFabCore(
-      getAntagonistColor(),
-      getGreenColor(),
-      widget,
-      onPressed,
-      null,
-    );
-  }
-
   Widget getGreyFab(IconData icon, VoidCallback? onPressed) {
     return getIconFab(getGreyColor(), icon, onPressed);
   }

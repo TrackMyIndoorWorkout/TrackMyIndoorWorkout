@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,12 +8,14 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:rxdart/rxdart.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/scan_duration.dart';
 import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
+import '../../utils/delays.dart';
 import '../../utils/logging.dart';
 import '../../utils/theme_manager.dart';
 import 'boolean_question.dart';
@@ -34,12 +38,15 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
   bool _isScanning = false;
   bool _pairingHrm = false;
   final List<String> _scanResults = [];
+  final StreamController<List<ScanResult>> _scanStreamController = StreamController.broadcast();
+  StreamSubscription<List<ScanResult>>? _scanStreamSubscription;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   HeartRateMonitor? _heartRateMonitor;
   int _logLevel = logLevelDefault;
 
   @override
   void dispose() {
+    _scanStreamSubscription?.pause();
     try {
       FlutterBluePlus.instance.stopScan();
     } on PlatformException catch (e, stack) {
@@ -57,18 +64,23 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     super.dispose();
   }
 
-  void _startScan() {
+  Future<void> _startScan() async {
     if (_isScanning) {
       return;
     }
 
     _scanResults.clear();
+    setState(() {
+      _isScanning = true;
+    });
+
     _isScanning = true;
 
     try {
-      FlutterBluePlus.instance
-          .startScan(timeout: Duration(seconds: _scanDuration))
-          .whenComplete(() => _isScanning = false);
+      await FlutterBluePlus.instance.startScan(timeout: Duration(seconds: _scanDuration));
+      setState(() {
+        _isScanning = false;
+      });
     } on PlatformException catch (e, stack) {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
@@ -84,6 +96,16 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     Logging.logVersion(Get.find<PackageInfo>());
   }
 
+  Stream<List<ScanResult>> get _throttledScanStream async* {
+    await for (var scanResults in FlutterBluePlus.instance.scanResults.throttleTime(
+      const Duration(milliseconds: uiIntermittentDelay),
+      leading: false,
+      trailing: true,
+    )) {
+      yield scanResults;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -92,9 +114,13 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     _captionStyle = Get.textTheme.bodySmall!.apply(fontSizeFactor: fontSizeFactor);
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
     _isScanning = false;
+    _scanStreamSubscription =
+        _throttledScanStream.listen((scanResults) => _scanStreamController.add(scanResults));
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-    _startScan();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _startScan();
+    });
   }
 
   @override
@@ -102,7 +128,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
-          _startScan();
+          await _startScan();
         },
         child: ListView(
           physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -124,32 +150,25 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                               emptyMeasurement,
                           style: _subtitleStyle,
                         ),
-                        trailing: StreamBuilder<BluetoothDeviceState>(
-                          stream: _heartRateMonitor?.device?.state,
-                          initialData: BluetoothDeviceState.disconnected,
-                          builder: (c, snapshot) {
-                            if (snapshot.data == BluetoothDeviceState.connected) {
-                              return _themeManager.getGreenFab(Icons.favorite, () {
-                                Get.snackbar("Info", "Already connected");
-                              });
-                            } else {
-                              return _themeManager.getGreyFab(Icons.bluetooth, () {
-                                setState(() {
-                                  _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
-                                      ? Get.find<HeartRateMonitor>()
-                                      : null;
-                                });
-                              });
-                            }
-                          },
-                        ),
+                        trailing: _themeManager.getGreenFab(Icons.favorite, () async {
+                          if (await _heartRateMonitor?.device?.state.first ==
+                              BluetoothDeviceState.connected) {
+                            Get.snackbar("Info", "Already connected");
+                          } else {
+                            setState(() {
+                              _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                  ? Get.find<HeartRateMonitor>()
+                                  : null;
+                            });
+                          }
+                        }),
                       )
                     : Container(),
               ],
             ),
             const Divider(),
             StreamBuilder<List<ScanResult>>(
-              stream: FlutterBluePlus.instance.scanResults,
+              stream: _scanStreamController.stream,
               initialData: const [],
               builder: (c, snapshot) => snapshot.data == null
                   ? Container()
@@ -257,27 +276,20 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
           children: [
             _themeManager.getBlueFab(Icons.clear, () => Get.back(result: true)),
             const SizedBox(width: 10, height: 10),
-            StreamBuilder<bool>(
-              stream: FlutterBluePlus.instance.isScanning,
-              initialData: true,
-              builder: (c, snapshot) {
-                if (snapshot.data == null || snapshot.data!) {
-                  return JumpingDotsProgressIndicator(
+            _isScanning
+                ? JumpingDotsProgressIndicator(
                     fontSize: 30.0,
                     color: _themeManager.getProtagonistColor(),
-                  );
-                } else if (_pairingHrm) {
-                  return HeartbeatProgressIndicator(
-                    child: IconButton(icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
-                  );
-                } else {
-                  return IconButton(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () => _startScan(),
-                  );
-                }
-              },
-            ),
+                  )
+                : _pairingHrm
+                    ? HeartbeatProgressIndicator(
+                        child: IconButton(
+                            icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
+                      )
+                    : IconButton(
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () async => await _startScan(),
+                      )
           ],
         ),
       ),
