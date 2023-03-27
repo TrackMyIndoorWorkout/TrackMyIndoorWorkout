@@ -20,10 +20,7 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headlineMedium!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
+    _textStyle = Get.textTheme.headlineMedium!.apply(fontFamily: fontFamily);
     _sizeDefault = _textStyle.fontSize! * 2;
   }
 

@@ -26,10 +26,7 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headlineMedium!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
+    _textStyle = Get.textTheme.headlineMedium!.apply(fontFamily: fontFamily);
     _inverseTextStyle = Get.textTheme.headlineMedium!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),

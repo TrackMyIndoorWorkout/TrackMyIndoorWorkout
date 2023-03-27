@@ -1826,8 +1826,6 @@ class RecordingState extends State<RecordingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const separatorHeight = 1.0;
-
     final size = Get.mediaQuery.size;
     if (size.width != _mediaWidth || size.height != _mediaHeight) {
       _mediaWidth = size.width;
@@ -2175,9 +2173,7 @@ class RecordingState extends State<RecordingScreen> {
 
     columnOne.addAll([
       rows[_time1Index],
-      const Divider(height: separatorHeight),
       rows[_calories1Index],
-      const Divider(height: separatorHeight),
     ]);
 
     if (_onStageStatisticsType != onStageStatisticsTypeNone) {
@@ -2195,7 +2191,6 @@ class RecordingState extends State<RecordingScreen> {
           controller: _rowControllers[_powerNIndex],
         ),
       ),
-      const Divider(height: separatorHeight),
       ColoredBox(
         color: _getSpeedColor(_selfRank, background: true),
         child: ExpandablePanel(
@@ -2219,7 +2214,6 @@ class RecordingState extends State<RecordingScreen> {
           controller: _rowControllers[_cadenceNIndex],
         ),
       ),
-      const Divider(height: separatorHeight),
       ColoredBox(
         color: _getTargetHrColor(targetHrState, true),
         child: ExpandablePanel(
@@ -2230,7 +2224,6 @@ class RecordingState extends State<RecordingScreen> {
           controller: _rowControllers[_hrNIndex],
         ),
       ),
-      const Divider(height: separatorHeight),
       ExpandablePanel(
         theme: _expandableThemeData,
         header: rows[_distance1Index],
@@ -2243,7 +2236,6 @@ class RecordingState extends State<RecordingScreen> {
     if (_landscape && _twoColumnLayout) {
       columnTwo.addAll(columnRest);
     } else {
-      columnOne.add(const Divider(height: separatorHeight));
       columnOne.addAll(columnRest);
     }
 
