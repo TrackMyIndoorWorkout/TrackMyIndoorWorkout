@@ -1103,7 +1103,7 @@ class RecordingState extends State<RecordingScreen> {
 
     try {
       if (await FlutterBluePlus.instance.isOn) {
-        _fitnessEquipment?.detach();
+        await _fitnessEquipment?.stopWorkout();
       }
     } on PlatformException catch (e, stack) {
       debugPrint("Equipment got turned off?");
@@ -1113,7 +1113,24 @@ class RecordingState extends State<RecordingScreen> {
         _logLevel,
         logLevelError,
         "RECORD",
-        "_stopMeasurement",
+        "_stopMeasurement stopWorkout",
+        "${e.message}",
+      );
+    }
+
+    try {
+      if (await FlutterBluePlus.instance.isOn) {
+        await _fitnessEquipment?.detach();
+      }
+    } on PlatformException catch (e, stack) {
+      debugPrint("Equipment got turned off?");
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.log(
+        _logLevel,
+        logLevelError,
+        "RECORD",
+        "_stopMeasurement detach",
         "${e.message}",
       );
     }
@@ -1125,7 +1142,6 @@ class RecordingState extends State<RecordingScreen> {
       last?.calories,
       last?.movingTime ?? 0,
     );
-    _fitnessEquipment?.stopWorkout();
 
     if (!_uxDebug) {
       if (_leaderboardFeature && (last?.distance ?? 0.0) > displayEps) {

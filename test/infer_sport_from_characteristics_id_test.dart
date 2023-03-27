@@ -35,7 +35,9 @@ void main() {
       const TestPair(characteristicId: c2RowingGeneralStatusUuid, sports: [ActivityType.rowing]),
       const TestPair(characteristicId: crossTrainerUuid, sports: [ActivityType.elliptical]),
       const TestPair(characteristicId: heartRateMeasurementUuid, sports: []),
-      const TestPair(characteristicId: kayakFirstAllAroundUuid, sports: [ActivityType.kayaking, ActivityType.canoeing]),
+      const TestPair(
+          characteristicId: kayakFirstAllAroundUuid,
+          sports: [ActivityType.kayaking, ActivityType.canoeing]),
     ]) {
       test("${testPair.characteristicId} -> ${testPair.sports}", () async {
         await initPrefServiceForTest();

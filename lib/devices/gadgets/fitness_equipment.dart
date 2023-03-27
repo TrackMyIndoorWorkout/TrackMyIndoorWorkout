@@ -1361,9 +1361,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
   }
 
-  void stopWorkout() {
+  Future<void> stopWorkout() async {
     if (!_blockSignalStartStop && descriptor != null) {
-      descriptor!.executeControlOperation(
+      await descriptor!.executeControlOperation(
         getControlPoint(),
         _blockSignalStartStop,
         logLevel,
