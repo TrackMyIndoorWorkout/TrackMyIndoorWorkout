@@ -154,21 +154,21 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         break;
     }
 
-    if (command.isEmpty) {
+    if (command.isEmpty && opCode != resetControl) {
       return;
     }
 
-    if (opCode == startOrResumeControl) {
+    if (opCode == startOrResumeControl || opCode == resetControl) {
       await _executeControlOperationCore(controlPoint, reset1Command, logLevel);
-      await Future<void>.delayed(const Duration(milliseconds: 1));
       final reset1Return = await controlPoint.read();
       debugPrint("Reset1 return: ${utf8.decode(reset1Return)}");
-      await Future<void>.delayed(const Duration(milliseconds: 1));
       await _executeControlOperationCore(controlPoint, reset2Command, logLevel);
-      await Future<void>.delayed(const Duration(milliseconds: 1));
       final reset2Return = await controlPoint.read();
       debugPrint("Reset2 return: ${utf8.decode(reset2Return)}");
-      await Future<void>.delayed(const Duration(milliseconds: 1));
+    }
+
+    if (opCode == resetControl) {
+      return;
     }
 
     await _executeControlOperationCore(controlPoint, command, logLevel);
