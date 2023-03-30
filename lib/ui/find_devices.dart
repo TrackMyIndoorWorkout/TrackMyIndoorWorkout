@@ -144,6 +144,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     Get.put<AppDatabase>(database, permanent: true);
+
+    if (_instantScan) {
+      await _startScan(true);
+    }
   }
 
   void _readPreferencesValues() {
@@ -340,11 +344,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _isScanning = false;
     _scanStreamSubscription =
         _throttledScanStream.listen((scanResults) => _scanStreamController.add(scanResults));
-    _openDatabase().then((value) => _instantScan
-        ? WidgetsBinding.instance.addPostFrameCallback((_) async {
-            await _startScan(true);
-          })
-        : {});
+    _openDatabase();
 
     _captionStyle = Get.textTheme.titleLarge!;
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
