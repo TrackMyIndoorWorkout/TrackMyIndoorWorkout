@@ -1,7 +1,5 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:track_my_indoor_exercise/preferences/bike_color.dart';
-import 'package:track_my_indoor_exercise/preferences/boat_weight.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
@@ -10,8 +8,11 @@ import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
+import '../preferences/bike_color.dart';
 import '../preferences/bike_weight.dart';
 import '../preferences/block_signal_start_stop.dart';
+import '../preferences/boat_color.dart';
+import '../preferences/boat_weight.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
@@ -157,6 +158,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     maximumChartColorTag: maximumChartColorDefault,
     boatWeightTag: boatWeightDefault,
     bikeColorOnConsoleTag: bikeColorOnConsoleDefault,
+    boatColorOnConsoleTag: boatColorOnConsoleDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

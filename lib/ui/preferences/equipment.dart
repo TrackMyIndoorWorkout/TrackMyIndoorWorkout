@@ -5,6 +5,7 @@ import '../../preferences/air_temperature.dart';
 import '../../preferences/bike_color.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
+import '../../preferences/boat_color.dart';
 import '../../preferences/boat_weight.dart';
 import '../../preferences/drag_force_tune.dart';
 import '../../preferences/drive_train_loss.dart';
@@ -121,6 +122,12 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         pref: boatWeightTag,
         min: boatWeightMin,
         max: boatWeightMax,
+      ),
+      PrefColor(
+        title: const Text(boatColorOnConsole),
+        subtitle: const Text(boatColorOnConsoleDescription),
+        pref: boatColorOnConsoleTag,
+        defaultValue: boatColorOnConsoleDefault,
       ),
       const PrefCheckbox(
         title: Text(paddlingWithCyclingSensors),
