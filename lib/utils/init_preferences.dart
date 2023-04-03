@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/preferences/boat_weight.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
@@ -153,6 +154,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
+    boatWeightTag: boatWeightDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
