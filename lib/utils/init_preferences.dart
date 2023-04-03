@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/preferences/bike_color.dart';
 import 'package:track_my_indoor_exercise/preferences/boat_weight.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
@@ -155,6 +156,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
     boatWeightTag: boatWeightDefault,
+    bikeColorOnConsoleTag: bikeColorOnConsoleDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

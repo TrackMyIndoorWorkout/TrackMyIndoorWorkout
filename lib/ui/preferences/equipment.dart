@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/air_temperature.dart';
+import '../../preferences/bike_color.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/boat_weight.dart';
@@ -12,6 +13,7 @@ import '../../preferences/paddling_with_cycling_sensors.dart';
 import '../../preferences/water_wheel_circumference.dart';
 import '../../preferences/wheel_circumference.dart';
 import '../../utils/preferences.dart';
+import 'pref_color.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
@@ -38,6 +40,12 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         pref: bikeWeightTag,
         min: bikeWeightMin,
         max: bikeWeightMax,
+      ),
+      PrefColor(
+        title: const Text(bikeColorOnConsole),
+        subtitle: const Text(bikeColorOnConsoleDescription),
+        pref: bikeColorOnConsoleTag,
+        defaultValue: bikeColorOnConsoleDefault,
       ),
       PrefSlider<int>(
         title: const Text(wheelCircumference),
