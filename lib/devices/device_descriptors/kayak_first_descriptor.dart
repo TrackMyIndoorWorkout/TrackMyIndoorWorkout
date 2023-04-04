@@ -2,11 +2,18 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/models/record.dart';
+import '../../preferences/athlete_body_weight.dart';
+import '../../preferences/boat_color.dart';
+import '../../preferences/boat_weight.dart';
 import '../../preferences/log_level.dart';
+import '../../utils/constants.dart';
 import '../../utils/logging.dart';
+import '../../utils/string_ex.dart';
 import '../gatt/ftms.dart';
 import '../gatt/kayak_first.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
@@ -17,11 +24,14 @@ import 'device_descriptor.dart';
 class KayakFirstDescriptor extends DeviceDescriptor {
   static const dataStreamFlag = 0x36; // ASCII 6
   static const separator = 0x3B; // ASCII ;
+  static const resetCommand = "1";
+  static const handshakeCommand = "2";
+  static const newHandshakeCommand = "${handshakeCommand}1";
+  static const configurationCommand = "3";
+  static const pollDataCommand = "6";
+  static const parametersCommand = "8";
   static const startCommand = "9;1";
   static const stopCommand = "9;3";
-  static const reset1Command = "1";
-  static const reset2Command = "2";
-  static const pollDataCommand = "6";
 
   KayakFirstDescriptor()
       : super(
@@ -144,6 +154,9 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
     var command = "";
     switch (opCode) {
+      case resetControl:
+        command = resetCommand;
+        break;
       case startOrResumeControl:
         command = startCommand;
         break;
@@ -154,20 +167,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         break;
     }
 
-    if (command.isEmpty && opCode != resetControl) {
-      return;
-    }
-
-    if (opCode == startOrResumeControl || opCode == resetControl) {
-      await _executeControlOperationCore(controlPoint, reset1Command, logLevel);
-      final reset1Return = await controlPoint.read();
-      debugPrint("Reset1 return: ${utf8.decode(reset1Return)}");
-      await _executeControlOperationCore(controlPoint, reset2Command, logLevel);
-      final reset2Return = await controlPoint.read();
-      debugPrint("Reset2 return: ${utf8.decode(reset2Return)}");
-    }
-
-    if (opCode == resetControl) {
+    if (command.isEmpty) {
       return;
     }
 
@@ -177,5 +177,36 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   @override
   Future<void> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
     await _executeControlOperationCore(controlPoint, pollDataCommand, logLevel);
+  }
+
+  Future<void> handshake(BluetoothCharacteristic controlPoint, bool isNew, int logLevel) async {
+    final prefService = Get.find<BasePrefService>();
+    final athleteWeight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
+    final now = DateTime.now();
+    final unixEpoch = now.millisecondsSinceEpoch ~/ 1000;
+    final timeZoneOffset = now.timeZoneOffset.inMinutes;
+    String commandPrefix = isNew ? newHandshakeCommand : handshakeCommand;
+    String fullCommand = "$commandPrefix;$unixEpoch;$timeZoneOffset;$athleteWeight;";
+
+    if (commandPrefix == handshakeCommand) {
+      fullCommand += sport == ActivityType.kayaking ? "1" : "2";
+    } else {
+      final boatWeight = prefService.get<int>(boatWeightTag) ?? boatWeightDefault;
+      fullCommand += boatWeight.toString();
+    }
+
+    await _executeControlOperationCore(controlPoint, fullCommand, logLevel);
+  }
+
+  @override
+  Future<void> applyConfiguration(
+      BluetoothCharacteristic controlPoint, String name, int logLevel) async {
+    final prefService = Get.find<BasePrefService>();
+    final boatWeight = prefService.get<int>(boatWeightTag) ?? boatWeightDefault;
+    final boatColor = prefService.get<int>(boatColorOnConsole) ?? boatColorOnConsoleDefault;
+    final boatColorString = boatColor.toRadixString(16).rgbString();
+    final configureCommand =
+        "$configurationCommand;$name;$boatColorString;0;0;0;0;0;$boatWeight;0;0;0;0;0;0";
+    await _executeControlOperationCore(controlPoint, configureCommand, logLevel);
   }
 }

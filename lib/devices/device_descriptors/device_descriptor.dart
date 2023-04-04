@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../gadgets/complex_sensor.dart';
@@ -99,5 +100,19 @@ abstract class DeviceDescriptor extends DataHandler {
 
   void trimQueues() {}
 
-  Future<void> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {}
+  /// Sends command to induce / signal a measurement polling operation to a
+  /// device which operates that way. The command will be sent to the
+  /// Bluetooth characteristic [controlPoint].
+  Future<void> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
+    debugPrint("pollMeasurement Not implemented!");
+  }
+
+  /// Configure the Bluetooth device. Configuration can change the following:
+  /// 1. Bluetooth name
+  /// 2. Equipment color (on console)
+  /// 3. Equipment weight
+  Future<void> applyConfiguration(
+      BluetoothCharacteristic controlPoint, String name, int logLevel) async {
+    debugPrint("applyConfiguration Not implemented!");
+  }
 }
