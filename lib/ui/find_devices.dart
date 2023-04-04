@@ -680,7 +680,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   Expanded(
                     child: Center(
                       child: SportPickerBottomSheet(
-                        sportChoices: waterSports,
+                        sportChoices:
+                            descriptor.fourCC == kayakFirstFourCC ? paddleSports : waterSports,
                         initialSport: initialSport,
                       ),
                     ),
