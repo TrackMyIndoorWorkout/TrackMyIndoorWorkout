@@ -300,7 +300,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (!attached || characteristic == null || descriptor == null) return;
 
     await for (final byteList in characteristic!.value) {
-      debugPrint("KayakFirst: ${utf8.decode(byteList)}");
       if (logLevel >= logLevelInfo) {
         Logging.log(
           logLevel,
