@@ -115,7 +115,7 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
                   controller: _textController,
                   onChanged: (String value) => {_fitnessEquipment?.bluetoothName = value},
                 ),
-                Text(boatWeight, style: _textStyle),
+                const Text(boatWeight),
                 NumberSelector(
                   current: _boatWeight,
                   min: boatWeightMin,
@@ -133,7 +133,7 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
                     _prefService.set<int>(boatWeightTag, value);
                   },
                 ),
-                Text(boatColorOnConsole, style: _textStyle),
+                const Text(boatColorOnConsole),
                 CircleColorPicker(
                   controller: _colorPickerController,
                   onChanged: (color) {
@@ -145,23 +145,24 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
                   thumbSize: _mediaWidth! / 5,
                   textStyle: _textStyle,
                 ),
-                Text(athleteBodyWeight, style: _textStyle),
+                const Text(athleteBodyWeight),
                 NumberSelector(
-                    current: _athleteWeight,
-                    min: athleteBodyWeightMin,
-                    max: athleteBodyWeightMax,
-                    showMinMax: true,
-                    showSuffix: false,
-                    hasBorder: true,
-                    borderColor: _borderColor,
-                    hasDividers: true,
-                    dividerColor: _borderColor,
-                    backgroundColor: _backgroundColor,
-                    iconColor: _iconColor,
-                    onUpdate: (int value) {
-                      _athleteWeight = value;
-                      _prefService.set<int>(athleteBodyWeightIntTag, value);
-                    }),
+                  current: _athleteWeight,
+                  min: athleteBodyWeightMin,
+                  max: athleteBodyWeightMax,
+                  showMinMax: true,
+                  showSuffix: false,
+                  hasBorder: true,
+                  borderColor: _borderColor,
+                  hasDividers: true,
+                  dividerColor: _borderColor,
+                  backgroundColor: _backgroundColor,
+                  iconColor: _iconColor,
+                  onUpdate: (int value) {
+                    _athleteWeight = value;
+                    _prefService.set<int>(athleteBodyWeightIntTag, value);
+                  },
+                ),
               ],
             ),
           ),
