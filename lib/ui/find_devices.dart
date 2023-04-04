@@ -685,10 +685,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
           final blockSignalStartStop = testing ||
               (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
           // 1. Reset
-          kayakFirst.executeControlOperation(
+          await kayakFirst.executeControlOperation(
               fitnessEquipment!.getControlPoint(), blockSignalStartStop, _logLevel, resetControl);
           // 2. Handshake
-          kayakFirst.handshake(fitnessEquipment.getControlPoint()!, true, _logLevel);
+          await kayakFirst.handshake(fitnessEquipment.getControlPoint()!, true, _logLevel);
         }
       }
 
