@@ -32,7 +32,7 @@ import '../../utils/power_speed_mixin.dart';
 import '../bluetooth_device_ex.dart';
 import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
-import '../device_descriptors/kaya_first_descriptor.dart';
+import '../device_descriptors/kayak_first_descriptor.dart';
 import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gatt/ftms.dart';
