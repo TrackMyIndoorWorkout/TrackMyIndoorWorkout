@@ -165,14 +165,22 @@ abstract class AppDatabase extends FloorDatabase {
       updated++;
     }
 
+    if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
+      activity.end = lastRecord.timeStamp!;
+      updated++;
+    }
+
     if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
       activity.elapsed = lastRecord.elapsed!;
       updated++;
     }
 
-    if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
-      activity.end = lastRecord.timeStamp!;
-      updated++;
+    if (activity.elapsed == 0 && activity.end != 0) {
+      final elapsedMillis = activity.end - activity.start;
+      if (elapsedMillis >= 1000) {
+        activity.elapsed = elapsedMillis ~/ 1000;
+        updated++;
+      }
     }
 
     if (activity.movingTime == 0) {
