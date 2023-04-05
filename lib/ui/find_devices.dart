@@ -667,18 +667,23 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (descriptor.fourCC == kayakFirstFourCC) {
         if (_fitnessEquipment == null) {
           fitnessEquipment = FitnessEquipment(descriptor: descriptor, device: device);
+          _fitnessEquipment = fitnessEquipment;
         }
 
-        final success = await fitnessEquipment?.connectOnDemand() ?? false;
+        bool success = true;
+        if (!(_fitnessEquipment?.discovered ?? false)) {
+          success = await _fitnessEquipment?.connectOnDemand() ?? false;
+        }
+
         if (success) {
           final kayakFirst = (descriptor as KayakFirstDescriptor);
           final blockSignalStartStop = testing ||
               (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
           // 1. Reset
           await kayakFirst.executeControlOperation(
-              fitnessEquipment!.getControlPoint(), blockSignalStartStop, _logLevel, resetControl);
+              _fitnessEquipment!.getControlPoint(), blockSignalStartStop, _logLevel, resetControl);
           // 2. Handshake
-          await kayakFirst.handshake(fitnessEquipment.getControlPoint()!, true, _logLevel);
+          await kayakFirst.handshake(_fitnessEquipment!.getControlPoint(), true, _logLevel);
         } else {
           Get.snackbar("Error", "Could not pre connect to KayakFirst");
           Logging.log(
