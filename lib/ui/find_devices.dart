@@ -182,42 +182,36 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
-      if (_logLevel >= logLevelInfo) {
-        Logging.log(
-          _logLevel,
-          logLevelInfo,
-          "FIND_DEVICES",
-          "startScan",
-          "Scan already in progress",
-        );
-      }
-
-      return;
-    }
-
-    if (!await bluetoothCheck(silent, _logLevel)) {
-      if (_logLevel >= logLevelInfo) {
-        Logging.log(
-          _logLevel,
-          logLevelInfo,
-          "FIND_DEVICES",
-          "startScan",
-          "bluetooth check failed",
-        );
-      }
-
-      return;
-    }
-
-    if (_logLevel >= logLevelInfo) {
       Logging.log(
         _logLevel,
         logLevelInfo,
         "FIND_DEVICES",
         "startScan",
-        "Scan initiated",
+        "Scan already in progress",
       );
+
+      return;
     }
+
+    if (!await bluetoothCheck(silent, _logLevel)) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FIND_DEVICES",
+        "startScan",
+        "bluetooth check failed",
+      );
+
+      return;
+    }
+
+    Logging.log(
+      _logLevel,
+      logLevelInfo,
+      "FIND_DEVICES",
+      "startScan",
+      "Scan initiated",
+    );
 
     _readPreferencesValues();
     await _readDeviceSports();
@@ -254,15 +248,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
               _lastEquipmentIds.isNotEmpty &&
               lasts.isNotEmpty &&
               !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
-        if (_logLevel > logLevelNone) {
-          Logging.log(
-            _logLevel,
-            logLevelWarning,
-            "FIND_DEVICES",
-            "_startScan finished pre auto-connect",
-            "advertisementCache miss",
-          );
-        }
+        Logging.log(
+          _logLevel,
+          logLevelWarning,
+          "FIND_DEVICES",
+          "_startScan finished pre auto-connect",
+          "advertisementCache miss",
+        );
       } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
         if (_fitnessEquipment != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -641,15 +633,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
         if (inferredSport == null) {
           Get.snackbar("Error", "Could not infer sport of the device");
-          if (_logLevel > logLevelNone) {
-            Logging.log(
-              _logLevel,
-              logLevelError,
-              "FIND_DEVICES",
-              "goToRecording",
-              "Could not infer sport of the device",
-            );
-          }
+          Logging.log(
+            _logLevel,
+            logLevelError,
+            "FIND_DEVICES",
+            "goToRecording",
+            "Could not infer sport of the device",
+          );
 
           setState(() {
             _goingToRecording = false;
@@ -878,15 +868,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 BluetoothDeviceState.connected) {
                               Get.snackbar("Info", "HRM Already connected");
 
-                              if (_logLevel > logLevelNone) {
-                                Logging.log(
-                                  _logLevel,
-                                  logLevelWarning,
-                                  "FIND_DEVICES",
-                                  "HRM click",
-                                  "HRM Already connected",
-                                );
-                              }
+                              Logging.log(
+                                _logLevel,
+                                logLevelWarning,
+                                "FIND_DEVICES",
+                                "HRM click",
+                                "HRM Already connected",
+                              );
                             } else {
                               setState(() {
                                 _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()

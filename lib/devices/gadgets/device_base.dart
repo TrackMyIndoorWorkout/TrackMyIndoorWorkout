@@ -94,6 +94,7 @@ abstract class DeviceBase {
       connecting = false;
       connected = true;
     }
+
     return connected;
   }
 
@@ -194,15 +195,13 @@ abstract class DeviceBase {
               logMessage = "Stopped!";
               break;
           }
-          if (logLevel >= logLevelInfo) {
-            Logging.log(
-              logLevel,
-              logLevelInfo,
-              "FITNESS_EQUIPMENT",
-              "connectToControlPoint controlPointSubscription",
-              logMessage,
-            );
-          }
+          Logging.log(
+            logLevel,
+            logLevelInfo,
+            "FITNESS_EQUIPMENT",
+            "connectToControlPoint controlPointSubscription",
+            logMessage,
+          );
         }
       });
     }

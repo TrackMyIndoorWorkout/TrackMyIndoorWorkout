@@ -183,15 +183,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         .toList(growable: false);
 
     if (values.isEmpty) {
-      if (logLevel >= logLevelInfo) {
-        Logging.log(
-          logLevel,
-          logLevelInfo,
-          "FITNESS_EQUIPMENT",
-          "mergedToYield",
-          "Skipping!!",
-        );
-      }
+      Logging.log(
+        logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "mergedToYield",
+        "Skipping!!",
+      );
       return null;
     }
 
@@ -216,15 +214,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   void _throttlingTimerCallback() {
     _throttleTimer = null;
-    if (logLevel >= logLevelInfo) {
-      Logging.log(
-        logLevel,
-        logLevelInfo,
-        "FITNESS_EQUIPMENT",
-        "listenToData",
-        "Timer expire induced handling",
-      );
-    }
+    Logging.log(
+      logLevel,
+      logLevelInfo,
+      "FITNESS_EQUIPMENT",
+      "listenToData",
+      "Timer expire induced handling",
+    );
 
     if (_recordHandlerFunction != null) {
       final merged = _mergedForYield();
