@@ -229,7 +229,10 @@ abstract class DeviceBase {
       }
 
       discovering = false;
-      if (retry) return false;
+      if (retry) {
+        return false;
+      }
+
       await discover(retry: true);
     }
 
