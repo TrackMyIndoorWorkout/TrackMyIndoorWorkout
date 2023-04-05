@@ -175,6 +175,29 @@ abstract class AppDatabase extends FloorDatabase {
       updated++;
     }
 
+    if (activity.movingTime == 0) {
+      final records = await recordDao.findAllActivityRecords(activity.id ?? 0);
+      if (records.length <= 1) {
+        return false;
+      }
+
+      double movingMillis = 0;
+      var previousRecord = records.first;
+      for (final record in records.skip(1)) {
+        if (!record.isNotMoving()) {
+          final dTMillis = record.timeStamp! - previousRecord.timeStamp!;
+          movingMillis += dTMillis;
+        }
+
+        previousRecord = record;
+      }
+
+      if (movingMillis > 0) {
+        activity.movingTime = movingMillis.toInt();
+        updated++;
+      }
+    }
+
     if (updated > 0) {
       await activityDao.updateActivity(activity);
     }
