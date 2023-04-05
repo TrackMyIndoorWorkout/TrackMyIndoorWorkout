@@ -148,11 +148,16 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
     if (!command.startsWith(pollDataCommand)) {
       String response = "";
-      String responseChunk = "01234567890123456789";
-      while (!response.endsWith(crLf) && responseChunk.length == responseChunkSize) {
+      String lastChunk = "";
+      while (!response.endsWith(crLf)) {
         final responseBytes = await controlPoint.read();
-        responseChunk = utf8.decode(responseBytes);
+        final responseChunk = utf8.decode(responseBytes);
+        if (responseChunk == lastChunk) {
+          break;
+        }
+
         response += responseChunk;
+        lastChunk = responseChunk;
       }
 
       Logging.log(
