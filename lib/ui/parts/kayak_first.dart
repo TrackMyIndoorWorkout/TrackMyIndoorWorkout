@@ -112,6 +112,7 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
                     labelText: 'Name',
                     hintText: 'Specify bluetooth name',
                   ),
+                  initialValue: _fitnessEquipment?.bluetoothName ?? "",
                   controller: _textController,
                   onChanged: (String value) => {_fitnessEquipment?.bluetoothName = value},
                 ),

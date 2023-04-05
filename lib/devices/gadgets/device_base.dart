@@ -53,7 +53,7 @@ abstract class DeviceBase {
   bool discovering = false;
   bool discovered = false;
 
-  String bluetoothName = "";
+  late String bluetoothName;
   final prefService = Get.find<BasePrefService>();
   bool uxDebug = appDebugModeDefault;
   int logLevel = logLevelDefault;
