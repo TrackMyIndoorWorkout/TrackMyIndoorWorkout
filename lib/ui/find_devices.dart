@@ -666,10 +666,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
       if (descriptor.fourCC == kayakFirstFourCC) {
         if (_fitnessEquipment == null) {
-          fitnessEquipment = FitnessEquipment(device: device);
+          fitnessEquipment = FitnessEquipment(descriptor: descriptor, device: device);
         }
 
-        final success = await fitnessEquipment?.connectOnDemand(identify: true) ?? false;
+        final success = await fitnessEquipment?.connectOnDemand() ?? false;
         if (success) {
           final kayakFirst = (descriptor as KayakFirstDescriptor);
           final blockSignalStartStop = testing ||
@@ -679,6 +679,22 @@ class FindDevicesState extends State<FindDevicesScreen> {
               fitnessEquipment!.getControlPoint(), blockSignalStartStop, _logLevel, resetControl);
           // 2. Handshake
           await kayakFirst.handshake(fitnessEquipment.getControlPoint()!, true, _logLevel);
+        } else {
+          Get.snackbar("Error", "Could not pre connect to KayakFirst");
+          Logging.log(
+            _logLevel,
+            logLevelError,
+            "FIND_DEVICES",
+            "goToRecording",
+            "Could not pre connect to KayakFirst",
+          );
+
+          setState(() {
+            _goingToRecording = false;
+          });
+
+          _scanStreamSubscription?.resume();
+          return false;
         }
       }
 
@@ -765,10 +781,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           fitnessEquipment.characteristicId == descriptor.dataCharacteristicId) {
         fitnessEquipment.descriptor = descriptor;
       } else {
-        fitnessEquipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: device,
-        );
+        fitnessEquipment = FitnessEquipment(descriptor: descriptor, device: device);
       }
 
       Get.put<FitnessEquipment>(fitnessEquipment, permanent: true);
