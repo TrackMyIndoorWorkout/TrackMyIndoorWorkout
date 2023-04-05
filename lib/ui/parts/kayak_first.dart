@@ -138,7 +138,9 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
                 CircleColorPicker(
                   controller: _colorPickerController,
                   onChanged: (color) {
-                    _boatColor = color.value;
+                    setState(() {
+                      _boatColor = color.value;
+                    });
                     _prefService.set<int>(boatColorOnConsoleTag, color.value);
                   },
                   size: Size(_mediaWidth!, _mediaWidth!),
