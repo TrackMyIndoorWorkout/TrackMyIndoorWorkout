@@ -32,6 +32,8 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const parametersCommand = "8";
   static const startCommand = "9;1";
   static const stopCommand = "9;3";
+  static const crLf = "\r\n";
+  static const responseChunkSize = 20;
 
   KayakFirstDescriptor()
       : super(
@@ -103,7 +105,8 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   bool isClosingPacket(List<int> data) {
-    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D;
+    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D ||
+        data.length < responseChunkSize;
   }
 
   @override
@@ -116,9 +119,17 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   Future<void> _executeControlOperationCore(
       BluetoothCharacteristic controlPoint, String command, int logLevel) async {
-    if (!command.endsWith("\r\n")) {
-      command += "\r\n";
+    if (!command.endsWith(crLf)) {
+      command += crLf;
     }
+
+    Logging.log(
+      logLevel,
+      logLevelInfo,
+      "KayakFirst",
+      "_executeControlOperationCore command",
+      command,
+    );
 
     try {
       await controlPoint.write(utf8.encode(command));
@@ -133,6 +144,24 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       );
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+
+    if (!command.startsWith(pollDataCommand)) {
+      String response = "";
+      String responseChunk = "01234567890123456789";
+      while (!response.endsWith(crLf) && responseChunk.length == responseChunkSize) {
+        final responseBytes = await controlPoint.read();
+        responseChunk = utf8.decode(responseBytes);
+        response += responseChunk;
+      }
+
+      Logging.log(
+        logLevel,
+        logLevelInfo,
+        "KayakFirst",
+        "_executeControlOperationCore response",
+        response,
+      );
     }
   }
 
@@ -179,7 +208,11 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     await _executeControlOperationCore(controlPoint, pollDataCommand, logLevel);
   }
 
-  Future<void> handshake(BluetoothCharacteristic controlPoint, bool isNew, int logLevel) async {
+  Future<void> handshake(BluetoothCharacteristic? controlPoint, bool isNew, int logLevel) async {
+    if (!await FlutterBluePlus.instance.isOn || controlPoint == null) {
+      return;
+    }
+
     final prefService = Get.find<BasePrefService>();
     final athleteWeight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     final now = DateTime.now();
