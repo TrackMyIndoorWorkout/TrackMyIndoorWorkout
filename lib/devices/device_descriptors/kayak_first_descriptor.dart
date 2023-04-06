@@ -8,6 +8,7 @@ import 'package:pref/pref.dart';
 import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/models/record.dart';
 import '../../preferences/athlete_body_weight.dart';
+import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/boat_color.dart';
 import '../../preferences/boat_weight.dart';
 import '../../preferences/log_level.dart';
@@ -238,7 +239,11 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   Future<void> applyConfiguration(
-      BluetoothCharacteristic controlPoint, String name, int logLevel) async {
+      BluetoothCharacteristic? controlPoint, String name, int logLevel) async {
+    if (!await FlutterBluePlus.instance.isOn || controlPoint == null) {
+      return;
+    }
+
     final prefService = Get.find<BasePrefService>();
     final boatWeight = prefService.get<int>(boatWeightTag) ?? boatWeightDefault;
     final boatColor = prefService.get<int>(boatColorOnConsole) ?? boatColorOnConsoleDefault;
@@ -246,5 +251,20 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     final configureCommand =
         "$configurationCommand;$name;$boatColorString;0;0;0;0;0;$boatWeight;0;0;0;0;0;0";
     await _executeControlOperationCore(controlPoint, configureCommand, logLevel);
+  }
+
+  @override
+  Future<void> postConnect(BluetoothCharacteristic? controlPoint, int logLevel) async {
+    if (!await FlutterBluePlus.instance.isOn || controlPoint == null) {
+      return;
+    }
+
+    final prefService = Get.find<BasePrefService>();
+    final blockSignalStartStop =
+        testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
+    // 1. Reset
+    await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
+    // 2. Handshake
+    await handshake(controlPoint, true, logLevel);
   }
 }

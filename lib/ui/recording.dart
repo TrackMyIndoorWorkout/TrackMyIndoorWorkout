@@ -270,6 +270,7 @@ class RecordingState extends State<RecordingScreen> {
 
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
+      await _fitnessEquipment?.postConnect();
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
         await _startMeasurement();
@@ -744,6 +745,7 @@ class RecordingState extends State<RecordingScreen> {
       widget.descriptor.slowPace = slowPace;
       _fitnessEquipment?.slowPace = slowPace;
     }
+
     _showPacer = prefService.get<bool>(showPacerTag) ?? showPacerDefault;
     if (_showPacer) {
       final pacerSpeed = SpeedSpec.pacerSpeeds[SportSpec.sport2Sport(widget.sport)]!;

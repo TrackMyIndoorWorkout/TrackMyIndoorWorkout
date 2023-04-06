@@ -15,7 +15,6 @@ import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
-import '../devices/device_descriptors/kayak_first_descriptor.dart';
 import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
 import '../devices/gadgets/complex_sensor.dart';
@@ -30,7 +29,6 @@ import '../devices/gatt/precor.dart';
 import '../devices/gatt/schwinn_x70.dart';
 import '../devices/gatt_maps.dart';
 import '../preferences/auto_connect.dart';
-import '../preferences/block_signal_start_stop.dart';
 import '../persistence/database.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/instant_scan.dart';
@@ -578,10 +576,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
     }
 
-    if (descriptor?.fourCC == kayakFirstFourCC) {
-      preConnectLogic = true;
-    }
-
     if (preConnectLogic) {
       // Step 3. Try to infer from DeviceUsage, FTMS advertisement service data or characteristics
       bool pickedAlready = false;
@@ -663,46 +657,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
 
       final prefService = Get.find<BasePrefService>();
-
-      if (descriptor.fourCC == kayakFirstFourCC) {
-        if (_fitnessEquipment == null) {
-          fitnessEquipment = FitnessEquipment(descriptor: descriptor, device: device);
-          _fitnessEquipment = fitnessEquipment;
-        }
-
-        bool success = true;
-        if (!(_fitnessEquipment?.discovered ?? false)) {
-          success = await _fitnessEquipment?.connectOnDemand() ?? false;
-        }
-
-        if (success) {
-          final kayakFirst = (descriptor as KayakFirstDescriptor);
-          final blockSignalStartStop = testing ||
-              (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
-          // 1. Reset
-          await kayakFirst.executeControlOperation(
-              _fitnessEquipment!.getControlPoint(), blockSignalStartStop, _logLevel, resetControl);
-          // 2. Handshake
-          await kayakFirst.handshake(_fitnessEquipment!.getControlPoint(), true, _logLevel);
-        } else {
-          Get.snackbar("Error", "Could not pre connect to KayakFirst");
-          Logging.log(
-            _logLevel,
-            logLevelError,
-            "FIND_DEVICES",
-            "goToRecording",
-            "Could not pre connect to KayakFirst",
-          );
-
-          setState(() {
-            _goingToRecording = false;
-          });
-
-          _scanStreamSubscription?.resume();
-          return false;
-        }
-      }
-
       if (descriptor.isMultiSport && !pickedAlready) {
         final multiSportSupport =
             prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;

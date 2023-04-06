@@ -528,6 +528,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     return success;
   }
 
+  Future<void> postConnect() async {
+    await descriptor?.postConnect(getControlPoint(), logLevel);
+  }
+
   /// Needed to check if any of the last seen data stubs for each
   /// combination indicated movement. #234 #259
   bool wasNotMoving() {
