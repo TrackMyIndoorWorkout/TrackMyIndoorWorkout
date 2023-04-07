@@ -9,7 +9,6 @@ import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/models/record.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
-import '../../preferences/boat_color.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
@@ -237,11 +236,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       return;
     }
 
-    final prefService = Get.find<BasePrefService>();
-    final boatColor = prefService.get<int>(boatColorOnConsole) ?? boatColorOnConsoleDefault;
-    final boatColorString = boatColor.toRadixString(16).rgbString();
-    final configureCommand =
-        "$configurationCommand;$name;$boatColorString;0;0;0;0;0;0;0;0;0;0;0;0";
+    final configureCommand = "$configurationCommand;$name;0;0;0;0;0;0;0;0;0;0;0;0;0";
     await _executeControlOperationCore(controlPoint, configureCommand, logLevel);
   }
 

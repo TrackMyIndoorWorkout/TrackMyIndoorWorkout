@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
 import 'package:get/get.dart';
 import 'package:number_selector/number_selector.dart';
 import 'package:pref/pref.dart';
@@ -11,7 +10,6 @@ import '../../devices/gadgets/device_base.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../preferences/athlete_body_weight.dart';
-import '../../preferences/boat_color.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
@@ -37,9 +35,7 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
   Color _iconColor = Colors.black;
   TextStyle _textStyle = const TextStyle();
   final BasePrefService _prefService = Get.find<BasePrefService>();
-  int _boatColor = boatColorOnConsoleDefault;
   int _athleteWeight = athleteBodyWeightDefault;
-  late final CircleColorPickerController _colorPickerController;
   double? _mediaWidth;
 
   Future<String> _readBatteryLevel(DeviceBase? device) async {
@@ -69,8 +65,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
     _borderColor = _themeManager.getGreyColor();
     _backgroundColor = _themeManager.isDark() ? Colors.grey.shade800 : Colors.grey.shade200;
     _iconColor = _themeManager.getProtagonistColor();
-    _boatColor = _prefService.get<int>(boatColorOnConsole) ?? boatColorOnConsoleDefault;
-    _colorPickerController = CircleColorPickerController(initialColor: Color(_boatColor));
     _athleteWeight = _prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
@@ -112,20 +106,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
                   ),
                   controller: _textController,
                   onChanged: (String value) => {_fitnessEquipment?.bluetoothName = value},
-                ),
-                const Text(boatColorOnConsole),
-                CircleColorPicker(
-                  controller: _colorPickerController,
-                  onChanged: (color) {
-                    setState(() {
-                      _boatColor = color.value;
-                    });
-                    _prefService.set<int>(boatColorOnConsoleTag, color.value);
-                  },
-                  size: Size(_mediaWidth!, _mediaWidth!),
-                  strokeWidth: 5,
-                  thumbSize: _mediaWidth! / 5,
-                  textStyle: _textStyle,
                 ),
                 const Text(athleteBodyWeight),
                 NumberSelector(

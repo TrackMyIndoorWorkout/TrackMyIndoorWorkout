@@ -11,7 +11,6 @@ import '../preferences/auto_connect.dart';
 import '../preferences/bike_color.dart';
 import '../preferences/bike_weight.dart';
 import '../preferences/block_signal_start_stop.dart';
-import '../preferences/boat_color.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
@@ -156,7 +155,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
     bikeColorOnConsoleTag: bikeColorOnConsoleDefault,
-    boatColorOnConsoleTag: boatColorOnConsoleDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
