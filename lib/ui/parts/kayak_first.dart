@@ -159,17 +159,16 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
           children: [
             _themeManager.getBlueFab(Icons.clear, () => Get.close(1)),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(Icons.check, () {
+            _themeManager.getGreenFab(Icons.check, () async {
               if (_fitnessEquipment != null) {
                 return;
               }
 
               final kayakFirst = _fitnessEquipment!.descriptor as KayakFirstDescriptor;
-              kayakFirst.applyConfiguration(
-                _fitnessEquipment!.getControlPoint()!,
-                _fitnessEquipment?.bluetoothName ?? unnamedDevice,
-                _logLevel,
-              );
+              final controlPoint = _fitnessEquipment!.getControlPoint()!;
+              await kayakFirst.handshake(controlPoint, false, _logLevel);
+              final bluetoothName = _fitnessEquipment?.bluetoothName ?? unnamedDevice;
+              await kayakFirst.applyConfiguration(controlPoint, bluetoothName, _logLevel);
             }),
           ],
         ),
