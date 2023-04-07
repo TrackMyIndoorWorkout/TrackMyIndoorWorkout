@@ -157,8 +157,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return badKey;
     }
 
-    if (descriptor?.isPolling ?? false) {
-      return l[0] + (descriptor! as KayakFirstDescriptor).separatorCount(l) * 256;
+    if (descriptor != null && descriptor is KayakFirstDescriptor) {
+      var selector = l[0];
+      if (l.length > 1 && l[1] != KayakFirstDescriptor.separator) {
+        selector += 256 * l[1];
+      }
+
+      return selector;
     }
 
     if (l.length == 1 || descriptor?.flagByteSize == 1) {

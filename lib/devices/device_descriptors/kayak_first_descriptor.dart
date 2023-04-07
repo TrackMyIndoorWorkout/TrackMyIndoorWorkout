@@ -95,13 +95,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   bool isDataProcessable(List<int> data) {
-    if (data.isEmpty) return false;
-
-    if (data[0] != dataStreamFlag) return false;
-
-    final isClosed = data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D;
-    final sepCount = separatorCount(data);
-    return isClosed && sepCount == 23;
+    return data.isNotEmpty;
   }
 
   @override
@@ -112,7 +106,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   bool isFlagValid(int flag) {
-    return true; // flag == dataStreamFlag;
+    return flag == dataStreamFlag;
   }
 
   @override
