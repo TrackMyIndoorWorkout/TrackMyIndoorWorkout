@@ -263,6 +263,6 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     // 1. Reset
     await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
     // 2. Handshake
-    await handshake(controlPoint, true, logLevel);
+    await handshake(controlPoint, false, logLevel);
   }
 }
