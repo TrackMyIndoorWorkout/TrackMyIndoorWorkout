@@ -314,6 +314,15 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
       List<int> byteListPrep = [];
       if (descriptor?.fragmentedPackets ?? false) {
+        final fragLength = packetFragment.length;
+        final listLength = byteList.length;
+        if (byteList.isNotEmpty &&
+            fragLength >= listLength &&
+            packetFragment.sublist(fragLength - listLength).equals(byteList)) {
+          // repeat packet fragment => discard
+          continue;
+        }
+
         packetFragment.addAll(byteList);
         if (descriptor?.isClosingPacket(byteList) ?? true) {
           byteListPrep.addAll(packetFragment);
