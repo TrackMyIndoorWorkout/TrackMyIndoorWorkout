@@ -12,7 +12,6 @@ import '../preferences/bike_color.dart';
 import '../preferences/bike_weight.dart';
 import '../preferences/block_signal_start_stop.dart';
 import '../preferences/boat_color.dart';
-import '../preferences/boat_weight.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
@@ -156,7 +155,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
-    boatWeightTag: boatWeightDefault,
     bikeColorOnConsoleTag: bikeColorOnConsoleDefault,
     boatColorOnConsoleTag: boatColorOnConsoleDefault,
   };

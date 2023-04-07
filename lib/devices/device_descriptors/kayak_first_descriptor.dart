@@ -230,8 +230,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     if (commandPrefix == handshakeCommand) {
       fullCommand += sport == ActivityType.kayaking ? "1" : "2";
     } else {
-      final boatWeight = prefService.get<int>(boatWeightTag) ?? boatWeightDefault;
-      fullCommand += boatWeight.toString();
+      fullCommand += boatWeightDefault.toString();
     }
 
     await _executeControlOperationCore(controlPoint, fullCommand, logLevel);
@@ -245,11 +244,10 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     final prefService = Get.find<BasePrefService>();
-    final boatWeight = prefService.get<int>(boatWeightTag) ?? boatWeightDefault;
     final boatColor = prefService.get<int>(boatColorOnConsole) ?? boatColorOnConsoleDefault;
     final boatColorString = boatColor.toRadixString(16).rgbString();
     final configureCommand =
-        "$configurationCommand;$name;$boatColorString;0;0;0;0;0;$boatWeight;0;0;0;0;0;0";
+        "$configurationCommand;$name;$boatColorString;0;0;0;0;0;$boatWeightDefault;0;0;0;0;0;0";
     await _executeControlOperationCore(controlPoint, configureCommand, logLevel);
   }
 

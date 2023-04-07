@@ -12,7 +12,6 @@ import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/boat_color.dart';
-import '../../preferences/boat_weight.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
@@ -38,7 +37,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
   Color _iconColor = Colors.black;
   TextStyle _textStyle = const TextStyle();
   final BasePrefService _prefService = Get.find<BasePrefService>();
-  int _boatWeight = boatWeightDefault;
   int _boatColor = boatColorOnConsoleDefault;
   int _athleteWeight = athleteBodyWeightDefault;
   late final CircleColorPickerController _colorPickerController;
@@ -71,7 +69,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
     _borderColor = _themeManager.getGreyColor();
     _backgroundColor = _themeManager.isDark() ? Colors.grey.shade800 : Colors.grey.shade200;
     _iconColor = _themeManager.getProtagonistColor();
-    _boatWeight = _prefService.get<int>(boatWeightTag) ?? boatWeightDefault;
     _boatColor = _prefService.get<int>(boatColorOnConsole) ?? boatColorOnConsoleDefault;
     _colorPickerController = CircleColorPickerController(initialColor: Color(_boatColor));
     _athleteWeight = _prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
@@ -115,24 +112,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
                   ),
                   controller: _textController,
                   onChanged: (String value) => {_fitnessEquipment?.bluetoothName = value},
-                ),
-                const Text(boatWeight),
-                NumberSelector(
-                  current: _boatWeight,
-                  min: boatWeightMin,
-                  max: boatWeightMax,
-                  showMinMax: true,
-                  showSuffix: false,
-                  hasBorder: true,
-                  borderColor: _borderColor,
-                  hasDividers: true,
-                  dividerColor: _borderColor,
-                  backgroundColor: _backgroundColor,
-                  iconColor: _iconColor,
-                  onUpdate: (int value) {
-                    _boatWeight = value;
-                    _prefService.set<int>(boatWeightTag, value);
-                  },
                 ),
                 const Text(boatColorOnConsole),
                 CircleColorPicker(

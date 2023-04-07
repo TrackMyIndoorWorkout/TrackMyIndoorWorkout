@@ -6,7 +6,6 @@ import '../../preferences/bike_color.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/boat_color.dart';
-import '../../preferences/boat_weight.dart';
 import '../../preferences/drag_force_tune.dart';
 import '../../preferences/drive_train_loss.dart';
 import '../../preferences/measurement_sink_address.dart';
@@ -107,21 +106,6 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         pref: dragForceTuneTag,
         min: dragForceTuneMin,
         max: dragForceTuneMax,
-      ),
-      PrefSlider<int>(
-        title: const Text(boatWeight),
-        subtitle: const Text(boatWeightDescription),
-        pref: boatWeightTag,
-        trailing: (num value) => Text("$value kg"),
-        min: boatWeightMin,
-        max: boatWeightMax,
-        divisions: boatWeightDivisions,
-        direction: Axis.vertical,
-      ),
-      const PrefInteger(
-        pref: boatWeightTag,
-        min: boatWeightMin,
-        max: boatWeightMax,
       ),
       PrefColor(
         title: const Text(boatColorOnConsole),
