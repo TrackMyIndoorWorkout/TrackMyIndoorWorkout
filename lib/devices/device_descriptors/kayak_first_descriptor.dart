@@ -10,7 +10,6 @@ import '../../persistence/models/record.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/boat_color.dart';
-import '../../preferences/boat_weight.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
@@ -35,6 +34,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const stopCommand = "9;3";
   static const crLf = "\r\n";
   static const responseChunkSize = 20;
+  static const boatWeightDefault = 12;
 
   KayakFirstDescriptor()
       : super(
@@ -241,7 +241,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     final boatColor = prefService.get<int>(boatColorOnConsole) ?? boatColorOnConsoleDefault;
     final boatColorString = boatColor.toRadixString(16).rgbString();
     final configureCommand =
-        "$configurationCommand;$name;$boatColorString;0;0;0;0;0;$boatWeightDefault;0;0;0;0;0;0";
+        "$configurationCommand;$name;$boatColorString;0;0;0;0;0;0;0;0;0;0;0;0";
     await _executeControlOperationCore(controlPoint, configureCommand, logLevel);
   }
 
