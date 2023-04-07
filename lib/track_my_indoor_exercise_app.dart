@@ -33,8 +33,8 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         color: _themeManager!.getHeaderColor(),
-        theme: FlexThemeData.light(scheme: FlexScheme.blue, useMaterial3: true),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.blue, useMaterial3: true),
+        theme: FlexThemeData.light(scheme: FlexScheme.indigoM3, useMaterial3: true),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.indigoM3, useMaterial3: true),
         themeMode: _themeManager!.getThemeMode(),
         home: const FindDevicesScreen(),
       ),
