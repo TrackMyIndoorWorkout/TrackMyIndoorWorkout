@@ -25,7 +25,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _textController = TextEditingController();
   String _hrmBatteryLevel = notAvailable;
   int _logLevel = logLevelDefault;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
@@ -68,7 +67,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
     _athleteWeight = _prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-    _textController.text = _fitnessEquipment?.bluetoothName ?? "";
     _logLevel = _fitnessEquipment?.logLevel ?? logLevelDefault;
     _readBatteryLevels();
   }
@@ -98,15 +96,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextFormField(
-                  decoration: const InputDecoration(
-                    filled: true,
-                    labelText: 'Name',
-                    hintText: 'Specify bluetooth name',
-                  ),
-                  controller: _textController,
-                  onChanged: (String value) => {_fitnessEquipment?.bluetoothName = value},
-                ),
                 const Text(athleteBodyWeight),
                 NumberSelector(
                   current: _athleteWeight,
@@ -147,8 +136,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
               final kayakFirst = _fitnessEquipment!.descriptor as KayakFirstDescriptor;
               final controlPoint = _fitnessEquipment!.getControlPoint()!;
               await kayakFirst.handshake(controlPoint, false, _logLevel);
-              final bluetoothName = _fitnessEquipment?.bluetoothName ?? unnamedDevice;
-              await kayakFirst.applyConfiguration(controlPoint, bluetoothName, _logLevel);
             }),
           ],
         ),

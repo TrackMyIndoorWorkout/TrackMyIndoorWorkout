@@ -353,7 +353,7 @@ class RecordingState extends State<RecordingScreen> {
     if (!continued) {
       _activity = Activity(
         fourCC: widget.descriptor.fourCC,
-        deviceName: _fitnessEquipment?.bluetoothName ?? widget.device.nonEmptyName,
+        deviceName: widget.device.nonEmptyName,
         deviceId: widget.device.id.id,
         hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
         start: now.millisecondsSinceEpoch,

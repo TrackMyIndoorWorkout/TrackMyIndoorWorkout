@@ -107,15 +107,6 @@ abstract class DeviceDescriptor extends DataHandler {
     debugPrint("pollMeasurement Not implemented!");
   }
 
-  /// Configure the Bluetooth device. Configuration can change the following:
-  /// 1. Bluetooth name
-  /// 2. Equipment color (on console)
-  /// 3. Equipment weight
-  Future<void> applyConfiguration(
-      BluetoothCharacteristic? controlPoint, String name, int logLevel) async {
-    debugPrint("applyConfiguration Not implemented!");
-  }
-
   /// Perform extra operations right after a successful connect and
   /// service + characteristics discovery
   Future<void> postConnect(BluetoothCharacteristic? controlPoint, int logLevel) async {}

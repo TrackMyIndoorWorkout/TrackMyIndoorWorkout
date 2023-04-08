@@ -12,7 +12,6 @@ import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
-import '../../utils/string_ex.dart';
 import '../gatt/ftms.dart';
 import '../gatt/kayak_first.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
@@ -227,17 +226,6 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     await _executeControlOperationCore(controlPoint, fullCommand, logLevel);
-  }
-
-  @override
-  Future<void> applyConfiguration(
-      BluetoothCharacteristic? controlPoint, String name, int logLevel) async {
-    if (!await FlutterBluePlus.instance.isOn || controlPoint == null) {
-      return;
-    }
-
-    final configureCommand = "$configurationCommand;$name;0;0;0;0;0;0;0;0;0;0;0;0;0";
-    await _executeControlOperationCore(controlPoint, configureCommand, logLevel);
   }
 
   @override

@@ -53,7 +53,6 @@ abstract class DeviceBase {
   bool discovering = false;
   bool discovered = false;
 
-  late String bluetoothName;
   final prefService = Get.find<BasePrefService>();
   bool uxDebug = appDebugModeDefault;
   int logLevel = logLevelDefault;
@@ -67,7 +66,6 @@ abstract class DeviceBase {
     this.statusCharacteristicId = "",
   }) {
     readConfiguration();
-    bluetoothName = device?.nonEmptyName ?? "";
   }
 
   void readConfiguration() {
