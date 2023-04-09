@@ -319,7 +319,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         if (byteList.isNotEmpty &&
             fragLength >= listLength &&
             packetFragment.sublist(fragLength - listLength).equals(byteList)) {
-          // repeat packet fragment => discard
+          // repeat packet fragment => discard!
           continue;
         }
 
@@ -542,8 +542,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     return success;
   }
 
-  Future<void> postConnect() async {
-    await descriptor?.postConnect(getControlPoint(), logLevel);
+  Future<void> postPumpStart() async {
+    await descriptor?.postPumpStart(getControlPoint(), logLevel);
   }
 
   /// Needed to check if any of the last seen data stubs for each
