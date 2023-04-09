@@ -119,12 +119,6 @@ class ScanResultTile extends StatelessWidget {
           secondaryStyle,
         ),
         _buildAdvRow(
-          'Tx Power Level',
-          '${result.advertisementData.txPowerLevel ?? 'N/A'}',
-          detailStyle,
-          secondaryStyle,
-        ),
-        _buildAdvRow(
           'Manufacturer Data',
           getNiceManufacturerData(
               result.advertisementData.manufacturerData.keys.toList(growable: false)),
