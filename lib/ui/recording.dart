@@ -266,11 +266,18 @@ class RecordingState extends State<RecordingScreen> {
 
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
-      await _fitnessEquipment?.postConnect();
+      await _fitnessEquipment?.additionalSensorsOnDemand();
+
+      await _fitnessEquipment?.attach();
+
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
         await _startMeasurement();
       }
+
+      _startPumpingData();
+
+      await _fitnessEquipment?.postPumpStart();
     } else {
       Get.defaultDialog(
         middleText: 'Problem connecting to ${widget.descriptor.fullName}. Aborting...',
@@ -294,6 +301,138 @@ class RecordingState extends State<RecordingScreen> {
         _zoneIndexes[valueIndex] = zoneIndex;
       }
     }
+  }
+
+  Future<void> _recordHandlerFunction(RecordWithSport record) async {
+    if (!_measuring || !(_fitnessEquipment?.measuring ?? false)) {
+      return;
+    }
+
+    _sinkSocket?.add(record.binarySerialize());
+
+    final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
+    if (workoutState != WorkoutState.waitingForFirstMove) {
+      if (!_uxDebug &&
+          (workoutState == WorkoutState.moving ||
+              workoutState == WorkoutState.startedMoving ||
+              workoutState == WorkoutState.justPaused)) {
+        await _database.recordDao.insertRecord(record);
+      }
+
+      setState(() {
+        if (!_simplerUi) {
+          _graphData.add(record.display());
+          if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+              _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+            _graphAvgData.add(_accu.averageDisplayRecord(record.dt));
+          }
+
+          if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+              _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+            _graphMaxData.add(_accu.maximumDisplayRecord(record.dt));
+          }
+
+          if (_pointCount > 0 && _graphData.length > _pointCount) {
+            _graphData.removeFirst();
+            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              _graphAvgData.removeFirst();
+            }
+
+            if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              _graphMaxData.removeFirst();
+            }
+          }
+          graphData = _graphData.toList();
+          if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+              _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+            graphAvgData = _graphAvgData.toList();
+          }
+
+          if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+              _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+            graphMaxData = _graphMaxData.toList();
+          }
+        }
+
+        _distance = record.distance ?? 0.0;
+        if (_displayLapCounter) {
+          _lapCount = (_distance / _trackLength).floor();
+        }
+
+        _elapsed = record.elapsed ?? 0;
+        if (_timeDisplayMode == timeDisplayModeHIITMoving) {
+          if (workoutState == WorkoutState.justPaused ||
+              workoutState == WorkoutState.startedMoving) {
+            _markedTime = _elapsed;
+          }
+
+          if (workoutState != WorkoutState.waitingForFirstMove) {
+            _elapsed -= _markedTime;
+          }
+        }
+
+        _movingTime = record.movingTime.round();
+        if (record.heartRate != null &&
+            (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
+          _heartRate = record.heartRate;
+        }
+
+        if (_leaderboardFeature || _showPacer) {
+          final selfRankTuple = _getSelfRank();
+          _selfRank = selfRankTuple.item1;
+          _selfAvgSpeed = selfRankTuple.item2;
+          _selfRankString = _getSelfRankString();
+        }
+
+        if (_onStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
+          _accu.processRecord(record);
+
+          if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+              _onStageStatisticsType == onStageStatisticsTypeAlternating &&
+                  _elapsed % (_onStageStatisticsAlternationDuration * 2) <
+                      _onStageStatisticsAlternationDuration) {
+            _statistics[_power0Index] = _accu.avgPower.toInt().toString();
+            _statistics[_speed0Index] = speedOrPaceString(
+              _accu.avgSpeed,
+              _si,
+              widget.descriptor.sport,
+              limitSlowSpeed: true,
+            );
+            _statistics[_cadence0Index] = _accu.avgCadence.toInt().toString();
+            _statistics[_hr0Index] = _accu.avgHeartRate.toInt().toString();
+          } else {
+            _statistics[_power0Index] = _accu.maxPowerDisplay.toString();
+            _statistics[_speed0Index] = speedOrPaceString(
+              _accu.maxSpeedDisplay,
+              _si,
+              widget.descriptor.sport,
+              limitSlowSpeed: true,
+            );
+            _statistics[_cadence0Index] = _accu.maxCadenceDisplay.toString();
+            _statistics[_hr0Index] = _accu.maxHeartRateDisplay.toString();
+          }
+        }
+
+        _values = [
+          record.calories?.toString() ?? emptyMeasurement,
+          record.power?.toString() ?? emptyMeasurement,
+          record.speedOrPaceStringByUnit(_si, widget.descriptor.sport),
+          record.cadence?.toString() ?? emptyMeasurement,
+          record.heartRate?.toString() ?? emptyMeasurement,
+          record.distanceStringByUnit(_si, _highRes),
+        ];
+        optionallyChangeMeasurementByZone(_speedNIndex, record.speed ?? 0.0, false);
+        optionallyChangeMeasurementByZone(_powerNIndex, record.power ?? 0, true);
+        optionallyChangeMeasurementByZone(_cadenceNIndex, record.cadence ?? 0, true);
+        optionallyChangeMeasurementByZone(_hrNIndex, record.heartRate ?? 0, true);
+      });
+    }
+  }
+
+  void _startPumpingData() {
+    _fitnessEquipment?.pumpData((record) async => await _recordHandlerFunction(record));
   }
 
   Future<void> _startMeasurement() async {
@@ -321,7 +460,6 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    await _fitnessEquipment?.additionalSensorsOnDemand();
     final now = DateTime.now();
     var continued = false;
     if (!_uxDebug) {
@@ -424,141 +562,6 @@ class RecordingState extends State<RecordingScreen> {
     });
     _fitnessEquipment?.measuring = true;
     _fitnessEquipment?.startWorkout();
-
-    _fitnessEquipment?.pumpData((record) async {
-      _dataGapWatchdog?.cancel();
-      _dataGapBeeperTimer?.cancel();
-      if (_dataGapWatchdogTime > 0 && !_circuitWorkout) {
-        _dataGapWatchdog = Timer(
-          Duration(seconds: _dataGapWatchdogTime),
-          _dataGapTimeoutHandler,
-        );
-      }
-
-      _sinkSocket?.add(record.binarySerialize());
-
-      final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
-      if (_measuring &&
-          (_fitnessEquipment?.measuring ?? false) &&
-          workoutState != WorkoutState.waitingForFirstMove) {
-        if (!_uxDebug &&
-            (workoutState == WorkoutState.moving ||
-                workoutState == WorkoutState.startedMoving ||
-                workoutState == WorkoutState.justPaused)) {
-          await _database.recordDao.insertRecord(record);
-        }
-
-        setState(() {
-          if (!_simplerUi) {
-            _graphData.add(record.display());
-            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-              _graphAvgData.add(_accu.averageDisplayRecord(record.dt));
-            }
-
-            if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-              _graphMaxData.add(_accu.maximumDisplayRecord(record.dt));
-            }
-
-            if (_pointCount > 0 && _graphData.length > _pointCount) {
-              _graphData.removeFirst();
-              if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-                  _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-                _graphAvgData.removeFirst();
-              }
-
-              if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-                  _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-                _graphMaxData.removeFirst();
-              }
-            }
-            graphData = _graphData.toList();
-            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-              graphAvgData = _graphAvgData.toList();
-            }
-
-            if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-              graphMaxData = _graphMaxData.toList();
-            }
-          }
-
-          _distance = record.distance ?? 0.0;
-          if (_displayLapCounter) {
-            _lapCount = (_distance / _trackLength).floor();
-          }
-
-          _elapsed = record.elapsed ?? 0;
-          if (_timeDisplayMode == timeDisplayModeHIITMoving) {
-            if (workoutState == WorkoutState.justPaused ||
-                workoutState == WorkoutState.startedMoving) {
-              _markedTime = _elapsed;
-            }
-
-            if (workoutState != WorkoutState.waitingForFirstMove) {
-              _elapsed -= _markedTime;
-            }
-          }
-
-          _movingTime = record.movingTime.round();
-          if (record.heartRate != null &&
-              (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
-            _heartRate = record.heartRate;
-          }
-
-          if (_leaderboardFeature || _showPacer) {
-            final selfRankTuple = _getSelfRank();
-            _selfRank = selfRankTuple.item1;
-            _selfAvgSpeed = selfRankTuple.item2;
-            _selfRankString = _getSelfRankString();
-          }
-
-          if (_onStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
-            _accu.processRecord(record);
-
-            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating &&
-                    _elapsed % (_onStageStatisticsAlternationDuration * 2) <
-                        _onStageStatisticsAlternationDuration) {
-              _statistics[_power0Index] = _accu.avgPower.toInt().toString();
-              _statistics[_speed0Index] = speedOrPaceString(
-                _accu.avgSpeed,
-                _si,
-                widget.descriptor.sport,
-                limitSlowSpeed: true,
-              );
-              _statistics[_cadence0Index] = _accu.avgCadence.toInt().toString();
-              _statistics[_hr0Index] = _accu.avgHeartRate.toInt().toString();
-            } else {
-              _statistics[_power0Index] = _accu.maxPowerDisplay.toString();
-              _statistics[_speed0Index] = speedOrPaceString(
-                _accu.maxSpeedDisplay,
-                _si,
-                widget.descriptor.sport,
-                limitSlowSpeed: true,
-              );
-              _statistics[_cadence0Index] = _accu.maxCadenceDisplay.toString();
-              _statistics[_hr0Index] = _accu.maxHeartRateDisplay.toString();
-            }
-          }
-
-          _values = [
-            record.calories?.toString() ?? emptyMeasurement,
-            record.power?.toString() ?? emptyMeasurement,
-            record.speedOrPaceStringByUnit(_si, widget.descriptor.sport),
-            record.cadence?.toString() ?? emptyMeasurement,
-            record.heartRate?.toString() ?? emptyMeasurement,
-            record.distanceStringByUnit(_si, _highRes),
-          ];
-          optionallyChangeMeasurementByZone(_speedNIndex, record.speed ?? 0.0, false);
-          optionallyChangeMeasurementByZone(_powerNIndex, record.power ?? 0, true);
-          optionallyChangeMeasurementByZone(_cadenceNIndex, record.cadence ?? 0, true);
-          optionallyChangeMeasurementByZone(_hrNIndex, record.heartRate ?? 0, true);
-        });
-      }
-    });
   }
 
   void _onToggleDetails(int index) {
