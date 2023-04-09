@@ -30,7 +30,6 @@ import '../persistence/database.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
-import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
@@ -197,10 +196,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _uxDebug = appDebugModeDefault;
   String _timeDisplayMode = timeDisplayModeDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
-  Timer? _dataGapWatchdog;
-  int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
   String _dataGapSoundEffect = dataStreamGapSoundEffectDefault;
-  Timer? _dataGapBeeperTimer;
 
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig = [];
@@ -408,7 +404,6 @@ class RecordingState extends State<RecordingScreen> {
 
     await _fitnessEquipment?.setActivity(_activity!);
 
-    await _fitnessEquipment?.attach();
     setState(() {
       _elapsed = 0;
       _movingTime = 0;
@@ -765,11 +760,8 @@ class RecordingState extends State<RecordingScreen> {
 
     _circuitWorkout =
         (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
-    _dataGapWatchdogTime =
-        prefService.get<int>(dataStreamGapWatchdogIntTag) ?? dataStreamGapWatchdogDefault;
     _dataGapSoundEffect =
         prefService.get<String>(dataStreamGapSoundEffectTag) ?? dataStreamGapSoundEffectDefault;
-
     _targetHrMode = prefService.get<String>(targetHeartRateModeTag) ?? targetHeartRateModeDefault;
     _targetHrBounds = getTargetHeartRateBounds(_targetHrMode, _preferencesSpecs[3], prefService);
     _targetHrAlerting = false;
@@ -960,8 +952,6 @@ class RecordingState extends State<RecordingScreen> {
 
   _preDispose() async {
     _hrBeepPeriodTimer?.cancel();
-    _dataGapWatchdog?.cancel();
-    _dataGapBeeperTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
       Get.find<SoundService>().stopAllSoundEffects();
@@ -989,36 +979,6 @@ class RecordingState extends State<RecordingScreen> {
     Wakelock.disable();
 
     super.dispose();
-  }
-
-  Future<void> _dataGapTimeoutHandler() async {
-    Get.snackbar("Warning", "Equipment might be disconnected!");
-
-    _fitnessEquipment?.measuring = false;
-    _hrBeepPeriodTimer?.cancel();
-
-    if (_dataGapSoundEffect != soundEffectNone) {
-      _dataTimeoutBeeper();
-    }
-
-    if (!_circuitWorkout) {
-      await _stopMeasurement(false);
-    }
-
-    try {
-      await _fitnessEquipment?.disconnect();
-    } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-  }
-
-  Future<void> _dataTimeoutBeeper() async {
-    await Get.find<SoundService>().playDataTimeoutSoundEffect();
-    if (_measuring && _dataGapSoundEffect != soundEffectNone && _dataGapWatchdogTime >= 2) {
-      _dataGapBeeperTimer = Timer(Duration(seconds: _dataGapWatchdogTime), _dataTimeoutBeeper);
-    }
   }
 
   Future<void> _hrBeeper() async {
@@ -1090,8 +1050,6 @@ class RecordingState extends State<RecordingScreen> {
     if (!_measuring || _activity == null) return;
 
     _hrBeepPeriodTimer?.cancel();
-    _dataGapWatchdog?.cancel();
-    _dataGapBeeperTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
       Get.find<SoundService>().stopAllSoundEffects();
