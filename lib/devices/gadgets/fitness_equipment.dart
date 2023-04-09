@@ -403,6 +403,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   void pumpData(RecordHandlerFunction recordHandlerFunction) {
+    subscription?.cancel();
     _recordHandlerFunction = recordHandlerFunction;
     if (uxDebug) {
       _timer = Timer(
