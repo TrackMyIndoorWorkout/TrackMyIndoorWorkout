@@ -83,3 +83,6 @@ flutter:
         - asset: fonts/brands.ttf
   assets:
     - assets/
+    - assets/audio/
+    - assets/donation/
+    - assets/integration/
