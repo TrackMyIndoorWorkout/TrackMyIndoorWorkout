@@ -956,22 +956,6 @@ class RecordingState extends State<RecordingScreen> {
         _dataGapSoundEffect != soundEffectNone) {
       Get.find<SoundService>().stopAllSoundEffects();
     }
-
-    try {
-      await _heartRateMonitor?.detach();
-    } on PlatformException catch (e, stack) {
-      debugPrint("HRM device got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-
-    try {
-      await _fitnessEquipment?.detach();
-    } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
   }
 
   @override
@@ -1072,23 +1056,6 @@ class RecordingState extends State<RecordingScreen> {
         logLevelError,
         "RECORD",
         "_stopMeasurement stopWorkout",
-        "${e.message}",
-      );
-    }
-
-    try {
-      if (await FlutterBluePlus.instance.isOn) {
-        await _fitnessEquipment?.detach();
-      }
-    } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
-        _logLevel,
-        logLevelError,
-        "RECORD",
-        "_stopMeasurement detach",
         "${e.message}",
       );
     }
