@@ -138,29 +138,6 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       debugPrint("$e");
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
-
-    if (!command.startsWith(pollDataCommand)) {
-      String response = "";
-      String lastChunk = "";
-      while (!response.endsWith(crLf)) {
-        final responseBytes = await controlPoint.read();
-        final responseChunk = utf8.decode(responseBytes);
-        if (responseChunk == lastChunk) {
-          break;
-        }
-
-        response += responseChunk;
-        lastChunk = responseChunk;
-      }
-
-      Logging.log(
-        logLevel,
-        logLevelInfo,
-        "KayakFirst",
-        "_executeControlOperationCore response",
-        response,
-      );
-    }
   }
 
   @override
