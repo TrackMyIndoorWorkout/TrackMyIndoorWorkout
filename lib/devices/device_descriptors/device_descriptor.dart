@@ -107,7 +107,7 @@ abstract class DeviceDescriptor extends DataHandler {
     debugPrint("pollMeasurement Not implemented!");
   }
 
-  /// Perform extra operations right after a successful connect and
-  /// service + characteristics discovery
-  Future<void> postConnect(BluetoothCharacteristic? controlPoint, int logLevel) async {}
+  /// Perform extra operations after a successful connect,
+  /// service + characteristics discovery, attach, setNotifyValue(true)
+  Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {}
 }

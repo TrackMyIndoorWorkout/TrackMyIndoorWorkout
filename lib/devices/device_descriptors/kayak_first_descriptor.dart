@@ -206,7 +206,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   }
 
   @override
-  Future<void> postConnect(BluetoothCharacteristic? controlPoint, int logLevel) async {
+  Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {
     if (!await FlutterBluePlus.instance.isOn || controlPoint == null) {
       return;
     }
